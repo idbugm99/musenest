@@ -5,24 +5,43 @@ Professional model portfolio management system built with Node.js and MySQL. A m
 ## ✨ Features
 
 - **Multi-Theme Support**: 5 beautiful themes (basic, luxury, glamour, modern, dark)
+- **Admin Impersonation System**: Secure client account testing with audit trails
+- **Subscription-Based Access**: Theme availability tied to account permissions
 - **Normalized Database**: No JSON fields, proper relational structure
 - **Dynamic Routing**: Database-driven page routing and content management
-- **Gallery Management**: Professional image galleries with tags and filtering
+- **Gallery Management**: Professional image galleries with automatic organization
 - **FAQ System**: Categorized frequently asked questions
 - **Booking System**: Availability calendar and appointment management
 - **Service Management**: Rates, categories, and service descriptions
 - **User Management**: Multi-user access with role-based permissions
+- **Media Organization**: Automatic model directory creation during onboarding
 - **Security First**: Built-in rate limiting, helmet security, and CORS protection
 
 ## 🏗️ Architecture
 
 ### Database Schema
 - **Fully Normalized**: No JSON dependencies, proper foreign keys
-- **Theme System**: Separate tables for themes and colors
+- **Theme Sets System**: Complete design systems with subscription-based access
+- **Account Permissions**: Subscription plans and theme access control
+- **Impersonation System**: Secure admin testing with comprehensive audit trails
 - **Content Management**: Flexible page sections and metadata
-- **Gallery System**: Images with tags and section organization
+- **Gallery System**: Images with tags and automatic model organization
 - **FAQ System**: Categorized questions and answers
 - **Service Management**: Categories and pricing structures
+
+### Impersonation System
+**Security Features:**
+- Permission-based access control (admin/sysadmin only)
+- HTTP-only secure cookies with configurable expiration
+- JWT token generation for seamless authentication
+- Comprehensive audit trails with IP tracking
+- Destination choice: Admin Panel vs Public Paysite
+
+**Database Tables:**
+- `impersonation_audit` - Complete activity logging
+- `active_impersonations` - Session management
+- `impersonation_restrictions` - Configurable limitations
+- `impersonation_security_log` - Security event tracking
 
 ### Template Organization
 ```
