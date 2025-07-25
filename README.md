@@ -57,7 +57,7 @@ MuseNest/
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/idbugm99/musenest.git
    cd musenest
    ```
 
