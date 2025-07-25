@@ -112,9 +112,9 @@ app.get('/health', async (req, res) => {
     });
 });
 
-// API Routes (to be implemented)
-// app.use('/api/auth', require('./src/routes/auth'));
-// app.use('/api/models', require('./src/routes/models'));
+// API Routes
+app.use('/api/auth', require('./src/routes/auth'));
+app.use('/api/models', require('./src/routes/models'));
 // app.use('/api/gallery', require('./src/routes/gallery'));
 // app.use('/api/content', require('./src/routes/content'));
 
