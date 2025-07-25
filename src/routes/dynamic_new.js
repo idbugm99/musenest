@@ -266,12 +266,11 @@ router.get('/:slug/:page?', optionalAuth, async (req, res) => {
             ...pageData
         };
 
-        // Determine template path (map home -> index)
+        // Determine template name (map home -> index)
         const templateName = requestedPage.name === 'home' ? 'index' : requestedPage.name;
-        const templatePath = `${themeSet.name}/${templateName}.html`;
 
-        // Render template
-        const html = await templateEngine.render(templatePath, templateData);
+        // Render template with theme
+        const html = await templateEngine.renderWithTheme(themeSet.name, templateName, templateData);
         res.send(html);
 
     } catch (error) {
@@ -279,7 +278,7 @@ router.get('/:slug/:page?', optionalAuth, async (req, res) => {
         
         // Try fallback to basic theme
         try {
-            const basicTemplate = `basic/${req.params.page || 'index'}.html`;
+            const fallbackTemplateName = req.params.page === 'home' || !req.params.page ? 'index' : req.params.page;
             const fallbackData = {
                 model: { slug: req.params.slug, name: 'Portfolio' },
                 theme: { name: 'basic', colors: {} },
@@ -287,7 +286,7 @@ router.get('/:slug/:page?', optionalAuth, async (req, res) => {
                 site_settings: { site_name: 'Portfolio', model_name: 'Portfolio' }
             };
             
-            const html = await templateEngine.render(basicTemplate, fallbackData);
+            const html = await templateEngine.renderWithTheme('basic', fallbackTemplateName, fallbackData);
             res.send(html);
         } catch (fallbackError) {
             console.error('Fallback template error:', fallbackError);
