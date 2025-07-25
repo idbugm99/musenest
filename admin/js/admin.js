@@ -22,9 +22,33 @@ class AdminDashboard {
         console.log('Initializing admin dashboard...');
         console.log('Auth token:', this.authToken ? 'Present' : 'Missing');
         
-        // Check authentication
-        if (!this.authToken) {
-            console.log('No auth token, redirecting to login');
+        // Check for impersonation session first
+        const impersonationStatus = await this.checkImpersonationStatus();
+        
+        if (impersonationStatus.isImpersonating) {
+            console.log('Impersonation session detected, proceeding as impersonated user');
+            this.isImpersonating = true;
+            this.impersonationData = impersonationStatus.data;
+            
+            // Generate temporary token for impersonated user
+            try {
+                const tokenResponse = await fetch('/api/impersonation/generate-token', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                if (tokenResponse.ok) {
+                    const tokenData = await tokenResponse.json();
+                    if (tokenData.success) {
+                        this.authToken = tokenData.token;
+                        console.log('Generated impersonation token successfully');
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to generate impersonation token:', error);
+            }
+        } else if (!this.authToken) {
+            console.log('No auth token or impersonation session, redirecting to login');
             this.redirectToLogin();
             return;
         }
@@ -42,8 +66,31 @@ class AdminDashboard {
             window.dispatchEvent(new CustomEvent('adminDashboardReady'));
         } catch (error) {
             console.error('Initialization error:', error);
-            this.redirectToLogin();
+            if (!this.isImpersonating) {
+                this.redirectToLogin();
+            }
         }
+    }
+
+    async checkImpersonationStatus() {
+        try {
+            const response = await fetch('/api/impersonation/status', {
+                method: 'GET',
+                credentials: 'include' // Include cookies
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                return {
+                    isImpersonating: data.success && data.data.is_impersonating,
+                    data: data.success ? data.data : null
+                };
+            }
+        } catch (error) {
+            console.error('Error checking impersonation status:', error);
+        }
+        
+        return { isImpersonating: false, data: null };
     }
 
     async loadCurrentUser() {
@@ -277,15 +324,21 @@ class AdminDashboard {
         const url = `${this.baseURL}${endpoint}`;
         console.log('ApiRequest - URL:', url);
         console.log('ApiRequest - Token:', this.authToken ? 'Present' : 'Missing');
+        console.log('ApiRequest - Impersonating:', this.isImpersonating ? 'Yes' : 'No');
         
         const defaultHeaders = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.authToken}`
+            'Content-Type': 'application/json'
         };
+
+        // Add Authorization header if we have a token (whether impersonating or not)
+        if (this.authToken) {
+            defaultHeaders['Authorization'] = `Bearer ${this.authToken}`;
+        }
 
         const config = {
             method: 'GET',
             headers: { ...defaultHeaders, ...options.headers },
+            credentials: 'include', // Always include cookies for impersonation
             ...options
         };
 
@@ -299,7 +352,7 @@ class AdminDashboard {
             const data = await response.json();
             console.log('ApiRequest - Response data:', data);
             
-            if (response.status === 401) {
+            if (response.status === 401 && !this.isImpersonating) {
                 console.warn('Authentication failed, redirecting to login');
                 this.redirectToLogin();
                 throw new Error('Authentication required');

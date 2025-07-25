@@ -16,8 +16,36 @@ function generateToken(user) {
     );
 }
 
-// Verify JWT token middleware
+// Verify JWT token middleware with impersonation support
 async function authenticateToken(req, res, next) {
+    // Check for impersonation session first - BEFORE checking JWT
+    if (req.isImpersonating && req.impersonation) {
+        // Using impersonation mode
+        try {
+            // Get impersonated model's user data
+            const users = await query(`
+                SELECT u.id, u.email, u.role, u.is_active, m.name as model_name, m.slug as model_slug
+                FROM models m
+                JOIN model_users mu ON m.id = mu.model_id
+                JOIN users u ON mu.user_id = u.id
+                WHERE m.id = ? AND mu.role = 'owner' AND mu.is_active = true
+            `, [req.impersonation.impersonated_model_id]);
+
+            if (users.length > 0) {
+                const impersonatedUser = users[0];
+                req.user = impersonatedUser;
+                req.originalUser = { id: req.impersonation.admin_user_id };
+                req.userContext = 'impersonated';
+                // Impersonation successful
+                return next();
+            } else {
+                // No user found for impersonated model
+            }
+        } catch (error) {
+            console.error('Impersonation user lookup error:', error);
+        }
+    }
+
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
@@ -54,6 +82,7 @@ async function authenticateToken(req, res, next) {
         }
 
         req.user = user;
+        req.userContext = 'normal';
         next();
     } catch (error) {
         console.error('Token verification error:', error);
@@ -156,8 +185,32 @@ function requireAdminAccess(req, res, next) {
     next();
 }
 
-// Optional authentication (for public/private content)
+// Optional authentication (for public/private content) with impersonation support
 async function optionalAuth(req, res, next) {
+    // Check for impersonation session first
+    if (req.isImpersonating && req.impersonation) {
+        try {
+            // Get impersonated model's user data
+            const users = await query(`
+                SELECT u.id, u.email, u.role, u.is_active, m.name as model_name, m.slug as model_slug
+                FROM models m
+                JOIN model_users mu ON m.id = mu.model_id
+                JOIN users u ON mu.user_id = u.id
+                WHERE m.id = ? AND mu.role = 'owner' AND mu.is_active = true
+            `, [req.impersonation.impersonated_model_id]);
+
+            if (users.length > 0) {
+                const impersonatedUser = users[0];
+                req.user = impersonatedUser;
+                req.originalUser = { id: req.impersonation.admin_user_id };
+                req.userContext = 'impersonated';
+                return next();
+            }
+        } catch (error) {
+            console.error('Impersonation user lookup error:', error);
+        }
+    }
+
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -176,6 +229,7 @@ async function optionalAuth(req, res, next) {
 
         if (users.length > 0 && users[0].is_active) {
             req.user = users[0];
+            req.userContext = 'normal';
         } else {
             req.user = null;
         }

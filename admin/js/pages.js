@@ -75,15 +75,7 @@ class PageContentManager {
 
     async loadPageTypes() {
         try {
-            const response = await fetch('/api/admin/pages/types', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('musenest_token')}`
-                }
-            });
-
-            if (!response.ok) throw new Error('Failed to load page types');
-            
-            this.pageTypes = await response.json();
+            this.pageTypes = await window.adminDashboard.apiRequest('/api/admin/pages/types');
             this.renderPageTypes();
         } catch (error) {
             console.error('Error loading page types:', error);
@@ -93,15 +85,7 @@ class PageContentManager {
 
     async loadPageSections() {
         try {
-            const response = await fetch('/api/admin/pages/sections', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('musenest_token')}`
-                }
-            });
-
-            if (!response.ok) throw new Error('Failed to load page sections');
-            
-            this.pageSections = await response.json();
+            this.pageSections = await window.adminDashboard.apiRequest('/api/admin/pages/sections');
             this.filterPageSections();
         } catch (error) {
             console.error('Error loading page sections:', error);
@@ -267,12 +251,8 @@ class PageContentManager {
 
             if (!title) throw new Error('Section title is required');
 
-            const response = await fetch(`/api/admin/pages/sections/${this.currentSection.id}`, {
+            await window.adminDashboard.apiRequest(`/api/admin/pages/sections/${this.currentSection.id}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('musenest_token')}`
-                },
                 body: JSON.stringify({
                     title,
                     sort_order: sortOrder,
@@ -280,8 +260,6 @@ class PageContentManager {
                     content
                 })
             });
-
-            if (!response.ok) throw new Error('Failed to save section');
 
             showNotification('Page section updated successfully', 'success');
             this.cancelEdit();
@@ -298,14 +276,9 @@ class PageContentManager {
         }
 
         try {
-            const response = await fetch(`/api/admin/pages/sections/${sectionId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('musenest_token')}`
-                }
+            await window.adminDashboard.apiRequest(`/api/admin/pages/sections/${sectionId}`, {
+                method: 'DELETE'
             });
-
-            if (!response.ok) throw new Error('Failed to delete section');
 
             showNotification('Page section deleted successfully', 'success');
             this.loadPageSections();

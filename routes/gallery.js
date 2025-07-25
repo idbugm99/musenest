@@ -49,13 +49,34 @@ const upload = multer({
 // Get all gallery images for authenticated model
 router.get('/images', auth, async (req, res) => {
     try {
+        // Get the model ID - either from impersonation context or user's model
+        let modelId;
+        if (req.isImpersonating && req.impersonation) {
+            modelId = req.impersonation.impersonated_model_id;
+        } else {
+            // Look up model ID for regular user
+            const [userModel] = await db.execute(
+                'SELECT model_id FROM model_users WHERE user_id = ? AND role = "owner" AND is_active = true',
+                [req.user.id]
+            );
+            modelId = userModel.length > 0 ? userModel[0].model_id : null;
+        }
+
+        if (!modelId) {
+            return res.status(404).json({
+                success: false,
+                message: 'No model found for user'
+            });
+        }
+
         const [rows] = await db.execute(`
-            SELECT gi.*, gs.title as section_title 
+            SELECT gi.*, gs.title as section_title, m.slug as model_slug
             FROM gallery_images gi
             LEFT JOIN gallery_sections gs ON gi.section_id = gs.id
+            LEFT JOIN models m ON gi.model_id = m.id
             WHERE gi.model_id = ? 
             ORDER BY gi.section_id, gi.sort_order
-        `, [req.user.id]);
+        `, [modelId]);
 
         res.json({
             success: true,
@@ -73,6 +94,26 @@ router.get('/images', auth, async (req, res) => {
 // Get gallery sections for authenticated model
 router.get('/sections', auth, async (req, res) => {
     try {
+        // Get the model ID - either from impersonation context or user's model
+        let modelId;
+        if (req.isImpersonating && req.impersonation) {
+            modelId = req.impersonation.impersonated_model_id;
+        } else {
+            // Look up model ID for regular user
+            const [userModel] = await db.execute(
+                'SELECT model_id FROM model_users WHERE user_id = ? AND role = "owner" AND is_active = true',
+                [req.user.id]
+            );
+            modelId = userModel.length > 0 ? userModel[0].model_id : null;
+        }
+
+        if (!modelId) {
+            return res.status(404).json({
+                success: false,
+                message: 'No model found for user'
+            });
+        }
+
         const [sections] = await db.execute(`
             SELECT gs.*, COUNT(gi.id) as image_count
             FROM gallery_sections gs
@@ -80,7 +121,7 @@ router.get('/sections', auth, async (req, res) => {
             WHERE gs.model_id = ?
             GROUP BY gs.id
             ORDER BY gs.sort_order
-        `, [req.user.id]);
+        `, [modelId]);
 
         res.json({
             success: true,

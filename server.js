@@ -61,10 +61,15 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Impersonation middleware (must be after session handling)
+const { impersonationMiddleware } = require('./middleware/impersonation');
+app.use(impersonationMiddleware);
+
 // Static files
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use('/admin', express.static(path.join(__dirname, 'admin')));
+app.use('/js', express.static(path.join(__dirname, 'public/js')));
 
 // Disable built-in template engine - we use our custom one
 app.set('view engine', false);
@@ -77,6 +82,16 @@ app.get('/', (req, res) => {
         status: 'Running',
         message: 'Professional model portfolio management system'
     });
+});
+
+// Onboarding page
+app.get('/onboarding', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'onboarding.html'));
+});
+
+// Test impersonation page  
+app.get('/admin/test-impersonation.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'test-impersonation.html'));
 });
 
 // Health check
@@ -102,6 +117,10 @@ app.use('/api/testimonials', require('./routes/testimonials'));
 app.use('/api/calendar', require('./routes/calendar'));
 app.use('/api/theme-custom', require('./routes/theme-customization'));
 app.use('/api/theme-sets', require('./routes/theme-sets'));
+app.use('/api/onboarding', require('./routes/api/onboarding'));
+app.use('/api/admin-business', require('./routes/api/admin-business'));
+app.use('/api/system-management', require('./routes/api/system-management'));
+app.use('/api/impersonation', require('./routes/api/impersonation'));
 
 // Dynamic model routes (Theme Sets + Modular Pages)
 app.use('/', require('./src/routes/dynamic_new'));

@@ -171,7 +171,7 @@ class GalleryManager {
         container.innerHTML = images.map(image => `
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden group">
                 <div class="aspect-w-1 aspect-h-1 relative">
-                    <img src="/uploads/${window.adminDashboard.currentUser.slug}/${image.filename}" 
+                    <img src="/uploads/${image.model_slug || window.adminDashboard.currentUser.slug || window.adminDashboard.currentUser.model_slug}/${image.filename}" 
                          alt="${this.escapeHtml(image.alt_text || image.caption || '')}"
                          class="w-full h-48 object-cover">
                     <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
@@ -201,7 +201,7 @@ class GalleryManager {
         container.className = 'space-y-4';
         container.innerHTML = images.map(image => `
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 flex items-center space-x-4">
-                <img src="/uploads/${window.adminDashboard.currentUser.slug}/${image.filename}" 
+                <img src="/uploads/${image.model_slug || window.adminDashboard.currentUser.slug || window.adminDashboard.currentUser.model_slug}/${image.filename}" 
                      alt="${this.escapeHtml(image.alt_text || image.caption || '')}"
                      class="w-16 h-16 object-cover rounded-lg">
                 <div class="flex-1 min-w-0">
@@ -395,7 +395,7 @@ class GalleryManager {
         const modal = this.createModal('Edit Image', `
             <form id="editImageForm">
                 <div class="mb-4">
-                    <img src="/uploads/${window.adminDashboard.currentUser.slug}/${image.filename}" 
+                    <img src="/uploads/${image.model_slug || window.adminDashboard.currentUser.slug || window.adminDashboard.currentUser.model_slug}/${image.filename}" 
                          alt="${this.escapeHtml(image.alt_text || '')}"
                          class="w-full h-48 object-cover rounded-lg mb-4">
                 </div>
@@ -501,7 +501,7 @@ class GalleryManager {
 
         const modal = this.createModal('View Image', `
             <div class="text-center">
-                <img src="/uploads/${window.adminDashboard.currentUser.slug}/${image.filename}" 
+                <img src="/uploads/${image.model_slug || window.adminDashboard.currentUser.slug || window.adminDashboard.currentUser.model_slug}/${image.filename}" 
                      alt="${this.escapeHtml(image.alt_text || '')}"
                      class="max-w-full max-h-96 mx-auto rounded-lg">
                 <div class="mt-4 text-left">
