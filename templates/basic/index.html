@@ -7,47 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm border-b">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex">
-                    <div class="flex-shrink-0 flex items-center">
-                        <h1 class="text-xl font-bold text-gray-900">
-                            {{site_settings.site_name || model.name}}
-                        </h1>
-                    </div>
-                </div>
-                
-                <div class="hidden md:ml-6 md:flex md:space-x-8">
-                    <a href="/{{model.slug}}/" 
-                       class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                        Home
-                    </a>
-                    <a href="/{{model.slug}}/about" 
-                       class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                        About
-                    </a>
-                    <a href="/{{model.slug}}/gallery" 
-                       class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                        Gallery
-                    </a>
-                    <a href="/{{model.slug}}/rates" 
-                       class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                        Rates
-                    </a>
-                    <a href="/{{model.slug}}/faq" 
-                       class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                        FAQ
-                    </a>
-                    <a href="/{{model.slug}}/contact" 
-                       class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                        Contact
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <!-- Render Navigation Component -->
+    {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
 
     <!-- Hero Section -->
     <section class="bg-white">

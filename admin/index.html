@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MuseNest Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .admin-sidebar {
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .admin-sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+        
+        .content-area {
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .drag-over {
+            border: 2px dashed #3B82F6;
+            background-color: #EBF8FF;
+        }
+        
+        .sortable-ghost {
+            opacity: 0.4;
+        }
+        
+        .notification {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .modal {
+            animation: modalAppear 0.2s ease-out;
+        }
+        
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .theme-preview {
+            transition: all 0.2s ease;
+        }
+        
+        .theme-preview:hover {
+            transform: scale(1.05);
+        }
+        
+        .theme-preview.selected {
+            ring: 3px solid #3B82F6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 fixed w-full top-0 z-50">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md p-2">
+                        <i class="fas fa-bars text-lg"></i>
+                    </button>
+                    <h1 class="ml-4 text-xl font-bold text-gray-900">MuseNest Admin</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-semibold" id="userInitials">--</span>
+                        </div>
+                        <span class="text-sm text-gray-700" id="userName">Loading...</span>
+                    </div>
+                    <button id="logoutBtn" class="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-md p-2">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="admin-sidebar fixed left-0 top-16 h-full w-64 bg-white shadow-lg border-r border-gray-200 z-40">
+        <div class="p-4">
+            <nav class="space-y-2">
+                <a href="#" data-tab="dashboard" class="nav-item flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 active">
+                    <i class="fas fa-tachometer-alt w-5"></i>
+                    <span class="ml-3">Dashboard</span>
+                </a>
+                <a href="#" data-tab="gallery" class="nav-item flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                    <i class="fas fa-images w-5"></i>
+                    <span class="ml-3">Gallery</span>
+                </a>
+                <a href="#" data-tab="faq" class="nav-item flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                    <i class="fas fa-question-circle w-5"></i>
+                    <span class="ml-3">FAQ</span>
+                </a>
+                <a href="#" data-tab="testimonials" class="nav-item flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                    <i class="fas fa-star w-5"></i>
+                    <span class="ml-3">Testimonials</span>
+                </a>
+                <a href="#" data-tab="settings" class="nav-item flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                    <i class="fas fa-cog w-5"></i>
+                    <span class="ml-3">Settings</span>
+                </a>
+                <a href="#" data-tab="themes" class="nav-item flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                    <i class="fas fa-palette w-5"></i>
+                    <span class="ml-3">Themes</span>
+                </a>
+                <div class="border-t border-gray-200 pt-4 mt-4">
+                    <a href="#" id="viewSiteBtn" class="flex items-center px-4 py-2 text-blue-600 rounded-lg hover:bg-blue-50" target="_blank">
+                        <i class="fas fa-external-link-alt w-5"></i>
+                        <span class="ml-3">View Site</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="content-area ml-64 pt-16 min-h-screen">
+        <!-- Dashboard Tab -->
+        <div id="dashboard-tab" class="tab-content p-6">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Dashboard</h2>
+                <p class="text-gray-600">Overview of your MuseNest portfolio</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-images text-blue-500 text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600">Gallery Images</p>
+                            <p class="text-2xl font-bold text-gray-900" id="galleryCount">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-question-circle text-green-500 text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600">FAQ Items</p>
+                            <p class="text-2xl font-bold text-gray-900" id="faqCount">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-star text-yellow-500 text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600">Testimonials</p>
+                            <p class="text-2xl font-bold text-gray-900" id="testimonialsCount">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-palette text-purple-500 text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600">Current Theme</p>
+                            <p class="text-lg font-bold text-gray-900 capitalize" id="currentTheme">basic</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <button data-tab="gallery" class="quick-action-btn flex items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                        <i class="fas fa-upload text-blue-500 text-xl mr-3"></i>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-900">Upload Images</p>
+                            <p class="text-sm text-gray-600">Add photos to gallery</p>
+                        </div>
+                    </button>
+
+                    <button data-tab="faq" class="quick-action-btn flex items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors">
+                        <i class="fas fa-plus text-green-500 text-xl mr-3"></i>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-900">Add FAQ</p>
+                            <p class="text-sm text-gray-600">Create new FAQ item</p>
+                        </div>
+                    </button>
+
+                    <button data-tab="themes" class="quick-action-btn flex items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors">
+                        <i class="fas fa-palette text-purple-500 text-xl mr-3"></i>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-900">Change Theme</p>
+                            <p class="text-sm text-gray-600">Switch site appearance</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Tab -->
+        <div id="gallery-tab" class="tab-content p-6 hidden">
+            <div class="mb-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Gallery Management</h2>
+                    <p class="text-gray-600">Upload and organize your portfolio images</p>
+                </div>
+                <button id="uploadImageBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                    <i class="fas fa-upload mr-2"></i>
+                    Upload Images
+                </button>
+            </div>
+
+            <!-- Gallery Sections -->
+            <div class="mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Gallery Sections</h3>
+                    <button id="createSectionBtn" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        <i class="fas fa-plus mr-1"></i>
+                        Add Section
+                    </button>
+                </div>
+                <div id="gallerySections" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Sections will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Image Grid -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">All Images</h3>
+                    <div class="flex space-x-2">
+                        <select id="sectionFilter" class="border border-gray-300 rounded-md px-3 py-1 text-sm">
+                            <option value="">All Sections</option>
+                        </select>
+                        <div class="flex border border-gray-300 rounded-md">
+                            <button id="gridViewBtn" class="px-3 py-1 text-sm bg-blue-50 text-blue-600 border-r border-gray-300">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button id="listViewBtn" class="px-3 py-1 text-sm text-gray-500 hover:bg-gray-50">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="imageGrid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <!-- Images will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Tab -->
+        <div id="faq-tab" class="tab-content p-6 hidden">
+            <div class="mb-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">FAQ Management</h2>
+                    <p class="text-gray-600">Manage frequently asked questions</p>
+                </div>
+                <button id="createFAQBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                    <i class="fas fa-plus mr-2"></i>
+                    Add FAQ
+                </button>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900">FAQ Items</h3>
+                        <div class="flex space-x-2">
+                            <button id="faqBulkEdit" class="text-gray-500 hover:text-gray-700 text-sm">
+                                <i class="fas fa-edit mr-1"></i>
+                                Bulk Edit
+                            </button>
+                            <select id="faqStatusFilter" class="border border-gray-300 rounded-md px-3 py-1 text-sm">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="faqList" class="divide-y divide-gray-200">
+                    <!-- FAQ items will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Testimonials Tab -->
+        <div id="testimonials-tab" class="tab-content p-6 hidden">
+            <div class="mb-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Testimonials</h2>
+                    <p class="text-gray-600">Manage client testimonials and reviews</p>
+                </div>
+                <button id="createTestimonialBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                    <i class="fas fa-plus mr-2"></i>
+                    Add Testimonial
+                </button>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900">Client Reviews</h3>
+                        <div class="flex space-x-2">
+                            <select id="testimonialStatusFilter" class="border border-gray-300 rounded-md px-3 py-1 text-sm">
+                                <option value="">All Status</option>
+                                <option value="published">Published</option>
+                                <option value="unpublished">Unpublished</option>
+                                <option value="approved">Approved</option>
+                                <option value="unapproved">Unapproved</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="testimonialsList" class="divide-y divide-gray-200">
+                    <!-- Testimonials will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings-tab" class="tab-content p-6 hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Site Settings</h2>
+                <p class="text-gray-600">Configure your portfolio settings</p>
+            </div>
+
+            <!-- Settings Categories -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Category Navigation -->
+                <div class="lg:col-span-1">
+                    <nav class="space-y-1">
+                        <a href="#" data-category="general" class="settings-category-btn bg-blue-50 text-blue-700 group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                            <i class="fas fa-cog mr-3"></i>
+                            General
+                        </a>
+                        <a href="#" data-category="contact" class="settings-category-btn text-gray-600 hover:text-gray-900 group flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-50">
+                            <i class="fas fa-envelope mr-3"></i>
+                            Contact Info
+                        </a>
+                        <a href="#" data-category="appearance" class="settings-category-btn text-gray-600 hover:text-gray-900 group flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-50">
+                            <i class="fas fa-paint-brush mr-3"></i>
+                            Appearance
+                        </a>
+                        <a href="#" data-category="seo" class="settings-category-btn text-gray-600 hover:text-gray-900 group flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-50">
+                            <i class="fas fa-search mr-3"></i>
+                            SEO
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Settings Content -->
+                <div class="lg:col-span-3">
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div id="settingsContent">
+                            <!-- Settings forms will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Themes Tab -->
+        <div id="themes-tab" class="tab-content p-6 hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Theme Selection</h2>
+                <p class="text-gray-600">Choose the perfect look for your portfolio</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="themesGrid">
+                <!-- Theme cards will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notifications" class="fixed top-20 right-4 z-50 space-y-2">
+        <!-- Notifications will appear here -->
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
+            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+            <span class="text-gray-700">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/admin.js"></script>
+    <script src="js/gallery.js"></script>
+    <script src="js/faq.js"></script>
+    <script src="js/testimonials.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/themes.js"></script>
+</body>
+</html>

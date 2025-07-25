@@ -14,6 +14,18 @@ class TemplateEngine {
     }
 
     registerDefaultHelpers() {
+        // Component rendering helper
+        this.registerHelper('component', (componentName, options) => {
+            try {
+                const context = options.hash || {};
+                const theme = context.theme || 'basic';
+                return this.renderComponent(componentName, context, theme);
+            } catch (error) {
+                console.error(`Error rendering component ${componentName}:`, error);
+                return `<!-- Component ${componentName} failed to render -->`;
+            }
+        });
+
         // Conditional helper
         this.registerHelper('if', (condition, options) => {
             if (condition) {
@@ -154,6 +166,11 @@ class TemplateEngine {
         return template.replace(/\{\{([^#\/][^}]*)\}\}/g, (match, variable) => {
             const trimmedVar = variable.trim();
             
+            // Handle component calls
+            if (trimmedVar.startsWith('component ')) {
+                return `{{COMPONENT_PLACEHOLDER:${match}}}`;
+            }
+            
             // Handle helper functions
             if (trimmedVar.includes('(') && trimmedVar.includes(')')) {
                 return this.processHelper(trimmedVar, context);
@@ -210,6 +227,41 @@ class TemplateEngine {
         return helper(...args);
     }
 
+    // Process component placeholders
+    async processComponents(template, context) {
+        const componentRegex = /\{\{COMPONENT_PLACEHOLDER:\{\{component\s+([^}]+)\}\}\}\}/g;
+        let match;
+        let processed = template;
+        
+        while ((match = componentRegex.exec(template)) !== null) {
+            const componentCall = match[1];
+            const parts = componentCall.split(/\s+/);
+            const componentName = parts[0].replace(/['"]/g, '');
+            
+            // Parse component parameters
+            const params = {};
+            for (let i = 1; i < parts.length; i++) {
+                const part = parts[i];
+                if (part.includes('=')) {
+                    const [key, value] = part.split('=');
+                    params[key] = this.getValue(context, value);
+                }
+            }
+            
+            const theme = params.theme || 'basic';
+            
+            try {
+                const componentHtml = await this.renderComponent(componentName, params, theme);
+                processed = processed.replace(match[0], componentHtml);
+            } catch (error) {
+                console.error(`Error rendering component ${componentName}:`, error);
+                processed = processed.replace(match[0], `<!-- Component ${componentName} failed to render -->`);
+            }
+        }
+        
+        return processed;
+    }
+
     // Main render function
     render(template, context = {}) {
         try {
@@ -231,7 +283,8 @@ class TemplateEngine {
             // Check cache first
             if (this.templateCache.has(templatePath)) {
                 const template = this.templateCache.get(templatePath);
-                return this.render(template, context);
+                let processed = this.render(template, context);
+                return await this.processComponents(processed, context);
             }
 
             // Read template file
@@ -242,7 +295,8 @@ class TemplateEngine {
                 this.templateCache.set(templatePath, template);
             }
 
-            return this.render(template, context);
+            let processed = this.render(template, context);
+            return await this.processComponents(processed, context);
         } catch (error) {
             console.error(`Template file error for ${templatePath}:`, error);
             return `<!-- Template File Error: ${error.message} -->`;
@@ -271,6 +325,138 @@ class TemplateEngine {
             
             throw new Error(`Template ${templateName} not found in basic theme`);
         }
+    }
+
+    // Get component template path
+    getComponentPath(theme, componentName) {
+        const templatesDir = path.join(__dirname, '../../templates');
+        
+        // First try theme-specific component
+        const themeComponentPath = path.join(templatesDir, theme, 'components', `${componentName}.html`);
+        // Fallback to base component
+        const baseComponentPath = path.join(templatesDir, 'components', `${componentName}.html`);
+        
+        return { themeComponentPath, baseComponentPath };
+    }
+
+    // Render component
+    async renderComponent(componentName, context = {}, theme = 'basic') {
+        const { themeComponentPath, baseComponentPath } = this.getComponentPath(theme, componentName);
+        
+        try {
+            // Try theme-specific component first
+            try {
+                await fs.access(themeComponentPath);
+                return await this.renderFile(themeComponentPath, context);
+            } catch (error) {
+                // Fallback to base component
+                await fs.access(baseComponentPath);
+                return await this.renderFile(baseComponentPath, context);
+            }
+        } catch (error) {
+            console.error(`Component ${componentName} not found in theme ${theme} or base components`);
+            return `<!-- Component ${componentName} not found -->`;
+        }
+    }
+
+    // Build navigation context (utility method)
+    buildNavigationContext(model, currentPage, user = null) {
+        const baseUrl = `/${model.slug}`;
+        
+        // Define standard navigation items
+        const navItems = [
+            {
+                label: 'Home',
+                url: baseUrl,
+                slug: 'home',
+                icon: 'fas fa-home',
+                is_active: currentPage === 'home' || currentPage === 'index'
+            },
+            {
+                label: 'About',
+                url: `${baseUrl}/about`,
+                slug: 'about',
+                icon: 'fas fa-user',
+                is_active: currentPage === 'about'
+            },
+            {
+                label: 'Gallery',
+                url: `${baseUrl}/gallery`,
+                slug: 'gallery',
+                icon: 'fas fa-images',
+                is_active: currentPage === 'gallery'
+            },
+            {
+                label: 'Rates',
+                url: `${baseUrl}/rates`,
+                slug: 'rates',
+                icon: 'fas fa-tags',
+                is_active: currentPage === 'rates'
+            },
+            {
+                label: 'Contact',
+                url: `${baseUrl}/contact`,
+                slug: 'contact',
+                icon: 'fas fa-envelope',
+                is_active: currentPage === 'contact'
+            }
+        ];
+
+        // Add FAQ if model has FAQ items
+        if (model.has_faq) {
+            navItems.splice(-1, 0, {
+                label: 'FAQ',
+                url: `${baseUrl}/faq`,
+                slug: 'faq',
+                icon: 'fas fa-question-circle',
+                is_active: currentPage === 'faq'
+            });
+        }
+
+        return {
+            nav_items: navItems,
+            base_url: baseUrl,
+            current_page: currentPage,
+            user: user ? {
+                name: user.name || user.email,
+                email: user.email,
+                initials: this.generateInitials(user.name || user.email)
+            } : null,
+            navbar_class: 'main-navbar',
+            container_class: 'nav-container'
+        };
+    }
+
+    // Generate user initials
+    generateInitials(name) {
+        if (!name) return 'U';
+        
+        return name
+            .replace(/@.*$/, '') // Remove email domain if it's an email
+            .split(/[\s@.]/)
+            .filter(part => part.length > 0)
+            .map(part => part[0])
+            .join('')
+            .toUpperCase()
+            .substring(0, 2);
+    }
+
+    // Render page with navigation (convenience method)
+    async renderPageWithNavigation(theme, templateName, context = {}) {
+        // Build navigation context
+        const navContext = this.buildNavigationContext(
+            context.model,
+            context.current_page || templateName,
+            context.user
+        );
+
+        // Merge navigation context with page context
+        const mergedContext = {
+            ...context,
+            navigation: navContext
+        };
+
+        return await this.renderWithTheme(theme, templateName, mergedContext);
     }
 
     // Clear template cache (useful for development)

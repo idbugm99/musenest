@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - {{site_settings.site_name || 'MuseNest Portfolio'}}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .gallery-item {
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+        }
+
+        .gallery-item img {
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.03);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+
+    <!-- Header Section -->
+    <section class="bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold text-gray-900 sm:text-5xl">
+                    Gallery
+                </h1>
+                <div class="mt-4 w-24 h-1 bg-blue-600 mx-auto"></div>
+                <p class="mt-6 text-xl text-gray-600 max-w-3xl mx-auto">
+                    Explore my collection of professional photography
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Sections -->
+    {{#if gallery_sections.length}}
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {{#each gallery_sections}}
+            <div class="mb-16">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                        {{this.title}}
+                    </h2>
+                    <div class="w-16 h-1 bg-blue-600 mx-auto"></div>
+                    {{#if this.description}}
+                    <p class="text-gray-600 mt-4 max-w-2xl mx-auto">{{this.description}}</p>
+                    {{/if}}
+                </div>
+                
+                {{#if this.images.length}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {{#each this.images}}
+                    <div class="gallery-item group bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="aspect-w-4 aspect-h-5">
+                            <img src="/uploads/{{../model.slug}}/{{this.filename}}" 
+                                 alt="{{this.alt_text}}"
+                                 class="w-full h-80 object-cover">
+                        </div>
+                        
+                        {{#if this.caption}}
+                        <div class="p-4">
+                            <p class="text-sm text-gray-600">{{this.caption}}</p>
+                        </div>
+                        {{/if}}
+                    </div>
+                    {{/each}}
+                </div>
+                {{else}}
+                <div class="text-center py-12">
+                    <div class="bg-white rounded-lg shadow-sm p-12">
+                        <div class="text-blue-600 text-4xl mb-4">📸</div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">{{this.title}} Coming Soon</h3>
+                        <p class="text-gray-600">New images will be added to this section soon...</p>
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+            {{/each}}
+        </div>
+    </section>
+    {{else}}
+    <!-- Empty State -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center py-16">
+                <div class="bg-white rounded-lg shadow-sm p-16">
+                    <div class="text-blue-600 text-6xl mb-8">✨</div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6">Gallery Coming Soon</h2>
+                    <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                        I'm carefully curating a collection of professional photography. Check back soon for exclusive content.
+                    </p>
+                    <div class="w-32 h-1 bg-blue-600 mx-auto"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {{/if}}
+
+    <!-- Call to Action -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h3 class="text-3xl font-bold text-gray-900 mb-4">
+                Ready to Book?
+            </h3>
+            <p class="text-gray-600 mb-8">
+                Contact me to discuss your needs and schedule an appointment
+            </p>
+            <a href="/{{model.slug}}/contact" 
+               class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                Get In Touch
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold mb-4">{{site_settings.site_name || model.name}}</h3>
+                {{#if site_settings.contact_email}}
+                <p class="text-gray-300 mb-2">{{site_settings.contact_email}}</p>
+                {{/if}}
+                {{#if site_settings.contact_phone}}
+                <p class="text-gray-300 mb-4">{{site_settings.contact_phone}}</p>
+                {{/if}}
+                <p class="text-sm text-gray-400">
+                    © {{currentYear}} {{site_settings.site_name || model.name}}. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

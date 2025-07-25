@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - {{site_settings.site_name || 'Glamour Portfolio'}}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .bg-glamour-dark { background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); }
+        .bg-glamour-gold { background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); }
+        .text-glamour-gold { color: #D4AF37; }
+        .border-glamour-gold { border-color: #D4AF37; }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        .animate-shimmer {
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            background: #1a1a1a;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.2);
+        }
+
+        .gallery-item img {
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen">
+    {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+
+    <!-- Header Section -->
+    <section class="relative py-20 bg-glamour-dark">
+        <div class="absolute inset-0 opacity-5">
+            <div class="w-full h-full bg-gradient-radial from-yellow-500/20 via-transparent to-transparent"></div>
+        </div>
+        
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">
+                Gallery
+            </h1>
+            <div class="w-24 h-1 bg-glamour-gold mx-auto mb-6 animate-shimmer"></div>
+            <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                Explore my exclusive collection of professional photography
+            </p>
+        </div>
+    </section>
+
+    <!-- Gallery Sections -->
+    {{#if gallery_sections.length}}
+    <section class="py-20 bg-black">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {{#each gallery_sections}}
+            <div class="mb-16">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+                        {{this.title}}
+                    </h2>
+                    <div class="w-16 h-1 bg-glamour-gold mx-auto"></div>
+                    {{#if this.description}}
+                    <p class="text-gray-400 mt-6 max-w-2xl mx-auto">{{this.description}}</p>
+                    {{/if}}
+                </div>
+                
+                {{#if this.images.length}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {{#each this.images}}
+                    <div class="gallery-item group">
+                        <div class="aspect-w-4 aspect-h-5">
+                            <img src="/uploads/{{../model.slug}}/{{this.filename}}" 
+                                 alt="{{this.alt_text}}"
+                                 class="w-full h-80 object-cover">
+                        </div>
+                        
+                        <!-- Overlay -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div class="absolute bottom-4 left-4 right-4">
+                                {{#if this.caption}}
+                                <p class="text-white text-sm">{{this.caption}}</p>
+                                {{/if}}
+                            </div>
+                        </div>
+                        
+                        <!-- Golden border on hover -->
+                        <div class="absolute inset-0 border-2 border-transparent group-hover:border-glamour-gold transition-colors duration-300 rounded-xl"></div>
+                    </div>
+                    {{/each}}
+                </div>
+                {{else}}
+                <div class="text-center py-12">
+                    <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-2xl p-12">
+                        <div class="text-glamour-gold text-4xl mb-4">📸</div>
+                        <h3 class="text-xl font-bold text-white mb-4">{{this.title}} Coming Soon</h3>
+                        <p class="text-gray-400">New images will be added to this section soon...</p>
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+            {{/each}}
+        </div>
+    </section>
+    {{else}}
+    <!-- Empty State -->
+    <section class="py-20 bg-black">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center py-16">
+                <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-2xl p-16">
+                    <div class="text-glamour-gold text-8xl mb-8">✨</div>
+                    <h2 class="text-4xl font-bold text-white mb-6">Gallery Coming Soon</h2>
+                    <p class="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
+                        I'm carefully curating a stunning collection of professional photography. Check back soon for exclusive content.
+                    </p>
+                    <div class="w-32 h-1 bg-glamour-gold mx-auto animate-shimmer"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {{/if}}
+
+    <!-- Call to Action -->
+    <section class="py-16 bg-gradient-to-b from-black to-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h3 class="text-3xl font-bold text-white mb-4">
+                Ready to Book?
+            </h3>
+            <p class="text-gray-300 mb-8">
+                Contact me to discuss your needs and schedule an appointment
+            </p>
+            <a href="/{{model.slug}}/contact" 
+               class="inline-block px-8 py-4 border-2 border-glamour-gold text-lg font-semibold text-glamour-gold hover:bg-glamour-gold hover:text-black transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25">
+                Get In Touch
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="text-center">
+                <h3 class="text-3xl font-bold text-glamour-gold mb-6">
+                    {{site_settings.site_name || model.name}}
+                </h3>
+                
+                <div class="flex justify-center space-x-8 mb-8">
+                    {{#if site_settings.contact_email}}
+                    <div class="text-gray-300">
+                        <span class="text-glamour-gold">Email:</span> {{site_settings.contact_email}}
+                    </div>
+                    {{/if}}
+                    {{#if site_settings.contact_phone}}
+                    <div class="text-gray-300">
+                        <span class="text-glamour-gold">Phone:</span> {{site_settings.contact_phone}}
+                    </div>
+                    {{/if}}
+                </div>
+                
+                <div class="w-24 h-1 bg-glamour-gold mx-auto mb-8"></div>
+                
+                <p class="text-gray-400">
+                    © {{currentYear}} {{site_settings.site_name || model.name}}. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

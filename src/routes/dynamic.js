@@ -1,13 +1,13 @@
 const express = require('express');
-const { query } = require('../../config/database');
+const db = require('../../config/database');
 const templateEngine = require('../utils/templateEngine');
-const { optionalAuth } = require('../middleware/auth');
+const { optionalAuth } = require('../../middleware/auth');
 
 const router = express.Router();
 
 // Helper function to get model by slug
 async function getModelBySlug(slug) {
-    const models = await query(`
+    const models = await db.query(`
         SELECT m.*, ss.site_name, ss.model_name, ss.tagline, ss.city,
                ss.contact_email, ss.contact_phone, ss.header_image,
                ss.watermark_text, ss.watermark_image
@@ -21,7 +21,7 @@ async function getModelBySlug(slug) {
 
 // Helper function to get model's active theme
 async function getModelTheme(modelId) {
-    const themes = await query(`
+    const themes = await db.query(`
         SELECT t.name, t.display_name, t.description
         FROM themes t
         JOIN model_themes mt ON t.id = mt.theme_id
@@ -34,7 +34,7 @@ async function getModelTheme(modelId) {
 
 // Helper function to get theme colors
 async function getThemeColors(themeName) {
-    const colors = await query(`
+    const colors = await db.query(`
         SELECT tc.color_type, tc.color_value
         FROM theme_colors tc
         JOIN themes t ON tc.theme_id = t.id
@@ -49,7 +49,7 @@ async function getThemeColors(themeName) {
 
 // Helper function to get menu items (future feature)
 async function getMenuItems(modelId) {
-    const menuItems = await query(`
+    const menuItems = await db.query(`
         SELECT label, slug, url_path, is_external, sort_order
         FROM menu_items
         WHERE model_id = ? AND is_visible = true
@@ -103,7 +103,7 @@ router.get('/:slug/', optionalAuth, async (req, res) => {
         }
 
         // Get homepage content
-        const homeContent = await query(`
+        const homeContent = await db.query(`
             SELECT * FROM pages p
             JOIN page_types pt ON p.page_type_id = pt.id
             WHERE p.model_id = ? AND pt.slug = 'home' AND p.is_visible = true
@@ -113,7 +113,7 @@ router.get('/:slug/', optionalAuth, async (req, res) => {
         // Get page sections for home page
         let pageSections = [];
         if (homeContent.length > 0) {
-            pageSections = await query(`
+            pageSections = await db.query(`
                 SELECT * FROM page_sections
                 WHERE page_id = ? AND is_visible = true
                 ORDER BY sort_order ASC
@@ -121,7 +121,7 @@ router.get('/:slug/', optionalAuth, async (req, res) => {
         }
 
         // Get testimonials
-        const testimonials = await query(`
+        const testimonials = await db.query(`
             SELECT client_name, client_initial, testimonial_text, rating, is_featured
             FROM testimonials
             WHERE model_id = ? AND is_active = true AND is_featured = true
@@ -130,7 +130,7 @@ router.get('/:slug/', optionalAuth, async (req, res) => {
         `, [model.id]);
 
         // Get gallery sections with images
-        const gallerySections = await query(`
+        const gallerySections = await db.query(`
             SELECT * FROM gallery_sections
             WHERE model_id = ? AND is_visible = true
             ORDER BY sort_order ASC
@@ -139,7 +139,7 @@ router.get('/:slug/', optionalAuth, async (req, res) => {
 
         // Get images for each gallery section
         for (let section of gallerySections) {
-            const images = await query(`
+            const images = await db.query(`
                 SELECT filename, caption, alt_text, is_featured, sort_order
                 FROM gallery_images
                 WHERE model_id = ? AND section_id = ? AND is_active = true
@@ -152,15 +152,16 @@ router.get('/:slug/', optionalAuth, async (req, res) => {
 
         // Build template context
         const context = await buildTemplateContext(model, req.user);
+        context.current_page = 'home';
         context.home_content = homeContent.length > 0 ? homeContent[0] : {};
         context.page_sections = pageSections;
         context.testimonials = testimonials;
         context.gallery_sections = gallerySections;
         context.gallery_images = gallerySections.length > 0 ? gallerySections[0].images : [];
 
-        // Get theme and render
+        // Get theme and render with navigation
         const theme = context.theme.name;
-        const html = await templateEngine.renderWithTheme(theme, 'index', context);
+        const html = await templateEngine.renderPageWithNavigation(theme, 'index', context);
 
         res.send(html);
 
@@ -197,7 +198,7 @@ router.get('/:slug/:page', optionalAuth, async (req, res) => {
         switch (page) {
             case 'faq':
                 // Get FAQ items
-                const faqItems = await query(`
+                const faqItems = await db.query(`
                     SELECT question, answer, sort_order, is_visible
                     FROM faq_items
                     WHERE model_id = ? AND is_visible = true
@@ -209,14 +210,14 @@ router.get('/:slug/:page', optionalAuth, async (req, res) => {
 
             case 'gallery':
                 // Get all gallery sections with images
-                const sections = await query(`
+                const sections = await db.query(`
                     SELECT * FROM gallery_sections
                     WHERE model_id = ? AND is_visible = true
                     ORDER BY sort_order ASC
                 `, [model.id]);
 
                 for (let section of sections) {
-                    const images = await query(`
+                    const images = await db.query(`
                         SELECT filename, caption, alt_text, is_featured, sort_order
                         FROM gallery_images
                         WHERE model_id = ? AND section_id = ? AND is_active = true
@@ -231,7 +232,7 @@ router.get('/:slug/:page', optionalAuth, async (req, res) => {
 
             case 'about':
                 // Get about page content from page_sections
-                const aboutPage = await query(`
+                const aboutPage = await db.query(`
                     SELECT p.* FROM pages p
                     JOIN page_types pt ON p.page_type_id = pt.id
                     WHERE p.model_id = ? AND pt.slug = 'about' AND p.is_visible = true
@@ -239,7 +240,7 @@ router.get('/:slug/:page', optionalAuth, async (req, res) => {
                 `, [model.id]);
 
                 if (aboutPage.length > 0) {
-                    const aboutSections = await query(`
+                    const aboutSections = await db.query(`
                         SELECT * FROM page_sections
                         WHERE page_id = ? AND is_visible = true
                         ORDER BY sort_order ASC
@@ -252,7 +253,7 @@ router.get('/:slug/:page', optionalAuth, async (req, res) => {
 
             case 'contact':
                 // Get contact page content
-                const contactPage = await query(`
+                const contactPage = await db.query(`
                     SELECT p.* FROM pages p
                     JOIN page_types pt ON p.page_type_id = pt.id
                     WHERE p.model_id = ? AND pt.slug = 'contact' AND p.is_visible = true
@@ -260,7 +261,7 @@ router.get('/:slug/:page', optionalAuth, async (req, res) => {
                 `, [model.id]);
 
                 if (contactPage.length > 0) {
-                    const contactSections = await query(`
+                    const contactSections = await db.query(`
                         SELECT * FROM page_sections
                         WHERE page_id = ? AND is_visible = true
                         ORDER BY sort_order ASC
@@ -273,14 +274,14 @@ router.get('/:slug/:page', optionalAuth, async (req, res) => {
 
             case 'rates':
                 // Get services and rates
-                const serviceCategories = await query(`
+                const serviceCategories = await db.query(`
                     SELECT * FROM service_categories
                     WHERE model_id = ? AND is_visible = true
                     ORDER BY sort_order ASC
                 `, [model.id]);
 
                 for (let category of serviceCategories) {
-                    const services = await query(`
+                    const services = await db.query(`
                         SELECT * FROM services
                         WHERE model_id = ? AND category_id = ? AND is_active = true
                         ORDER BY sort_order ASC
@@ -294,7 +295,7 @@ router.get('/:slug/:page', optionalAuth, async (req, res) => {
 
             default:
                 // Try to find a matching page type
-                const customPage = await query(`
+                const customPage = await db.query(`
                     SELECT p.*, pt.slug as page_type FROM pages p
                     JOIN page_types pt ON p.page_type_id = pt.id
                     WHERE p.model_id = ? AND pt.slug = ? AND p.is_visible = true
@@ -308,7 +309,7 @@ router.get('/:slug/:page', optionalAuth, async (req, res) => {
                     });
                 }
 
-                const customSections = await query(`
+                const customSections = await db.query(`
                     SELECT * FROM page_sections
                     WHERE page_id = ? AND is_visible = true
                     ORDER BY sort_order ASC
@@ -322,10 +323,11 @@ router.get('/:slug/:page', optionalAuth, async (req, res) => {
 
         // Add page content to context
         Object.assign(context, pageContent);
+        context.current_page = page;
 
-        // Get theme and render
+        // Get theme and render with navigation
         const theme = context.theme.name;
-        const html = await templateEngine.renderWithTheme(theme, templateName, context);
+        const html = await templateEngine.renderPageWithNavigation(theme, templateName, context);
 
         res.send(html);
 

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rates - {{site_settings.site_name || 'MuseNest Portfolio'}}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .price-card {
+            transition: all 0.3s ease;
+        }
+
+        .price-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+        }
+
+        .featured-card {
+            border: 2px solid #3B82F6;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .featured-card::before {
+            content: 'Most Popular';
+            position: absolute;
+            top: 16px;
+            right: -30px;
+            background: #3B82F6;
+            color: white;
+            padding: 6px 40px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transform: rotate(45deg);
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+
+    <!-- Header Section -->
+    <section class="bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold text-gray-900 sm:text-5xl">
+                    Rates & Services
+                </h1>
+                <div class="mt-4 w-24 h-1 bg-blue-600 mx-auto"></div>
+                <p class="mt-6 text-xl text-gray-600 max-w-3xl mx-auto">
+                    Professional companionship services tailored to your needs
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Service Categories -->
+    {{#if service_categories.length}}
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {{#each service_categories}}
+            <div class="mb-20">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                        {{this.name}}
+                    </h2>
+                    <div class="w-16 h-1 bg-blue-600 mx-auto"></div>
+                    {{#if this.description}}
+                    <p class="text-gray-600 mt-6 max-w-3xl mx-auto text-lg">{{this.description}}</p>
+                    {{/if}}
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {{#each this.services}}
+                    <div class="price-card bg-white rounded-lg shadow-sm border {{#if this.is_featured}}featured-card{{else}}hover:border-blue-300{{/if}} p-8">
+                        <div class="text-center mb-8">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">{{this.name}}</h3>
+                            <div class="text-4xl font-bold text-blue-600 mb-4">
+                                {{#if this.price_display}}
+                                    {{this.price_display}}
+                                {{else}}
+                                    ${{this.price}}
+                                {{/if}}
+                            </div>
+                            <p class="text-gray-600">{{this.duration_display || this.duration}}</p>
+                        </div>
+                        
+                        {{#if this.description}}
+                        <p class="text-gray-700 mb-6 text-center">{{this.description}}</p>
+                        {{/if}}
+                        
+                        {{#if this.features}}
+                        <div class="space-y-3 mb-8">
+                            {{#each this.features}}
+                            <div class="flex items-center space-x-3">
+                                <div class="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                                <span class="text-gray-700">{{this}}</span>
+                            </div>
+                            {{/each}}
+                        </div>
+                        {{/if}}
+                        
+                        <div class="text-center">
+                            <a href="/{{model.slug}}/contact" 
+                               class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                                Book Now
+                            </a>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </section>
+    {{else}}
+    <!-- Default Service Packages -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                    Service Packages
+                </h2>
+                <div class="w-16 h-1 bg-blue-600 mx-auto"></div>
+                <p class="text-gray-600 mt-6 max-w-3xl mx-auto text-lg">
+                    Choose from my carefully curated service packages designed to meet your specific needs
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Dinner Companion -->
+                <div class="price-card bg-white rounded-lg shadow-sm border hover:border-blue-300 p-8">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Dinner Companion</h3>
+                        <div class="text-4xl font-bold text-blue-600 mb-4">$300</div>
+                        <p class="text-gray-600">3 Hours</p>
+                    </div>
+                    
+                    <p class="text-gray-700 mb-6 text-center">
+                        Elegant dinner companionship for social or business occasions
+                    </p>
+                    
+                    <div class="space-y-3 mb-8">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                            <span class="text-gray-700">Sophisticated conversation</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                            <span class="text-gray-700">Elegant attire</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                            <span class="text-gray-700">Professional demeanor</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                            <span class="text-gray-700">Complete discretion</span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <a href="/{{model.slug}}/contact" 
+                           class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                            Book Now
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Social Events -->
+                <div class="price-card bg-white rounded-lg shadow-sm border featured-card p-8">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Social Events</h3>
+                        <div class="text-4xl font-bold text-blue-600 mb-4">$500</div>
+                        <p class="text-gray-600">4-5 Hours</p>
+                    </div>
+                    
+                    <p class="text-gray-700 mb-6 text-center">
+                        Perfect companion for parties, galas, and special occasions
+                    </p>
+                    
+                    <div class="space-y-3 mb-8">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                            <span class="text-gray-700">Event-appropriate attire</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                            <span class="text-gray-700">Social grace & charm</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                            <span class="text-gray-700">Networking assistance</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                            <span class="text-gray-700">Photography partner</span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <a href="/{{model.slug}}/contact" 
+                           class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                            Book Now
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Private Engagements -->
+                <div class="price-card bg-white rounded-lg shadow-sm border hover:border-blue-300 p-8">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Private Time</h3>
+                        <div class="text-4xl font-bold text-blue-600 mb-4">$800</div>
+                        <p class="text-gray-600">Per Hour</p>
+                    </div>
+                    
+                    <p class="text-gray-700 mb-6 text-center">
+                        Intimate, private companionship in a comfortable setting
+                    </p>
+                    
+                    <div class="space-y-3 mb-8">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                            <span class="text-gray-700">Genuine connection</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                            <span class="text-gray-700">Relaxed atmosphere</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                            <span class="text-gray-700">Personalized experience</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                            <span class="text-gray-700">Minimum 2 hours</span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <a href="/{{model.slug}}/contact" 
+                           class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                            Book Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {{/if}}
+
+    <!-- Booking Information -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                    Booking Information
+                </h2>
+                <div class="w-16 h-1 bg-blue-600 mx-auto"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Payment Methods -->
+                <div class="bg-gray-50 rounded-lg p-8 text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Payment Methods</h3>
+                    <p class="text-gray-700">Cash, bank transfer, or cryptocurrency accepted. Payment required before meeting.</p>
+                </div>
+
+                <!-- Advance Booking -->
+                <div class="bg-gray-50 rounded-lg p-8 text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Advance Booking</h3>
+                    <p class="text-gray-700">Please book at least 24-48 hours in advance. Same-day bookings subject to availability.</p>
+                </div>
+
+                <!-- Cancellation Policy -->
+                <div class="bg-gray-50 rounded-lg p-8 text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Cancellation Policy</h3>
+                    <p class="text-gray-700">24-hour notice required for cancellations. Late cancellations may incur fees.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Custom Packages -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">
+                Custom Packages Available
+            </h2>
+            <div class="w-16 h-1 bg-blue-600 mx-auto mb-8"></div>
+            <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                Looking for something special? I offer custom packages for extended engagements, 
+                travel companionship, and unique experiences tailored to your needs.
+            </p>
+            <a href="/{{model.slug}}/contact" 
+               class="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                Discuss Custom Package
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold mb-4">{{site_settings.site_name || model.name}}</h3>
+                {{#if site_settings.contact_email}}
+                <p class="text-gray-300 mb-2">{{site_settings.contact_email}}</p>
+                {{/if}}
+                {{#if site_settings.contact_phone}}
+                <p class="text-gray-300 mb-4">{{site_settings.contact_phone}}</p>
+                {{/if}}
+                <p class="text-sm text-gray-400">
+                    © {{currentYear}} {{site_settings.site_name || model.name}}. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

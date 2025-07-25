@@ -1,0 +1,109 @@
+<!-- Base Navigation Component -->
+<nav class="navbar {{navbar_class}}" data-theme="{{theme.name}}">
+    <div class="nav-container {{container_class}}">
+        <!-- Brand/Logo -->
+        <div class="nav-brand">
+            <a href="{{base_url}}" class="brand-link">
+                {{#if site_settings.logo_image}}
+                    <img src="{{site_settings.logo_image}}" alt="{{site_settings.site_name}}" class="brand-logo">
+                {{else}}
+                    <span class="brand-text">{{site_settings.site_name}}</span>
+                {{/if}}
+            </a>
+        </div>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="nav-toggle" data-toggle="nav-menu" aria-label="Toggle navigation">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+
+        <!-- Navigation Menu -->
+        <div class="nav-menu" id="nav-menu">
+            <ul class="nav-list">
+                {{#each nav_items}}
+                <li class="nav-item {{#if is_active}}active{{/if}} {{#if is_disabled}}disabled{{/if}}">
+                    {{#if external_url}}
+                        <a href="{{external_url}}" class="nav-link external" target="_blank" rel="noopener">
+                            {{#if icon}}<i class="{{icon}}"></i>{{/if}}
+                            {{label}}
+                            {{#if show_external_icon}}<i class="fas fa-external-link-alt"></i>{{/if}}
+                        </a>
+                    {{else}}
+                        <a href="{{url}}" class="nav-link {{#if is_active}}active{{/if}}" 
+                           {{#if description}}title="{{description}}"{{/if}}>
+                            {{#if icon}}<i class="{{icon}}"></i>{{/if}}
+                            {{label}}
+                            {{#if badge}}<span class="nav-badge">{{badge}}</span>{{/if}}
+                        </a>
+                    {{/if}}
+                </li>
+                {{/each}}
+            </ul>
+
+            <!-- User Menu (if logged in) -->
+            {{#if user}}
+            <div class="nav-user">
+                <div class="user-dropdown">
+                    <button class="user-toggle" data-toggle="user-menu">
+                        <span class="user-avatar">{{user.initials}}</span>
+                        <span class="user-name">{{user.name}}</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="user-menu" id="user-menu">
+                        <a href="/admin/" class="user-link">
+                            <i class="fas fa-cog"></i> Admin Panel
+                        </a>
+                        <a href="/logout" class="user-link">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</nav>
+
+<!-- Navigation JavaScript -->
+<script>
+(function() {
+    // Mobile menu toggle
+    const navToggle = document.querySelector('[data-toggle="nav-menu"]');
+    const navMenu = document.getElementById('nav-menu');
+    
+    if (navToggle && navMenu) {
+        navToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+            navToggle.classList.toggle('active');
+        });
+    }
+
+    // User dropdown toggle
+    const userToggle = document.querySelector('[data-toggle="user-menu"]');
+    const userMenu = document.getElementById('user-menu');
+    
+    if (userToggle && userMenu) {
+        userToggle.addEventListener('click', function() {
+            userMenu.classList.toggle('active');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!userToggle.contains(event.target) && !userMenu.contains(event.target)) {
+                userMenu.classList.remove('active');
+            }
+        });
+    }
+
+    // Close mobile menu when clicking nav links
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            navMenu.classList.remove('active');
+            navToggle.classList.remove('active');
+        });
+    });
+})();
+</script>

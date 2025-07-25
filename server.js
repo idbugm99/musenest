@@ -11,24 +11,42 @@ const { testConnection } = require('./config/database');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Security middleware
-app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
-            scriptSrc: ["'self'", "'unsafe-inline'"],
-            imgSrc: ["'self'", "data:", "https:"],
-            fontSrc: ["'self'", "https://fonts.gstatic.com"],
+// Security middleware (disabled HTTPS redirect in development)
+if (process.env.NODE_ENV === 'production') {
+    app.use(helmet({
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+                scriptSrc: ["'self'", "'unsafe-inline'"],
+                imgSrc: ["'self'", "data:", "https:"],
+                fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
+            },
         },
-    },
-}));
+    }));
+} else {
+    // Development mode - minimal security headers, no HTTPS enforcement
+    app.use(helmet({
+        contentSecurityPolicy: false,
+        hsts: false,
+    }));
+}
 
-// Rate limiting
+// Rate limiting (reasonable limits with static asset exclusion)
 const limiter = rateLimit({
     windowMs: (process.env.RATE_LIMIT_WINDOW || 15) * 60 * 1000, // 15 minutes
-    max: process.env.RATE_LIMIT_MAX || 100, // limit each IP to 100 requests per windowMs
-    message: 'Too many requests from this IP, please try again later.'
+    max: process.env.NODE_ENV === 'development' ? 200 : (process.env.RATE_LIMIT_MAX || 100),
+    message: 'Too many requests from this IP, please try again later.',
+    skip: (req) => {
+        // Skip rate limiting for static assets only
+        return req.url.startsWith('/public/') || 
+               req.url.startsWith('/uploads/') ||
+               req.url.endsWith('.css') ||
+               req.url.endsWith('.js') ||
+               req.url.endsWith('.png') ||
+               req.url.endsWith('.jpg') ||
+               req.url.endsWith('.ico');
+    }
 });
 app.use(limiter);
 
@@ -46,6 +64,7 @@ app.use(cookieParser());
 // Static files
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use('/admin', express.static(path.join(__dirname, 'admin')));
 
 // Disable built-in template engine - we use our custom one
 app.set('view engine', false);
@@ -73,8 +92,12 @@ app.get('/health', async (req, res) => {
 // API Routes
 app.use('/api/auth', require('./src/routes/auth'));
 app.use('/api/models', require('./src/routes/models'));
-// app.use('/api/gallery', require('./src/routes/gallery'));
-// app.use('/api/content', require('./src/routes/content'));
+
+// Content Management APIs
+app.use('/api/gallery', require('./routes/gallery'));
+app.use('/api/faq', require('./routes/faq'));
+app.use('/api/settings', require('./routes/settings'));
+app.use('/api/testimonials', require('./routes/testimonials'));
 
 // Dynamic model routes
 app.use('/', require('./src/routes/dynamic'));

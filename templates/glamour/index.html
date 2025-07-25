@@ -3,13 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{site_settings.site_name || 'Glamour Portfolio'}}</title>
+    <title>Home - {{site_settings.site_name || 'Glamour Portfolio'}}</title>
+    <meta name="description" content="{{site_settings.meta_description || 'Elegant, upscale companion services with complete discretion.'}}">
+    <meta name="og:title" content="{{site_settings.site_name}} - Escort Model">
+    <meta name="og:description" content="{{site_settings.meta_description}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{site_settings.og_image || '/uploads/opengraph.jpg'}}">
+    
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
     <style>
         .bg-glamour-dark { background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); }
         .bg-glamour-gold { background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); }
         .text-glamour-gold { color: #D4AF37; }
         .border-glamour-gold { border-color: #D4AF37; }
+        .glamour-gold { color: #D4AF37; }
+        
+        .parallax-hero {
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: scroll;
+        }
+        
+        .luxury-grain::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('/uploads/grain.png');
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        
+        .font-heading {
+            font-family: 'Georgia', serif;
+        }
+        
+        .font-body {
+            font-family: 'Arial', sans-serif;
+        }
         
         @keyframes shimmer {
             0% { background-position: -200% 0; }
@@ -22,207 +60,190 @@
             animation: shimmer 2s infinite;
         }
     </style>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 800,
+                once: true,
+                offset: 100
+            });
+        });
+    </script>
 </head>
 <body class="bg-black text-white min-h-screen">
-    <!-- Navigation -->
-    <nav class="bg-black bg-opacity-90 backdrop-blur-sm border-b border-gray-800 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <h1 class="text-xl font-bold text-glamour-gold">
-                        {{site_settings.site_name || model.name}}
-                    </h1>
-                </div>
-                
-                <div class="hidden md:flex md:space-x-8 md:items-center">
-                    <a href="/{{model.slug}}/" 
-                       class="text-gray-300 hover:text-glamour-gold px-3 py-2 text-sm font-medium transition-colors duration-300 border-b-2 border-transparent hover:border-glamour-gold">
-                        Home
-                    </a>
-                    <a href="/{{model.slug}}/about" 
-                       class="text-gray-300 hover:text-glamour-gold px-3 py-2 text-sm font-medium transition-colors duration-300 border-b-2 border-transparent hover:border-glamour-gold">
-                        About
-                    </a>
-                    <a href="/{{model.slug}}/gallery" 
-                       class="text-gray-300 hover:text-glamour-gold px-3 py-2 text-sm font-medium transition-colors duration-300 border-b-2 border-transparent hover:border-glamour-gold">
-                        Gallery
-                    </a>
-                    <a href="/{{model.slug}}/rates" 
-                       class="text-gray-300 hover:text-glamour-gold px-3 py-2 text-sm font-medium transition-colors duration-300 border-b-2 border-transparent hover:border-glamour-gold">
-                        Rates
-                    </a>
-                    <a href="/{{model.slug}}/faq" 
-                       class="text-gray-300 hover:text-glamour-gold px-3 py-2 text-sm font-medium transition-colors duration-300 border-b-2 border-transparent hover:border-glamour-gold">
-                        FAQ
-                    </a>
-                    <a href="/{{model.slug}}/contact" 
-                       class="text-gray-300 hover:text-glamour-gold px-3 py-2 text-sm font-medium transition-colors duration-300 border-b-2 border-transparent hover:border-glamour-gold">
-                        Contact
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <!-- Render Navigation Component -->
+    {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
 
     <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center bg-glamour-dark">
-        <!-- Background Pattern -->
-        <div class="absolute inset-0 opacity-5">
-            <div class="w-full h-full bg-gradient-radial from-yellow-500/20 via-transparent to-transparent"></div>
-        </div>
-        
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-            <div class="text-center">
-                <!-- Main Title with Glow Effect -->
-                <div class="relative mb-8">
-                    <h1 class="text-5xl md:text-7xl font-bold text-white mb-4 relative z-10">
-                        Welcome to {{site_settings.model_name}}
-                    </h1>
-                    <div class="absolute inset-0 text-5xl md:text-7xl font-bold text-glamour-gold opacity-30 blur-sm">
-                        Welcome to {{site_settings.model_name}}
-                    </div>
-                </div>
-                
-                <!-- Subtitle -->
-                <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-                    {{#if site_settings.tagline}}{{site_settings.tagline}}{{else}}Exclusive companionship services{{/if}}
-                </p>
-                
-                <!-- Golden Divider -->
-                <div class="w-24 h-1 bg-glamour-gold mx-auto mb-8 animate-shimmer"></div>
-                
-                <div class="mt-12">
-                    <a href="/{{model.slug}}/contact" 
-                       class="inline-flex items-center px-8 py-4 border-2 border-glamour-gold text-lg font-semibold text-black bg-glamour-gold hover:bg-transparent hover:text-glamour-gold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25">
-                        Get In Touch
-                    </a>
-                </div>
+    <section class="parallax-hero relative min-h-screen flex items-center justify-center text-white text-center px-4" 
+             style="background-image: url('{{#if home_content.hero_background_image}}/uploads/{{model.slug}}/{{home_content.hero_background_image.filename}}{{else}}/uploads/{{model.slug}}/Parallax_Sample.png{{/if}}');">
+        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/70" 
+             style="opacity: {{#if home_content.hero_background_opacity}}{{subtract 1.0 home_content.hero_background_opacity}}{{else}}0.4{{/if}};"></div>
+        <div class="luxury-grain absolute inset-0 z-0"></div>
+
+        <div class="z-10 max-w-4xl mx-auto space-y-6" data-aos="fade-up">
+            <h1 class="text-4xl md:text-6xl font-heading font-bold tracking-wide drop-shadow-[0_0_10px_#d4af37aa]">
+                {{site_settings.model_name || model.name}}
+            </h1>
+            <p class="text-xl md:text-2xl font-body opacity-90">
+                {{site_settings.tagline || 'Elegance. Discretion. Desire.'}}
+            </p>
+
+            <div class="flex justify-center gap-6 mt-6">
+                <a href="/{{model.slug}}/contact" class="px-6 py-3 text-black bg-[#d4af37] rounded-full shadow-2xl font-semibold hover:bg-yellow-400 hover:scale-105 transition-all">
+                    View Calendar
+                </a>
+                <a href="/{{model.slug}}/contact" class="px-6 py-3 text-white border border-[#d4af37] rounded-full shadow-2xl hover:bg-[#d4af37] hover:text-black hover:scale-105 transition-all">
+                    Contact Me
+                </a>
             </div>
         </div>
     </section>
 
-    <!-- About Section -->
-    {{#if home_content.about_visible}}
-    <section class="py-20 bg-gradient-to-b from-black to-gray-900">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
-                    {{home_content.about_title || 'About Me'}}
-                </h2>
-                <div class="w-16 h-1 bg-glamour-gold mx-auto"></div>
+    <!-- About Me Section -->
+    <section class="bg-black text-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
+            
+            <!-- Left: Portrait -->
+            <div class="relative rounded-2xl overflow-hidden shadow-2xl border-[1.5px] border-[#d4af37] hover:scale-105 transition-transform" data-aos="fade-right">
+                {{#if home_content.about_profile_image}}
+                <img src="/uploads/{{model.slug}}/{{home_content.about_profile_image}}" alt="Elegant portrait" class="w-full h-full object-cover rounded-2xl">
+                {{else}}
+                <img src="/uploads/{{model.slug}}/Office_Sample.png" alt="Elegant portrait" class="w-full h-full object-cover rounded-2xl">
+                {{/if}}
             </div>
             
-            <div class="max-w-4xl mx-auto">
-                <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 md:p-12">
-                    <p class="text-lg md:text-xl text-gray-300 mb-6 leading-relaxed">
+            <!-- Right: Text -->
+            <div class="border-[1.5px] border-[#d4af37] rounded-2xl p-6 bg-gray-900/50" data-aos="fade-left">
+                <h2 class="text-4xl font-heading font-bold glamour-gold mb-6">About Me</h2>
+                <p class="text-lg font-body text-gray-300 leading-relaxed mb-6">
+                    {{#if home_content.about_paragraph_1}}
                         {{home_content.about_paragraph_1}}
-                    </p>
-                    {{#if home_content.about_paragraph_2}}
-                    <p class="text-lg md:text-xl text-gray-300 leading-relaxed">
-                        {{home_content.about_paragraph_2}}
-                    </p>
+                    {{else}}
+                        I offer an upscale, refined experience for gentlemen seeking true companionship. My sessions are more than appointments—they are adventures of elegance and unforgettable connection.
                     {{/if}}
-                </div>
+                </p>
+                <a href="/{{model.slug}}/about" class="glamour-gold hover:text-white font-heading text-lg transition-colors border-b border-transparent hover:border-[#d4af37]">
+                    Learn More →
+                </a>
             </div>
+            
         </div>
     </section>
-    {{/if}}
 
-    <!-- Gallery Section -->
-    {{#if gallery_images}}
-    <section class="py-20 bg-black">
+    <!-- Gallery Preview -->
+    <section class="bg-gray-900 py-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
-                    Gallery
-                </h2>
-                <div class="w-16 h-1 bg-glamour-gold mx-auto"></div>
-            </div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {{#each gallery_images}}
-                <div class="group relative overflow-hidden rounded-xl bg-gray-900">
-                    <img src="/uploads/{{this.filename}}" 
-                         alt="{{this.alt_text}}"
-                         class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div class="absolute bottom-4 left-4 right-4">
-                            {{#if this.caption}}
-                            <p class="text-white text-sm">{{this.caption}}</p>
-                            {{/if}}
+            <h2 class="text-4xl font-heading font-bold text-center glamour-gold mb-12">Glamour Gallery</h2>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {{#if gallery_images.length}}
+                    {{#each gallery_images}}
+                        {{#if @index < 4}}
+                        <div class="aspect-square rounded-2xl overflow-hidden border-[1.5px] border-[#d4af37] shadow-2xl hover:scale-105 hover:ring-2 hover:ring-[#d4af37] transition-all" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
+                            <img src="/uploads/{{../model.slug}}/{{this.filename}}" alt="{{this.caption || 'Gallery photo'}}" class="w-full h-full object-cover">
                         </div>
+                        {{/if}}
+                    {{/each}}
+                {{else}}
+                    <!-- Fallback content when no gallery images -->
+                    {{#repeat 4}}
+                    <div class="aspect-square rounded-2xl overflow-hidden border-[1.5px] border-[#d4af37] shadow-2xl bg-gray-800 flex items-center justify-center hover:scale-105 hover:ring-2 hover:ring-[#d4af37] transition-all" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
+                        <span class="text-[#d4af37] text-sm font-heading">Photo {{add @index 1}}</span>
                     </div>
-                    <!-- Golden border on hover -->
-                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-glamour-gold transition-colors duration-300 rounded-xl"></div>
-                </div>
-                {{/each}}
+                    {{/repeat}}
+                {{/if}}
             </div>
-            
-            <!-- View More Button -->
-            <div class="text-center">
-                <a href="/{{model.slug}}/gallery" 
-                   class="inline-block px-8 py-4 border-2 border-glamour-gold text-lg font-semibold text-glamour-gold hover:bg-glamour-gold hover:text-black transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25">
+
+            <div class="text-center mt-10">
+                <a href="/{{model.slug}}/gallery" class="bg-[#d4af37] text-black px-6 py-3 rounded-full font-semibold shadow-2xl hover:bg-yellow-500 hover:scale-105 transition-all">
                     View Full Gallery
                 </a>
             </div>
         </div>
     </section>
-    {{else}}
-    <section class="py-20 bg-black">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
-                    Gallery
-                </h2>
-                <div class="w-16 h-1 bg-glamour-gold mx-auto"></div>
-            </div>
+
+    <!-- Services Section -->
+    <section class="bg-black py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+            <h2 class="text-4xl font-heading font-bold text-center glamour-gold mb-16">Elite Services</h2>
             
-            <div class="text-center py-16">
-                <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-2xl p-12">
-                    <div class="text-glamour-gold text-6xl mb-4">✨</div>
-                    <h3 class="text-2xl font-bold text-white mb-4">Gallery Coming Soon</h3>
-                    <p class="text-gray-400">Beautiful imagery will be showcased here...</p>
+            <div class="grid md:grid-cols-3 gap-10">
+                
+                <!-- Service Card -->
+                <div class="bg-gray-900 rounded-2xl p-8 shadow-2xl border-[1.5px] border-[#d4af37] hover:scale-105 hover:shadow-[0_0_20px_#d4af37aa] transition-all transition-shadow" data-aos="zoom-in" data-aos-delay="100">
+                    <h3 class="text-2xl font-heading glamour-gold mb-4">VIP Encounter</h3>
+                    <p class="text-gray-300 font-body mb-4">Discreet luxury experiences tailored to your every desire in a private, upscale setting.</p>
+                    <a href="/{{model.slug}}/rates" class="glamour-gold hover:text-white transition-colors font-semibold">View Rates →</a>
                 </div>
+
+                <div class="bg-gray-900 rounded-2xl p-8 shadow-2xl border-[1.5px] border-[#d4af37] hover:scale-105 hover:shadow-[0_0_20px_#d4af37aa] transition-all transition-shadow" data-aos="zoom-in" data-aos-delay="200">
+                    <h3 class="text-2xl font-heading glamour-gold mb-4">Travel Companion</h3>
+                    <p class="text-gray-300 font-body mb-4">Join me for extended trips or luxury getaways, where charm meets adventure.</p>
+                    <a href="/{{model.slug}}/contact" class="glamour-gold hover:text-white transition-colors font-semibold">Inquire →</a>
+                </div>
+
+                <div class="bg-gray-900 rounded-2xl p-8 shadow-2xl border-[1.5px] border-[#d4af37] hover:scale-105 hover:shadow-[0_0_20px_#d4af37aa] transition-all transition-shadow" data-aos="zoom-in" data-aos-delay="300">
+                    <h3 class="text-2xl font-heading glamour-gold mb-4">Exclusive Events</h3>
+                    <p class="text-gray-300 font-body mb-4">Make an impression. Sophisticated companionship for dinners, galas, or red carpet affairs.</p>
+                    <a href="/{{model.slug}}/contact" class="glamour-gold hover:text-white transition-colors font-semibold">Let's Connect →</a>
+                </div>
+
             </div>
         </div>
     </section>
-    {{/if}}
+
+    <!-- CTA Banner -->
+    <section class="bg-gradient-to-r from-[#1a1a1a] to-[#333] py-20 text-white text-center luxury-grain" data-aos="zoom-in">
+        <h2 class="text-3xl md:text-4xl font-heading font-bold mb-4">Ready for an unforgettable experience?</h2>
+        <p class="text-lg font-body text-gray-200 mb-6">Let's create a moment of true connection, luxury, and authenticity.</p>
+        <div class="flex justify-center space-x-4">
+            <a href="/{{model.slug}}/contact" class="bg-[#d4af37] text-black font-semibold px-6 py-3 rounded-full shadow-2xl hover:bg-yellow-500 hover:scale-105 transition-all">View Availability</a>
+            <a href="/{{model.slug}}/contact" class="border border-[#d4af37] px-6 py-3 rounded-full font-semibold hover:bg-[#d4af37] hover:text-black hover:scale-105 transition-all">Send a Message</a>
+        </div>
+    </section>
 
     <!-- Testimonials Section -->
-    {{#if testimonials}}
-    <section class="py-20 bg-gradient-to-b from-gray-900 to-black">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
-                    What Clients Say
-                </h2>
-                <div class="w-16 h-1 bg-glamour-gold mx-auto"></div>
-            </div>
+    {{#if testimonials.length}}
+    <section class="bg-black py-20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+            <h2 class="text-4xl font-heading font-bold text-center glamour-gold mb-12">What Clients Say</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="space-y-6">
                 {{#each testimonials}}
-                <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-xl p-8 hover:border-glamour-gold transition-colors duration-300">
-                    {{#if this.rating}}
-                    <div class="text-glamour-gold text-2xl mb-4">
-                        {{#if this.rating}}
-                            {{#if (eq this.rating 5)}}⭐⭐⭐⭐⭐{{/if}}
-                            {{#if (eq this.rating 4)}}⭐⭐⭐⭐{{/if}}
-                            {{#if (eq this.rating 3)}}⭐⭐⭐{{/if}}
-                            {{#if (eq this.rating 2)}}⭐⭐{{/if}}
-                            {{#if (eq this.rating 1)}}⭐{{/if}}
-                        {{/if}}
-                    </div>
-                    {{/if}}
-                    <blockquote class="text-gray-300 mb-6 italic">
-                        "{{this.testimonial_text}}"
-                    </blockquote>
-                    <div class="border-t border-gray-700 pt-4">
-                        <p class="font-semibold text-white">
-                            {{#if this.client_name}}{{this.client_name}}{{else}}{{this.client_initial}}{{/if}}
-                        </p>
+                <div class="bg-gray-900 rounded-2xl p-6 shadow-2xl border-[1.5px] border-[#d4af37] flex flex-col md:flex-row md:justify-between md:items-center" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
+                    <div class="mb-4 md:mb-0">
+                        <div class="text-glamour-gold text-xl mb-2">
+                            {{#if this.rating}}
+                                {{#repeat this.rating}}⭐{{/repeat}}
+                            {{/if}}
+                        </div>
+                        <blockquote class="text-gray-300 italic mb-2">"{{this.testimonial_text}}"</blockquote>
+                        <p class="text-sm text-gray-400">— {{this.client_name || this.client_initial}}</p>
                     </div>
                 </div>
                 {{/each}}
+            </div>
+        </div>
+    </section>
+    {{else}}
+    <!-- No testimonials message -->
+    <section class="bg-black py-20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+            <h2 class="text-4xl font-heading font-bold text-center glamour-gold mb-12">Client Experiences</h2>
+            
+            <div class="bg-gray-900 rounded-2xl p-8 shadow-2xl border-[1.5px] border-[#d4af37] text-center" data-aos="fade-up">
+                <h3 class="text-xl font-semibold glamour-gold mb-4">Exclusive Testimonials</h3>
+                <p class="text-gray-400 mb-6">Discretion is paramount. Client testimonials are shared privately to protect confidentiality while maintaining the highest standards of service.</p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/{{model.slug}}/contact" class="bg-[#d4af37] text-black px-6 py-3 rounded-full font-semibold hover:bg-yellow-500 transition shadow-lg">
+                        Request References
+                    </a>
+                    <a href="/{{model.slug}}/contact" class="border border-[#d4af37] text-[#d4af37] px-6 py-3 rounded-full font-semibold hover:bg-[#d4af37] hover:text-black transition">
+                        Contact Me
+                    </a>
+                </div>
             </div>
         </div>
     </section>

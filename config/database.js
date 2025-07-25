@@ -65,6 +65,7 @@ async function transaction(queries) {
 
 module.exports = {
     pool,
+    execute: pool.execute.bind(pool),
     query,
     transaction,
     testConnection

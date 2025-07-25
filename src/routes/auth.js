@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const { body, validationResult } = require('express-validator');
 const { query } = require('../../config/database');
-const { generateToken, authenticateToken } = require('../middleware/auth');
+const { generateToken, authenticateToken } = require('../../middleware/auth');
 
 const router = express.Router();
 
