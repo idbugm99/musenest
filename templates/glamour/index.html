@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{site_settings.site_name || 'Glamour Portfolio'}}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .bg-glamour-dark { background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); }
+        .bg-glamour-gold { background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); }
+        .text-glamour-gold { color: #D4AF37; }
+        .border-glamour-gold { border-color: #D4AF37; }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        .animate-shimmer {
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-black bg-opacity-90 backdrop-blur-sm border-b border-gray-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold text-glamour-gold">
+                        {{site_settings.site_name || model.name}}
+                    </h1>
+                </div>
+                
+                <div class="hidden md:flex md:space-x-8 md:items-center">
+                    {{#each menu_items}}
+                    <a href="/{{../model.slug}}/{{this.slug}}" 
+                       class="text-gray-300 hover:text-glamour-gold px-3 py-2 text-sm font-medium transition-colors duration-300 border-b-2 border-transparent hover:border-glamour-gold">
+                        {{this.label}}
+                    </a>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center bg-glamour-dark">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-5">
+            <div class="w-full h-full bg-gradient-radial from-yellow-500/20 via-transparent to-transparent"></div>
+        </div>
+        
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+            <div class="text-center">
+                <!-- Main Title with Glow Effect -->
+                <div class="relative mb-8">
+                    <h1 class="text-5xl md:text-7xl font-bold text-white mb-4 relative z-10">
+                        {{home_content.hero_title || 'Welcome'}}
+                    </h1>
+                    <div class="absolute inset-0 text-5xl md:text-7xl font-bold text-glamour-gold opacity-30 blur-sm">
+                        {{home_content.hero_title || 'Welcome'}}
+                    </div>
+                </div>
+                
+                <!-- Subtitle -->
+                <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+                    {{home_content.hero_subtitle || site_settings.tagline}}
+                </p>
+                
+                <!-- Golden Divider -->
+                <div class="w-24 h-1 bg-glamour-gold mx-auto mb-8 animate-shimmer"></div>
+                
+                {{#if home_content.hero_button_text}}
+                <div class="mt-12">
+                    <a href="{{home_content.hero_button_url || '#contact'}}" 
+                       class="inline-flex items-center px-8 py-4 border-2 border-glamour-gold text-lg font-semibold text-black bg-glamour-gold hover:bg-transparent hover:text-glamour-gold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25">
+                        {{home_content.hero_button_text}}
+                    </a>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    {{#if home_content.about_visible}}
+    <section class="py-20 bg-gradient-to-b from-black to-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
+                    {{home_content.about_title || 'About Me'}}
+                </h2>
+                <div class="w-16 h-1 bg-glamour-gold mx-auto"></div>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 md:p-12">
+                    <p class="text-lg md:text-xl text-gray-300 mb-6 leading-relaxed">
+                        {{home_content.about_paragraph_1}}
+                    </p>
+                    {{#if home_content.about_paragraph_2}}
+                    <p class="text-lg md:text-xl text-gray-300 leading-relaxed">
+                        {{home_content.about_paragraph_2}}
+                    </p>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </section>
+    {{/if}}
+
+    <!-- Gallery Section -->
+    {{#if home_content.gallery_visible}}
+    <section class="py-20 bg-black">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
+                    {{home_content.gallery_section_title || 'Gallery'}}
+                </h2>
+                <div class="w-16 h-1 bg-glamour-gold mx-auto"></div>
+            </div>
+            
+            {{#if gallery_images.length}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {{#each gallery_images}}
+                <div class="group relative overflow-hidden rounded-xl bg-gray-900">
+                    <img src="/uploads/{{this.filename}}" 
+                         alt="{{this.alt_text || this.caption}}"
+                         class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div class="absolute bottom-4 left-4 right-4">
+                            {{#if this.caption}}
+                            <p class="text-white text-sm">{{this.caption}}</p>
+                            {{/if}}
+                        </div>
+                    </div>
+                    <!-- Golden border on hover -->
+                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-glamour-gold transition-colors duration-300 rounded-xl"></div>
+                </div>
+                {{/each}}
+            </div>
+            {{else}}
+            <div class="text-center py-16">
+                <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-2xl p-12">
+                    <div class="text-glamour-gold text-6xl mb-4">✨</div>
+                    <h3 class="text-2xl font-bold text-white mb-4">Gallery Coming Soon</h3>
+                    <p class="text-gray-400">Beautiful imagery will be showcased here...</p>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </section>
+    {{/if}}
+
+    <!-- Testimonials Section -->
+    {{#if testimonials.length}}
+    <section class="py-20 bg-gradient-to-b from-gray-900 to-black">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
+                    {{home_content.testimonials_section_title || 'What Clients Say'}}
+                </h2>
+                <div class="w-16 h-1 bg-glamour-gold mx-auto"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {{#each testimonials}}
+                <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-xl p-8 hover:border-glamour-gold transition-colors duration-300">
+                    <div class="text-glamour-gold text-2xl mb-4">
+                        {{#repeat this.rating}}"⭐"{{/repeat}}
+                    </div>
+                    <blockquote class="text-gray-300 mb-6 italic">
+                        "{{this.testimonial_text}}"
+                    </blockquote>
+                    <div class="border-t border-gray-700 pt-4">
+                        <p class="font-semibold text-white">
+                            {{this.client_name || this.client_initial}}
+                        </p>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </section>
+    {{/if}}
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="text-center">
+                <h3 class="text-3xl font-bold text-glamour-gold mb-6">
+                    {{site_settings.site_name || model.name}}
+                </h3>
+                
+                <div class="flex justify-center space-x-8 mb-8">
+                    {{#if site_settings.contact_email}}
+                    <div class="text-gray-300">
+                        <span class="text-glamour-gold">Email:</span> {{site_settings.contact_email}}
+                    </div>
+                    {{/if}}
+                    {{#if site_settings.contact_phone}}
+                    <div class="text-gray-300">
+                        <span class="text-glamour-gold">Phone:</span> {{site_settings.contact_phone}}
+                    </div>
+                    {{/if}}
+                </div>
+                
+                <div class="w-24 h-1 bg-glamour-gold mx-auto mb-8"></div>
+                
+                <p class="text-gray-400">
+                    © {{currentYear}} {{site_settings.site_name || model.name}}. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
