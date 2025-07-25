@@ -47,50 +47,8 @@ app.use(cookieParser());
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-// Template engine setup (using Handlebars-like syntax for now)
-app.set('view engine', 'html');
-app.set('views', path.join(__dirname, 'templates'));
-
-// Custom template rendering middleware
-app.engine('html', (filePath, options, callback) => {
-    const fs = require('fs');
-    fs.readFile(filePath, 'utf8', (err, content) => {
-        if (err) return callback(err);
-        
-        // Simple template replacement for now
-        // In production, you'd use a proper template engine like Handlebars
-        let rendered = content;
-        
-        // Replace template variables
-        Object.keys(options).forEach(key => {
-            const regex = new RegExp(`{{${key}}}`, 'g');
-            rendered = rendered.replace(regex, options[key] || '');
-        });
-        
-        // Handle conditional blocks (basic implementation)
-        rendered = rendered.replace(/{{#if\s+([^}]+)}}([\s\S]*?){{\/if}}/g, (match, condition, content) => {
-            const value = options[condition.trim()];
-            return value ? content : '';
-        });
-        
-        // Handle loops (basic implementation)
-        rendered = rendered.replace(/{{#each\s+([^}]+)}}([\s\S]*?){{\/each}}/g, (match, arrayName, content) => {
-            const array = options[arrayName.trim()];
-            if (!Array.isArray(array)) return '';
-            
-            return array.map(item => {
-                let itemContent = content;
-                Object.keys(item).forEach(key => {
-                    const regex = new RegExp(`{{this\\.${key}}}`, 'g');
-                    itemContent = itemContent.replace(regex, item[key] || '');
-                });
-                return itemContent;
-            }).join('');
-        });
-        
-        callback(null, rendered);
-    });
-});
+// Disable built-in template engine - we use our custom one
+app.set('view engine', false);
 
 // Routes
 app.get('/', (req, res) => {
@@ -118,8 +76,8 @@ app.use('/api/models', require('./src/routes/models'));
 // app.use('/api/gallery', require('./src/routes/gallery'));
 // app.use('/api/content', require('./src/routes/content'));
 
-// Dynamic model routes (to be implemented)
-// app.use('/', require('./src/routes/dynamic'));
+// Dynamic model routes
+app.use('/', require('./src/routes/dynamic'));
 
 // 404 handler
 app.use('*', (req, res) => {
