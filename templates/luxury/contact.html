@@ -18,26 +18,30 @@
     <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
     
     <style>
-        /* Basic Theme Styles */
+        /* Luxury Theme Styles */
         
-        /* Basic Theme Colors */
+        /* Luxury Theme Colors */
         :root {
-            --basic-primary: var(--color-primary, #3B82F6);
-            --basic-secondary: var(--color-secondary, #6B7280);
-            --basic-accent: var(--color-accent, #10B981);
-            --basic-text: var(--color-text, #1F2937);
-            --basic-background: var(--color-background, #FFFFFF);
+            --luxury-primary: var(--color-primary, #7C3AED);
+            --luxury-secondary: var(--color-secondary, #5B21B6);
+            --luxury-accent: var(--color-accent, #F59E0B);
+            --luxury-text: var(--color-text, #581C87);
+            --luxury-background: var(--color-background, #FAF5FF);
         }
         
-        .text-basic-primary { color: var(--basic-primary); }
-        .bg-basic-primary { background-color: var(--basic-primary); }
-        .border-basic-primary { border-color: var(--basic-primary); }
+        .text-luxury-primary { color: var(--luxury-primary); }
+        .bg-luxury-primary { background-color: var(--luxury-primary); }
+        .border-luxury-primary { border-color: var(--luxury-primary); }
+        
+        .luxury-gradient {
+            background: linear-gradient(135deg, var(--luxury-primary) 0%, var(--luxury-secondary) 100%);
+        }
             
     </style>
 </head>
-<body class="bg-basic-background font-sans">
+<body class="bg-luxury-background font-serif">
     <!-- Navigation Component -->
-    {{component "navigation" theme="basic" model=model navigation=navigation}}
+    {{component "navigation" theme="luxury" model=model navigation=navigation}}
     
     <!-- Page Content -->
     
@@ -45,12 +49,12 @@
 Contact - {{#if current_model}}{{site_settings.model_name if site_settings and site_settings.model_name else (current_model.name}}{{else}}{{'Model Example')}}{{/if}}
 
 
-<section class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="py-16 bg-background">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {{#if contact_content.contact_header_visible}}
         <div class="text-center mb-12">
-            <h1 class="text-4xl font-heading font-bold mb-6">{{contact_content.page_title or 'Contact Me'}}</h1>
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            <h1 class="text-4xl font-heading font-bold mb-6 text-accent">{{contact_content.page_title or 'Contact Me'}}</h1>
+            <p class="text-xl text-charcoal/70 max-w-3xl mx-auto">
                 {{contact_content.page_subtitle or 'I look forward to hearing from you. Please use the form below or my preferred contact methods.'}}
             </p>
         </div>
@@ -59,8 +63,9 @@ Contact - {{#if current_model}}{{site_settings.model_name if site_settings and s
         <div class="grid md:grid-cols-2 gap-12">
             <!-- Contact Form -->
             {{#if contact_content.contact_form_visible}}
-            <div class="bg-background p-8 rounded-lg">
-                <h2 class="text-2xl font-heading font-bold mb-6">{{contact_content.form_title or 'Send a Message'}}</h2>
+            <div class="bg-primary border border-accent p-8 rounded-2xl shadow-lg">
+                <p class="text-charcoal/60 text-xs uppercase tracking-widest mb-2">Get in Touch</p>
+                <h2 class="text-2xl font-heading font-bold mb-6 text-accent">{{contact_content.form_title or 'Send a Message'}}</h2>
                 
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {{#if messages}}
@@ -74,33 +79,33 @@ Contact - {{#if current_model}}{{site_settings.model_name if site_settings and s
                 
                 <form method="POST" class="space-y-6">
                     <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">{{contact_content.form_name_label or 'Your Name'}}</label>
+                        <label for="name" class="block text-sm font-medium text-charcoal mb-2">{{contact_content.form_name_label or 'Your Name'}}</label>
                         <input type="text" id="name" name="name" required 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                               class="w-full px-4 py-3 border border-accent rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent bg-background text-charcoal">
                     </div>
                     
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">{{contact_content.form_email_label or 'Email Address'}}</label>
+                        <label for="email" class="block text-sm font-medium text-charcoal mb-2">{{contact_content.form_email_label or 'Email Address'}}</label>
                         <input type="email" id="email" name="email" required 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                               class="w-full px-4 py-3 border border-accent rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent bg-background text-charcoal">
                     </div>
                     
                     <div>
-                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">{{contact_content.form_phone_label or 'Phone Number (Optional)'}}</label>
+                        <label for="phone" class="block text-sm font-medium text-charcoal mb-2">{{contact_content.form_phone_label or 'Phone Number (Optional)'}}</label>
                         <input type="tel" id="phone" name="phone" 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                               class="w-full px-4 py-3 border border-accent rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent bg-background text-charcoal">
                     </div>
                     
                     <div>
-                        <label for="date" class="block text-sm font-medium text-gray-700 mb-2">{{contact_content.form_date_label or 'Preferred Date'}}</label>
+                        <label for="date" class="block text-sm font-medium text-charcoal mb-2">{{contact_content.form_date_label or 'Preferred Date'}}</label>
                         <input type="date" id="date" name="date" 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                               class="w-full px-4 py-3 border border-accent rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent bg-background text-charcoal">
                     </div>
                     
                     <div>
-                        <label for="duration" class="block text-sm font-medium text-gray-700 mb-2">{{contact_content.form_duration_label or 'Duration'}}</label>
+                        <label for="duration" class="block text-sm font-medium text-charcoal mb-2">{{contact_content.form_duration_label or 'Duration'}}</label>
                         <select id="duration" name="duration" 
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                class="w-full px-4 py-3 border border-accent rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent bg-background text-charcoal">
                             <option value="">Select duration</option>
                             {% set duration_options = contact_content.form_duration_options or '1 Hour,90 Minutes,2 Hours,3 Hours,Overnight,Extended (please specify)' %}
                             {{#each option in duration_options.split(',')}}
@@ -111,9 +116,9 @@ Contact - {{#if current_model}}{{site_settings.model_name if site_settings and s
                     </div>
                     
                     <div>
-                        <label for="message" class="block text-sm font-medium text-gray-700 mb-2">{{contact_content.form_message_label or 'Message'}}</label>
+                        <label for="message" class="block text-sm font-medium text-charcoal mb-2">{{contact_content.form_message_label or 'Message'}}</label>
                         <textarea id="message" name="message" rows="5" required 
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                  class="w-full px-4 py-3 border border-accent rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent bg-background text-charcoal"
                                   placeholder="{{contact_content.form_message_placeholder or 'Please include any specific requests or questions...'}}"></textarea>
                     </div>
                     

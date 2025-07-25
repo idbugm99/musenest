@@ -3,280 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - {{site_settings.site_name || 'Glamour Portfolio'}}</title>
-    <meta name="description" content="{{site_settings.meta_description || 'Elegant, upscale companion services with complete discretion.'}}">
-    <meta name="og:title" content="{{site_settings.site_name}} - Escort Model">
+    <title>{{#if site_settings.site_name}}{{site_settings.site_name}}{{else}}{{model.name}}{{/if}}</title>
+    <meta name="description" content="{{site_settings.meta_description}}">
+    <meta name="og:title" content="{{site_settings.site_name}} - {{model.name}}">
     <meta name="og:description" content="{{site_settings.meta_description}}">
     <meta name="og:type" content="website">
-    <meta name="og:image" content="{{site_settings.og_image || '/uploads/opengraph.jpg'}}">
+    <meta name="og:image" content="{{site_settings.og_image}}">
     
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <!-- AOS Animation Library -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     
-    <style>
-        .bg-glamour-dark { background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); }
-        .bg-glamour-gold { background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); }
-        .text-glamour-gold { color: #D4AF37; }
-        .border-glamour-gold { border-color: #D4AF37; }
-        .glamour-gold { color: #D4AF37; }
-        
-        .parallax-hero {
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-            background-attachment: scroll;
-        }
-        
-        .luxury-grain::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('/uploads/grain.png');
-            opacity: 0.15;
-            pointer-events: none;
-        }
-        
-        .font-heading {
-            font-family: 'Georgia', serif;
-        }
-        
-        .font-body {
-            font-family: 'Arial', sans-serif;
-        }
-        
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-        
-        .animate-shimmer {
-            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
-            background-size: 200% 100%;
-            animation: shimmer 2s infinite;
-        }
-    </style>
+    <!-- Dynamic Theme Colors -->
+    <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
     
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            AOS.init({
-                duration: 800,
-                once: true,
-                offset: 100
-            });
-        });
-    </script>
+    <style>
+        /* Glamour Theme Styles */
+        
+        /* Glamour Theme Colors */
+        :root {
+            --glamour-primary: var(--color-primary, #EC4899);
+            --glamour-secondary: var(--color-secondary, #BE185D);
+            --glamour-accent: var(--color-accent, #F59E0B);
+            --glamour-text: var(--color-text, #831843);
+            --glamour-background: var(--color-background, #FDF2F8);
+        }
+        
+        .text-glamour-primary { color: var(--glamour-primary); }
+        .bg-glamour-primary { background-color: var(--glamour-primary); }
+        .border-glamour-primary { border-color: var(--glamour-primary); }
+        
+        .glamour-gradient {
+            background: linear-gradient(135deg, var(--glamour-primary) 0%, var(--glamour-secondary) 100%);
+        }
+            
+    </style>
 </head>
-<body class="bg-black text-white min-h-screen">
-    <!-- Render Navigation Component -->
-    {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+<body class="bg-glamour-background font-serif">
+    <!-- Navigation Component -->
+    {{component "navigation" theme="glamour" model=model navigation=navigation}}
+    
+    <!-- Page Content -->
+    
+Home - {{#if site_settings}}{{site_settings.site_name}}{{else}}{{'Model Name'}}{{/if}}
 
-    <!-- Hero Section -->
-    <section class="parallax-hero relative min-h-screen flex items-center justify-center text-white text-center px-4" 
-             style="background-image: url('{{#if home_content.hero_background_image}}/uploads/{{model.slug}}/{{home_content.hero_background_image.filename}}{{else}}/uploads/{{model.slug}}/Parallax_Sample.png{{/if}}');">
-        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/70" 
-             style="opacity: {{#if home_content.hero_background_opacity}}{{subtract 1.0 home_content.hero_background_opacity}}{{else}}0.4{{/if}};"></div>
-        <div class="luxury-grain absolute inset-0 z-0"></div>
 
-        <div class="z-10 max-w-4xl mx-auto space-y-6" data-aos="fade-up">
-            <h1 class="text-4xl md:text-6xl font-heading font-bold tracking-wide drop-shadow-[0_0_10px_#d4af37aa]">
-                {{site_settings.model_name || model.name}}
-            </h1>
-            <p class="text-xl md:text-2xl font-body opacity-90">
-                {{site_settings.tagline || 'Elegance. Discretion. Desire.'}}
-            </p>
+  {{super()}}
+  <meta name="description" content="{{#if site_settings}}{{site_settings.meta_description}}{{else}}{{'Elegant, upscale companion services with complete discretion.'}}{{/if}}">
+  <meta name="og:title" content="{{site_settings.site_name}} - Escort Model">
+  <meta name="og:description" content="{{site_settings.meta_description}}">
+  <meta name="og:type" content="website">
+  <meta name="og:image" content="{{#if site_settings}}{{site_settings.og_image}}{{else}}{{'/static/images/opengraph.jpg'}}{{/if}}">
+  <!-- AOS Animation Library -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  
+  <style>
+    .parallax-hero {
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: scroll;
+    }
+    .luxury-grain::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image: url('/static/images/grain.png');
+      opacity: 0.15;
+      pointer-events: none;
+    }
+  </style>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      AOS.init({
+        duration: 800,
+        once: true,
+        offset: 100
+      });
+    });
+  </script>
 
-            <div class="flex justify-center gap-6 mt-6">
-                <a href="/{{model.slug}}/contact" class="px-6 py-3 text-black bg-[#d4af37] rounded-full shadow-2xl font-semibold hover:bg-yellow-400 hover:scale-105 transition-all">
-                    View Calendar
-                </a>
-                <a href="/{{model.slug}}/contact" class="px-6 py-3 text-white border border-[#d4af37] rounded-full shadow-2xl hover:bg-[#d4af37] hover:text-black hover:scale-105 transition-all">
-                    Contact Me
-                </a>
-            </div>
+
+
+<section class="parallax-hero relative min-h-screen flex items-center justify-center text-white text-center px-4" style="background-image: url('{{#if home_content.hero_background_image}}{{url_for('static', filename=get_model_image_path(get_current_model_slug(), home_content.hero_background_image.filename))}}{{else}}{{url_for('static', filename='images/escortmodel/Parallax_Sample.png')}}{{/if}}');">
+  <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/70" style="opacity: {{#if home_content.hero_background_opacity}}{{1.0 - (home_content.hero_background_opacity}}{{else}}{{0.6)}}{{/if}};"></div>
+  <div class="luxury-grain absolute inset-0 z-0"></div>
+
+  <div class="z-10 max-w-4xl mx-auto space-y-6" data-aos="fade-up">
+    <h1 class="text-4xl md:text-6xl font-heading font-bold tracking-wide drop-shadow-[0_0_10px_#d4af37aa]">
+      {{#if site_settings}}{{site_settings.model_name}}{{else}}{{'Your Name Here'}}{{/if}}
+    </h1>
+    <p class="text-xl md:text-2xl font-body opacity-90">
+      {{#if site_settings}}{{site_settings.tagline}}{{else}}{{'Elegance. Discretion. Desire.'}}{{/if}}
+    </p>
+
+    <div class="flex justify-center gap-6 mt-6">
+      <a href="{{model_url_for('model.calendar_view')}}" class="px-6 py-3 text-black bg-[#d4af37] rounded-full shadow-2xl font-semibold hover:bg-yellow-400 hover:scale-105 transition-all">
+        View Calendar
+      </a>
+      <a href="{{model_url_for('model.contact')}}" class="px-6 py-3 text-white border border-[#d4af37] rounded-full shadow-2xl hover:bg-[#d4af37] hover:text-black hover:scale-105 transition-all">
+        Contact Me
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- About Me Section -->
+<section class="bg-black text-white py-20">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
+    
+    <!-- Left: Portrait -->
+    <div class="relative rounded-2xl overflow-hidden shadow-2xl border-[1.5px] border-[#d4af37] hover:scale-105 transition-transform" data-aos="fade-right">
+      <img src="/static/images/escortmodel/Office_Sample.png" alt="Elegant portrait" class="w-full h-full object-cover rounded-2xl">
+    </div>
+    
+    <!-- Right: Text -->
+    <div class="border-[1.5px] border-[#d4af37] rounded-2xl p-6 bg-gray-900/50" data-aos="fade-left">
+      <h2 class="text-4xl font-heading font-bold glamour-gold mb-6">About Me</h2>
+      <p class="text-lg font-body text-gray-300 leading-relaxed mb-6">
+        I offer an upscale, refined experience for gentlemen seeking true companionship. My sessions are more than appointments—they are adventures of elegance and unforgettable connection.
+      </p>
+      <a href="{{model_url_for('model.about')}}" class="glamour-gold hover:text-white font-heading text-lg transition-colors border-b border-transparent hover:border-[#d4af37]">
+        Learn More →
+      </a>
+    </div>
+    
+  </div>
+</section>
+
+<!-- Gallery Preview -->
+<section class="bg-gray-900 py-20">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-4xl font-heading font-bold text-center glamour-gold mb-12">Glamour Gallery</h2>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      {{#each image in gallery_images[:4]}}
+      <div class="aspect-square rounded-2xl overflow-hidden border-[1.5px] border-[#d4af37] shadow-2xl hover:scale-105 hover:ring-2 hover:ring-[#d4af37] transition-all" data-aos="fade-up" data-aos-delay="{{loop.index * 100}}">
+        <img src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), image.filename))}}" alt="{{image.caption or 'Gallery photo'}}" class="w-full h-full object-cover">
+      </div>
+      {{else}}
+      <!-- Fallback content when no gallery images -->
+      {{#each i in range(4)}}
+      <div class="aspect-square rounded-2xl overflow-hidden border-[1.5px] border-[#d4af37] shadow-2xl bg-gray-800 flex items-center justify-center hover:scale-105 hover:ring-2 hover:ring-[#d4af37] transition-all" data-aos="fade-up" data-aos-delay="{{(i + 1) * 100}}">
+        <span class="text-[#d4af37] text-sm font-heading">Photo {{i + 1}}</span>
+      </div>
+      {{/each}}
+      {{/each}}
+    </div>
+
+    <div class="text-center mt-10">
+      <a href="{{model_url_for('content.gallery')}}" class="bg-[#d4af37] text-black px-6 py-3 rounded-full font-semibold shadow-2xl hover:bg-yellow-500 hover:scale-105 transition-all">
+        View Full Gallery
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Services Section -->
+<section class="bg-black py-20">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+    <h2 class="text-4xl font-heading font-bold text-center glamour-gold mb-16">Elite Services</h2>
+    
+    <div class="grid md:grid-cols-3 gap-10">
+      
+      <!-- Service Card -->
+      <div class="bg-gray-900 rounded-2xl p-8 shadow-2xl border-[1.5px] border-[#d4af37] hover:scale-105 hover:shadow-[0_0_20px_#d4af37aa] transition-all transition-shadow" data-aos="zoom-in" data-aos-delay="100">
+        <h3 class="text-2xl font-heading glamour-gold mb-4">VIP Encounter</h3>
+        <p class="text-gray-300 font-body mb-4">Discreet luxury experiences tailored to your every desire in a private, upscale setting.</p>
+        <a href="{{model_url_for('model.rates')}}" class="glamour-gold hover:text-white transition-colors font-semibold">View Rates →</a>
+      </div>
+
+      <div class="bg-gray-900 rounded-2xl p-8 shadow-2xl border-[1.5px] border-[#d4af37] hover:scale-105 hover:shadow-[0_0_20px_#d4af37aa] transition-all transition-shadow" data-aos="zoom-in" data-aos-delay="200">
+        <h3 class="text-2xl font-heading glamour-gold mb-4">Travel Companion</h3>
+        <p class="text-gray-300 font-body mb-4">Join me for extended trips or luxury getaways, where charm meets adventure.</p>
+        <a href="{{model_url_for('model.contact')}}" class="glamour-gold hover:text-white transition-colors font-semibold">Inquire →</a>
+      </div>
+
+      <div class="bg-gray-900 rounded-2xl p-8 shadow-2xl border-[1.5px] border-[#d4af37] hover:scale-105 hover:shadow-[0_0_20px_#d4af37aa] transition-all transition-shadow" data-aos="zoom-in" data-aos-delay="300">
+        <h3 class="text-2xl font-heading glamour-gold mb-4">Exclusive Events</h3>
+        <p class="text-gray-300 font-body mb-4">Make an impression. Sophisticated companionship for dinners, galas, or red carpet affairs.</p>
+        <a href="{{model_url_for('model.contact')}}" class="glamour-gold hover:text-white transition-colors font-semibold">Let's Connect →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA Banner -->
+<section class="bg-gradient-to-r from-[#1a1a1a] to-[#333] py-20 text-white text-center luxury-grain" data-aos="zoom-in">
+  <h2 class="text-3xl md:text-4xl font-heading font-bold mb-4">Ready for an unforgettable experience?</h2>
+  <p class="text-lg font-body text-gray-200 mb-6">Let's create a moment of true connection, luxury, and authenticity.</p>
+  <div class="flex justify-center space-x-4">
+    <a href="{{model_url_for('model.calendar_view')}}" class="bg-[#d4af37] text-black font-semibold px-6 py-3 rounded-full shadow-2xl hover:bg-yellow-500 hover:scale-105 transition-all">View Availability</a>
+    <a href="{{model_url_for('model.contact')}}" class="border border-[#d4af37] px-6 py-3 rounded-full font-semibold hover:bg-[#d4af37] hover:text-black hover:scale-105 transition-all">Send a Message</a>
+  </div>
+</section>
+
+<!-- Availability Preview Section -->
+<section class="bg-black py-20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+    <h2 class="text-4xl font-heading font-bold text-center glamour-gold mb-12">My Upcoming Availability</h2>
+    
+    {{#if availability_list and availability_list|.length > 0}}
+      <div class="space-y-6">
+      {{#each event in availability_list}}
+        <div class="bg-gray-900 rounded-2xl p-6 shadow-2xl border-[1.5px] border-[#d4af37] flex flex-col md:flex-row md:justify-between md:items-center" data-aos="fade-up" data-aos-delay="{{loop.index * 100}}">
+          <div class="mb-4 md:mb-0">
+            <h3 class="text-xl font-semibold glamour-gold mb-1 flex items-center">
+              <span class="text-[#d4af37] mr-2">•</span>
+              {{event.date.strftime('%A, %B %d')}}
+            </h3>
+            {{#if event.location}}
+              <p class="text-gray-400">{{event.location}}</p>
+            {{/if}}
+            {{#if event.time_start and event.time_end}}
+              <p class="mt-1 text-yellow-400 font-mono bg-gray-800 inline-block px-3 py-1 rounded">
+                {{event.time_start.strftime('%I:%M %p')}} - {{event.time_end.strftime('%I:%M %p')}}
+              </p>
+            {% elif not event.all_day %}
+              <p class="mt-1 text-gray-400 text-sm italic">Time available upon request</p>
+            {{/if}}
+          </div>
+          <div class="text-right">
+            <p class="glamour-gold text-lg font-serif font-semibold">{{event.status}}</p>
+          </div>
         </div>
-    </section>
-
-    <!-- About Me Section -->
-    <section class="bg-black text-white py-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
-            
-            <!-- Left: Portrait -->
-            <div class="relative rounded-2xl overflow-hidden shadow-2xl border-[1.5px] border-[#d4af37] hover:scale-105 transition-transform" data-aos="fade-right">
-                {{#if home_content.about_profile_image}}
-                <img src="/uploads/{{model.slug}}/{{home_content.about_profile_image}}" alt="Elegant portrait" class="w-full h-full object-cover rounded-2xl">
-                {{else}}
-                <img src="/uploads/{{model.slug}}/Office_Sample.png" alt="Elegant portrait" class="w-full h-full object-cover rounded-2xl">
-                {{/if}}
-            </div>
-            
-            <!-- Right: Text -->
-            <div class="border-[1.5px] border-[#d4af37] rounded-2xl p-6 bg-gray-900/50" data-aos="fade-left">
-                <h2 class="text-4xl font-heading font-bold glamour-gold mb-6">About Me</h2>
-                <p class="text-lg font-body text-gray-300 leading-relaxed mb-6">
-                    {{#if home_content.about_paragraph_1}}
-                        {{home_content.about_paragraph_1}}
-                    {{else}}
-                        I offer an upscale, refined experience for gentlemen seeking true companionship. My sessions are more than appointments—they are adventures of elegance and unforgettable connection.
-                    {{/if}}
-                </p>
-                <a href="/{{model.slug}}/about" class="glamour-gold hover:text-white font-heading text-lg transition-colors border-b border-transparent hover:border-[#d4af37]">
-                    Learn More →
-                </a>
-            </div>
-            
-        </div>
-    </section>
-
-    <!-- Gallery Preview -->
-    <section class="bg-gray-900 py-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-4xl font-heading font-bold text-center glamour-gold mb-12">Glamour Gallery</h2>
-
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {{#if gallery_images.length}}
-                    {{#each gallery_images}}
-                        {{#if @index < 4}}
-                        <div class="aspect-square rounded-2xl overflow-hidden border-[1.5px] border-[#d4af37] shadow-2xl hover:scale-105 hover:ring-2 hover:ring-[#d4af37] transition-all" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
-                            <img src="/uploads/{{../model.slug}}/{{this.filename}}" alt="{{this.caption || 'Gallery photo'}}" class="w-full h-full object-cover">
-                        </div>
-                        {{/if}}
-                    {{/each}}
-                {{else}}
-                    <!-- Fallback content when no gallery images -->
-                    {{#repeat 4}}
-                    <div class="aspect-square rounded-2xl overflow-hidden border-[1.5px] border-[#d4af37] shadow-2xl bg-gray-800 flex items-center justify-center hover:scale-105 hover:ring-2 hover:ring-[#d4af37] transition-all" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
-                        <span class="text-[#d4af37] text-sm font-heading">Photo {{add @index 1}}</span>
-                    </div>
-                    {{/repeat}}
-                {{/if}}
-            </div>
-
-            <div class="text-center mt-10">
-                <a href="/{{model.slug}}/gallery" class="bg-[#d4af37] text-black px-6 py-3 rounded-full font-semibold shadow-2xl hover:bg-yellow-500 hover:scale-105 transition-all">
-                    View Full Gallery
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Services Section -->
-    <section class="bg-black py-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
-            <h2 class="text-4xl font-heading font-bold text-center glamour-gold mb-16">Elite Services</h2>
-            
-            <div class="grid md:grid-cols-3 gap-10">
-                
-                <!-- Service Card -->
-                <div class="bg-gray-900 rounded-2xl p-8 shadow-2xl border-[1.5px] border-[#d4af37] hover:scale-105 hover:shadow-[0_0_20px_#d4af37aa] transition-all transition-shadow" data-aos="zoom-in" data-aos-delay="100">
-                    <h3 class="text-2xl font-heading glamour-gold mb-4">VIP Encounter</h3>
-                    <p class="text-gray-300 font-body mb-4">Discreet luxury experiences tailored to your every desire in a private, upscale setting.</p>
-                    <a href="/{{model.slug}}/rates" class="glamour-gold hover:text-white transition-colors font-semibold">View Rates →</a>
-                </div>
-
-                <div class="bg-gray-900 rounded-2xl p-8 shadow-2xl border-[1.5px] border-[#d4af37] hover:scale-105 hover:shadow-[0_0_20px_#d4af37aa] transition-all transition-shadow" data-aos="zoom-in" data-aos-delay="200">
-                    <h3 class="text-2xl font-heading glamour-gold mb-4">Travel Companion</h3>
-                    <p class="text-gray-300 font-body mb-4">Join me for extended trips or luxury getaways, where charm meets adventure.</p>
-                    <a href="/{{model.slug}}/contact" class="glamour-gold hover:text-white transition-colors font-semibold">Inquire →</a>
-                </div>
-
-                <div class="bg-gray-900 rounded-2xl p-8 shadow-2xl border-[1.5px] border-[#d4af37] hover:scale-105 hover:shadow-[0_0_20px_#d4af37aa] transition-all transition-shadow" data-aos="zoom-in" data-aos-delay="300">
-                    <h3 class="text-2xl font-heading glamour-gold mb-4">Exclusive Events</h3>
-                    <p class="text-gray-300 font-body mb-4">Make an impression. Sophisticated companionship for dinners, galas, or red carpet affairs.</p>
-                    <a href="/{{model.slug}}/contact" class="glamour-gold hover:text-white transition-colors font-semibold">Let's Connect →</a>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Banner -->
-    <section class="bg-gradient-to-r from-[#1a1a1a] to-[#333] py-20 text-white text-center luxury-grain" data-aos="zoom-in">
-        <h2 class="text-3xl md:text-4xl font-heading font-bold mb-4">Ready for an unforgettable experience?</h2>
-        <p class="text-lg font-body text-gray-200 mb-6">Let's create a moment of true connection, luxury, and authenticity.</p>
-        <div class="flex justify-center space-x-4">
-            <a href="/{{model.slug}}/contact" class="bg-[#d4af37] text-black font-semibold px-6 py-3 rounded-full shadow-2xl hover:bg-yellow-500 hover:scale-105 transition-all">View Availability</a>
-            <a href="/{{model.slug}}/contact" class="border border-[#d4af37] px-6 py-3 rounded-full font-semibold hover:bg-[#d4af37] hover:text-black hover:scale-105 transition-all">Send a Message</a>
-        </div>
-    </section>
-
-    <!-- Testimonials Section -->
-    {{#if testimonials.length}}
-    <section class="bg-black py-20">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
-            <h2 class="text-4xl font-heading font-bold text-center glamour-gold mb-12">What Clients Say</h2>
-            
-            <div class="space-y-6">
-                {{#each testimonials}}
-                <div class="bg-gray-900 rounded-2xl p-6 shadow-2xl border-[1.5px] border-[#d4af37] flex flex-col md:flex-row md:justify-between md:items-center" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
-                    <div class="mb-4 md:mb-0">
-                        <div class="text-glamour-gold text-xl mb-2">
-                            {{#if this.rating}}
-                                {{#repeat this.rating}}⭐{{/repeat}}
-                            {{/if}}
-                        </div>
-                        <blockquote class="text-gray-300 italic mb-2">"{{this.testimonial_text}}"</blockquote>
-                        <p class="text-sm text-gray-400">— {{this.client_name || this.client_initial}}</p>
-                    </div>
-                </div>
-                {{/each}}
-            </div>
-        </div>
-    </section>
+      {{/each}}
+      </div>
     {{else}}
-    <!-- No testimonials message -->
-    <section class="bg-black py-20">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
-            <h2 class="text-4xl font-heading font-bold text-center glamour-gold mb-12">Client Experiences</h2>
-            
-            <div class="bg-gray-900 rounded-2xl p-8 shadow-2xl border-[1.5px] border-[#d4af37] text-center" data-aos="fade-up">
-                <h3 class="text-xl font-semibold glamour-gold mb-4">Exclusive Testimonials</h3>
-                <p class="text-gray-400 mb-6">Discretion is paramount. Client testimonials are shared privately to protect confidentiality while maintaining the highest standards of service.</p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="/{{model.slug}}/contact" class="bg-[#d4af37] text-black px-6 py-3 rounded-full font-semibold hover:bg-yellow-500 transition shadow-lg">
-                        Request References
-                    </a>
-                    <a href="/{{model.slug}}/contact" class="border border-[#d4af37] text-[#d4af37] px-6 py-3 rounded-full font-semibold hover:bg-[#d4af37] hover:text-black transition">
-                        Contact Me
-                    </a>
-                </div>
-            </div>
+      <!-- No availability message -->
+      <div class="bg-gray-900 rounded-2xl p-8 shadow-2xl border-[1.5px] border-[#d4af37] text-center" data-aos="fade-up">
+        <h3 class="text-xl font-semibold glamour-gold mb-4">No Upcoming Availability</h3>
+        <p class="text-gray-400 mb-6">I don't have any available dates in the next 14 days. Please check my full calendar for future dates or contact me directly to discuss scheduling.</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="{{model_url_for('model.calendar_view')}}" class="bg-[#d4af37] text-black px-6 py-3 rounded-full font-semibold hover:bg-yellow-500 transition shadow-lg">
+            View Full Calendar
+          </a>
+          <a href="{{model_url_for('model.contact')}}" class="border border-[#d4af37] text-[#d4af37] px-6 py-3 rounded-full font-semibold hover:bg-[#d4af37] hover:text-black transition">
+            Contact Me
+          </a>
         </div>
-    </section>
+      </div>
     {{/if}}
 
-    <!-- Footer -->
-    <footer class="bg-black border-t border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div class="text-center">
-                <h3 class="text-3xl font-bold text-glamour-gold mb-6">
-                    {{site_settings.site_name || model.name}}
-                </h3>
-                
-                <div class="flex justify-center space-x-8 mb-8">
-                    {{#if site_settings.contact_email}}
-                    <div class="text-gray-300">
-                        <span class="text-glamour-gold">Email:</span> {{site_settings.contact_email}}
-                    </div>
-                    {{/if}}
-                    {{#if site_settings.contact_phone}}
-                    <div class="text-gray-300">
-                        <span class="text-glamour-gold">Phone:</span> {{site_settings.contact_phone}}
-                    </div>
-                    {{/if}}
-                </div>
-                
-                <div class="w-24 h-1 bg-glamour-gold mx-auto mb-8"></div>
-                
-                <p class="text-gray-400">
-                    © {{currentYear}} {{site_settings.site_name || model.name}}. All rights reserved.
-                </p>
-            </div>
-        </div>
-    </footer>
+    <!-- Calendar CTA -->
+    <div class="text-center mt-10">
+      <a href="{{model_url_for('model.calendar_view')}}" 
+         class="glamour-gold hover:text-white font-serif text-lg border-b border-transparent hover:border-[#d4af37] transition-colors">
+        View Full Calendar →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Collapse any unintentional gaps -->
+<div class="h-0 overflow-hidden"></div>
+
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    </script>
 </body>
 </html>

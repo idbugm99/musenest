@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{#if site_settings.site_name}}{{site_settings.site_name}}{{else}}{{model.name}}{{/if}}</title>
+    <meta name="description" content="{{site_settings.meta_description}}">
+    <meta name="og:title" content="{{site_settings.site_name}} - {{model.name}}">
+    <meta name="og:description" content="{{site_settings.meta_description}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{site_settings.og_image}}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Dynamic Theme Colors -->
+    <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
+    
+    <style>
+        /* Luxury Theme Styles */
+        
+        /* Luxury Theme Colors */
+        :root {
+            --luxury-primary: var(--color-primary, #7C3AED);
+            --luxury-secondary: var(--color-secondary, #5B21B6);
+            --luxury-accent: var(--color-accent, #F59E0B);
+            --luxury-text: var(--color-text, #581C87);
+            --luxury-background: var(--color-background, #FAF5FF);
+        }
+        
+        .text-luxury-primary { color: var(--luxury-primary); }
+        .bg-luxury-primary { background-color: var(--luxury-primary); }
+        .border-luxury-primary { border-color: var(--luxury-primary); }
+        
+        .luxury-gradient {
+            background: linear-gradient(135deg, var(--luxury-primary) 0%, var(--luxury-secondary) 100%);
+        }
+            
+    </style>
+</head>
+<body class="bg-luxury-background font-serif">
+    <!-- Navigation Component -->
+    {{component "navigation" theme="luxury" model=model navigation=navigation}}
+    
+    <!-- Page Content -->
+    
+
+Etiquette - {{#if current_model}}{{site_settings.model_name if site_settings and site_settings.model_name else (current_model.name}}{{else}}{{'Model Example')}}{{/if}}
+
+
+<section class="py-16 bg-background text-charcoal">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{#if etiquette_content.etiquette_header_visible}}
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-heading font-bold mb-6 text-accent">{{etiquette_content.page_title or 'Etiquette & Guidelines'}}</h1>
+            <p class="text-xl text-charcoal/70 max-w-3xl mx-auto">
+                {{etiquette_content.page_subtitle or 'To ensure a pleasant and respectful experience for both of us, please review these important guidelines.'}}
+            </p>
+        </div>
+        {{/if}}
+        
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <!-- Booking & Screening -->
+            {{#if etiquette_content.etiquette_booking_visible}}
+            <div class="bg-primary border border-accent p-8 rounded-2xl shadow-lg">
+                <p class="text-charcoal/60 text-xs uppercase tracking-widest mb-2">Planning</p>
+                <h2 class="text-2xl font-heading font-bold mb-6 text-accent">{{etiquette_content.booking_title or 'Booking & Screening'}}</h2>
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-charcoal">{{etiquette_content.booking_initial_contact_title or 'Initial Contact'}}</h3>
+                        <p class="text-charcoal/70">{{etiquette_content.booking_initial_contact_text or 'Please introduce yourself politely and include your desired date, time, and duration when reaching out.'}}</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-charcoal">{{etiquette_content.booking_screening_title or 'Screening Process'}}</h3>
+                        <p class="text-charcoal/70">{{etiquette_content.booking_screening_text or 'For everyone's ty, a brief screening process is required for all new clients. This includes basic verification and references.'}}</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-charcoal">{{etiquette_content.booking_advance_title or 'Advance Booking'}}</h3>
+                        <p class="text-charcoal/70">{{etiquette_content.booking_advance_text or 'I prefer bookings made at least 24 hours in advance. Same-day appointments may be available with an additional fee.'}}</p>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Respect & Boundaries -->
+            {{#if etiquette_content.etiquette_respect_visible}}
+            <div class="bg-accent text-charcoal p-8 rounded-2xl shadow-lg">
+                <p class="text-charcoal/60 text-xs uppercase tracking-widest mb-2">Mutual Understanding</p>
+                <h2 class="text-2xl font-heading font-bold mb-6 text-charcoal">{{etiquette_content.respect_title or 'Respect & Boundaries'}}</h2>
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-charcoal">{{etiquette_content.respect_mutual_title or 'Mutual Respect'}}</h3>
+                        <p class="text-charcoal/80">{{etiquette_content.respect_mutual_text or 'I treat all clients with respect and kindness, and I expect the same in return. Rude or disrespectful behavior will not be tolerated.'}}</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-charcoal">{{etiquette_content.respect_boundaries_title or 'Professional Boundaries'}}</h3>
+                        <p class="text-charcoal/80">{{etiquette_content.respect_boundaries_text or 'Our time together is for companionship and social interaction. Please respect all boundaries and guidelines.'}}</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-charcoal">{{etiquette_content.respect_personal_title or 'Personal Information'}}</h3>
+                        <p class="text-charcoal/80">{{etiquette_content.respect_personal_text or 'Please do not ask for personal information beyond what is shared publicly. Discretion works both ways.'}}</p>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <!-- Hygiene & Presentation -->
+            {{#if etiquette_content.etiquette_hygiene_visible}}
+            <div class="bg-accent/10 border border-accent p-8 rounded-2xl shadow-lg">
+                <p class="text-charcoal/60 text-xs uppercase tracking-widest mb-2">Standards</p>
+                <h2 class="text-2xl font-heading font-bold mb-6 text-accent">{{etiquette_content.hygiene_title or 'Hygiene & Presentation'}}</h2>
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-charcoal">{{etiquette_content.hygiene_personal_title or 'Personal Hygiene'}}</h3>
+                        <p class="text-charcoal/70">{{etiquette_content.hygiene_personal_text or 'Please arrive freshly showered and well-groomed. Good personal hygiene is essential for a comfortable experience.'}}</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-charcoal">{{etiquette_content.hygiene_attire_title or 'Attire'}}</h3>
+                        <p class="text-charcoal/70">{{etiquette_content.hygiene_attire_text or 'Dress appropriately for our planned activities. I'll always be well-dressed and expect the same consideration.'}}</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-charcoal">{{etiquette_content.hygiene_substances_title or 'Substances'}}</h3>
+                        <p class="text-charcoal/70">{{etiquette_content.hygiene_substances_text or 'Please do not arrive under the influence of alcohol or other substances. Light social drinking during our time is acceptable.'}}</p>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Cancellation Policy -->
+            {{#if etiquette_content.etiquette_cancellation_visible}}
+            <div class="bg-primary border border-accent p-8 rounded-2xl shadow-lg">
+                <p class="text-charcoal/60 text-xs uppercase tracking-widest mb-2">Policies</p>
+                <h2 class="text-2xl font-heading font-bold mb-6 text-accent">{{etiquette_content.cancellation_title or 'Cancellation Policy'}}</h2>
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-charcoal">{{etiquette_content.cancellation_advance_title or 'Advance Notice'}}</h3>
+                        <p class="text-charcoal/70">{{etiquette_content.cancellation_advance_text or 'Please provide at least 2 hours notice for cancellations. Last-minute cancellations may result in a cancellation fee.'}}</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-charcoal">{{etiquette_content.cancellation_noshow_title or 'No-Shows'}}</h3>
+                        <p class="text-charcoal/70">{{etiquette_content.cancellation_noshow_text or 'No-shows without notice will result in being blacklisted from future bookings.'}}</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-charcoal">{{etiquette_content.cancellation_my_title or 'My Cancellations'}}</h3>
+                        <p class="text-charcoal/70">{{etiquette_content.cancellation_my_text or 'In the rare event I need to cancel, I'll provide as much notice as possible and offer to reschedule.'}}</p>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+        
+        <!-- Safety & Discretion -->
+        {{#if etiquette_content.etiquette_ty_visible}}
+        <div class="bg-charcoal text-white p-8 rounded-2xl shadow-lg mb-12">
+            <p class="text-white/60 text-xs uppercase tracking-widest mb-2 text-center">Security</p>
+            <h2 class="text-2xl font-heading font-bold mb-6 text-center">{{etiquette_content.ty_title or 'Safety & Discretion'}}</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center">
+                    <div class="bg-accent rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-charcoal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">{{etiquette_content.ty_confidentiality_title or 'Confidentiality'}}</h3>
+                    <p class="text-white/80">{{etiquette_content.ty_confidentiality_text or 'Your privacy is paramount. All interactions remain strictly confidential.'}}</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-accent rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-charcoal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">{{etiquette_content.ty_environment_title or 'Safe Environment'}}</h3>
+                    <p class="text-white/80">{{etiquette_content.ty_environment_text or 'I maintain a , clean, and welcoming environment for all meetings.'}}</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-accent rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-charcoal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">{{etiquette_content.ty_communication_title or 'Professional Communication'}}</h3>
+                    <p class="text-white/80">{{etiquette_content.ty_communication_text or 'All communications are handled professionally and discreetly.'}}</p>
+                </div>
+            </div>
+        </div>
+        {{/if}}
+        
+        <!-- Contact Information -->
+        {{#if etiquette_content.etiquette_questions_visible}}
+        <div class="text-center bg-primary border border-accent p-8 rounded-2xl shadow-lg">
+            <p class="text-charcoal/60 text-xs uppercase tracking-widest mb-2">Need Help</p>
+            <h3 class="text-2xl font-heading font-bold mb-4 text-accent">{{etiquette_content.questions_title or 'Questions?'}}</h3>
+            <p class="text-lg text-charcoal/70 mb-6">{{etiquette_content.questions_text or 'If you have any questions about these guidelines or need clarification, please don't hesitate to reach out.'}}</p>
+            <a href="{{model_url_for('model.contact')}}" class="bg-accent text-charcoal px-8 py-3 rounded-2xl font-semibold hover:opacity-90 hover:scale-[1.01] transition-transform duration-200 shadow-lg">{{etiquette_content.questions_button_text or 'Contact Me'}}</a>
+        </div>
+        {{/if}}
+    </div>
+</section>
+
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    </script>
+</body>
+</html>

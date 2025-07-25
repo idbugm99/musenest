@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{#if site_settings.site_name}}{{site_settings.site_name}}{{else}}{{model.name}}{{/if}}</title>
+    <meta name="description" content="{{site_settings.meta_description}}">
+    <meta name="og:title" content="{{site_settings.site_name}} - {{model.name}}">
+    <meta name="og:description" content="{{site_settings.meta_description}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{site_settings.og_image}}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Dynamic Theme Colors -->
+    <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
+    
+    <style>
+        /* Luxury Theme Styles */
+        
+        /* Luxury Theme Colors */
+        :root {
+            --luxury-primary: var(--color-primary, #7C3AED);
+            --luxury-secondary: var(--color-secondary, #5B21B6);
+            --luxury-accent: var(--color-accent, #F59E0B);
+            --luxury-text: var(--color-text, #581C87);
+            --luxury-background: var(--color-background, #FAF5FF);
+        }
+        
+        .text-luxury-primary { color: var(--luxury-primary); }
+        .bg-luxury-primary { background-color: var(--luxury-primary); }
+        .border-luxury-primary { border-color: var(--luxury-primary); }
+        
+        .luxury-gradient {
+            background: linear-gradient(135deg, var(--luxury-primary) 0%, var(--luxury-secondary) 100%);
+        }
+            
+    </style>
+</head>
+<body class="bg-luxury-background font-serif">
+    <!-- Navigation Component -->
+    {{component "navigation" theme="luxury" model=model navigation=navigation}}
+    
+    <!-- Page Content -->
+    
+
+Rates - {{#if current_model}}{{site_settings.model_name if site_settings and site_settings.model_name else (current_model.name}}{{else}}{{'Model Example')}}{{/if}}
+
+
+<section class="py-16 bg-background text-charcoal">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        
+        <!-- Intro Section -->
+        {{#if rates_settings.rates_header_visible}}
+        <section class="text-center mb-12">
+            <h1 class="text-5xl font-heading text-accent mb-4">{{rates_settings.page_title or 'Rates & Donations'}}</h1>
+            <p class="text-base text-charcoal/60 max-w-xl mx-auto">{{rates_settings.page_subtitle or 'Investment in time together. All arrangements are for companionship and social time only.'}}</p>
+        </section>
+        {{/if}}
+
+        {{#if rates_settings.rates_table_visible}}
+        <!-- Premium Rates Section -->
+        {% set has_incall = incall_rates and incall_rates|.length > 0 and rates_settings.rates_incall_visible %}
+        {% set has_outcall = outcall_rates and outcall_rates|.length > 0 and rates_settings.rates_outcall_visible %}
+        
+        {{#if has_incall}}
+        <div class="border-t border-charcoal/10 my-8"></div>
+        <!-- Incall Rates -->
+        <div class="bg-primary border border-accent p-8 rounded-2xl shadow-lg">
+            <p class="text-charcoal/60 text-xs uppercase tracking-widest mb-2">Premium Service</p>
+            <h2 class="font-heading text-accent text-2xl text-center mb-6">Incall</h2>
+            <div class="space-y-4">
+                {{#each rate in incall_rates}}
+                <div class="flex justify-between items-center py-3 {{#if not loop.last}}border-b border-charcoal/10{{/if}}">
+                    <div class="flex-1">
+                        {% set visible_parts = [] %}
+                        {{#if rates_settings.incall_show_service_name}}
+                            {% set _ = visible_parts.append('<span class="font-medium text-charcoal">' + (rate.service_name or 'Service') + '</span>') %}
+                        {{/if}}
+                        {{#if rates_settings.incall_show_duration}}
+                            {% set _ = visible_parts.append('<span class="text-base text-charcoal/60">' + (rate.duration or 'Duration') + '</span>') %}
+                        {{/if}}
+                        <span class="text-base text-charcoal">{{visible_parts|join(' — ')|}}</span>
+                    </div>
+                    {{#if rates_settings.incall_show_price}}
+                    <span class="text-lg font-semibold text-accent">{{rate.price}}</span>
+                    {{/if}}
+                </div>
+                {{/each}}
+            </div>
+        </div>
+        {{/if}}
+
+        {{#if has_outcall}}
+        <!-- Outcall Rates -->
+        <div class="bg-accent/10 border border-accent p-8 rounded-2xl shadow-lg">
+            <p class="text-charcoal/60 text-xs uppercase tracking-widest mb-2">Mobile Service</p>
+            <h2 class="font-heading text-accent text-2xl text-center mb-6">Outcall</h2>
+            <div class="space-y-4">
+                {{#each rate in outcall_rates}}
+                <div class="flex justify-between items-center py-3 {{#if not loop.last}}border-b border-charcoal/10{{/if}}">
+                    <div class="flex-1">
+                        {% set visible_parts = [] %}
+                        {{#if rates_settings.outcall_show_service_name}}
+                            {% set _ = visible_parts.append('<span class="font-medium text-charcoal">' + (rate.service_name or 'Service') + '</span>') %}
+                        {{/if}}
+                        {{#if rates_settings.outcall_show_duration}}
+                            {% set _ = visible_parts.append('<span class="text-base text-charcoal/60">' + (rate.duration or 'Duration') + '</span>') %}
+                        {{/if}}
+                        <span class="text-base text-charcoal">{{visible_parts|join(' — ')|}}</span>
+                    </div>
+                    {{#if rates_settings.outcall_show_price}}
+                    <span class="text-lg font-semibold text-accent">{{rate.price}}</span>
+                    {{/if}}
+                </div>
+                {{/each}}
+            </div>
+        </div>
+        {{/if}}
+
+        <!-- Extended Engagements -->
+        {{#if extended_rates and extended_rates|.length > 0 and rates_settings.rates_extended_visible}}
+        <div class="border-t border-charcoal/10 my-8"></div>
+        <section>
+            <p class="text-charcoal/60 text-xs uppercase tracking-widest mb-2 text-center">Extended Options</p>
+            <h2 class="font-heading text-accent text-2xl text-center mb-8">Extended Engagements</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {{#each rate in extended_rates}}
+                <div class="bg-primary border border-accent p-8 rounded-2xl text-center shadow-lg">
+                    {{#if rates_settings.extended_show_service_name}}
+                    <h3 class="text-xl font-heading text-accent mb-3">{{rate.service_name}}</h3>
+                    {{/if}}
+                    {{#if rates_settings.extended_show_price}}
+                    <p class="text-2xl font-bold text-accent mb-2">{{rate.price}}</p>
+                    {{/if}}
+                    {{#if rates_settings.extended_show_duration}}
+                    <p class="text-base text-charcoal/60">{{rate.duration}}</p>
+                    {{/if}}
+                </div>
+                {{/each}}
+            </div>
+        </section>
+        {{/if}}
+        {{/if}}
+
+        <!-- Optional Add-Ons -->
+        {% set has_payment_terms = payment_terms and payment_terms|.length > 0 and rates_settings.rates_payment_visible %}
+        {% set has_additional_services = additional_services and additional_services|.length > 0 and rates_settings.rates_additional_visible %}
+        
+        {{#if has_payment_terms or has_additional_services}}
+        <div class="border-t border-charcoal/10 my-8"></div>
+        <section class="bg-primary text-charcoal p-8 rounded-2xl border border-accent shadow-lg">
+            <p class="text-charcoal/60 text-xs uppercase tracking-widest mb-2">Service Details</p>
+            <h3 class="font-heading text-accent text-2xl mb-6">Additional Options</h3>
+            <ul class="list-disc pl-6 space-y-3 text-base text-charcoal/80">
+                {{#if has_payment_terms}}
+                    {{#each term in payment_terms}}
+                    <li>{{term.term_text}}</li>
+                    {{/each}}
+                {{/if}}
+                {{#if has_additional_services}}
+                    {{#each term in additional_services}}
+                    <li>{{term.term_text}}</li>
+                    {{/each}}
+                {{/if}}
+            </ul>
+        </section>
+        {{/if}}
+
+        <!-- Donations Section -->
+        {{#if rates_settings.donations_visible}}
+        <div class="border-t border-charcoal/10 my-8"></div>
+        <section class="bg-primary border border-accent p-8 rounded-2xl text-center shadow-lg">
+            <p class="text-charcoal/60 text-xs uppercase tracking-widest mb-2">Support</p>
+            <h2 class="font-heading text-accent text-2xl mb-4">{{rates_settings.donation_title or 'Donations'}}</h2>
+            <p class="text-base text-charcoal/70">{{rates_settings.donation_description or 'Donations are appreciated to help support my work.'}}</p>
+        </section>
+        {{/if}}
+
+        <!-- Terms & Conditions -->
+        {{#if rates_settings.terms_visible}}
+        <div class="border-t border-charcoal/10 my-8"></div>
+        <div class="bg-primary border-l-4 border-accent p-8 rounded-2xl shadow-lg">
+            <p class="text-charcoal/60 text-xs uppercase tracking-widest mb-2">Legal</p>
+            <h2 class="font-heading text-accent text-2xl mb-6">{{rates_settings.terms_title or 'Terms & Conditions'}}</h2>
+            <p class="text-base text-charcoal/70 font-serif leading-relaxed">{{rates_settings.terms_content or 'Please read and understand these terms before booking.'}}</p>
+        </div>
+        {{/if}}
+
+        <!-- Final CTA: Let's Make Memories -->
+        {{#if rates_settings.cta_visible}}
+        <div class="border-t border-charcoal/10 my-8"></div>
+        <section class="text-center mt-12">
+            <p class="text-charcoal/60 text-xs uppercase tracking-widest mb-2">Ready to Begin</p>
+            <h3 class="font-heading text-accent text-2xl mb-4">{{rates_settings.cta_title or 'Let's Make Memories'}}</h3>
+            <p class="text-base text-charcoal/60 mb-8 max-w-md mx-auto">{{rates_settings.cta_description or 'Contact me to discuss your preferences and arrange our time together.'}}</p>
+            <div class="flex justify-center gap-4">
+                <a href="{{model_url_for('model.calendar_view')}}" class="bg-accent text-charcoal px-8 py-4 rounded-2xl font-semibold hover:opacity-90 hover:scale-[1.01] transition-transform duration-200 shadow-lg">{{rates_settings.cta_button_1_text or 'View Calendar'}}</a>
+                <a href="{{model_url_for('model.contact')}}" class="border border-accent text-accent px-8 py-4 rounded-2xl font-semibold hover:bg-accent hover:text-charcoal hover:opacity-90 hover:scale-[1.01] transition-transform duration-200 shadow-lg">{{rates_settings.cta_button_2_text or 'Contact Me'}}</a>
+            </div>
+        </section>
+        {{/if}}
+
+    </div>
+</section>
+
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    </script>
+</body>
+</html>

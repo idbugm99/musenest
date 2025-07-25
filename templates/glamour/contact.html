@@ -3,272 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact - {{site_settings.site_name || 'Glamour Portfolio'}}</title>
+    <title>{{#if site_settings.site_name}}{{site_settings.site_name}}{{else}}{{model.name}}{{/if}}</title>
+    <meta name="description" content="{{site_settings.meta_description}}">
+    <meta name="og:title" content="{{site_settings.site_name}} - {{model.name}}">
+    <meta name="og:description" content="{{site_settings.meta_description}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{site_settings.og_image}}">
+    
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Dynamic Theme Colors -->
+    <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
+    
     <style>
-        .bg-glamour-dark { background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); }
-        .bg-glamour-gold { background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); }
-        .text-glamour-gold { color: #D4AF37; }
-        .border-glamour-gold { border-color: #D4AF37; }
+        /* Glamour Theme Styles */
         
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
+        /* Glamour Theme Colors */
+        :root {
+            --glamour-primary: var(--color-primary, #EC4899);
+            --glamour-secondary: var(--color-secondary, #BE185D);
+            --glamour-accent: var(--color-accent, #F59E0B);
+            --glamour-text: var(--color-text, #831843);
+            --glamour-background: var(--color-background, #FDF2F8);
         }
         
-        .animate-shimmer {
-            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
-            background-size: 200% 100%;
-            animation: shimmer 2s infinite;
+        .text-glamour-primary { color: var(--glamour-primary); }
+        .bg-glamour-primary { background-color: var(--glamour-primary); }
+        .border-glamour-primary { border-color: var(--glamour-primary); }
+        
+        .glamour-gradient {
+            background: linear-gradient(135deg, var(--glamour-primary) 0%, var(--glamour-secondary) 100%);
         }
-
-        .form-input {
-            background: rgba(31, 41, 55, 0.5);
-            border: 1px solid #374151;
-            color: white;
-            transition: all 0.3s ease;
-        }
-
-        .form-input:focus {
-            border-color: #D4AF37;
-            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
-            outline: none;
-        }
-
-        .form-input::placeholder {
-            color: #9CA3AF;
-        }
+            
     </style>
 </head>
-<body class="bg-black text-white min-h-screen">
-    {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+<body class="bg-glamour-background font-serif">
+    <!-- Navigation Component -->
+    {{component "navigation" theme="glamour" model=model navigation=navigation}}
+    
+    <!-- Page Content -->
+    
 
-    <!-- Header Section -->
-    <section class="relative py-20 bg-glamour-dark">
-        <div class="absolute inset-0 opacity-5">
-            <div class="w-full h-full bg-gradient-radial from-yellow-500/20 via-transparent to-transparent"></div>
+Contact - {{#if current_model}}{{site_settings.model_name if site_settings and site_settings.model_name else (current_model.name}}{{else}}{{'Model Example')}}{{/if}}
+
+
+<section class="py-16 bg-gradient-to-br from-black via-zinc-900 to-zinc-800 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{#if contact_content.contact_header_visible}}
+        <div class="text-center mb-12" data-aos="fade-up" data-aos-duration="800">
+            <h1 class="text-4xl font-heading font-bold mb-6 text-[{{color_theme.primary_color}}]">{{contact_content.page_title or 'Contact Me'}}</h1>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+                {{contact_content.page_subtitle or 'I look forward to hearing from you. Please use the form below or my preferred contact methods.'}}
+            </p>
         </div>
+        {{/if}}
         
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">
-                Get In Touch
-            </h1>
-            <div class="w-24 h-1 bg-glamour-gold mx-auto mb-6 animate-shimmer"></div>
-            <p class="text-xl text-gray-300 max-w-3xl mx-auto">
-                Ready to begin an unforgettable experience? I'd love to hear from you.
-            </p>
-        </div>
-    </section>
-
-    <!-- Contact Information & Form -->
-    <section class="py-20 bg-gradient-to-b from-black to-gray-900">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                <!-- Contact Information -->
-                <div class="space-y-8">
-                    <div>
-                        <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
-                            Contact Information
-                        </h2>
-                        <div class="w-16 h-1 bg-glamour-gold mb-8"></div>
-                        <p class="text-lg text-gray-300 leading-relaxed">
-                            I value discretion and professionalism in all communications. 
-                            Please reach out with your inquiry and I will respond promptly.
-                        </p>
+        <div class="grid md:grid-cols-2 gap-12">
+            <!-- Contact Form -->
+            {{#if contact_content.contact_form_visible}}
+            <div class="bg-zinc-800 p-8 rounded-xl shadow-2xl border border-[{{color_theme.primary_color}}]/20 hover:border-[{{color_theme.primary_color}}]/40 transition-all duration-300" data-aos="fade-right" data-aos-delay="200">
+                <h2 class="text-2xl font-heading font-bold mb-6 text-[{{color_theme.primary_color}}]">{{contact_content.form_title or 'Send a Message'}}</h2>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {{#if messages}}
+                        {{#each category, message in messages}}
+                            <div class="mb-6 p-4 rounded-lg {{#if category == 'success'}}bg-emerald-900/50 text-emerald-300 border border-emerald-600/30{{else}}bg-red-900/50 text-red-300 border border-red-600/30{{/if}}">
+                                {{message}}
+                            </div>
+                        {{/each}}
+                    {{/if}}
+                {% endwith %}
+                
+                <form method="POST" class="space-y-6">
+                    <div data-aos="fade-up" data-aos-delay="300">
+                        <label for="name" class="block text-sm font-medium text-gray-300 mb-2">{{contact_content.form_name_label or 'Your Name'}}</label>
+                        <input type="text" id="name" name="name" required 
+                               class="w-full px-4 py-3 bg-zinc-700 border border-zinc-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-[{{color_theme.primary_color}}] focus:border-transparent transition-all duration-300">
                     </div>
-
-                    <!-- Contact Methods -->
-                    <div class="space-y-6">
-                        {{#if site_settings.contact_email}}
-                        <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-xl p-6 hover:border-glamour-gold transition-colors duration-300">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 bg-glamour-gold bg-opacity-20 rounded-lg flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-glamour-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-semibold text-white">Email</h3>
-                                    <p class="text-gray-300">{{site_settings.contact_email}}</p>
-                                </div>
-                            </div>
-                        </div>
-                        {{/if}}
-
-                        {{#if site_settings.contact_phone}}
-                        <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-xl p-6 hover:border-glamour-gold transition-colors duration-300">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 bg-glamour-gold bg-opacity-20 rounded-lg flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-glamour-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-semibold text-white">Phone</h3>
-                                    <p class="text-gray-300">{{site_settings.contact_phone}}</p>
-                                </div>
-                            </div>
-                        </div>
-                        {{/if}}
-
-                        {{#if site_settings.city}}
-                        <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-xl p-6 hover:border-glamour-gold transition-colors duration-300">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 bg-glamour-gold bg-opacity-20 rounded-lg flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-glamour-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-semibold text-white">Location</h3>
-                                    <p class="text-gray-300">{{site_settings.city}}</p>
-                                </div>
-                            </div>
-                        </div>
-                        {{/if}}
-                    </div>
-
-                    <!-- Booking Guidelines -->
-                    <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-xl p-8">
-                        <h3 class="text-2xl font-bold text-white mb-6">Booking Guidelines</h3>
-                        <div class="space-y-4 text-gray-300">
-                            <div class="flex items-start space-x-3">
-                                <div class="w-2 h-2 bg-glamour-gold rounded-full mt-2 flex-shrink-0"></div>
-                                <p>Please book at least 24-48 hours in advance for optimal scheduling</p>
-                            </div>
-                            <div class="flex items-start space-x-3">
-                                <div class="w-2 h-2 bg-glamour-gold rounded-full mt-2 flex-shrink-0"></div>
-                                <p>Include details about the type of engagement and preferred date/time</p>
-                            </div>
-                            <div class="flex items-start space-x-3">
-                                <div class="w-2 h-2 bg-glamour-gold rounded-full mt-2 flex-shrink-0"></div>
-                                <p>All communications are kept strictly confidential</p>
-                            </div>
-                            <div class="flex items-start space-x-3">
-                                <div class="w-2 h-2 bg-glamour-gold rounded-full mt-2 flex-shrink-0"></div>
-                                <p>References may be required for new clients</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Contact Form -->
-                <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8">
-                    <h3 class="text-2xl font-bold text-white mb-8">Send a Message</h3>
                     
-                    <form action="/api/contact/{{model.slug}}" method="POST" class="space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div data-aos="fade-up" data-aos-delay="350">
+                        <label for="email" class="block text-sm font-medium text-gray-300 mb-2">{{contact_content.form_email_label or 'Email Address'}}</label>
+                        <input type="email" id="email" name="email" required 
+                               class="w-full px-4 py-3 bg-zinc-700 border border-zinc-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-[{{color_theme.primary_color}}] focus:border-transparent transition-all duration-300">
+                    </div>
+                    
+                    <div data-aos="fade-up" data-aos-delay="400">
+                        <label for="phone" class="block text-sm font-medium text-gray-300 mb-2">{{contact_content.form_phone_label or 'Phone Number (Optional)'}}</label>
+                        <input type="tel" id="phone" name="phone" 
+                               class="w-full px-4 py-3 bg-zinc-700 border border-zinc-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-[{{color_theme.primary_color}}] focus:border-transparent transition-all duration-300">
+                    </div>
+                    
+                    <div data-aos="fade-up" data-aos-delay="450">
+                        <label for="date" class="block text-sm font-medium text-gray-300 mb-2">{{contact_content.form_date_label or 'Preferred Date'}}</label>
+                        <input type="date" id="date" name="date" 
+                               class="w-full px-4 py-3 bg-zinc-700 border border-zinc-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-[{{color_theme.primary_color}}] focus:border-transparent transition-all duration-300">
+                    </div>
+                    
+                    <div data-aos="fade-up" data-aos-delay="500">
+                        <label for="duration" class="block text-sm font-medium text-gray-300 mb-2">{{contact_content.form_duration_label or 'Duration'}}</label>
+                        <select id="duration" name="duration" 
+                                class="w-full px-4 py-3 bg-zinc-700 border border-zinc-600 rounded-lg text-white focus:ring-2 focus:ring-[{{color_theme.primary_color}}] focus:border-transparent transition-all duration-300">
+                            <option value="">Select duration</option>
+                            {% set duration_options = contact_content.form_duration_options or '1 Hour,90 Minutes,2 Hours,3 Hours,Overnight,Extended (please specify)' %}
+                            {{#each option in duration_options.split(',')}}
+                                {% set option_value = option.strip().lower() %}
+                                <option value="{{option_value}}">{{option.strip()}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    
+                    <div data-aos="fade-up" data-aos-delay="550">
+                        <label for="message" class="block text-sm font-medium text-gray-300 mb-2">{{contact_content.form_message_label or 'Message'}}</label>
+                        <textarea id="message" name="message" rows="5" required 
+                                  class="w-full px-4 py-3 bg-zinc-700 border border-zinc-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-[{{color_theme.primary_color}}] focus:border-transparent transition-all duration-300"
+                                  placeholder="{{contact_content.form_message_placeholder or 'Please include any specific requests or questions...'}}"></textarea>
+                    </div>
+                    
+                    <button type="submit" 
+                            class="w-full bg-[{{color_theme.primary_color}}] text-black font-bold py-3 px-6 rounded-lg hover:shadow-[0_0_8px_{{color_theme.primary_color}}] hover:scale-[1.02] transition-all duration-300 relative overflow-hidden group"
+                            data-aos="zoom-in" data-aos-delay="600">
+                        <span class="relative z-10">{{contact_content.form_button_text or 'Send Message'}}</span>
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></div>
+                    </button>
+                </form>
+            </div>
+            {{/if}}
+            
+            <!-- Contact Information -->
+            <div class="space-y-8">
+                <!-- Direct Contact -->
+                {{#if contact_content.contact_direct_visible}}
+                <div class="bg-[{{color_theme.primary_color}}]/10 border border-[{{color_theme.primary_color}}]/30 text-white p-8 rounded-xl shadow-lg hover:shadow-[0_0_6px_{{color_theme.primary_color}}] hover:scale-[1.02] transition-all duration-300" data-aos="fade-left" data-aos-delay="200">
+                    <h2 class="text-2xl font-heading font-bold mb-6 text-[{{color_theme.primary_color}}]">{{contact_content.direct_title or 'Direct Contact'}}</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center group">
+                            <svg class="w-6 h-6 mr-4 text-[{{color_theme.primary_color}}] group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
                             <div>
-                                <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
-                                <input type="text" id="name" name="name" required
-                                       class="w-full px-4 py-3 rounded-lg form-input"
-                                       placeholder="Your full name">
+                                <p class="font-semibold text-[{{color_theme.primary_color}}]">{{contact_content.direct_email_label or 'Email'}}</p>
+                                <p class="text-gray-300">
+                                    {{#if site_settings and site_settings.contact_email}}
+                                        {{site_settings.contact_email}}
+                                    {{else}}
+                                        <span class="italic opacity-75">Contact email not set</span>
+                                    {{/if}}
+                                </p>
                             </div>
+                        </div>
+                        
+                        <div class="flex items-center group">
+                            <svg class="w-6 h-6 mr-4 text-[{{color_theme.primary_color}}] group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                            </svg>
                             <div>
-                                <label for="email" class="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
-                                <input type="email" id="email" name="email" required
-                                       class="w-full px-4 py-3 rounded-lg form-input"
-                                       placeholder="your@email.com">
+                                <p class="font-semibold text-[{{color_theme.primary_color}}]">{{contact_content.direct_phone_label or 'Phone'}}</p>
+                                <p class="text-gray-300">{{#if site_settings and site_settings.contact_phone}}{{site_settings.contact_phone}}{{else}}{{'(555) 123-4567'}}{{/if}}</p>
                             </div>
                         </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <div class="flex items-center group">
+                            <svg class="w-6 h-6 mr-4 text-[{{color_theme.primary_color}}] group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
                             <div>
-                                <label for="phone" class="block text-sm font-medium text-gray-300 mb-2">Phone Number</label>
-                                <input type="tel" id="phone" name="phone"
-                                       class="w-full px-4 py-3 rounded-lg form-input"
-                                       placeholder="Your phone number">
-                            </div>
-                            <div>
-                                <label for="date" class="block text-sm font-medium text-gray-300 mb-2">Preferred Date</label>
-                                <input type="date" id="date" name="preferred_date"
-                                       class="w-full px-4 py-3 rounded-lg form-input">
+                                <p class="font-semibold text-[{{color_theme.primary_color}}]">{{contact_content.direct_response_label or 'Response Time'}}</p>
+                                <p class="text-gray-300">{{contact_content.direct_response_text or 'Within 2-4 hours'}}</p>
                             </div>
                         </div>
-
-                        <div>
-                            <label for="service_type" class="block text-sm font-medium text-gray-300 mb-2">Type of Engagement</label>
-                            <select id="service_type" name="service_type" required
-                                    class="w-full px-4 py-3 rounded-lg form-input">
-                                <option value="">Select engagement type</option>
-                                <option value="dinner">Dinner Companion</option>
-                                <option value="social">Social Event</option>
-                                <option value="travel">Travel Companion</option>
-                                <option value="intimate">Private Engagement</option>
-                                <option value="other">Other (please specify in message)</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label for="message" class="block text-sm font-medium text-gray-300 mb-2">Message</label>
-                            <textarea id="message" name="message" rows="6" required
-                                      class="w-full px-4 py-3 rounded-lg form-input resize-none"
-                                      placeholder="Please provide details about your inquiry, including preferred time, location, and any special requests..."></textarea>
-                        </div>
-
-                        <div class="flex items-start space-x-3">
-                            <input type="checkbox" id="privacy" name="privacy_accepted" required
-                                   class="mt-1 w-4 h-4 text-glamour-gold border-gray-600 rounded focus:ring-glamour-gold">
-                            <label for="privacy" class="text-sm text-gray-300">
-                                I understand that all communications are confidential and agree to the privacy policy.
-                            </label>
-                        </div>
-
-                        <button type="submit" 
-                                class="w-full px-8 py-4 bg-glamour-gold hover:bg-yellow-600 text-black font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25 rounded-lg">
-                            Send Message
-                        </button>
-                    </form>
+                    </div>
                 </div>
+                {{/if}}
+                
+                <!-- Booking Guidelines -->
+                {{#if contact_content.contact_guidelines_visible}}
+                <div class="bg-zinc-700/70 p-8 rounded-xl shadow-lg hover:shadow-[0_0_6px_{{color_theme.primary_color}}] hover:scale-[1.02] transition-all duration-300" data-aos="fade-left" data-aos-delay="300">
+                    <h3 class="text-xl font-heading font-bold mb-4 text-[{{color_theme.primary_color}}]">{{contact_content.guidelines_title or 'Booking Guidelines'}}</h3>
+                    <div class="space-y-3 text-gray-300">
+                        <div class="flex items-start group">
+                            <span class="text-[{{color_theme.primary_color}}] mr-3 text-lg group-hover:scale-110 transition-transform duration-300">◆</span>
+                            <span class="leading-relaxed">{{contact_content.guideline_1 or 'Include your preferred date and time'}}</span>
+                        </div>
+                        <div class="flex items-start group">
+                            <span class="text-[{{color_theme.primary_color}}] mr-3 text-lg group-hover:scale-110 transition-transform duration-300">◆</span>
+                            <span class="leading-relaxed">{{contact_content.guideline_2 or 'Specify desired duration of our meeting'}}</span>
+                        </div>
+                        <div class="flex items-start group">
+                            <span class="text-[{{color_theme.primary_color}}] mr-3 text-lg group-hover:scale-110 transition-transform duration-300">◆</span>
+                            <span class="leading-relaxed">{{contact_content.guideline_3 or 'Mention if you're a first-time or returning client'}}</span>
+                        </div>
+                        <div class="flex items-start group">
+                            <span class="text-[{{color_theme.primary_color}}] mr-3 text-lg group-hover:scale-110 transition-transform duration-300">◆</span>
+                            <span class="leading-relaxed">{{contact_content.guideline_4 or 'Be prepared for a brief screening process'}}</span>
+                        </div>
+                        <div class="flex items-start group">
+                            <span class="text-[{{color_theme.primary_color}}] mr-3 text-lg group-hover:scale-110 transition-transform duration-300">◆</span>
+                            <span class="leading-relaxed">{{contact_content.guideline_5 or 'Allow 24+ hours for booking confirmation'}}</span>
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Location -->
+                {{#if contact_content.contact_location_visible}}
+                <div class="bg-zinc-900 border border-[{{color_theme.primary_color}}]/20 text-white p-8 rounded-xl shadow-lg hover:shadow-[0_0_6px_{{color_theme.primary_color}}] hover:scale-[1.02] transition-all duration-300" data-aos="fade-left" data-aos-delay="400">
+                    <h3 class="text-xl font-heading font-bold mb-4 text-[{{color_theme.primary_color}}]">{{contact_content.location_title or 'Location'}}</h3>
+                    <div class="space-y-2 text-gray-300">
+                        <p class="leading-relaxed">{{contact_content.location_area_text or 'Currently serving the greater Denver area'}}</p>
+                        <p class="leading-relaxed">{{contact_content.location_services_text or 'Incall and outcall services available'}}</p>
+                        <p class="leading-relaxed">{{contact_content.location_travel_text or 'Travel arrangements can be discussed'}}</p>
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Privacy Notice -->
+                {{#if contact_content.contact_privacy_visible}}
+                <div class="bg-black/90 border border-[{{color_theme.primary_color}}]/30 text-white p-6 rounded-xl shadow-lg hover:shadow-[0_0_6px_{{color_theme.primary_color}}] hover:scale-[1.02] transition-all duration-300" data-aos="fade-left" data-aos-delay="500">
+                    <h3 class="text-lg font-heading font-bold mb-3 text-[{{color_theme.primary_color}}]">{{contact_content.privacy_title or 'Privacy & Discretion'}}</h3>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        {{contact_content.privacy_text or 'All communications are handled with the utmost discretion and confidentiality. Your privacy is my priority, and I expect the same level of respect in return.'}}
+                    </p>
+                </div>
+                {{/if}}
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- FAQ Quick Links -->
-    <section class="py-16 bg-black">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h3 class="text-3xl font-bold text-white mb-4">
-                Have Questions?
-            </h3>
-            <p class="text-gray-300 mb-8">
-                Check out my frequently asked questions for quick answers
-            </p>
-            <a href="/{{model.slug}}/faq" 
-               class="inline-block px-8 py-4 border-2 border-glamour-gold text-lg font-semibold text-glamour-gold hover:bg-glamour-gold hover:text-black transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25">
-                View FAQ
-            </a>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-black border-t border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div class="text-center">
-                <h3 class="text-3xl font-bold text-glamour-gold mb-6">
-                    {{site_settings.site_name || model.name}}
-                </h3>
-                
-                <div class="flex justify-center space-x-8 mb-8">
-                    {{#if site_settings.contact_email}}
-                    <div class="text-gray-300">
-                        <span class="text-glamour-gold">Email:</span> {{site_settings.contact_email}}
-                    </div>
-                    {{/if}}
-                    {{#if site_settings.contact_phone}}
-                    <div class="text-gray-300">
-                        <span class="text-glamour-gold">Phone:</span> {{site_settings.contact_phone}}
-                    </div>
-                    {{/if}}
-                </div>
-                
-                <div class="w-24 h-1 bg-glamour-gold mx-auto mb-8"></div>
-                
-                <p class="text-gray-400">
-                    © {{currentYear}} {{site_settings.site_name || model.name}}. All rights reserved.
-                </p>
-            </div>
-        </div>
-    </footer>
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    </script>
 </body>
 </html>

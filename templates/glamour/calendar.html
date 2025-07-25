@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{#if site_settings.site_name}}{{site_settings.site_name}}{{else}}{{model.name}}{{/if}}</title>
+    <meta name="description" content="{{site_settings.meta_description}}">
+    <meta name="og:title" content="{{site_settings.site_name}} - {{model.name}}">
+    <meta name="og:description" content="{{site_settings.meta_description}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{site_settings.og_image}}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Dynamic Theme Colors -->
+    <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
+    
+    <style>
+        /* Glamour Theme Styles */
+        
+        /* Glamour Theme Colors */
+        :root {
+            --glamour-primary: var(--color-primary, #EC4899);
+            --glamour-secondary: var(--color-secondary, #BE185D);
+            --glamour-accent: var(--color-accent, #F59E0B);
+            --glamour-text: var(--color-text, #831843);
+            --glamour-background: var(--color-background, #FDF2F8);
+        }
+        
+        .text-glamour-primary { color: var(--glamour-primary); }
+        .bg-glamour-primary { background-color: var(--glamour-primary); }
+        .border-glamour-primary { border-color: var(--glamour-primary); }
+        
+        .glamour-gradient {
+            background: linear-gradient(135deg, var(--glamour-primary) 0%, var(--glamour-secondary) 100%);
+        }
+            
+    </style>
+</head>
+<body class="bg-glamour-background font-serif">
+    <!-- Navigation Component -->
+    {{component "navigation" theme="glamour" model=model navigation=navigation}}
+    
+    <!-- Page Content -->
+    
+Calendar - {{#if current_model}}{{site_settings.model_name if site_settings and site_settings.model_name else (current_model.name}}{{else}}{{'Model Example')}}{{/if}}
+
+
+<section class="py-12 md:py-16 bg-gradient-to-br from-black via-zinc-900 to-zinc-800 text-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h1 class="font-heading text-4xl font-bold text-[{{color_theme.primary_color}}]">My Calendar</h1>
+      <h2 class="text-2xl font-semibold text-white mt-2">{{month_name}} {{current_year}}</h2>
+      <p class="text-xl text-gray-300 max-w-2xl mx-auto mt-4">See when I'm available and where I'm located.</p>
+    </div>
+    
+    
+    <!-- Calendar Navigation -->
+    <div class="flex justify-between items-center max-w-5xl mx-auto mb-6 px-4 md:px-0">
+      <a href="?month={{prev_month}}&year={{prev_year}}" class="bg-[{{color_theme.primary_color}}] text-black font-semibold rounded-full px-4 py-2 hover:shadow-[0_0_8px_{{color_theme.primary_color}}] transition-all">
+        ← Previous
+      </a>
+
+      <div class="text-center">
+        <span class="font-heading text-lg font-semibold text-[{{color_theme.primary_color}}]">Navigate Calendar</span>
+      </div>
+
+      <a href="?month={{next_month}}&year={{next_year}}" class="bg-[{{color_theme.primary_color}}] text-black font-semibold rounded-full px-4 py-2 hover:shadow-[0_0_8px_{{color_theme.primary_color}}] transition-all">
+        Next →
+      </a>
+    </div>
+    
+    <!-- Calendar Grid -->
+    <div class="calendar-wrapper bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden border border-[{{color_theme.primary_color}}]/20 mb-12 max-w-6xl mx-auto">
+      <!-- Calendar Header -->
+      <div class="grid grid-cols-7 bg-gradient-to-r from-[{{color_theme.primary_color}}]/20 to-[{{color_theme.primary_color}}]/10">
+        <div class="p-4 text-center font-semibold text-[{{color_theme.primary_color}}] border-r border-gray-700">Sun</div>
+        <div class="p-4 text-center font-semibold text-[{{color_theme.primary_color}}] border-r border-gray-700">Mon</div>
+        <div class="p-4 text-center font-semibold text-[{{color_theme.primary_color}}] border-r border-gray-700">Tue</div>
+        <div class="p-4 text-center font-semibold text-[{{color_theme.primary_color}}] border-r border-gray-700">Wed</div>
+        <div class="p-4 text-center font-semibold text-[{{color_theme.primary_color}}] border-r border-gray-700">Thu</div>
+        <div class="p-4 text-center font-semibold text-[{{color_theme.primary_color}}] border-r border-gray-700">Fri</div>
+        <div class="p-4 text-center font-semibold text-[{{color_theme.primary_color}}]">Sat</div>
+      </div>
+      
+      <!-- Calendar Days -->
+      {{#each week_data in processed_weeks}}
+      <div class="grid grid-cols-7 border-t border-gray-700 relative" style="min-height: {{110 + (week_data.spans|.length * 26)}}px;">
+        <!-- Day cells -->
+        {{#each day in week_data.days}}
+        <div class="p-2 border-r border-gray-700 {{#if day == 0}}bg-gray-800/50{{/if}} relative min-h-[120px] hover:bg-[{{color_theme.primary_color}}]/10 hover:border-[{{color_theme.primary_color}}]/30 transition-all overflow-visible">
+          {{#if day > 0}}
+            <!-- Day Number -->
+            <div class="text-sm font-semibold mb-2 {{#if day == current_date.day and current_month == current_date.month and current_year == current_date.year}}text-black bg-[{{color_theme.primary_color}}]/20 border border-[{{color_theme.primary_color}}] rounded-full w-8 h-8 flex items-center justify-center{{else}}text-white{{/if}} relative z-10">
+              {{day}}
+            </div>
+            
+            <!-- Individual availability entries for this day -->
+            {% set day_date = '%04d-%02d-%02d'|format(current_year, current_month, day) %}
+            {{#if day_date in availability_by_date}}
+              <div class="space-y-1 mt-1">
+                {{#each avail in availability_by_date[day_date]}}
+                <div class="relative z-20 group">
+                  <div class="bg-[{{color_theme.primary_color}}] text-black font-medium text-xs px-2 py-1 rounded-md shadow-sm hover:shadow-[0_0_6px_{{color_theme.primary_color}}] transition-all cursor-pointer truncate"
+                       title="{{avail.status|title}} - {{avail.location}}{{#if avail.get_display_time}} - {{avail.get_display_time()}}{{/if}}">
+                    {{avail.location[:10]}}{{#if avail.location|.length > 10}}...{{/if}}
+                  </div>
+                  
+                  <!-- Hover Tooltip -->
+                  <div class="absolute left-0 top-full mt-1 bg-zinc-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl border border-[{{color_theme.primary_color}}]/30 opacity-0 group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap pointer-events-none">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="w-2 h-2 rounded-full bg-[{{color_theme.primary_color}}]"></span>
+                      <span class="font-semibold text-[{{color_theme.primary_color}}]">{{avail.status|title}}</span>
+                    </div>
+                    <div class="text-white font-medium">{{avail.location}}</div>
+                    {{#if avail.get_display_time}}
+                    <div class="text-gray-300 mt-1">{{avail.get_display_time()}}</div>
+                    {{/if}}
+                    <div class="text-gray-400 text-xs mt-1">{{day_date}}</div>
+                  </div>
+                </div>
+                {{/each}}
+              </div>
+            {{/if}}
+          {{/if}}
+        </div>
+        {{/each}}
+        
+        <!-- Availability spans (multi-day events) -->
+        {{#each span in week_data.spans}}
+        <div class="absolute z-10 h-5 rounded-md hover:shadow-[0_0_6px_{{color_theme.primary_color}}] transition-all cursor-pointer overflow-hidden whitespace-nowrap group
+                    {{#if span.status == 'available'}}bg-[{{color_theme.primary_color}}] shadow-sm text-black
+                    {% elif span.status == 'vacation' %}bg-purple-600 shadow-sm text-white
+                    {% elif span.status == 'busy' %}bg-red-600 shadow-sm text-white
+                    {{else}}bg-[{{color_theme.primary_color}}] shadow-sm text-black
+                    {{/if}}" 
+             style="left: {{span.start_pos * (100/7)}}%; 
+                    width: {{span.width * (100/7)}}%; 
+                    top: {{65 + (loop.index0 * 26)}}px;"
+             title="{{span.status|title}} - {{span.location}}{{#if span.time_display}} - {{span.time_display}}{{/if}}">
+          <div class="px-2 py-1 text-xs font-medium leading-none truncate">
+            {{span.location}}
+          </div>
+          
+          <!-- Hover Tooltip for Spans -->
+          <div class="absolute left-0 top-full mt-1 bg-zinc-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl border border-[{{color_theme.primary_color}}]/30 opacity-0 group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap pointer-events-none">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="w-2 h-2 rounded-full {{#if span.status == 'available'}}bg-[{{color_theme.primary_color}}]{% elif span.status == 'vacation' %}bg-purple-600{% elif span.status == 'busy' %}bg-red-600{{else}}bg-[{{color_theme.primary_color}}]{{/if}}"></span>
+              <span class="font-semibold {{#if span.status == 'available'}}text-[{{color_theme.primary_color}}]{% elif span.status == 'vacation' %}text-purple-400{% elif span.status == 'busy' %}text-red-400{{else}}text-[{{color_theme.primary_color}}]{{/if}}">{{span.status|title}}</span>
+            </div>
+            <div class="text-white font-medium">{{span.location}}</div>
+            {{#if span.time_display}}
+            <div class="text-gray-300 mt-1">{{span.time_display}}</div>
+            {{/if}}
+            <div class="text-gray-400 text-xs mt-1">Multi-day event</div>
+          </div>
+        </div>
+        {{/each}}
+      </div>
+      {{/each}}
+    </div>
+    
+    <!-- Legend -->
+    <div class="flex justify-center gap-4 mt-8 mb-4">
+      <div class="flex items-center gap-2 text-sm bg-white/10 px-3 py-1 rounded-full border border-white/20 hover:shadow-[0_0_6px_{{color_theme.primary_color}}] transition-all cursor-pointer">
+        <span class="w-3 h-3 rounded-full" style="background-color: {{color_theme.primary_color}}"></span>
+        <span class="text-white/90 font-medium">Available</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm bg-white/10 px-3 py-1 rounded-full border border-white/20 hover:shadow-[0_0_6px_{{color_theme.primary_color}}] transition-all cursor-pointer">
+        <span class="w-3 h-3 rounded-full" style="background-color: {{color_theme.primary_color}}"></span>
+        <span class="text-white/90 font-medium">Touring</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm bg-white/10 px-3 py-1 rounded-full border border-white/20 hover:shadow-[0_0_6px_{{color_theme.primary_color}}] transition-all cursor-pointer">
+        <span class="w-3 h-3 rounded-full bg-purple-600"></span>
+        <span class="text-white/90 font-medium">Vacation</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm bg-white/10 px-3 py-1 rounded-full border border-white/20 hover:shadow-[0_0_6px_{{color_theme.primary_color}}] transition-all cursor-pointer">
+        <span class="w-3 h-3 rounded-full bg-red-600"></span>
+        <span class="text-white/90 font-medium">Busy</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    </script>
+</body>
+</html>

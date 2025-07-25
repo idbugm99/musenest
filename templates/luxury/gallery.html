@@ -18,26 +18,30 @@
     <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
     
     <style>
-        /* Basic Theme Styles */
+        /* Luxury Theme Styles */
         
-        /* Basic Theme Colors */
+        /* Luxury Theme Colors */
         :root {
-            --basic-primary: var(--color-primary, #3B82F6);
-            --basic-secondary: var(--color-secondary, #6B7280);
-            --basic-accent: var(--color-accent, #10B981);
-            --basic-text: var(--color-text, #1F2937);
-            --basic-background: var(--color-background, #FFFFFF);
+            --luxury-primary: var(--color-primary, #7C3AED);
+            --luxury-secondary: var(--color-secondary, #5B21B6);
+            --luxury-accent: var(--color-accent, #F59E0B);
+            --luxury-text: var(--color-text, #581C87);
+            --luxury-background: var(--color-background, #FAF5FF);
         }
         
-        .text-basic-primary { color: var(--basic-primary); }
-        .bg-basic-primary { background-color: var(--basic-primary); }
-        .border-basic-primary { border-color: var(--basic-primary); }
+        .text-luxury-primary { color: var(--luxury-primary); }
+        .bg-luxury-primary { background-color: var(--luxury-primary); }
+        .border-luxury-primary { border-color: var(--luxury-primary); }
+        
+        .luxury-gradient {
+            background: linear-gradient(135deg, var(--luxury-primary) 0%, var(--luxury-secondary) 100%);
+        }
             
     </style>
 </head>
-<body class="bg-basic-background font-sans">
+<body class="bg-luxury-background font-serif">
     <!-- Navigation Component -->
-    {{component "navigation" theme="basic" model=model navigation=navigation}}
+    {{component "navigation" theme="luxury" model=model navigation=navigation}}
     
     <!-- Page Content -->
     
@@ -46,7 +50,40 @@ Gallery - {{#if current_model}}{{site_settings.model_name if site_settings and s
 
 
 <style>
-/* Masonry Layout CSS */
+/* Enhanced font rendering for luxury feel */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+.font-heading {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "liga" 1, "kern" 1;
+}
+
+/* Luxury grain texture */
+.luxury-grain {
+    position: relative;
+}
+
+.luxury-grain::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('{{url_for('static', filename='images/grain.png')}}');
+    background-repeat: repeat;
+    opacity: 0.15;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Masonry Layout CSS - WORKING VERSION FROM gallery.html */
 .masonry-container {
     column-count: 3;
     column-gap: 1.5rem;
@@ -70,28 +107,29 @@ Gallery - {{#if current_model}}{{site_settings.model_name if site_settings and s
     }
 }
 
-/* Carousel CSS */
+/* Enhanced Carousel CSS for luxury */
 .carousel-container {
     position: relative;
     overflow: hidden;
-    border-radius: 0.5rem;
-    background: #f3f4f6;
+    border-radius: 1rem;
+    background: rgba(0, 0, 0, 0.2);
     width: 100%;
-    max-width: 600px; /* Appropriate max width */
-    height: 500px; /* Taller height for better image display */
-    margin: 0 auto; /* Center the carousel */
+    max-width: 700px;
+    height: 550px;
+    margin: 0 auto;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
 }
 
 @media (max-width: 768px) {
     .carousel-container {
         max-width: 90%;
-        height: 400px;
+        height: 450px;
     }
 }
 
 @media (max-width: 480px) {
     .carousel-container {
-        height: 300px;
+        height: 350px;
     }
 }
 
@@ -113,7 +151,6 @@ Gallery - {{#if current_model}}{{site_settings.model_name if site_settings and s
     box-sizing: border-box;
 }
 
-/* Fade transition support */
 .carousel-slide.fade-mode {
     position: absolute;
     top: 0;
@@ -132,24 +169,26 @@ Gallery - {{#if current_model}}{{site_settings.model_name if site_settings and s
     height: 100%;
     object-fit: contain;
     object-position: center;
-    border-radius: 0.5rem;
+    border-radius: 1rem;
 }
 
 .carousel-btn {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(0,0,0,0.5);
+    background: rgba(212, 175, 55, 0.8);
     color: white;
     border: none;
-    padding: 0.75rem;
+    padding: 0.875rem;
     border-radius: 50%;
     cursor: pointer;
     z-index: 10;
+    transition: all 0.3s ease;
 }
 
 .carousel-btn:hover {
-    background: rgba(0,0,0,0.7);
+    background: rgba(212, 175, 55, 1);
+    transform: translateY(-50%) scale(1.1);
 }
 
 .carousel-btn.prev {
@@ -180,7 +219,7 @@ Gallery - {{#if current_model}}{{site_settings.model_name if site_settings and s
     background: var(--primary-color, #8B5CF6);
 }
 
-/* Filter Buttons */
+/* Filter Buttons - Fixed for dark background */
 .filter-btn {
     padding: 0.5rem 1rem;
     border-radius: 9999px;
@@ -191,20 +230,20 @@ Gallery - {{#if current_model}}{{site_settings.model_name if site_settings and s
 }
 
 .filter-btn.active {
-    background: var(--primary-color, #8B5CF6);
-    color: white;
-    border-color: var(--primary-color, #8B5CF6);
+    background: var(--accent-color);
+    color: var(--text-color);
+    border-color: var(--accent-color);
 }
 
 .filter-btn:not(.active) {
     background: transparent;
-    color: var(--primary-color, #8B5CF6);
-    border-color: var(--primary-color, #8B5CF6);
+    color: var(--accent-color);
+    border-color: var(--accent-color);
 }
 
 .filter-btn:not(.active):hover {
-    background: var(--primary-color, #8B5CF6);
-    color: white;
+    background: var(--accent-color);
+    color: var(--text-color);
 }
 
 /* Lightbox */
@@ -272,7 +311,7 @@ Gallery - {{#if current_model}}{{site_settings.model_name if site_settings and s
 .gallery-placeholder-svg {
     width: 100%;
     height: auto;
-    color: #D1D5DB; /* Soft gray */
+    color: #D1D5DB;
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
 }
 
@@ -280,14 +319,14 @@ Gallery - {{#if current_model}}{{site_settings.model_name if site_settings and s
     font-family: var(--font-heading, 'Playfair Display', serif);
     font-size: 2.5rem;
     font-weight: 600;
-    color: #374151; /* Warm dark gray */
+    color: #374151;
     margin-bottom: 1rem;
     line-height: 1.2;
 }
 
 .empty-gallery-message {
     font-size: 1.125rem;
-    color: #6B7280; /* Medium gray */
+    color: #6B7280;
     line-height: 1.6;
     margin-bottom: 2.5rem;
     max-width: 480px;
@@ -384,31 +423,34 @@ Gallery - {{#if current_model}}{{site_settings.model_name if site_settings and s
 }
 </style>
 
-<section class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-4xl font-heading font-bold text-center mb-12">Gallery</h1>
+<section class="py-20 bg-background text-charcoal luxury-grain relative">
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-down">
+            <h1 class="text-5xl font-heading font-bold text-accent mb-4">My Gallery</h1>
+            <!-- Gold underline accent -->
+            <div class="w-16 h-1 bg-accent rounded-full mx-auto"></div>
+        </div>
         
         {{#if sections}}
             {{#each section in sections}}
                 {{#if section.active_images}}
-                <div class="mb-16" data-section-id="{{section.id}}">
+                <div class="mb-20" data-section-id="{{section.id}}" data-aos="fade-up" data-aos-delay="{{loop.index0 * 200}}">
                     <!-- Section Header -->
-                    <div class="text-center mb-8">
-                        <h2 class="text-3xl font-heading font-bold mb-4">{{section.title}}</h2>
+                    <div class="text-center mb-12">
+                        <h2 class="text-4xl font-heading font-bold mb-6 text-accent">{{section.title}}</h2>
                         
                         <!-- Tag Filters (if enabled and NOT carousel) -->
                         {{#if section.enable_filters and section.layout_type != 'carousel'}}
                             {{#if section.available_tags}}
-                            <div class="flex flex-wrap justify-center gap-2 mb-6 filter-buttons" data-section="{{section.id}}" data-default-filter="{{section.default_filter or 'all'}}">
+                            <div class="flex flex-wrap justify-center gap-3 mb-8 filter-buttons" data-section="{{section.id}}" data-default-filter="{{section.default_filter or 'all'}}">
                                 <button class="filter-btn {{#if (section.default_filter or 'all') == 'all'}}{{'active'}}{{else}}{{''}}{{/if}}" onclick="filterImages({{section.id}}, 'all')">All</button>
                                 {{#each tag in section.available_tags}}
                                 <button class="filter-btn {{#if (section.default_filter or 'all') == tag}}{{'active'}}{{else}}{{''}}{{/if}}" onclick="filterImages({{section.id}}, '{{tag}}')">{{tag}}</button>
                                 {{/each}}
                             </div>
                             {{else}}
-                            <!-- Show message when filters are enabled but no tags exist -->
-                            <div class="text-center mb-6">
-                                <p class="text-sm text-gray-500 italic">Filters enabled - add tags to images to see filter options</p>
+                            <div class="text-center mb-8">
+                                <p class="text-sm text-charcoal/60 italic">Filters enabled - add tags to images to see filter options</p>
                             </div>
                             {{/if}}
                         {{/if}}
@@ -416,39 +458,47 @@ Gallery - {{#if current_model}}{{site_settings.model_name if site_settings and s
 
                     <!-- Grid Layout -->
                     {{#if section.layout_type == 'grid'}}
-                    <div class="grid grid-cols-1 md:grid-cols-{{section.grid_columns}} gap-6 gallery-grid" data-section="{{section.id}}">
+                    <div class="grid grid-cols-1 md:grid-cols-{{section.grid_columns or 3}} gap-8 gallery-grid" data-section="{{section.id}}">
                         {{#each image in section.active_images}}
                         <div class="gallery-item group cursor-pointer" 
                              data-tags="{{(image.tags or '').lower()}}"
+                             data-aos="zoom-in"
+                             data-aos-delay="{{loop.index0 * 100}}"
                              {{#if section.enable_lightbox}}onclick="openLightbox('{{image.filename}}', '{{image.caption or ''}}', {{section.enable_fullscreen|lower}})"{{/if}}>
-                            <div class="aspect-square overflow-hidden rounded-lg bg-gray-200 group-hover:shadow-lg transition-shadow">
+                            <div class="overflow-hidden rounded-xl shadow-lg hover:scale-105 transition-transform duration-500 bg-black/20">
                                 <img src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), image.filename))}}" 
                                      alt="{{image.caption or 'Gallery Image'}}"
-                                     class="w-full h-full object-cover"
-                                     onerror="this.parentElement.innerHTML='<div class='w-full h-full flex items-center justify-center text-gray-500'>{{image.filename}}</div>'">
+                                     class="w-full h-auto object-cover aspect-square"
+                                     onerror="this.parentElement.innerHTML='<div class='w-full h-full flex items-center justify-center text-gray-400'>{{image.filename}}</div>'">
                             </div>
                             {{#if image.caption}}
-                            <p class="mt-2 text-center text-gray-600">{{image.caption}}</p>
+                            <p class="mt-3 text-center text-charcoal/80 font-medium">{{image.caption}}</p>
+                            {{/if}}
+                            {{#if image.tags}}
+                            <div class="text-sm text-accent mt-2 text-center italic">{{image.tags}}</div>
                             {{/if}}
                         </div>
                         {{/each}}
                     </div>
 
-                    <!-- Masonry Layout -->
+                    <!-- Masonry Layout - EXACT COPY FROM WORKING GALLERY.HTML -->
                     {% elif section.layout_type == 'masonry' %}
                     <div class="masonry-container" data-section="{{section.id}}">
                         {{#each image in section.active_images}}
                         <div class="masonry-item gallery-item cursor-pointer" 
                              data-tags="{{(image.tags or '').lower()}}"
                              {{#if section.enable_lightbox}}onclick="openLightbox('{{image.filename}}', '{{image.caption or ''}}', {{section.enable_fullscreen|lower}})"{{/if}}>
-                            <div class="overflow-hidden rounded-lg bg-gray-200 hover:shadow-lg transition-shadow">
+                            <div class="overflow-hidden rounded-xl shadow-lg hover:scale-105 transition-transform duration-500 bg-black/20">
                                 <img src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), image.filename))}}" 
                                      alt="{{image.caption or 'Gallery Image'}}"
                                      class="w-full h-auto object-cover"
-                                     onerror="this.parentElement.innerHTML='<div class='w-full h-48 flex items-center justify-center text-gray-500'>{{image.filename}}</div>'">
+                                     onerror="this.parentElement.innerHTML='<div class='w-full h-48 flex items-center justify-center text-gray-400'>{{image.filename}}</div>'">
                             </div>
                             {{#if image.caption}}
-                            <p class="mt-2 text-center text-gray-600">{{image.caption}}</p>
+                            <p class="mt-3 text-center text-charcoal/80 font-medium">{{image.caption}}</p>
+                            {{/if}}
+                            {{#if image.tags}}
+                            <div class="text-sm text-accent mt-2 text-center italic">{{image.tags}}</div>
                             {{/if}}
                         </div>
                         {{/each}}
@@ -456,7 +506,7 @@ Gallery - {{#if current_model}}{{site_settings.model_name if site_settings and s
 
                     <!-- Carousel Layout -->
                     {% elif section.layout_type == 'carousel' %}
-                    <div class="max-w-4xl mx-auto">
+                    <div class="max-w-5xl mx-auto" data-aos="zoom-in">
                         <div class="carousel-container" data-carousel="{{section.id}}">
                             <div class="carousel-track" data-section="{{section.id}}">
                                 {{#each image in section.active_images}}
@@ -464,7 +514,7 @@ Gallery - {{#if current_model}}{{site_settings.model_name if site_settings and s
                                     <img src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), image.filename))}}" 
                                          alt="{{image.caption or 'Gallery Image'}}"
                                          {{#if section.enable_lightbox}}onclick="openLightbox('{{image.filename}}', '{{image.caption or ''}}', {{section.enable_fullscreen|lower}})"{{/if}}
-                                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%23f3f4f6'/%3E%3Ctext x='400' y='225' text-anchor='middle' dy='0.35em' fill='%236b7280' font-family='Arial' font-size='18'%3E{{image.filename}}%3C/text%3E%3C/svg%3E'">
+                                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%23000'/%3E%3Ctext x='400' y='225' text-anchor='middle' dy='0.35em' fill='%23D4AF37' font-family='Arial' font-size='18'%3E{{image.filename}}%3C/text%3E%3C/svg%3E'">
                                 </div>
                                 {{/each}}
                             </div>
@@ -493,7 +543,7 @@ Gallery - {{#if current_model}}{{site_settings.model_name if site_settings and s
                         {{/if}}
                         
                         {{#if section.show_captions}}
-                        <p class="text-center text-gray-600 mt-4 carousel-caption" data-section="{{section.id}}">
+                        <p class="text-center text-charcoal/80 mt-6 carousel-caption text-lg" data-section="{{section.id}}">
                             {{#if section.active_images}}{{section.active_images[0].caption or ''}}{{/if}}
                         </p>
                         {{/if}}
@@ -501,16 +551,18 @@ Gallery - {{#if current_model}}{{site_settings.model_name if site_settings and s
 
                     <!-- Thumbnail Grid -->
                     {% elif section.layout_type == 'lightbox_grid' %}
-                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4" data-section="{{section.id}}">
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6" data-section="{{section.id}}">
                         {{#each image in section.active_images}}
                         <div class="gallery-item aspect-square cursor-pointer" 
                              data-tags="{{(image.tags or '').lower()}}"
+                             data-aos="zoom-in"
+                             data-aos-delay="{{loop.index0 * 50}}"
                              onclick="openLightbox('{{image.filename}}', '{{image.caption or ''}}', {{section.enable_fullscreen|lower}})">
-                            <div class="w-full h-full overflow-hidden rounded-lg bg-gray-200 hover:shadow-lg transition-shadow">
+                            <div class="w-full h-full overflow-hidden rounded-xl shadow-lg hover:scale-105 transition-transform duration-500 bg-black/20">
                                 <img src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), image.filename))}}" 
                                      alt="{{image.caption or 'Gallery Image'}}"
                                      class="w-full h-full object-cover"
-                                     onerror="this.parentElement.innerHTML='<div class='w-full h-full flex items-center justify-center text-gray-500 text-xs'>{{image.filename}}</div>'">
+                                     onerror="this.parentElement.innerHTML='<div class='w-full h-full flex items-center justify-center text-gray-400 text-xs'>{{image.filename}}</div>'">
                             </div>
                         </div>
                         {{/each}}
@@ -519,34 +571,40 @@ Gallery - {{#if current_model}}{{site_settings.model_name if site_settings and s
                 </div>
                 {{/if}}
             {{/each}}
+
+            <!-- Call-to-Action Footer -->
+            <div class="mt-20 bg-primary border border-accent p-12 rounded-2xl text-center shadow-lg" data-aos="fade-up">
+                <p class="text-charcoal/60 text-xs uppercase tracking-widest mb-2">Ready to Begin</p>
+                <h3 class="text-4xl font-heading font-bold mb-4 text-accent">Want to see more?</h3>
+                <p class="text-xl mb-8 text-charcoal/80">Discover what makes each experience truly unforgettable</p>
+                <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                    <a href="{{model_url_for('model.rates')}}" 
+                       class="inline-flex items-center justify-center px-8 py-4 bg-accent text-charcoal border-2 border-accent rounded-2xl text-lg font-semibold hover:opacity-90 hover:scale-[1.01] transition-transform duration-200 shadow-lg">
+                        View My Rates
+                    </a>
+                    <a href="{{model_url_for('model.calendar')}}" 
+                       class="inline-flex items-center justify-center px-8 py-4 bg-transparent border-2 border-accent text-accent rounded-2xl text-lg font-semibold hover:bg-accent hover:text-charcoal hover:scale-[1.01] transition-transform duration-200 shadow-lg">
+                        Schedule a Meeting
+                    </a>
+                </div>
+            </div>
         {{else}}
             <!-- Elegant Empty State -->
             <div class="gallery-empty-container">
-                <!-- Elegant Image Placeholder Icon -->
                 <div class="gallery-empty-icon">
                     <svg class="gallery-placeholder-svg" viewBox="0 0 200 140" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Frame -->
                         <rect x="10" y="10" width="180" height="120" rx="8" stroke="currentColor" stroke-width="2" fill="none"/>
-                        <!-- Mountain silhouette -->
                         <path d="M30 90 L60 60 L90 80 L120 50 L150 70 L170 90 V110 H30 V90 Z" fill="currentColor" opacity="0.3"/>
-                        <!-- Sun/Moon circle -->
                         <circle cx="150" cy="40" r="12" fill="currentColor" opacity="0.4"/>
-                        <!-- Camera icon overlay -->
                         <rect x="85" y="65" width="30" height="20" rx="4" fill="currentColor" opacity="0.6"/>
                         <circle cx="100" cy="75" r="6" stroke="white" stroke-width="1.5" fill="none"/>
                         <rect x="92" y="67" width="4" height="2" fill="white"/>
                     </svg>
                 </div>
-
-                <!-- Styled Headline -->
                 <h2 class="empty-gallery-heading">{{gallery_empty_content.get('headline', 'Gallery Coming Soon')}}</h2>
-                
-                <!-- Supportive Message -->
                 <p class="empty-gallery-message">
                     {{gallery_empty_content.get('message', 'Our curated image collections are being updated. Please check back soon for the latest experiences.')}}
                 </p>
-                
-                <!-- Call to Action -->
                 <div class="empty-gallery-actions">
                     <a href="{{model_url_for('model.contact')}}" class="btn-elegant-secondary">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

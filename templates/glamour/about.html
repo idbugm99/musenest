@@ -3,247 +3,351 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About - {{site_settings.site_name || 'Glamour Portfolio'}}</title>
+    <title>{{#if site_settings.site_name}}{{site_settings.site_name}}{{else}}{{model.name}}{{/if}}</title>
+    <meta name="description" content="{{site_settings.meta_description}}">
+    <meta name="og:title" content="{{site_settings.site_name}} - {{model.name}}">
+    <meta name="og:description" content="{{site_settings.meta_description}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{site_settings.og_image}}">
+    
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Dynamic Theme Colors -->
+    <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
+    
     <style>
-        .bg-glamour-dark { background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); }
-        .bg-glamour-gold { background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); }
-        .text-glamour-gold { color: #D4AF37; }
-        .border-glamour-gold { border-color: #D4AF37; }
+        /* Glamour Theme Styles */
         
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
+        /* Glamour Theme Colors */
+        :root {
+            --glamour-primary: var(--color-primary, #EC4899);
+            --glamour-secondary: var(--color-secondary, #BE185D);
+            --glamour-accent: var(--color-accent, #F59E0B);
+            --glamour-text: var(--color-text, #831843);
+            --glamour-background: var(--color-background, #FDF2F8);
         }
         
-        .animate-shimmer {
-            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
-            background-size: 200% 100%;
-            animation: shimmer 2s infinite;
+        .text-glamour-primary { color: var(--glamour-primary); }
+        .bg-glamour-primary { background-color: var(--glamour-primary); }
+        .border-glamour-primary { border-color: var(--glamour-primary); }
+        
+        .glamour-gradient {
+            background: linear-gradient(135deg, var(--glamour-primary) 0%, var(--glamour-secondary) 100%);
         }
-
-        .text-glow {
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
-        }
+            
     </style>
 </head>
-<body class="bg-black text-white min-h-screen">
-    {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+<body class="bg-glamour-background font-serif">
+    <!-- Navigation Component -->
+    {{component "navigation" theme="glamour" model=model navigation=navigation}}
+    
+    <!-- Page Content -->
+    <!-- about_glamour.html -->
 
-    <!-- Header Section -->
-    <section class="relative py-20 bg-glamour-dark">
-        <div class="absolute inset-0 opacity-5">
-            <div class="w-full h-full bg-gradient-radial from-yellow-500/20 via-transparent to-transparent"></div>
+
+
+{{#if about_content}}{{about_content.page_title}}{{else}}{{'About'}}{{/if}} - {{#if current_model}}{{site_settings.model_name if site_settings and site_settings.model_name else (current_model.name}}{{else}}{{'Model Example')}}{{/if}}
+
+
+  {{super()}}
+  <!-- AOS Animation Library -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      AOS.init({
+        duration: 800,
+        once: true,
+        offset: 100
+      });
+    });
+  </script>
+
+
+
+
+<section class="text-center py-20 bg-black text-white">
+  {{#if about_content and about_content.page_title_visible}}
+  <h1 class="text-4xl md:text-5xl font-extrabold text-[{{color_theme.primary_color}}] mb-4">
+    {{about_content.page_title}}
+  </h1>
+  {{else}}
+  <h1 class="text-4xl md:text-5xl font-extrabold text-[{{color_theme.primary_color}}] mb-4">
+    About Me
+  </h1>
+  {{/if}}
+  {{#if about_content and about_content.main_paragraph_1}}
+  <p class="max-w-2xl mx-auto text-lg md:text-xl opacity-80">
+    {{about_content.main_paragraph_1[:120]}}...
+  </p>
+  {{else}}
+  <p class="max-w-2xl mx-auto text-lg md:text-xl opacity-80">
+    A glimpse into the woman behind the glamour. Refined. Intelligent. Discreet.
+  </p>
+  {{/if}}
+</section>
+
+<!-- Hero Image + Statement Block -->
+<section class="relative h-[500px] overflow-hidden">
+  {{#if about_content and about_content.portrait_image and about_content.portrait_visible}}
+  <img src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), about_content.portrait_image.filename))}}"
+       alt="{{about_content.portrait_alt or 'Glamour Shot'}}"
+       class="absolute inset-0 object-cover w-full h-full opacity-80">
+  {% elif gallery_images and gallery_images|.length > 0 %}
+  <img src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), gallery_images[0].filename))}}"
+       alt="{{gallery_images[0].caption or 'Glamour Shot'}}"
+       class="absolute inset-0 object-cover w-full h-full opacity-80">
+  {{else}}
+  <img src="{{url_for('static', filename='images/glamour_hero.jpg')}}"
+       alt="Glamour Shot"
+       class="absolute inset-0 object-cover w-full h-full opacity-80">
+  {{/if}}
+
+  <div class="relative z-10 flex items-center justify-center h-full bg-black/50">
+    <div class="text-center px-6">
+      {{#if about_content and about_content.main_paragraph_2}}
+      <p class="text-2xl md:text-3xl font-light italic text-white">
+        "{{about_content.main_paragraph_2[:80]}}..."
+      </p>
+      {{else}}
+      <p class="text-2xl md:text-3xl font-light italic text-white">
+        "Elegance is when the inside is as beautiful as the outside."
+      </p>
+      {{/if}}
+      {{#if about_content and about_content.services_visible and about_content.service_1}}
+      <p class="mt-4 text-[{{color_theme.primary_color}}] tracking-widest font-semibold uppercase text-sm">
+        {{#if about_content.service_1}}{{about_content.service_1.split(' ')[0]}}{{else}}{{'Discretion'}}{{/if}} • {{#if about_content.service_2}}{{about_content.service_2.split(' ')[0]}}{{else}}{{'Class'}}{{/if}} • {{#if about_content.service_3}}{{about_content.service_3.split(' ')[0]}}{{else}}{{'Confidence'}}{{/if}}
+      </p>
+      {{else}}
+      <p class="mt-4 text-[{{color_theme.primary_color}}] tracking-widest font-semibold uppercase text-sm">
+        Discretion • Class • Confidence
+      </p>
+      {{/if}}
+    </div>
+  </div>
+</section>
+
+<!-- Glamour Quote Overlay -->
+<div class="bg-black py-8">
+  <p class="text-white/80 italic text-xl text-center mt-6">
+    "True elegance is unforgettable. Let me show you why."
+  </p>
+</div>
+
+<!-- Glamour Photo Strip -->
+<section class="bg-black py-16 px-4">
+  <div class="max-w-6xl mx-auto">
+    <p class="text-center text-white/70 text-lg mb-8 italic" data-aos="fade-up">
+      My life in moments — a visual diary of elegance and escape.
+    </p>
+    <div class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4">
+      {{#each photo in gallery_images[:5]}}
+        <img 
+          src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), photo.filename))}}" 
+          alt="{{photo.caption or 'Glamour Photo'}}" 
+          class="rounded-xl shadow-md w-[200px] h-[280px] object-cover border-2 border-[{{color_theme.primary_color}}] snap-start flex-shrink-0 hover:shadow-[0_0_8px_{{color_theme.primary_color}}] transition-all duration-300" 
+        />
+      {{/each}}
+    </div>
+  </div>
+</section>
+
+<!-- Biography Section -->
+<section class="bg-black py-20 px-4 md:px-12">
+  <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center md:items-start gap-12">
+
+    <!-- Profile Image -->
+    <div class="flex-shrink-0 w-full md:w-1/3 rounded-2xl overflow-hidden shadow-md">
+      {{#if about_content and about_content.portrait_image and about_content.portrait_visible}}
+      <img src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), about_content.portrait_image.filename))}}"
+           alt="{{about_content.portrait_alt}}"
+           class="w-full h-auto object-cover">
+      {% elif gallery_images and gallery_images|.length > 1 %}
+      <img src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), gallery_images[1].filename))}}"
+           alt="{{gallery_images[1].caption or 'Glamour Profile'}}"
+           class="w-full h-auto object-cover">
+      {{else}}
+      <img src="{{url_for('static', filename='images/glamour_profile.jpg')}}"
+           alt="Glamour Profile"
+           class="w-full h-auto object-cover">
+      {{/if}}
+    </div>
+
+    <!-- Biography Text -->
+    <div class="text-white md:w-2/3 space-y-6">
+      {{#if about_content and about_content.page_title}}
+      <h2 class="text-2xl font-bold text-[{{color_theme.primary_color}}]">{{about_content.page_title.replace('About', 'Who I Am')}}</h2>
+      {{else}}
+      <h2 class="text-2xl font-bold text-[{{color_theme.primary_color}}]">Who I Am</h2>
+      {{/if}}
+      
+      {{#if about_content and about_content.main_content_visible}}
+        {{#if about_content.main_paragraph_3}}
+        <p class="text-lg leading-relaxed">
+          {{about_content.main_paragraph_3}}
+        </p>
+        {{/if}}
+        {{#if about_content.main_paragraph_4}}
+        <p class="text-lg leading-relaxed">
+          {{about_content.main_paragraph_4}}
+        </p>
+        {{/if}}
+      {{else}}
+      <p class="text-lg leading-relaxed">
+        With charm, grace, and depth, I offer not just beauty—but a true experience of connection. My background blends
+        refinement and education with a love for exploration and intelligent conversation. Whether you're seeking companionship
+        for a quiet evening or a luxurious weekend escape, I provide discretion, elegance, and authenticity.
+      </p>
+      <p class="text-lg leading-relaxed">
+        My time is reserved for those who appreciate the rarest of encounters: sincere, effortless, unforgettable.
+      </p>
+      {{/if}}
+    </div>
+
+  </div>
+</section>
+
+<!-- Luxury Divider -->
+<div class="my-12 border-t-[1.5px] border-[{{color_theme.primary_color}}] w-1/3 mx-auto"></div>
+
+<!-- Services & Interests Section -->
+{{#if about_content and (about_content.services_visible or about_content.interests_visible)}}
+<section class="bg-zinc-900 py-20 px-4 md:px-12">
+  <div class="max-w-5xl mx-auto">
+    <div class="grid md:grid-cols-2 gap-12">
+      
+      <!-- Services -->
+      {{#if about_content.services_visible}}
+      <div class="text-white">
+        <h2 class="text-2xl font-bold text-[{{color_theme.primary_color}}] mb-6" data-aos="fade-up" data-aos-delay="100">{{about_content.services_title}}</h2>
+        <ul class="space-y-4">
+          {{#if about_content.service_1}}
+          <li class="flex items-start">
+            <span class="text-[{{color_theme.primary_color}}] mr-3 text-lg">✦</span>
+            <span class="text-lg">{{about_content.service_1}}</span>
+          </li>
+          {{/if}}
+          {{#if about_content.service_2}}
+          <li class="flex items-start">
+            <span class="text-[{{color_theme.primary_color}}] mr-3 text-lg">✦</span>
+            <span class="text-lg">{{about_content.service_2}}</span>
+          </li>
+          {{/if}}
+          {{#if about_content.service_3}}
+          <li class="flex items-start">
+            <span class="text-[{{color_theme.primary_color}}] mr-3 text-lg">✦</span>
+            <span class="text-lg">{{about_content.service_3}}</span>
+          </li>
+          {{/if}}
+          {{#if about_content.service_4}}
+          <li class="flex items-start">
+            <span class="text-[{{color_theme.primary_color}}] mr-3 text-lg">✦</span>
+            <span class="text-lg">{{about_content.service_4}}</span>
+          </li>
+          {{/if}}
+          {{#if about_content.service_5}}
+          <li class="flex items-start">
+            <span class="text-[{{color_theme.primary_color}}] mr-3 text-lg">✦</span>
+            <span class="text-lg">{{about_content.service_5}}</span>
+          </li>
+          {{/if}}
+        </ul>
+      </div>
+      {{/if}}
+      
+      <!-- Quick Facts & Interests -->
+      <div class="text-white space-y-8">
+        <!-- Quick Facts -->
+        {{#if quick_facts}}
+        <div>
+          <h2 class="text-2xl font-bold text-[{{color_theme.primary_color}}] mb-6" data-aos="fade-up" data-aos-delay="200">Quick Facts</h2>
+          <div class="space-y-3">
+            {{#each fact in quick_facts}}
+            {{#if fact.is_visible}}
+            <p class="text-lg">
+              <span class="text-[{{color_theme.primary_color}}] font-semibold">{{fact.question}}:</span> 
+              <span class="text-white/90">{{fact.answer}}</span>
+            </p>
+            {{/if}}
+            {{/each}}
+          </div>
         </div>
+        {{/if}}
         
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 text-glow">
-                About {{site_settings.model_name || model.name}}
-            </h1>
-            <div class="w-24 h-1 bg-glamour-gold mx-auto mb-6 animate-shimmer"></div>
-            <p class="text-xl text-gray-300 max-w-3xl mx-auto">
-                Get to know the person behind the elegance
-            </p>
+        <!-- Interests -->
+        {{#if about_content.interests_visible}}
+        <div>
+          <h2 class="text-2xl font-bold text-[{{color_theme.primary_color}}] mb-6" data-aos="fade-up" data-aos-delay="300">{{about_content.interests_title}}</h2>
+          <div class="flex flex-wrap gap-2">
+            {{#if about_content.interests}}
+              {{#each interest in about_content.interests.split(',')}}
+                {{#if interest.strip()}}
+                <span class="bg-[{{color_theme.primary_color}}] text-black px-3 py-1 rounded-full text-sm font-medium">{{interest.strip()}}</span>
+                {{/if}}
+              {{/each}}
+            {{/if}}
+          </div>
         </div>
-    </section>
+        {{/if}}
+      </div>
+      
+    </div>
+  </div>
+</section>
+{{/if}}
 
-    <!-- About Content -->
-    <section class="py-20 bg-gradient-to-b from-black to-gray-900">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <!-- Profile Image -->
-                <div class="relative">
-                    {{#if about_content.profile_image}}
-                    <div class="relative overflow-hidden rounded-2xl">
-                        <img src="/uploads/{{model.slug}}/{{about_content.profile_image}}" 
-                             alt="{{site_settings.model_name || model.name}}"
-                             class="w-full h-[600px] object-cover">
-                        <div class="absolute inset-0 border-4 border-glamour-gold opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-                    </div>
-                    {{else}}
-                    <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-2xl p-16 text-center">
-                        <div class="text-glamour-gold text-6xl mb-4">✨</div>
-                        <h3 class="text-2xl font-bold text-white mb-4">Professional Portrait</h3>
-                        <p class="text-gray-400">Coming Soon...</p>
-                    </div>
-                    {{/if}}
-                </div>
-
-                <!-- About Text -->
-                <div class="space-y-8">
-                    <div>
-                        <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
-                            Welcome to My World
-                        </h2>
-                        <div class="w-16 h-1 bg-glamour-gold mb-8"></div>
-                    </div>
-                    
-                    {{#if about_content.bio_paragraph_1}}
-                    <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-xl p-8">
-                        <p class="text-lg text-gray-300 leading-relaxed mb-6">
-                            {{about_content.bio_paragraph_1}}
-                        </p>
-                        {{#if about_content.bio_paragraph_2}}
-                        <p class="text-lg text-gray-300 leading-relaxed">
-                            {{about_content.bio_paragraph_2}}
-                        </p>
-                        {{/if}}
-                    </div>
-                    {{else}}
-                    <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-xl p-8">
-                        <p class="text-lg text-gray-300 leading-relaxed mb-6">
-                            I am a sophisticated companion who values discretion, elegance, and meaningful connections. 
-                            With a passion for the finer things in life, I bring grace and charm to every encounter.
-                        </p>
-                        <p class="text-lg text-gray-300 leading-relaxed">
-                            Whether it's an intimate dinner, a social event, or a quiet evening together, 
-                            I ensure every moment is memorable and tailored to your desires.
-                        </p>
-                    </div>
-                    {{/if}}
-
-                    <!-- Qualities/Skills Section -->
-                    <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-xl p-8">
-                        <h3 class="text-2xl font-bold text-white mb-6">What I Offer</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-2 h-2 bg-glamour-gold rounded-full"></div>
-                                <span class="text-gray-300">Sophisticated Conversation</span>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <div class="w-2 h-2 bg-glamour-gold rounded-full"></div>
-                                <span class="text-gray-300">Complete Discretion</span>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <div class="w-2 h-2 bg-glamour-gold rounded-full"></div>
-                                <span class="text-gray-300">Elegant Presence</span>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <div class="w-2 h-2 bg-glamour-gold rounded-full"></div>
-                                <span class="text-gray-300">Professional Service</span>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <div class="w-2 h-2 bg-glamour-gold rounded-full"></div>
-                                <span class="text-gray-300">Cultural Awareness</span>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <div class="w-2 h-2 bg-glamour-gold rounded-full"></div>
-                                <span class="text-gray-300">Travel Companion</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Personal Details Section -->
-    {{#if about_content.show_details}}
-    <section class="py-16 bg-black">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
-                    Personal Details
-                </h2>
-                <div class="w-16 h-1 bg-glamour-gold mx-auto"></div>
-            </div>
-            
-            <div class="max-w-4xl mx-auto">
-                <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {{#if about_content.age}}
-                        <div class="text-center">
-                            <div class="text-glamour-gold text-2xl font-bold mb-2">{{about_content.age}}</div>
-                            <div class="text-gray-400 text-sm uppercase tracking-wide">Age</div>
-                        </div>
-                        {{/if}}
-                        {{#if about_content.height}}
-                        <div class="text-center">
-                            <div class="text-glamour-gold text-2xl font-bold mb-2">{{about_content.height}}</div>
-                            <div class="text-gray-400 text-sm uppercase tracking-wide">Height</div>
-                        </div>
-                        {{/if}}
-                        {{#if about_content.languages}}
-                        <div class="text-center">
-                            <div class="text-glamour-gold text-2xl font-bold mb-2">{{about_content.languages}}</div>
-                            <div class="text-gray-400 text-sm uppercase tracking-wide">Languages</div>
-                        </div>
-                        {{/if}}
-                        {{#if about_content.education}}
-                        <div class="text-center">
-                            <div class="text-glamour-gold text-2xl font-bold mb-2">{{about_content.education}}</div>
-                            <div class="text-gray-400 text-sm uppercase tracking-wide">Education</div>
-                        </div>
-                        {{/if}}
-                        {{#if about_content.interests}}
-                        <div class="text-center">
-                            <div class="text-glamour-gold text-2xl font-bold mb-2">{{about_content.interests}}</div>
-                            <div class="text-gray-400 text-sm uppercase tracking-wide">Interests</div>
-                        </div>
-                        {{/if}}
-                        {{#if site_settings.city}}
-                        <div class="text-center">
-                            <div class="text-glamour-gold text-2xl font-bold mb-2">{{site_settings.city}}</div>
-                            <div class="text-gray-400 text-sm uppercase tracking-wide">Location</div>
-                        </div>
-                        {{/if}}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<!-- CTA Banner -->
+<section class="bg-gradient-to-br from-zinc-900 via-black to-zinc-800 py-20 px-4 md:px-12 text-center border-[1.5px] border-[{{color_theme.primary_color}}] mx-4 rounded-2xl">
+  <div class="max-w-3xl mx-auto space-y-6">
+    {{#if about_content and about_content.about_cta_visible and about_content.cta_title}}
+    <h2 class="text-3xl md:text-4xl font-bold text-[{{color_theme.primary_color}}]">{{about_content.cta_title}}</h2>
+    {{else}}
+    <h2 class="text-3xl md:text-4xl font-bold text-[{{color_theme.primary_color}}]">Refined. Intelligent. Yours.</h2>
     {{/if}}
+    
+    {{#if about_content and about_content.about_cta_visible and about_content.cta_description}}
+    <p class="text-lg text-white/90">
+      {{about_content.cta_description}}
+    </p>
+    {{else}}
+    <p class="text-lg text-white/90">
+      I invite you to indulge in a connection unlike any other. Let's make memories that last beyond the moment.
+    </p>
+    {{/if}}
+    
+    <div class="flex justify-center gap-6 mt-8 flex-wrap">
+      {{#if about_content and about_content.about_cta_visible}}
+      <a href="{{#if about_content.cta_button_1_link == 'calendar'}}/{{model.slug}}/calendar{% elif about_content.cta_button_1_link == 'contact' %}/{{model.slug}}/contact{% elif about_content.cta_button_1_link == 'gallery' %}/{{model.slug}}/gallery{% elif about_content.cta_button_1_link == 'rates' %}/{{model.slug}}/rates{{else}}/{{model.slug}}/contact{{/if}}" 
+         class="bg-[{{color_theme.primary_color}}] hover:bg-white text-black font-semibold text-lg px-8 py-4 rounded-full transition shadow-xl hover:shadow-[0_0_10px_{{color_theme.primary_color}}]">
+        {{about_content.cta_button_1_text}}
+      </a>
+      <a href="{{#if about_content.cta_button_2_link == 'calendar'}}/{{model.slug}}/calendar{% elif about_content.cta_button_2_link == 'contact' %}/{{model.slug}}/contact{% elif about_content.cta_button_2_link == 'gallery' %}/{{model.slug}}/gallery{% elif about_content.cta_button_2_link == 'rates' %}/{{model.slug}}/rates{% elif about_content.cta_button_2_link == 'etiquette' %}/{{model.slug}}/etiquette{{else}}/{{model.slug}}/etiquette{{/if}}" 
+         class="bg-white/10 hover:bg-white/20 text-white font-medium text-lg px-8 py-4 rounded-full transition shadow-xl">
+        {{about_content.cta_button_2_text}}
+      </a>
+      {{else}}
+      <a href="/contact" class="bg-[{{color_theme.primary_color}}] hover:bg-white text-black font-semibold text-lg px-8 py-4 rounded-full transition shadow-xl hover:shadow-[0_0_10px_{{color_theme.primary_color}}]">
+        Request a Meeting
+      </a>
+      <a href="/etiquette" class="bg-white/10 hover:bg-white/20 text-white font-medium text-lg px-8 py-4 rounded-full transition shadow-xl">
+        Read My Etiquette
+      </a>
+      {{/if}}
+    </div>
+  </div>
+</section>
 
-    <!-- Call to Action -->
-    <section class="py-16 bg-gradient-to-b from-gray-900 to-black">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h3 class="text-3xl font-bold text-white mb-4">
-                Ready to Meet?
-            </h3>
-            <p class="text-gray-300 mb-8 max-w-2xl mx-auto">
-                I would love to hear from you and discuss how we can create an unforgettable experience together.
-            </p>
-            <div class="space-x-4">
-                <a href="/{{model.slug}}/contact" 
-                   class="inline-block px-8 py-4 border-2 border-glamour-gold text-lg font-semibold text-glamour-gold hover:bg-glamour-gold hover:text-black transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25">
-                    Contact Me
-                </a>
-                <a href="/{{model.slug}}/rates" 
-                   class="inline-block px-8 py-4 bg-gray-800 hover:bg-gray-700 text-lg font-semibold text-white transition-all duration-300 transform hover:scale-105">
-                    View Rates
-                </a>
-            </div>
-        </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="bg-black border-t border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div class="text-center">
-                <h3 class="text-3xl font-bold text-glamour-gold mb-6">
-                    {{site_settings.site_name || model.name}}
-                </h3>
-                
-                <div class="flex justify-center space-x-8 mb-8">
-                    {{#if site_settings.contact_email}}
-                    <div class="text-gray-300">
-                        <span class="text-glamour-gold">Email:</span> {{site_settings.contact_email}}
-                    </div>
-                    {{/if}}
-                    {{#if site_settings.contact_phone}}
-                    <div class="text-gray-300">
-                        <span class="text-glamour-gold">Phone:</span> {{site_settings.contact_phone}}
-                    </div>
-                    {{/if}}
-                </div>
-                
-                <div class="w-24 h-1 bg-glamour-gold mx-auto mb-8"></div>
-                
-                <p class="text-gray-400">
-                    © {{currentYear}} {{site_settings.site_name || model.name}}. All rights reserved.
-                </p>
-            </div>
-        </div>
-    </footer>
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    </script>
 </body>
 </html>

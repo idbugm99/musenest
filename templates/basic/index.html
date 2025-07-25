@@ -3,128 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{site_settings.site_name || 'MuseNest Portfolio'}}</title>
+    <title>{{#if site_settings.site_name}}{{site_settings.site_name}}{{else}}{{model.name}}{{/if}}</title>
+    <meta name="description" content="{{site_settings.meta_description}}">
+    <meta name="og:title" content="{{site_settings.site_name}} - {{model.name}}">
+    <meta name="og:description" content="{{site_settings.meta_description}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{site_settings.og_image}}">
+    
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-50">
-    <!-- Render Navigation Component -->
-    {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
-
-    <!-- Hero Section -->
-    <section class="bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-            <div class="text-center">
-                <h1 class="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl">
-                    Welcome to {{site_settings.model_name}}
-                </h1>
-                <p class="mt-6 max-w-2xl mx-auto text-xl text-gray-500">
-                    {{#if site_settings.tagline}}{{site_settings.tagline}}{{else}}Professional companionship services{{/if}}
-                </p>
-                <div class="mt-8">
-                    <a href="/{{model.slug}}/contact" 
-                       class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
-                        Get In Touch
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    {{#if home_content.about_visible}}
-    <section class="py-16 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center">
-                <h2 class="text-3xl font-bold text-gray-900">
-                    {{home_content.about_title || 'About Me'}}
-                </h2>
-                <div class="mt-6 max-w-3xl mx-auto">
-                    <p class="text-lg text-gray-600 mb-4">
-                        {{home_content.about_paragraph_1}}
-                    </p>
-                    {{#if home_content.about_paragraph_2}}
-                    <p class="text-lg text-gray-600">
-                        {{home_content.about_paragraph_2}}
-                    </p>
-                    {{/if}}
-                </div>
-            </div>
-        </div>
-    </section>
-    {{/if}}
-
-    <!-- Gallery Section -->
-    {{#if home_content.gallery_visible}}
-    <section class="py-16 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900">
-                    {{home_content.gallery_section_title || 'Gallery'}}
-                </h2>
-            </div>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Dynamic Theme Colors -->
+    <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
+    
+    <style>
+        /* Basic Theme Styles */
+        
+        /* Basic Theme Colors */
+        :root {
+            --basic-primary: var(--color-primary, #3B82F6);
+            --basic-secondary: var(--color-secondary, #6B7280);
+            --basic-accent: var(--color-accent, #10B981);
+            --basic-text: var(--color-text, #1F2937);
+            --basic-background: var(--color-background, #FFFFFF);
+        }
+        
+        .text-basic-primary { color: var(--basic-primary); }
+        .bg-basic-primary { background-color: var(--basic-primary); }
+        .border-basic-primary { border-color: var(--basic-primary); }
             
-            {{#if gallery_images.length}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {{#each gallery_images}}
-                <div class="aspect-w-3 aspect-h-4 bg-gray-200 rounded-lg overflow-hidden">
-                    <img src="/uploads/{{this.filename}}" 
-                         alt="{{this.alt_text || this.caption}}"
-                         class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
-                </div>
-                {{/each}}
+    </style>
+</head>
+<body class="bg-basic-background font-sans">
+    <!-- Navigation Component -->
+    {{component "navigation" theme="basic" model=model navigation=navigation}}
+    
+    <!-- Page Content -->
+    
+
+Home - {{#if site_settings}}{{site_settings.site_name}}{{else}}{{'Rose Mastos'}}{{/if}}
+
+
+<!-- Hero Section -->
+{{#if home_content.hero_section_visible != False}}
+<section class="relative bg-gradient-to-r from-primary to-accent text-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-6xl font-heading font-bold mb-6">{{#if site_settings}}{{site_settings.model_name}}{{else}}{{'Rose Mastos'}}{{/if}}</h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">{{#if site_settings}}{{site_settings.tagline}}{{else}}{{'Elegant companionship with discretion and sophistication'}}{{/if}}</p>
+            <div class="space-x-4">
+                {% set button_1_page = home_content.hero_button_1_link or 'calendar' %}
+                {{#if button_1_page == 'calendar'}}
+                    {% set button_1_url = model_url_for('model.calendar_view') %}
+                {% elif button_1_page == 'contact' %}
+                    {% set button_1_url = model_url_for('model.contact') %}
+                {% elif button_1_page == 'gallery' %}
+                    {% set button_1_url = model_url_for('content.gallery') %}
+                {% elif button_1_page == 'rates' %}
+                    {% set button_1_url = model_url_for('model.rates') %}
+                {{else}}
+                    {% set button_1_url = model_url_for('model.index') %}
+                {{/if}}
+                {% set button_2_page = home_content.hero_button_2_link or 'contact' %}
+                {{#if button_2_page == 'calendar'}}
+                    {% set button_2_url = model_url_for('model.calendar_view') %}
+                {% elif button_2_page == 'contact' %}
+                    {% set button_2_url = model_url_for('model.contact') %}
+                {% elif button_2_page == 'gallery' %}
+                    {% set button_2_url = model_url_for('content.gallery') %}
+                {% elif button_2_page == 'rates' %}
+                    {% set button_2_url = model_url_for('model.rates') %}
+                {{else}}
+                    {% set button_2_url = model_url_for('model.index') %}
+                {{/if}}
+                <a href="{{button_1_url}}" class="bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">{{home_content.hero_button_1}}</a>
+                <a href="{{button_2_url}}" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary transition-colors">{{home_content.hero_button_2}}</a>
+            </div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- About Preview -->
+{{#if home_content.about_section_visible != False}}
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {% set about_link_page = home_content.about_link_destination or 'about' %}
+        {{#if about_link_page == 'about'}}
+            {% set about_link_url = model_url_for('model.about') %}
+        {% elif about_link_page == 'contact' %}
+            {% set about_link_url = model_url_for('model.contact') %}
+        {% elif about_link_page == 'gallery' %}
+            {% set about_link_url = model_url_for('content.gallery') %}
+        {% elif about_link_page == 'rates' %}
+            {% set about_link_url = model_url_for('model.rates') %}
+        {% elif about_link_page == 'calendar' %}
+            {% set about_link_url = model_url_for('model.calendar_view') %}
+        {{else}}
+            {% set about_link_url = model_url_for('model.about') %}
+        {{/if}}
+        {{#if home_content.portrait_section_visible != False}}
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <h2 class="text-3xl font-heading font-bold mb-6">{{home_content.about_title}}</h2>
+                <p class="text-lg text-gray-600 mb-6">{{home_content.about_paragraph_1}}</p>
+                <p class="text-lg text-gray-600 mb-6">{{home_content.about_paragraph_2}}</p>
+                <a href="{{about_link_url}}" class="text-primary hover:text-accent font-semibold">{{home_content.about_link_text}}</a>
+            </div>
+            <div class="bg-gray-200 h-96 rounded-lg flex items-center justify-center overflow-hidden">
+                {{#if home_content.portrait_image}}
+                <img src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), home_content.portrait_image.filename))}}" 
+                     alt="{{home_content.portrait_alt}}"
+                     class="w-full h-full object-cover object-center" style="object-position: 50% 20%;">
+                {{else}}
+                <p class="text-gray-500">{{home_content.portrait_alt}}</p>
+                {{/if}}
+            </div>
+        </div>
+        {{else}}
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl font-heading font-bold mb-6">{{home_content.about_title}}</h2>
+            <p class="text-lg text-gray-600 mb-6">{{home_content.about_paragraph_1}}</p>
+            <p class="text-lg text-gray-600 mb-6">{{home_content.about_paragraph_2}}</p>
+            <a href="{{about_link_url}}" class="text-primary hover:text-accent font-semibold">{{home_content.about_link_text}}</a>
+        </div>
+        {{/if}}
+    </div>
+</section>
+{{/if}}
+
+<!-- Gallery Preview -->
+{{#if home_content.gallery_section_visible != False}}
+<section class="py-16 bg-background">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-heading font-bold text-center mb-12">
+            {{home_content.gallery_section_title or 'Gallery'}}
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {{#each image in gallery_images}}
+            <div class="aspect-square rounded-lg overflow-hidden bg-gray-200">
+                <img src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), image.filename))}}" 
+                     alt="{{image.caption or 'Gallery image'}}" 
+                     class="w-full h-full object-cover object-top">
             </div>
             {{else}}
-            <div class="text-center py-12">
-                <p class="text-gray-500">Gallery images coming soon...</p>
+            {{#each i in range(6)}}
+            <div class="bg-gray-200 aspect-square rounded-lg flex items-center justify-center">
+                <p class="text-gray-500 text-sm">Photo {{i + 1}}</p>
             </div>
-            {{/if}}
+            {{/each}}
+            {{/each}}
         </div>
-    </section>
-    {{/if}}
+        <div class="text-center mt-8">
+            <a href="{{model_url_for('content.gallery')}}" class="bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-colors">
+                {{home_content.gallery_button_text or 'View Full Gallery'}}
+            </a>
+        </div>
+    </div>
+</section>
+{{/if}}
 
-    <!-- Testimonials Section -->
-    {{#if testimonials.length}}
-    <section class="py-16 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900">
-                    {{home_content.testimonials_section_title || 'What Clients Say'}}
-                </h2>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {{#each testimonials}}
-                <div class="bg-white rounded-lg shadow-sm p-6">
-                    <div class="text-yellow-400 mb-4">
-                        {{#repeat this.rating}}⭐{{/repeat}}
-                    </div>
-                    <p class="text-gray-600 mb-4">{{this.testimonial_text}}</p>
-                    <p class="font-semibold text-gray-900">
-                        {{this.client_name || this.client_initial}}
-                    </p>
+<!-- Testimonials -->
+{{#if home_content.testimonials_section_visible != False}}
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-heading font-bold text-center mb-12">{{home_content.testimonials_section_title or 'What Clients Say'}}</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            {{#each testimonial in testimonials}}
+            <div class="bg-background p-6 rounded-lg">
+                <div class="flex text-accent mb-4">
+                    {{#each i in range(testimonial.rating)}}
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    {{/each}}
                 </div>
-                {{/each}}
+                <p class="text-gray-600 mb-4">"{{testimonial.text}}"</p>
+                <p class="font-semibold">{{testimonial.name}}</p>
             </div>
+            {{else}}
+            <div class="bg-background p-6 rounded-lg">
+                <div class="flex text-accent mb-4">
+                    {{#each i in range(5)}}
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    {{/each}}
+                </div>
+                <p class="text-gray-600 mb-4">"Rose is absolutely wonderful. Professional, elegant, and truly caring. An unforgettable experience."</p>
+                <p class="font-semibold">Michael D.</p>
+            </div>
+            <div class="bg-background p-6 rounded-lg">
+                <div class="flex text-accent mb-4">
+                    {{#each i in range(5)}}
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    {{/each}}
+                </div>
+                <p class="text-gray-600 mb-4">"Discretion and class personified. Rose made our evening magical."</p>
+                <p class="font-semibold">James S.</p>
+            </div>
+            <div class="bg-background p-6 rounded-lg">
+                <div class="flex text-accent mb-4">
+                    {{#each i in range(5)}}
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    {{/each}}
+                </div>
+                <p class="text-gray-600 mb-4">"Exceptional service and genuine warmth. Highly recommended."</p>
+                <p class="font-semibold">Robert T.</p>
+            </div>
+            {{/each}}
         </div>
-    </section>
-    {{/if}}
+    </div>
+</section>
+{{/if}}
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="text-center">
-                <h3 class="text-2xl font-bold mb-4">{{site_settings.site_name || model.name}}</h3>
-                {{#if site_settings.contact_email}}
-                <p class="text-gray-300 mb-2">{{site_settings.contact_email}}</p>
+<!-- CTA Section -->
+{{#if home_content.cta_section_visible != False}}
+                {% set cta_button_1_page = home_content.cta_button_1_link or 'calendar' %}
+                {{#if cta_button_1_page == 'calendar'}}
+                    {% set cta_button_1_url = model_url_for('model.calendar_view') %}
+                {% elif cta_button_1_page == 'contact' %}
+                    {% set cta_button_1_url = model_url_for('model.contact') %}
+                {% elif cta_button_1_page == 'gallery' %}
+                    {% set cta_button_1_url = model_url_for('content.gallery') %}
+                {% elif cta_button_1_page == 'rates' %}
+                    {% set cta_button_1_url = model_url_for('model.rates') %}
+                {% elif cta_button_1_page == 'about' %}
+                    {% set cta_button_1_url = model_url_for('model.about') %}
+                {% elif cta_button_1_page == 'etiquette' %}
+                    {% set cta_button_1_url = model_url_for('model.etiquette') %}
+                {{else}}
+                    {% set cta_button_1_url = model_url_for('model.index') %}
                 {{/if}}
-                {{#if site_settings.contact_phone}}
-                <p class="text-gray-300 mb-4">{{site_settings.contact_phone}}</p>
+                {% set cta_button_2_page = home_content.cta_button_2_link or 'contact' %}
+                {{#if cta_button_2_page == 'calendar'}}
+                    {% set cta_button_2_url = model_url_for('model.calendar_view') %}
+                {% elif cta_button_2_page == 'contact' %}
+                    {% set cta_button_2_url = model_url_for('model.contact') %}
+                {% elif cta_button_2_page == 'gallery' %}
+                    {% set cta_button_2_url = model_url_for('content.gallery') %}
+                {% elif cta_button_2_page == 'rates' %}
+                    {% set cta_button_2_url = model_url_for('model.rates') %}
+                {% elif cta_button_2_page == 'about' %}
+                    {% set cta_button_2_url = model_url_for('model.about') %}
+                {% elif cta_button_2_page == 'etiquette' %}
+                    {% set cta_button_2_url = model_url_for('model.etiquette') %}
+                {{else}}
+                    {% set cta_button_2_url = model_url_for('model.index') %}
                 {{/if}}
-                <p class="text-sm text-gray-400">
-                    © {{currentYear}} {{site_settings.site_name || model.name}}. All rights reserved.
-                </p>
-            </div>
+<section class="py-16 bg-primary text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-heading font-bold mb-6">{{home_content.cta_section_title or 'Ready to Meet?'}}</h2>
+        <p class="text-xl mb-8">{{home_content.cta_section_subtitle or 'Experience elegance and sophistication with professional companionship services'}}</p>
+        <div class="space-x-4">
+            <a href="{{cta_button_1_url}}" class="bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">{{home_content.cta_button_1 or 'View Calendar'}}</a>
+            <a href="{{cta_button_2_url}}" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary transition-colors">{{home_content.cta_button_2 or 'Contact Me'}}</a>
         </div>
-    </footer>
+    </div>
+</section>
+{{/if}}
+
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    </script>
 </body>
 </html>

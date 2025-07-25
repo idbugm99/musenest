@@ -3,364 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rates - {{site_settings.site_name || 'Glamour Portfolio'}}</title>
+    <title>{{#if site_settings.site_name}}{{site_settings.site_name}}{{else}}{{model.name}}{{/if}}</title>
+    <meta name="description" content="{{site_settings.meta_description}}">
+    <meta name="og:title" content="{{site_settings.site_name}} - {{model.name}}">
+    <meta name="og:description" content="{{site_settings.meta_description}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{site_settings.og_image}}">
+    
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Dynamic Theme Colors -->
+    <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
+    
     <style>
-        .bg-glamour-dark { background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); }
-        .bg-glamour-gold { background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); }
-        .text-glamour-gold { color: #D4AF37; }
-        .border-glamour-gold { border-color: #D4AF37; }
+        /* Glamour Theme Styles */
         
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
+        /* Glamour Theme Colors */
+        :root {
+            --glamour-primary: var(--color-primary, #EC4899);
+            --glamour-secondary: var(--color-secondary, #BE185D);
+            --glamour-accent: var(--color-accent, #F59E0B);
+            --glamour-text: var(--color-text, #831843);
+            --glamour-background: var(--color-background, #FDF2F8);
         }
         
-        .animate-shimmer {
-            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
-            background-size: 200% 100%;
-            animation: shimmer 2s infinite;
+        .text-glamour-primary { color: var(--glamour-primary); }
+        .bg-glamour-primary { background-color: var(--glamour-primary); }
+        .border-glamour-primary { border-color: var(--glamour-primary); }
+        
+        .glamour-gradient {
+            background: linear-gradient(135deg, var(--glamour-primary) 0%, var(--glamour-secondary) 100%);
         }
-
-        .price-card {
-            transition: all 0.3s ease;
-        }
-
-        .price-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.2);
-        }
-
-        .featured-card {
-            border: 2px solid #D4AF37;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .featured-card::before {
-            content: 'Most Popular';
-            position: absolute;
-            top: 20px;
-            right: -30px;
-            background: #D4AF37;
-            color: black;
-            padding: 8px 40px;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-            transform: rotate(45deg);
-            letter-spacing: 1px;
-        }
+            
     </style>
 </head>
-<body class="bg-black text-white min-h-screen">
-    {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+<body class="bg-glamour-background font-serif">
+    <!-- Navigation Component -->
+    {{component "navigation" theme="glamour" model=model navigation=navigation}}
+    
+    <!-- Page Content -->
+    
 
-    <!-- Header Section -->
-    <section class="relative py-20 bg-glamour-dark">
-        <div class="absolute inset-0 opacity-5">
-            <div class="w-full h-full bg-gradient-radial from-yellow-500/20 via-transparent to-transparent"></div>
-        </div>
+Rates - {{#if current_model}}{{site_settings.model_name if site_settings and site_settings.model_name else (current_model.name}}{{else}}{{'Model Example')}}{{/if}}
+
+
+<section class="py-16 bg-background text-charcoal">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">
-                Rates & Services
-            </h1>
-            <div class="w-24 h-1 bg-glamour-gold mx-auto mb-6 animate-shimmer"></div>
-            <p class="text-xl text-gray-300 max-w-3xl mx-auto">
-                Professional companionship services tailored to your needs
-            </p>
-        </div>
-    </section>
-
-    <!-- Service Categories -->
-    {{#if service_categories.length}}
-    <section class="py-20 bg-gradient-to-b from-black to-gray-900">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {{#each service_categories}}
-            <div class="mb-20">
-                <div class="text-center mb-16">
-                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
-                        {{this.name}}
-                    </h2>
-                    <div class="w-16 h-1 bg-glamour-gold mx-auto"></div>
-                    {{#if this.description}}
-                    <p class="text-gray-300 mt-6 max-w-3xl mx-auto text-lg">{{this.description}}</p>
-                    {{/if}}
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {{#each this.services}}
-                    <div class="price-card bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 {{#if this.is_featured}}featured-card{{/if}}">
-                        <div class="text-center mb-8">
-                            <h3 class="text-2xl font-bold text-white mb-2">{{this.name}}</h3>
-                            <div class="text-4xl font-bold text-glamour-gold mb-4">
-                                {{#if this.price_display}}
-                                    {{this.price_display}}
-                                {{else}}
-                                    ${{this.price}}
+        <!-- Header & Introduction -->
+        {{#if rates_settings.rates_header_visible}}
+        <header class="text-center mb-16">
+            <div class="max-w-4xl mx-auto rounded-2xl border border-[{{color_theme.primary}}] bg-gradient-to-br from-background via-white/5 to-background shadow-xl p-8">
+                <h1 class="text-4xl font-heading font-bold mb-6 text-accent page-title" data-aos="zoom-in" data-aos-duration="600" style="text-shadow: 0 0 10px rgba({{color_theme.primary | replace('#', '') | list | batch(2) | map('join') | map('int', base=16) | join(', ')}}, 0.3);">
+                    {{rates_settings.page_title or 'Rates & Donations'}}
+                </h1>
+                <p class="text-xl text-charcoal/70 max-w-3xl mx-auto leading-relaxed intro-text" data-aos="zoom-in" data-aos-duration="600" data-aos-delay="200">
+                    {{rates_settings.page_subtitle or 'Investment in time together. All arrangements are for companionship and social time only.'}}
+                </p>
+            </div>
+        </header>
+        {{/if}}
+        
+        <!-- Rates Table -->
+        {{#if rates_settings.rates_table_visible}}
+        <div class="max-w-6xl mx-auto">
+            <!-- Rate Boxes (only show if they exist) -->
+            {% set has_incall = incall_rates and incall_rates|.length > 0 and rates_settings.rates_incall_visible %}
+            {% set has_outcall = outcall_rates and outcall_rates|.length > 0 and rates_settings.rates_outcall_visible %}
+            
+            {{#if has_incall or has_outcall}}
+            <div class="flex flex-col md:flex-row gap-6 justify-center my-12">
+                {{#if has_incall}}
+                <!-- Incall Rates -->
+                <div class="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700/50 rounded-2xl shadow-lg p-8 hover:scale-[1.01] hover:bg-[radial-gradient(circle,rgba(255,255,255,0.05)_1%,transparent_60%)] transition-all duration-300 ease-in-out flex-1 max-w-lg min-h-[440px] group" data-aos="fade-up" data-aos-delay="100">
+                    <p class="text-gray-400 text-xs uppercase tracking-widest mb-2">Premium Service</p>
+                    <h2 class="text-2xl font-heading font-bold mb-6 text-center text-yellow-500">Incall</h2>
+                    <div class="space-y-3">
+                        {{#each rate in incall_rates}}
+                        <div class="flex justify-between items-center {{#if not loop.last}}border-b border-yellow-500/30 py-2{{else}}py-2{{/if}} hover:scale-[1.01] transition-transform duration-300 ease-in-out" data-aos="fade-up" data-aos-delay="{{200 + (loop.index0 * 50)}}">
+                            <div class="flex-1">
+                                {% set visible_parts = [] %}
+                                {{#if rates_settings.incall_show_service_name}}
+                                    {% set _ = visible_parts.append('<span class="font-medium font-heading text-white">' + (rate.service_name or 'Service') + '</span>') %}
                                 {{/if}}
+                                {{#if rates_settings.incall_show_duration}}
+                                    {% set _ = visible_parts.append('<span class="text-gray-300">' + (rate.duration or 'Duration') + '</span>') %}
+                                {{/if}}
+                                <span class="text-lg text-gray-300 group-hover:text-white transition-colors duration-300">{{visible_parts|join(' — ')|}}</span>
                             </div>
-                            <p class="text-gray-400">{{this.duration_display || this.duration}}</p>
+                            {{#if rates_settings.incall_show_price}}
+                            <span class="ml-auto bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-semibold shadow-sm">{{rate.price}}</span>
+                            {{/if}}
                         </div>
-                        
-                        {{#if this.description}}
-                        <p class="text-gray-300 mb-6 text-center">{{this.description}}</p>
-                        {{/if}}
-                        
-                        {{#if this.features}}
-                        <div class="space-y-3 mb-8">
-                            {{#each this.features}}
-                            <div class="flex items-center space-x-3">
-                                <div class="w-2 h-2 bg-glamour-gold rounded-full flex-shrink-0"></div>
-                                <span class="text-gray-300">{{this}}</span>
+                        {{/each}}
+                    </div>
+                </div>
+                {{/if}}
+                
+                {{#if has_outcall}}
+                <!-- Outcall Rates -->
+                <div class="bg-gradient-to-tr from-yellow-700/30 to-yellow-600/20 border border-yellow-500/30 text-white rounded-2xl shadow-lg p-8 hover:scale-[1.01] hover:bg-[radial-gradient(circle,rgba(255,255,255,0.05)_1%,transparent_60%)] transition-all duration-300 ease-in-out flex-1 max-w-lg min-h-[440px] group" data-aos="fade-up" data-aos-delay="200">
+                    <p class="text-yellow-200/80 text-xs uppercase tracking-widest mb-2">Mobile Service</p>
+                    <h2 class="text-2xl font-heading font-bold mb-6 text-center text-yellow-300">Outcall</h2>
+                    <div class="space-y-3">
+                        {{#each rate in outcall_rates}}
+                        <div class="flex justify-between items-center {{#if not loop.last}}border-b border-yellow-500/30 py-2{{else}}py-2{{/if}} hover:scale-[1.01] transition-transform duration-300 ease-in-out" data-aos="fade-up" data-aos-delay="{{200 + (loop.index0 * 50)}}">
+                            <div class="flex-1">
+                                {% set visible_parts = [] %}
+                                {{#if rates_settings.outcall_show_service_name}}
+                                    {% set _ = visible_parts.append('<span class="font-medium font-heading text-white">' + (rate.service_name or 'Service') + '</span>') %}
+                                {{/if}}
+                                {{#if rates_settings.outcall_show_duration}}
+                                    {% set _ = visible_parts.append('<span class="text-gray-200">' + (rate.duration or 'Duration') + '</span>') %}
+                                {{/if}}
+                                <span class="text-lg text-gray-200">{{visible_parts|join(' — ')|}}</span>
                             </div>
-                            {{/each}}
+                            {{#if rates_settings.outcall_show_price}}
+                            <span class="ml-auto bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-semibold shadow-sm">{{rate.price}}</span>
+                            {{/if}}
                         </div>
-                        {{/if}}
-                        
-                        <div class="text-center">
-                            <a href="/{{model.slug}}/contact" 
-                               class="inline-block px-6 py-3 border-2 border-glamour-gold text-glamour-gold hover:bg-glamour-gold hover:text-black transition-all duration-300 font-semibold">
-                                Book Now
-                            </a>
-                        </div>
+                        {{/each}}
                     </div>
-                    {{/each}}
                 </div>
+                {{/if}}
             </div>
-            {{/each}}
-        </div>
-    </section>
-    {{else}}
-    <!-- Default Service Packages -->
-    <section class="py-20 bg-gradient-to-b from-black to-gray-900">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
-                    Service Packages
-                </h2>
-                <div class="w-16 h-1 bg-glamour-gold mx-auto"></div>
-                <p class="text-gray-300 mt-6 max-w-3xl mx-auto text-lg">
-                    Choose from my carefully curated service packages designed to meet your specific needs
-                </p>
-            </div>
+            {{/if}}
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Dinner Companion -->
-                <div class="price-card bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8">
-                    <div class="text-center mb-8">
-                        <h3 class="text-2xl font-bold text-white mb-2">Dinner Companion</h3>
-                        <div class="text-4xl font-bold text-glamour-gold mb-4">$300</div>
-                        <p class="text-gray-400">3 Hours</p>
-                    </div>
-                    
-                    <p class="text-gray-300 mb-6 text-center">
-                        Elegant dinner companionship for social or business occasions
-                    </p>
-                    
-                    <div class="space-y-3 mb-8">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-2 h-2 bg-glamour-gold rounded-full flex-shrink-0"></div>
-                            <span class="text-gray-300">Sophisticated conversation</span>
+            <!-- Extended Engagements (only show if they exist) -->
+            {{#if extended_rates and extended_rates|.length > 0 and rates_settings.rates_extended_visible}}
+            <section class="bg-background mb-12" data-aos="fade-up" data-aos-delay="300">
+                <div class="bg-gradient-to-br from-yellow-600/25 to-yellow-800/20 border border-yellow-500/30 text-white p-8 rounded-2xl shadow-lg hover:scale-[1.01] transition-all duration-300 ease-in-out">
+                    <p class="text-yellow-200/80 text-xs uppercase tracking-widest mb-2 text-center">Extended Options</p>
+                    <h2 class="text-2xl font-heading font-bold mb-8 text-center text-yellow-300">Extended Engagements</h2>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        {{#each rate in extended_rates}}
+                        <div class="text-center p-6 rounded-xl bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700/50 transform-gpu transition-transform scale-100 hover:scale-105 shadow-[0_0_10px_rgba(212,175,55,0.2)] hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]" data-aos="fade-up" data-aos-delay="{{400 + (loop.index0 * 50)}}">
+                            {{#if rates_settings.extended_show_service_name}}
+                            <h3 class="text-xl font-heading font-bold mb-3 text-yellow-500">{{rate.service_name}}</h3>
+                            {{/if}}
+                            {{#if rates_settings.extended_show_price}}
+                            <div class="bg-yellow-500 text-black px-4 py-2 rounded-full text-lg font-bold mb-3 mx-auto inline-block shadow-lg">{{rate.price}}</div>
+                            {{/if}}
+                            {{#if rates_settings.extended_show_duration}}
+                            <p class="text-sm text-gray-300">{{rate.duration}}</p>
+                            {{/if}}
                         </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-2 h-2 bg-glamour-gold rounded-full flex-shrink-0"></div>
-                            <span class="text-gray-300">Elegant attire</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-2 h-2 bg-glamour-gold rounded-full flex-shrink-0"></div>
-                            <span class="text-gray-300">Professional demeanor</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-2 h-2 bg-glamour-gold rounded-full flex-shrink-0"></div>
-                            <span class="text-gray-300">Complete discretion</span>
-                        </div>
-                    </div>
-                    
-                    <div class="text-center">
-                        <a href="/{{model.slug}}/contact" 
-                           class="inline-block px-6 py-3 border-2 border-glamour-gold text-glamour-gold hover:bg-glamour-gold hover:text-black transition-all duration-300 font-semibold">
-                            Book Now
-                        </a>
+                        {{/each}}
                     </div>
                 </div>
-
-                <!-- Social Events -->
-                <div class="price-card bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 featured-card">
-                    <div class="text-center mb-8">
-                        <h3 class="text-2xl font-bold text-white mb-2">Social Events</h3>
-                        <div class="text-4xl font-bold text-glamour-gold mb-4">$500</div>
-                        <p class="text-gray-400">4-5 Hours</p>
-                    </div>
-                    
-                    <p class="text-gray-300 mb-6 text-center">
-                        Perfect companion for parties, galas, and special occasions
-                    </p>
-                    
-                    <div class="space-y-3 mb-8">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-2 h-2 bg-glamour-gold rounded-full flex-shrink-0"></div>
-                            <span class="text-gray-300">Event-appropriate attire</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-2 h-2 bg-glamour-gold rounded-full flex-shrink-0"></div>
-                            <span class="text-gray-300">Social grace & charm</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-2 h-2 bg-glamour-gold rounded-full flex-shrink-0"></div>
-                            <span class="text-gray-300">Networking assistance</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-2 h-2 bg-glamour-gold rounded-full flex-shrink-0"></div>
-                            <span class="text-gray-300">Photography partner</span>
-                        </div>
-                    </div>
-                    
-                    <div class="text-center">
-                        <a href="/{{model.slug}}/contact" 
-                           class="inline-block px-6 py-3 bg-glamour-gold text-black hover:bg-yellow-600 transition-all duration-300 font-semibold">
-                            Book Now
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Private Engagements -->
-                <div class="price-card bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8">
-                    <div class="text-center mb-8">
-                        <h3 class="text-2xl font-bold text-white mb-2">Private Time</h3>
-                        <div class="text-4xl font-bold text-glamour-gold mb-4">$800</div>
-                        <p class="text-gray-400">Per Hour</p>
-                    </div>
-                    
-                    <p class="text-gray-300 mb-6 text-center">
-                        Intimate, private companionship in a comfortable setting
-                    </p>
-                    
-                    <div class="space-y-3 mb-8">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-2 h-2 bg-glamour-gold rounded-full flex-shrink-0"></div>
-                            <span class="text-gray-300">Genuine connection</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-2 h-2 bg-glamour-gold rounded-full flex-shrink-0"></div>
-                            <span class="text-gray-300">Relaxed atmosphere</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-2 h-2 bg-glamour-gold rounded-full flex-shrink-0"></div>
-                            <span class="text-gray-300">Personalized experience</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-2 h-2 bg-glamour-gold rounded-full flex-shrink-0"></div>
-                            <span class="text-gray-300">Minimum 2 hours</span>
-                        </div>
-                    </div>
-                    
-                    <div class="text-center">
-                        <a href="/{{model.slug}}/contact" 
-                           class="inline-block px-6 py-3 border-2 border-glamour-gold text-glamour-gold hover:bg-glamour-gold hover:text-black transition-all duration-300 font-semibold">
-                            Book Now
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    {{/if}}
-
-    <!-- Booking Information -->
-    <section class="py-16 bg-black">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
-                    Booking Information
-                </h2>
-                <div class="w-16 h-1 bg-glamour-gold mx-auto"></div>
-            </div>
+            </section>
+            {{/if}}
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Payment Methods -->
-                <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-xl p-8 text-center">
-                    <div class="w-16 h-16 bg-glamour-gold bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg class="w-8 h-8 text-glamour-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-4">Payment Methods</h3>
-                    <p class="text-gray-300">Cash, bank transfer, or cryptocurrency accepted. Payment required before meeting.</p>
-                </div>
-
-                <!-- Advance Booking -->
-                <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-xl p-8 text-center">
-                    <div class="w-16 h-16 bg-glamour-gold bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg class="w-8 h-8 text-glamour-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-4">Advance Booking</h3>
-                    <p class="text-gray-300">Please book at least 24-48 hours in advance. Same-day bookings subject to availability.</p>
-                </div>
-
-                <!-- Cancellation Policy -->
-                <div class="bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-700 rounded-xl p-8 text-center">
-                    <div class="w-16 h-16 bg-glamour-gold bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg class="w-8 h-8 text-glamour-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-4">Cancellation Policy</h3>
-                    <p class="text-gray-300">24-hour notice required for cancellations. Late cancellations may incur fees.</p>
+            <!-- Payment Terms & Add-Ons -->
+            {% set has_payment_terms = payment_terms and payment_terms|.length > 0 and rates_settings.rates_payment_visible %}
+            {% set has_additional_services = additional_services and additional_services|.length > 0 and rates_settings.rates_additional_visible %}
+            
+            {{#if has_payment_terms or has_additional_services}}
+            <div class="grid md:grid-cols-2 gap-6 my-12" data-aos="fade-up" data-aos-delay="400">
+                {{#if has_payment_terms}}
+                <section class="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700/50 p-6 lg:p-8 rounded-2xl shadow-lg hover:scale-[1.01] transition-transform duration-300 ease-in-out min-h-[300px] group">
+                    <h3 class="text-xl font-heading font-bold mb-6 text-yellow-500">Payment & Booking</h3>
+                    <ul class="space-y-4 text-gray-300">
+                        {{#each term in payment_terms}}
+                        <li class="flex items-start" data-aos="fade-up" data-aos-delay="{{500 + (loop.index0 * 50)}}">
+                            <span class="text-yellow-500 mr-3 text-lg flex-shrink-0 mt-1">◆</span>
+                            <span class="leading-relaxed group-hover:text-white transition-colors duration-300">{{term.term_text}}</span>
+                        </li>
+                        {{/each}}
+                    </ul>
+                </section>
+                {{/if}}
+                
+                {{#if has_additional_services}}
+                <section class="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700/50 p-6 lg:p-8 rounded-2xl shadow-lg hover:scale-[1.01] transition-transform duration-300 ease-in-out min-h-[300px] group">
+                    <h3 class="text-xl font-heading font-bold mb-6 text-yellow-500">Additional Services</h3>
+                    <ul class="space-y-4 text-gray-300">
+                        {{#each term in additional_services}}
+                        <li class="flex items-start" data-aos="fade-up" data-aos-delay="{{500 + (loop.index0 * 50)}}">
+                            <span class="text-yellow-500 mr-3 text-lg flex-shrink-0 mt-1">◆</span>
+                            <span class="leading-relaxed group-hover:text-white transition-colors duration-300">{{term.term_text}}</span>
+                        </li>
+                        {{/each}}
+                    </ul>
+                </section>
+                {{/if}}
+            </div>
+            {{/if}}
+        </div>
+        {{/if}}
+        
+        <!-- Donations Section -->
+        {{#if rates_settings.donations_visible}}
+        <section class="max-w-4xl mx-auto my-12" data-aos="fade-up" data-aos-delay="500">
+            <div class="bg-gradient-to-br from-gray-900 to-gray-800 border-l-4 border-yellow-500 p-8 rounded-2xl shadow-lg hover:scale-[1.01] transition-transform duration-300 ease-in-out">
+                <p class="text-gray-400 text-xs uppercase tracking-widest mb-2">Support</p>
+                <h2 class="text-2xl font-heading font-bold mb-4 text-yellow-500 flex items-center justify-center gap-2" data-aos="zoom-in" data-aos-delay="100">
+                    <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                    </svg>
+                    {{rates_settings.donation_title or 'Donations'}}
+                </h2>
+                <p class="text-lg font-serif leading-relaxed text-gray-300 text-center">{{rates_settings.donation_description or 'Donations are appreciated to help support my work.'}}</p>
+            </div>
+        </section>
+        {{/if}}
+        
+        <!-- Terms & Conditions Section -->
+        {{#if rates_settings.terms_visible}}
+        <section class="max-w-4xl mx-auto my-12" data-aos="fade-up" data-aos-delay="600">
+            <div class="bg-gradient-to-br from-gray-900 to-gray-800 border-l-4 border-yellow-500 p-8 rounded-2xl shadow-lg hover:scale-[1.01] transition-transform duration-300 ease-in-out">
+                <p class="text-gray-400 text-xs uppercase tracking-widest mb-2">Legal</p>
+                <h2 class="text-2xl font-heading font-bold mb-6 text-yellow-500 text-center" data-aos="zoom-in" data-aos-delay="100">{{rates_settings.terms_title or 'Terms & Conditions'}}</h2>
+                <div class="prose max-w-none">
+                    <p class="font-serif leading-relaxed text-gray-300 italic text-sm text-center">{{rates_settings.terms_content or 'Please read and understand these terms before booking.'}}</p>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- Custom Packages -->
-    <section class="py-16 bg-gradient-to-b from-black to-gray-900">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
-                Custom Packages Available
-            </h2>
-            <div class="w-16 h-1 bg-glamour-gold mx-auto mb-8"></div>
-            <p class="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-                Looking for something special? I offer custom packages for extended engagements, 
-                travel companionship, and unique experiences tailored to your needs.
-            </p>
-            <a href="/{{model.slug}}/contact" 
-               class="inline-block px-8 py-4 bg-glamour-gold hover:bg-yellow-600 text-black font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25">
-                Discuss Custom Package
-            </a>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-black border-t border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div class="text-center">
-                <h3 class="text-3xl font-bold text-glamour-gold mb-6">
-                    {{site_settings.site_name || model.name}}
-                </h3>
-                
-                <div class="flex justify-center space-x-8 mb-8">
-                    {{#if site_settings.contact_email}}
-                    <div class="text-gray-300">
-                        <span class="text-glamour-gold">Email:</span> {{site_settings.contact_email}}
-                    </div>
-                    {{/if}}
-                    {{#if site_settings.contact_phone}}
-                    <div class="text-gray-300">
-                        <span class="text-glamour-gold">Phone:</span> {{site_settings.contact_phone}}
-                    </div>
-                    {{/if}}
+        </section>
+        {{/if}}
+        
+        <!-- Call to Action Section -->
+        {{#if rates_settings.cta_visible}}
+        <section class="max-w-4xl mx-auto my-12" data-aos="fade-up" data-aos-delay="700">
+            <div class="text-center bg-gradient-to-br from-gray-900 to-gray-800 p-8 rounded-2xl border border-yellow-500/30 shadow-xl">
+                <p class="text-gray-400 text-xs uppercase tracking-widest mb-2">Ready to Begin</p>
+                <h3 class="text-2xl font-heading font-bold mb-4 text-yellow-500" data-aos="zoom-in" data-aos-delay="100">{{rates_settings.cta_title or 'Ready to Book?'}}</h3>
+                <p class="text-lg text-gray-300 mb-8 max-w-md mx-auto leading-relaxed">{{rates_settings.cta_description or 'Contact me to discuss your preferences and arrange our time together.'}}</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="{{model_url_for('model.calendar_view')}}" class="bg-yellow-500 text-black px-8 py-4 rounded-2xl font-semibold hover:shadow-[0_0_12px_rgba(212,175,55,0.5)] hover:-translate-y-[2px] transition-all ease-in-out duration-300 shadow-lg relative overflow-hidden group" data-aos="zoom-in" data-aos-delay="200">
+                        <span class="relative z-10">{{rates_settings.cta_button_1_text or 'View Calendar'}}</span>
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></div>
+                    </a>
+                    <a href="{{model_url_for('model.contact')}}" class="border-2 border-yellow-500 text-yellow-500 px-8 py-4 rounded-2xl font-semibold hover:bg-yellow-500 hover:text-black hover:shadow-[0_0_12px_rgba(212,175,55,0.5)] hover:-translate-y-[2px] transition-all ease-in-out duration-300 shadow-lg relative overflow-hidden group" data-aos="zoom-in" data-aos-delay="300">
+                        <span class="relative z-10">{{rates_settings.cta_button_2_text or 'Contact Me'}}</span>
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></div>
+                    </a>
                 </div>
-                
-                <div class="w-24 h-1 bg-glamour-gold mx-auto mb-8"></div>
-                
-                <p class="text-gray-400">
-                    © {{currentYear}} {{site_settings.site_name || model.name}}. All rights reserved.
-                </p>
             </div>
-        </div>
-    </footer>
+        </section>
+        {{/if}}
+    </div>
+</section>
+
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    </script>
 </body>
 </html>

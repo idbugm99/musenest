@@ -3,149 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAQ - {{site_settings.site_name || 'Glamour Portfolio'}}</title>
+    <title>{{#if site_settings.site_name}}{{site_settings.site_name}}{{else}}{{model.name}}{{/if}}</title>
+    <meta name="description" content="{{site_settings.meta_description}}">
+    <meta name="og:title" content="{{site_settings.site_name}} - {{model.name}}">
+    <meta name="og:description" content="{{site_settings.meta_description}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{site_settings.og_image}}">
+    
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Dynamic Theme Colors -->
+    <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
+    
     <style>
-        .bg-glamour-dark { background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); }
-        .bg-glamour-gold { background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); }
-        .text-glamour-gold { color: #D4AF37; }
-        .border-glamour-gold { border-color: #D4AF37; }
+        /* Glamour Theme Styles */
         
-        @keyframes pulse-slow {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        /* Glamour Theme Colors */
+        :root {
+            --glamour-primary: var(--color-primary, #EC4899);
+            --glamour-secondary: var(--color-secondary, #BE185D);
+            --glamour-accent: var(--color-accent, #F59E0B);
+            --glamour-text: var(--color-text, #831843);
+            --glamour-background: var(--color-background, #FDF2F8);
         }
-        .animate-pulse-slow {
-            animation: pulse-slow 3s ease-in-out infinite;
+        
+        .text-glamour-primary { color: var(--glamour-primary); }
+        .bg-glamour-primary { background-color: var(--glamour-primary); }
+        .border-glamour-primary { border-color: var(--glamour-primary); }
+        
+        .glamour-gradient {
+            background: linear-gradient(135deg, var(--glamour-primary) 0%, var(--glamour-secondary) 100%);
         }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        .animate-shimmer {
-            animation: shimmer 2s ease-in-out infinite;
-        }
+            
     </style>
 </head>
-<body class="bg-black text-white min-h-screen">
-    {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+<body class="bg-glamour-background font-serif">
+    <!-- Navigation Component -->
+    {{component "navigation" theme="glamour" model=model navigation=navigation}}
+    
+    <!-- Page Content -->
+    
 
-    <section class="py-16 bg-glamour-dark text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+FAQ - {{#if site_settings and site_settings.model_name}}{{site_settings.model_name}}{{else}}{{'Model Example'}}{{/if}}
+
+{{super()}}
+
+
+<style>
+@keyframes pulse-slow {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.animate-shimmer {
+  animation: shimmer 2s ease-in-out infinite;
+}
+</style>
+
+<section class="py-16 bg-background text-charcoal">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+        <!-- Page Header -->
+        <div class="text-center mb-16">
+            <h1 class="text-4xl font-heading font-bold mb-4 text-white" data-aos="fade-down" data-aos-duration="800">
+                Frequently Asked Questions
+            </h1>
+            <div class="w-24 h-1 bg-yellow-500 mx-auto mb-6"></div>
+            <p class="text-xl prose prose-sm text-gray-300 max-w-3xl mx-auto leading-relaxed" data-aos="fade-up" data-aos-delay="200">
+                Find answers to common questions about my services, booking process, and policies.
+            </p>
+        </div>
         
-            <!-- Page Header -->
-            <div class="text-center mb-16">
-                <h1 class="text-4xl font-bold mb-4 text-white">
-                    Frequently Asked Questions
-                </h1>
-                <div class="w-24 h-1 bg-yellow-500 mx-auto mb-6"></div>
-                <p class="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                    Find answers to common questions about my services, booking process, and policies.
-                </p>
-            </div>
-            
-            <!-- FAQ Accordion -->
-            {{#if faq_items.length}}
-            <div class="grid gap-6 mb-16">
-                {{#each faq_items}}
-                    {{#if this.is_visible}}
-                    {{#assign "is_even" (eq (modulo @index 2) 0)}}
-                    <div class="{{#if is_even}}bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700/50{{else}}bg-gradient-to-tr from-yellow-700/30 to-yellow-600/20 border border-yellow-500/30 text-white{{/if}} p-8 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-yellow-500/20 {{#unless is_even}}hover:ring-2 hover:ring-yellow-500/30 hover:ring-offset-2 hover:ring-offset-black{{/unless}} group">
-                        <button type="button" 
-                                class="w-full text-left font-medium text-lg {{#if is_even}}text-white hover:bg-gray-800/50{{else}}text-white{{/if}} focus:outline-none focus:ring-2 focus:ring-yellow-500 rounded-xl transition-all duration-300 flex justify-between items-center group p-2 -m-2 min-h-[48px]"
-                                onclick="toggleAccordion(this)">
-                            <div class="flex-1 pr-4">
-                                <p class="{{#if is_even}}text-gray-400{{else}}text-yellow-200/80{{/if}} text-sm uppercase tracking-wide mb-2 font-medium group-hover:text-gray-300 transition-colors duration-300">Question</p>
-                                <h3 class="text-xl font-semibold {{#if is_even}}text-white{{else}}text-yellow-300{{/if}}">{{this.question}}</h3>
-                            </div>
-                            <svg class="w-6 h-6 {{#if is_even}}text-yellow-500{{else}}text-yellow-300{{/if}} transition-all duration-300 transform group-hover:scale-110 flex-shrink-0" 
-                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        <div class="accordion-content max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
-                            <div class="pt-4 mt-4 border-t {{#if is_even}}border-yellow-500/20 text-gray-300{{else}}border-yellow-500/30 text-gray-200{{/if}} leading-relaxed group-hover:text-white transition-colors duration-300">
-                                <p class="{{#if is_even}}text-gray-400{{else}}text-yellow-200/80{{/if}} text-sm uppercase tracking-wide mb-3 font-medium">Answer</p>
-                                <div class="prose prose-sm {{#if is_even}}text-gray-300{{else}}text-gray-200{{/if}} leading-relaxed group-hover:text-white transition-colors duration-300">
-                                    {{{this.answer}}}
-                                </div>
+        <!-- FAQ Accordion -->
+        {{#if faq_items and faq_items|.length > 0}}
+        <div class="grid gap-6 mb-16">
+            {{#each item in faq_items}}
+                {{#if item.is_visible}}
+                {% set is_even = loop.index0 % 2 == 0 %}
+                <div class="{{#if is_even}}bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700/50{{else}}bg-gradient-to-tr from-yellow-700/30 to-yellow-600/20 border border-yellow-500/30 text-white{{/if}} p-8 sm:p-8 lg:p-8 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_10px_40px_rgba(234,179,8,0.3)] {{#if not is_even}}hover:ring-2 hover:ring-yellow-500/30 hover:ring-offset-2 hover:ring-offset-black{{/if}} group" data-aos="fade-up" data-aos-delay="{{100 + (loop.index0 * 50)}}">
+                    <button type="button" 
+                            class="w-full text-left font-medium text-lg {{#if is_even}}text-white hover:bg-gray-800/50{{else}}text-white{{/if}} focus:outline-none focus:ring-2 focus:ring-yellow-500 rounded-xl transition-all duration-300 flex justify-between items-center group p-2 -m-2 min-h-[48px]"
+                            onclick="toggleAccordion(this)">
+                        <div class="flex-1 pr-4">
+                            <p class="{{#if is_even}}text-gray-400{{else}}text-yellow-200/80{{/if}} text-sm uppercase tracking-wide mb-2 font-medium group-hover:text-gray-300 transition-colors duration-300">Question</p>
+                            <h3 class="text-xl font-heading font-semibold {{#if is_even}}text-white{{else}}text-yellow-300{{/if}}">{{item.question}}</h3>
+                        </div>
+                        <svg class="w-6 h-6 {{#if is_even}}text-yellow-500{{else}}text-yellow-300{{/if}} transition-all duration-300 transform group-hover:scale-110 flex-shrink-0" 
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="accordion-content max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
+                        <div class="pt-4 mt-4 border-t {{#if is_even}}border-yellow-500/20 text-gray-300{{else}}border-yellow-500/30 text-gray-200{{/if}} leading-relaxed group-hover:text-white transition-colors duration-300">
+                            <p class="{{#if is_even}}text-gray-400{{else}}text-yellow-200/80{{/if}} text-sm uppercase tracking-wide mb-3 font-medium">Answer</p>
+                            <div class="prose prose-sm {{#if is_even}}text-gray-300{{else}}text-gray-200{{/if}} leading-relaxed group-hover:text-white transition-colors duration-300">
+                                {{item.answer|}}
                             </div>
                         </div>
                     </div>
-                    {{/assign}}
-                    {{/if}}
-                {{/each}}
-            </div>
-            {{else}}
-            <!-- Empty state -->
-            <div class="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700/50 p-8 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-yellow-500/20 text-center py-16 group relative overflow-hidden">
-                <!-- Background blur effect -->
-                <div class="absolute inset-0 bg-gradient-radial from-yellow-500/10 via-transparent to-transparent opacity-50"></div>
-                
-                <div class="max-w-md mx-auto relative z-10">
-                    <!-- Icon with background glow -->
-                    <div class="relative mb-6">
-                        <div class="absolute inset-0 bg-yellow-500/20 rounded-full blur-xl scale-150"></div>
-                        <svg class="w-16 h-16 text-yellow-500/70 mx-auto animate-pulse-slow relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    
-                    <!-- Coming Soon with shimmer effect -->
-                    <div class="relative mb-4 overflow-hidden">
-                        <p class="text-gray-400 text-sm uppercase tracking-wide font-medium group-hover:text-gray-300 transition-colors duration-300">Coming Soon</p>
-                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent w-full h-full animate-shimmer opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    </div>
-                    
-                    <h3 class="text-xl font-semibold text-yellow-500 mb-3">No FAQ Items Available</h3>
-                    <p class="text-gray-300 leading-relaxed group-hover:text-white transition-colors duration-300">FAQ content is being updated. Please check back soon or contact me directly with any questions.</p>
                 </div>
-            </div>
-            {{/if}}
+                {{/if}}
+            {{/each}}
+        </div>
+        {{else}}
+        <!-- Empty state -->
+        <div class="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700/50 p-8 sm:p-8 lg:p-8 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_10px_40px_rgba(234,179,8,0.3)] text-center py-16 group relative overflow-hidden" data-aos="fade-up">
+            <!-- Background blur effect -->
+            <div class="absolute inset-0 bg-gradient-radial from-yellow-500/10 via-transparent to-transparent opacity-50"></div>
             
-            <!-- Call to Action Section -->
-            <div class="mt-16 text-center bg-gradient-to-tr from-yellow-700/30 to-yellow-600/20 border border-yellow-500/30 text-white p-8 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-yellow-500/20 hover:ring-2 hover:ring-yellow-500/30 hover:ring-offset-2 hover:ring-offset-black group">
-                <p class="text-yellow-200/80 text-sm uppercase tracking-wide mb-4 font-medium">Ready to Connect</p>
-                <h2 class="text-3xl font-semibold mb-4 text-yellow-300">
-                    Still Have Questions?
-                </h2>
-                <p class="text-gray-200 mb-6 max-w-md mx-auto leading-relaxed group-hover:text-white transition-colors duration-300">
-                    I'm here to help. Feel free to reach out directly if there's anything you'd like to know.
-                </p>
-                <a href="/{{model.slug}}/contact" 
-                   class="inline-block mt-4 px-6 py-3 rounded-full font-semibold text-black bg-yellow-500 hover:scale-105 hover:shadow-yellow-500/50 transition-all duration-300 shadow-lg relative overflow-hidden group">
-                    <span class="relative z-10">Contact Me</span>
-                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></div>
-                </a>
+            <div class="max-w-md mx-auto relative z-10">
+                <!-- Icon with background glow -->
+                <div class="relative mb-6">
+                    <div class="absolute inset-0 bg-yellow-500/20 rounded-full blur-xl scale-150"></div>
+                    <svg class="w-16 h-16 text-yellow-500/70 mx-auto animate-pulse-slow relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                
+                <!-- Coming Soon with shimmer effect -->
+                <div class="relative mb-4 overflow-hidden">
+                    <p class="text-gray-400 text-sm uppercase tracking-wide font-medium group-hover:text-gray-300 transition-colors duration-300">Coming Soon</p>
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent w-full h-full animate-shimmer opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <h3 class="text-xl font-heading font-semibold text-yellow-500 mb-3">No FAQ Items Available</h3>
+                <p class="prose prose-sm text-gray-300 leading-relaxed group-hover:text-white transition-colors duration-300">FAQ content is being updated. Please check back soon or contact me directly with any questions.</p>
             </div>
         </div>
-    </section>
+        {{/if}}
+        
+        <!-- Call to Action Section -->
+        <div class="mt-16 text-center bg-gradient-to-tr from-yellow-700/30 to-yellow-600/20 border border-yellow-500/30 text-white p-8 sm:p-8 lg:p-8 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_10px_40px_rgba(234,179,8,0.3)] hover:ring-2 hover:ring-yellow-500/30 hover:ring-offset-2 hover:ring-offset-black group" data-aos="fade-up" data-aos-delay="150">
+            <p class="text-yellow-200/80 text-sm uppercase tracking-wide mb-4 font-medium">Ready to Connect</p>
+            <h2 class="text-3xl font-heading font-semibold mb-4 text-yellow-300" data-aos="zoom-in" data-aos-delay="200">
+                Still Have Questions?
+            </h2>
+            <p class="prose prose-sm text-gray-200 mb-6 max-w-md mx-auto leading-relaxed group-hover:text-white transition-colors duration-300" data-aos="fade-up" data-aos-delay="250">
+                I'm here to help. Feel free to reach out directly if there's anything you'd like to know.
+            </p>
+            <a href="{{model_url_for('model.contact_glamour')}}" 
+               class="inline-block mt-4 px-6 py-3 rounded-full font-semibold text-black bg-yellow-500 hover:scale-105 hover:shadow-[0_0_15px_rgba(234,179,8,0.5)] transition-all duration-300 shadow-lg relative overflow-hidden group"
+               data-aos="zoom-in" data-aos-delay="300">
+                <span class="relative z-10">Contact Me</span>
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></div>
+            </a>
+            
+            <!-- Future upgrade suggestions (hidden comment for reference) -->
+            <!-- 
+            Future enhancements could include:
+            - Category filters ("Booking", "Privacy", "Rates")
+            - Search input bar at the top  
+            - FAQ icons (Q: speech bubble, A: open book)
+            - FAQ categories with collapsible sections
+            -->
+        </div>
+    </div>
+</section>
 
-    <script>
-    function toggleAccordion(button) {
-        const content = button.nextElementSibling;
-        const icon = button.querySelector('svg');
-        const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
-        
-        // Close all other accordions
-        document.querySelectorAll('.accordion-content').forEach(item => {
-            if (item !== content) {
-                item.style.maxHeight = '0px';
-                const otherIcon = item.previousElementSibling.querySelector('svg');
-                otherIcon.classList.remove('rotate-180');
-            }
-        });
-        
-        // Toggle current accordion
-        if (isOpen) {
-            content.style.maxHeight = '0px';
-            icon.classList.remove('rotate-180');
-        } else {
-            content.style.maxHeight = content.scrollHeight + 'px';
-            icon.classList.add('rotate-180');
+<script>
+function toggleAccordion(button) {
+    const content = button.nextElementSibling;
+    const icon = button.querySelector('svg');
+    const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+    
+    // Close all other accordions
+    document.querySelectorAll('.accordion-content').forEach(item => {
+        if (item !== content) {
+            item.style.maxHeight = '0px';
+            const otherIcon = item.previousElementSibling.querySelector('svg');
+            otherIcon.classList.remove('rotate-180');
         }
+    });
+    
+    // Toggle current accordion
+    if (isOpen) {
+        content.style.maxHeight = '0px';
+        icon.classList.remove('rotate-180');
+    } else {
+        content.style.maxHeight = content.scrollHeight + 'px';
+        icon.classList.add('rotate-180');
     }
+}
+</script>
+
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
     </script>
 </body>
 </html>
