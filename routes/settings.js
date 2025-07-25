@@ -67,32 +67,98 @@ router.get('/category/:category', auth, async (req, res) => {
     }
 });
 
-// Get single setting
+// Get single setting (adapted for MuseNest schema)
 router.get('/:key', auth, async (req, res) => {
     try {
         const settingKey = req.params.key;
+        
+        // Helper function to get user's model ID
+        const getUserModelId = async (userId) => {
+            const [models] = await db.execute(`
+                SELECT m.id 
+                FROM models m
+                JOIN model_users mu ON m.id = mu.model_id
+                WHERE mu.user_id = ? AND mu.is_active = true
+                ORDER BY mu.role = 'owner' DESC
+                LIMIT 1
+            `, [userId]);
+            return models.length > 0 ? models[0].id : null;
+        };
 
+        const modelId = await getUserModelId(req.user.id);
+        if (!modelId) {
+            return res.status(404).json({
+                success: false,
+                message: 'No model found for user'
+            });
+        }
+
+        // Handle theme setting specially
+        if (settingKey === 'theme') {
+            const [themeResult] = await db.execute(`
+                SELECT t.name as theme_name 
+                FROM model_themes mt 
+                JOIN themes t ON mt.theme_id = t.id 
+                WHERE mt.model_id = ? AND mt.is_active = 1 
+                ORDER BY mt.applied_at DESC 
+                LIMIT 1
+            `, [modelId]);
+            
+            const themeName = themeResult.length > 0 ? themeResult[0].theme_name : 'basic';
+            
+            return res.json({
+                success: true,
+                setting: {
+                    key: 'theme',
+                    value: themeName,
+                    category: 'appearance',
+                    updated_at: new Date().toISOString()
+                }
+            });
+        }
+
+        // For other settings, check if the column exists in site_settings
         const [rows] = await db.execute(`
-            SELECT * FROM site_settings 
-            WHERE model_id = ? AND setting_key = ?
-        `, [req.user.id, settingKey]);
+            SELECT * FROM site_settings WHERE model_id = ?
+        `, [modelId]);
 
         if (rows.length === 0) {
             return res.status(404).json({
+                success: false,
+                message: 'Settings not found'
+            });
+        }
+
+        const settings = rows[0];
+        
+        // Map common setting keys to actual columns
+        const columnMapping = {
+            'site_name': settings.site_name,
+            'model_name': settings.model_name,
+            'tagline': settings.tagline,
+            'city': settings.city,
+            'contact_email': settings.contact_email,
+            'contact_phone': settings.contact_phone,
+            'header_image': settings.header_image
+        };
+
+        if (settingKey in columnMapping) {
+            res.json({
+                success: true,
+                setting: {
+                    key: settingKey,
+                    value: columnMapping[settingKey] || '',
+                    category: 'general',
+                    updated_at: settings.updated_at
+                }
+            });
+        } else {
+            res.status(404).json({
                 success: false,
                 message: 'Setting not found'
             });
         }
 
-        res.json({
-            success: true,
-            setting: {
-                key: rows[0].setting_key,
-                value: rows[0].setting_value,
-                category: rows[0].category,
-                updated_at: rows[0].updated_at
-            }
-        });
     } catch (error) {
         console.error('Error fetching setting:', error);
         res.status(500).json({

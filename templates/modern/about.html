@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - {{site_settings.site_name || 'Modern Portfolio'}}</title>
+    <meta name="description" content="{{site_settings.meta_description || 'Learn more about our contemporary approach to professional services.'}}">
+    <meta name="og:title" content="About - {{site_settings.site_name}}">
+    <meta name="og:description" content="{{site_settings.meta_description}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{site_settings.og_image || '/uploads/opengraph.jpg'}}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <style>
+        /* Modern Theme Color Variables */
+        :root {
+            --modern-primary: var(--color-primary, #06B6D4);
+            --modern-secondary: var(--color-secondary, #0891B2);
+            --modern-accent: var(--color-accent, #10B981);
+            --modern-text: var(--color-text, #0C4A6E);
+            --modern-background: var(--color-background, #F0F9FF);
+        }
+        
+        .bg-modern-primary { background-color: var(--modern-primary); }
+        .bg-modern-secondary { background-color: var(--modern-secondary); }
+        .bg-modern-accent { background-color: var(--modern-accent); }
+        .text-modern-primary { color: var(--modern-primary); }
+        .text-modern-secondary { color: var(--modern-secondary); }
+        .text-modern-accent { color: var(--modern-accent); }
+        .text-modern-text { color: var(--modern-text); }
+        .bg-modern-background { background-color: var(--modern-background); }
+        .border-modern-primary { border-color: var(--modern-primary); }
+        
+        .modern-glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .modern-gradient {
+            background: linear-gradient(135deg, var(--modern-primary) 0%, var(--modern-secondary) 100%);
+        }
+        
+        .modern-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-modern-background">
+    <!-- Render Navigation Component -->
+    {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+
+    <!-- Hero Section -->
+    <section class="relative py-32 modern-gradient overflow-hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div data-aos="fade-up">
+                <h1 class="text-5xl md:text-6xl font-light text-white mb-6">About {{site_settings.model_name}}</h1>
+                <div class="w-24 h-1 bg-modern-accent mx-auto mb-8"></div>
+                <p class="text-xl text-gray-100 max-w-2xl mx-auto leading-relaxed">
+                    Discover the person behind the professional service
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Content -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16 items-start">
+                <!-- Content -->
+                <div data-aos="fade-right">
+                    {{#if about_content.main_content}}
+                        <div class="prose prose-lg max-w-none">
+                            {{{about_content.main_content}}}
+                        </div>
+                    {{else}}
+                        <h2 class="text-3xl font-light text-modern-text mb-6">Professional Excellence</h2>
+                        <div class="w-16 h-1 bg-modern-primary mb-8"></div>
+                        
+                        <p class="text-lg text-gray-600 mb-6 leading-relaxed">
+                            With a commitment to contemporary professionalism and sophisticated service, I bring a modern approach to traditional values of discretion, elegance, and excellence.
+                        </p>
+                        
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            My background combines extensive experience in hospitality, business, and personal relations, allowing me to provide services that meet the highest standards of quality and professionalism.
+                        </p>
+                        
+                        <p class="text-gray-600 mb-8 leading-relaxed">
+                            Whether for business engagements, social events, or private companionship, I understand the importance of adaptability, intelligence, and genuine connection in creating memorable experiences.
+                        </p>
+                    {{/if}}
+                    
+                    <!-- Contact CTA -->
+                    <div class="bg-modern-background rounded-2xl p-8 modern-shadow">
+                        <h3 class="text-xl font-semibold text-modern-text mb-4">Ready to Connect?</h3>
+                        <p class="text-gray-600 mb-6">
+                            I'd love to hear about your needs and discuss how we can work together.
+                        </p>
+                        <a href="/{{model.slug}}/contact" 
+                           class="inline-flex items-center bg-modern-primary text-white px-6 py-3 rounded-lg hover:bg-modern-secondary transition-colors">
+                            Get In Touch
+                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.001 8.001 0 01-7.75-6M3 12c0-4.418 3.582-8 8-8s8 3.582 8 8"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Images/Visual Content -->
+                <div class="space-y-8" data-aos="fade-left">
+                    {{#if gallery_images}}
+                        {{#each gallery_images}}
+                            {{#if @first}}
+                            <div class="relative">
+                                <img src="/uploads/{{../model.slug}}/{{this.filename}}" 
+                                     alt="{{../site_settings.model_name}}" 
+                                     class="w-full h-80 object-cover rounded-2xl modern-shadow">
+                                <!-- Decorative overlay -->
+                                <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-modern-accent bg-opacity-20 rounded-full -z-10"></div>
+                            </div>
+                            {{/if}}
+                        {{/each}}
+                    {{else}}
+                        <div class="w-full h-80 bg-gray-200 rounded-2xl flex items-center justify-center modern-shadow">
+                            <div class="text-center text-gray-500">
+                                <div class="w-16 h-16 bg-modern-primary bg-opacity-20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                                    <div class="w-8 h-8 bg-modern-primary rounded-full"></div>
+                                </div>
+                                <p>Professional Image</p>
+                            </div>
+                        </div>
+                    {{/if}}
+                    
+                    <!-- Stats/Info Cards -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white rounded-xl p-6 modern-shadow text-center">
+                            <div class="w-12 h-12 bg-modern-primary bg-opacity-10 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                                <div class="w-6 h-6 bg-modern-primary rounded"></div>
+                            </div>
+                            <h4 class="font-semibold text-modern-text mb-1">Professional</h4>
+                            <p class="text-sm text-gray-600">Service Excellence</p>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl p-6 modern-shadow text-center">
+                            <div class="w-12 h-12 bg-modern-accent bg-opacity-10 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                                <div class="w-6 h-6 bg-modern-accent rounded"></div>
+                            </div>
+                            <h4 class="font-semibold text-modern-text mb-1">Discreet</h4>
+                            <p class="text-sm text-gray-600">Complete Privacy</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modern Values Section -->
+    <section class="py-20 bg-modern-background">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-4xl font-light text-modern-text mb-4">Core Values</h2>
+                <div class="w-16 h-1 bg-modern-primary mx-auto mb-6"></div>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    The principles that guide every interaction and service
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-20 h-20 bg-white rounded-2xl mx-auto mb-6 flex items-center justify-center modern-shadow">
+                        <div class="w-10 h-10 bg-modern-primary rounded-xl"></div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-modern-text mb-4">Excellence</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Committed to delivering the highest quality service in every interaction and engagement.
+                    </p>
+                </div>
+                
+                <div class="text-center" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-20 h-20 bg-white rounded-2xl mx-auto mb-6 flex items-center justify-center modern-shadow">
+                        <div class="w-10 h-10 bg-modern-accent rounded-xl"></div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-modern-text mb-4">Integrity</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Maintaining honesty, discretion, and professional boundaries in all circumstances.
+                    </p>
+                </div>
+                
+                <div class="text-center" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-20 h-20 bg-white rounded-2xl mx-auto mb-6 flex items-center justify-center modern-shadow">
+                        <div class="w-10 h-10 bg-modern-secondary rounded-xl"></div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-modern-text mb-4">Sophistication</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Bringing elegance, intelligence, and refinement to every meeting and occasion.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    </script>
+</body>
+</html>

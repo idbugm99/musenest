@@ -37,6 +37,9 @@ class AdminDashboard {
             console.log('Loading dashboard data...');
             this.loadDashboardData();
             console.log('Dashboard initialization complete');
+            
+            // Dispatch ready event for other modules
+            window.dispatchEvent(new CustomEvent('adminDashboardReady'));
         } catch (error) {
             console.error('Initialization error:', error);
             this.redirectToLogin();
@@ -226,42 +229,55 @@ class AdminDashboard {
                     await window.themesManager.loadThemes();
                 }
                 break;
+            case 'pages':
+                if (window.pageManager) {
+                    await window.pageManager.loadPageContent();
+                }
+                break;
+            case 'calendar':
+                if (window.calendarManager) {
+                    await window.calendarManager.loadCalendarEvents();
+                }
+                break;
         }
     }
 
     async loadDashboardData() {
         try {
-            // Load stats in parallel
-            const [galleryResponse, faqResponse, testimonialsResponse, settingsResponse] = await Promise.all([
-                this.apiRequest('/api/gallery/images').catch(() => ({ success: false, images: [] })),
-                this.apiRequest('/api/faq').catch(() => ({ success: false, faqs: [] })),
-                this.apiRequest('/api/testimonials').catch(() => ({ success: false, testimonials: [] })),
-                this.apiRequest('/api/settings').catch(() => ({ success: false, settings: {} }))
-            ]);
+            // Load admin stats from the new endpoint
+            const statsResponse = await this.apiRequest('/api/admin/stats').catch(() => ({
+                gallery_images: 0,
+                faq_items: 0,
+                testimonials: 0,
+                page_sections: 0,
+                current_theme: 'basic'
+            }));
 
             // Update stats
-            document.getElementById('galleryCount').textContent = 
-                galleryResponse.success ? galleryResponse.images.length : '0';
-            
-            document.getElementById('faqCount').textContent = 
-                faqResponse.success ? faqResponse.faqs.length : '0';
-            
-            document.getElementById('testimonialsCount').textContent = 
-                testimonialsResponse.success ? testimonialsResponse.testimonials.length : '0';
-
-            // Update current theme
-            if (settingsResponse.success && settingsResponse.settings.theme) {
-                document.getElementById('currentTheme').textContent = 
-                    settingsResponse.settings.theme.value;
-            }
+            document.getElementById('galleryCount').textContent = statsResponse.gallery_images || '0';
+            document.getElementById('faqCount').textContent = statsResponse.faq_items || '0';
+            document.getElementById('testimonialsCount').textContent = statsResponse.testimonials || '0';
+            document.getElementById('pageSectionsCount').textContent = statsResponse.page_sections || '0';
+            document.getElementById('calendarEventsCount').textContent = statsResponse.calendar_events || '0';
+            document.getElementById('currentTheme').textContent = statsResponse.current_theme || 'basic';
 
         } catch (error) {
             console.error('Error loading dashboard data:', error);
+            // Set default values on error
+            document.getElementById('galleryCount').textContent = '0';
+            document.getElementById('faqCount').textContent = '0';
+            document.getElementById('testimonialsCount').textContent = '0';
+            document.getElementById('pageSectionsCount').textContent = '0';
+            document.getElementById('calendarEventsCount').textContent = '0';
+            document.getElementById('currentTheme').textContent = 'basic';
         }
     }
 
     async apiRequest(endpoint, options = {}) {
         const url = `${this.baseURL}${endpoint}`;
+        console.log('ApiRequest - URL:', url);
+        console.log('ApiRequest - Token:', this.authToken ? 'Present' : 'Missing');
+        
         const defaultHeaders = {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${this.authToken}`
@@ -273,9 +289,15 @@ class AdminDashboard {
             ...options
         };
 
+        console.log('ApiRequest - Config:', config);
+
         try {
+            console.log('ApiRequest - Making fetch request to:', url);
             const response = await fetch(url, config);
+            console.log('ApiRequest - Response status:', response.status);
+            console.log('ApiRequest - Response headers:', Object.fromEntries(response.headers.entries()));
             const data = await response.json();
+            console.log('ApiRequest - Response data:', data);
             
             if (response.status === 401) {
                 console.warn('Authentication failed, redirecting to login');
@@ -368,3 +390,16 @@ class AdminDashboard {
 document.addEventListener('DOMContentLoaded', () => {
     window.adminDashboard = new AdminDashboard();
 });
+
+// Global utility functions for other modules
+window.showNotification = function(message, type = 'info') {
+    if (window.adminDashboard) {
+        window.adminDashboard.showNotification(message, type);
+    }
+};
+
+window.showLoading = function(show = true) {
+    if (window.adminDashboard) {
+        window.adminDashboard.showLoading(show);
+    }
+};

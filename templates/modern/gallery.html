@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - {{site_settings.site_name || 'Modern Portfolio'}}</title>
+    <meta name="description" content="{{site_settings.meta_description || 'View our contemporary portfolio gallery.'}}">
+    <meta name="og:title" content="Gallery - {{site_settings.site_name}}">
+    <meta name="og:description" content="{{site_settings.meta_description}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{site_settings.og_image || '/uploads/opengraph.jpg'}}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <style>
+        /* Modern Theme Color Variables */
+        :root {
+            --modern-primary: var(--color-primary, #06B6D4);
+            --modern-secondary: var(--color-secondary, #0891B2);
+            --modern-accent: var(--color-accent, #10B981);
+            --modern-text: var(--color-text, #0C4A6E);
+            --modern-background: var(--color-background, #F0F9FF);
+        }
+        
+        .bg-modern-primary { background-color: var(--modern-primary); }
+        .text-modern-primary { color: var(--modern-primary); }
+        .text-modern-text { color: var(--modern-text); }
+        .bg-modern-background { background-color: var(--modern-background); }
+        
+        .modern-gradient {
+            background: linear-gradient(135deg, var(--modern-primary) 0%, var(--modern-secondary) 100%);
+        }
+        
+        .modern-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .gallery-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, rgba(6, 182, 212, 0.8), rgba(16, 185, 129, 0.8));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-modern-background">
+    <!-- Render Navigation Component -->
+    {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+
+    <!-- Hero Section -->
+    <section class="relative py-32 modern-gradient overflow-hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div data-aos="fade-up">
+                <h1 class="text-5xl md:text-6xl font-light text-white mb-6">Portfolio Gallery</h1>
+                <div class="w-24 h-1 bg-white mx-auto mb-8"></div>
+                <p class="text-xl text-gray-100 max-w-2xl mx-auto leading-relaxed">
+                    A curated collection showcasing contemporary elegance and professional excellence
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Grid -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {{#if gallery_images.length}}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {{#each gallery_images}}
+                    <div class="gallery-item modern-shadow" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
+                        <img src="/uploads/{{../model.slug}}/{{this.filename}}" 
+                             alt="{{this.alt_text || 'Portfolio image'}}" 
+                             class="w-full h-80 object-cover cursor-pointer"
+                             onclick="openLightbox('{{this.filename}}', '{{this.alt_text}}')">
+                        
+                        <div class="gallery-overlay">
+                            <div class="text-center text-white">
+                                <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                                <p class="font-medium">View Full Size</p>
+                            </div>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            {{else}}
+                <div class="text-center py-20" data-aos="fade-up">
+                    <div class="w-24 h-24 bg-modern-primary bg-opacity-10 rounded-full mx-auto mb-6 flex items-center justify-center">
+                        <svg class="w-12 h-12 text-modern-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-light text-modern-text mb-4">Gallery Coming Soon</h3>
+                    <p class="text-gray-600 max-w-md mx-auto">
+                        Professional portfolio images will be available shortly. Please check back soon or contact us directly.
+                    </p>
+                </div>
+            {{/if}}
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-modern-background">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+            <h2 class="text-4xl font-light text-modern-text mb-6">Interested in Working Together?</h2>
+            <div class="w-16 h-1 bg-modern-primary mx-auto mb-8"></div>
+            <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+                Let's discuss how we can create something exceptional together.
+            </p>
+            <a href="/{{model.slug}}/contact" 
+               class="inline-flex items-center bg-modern-primary text-white px-8 py-4 rounded-lg font-medium hover:bg-modern-secondary transition-all duration-300 transform hover:scale-105 modern-shadow">
+                Schedule Consultation
+                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.001 8.001 0 01-7.75-6M3 12c0-4.418 3.582-8 8-8s8 3.582 8 8"></path>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center p-4">
+        <div class="relative max-w-5xl max-h-full">
+            <img id="lightboxImage" src="" alt="" class="max-w-full max-h-full object-contain rounded-lg">
+            <button onclick="closeLightbox()" 
+                    class="absolute top-4 right-4 text-white text-2xl bg-black bg-opacity-50 w-10 h-10 rounded-full flex items-center justify-center hover:bg-opacity-70 transition-colors">
+                ×
+            </button>
+            <div id="lightboxCaption" class="absolute bottom-4 left-4 right-4 text-white text-center bg-black bg-opacity-50 py-2 px-4 rounded-lg"></div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+        
+        // Lightbox functionality
+        function openLightbox(filename, altText) {
+            const lightbox = document.getElementById('lightbox');
+            const image = document.getElementById('lightboxImage');
+            const caption = document.getElementById('lightboxCaption');
+            
+            image.src = `/uploads/{{model.slug}}/${filename}`;
+            image.alt = altText || 'Portfolio image';
+            caption.textContent = altText || 'Portfolio image';
+            
+            lightbox.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Close lightbox on click outside image
+        document.getElementById('lightbox').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLightbox();
+            }
+        });
+        
+        // Close lightbox on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+        
+        // Helper function for AOS delay calculation
+        Handlebars.registerHelper('multiply', function(a, b) {
+            return a * b;
+        });
+    </script>
+</body>
+</html>

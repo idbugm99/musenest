@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{site_settings.site_name || 'Modern Portfolio'}}</title>
+    <meta name="description" content="{{site_settings.meta_description || 'Contemporary design with clean lines and modern aesthetics.'}}">
+    <meta name="og:title" content="{{site_settings.site_name}} - Modern Portfolio">
+    <meta name="og:description" content="{{site_settings.meta_description}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{site_settings.og_image || '/uploads/opengraph.jpg'}}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Dynamic Theme Colors -->
+    <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
+    
+    <style>
+        /* Modern Theme Color Variables - Fallbacks */
+        :root {
+            --modern-primary: var(--color-primary, #06B6D4);
+            --modern-secondary: var(--color-secondary, #0891B2);
+            --modern-accent: var(--color-accent, #10B981);
+            --modern-text: var(--color-text, #0C4A6E);
+            --modern-background: var(--color-background, #F0F9FF);
+        }
+        
+        .bg-modern-primary { background-color: var(--modern-primary); }
+        .bg-modern-secondary { background-color: var(--modern-secondary); }
+        .bg-modern-accent { background-color: var(--modern-accent); }
+        .text-modern-primary { color: var(--modern-primary); }
+        .text-modern-secondary { color: var(--modern-secondary); }
+        .text-modern-accent { color: var(--modern-accent); }
+        .text-modern-text { color: var(--modern-text); }
+        .bg-modern-background { background-color: var(--modern-background); }
+        .border-modern-primary { border-color: var(--modern-primary); }
+        
+        .modern-glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .modern-gradient {
+            background: linear-gradient(135deg, var(--modern-primary) 0%, var(--modern-secondary) 100%);
+        }
+        
+        .modern-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .modern-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .modern-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+    </style>
+</head>
+<body class="bg-modern-background font-sans">
+    <!-- Render Navigation Component -->
+    {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+
+    <!-- Modern Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 modern-gradient"></div>
+        <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+        
+        <!-- Geometric Background Elements -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden">
+            <div class="absolute top-20 left-20 w-32 h-32 bg-white bg-opacity-10 rounded-full"></div>
+            <div class="absolute top-40 right-32 w-24 h-24 bg-modern-accent bg-opacity-20 transform rotate-45"></div>
+            <div class="absolute bottom-32 left-1/4 w-40 h-40 bg-white bg-opacity-5 rounded-lg transform rotate-12"></div>
+        </div>
+        
+        <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div data-aos="fade-up" data-aos-duration="800">
+                <h1 class="text-5xl md:text-7xl font-light text-white mb-6 tracking-tight">
+                    {{site_settings.model_name}}
+                </h1>
+                <div class="w-24 h-1 bg-modern-accent mx-auto mb-8"></div>
+                <p class="text-xl md:text-2xl text-gray-100 mb-12 max-w-3xl mx-auto font-light leading-relaxed">
+                    {{#if site_settings.tagline}}{{site_settings.tagline}}{{else}}Contemporary elegance meets professional excellence{{/if}}
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/{{model.slug}}/contact" 
+                       class="modern-glass px-8 py-4 text-white font-medium rounded-lg hover:bg-white hover:bg-opacity-20 transition-all duration-300 transform hover:scale-105">
+                        Schedule Consultation
+                    </a>
+                    <a href="/{{model.slug}}/gallery" 
+                       class="bg-white bg-opacity-10 px-8 py-4 text-white font-medium rounded-lg border border-white border-opacity-30 hover:bg-opacity-20 transition-all duration-300">
+                        View Portfolio
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+            <div class="w-6 h-10 border-2 border-white border-opacity-50 rounded-full flex justify-center">
+                <div class="w-1 h-3 bg-white bg-opacity-50 rounded-full mt-2 animate-bounce"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modern Services Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-4xl font-light text-modern-text mb-4">Premium Services</h2>
+                <div class="w-16 h-1 bg-modern-primary mx-auto mb-6"></div>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Discover a range of sophisticated services designed with the modern client in mind
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="modern-card bg-white rounded-2xl p-8 modern-shadow" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-16 h-16 bg-modern-primary bg-opacity-10 rounded-xl flex items-center justify-center mb-6">
+                        <div class="w-8 h-8 bg-modern-primary rounded-lg"></div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-modern-text mb-4">Consultation</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Professional consultation services tailored to your specific needs and preferences.
+                    </p>
+                </div>
+                
+                <div class="modern-card bg-white rounded-2xl p-8 modern-shadow" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-16 h-16 bg-modern-accent bg-opacity-10 rounded-xl flex items-center justify-center mb-6">
+                        <div class="w-8 h-8 bg-modern-accent rounded-lg"></div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-modern-text mb-4">Companionship</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Sophisticated companionship for business events, social gatherings, and private occasions.
+                    </p>
+                </div>
+                
+                <div class="modern-card bg-white rounded-2xl p-8 modern-shadow" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-16 h-16 bg-modern-secondary bg-opacity-10 rounded-xl flex items-center justify-center mb-6">
+                        <div class="w-8 h-8 bg-modern-secondary rounded-lg"></div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-modern-text mb-4">Travel</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Elite travel companion services for business trips and luxury vacations worldwide.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modern About Preview -->
+    <section class="py-20 bg-modern-background">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div data-aos="fade-right">
+                    <h2 class="text-4xl font-light text-modern-text mb-6">Modern Elegance</h2>
+                    <div class="w-16 h-1 bg-modern-primary mb-8"></div>
+                    <p class="text-lg text-gray-600 mb-6 leading-relaxed">
+                        Experience the perfect blend of contemporary sophistication and timeless grace.
+                    </p>
+                    <p class="text-gray-600 mb-8 leading-relaxed">
+                        {{#if home_content.about_preview}}
+                            {{home_content.about_preview}}
+                        {{else}}
+                            With a focus on quality, discretion, and unparalleled service, I provide an experience that exceeds expectations while maintaining the highest standards of professionalism.
+                        {{/if}}
+                    </p>
+                    <a href="/{{model.slug}}/about" 
+                       class="inline-flex items-center text-modern-primary font-medium hover:text-modern-secondary transition-colors">
+                        Learn More
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+                
+                <div class="relative" data-aos="fade-left">
+                    <div class="modern-glass rounded-3xl p-8 backdrop-blur-sm">
+                        {{#if gallery_images.[0]}}
+                        <img src="/uploads/{{model.slug}}/{{gallery_images.[0].filename}}" 
+                             alt="{{site_settings.model_name}}" 
+                             class="w-full h-80 object-cover rounded-2xl modern-shadow">
+                        {{else}}
+                        <div class="w-full h-80 bg-gray-200 rounded-2xl flex items-center justify-center">
+                            <div class="text-center text-gray-500">
+                                <div class="w-16 h-16 bg-modern-primary bg-opacity-20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                                    <div class="w-8 h-8 bg-modern-primary rounded-full"></div>
+                                </div>
+                                <p>Portfolio Image</p>
+                            </div>
+                        </div>
+                        {{/if}}
+                    </div>
+                    
+                    <!-- Decorative Elements -->
+                    <div class="absolute -top-4 -right-4 w-24 h-24 bg-modern-accent bg-opacity-20 rounded-full -z-10"></div>
+                    <div class="absolute -bottom-6 -left-6 w-32 h-32 bg-modern-primary bg-opacity-10 rounded-2xl -z-10 transform rotate-12"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modern CTA Section -->
+    <section class="py-20 modern-gradient relative overflow-hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-10"></div>
+        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div data-aos="fade-up">
+                <h2 class="text-4xl font-light text-white mb-6">Ready to Begin?</h2>
+                <p class="text-xl text-gray-100 mb-8 leading-relaxed">
+                    Experience the difference that comes with modern professionalism and sophisticated service.
+                </p>
+                <a href="/{{model.slug}}/contact" 
+                   class="modern-glass px-8 py-4 text-white font-medium rounded-lg hover:bg-white hover:bg-opacity-20 transition-all duration-300 transform hover:scale-105 inline-flex items-center">
+                    Contact Today
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.001 8.001 0 01-7.75-6M3 12c0-4.418 3.582-8 8-8s8 3.582 8 8"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

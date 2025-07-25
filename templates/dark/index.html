@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{site_settings.site_name || 'Dark Portfolio'}}</title>
+    <meta name="description" content="{{site_settings.meta_description || 'Sophisticated dark theme for evening elegance.'}}">
+    <meta name="og:title" content="{{site_settings.site_name}} - Dark Portfolio">
+    <meta name="og:description" content="{{site_settings.meta_description}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{site_settings.og_image || '/uploads/opengraph.jpg'}}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Dynamic Theme Colors -->
+    <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
+    
+    <style>
+        /* Dark Theme Color Variables - Fallbacks */
+        :root {
+            --dark-primary: var(--color-primary, #8B5CF6);
+            --dark-secondary: var(--color-secondary, #7C3AED);
+            --dark-accent: var(--color-accent, #F59E0B);
+            --dark-text: var(--color-text, #F9FAFB);
+            --dark-background: var(--color-background, #111827);
+        }
+        
+        body {
+            background-color: var(--dark-background);
+            color: var(--dark-text);
+        }
+        
+        .bg-dark-primary { background-color: var(--dark-primary); }
+        .bg-dark-secondary { background-color: var(--dark-secondary); }
+        .bg-dark-accent { background-color: var(--dark-accent); }
+        .text-dark-primary { color: var(--dark-primary); }
+        .text-dark-secondary { color: var(--dark-secondary); }
+        .text-dark-accent { color: var(--dark-accent); }
+        .text-dark-text { color: var(--dark-text); }
+        .bg-dark-background { background-color: var(--dark-background); }
+        .border-dark-primary { border-color: var(--dark-primary); }
+        
+        .dark-glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dark-gradient {
+            background: linear-gradient(135deg, var(--dark-primary) 0%, var(--dark-secondary) 100%);
+        }
+        
+        .dark-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .dark-card {
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .dark-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-4px);
+        }
+        
+        /* Dark mode overrides */
+        .dark-text { color: #F9FAFB; }
+        .dark-text-secondary { color: #D1D5DB; }
+        .dark-bg-card { background: rgba(255, 255, 255, 0.05); }
+        .dark-border { border-color: rgba(255, 255, 255, 0.1); }
+    </style>
+</head>
+<body class="bg-dark-background">
+    <!-- Render Navigation Component -->
+    {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+
+    <!-- Dark Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 bg-gray-900"></div>
+        <div class="absolute inset-0 dark-gradient opacity-80"></div>
+        
+        <!-- Ambient Light Effects -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-dark-primary opacity-10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-dark-accent opacity-15 rounded-full blur-3xl"></div>
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-dark-secondary opacity-5 rounded-full blur-2xl"></div>
+        </div>
+        
+        <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div data-aos="fade-up" data-aos-duration="1000">
+                <h1 class="text-6xl md:text-8xl font-thin text-dark-text mb-8 tracking-wider">
+                    {{site_settings.model_name}}
+                </h1>
+                <div class="w-32 h-px bg-dark-accent mx-auto mb-10"></div>
+                <p class="text-2xl md:text-3xl text-dark-text opacity-90 mb-16 max-w-4xl mx-auto font-light leading-relaxed">
+                    {{#if site_settings.tagline}}{{site_settings.tagline}}{{else}}Elegance unveiled in shadows and light{{/if}}
+                </p>
+                <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                    <a href="/{{model.slug}}/contact" 
+                       class="dark-glass px-10 py-5 text-dark-text font-light text-lg rounded-lg hover:bg-white hover:bg-opacity-10 transition-all duration-500 transform hover:scale-105 border border-white border-opacity-20">
+                        Private Consultation
+                    </a>
+                    <a href="/{{model.slug}}/gallery" 
+                       class="bg-dark-accent bg-opacity-20 px-10 py-5 text-dark-accent font-light text-lg rounded-lg border border-dark-accent border-opacity-30 hover:bg-opacity-30 transition-all duration-500">
+                        View Collection
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Elegant Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 opacity-60">
+            <div class="w-8 h-12 border border-dark-text border-opacity-30 rounded-full flex justify-center">
+                <div class="w-px h-4 bg-dark-accent mt-3 animate-pulse"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dark Services Section -->
+    <section class="py-32 bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20" data-aos="fade-up">
+                <h2 class="text-5xl font-thin text-dark-text mb-6">Exclusive Services</h2>
+                <div class="w-20 h-px bg-dark-primary mx-auto mb-8"></div>
+                <p class="text-xl text-dark-text opacity-80 max-w-3xl mx-auto font-light">
+                    Discover sophistication redefined through personalized experiences crafted for discerning clientele
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-10">
+                <div class="dark-card rounded-3xl p-10 dark-shadow" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-20 h-20 bg-dark-primary bg-opacity-20 rounded-2xl flex items-center justify-center mb-8">
+                        <div class="w-10 h-10 bg-dark-primary rounded-xl opacity-80"></div>
+                    </div>
+                    <h3 class="text-2xl font-light text-dark-text mb-6">Private Encounters</h3>
+                    <p class="text-dark-text opacity-70 leading-relaxed font-light">
+                        Intimate consultations designed for those who appreciate discretion and refined companionship.
+                    </p>
+                </div>
+                
+                <div class="dark-card rounded-3xl p-10 dark-shadow" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-20 h-20 bg-dark-accent bg-opacity-20 rounded-2xl flex items-center justify-center mb-8">
+                        <div class="w-10 h-10 bg-dark-accent rounded-xl opacity-80"></div>
+                    </div>
+                    <h3 class="text-2xl font-light text-dark-text mb-6">Elite Companionship</h3>
+                    <p class="text-dark-text opacity-70 leading-relaxed font-light">
+                        Sophisticated presence for exclusive events, business functions, and cultural experiences.
+                    </p>
+                </div>
+                
+                <div class="dark-card rounded-3xl p-10 dark-shadow" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-20 h-20 bg-dark-secondary bg-opacity-20 rounded-2xl flex items-center justify-center mb-8">
+                        <div class="w-10 h-10 bg-dark-secondary rounded-xl opacity-80"></div>
+                    </div>
+                    <h3 class="text-2xl font-light text-dark-text mb-6">Luxury Travel</h3>
+                    <p class="text-dark-text opacity-70 leading-relaxed font-light">
+                        Worldly travel companion for international destinations and exclusive retreats.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dark About Preview -->
+    <section class="py-32 bg-black">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-20 items-center">
+                <div data-aos="fade-right">
+                    <h2 class="text-5xl font-thin text-dark-text mb-8">Midnight Elegance</h2>
+                    <div class="w-20 h-px bg-dark-accent mb-10"></div>
+                    <p class="text-xl text-dark-text opacity-80 mb-8 leading-relaxed font-light">
+                        Where sophistication meets mystery in the quiet hours of refined indulgence.
+                    </p>
+                    <p class="text-dark-text opacity-70 mb-10 leading-relaxed font-light">
+                        {{#if home_content.about_preview}}
+                            {{home_content.about_preview}}
+                        {{else}}
+                            In the embrace of evening shadows, discover an experience that transcends the ordinary. Here, elegance is not merely shown but lived, breathed, and shared in moments of genuine connection.
+                        {{/if}}
+                    </p>
+                    <a href="/{{model.slug}}/about" 
+                       class="inline-flex items-center text-dark-accent font-light text-lg hover:text-dark-primary transition-colors">
+                        Discover More
+                        <svg class="w-5 h-5 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </a>
+                </div>
+                
+                <div class="relative" data-aos="fade-left">
+                    <div class="dark-glass rounded-3xl p-10 backdrop-blur-sm">
+                        {{#if gallery_images.[0]}}
+                        <img src="/uploads/{{model.slug}}/{{gallery_images.[0].filename}}" 
+                             alt="{{site_settings.model_name}}" 
+                             class="w-full h-96 object-cover rounded-2xl dark-shadow opacity-90">
+                        {{else}}
+                        <div class="w-full h-96 bg-gray-800 rounded-2xl flex items-center justify-center">
+                            <div class="text-center text-dark-text opacity-50">
+                                <div class="w-20 h-20 bg-dark-primary bg-opacity-30 rounded-full mx-auto mb-6 flex items-center justify-center">
+                                    <div class="w-10 h-10 bg-dark-primary rounded-full opacity-60"></div>
+                                </div>
+                                <p class="font-light">Portrait Coming Soon</p>
+                            </div>
+                        </div>
+                        {{/if}}
+                    </div>
+                    
+                    <!-- Ambient Light Effects -->
+                    <div class="absolute -top-6 -right-6 w-32 h-32 bg-dark-accent opacity-10 rounded-full blur-2xl -z-10"></div>
+                    <div class="absolute -bottom-8 -left-8 w-40 h-40 bg-dark-primary opacity-5 rounded-3xl -z-10 transform rotate-12"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dark CTA Section -->
+    <section class="py-32 bg-gray-900 relative overflow-hidden">
+        <div class="absolute inset-0 dark-gradient opacity-20"></div>
+        <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div data-aos="fade-up">
+                <h2 class="text-5xl font-thin text-dark-text mb-8">Enter the Experience</h2>
+                <div class="w-20 h-px bg-dark-accent mx-auto mb-10"></div>
+                <p class="text-2xl text-dark-text opacity-80 mb-12 leading-relaxed font-light max-w-3xl mx-auto">
+                    Step into a world where every detail is crafted for those who understand true refinement.
+                </p>
+                <a href="/{{model.slug}}/contact" 
+                   class="dark-glass px-12 py-6 text-dark-text font-light text-xl rounded-lg hover:bg-white hover:bg-opacity-10 transition-all duration-500 transform hover:scale-105 inline-flex items-center border border-white border-opacity-20">
+                    Begin the Journey
+                    <svg class="w-6 h-6 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Initialize AOS with slower, more elegant animations
+        AOS.init({
+            duration: 1200,
+            once: true,
+            offset: 50,
+            easing: 'ease-out-cubic'
+        });
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Subtle parallax effect for hero background
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelector('.dark-gradient');
+            if (parallax) {
+                parallax.style.transform = `translateY(${scrolled * 0.3}px)`;
+            }
+        });
+    </script>
+</body>
+</html>

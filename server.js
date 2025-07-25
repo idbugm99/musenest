@@ -92,15 +92,19 @@ app.get('/health', async (req, res) => {
 // API Routes
 app.use('/api/auth', require('./src/routes/auth'));
 app.use('/api/models', require('./src/routes/models'));
+app.use('/api/admin', require('./src/routes/admin'));
 
 // Content Management APIs
 app.use('/api/gallery', require('./routes/gallery'));
 app.use('/api/faq', require('./routes/faq'));
 app.use('/api/settings', require('./routes/settings'));
 app.use('/api/testimonials', require('./routes/testimonials'));
+app.use('/api/calendar', require('./routes/calendar'));
+app.use('/api/theme-custom', require('./routes/theme-customization'));
+app.use('/api/theme-sets', require('./routes/theme-sets'));
 
-// Dynamic model routes
-app.use('/', require('./src/routes/dynamic'));
+// Dynamic model routes (Theme Sets + Modular Pages)
+app.use('/', require('./src/routes/dynamic_new'));
 
 // 404 handler
 app.use('*', (req, res) => {

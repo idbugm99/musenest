@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rates - {{site_settings.site_name || 'Modern Portfolio'}}</title>
+    <meta name="description" content="{{site_settings.meta_description || 'Professional service rates and packages.'}}">
+    <meta name="og:title" content="Rates - {{site_settings.site_name}}">
+    <meta name="og:description" content="{{site_settings.meta_description}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{site_settings.og_image || '/uploads/opengraph.jpg'}}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <style>
+        /* Modern Theme Color Variables */
+        :root {
+            --modern-primary: var(--color-primary, #06B6D4);
+            --modern-secondary: var(--color-secondary, #0891B2);
+            --modern-accent: var(--color-accent, #10B981);
+            --modern-text: var(--color-text, #0C4A6E);
+            --modern-background: var(--color-background, #F0F9FF);
+        }
+        
+        .bg-modern-primary { background-color: var(--modern-primary); }
+        .bg-modern-secondary { background-color: var(--modern-secondary); }
+        .bg-modern-accent { background-color: var(--modern-accent); }
+        .text-modern-primary { color: var(--modern-primary); }
+        .text-modern-secondary { color: var(--modern-secondary); }
+        .text-modern-accent { color: var(--modern-accent); }
+        .text-modern-text { color: var(--modern-text); }
+        .bg-modern-background { background-color: var(--modern-background); }
+        .border-modern-primary { border-color: var(--modern-primary); }
+        
+        .modern-gradient {
+            background: linear-gradient(135deg, var(--modern-primary) 0%, var(--modern-secondary) 100%);
+        }
+        
+        .modern-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .pricing-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--modern-primary);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .pricing-card.featured {
+            border-color: var(--modern-primary);
+            position: relative;
+        }
+        
+        .pricing-card.featured::before {
+            content: 'Most Popular';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--modern-primary);
+            color: white;
+            padding: 4px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-modern-background">
+    <!-- Render Navigation Component -->
+    {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+
+    <!-- Hero Section -->
+    <section class="relative py-32 modern-gradient overflow-hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div data-aos="fade-up">
+                <h1 class="text-5xl md:text-6xl font-light text-white mb-6">Service Rates</h1>
+                <div class="w-24 h-1 bg-white mx-auto mb-8"></div>
+                <p class="text-xl text-gray-100 max-w-2xl mx-auto leading-relaxed">
+                    Transparent pricing for professional services and experiences
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Cards -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {{#if rates_content.packages}}
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {{#each rates_content.packages}}
+                    <div class="pricing-card bg-white rounded-3xl p-8 modern-shadow {{#if this.featured}}featured{{/if}}" 
+                         data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
+                        
+                        <div class="text-center mb-8">
+                            <h3 class="text-2xl font-semibold text-modern-text mb-2">{{this.name}}</h3>
+                            <div class="text-4xl font-light text-modern-primary mb-1">${{this.price}}</div>
+                            <p class="text-gray-500">{{this.duration}}</p>
+                        </div>
+                        
+                        <ul class="space-y-4 mb-8">
+                            {{#each this.features}}
+                            <li class="flex items-center">
+                                <div class="w-5 h-5 bg-modern-accent rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-gray-600">{{this}}</span>
+                            </li>
+                            {{/each}}
+                        </ul>
+                        
+                        <a href="/{{../model.slug}}/contact" 
+                           class="w-full bg-modern-primary text-white py-3 rounded-xl font-medium hover:bg-modern-secondary transition-colors text-center block">
+                            Book Now
+                        </a>
+                    </div>
+                    {{/each}}
+                </div>
+            {{else}}
+                <!-- Default Pricing Structure -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="pricing-card bg-white rounded-3xl p-8 modern-shadow" data-aos="fade-up">
+                        <div class="text-center mb-8">
+                            <h3 class="text-2xl font-semibold text-modern-text mb-2">Consultation</h3>
+                            <div class="text-4xl font-light text-modern-primary mb-1">$300</div>
+                            <p class="text-gray-500">2 hours</p>
+                        </div>
+                        
+                        <ul class="space-y-4 mb-8">
+                            <li class="flex items-center">
+                                <div class="w-5 h-5 bg-modern-accent rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-gray-600">Initial meeting</span>
+                            </li>
+                            <li class="flex items-center">
+                                <div class="w-5 h-5 bg-modern-accent rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-gray-600">Service discussion</span>
+                            </li>
+                            <li class="flex items-center">
+                                <div class="w-5 h-5 bg-modern-accent rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-gray-600">Private setting</span>
+                            </li>
+                        </ul>
+                        
+                        <a href="/{{model.slug}}/contact" 
+                           class="w-full bg-modern-primary text-white py-3 rounded-xl font-medium hover:bg-modern-secondary transition-colors text-center block">
+                            Book Now
+                        </a>
+                    </div>
+                    
+                    <div class="pricing-card featured bg-white rounded-3xl p-8 modern-shadow" data-aos="fade-up" data-aos-delay="100">
+                        <div class="text-center mb-8">
+                            <h3 class="text-2xl font-semibold text-modern-text mb-2">Evening</h3>
+                            <div class="text-4xl font-light text-modern-primary mb-1">$800</div>
+                            <p class="text-gray-500">4 hours</p>
+                        </div>
+                        
+                        <ul class="space-y-4 mb-8">
+                            <li class="flex items-center">
+                                <div class="w-5 h-5 bg-modern-accent rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-gray-600">Dinner companion</span>
+                            </li>
+                            <li class="flex items-center">
+                                <div class="w-5 h-5 bg-modern-accent rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-gray-600">Social events</span>
+                            </li>
+                            <li class="flex items-center">
+                                <div class="w-5 h-5 bg-modern-accent rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-gray-600">Entertainment venues</span>
+                            </li>
+                            <li class="flex items-center">
+                                <div class="w-5 h-5 bg-modern-accent rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-gray-600">Private time</span>
+                            </li>
+                        </ul>
+                        
+                        <a href="/{{model.slug}}/contact" 
+                           class="w-full bg-modern-primary text-white py-3 rounded-xl font-medium hover:bg-modern-secondary transition-colors text-center block">
+                            Book Now
+                        </a>
+                    </div>
+                    
+                    <div class="pricing-card bg-white rounded-3xl p-8 modern-shadow" data-aos="fade-up" data-aos-delay="200">
+                        <div class="text-center mb-8">
+                            <h3 class="text-2xl font-semibold text-modern-text mb-2">Extended</h3>
+                            <div class="text-4xl font-light text-modern-primary mb-1">$1500</div>
+                            <p class="text-gray-500">Overnight</p>
+                        </div>
+                        
+                        <ul class="space-y-4 mb-8">
+                            <li class="flex items-center">
+                                <div class="w-5 h-5 bg-modern-accent rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-gray-600">12+ hours</span>
+                            </li>
+                            <li class="flex items-center">
+                                <div class="w-5 h-5 bg-modern-accent rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-gray-600">Travel companion</span>
+                            </li>
+                            <li class="flex items-center">
+                                <div class="w-5 h-5 bg-modern-accent rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-gray-600">Exclusive access</span>
+                            </li>
+                            <li class="flex items-center">
+                                <div class="w-5 h-5 bg-modern-accent rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-gray-600">Premium experience</span>
+                            </li>
+                        </ul>
+                        
+                        <a href="/{{model.slug}}/contact" 
+                           class="w-full bg-modern-primary text-white py-3 rounded-xl font-medium hover:bg-modern-secondary transition-colors text-center block">
+                            Book Now
+                        </a>
+                    </div>
+                </div>
+            {{/if}}
+        </div>
+    </section>
+
+    <!-- Terms & Policies -->
+    <section class="py-20 bg-modern-background">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8" data-aos="fade-up">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-light text-modern-text mb-4">Terms & Policies</h2>
+                <div class="w-16 h-1 bg-modern-primary mx-auto"></div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-2xl p-6 modern-shadow">
+                    <h3 class="text-xl font-semibold text-modern-text mb-4">Booking Policy</h3>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="flex items-start">
+                            <div class="w-2 h-2 bg-modern-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                            <span>Advance booking required (minimum 24 hours)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-2 h-2 bg-modern-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                            <span>Deposit required for extended engagements</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-2 h-2 bg-modern-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                            <span>Cancellation policy applies</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 modern-shadow">
+                    <h3 class="text-xl font-semibold text-modern-text mb-4">Payment Terms</h3>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="flex items-start">
+                            <div class="w-2 h-2 bg-modern-accent rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                            <span>Cash payment preferred</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-2 h-2 bg-modern-accent rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                            <span>Electronic transfers accepted</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-2 h-2 bg-modern-accent rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                            <span>Payment due at start of engagement</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 rounded-2xl p-6 mt-8 text-center">
+                <p class="text-gray-600 text-sm leading-relaxed">
+                    All rates are for companionship and time only. Services are provided with complete discretion and professionalism. 
+                    Custom packages and extended arrangements available upon discussion.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact CTA -->
+    <section class="py-20 modern-gradient">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+            <h2 class="text-4xl font-light text-white mb-6">Ready to Begin?</h2>
+            <div class="w-16 h-1 bg-white mx-auto mb-8"></div>
+            <p class="text-xl text-gray-100 mb-8 leading-relaxed">
+                Contact me today to discuss your specific needs and arrange a consultation.
+            </p>
+            <a href="/{{model.slug}}/contact" 
+               class="inline-flex items-center bg-white bg-opacity-20 text-white px-8 py-4 rounded-lg font-medium hover:bg-opacity-30 transition-all duration-300 transform hover:scale-105 backdrop-blur-sm border border-white border-opacity-30">
+                Schedule Consultation
+                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.001 8.001 0 01-7.75-6M3 12c0-4.418 3.582-8 8-8s8 3.582 8 8"></path>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+        
+        // Helper function for AOS delay calculation
+        Handlebars.registerHelper('multiply', function(a, b) {
+            return a * b;
+        });
+    </script>
+</body>
+</html>

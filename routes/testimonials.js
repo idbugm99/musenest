@@ -3,14 +3,41 @@ const router = express.Router();
 const db = require('../config/database');
 const { authenticateToken: auth } = require('../middleware/auth');
 
+// Helper function to get user's model ID (same as admin routes)
+async function getUserModelId(userId) {
+    try {
+        const [models] = await db.execute(`
+            SELECT m.id 
+            FROM models m
+            JOIN model_users mu ON m.id = mu.model_id
+            WHERE mu.user_id = ? AND mu.is_active = true
+            ORDER BY mu.role = 'owner' DESC
+            LIMIT 1
+        `, [userId]);
+        
+        return models.length > 0 ? models[0].id : null;
+    } catch (error) {
+        console.error('getUserModelId error:', error);
+        return null;
+    }
+}
+
 // Get all testimonials for authenticated model
 router.get('/', auth, async (req, res) => {
     try {
+        const modelId = await getUserModelId(req.user.id);
+        if (!modelId) {
+            return res.json({
+                success: true,
+                testimonials: []
+            });
+        }
+
         const [rows] = await db.execute(`
             SELECT * FROM testimonials 
             WHERE model_id = ? 
-            ORDER BY sort_order, created_at DESC
-        `, [req.user.id]);
+            ORDER BY created_at DESC
+        `, [modelId]);
 
         res.json({
             success: true,
@@ -32,11 +59,11 @@ router.get('/public/:modelSlug', async (req, res) => {
 
         const [rows] = await db.execute(`
             SELECT t.id, t.testimonial_text, t.client_name, t.client_initial, 
-                   t.rating, t.location, t.created_at
+                   t.rating, t.created_at
             FROM testimonials t
             JOIN models m ON t.model_id = m.id
-            WHERE m.slug = ? AND t.is_published = 1 AND t.is_approved = 1
-            ORDER BY t.sort_order, t.created_at DESC
+            WHERE m.slug = ? AND t.is_active = 1
+            ORDER BY t.created_at DESC
         `, [modelSlug]);
 
         res.json({
@@ -88,10 +115,8 @@ router.post('/', auth, async (req, res) => {
             testimonial_text, 
             client_name, 
             client_initial, 
-            rating, 
-            location,
-            is_published = false,
-            is_approved = false
+            rating,
+            is_featured = false
         } = req.body;
 
         // Validate required fields
@@ -117,30 +142,20 @@ router.post('/', auth, async (req, res) => {
             });
         }
 
-        // Get next sort order
-        const [sortResult] = await db.execute(`
-            SELECT COALESCE(MAX(sort_order), 0) + 1 as next_order
-            FROM testimonials WHERE model_id = ?
-        `, [req.user.id]);
-
-        const sortOrder = sortResult[0].next_order;
-
         // Insert new testimonial
         const [result] = await db.execute(`
             INSERT INTO testimonials (
                 model_id, testimonial_text, client_name, client_initial, 
-                rating, location, sort_order, is_published, is_approved, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+                rating, is_featured, is_active
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
         `, [
             req.user.id, 
             testimonial_text.trim(), 
             client_name || null, 
             client_initial || null,
             rating || null,
-            location || null,
-            sortOrder,
-            is_published ? 1 : 0,
-            is_approved ? 1 : 0
+            is_featured ? 1 : 0,
+            1 // is_active = true by default
         ]);
 
         // Get the inserted testimonial
@@ -171,10 +186,9 @@ router.put('/:id', auth, async (req, res) => {
             testimonial_text, 
             client_name, 
             client_initial, 
-            rating, 
-            location,
-            is_published,
-            is_approved
+            rating,
+            is_featured,
+            is_active
         } = req.body;
 
         // Validate required fields
@@ -216,16 +230,15 @@ router.put('/:id', auth, async (req, res) => {
         await db.execute(`
             UPDATE testimonials 
             SET testimonial_text = ?, client_name = ?, client_initial = ?, 
-                rating = ?, location = ?, is_published = ?, is_approved = ?, updated_at = NOW()
+                rating = ?, is_featured = ?, is_active = ?
             WHERE id = ? AND model_id = ?
         `, [
             testimonial_text.trim(), 
             client_name || null, 
             client_initial || null,
             rating || null,
-            location || null,
-            is_published !== undefined ? (is_published ? 1 : 0) : undefined,
-            is_approved !== undefined ? (is_approved ? 1 : 0) : undefined,
+            is_featured !== undefined ? (is_featured ? 1 : 0) : 0,
+            is_active !== undefined ? (is_active ? 1 : 0) : 1,
             testimonialId, 
             req.user.id
         ]);
@@ -250,68 +263,22 @@ router.put('/:id', auth, async (req, res) => {
     }
 });
 
-// Reorder testimonials
-router.post('/reorder', auth, async (req, res) => {
-    try {
-        const { testimonialOrders } = req.body; // Array of {id, sort_order}
+// Reorder testimonials - DISABLED (no sort_order column in current schema)
+// router.post('/reorder', auth, async (req, res) => {
+//     res.status(501).json({
+//         success: false,
+//         message: 'Reorder functionality not available in current schema'
+//     });
+// });
 
-        if (!Array.isArray(testimonialOrders)) {
-            return res.status(400).json({
-                success: false,
-                message: 'testimonialOrders must be an array'
-            });
-        }
-
-        // Validate all testimonials belong to the user
-        const testimonialIds = testimonialOrders.map(item => item.id);
-        const [ownershipCheck] = await db.execute(`
-            SELECT COUNT(*) as count FROM testimonials 
-            WHERE id IN (${testimonialIds.map(() => '?').join(',')}) AND model_id = ?
-        `, [...testimonialIds, req.user.id]);
-
-        if (ownershipCheck[0].count !== testimonialOrders.length) {
-            return res.status(403).json({
-                success: false,
-                message: 'You can only reorder your own testimonials'
-            });
-        }
-
-        // Update sort orders in a transaction
-        await db.execute('START TRANSACTION');
-
-        for (const item of testimonialOrders) {
-            await db.execute(`
-                UPDATE testimonials 
-                SET sort_order = ?, updated_at = NOW() 
-                WHERE id = ? AND model_id = ?
-            `, [item.sort_order, item.id, req.user.id]);
-        }
-
-        await db.execute('COMMIT');
-
-        res.json({
-            success: true,
-            message: 'Testimonials reordered successfully'
-        });
-
-    } catch (error) {
-        await db.execute('ROLLBACK');
-        console.error('Error reordering testimonials:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to reorder testimonials'
-        });
-    }
-});
-
-// Toggle testimonial published status
-router.patch('/:id/publish', auth, async (req, res) => {
+// Toggle testimonial featured status
+router.patch('/:id/feature', auth, async (req, res) => {
     try {
         const testimonialId = req.params.id;
 
         // Verify testimonial ownership and get current status
         const [testimonialRows] = await db.execute(`
-            SELECT id, is_published FROM testimonials WHERE id = ? AND model_id = ?
+            SELECT id, is_featured FROM testimonials WHERE id = ? AND model_id = ?
         `, [testimonialId, req.user.id]);
 
         if (testimonialRows.length === 0) {
@@ -321,12 +288,12 @@ router.patch('/:id/publish', auth, async (req, res) => {
             });
         }
 
-        const newStatus = testimonialRows[0].is_published ? 0 : 1;
+        const newStatus = testimonialRows[0].is_featured ? 0 : 1;
 
         // Update status
         await db.execute(`
             UPDATE testimonials 
-            SET is_published = ?, updated_at = NOW()
+            SET is_featured = ?
             WHERE id = ? AND model_id = ?
         `, [newStatus, testimonialId, req.user.id]);
 
@@ -337,27 +304,27 @@ router.patch('/:id/publish', auth, async (req, res) => {
 
         res.json({
             success: true,
-            message: `Testimonial ${newStatus ? 'published' : 'unpublished'} successfully`,
+            message: `Testimonial ${newStatus ? 'featured' : 'unfeatured'} successfully`,
             testimonial: updatedRows[0]
         });
 
     } catch (error) {
-        console.error('Error toggling testimonial publish status:', error);
+        console.error('Error toggling testimonial featured status:', error);
         res.status(500).json({
             success: false,
-            message: 'Failed to toggle testimonial publish status'
+            message: 'Failed to toggle testimonial featured status'
         });
     }
 });
 
-// Toggle testimonial approved status
-router.patch('/:id/approve', auth, async (req, res) => {
+// Toggle testimonial active status
+router.patch('/:id/activate', auth, async (req, res) => {
     try {
         const testimonialId = req.params.id;
 
         // Verify testimonial ownership and get current status
         const [testimonialRows] = await db.execute(`
-            SELECT id, is_approved FROM testimonials WHERE id = ? AND model_id = ?
+            SELECT id, is_active FROM testimonials WHERE id = ? AND model_id = ?
         `, [testimonialId, req.user.id]);
 
         if (testimonialRows.length === 0) {
@@ -367,12 +334,12 @@ router.patch('/:id/approve', auth, async (req, res) => {
             });
         }
 
-        const newStatus = testimonialRows[0].is_approved ? 0 : 1;
+        const newStatus = testimonialRows[0].is_active ? 0 : 1;
 
         // Update status
         await db.execute(`
             UPDATE testimonials 
-            SET is_approved = ?, updated_at = NOW()
+            SET is_active = ?
             WHERE id = ? AND model_id = ?
         `, [newStatus, testimonialId, req.user.id]);
 
@@ -383,15 +350,15 @@ router.patch('/:id/approve', auth, async (req, res) => {
 
         res.json({
             success: true,
-            message: `Testimonial ${newStatus ? 'approved' : 'unapproved'} successfully`,
+            message: `Testimonial ${newStatus ? 'activated' : 'deactivated'} successfully`,
             testimonial: updatedRows[0]
         });
 
     } catch (error) {
-        console.error('Error toggling testimonial approval status:', error);
+        console.error('Error toggling testimonial active status:', error);
         res.status(500).json({
             success: false,
-            message: 'Failed to toggle testimonial approval status'
+            message: 'Failed to toggle testimonial active status'
         });
     }
 });
@@ -461,40 +428,40 @@ router.post('/bulk', auth, async (req, res) => {
         const placeholders = testimonialIds.map(() => '?').join(',');
 
         switch (action) {
-            case 'publish':
+            case 'feature':
                 await db.execute(`
                     UPDATE testimonials 
-                    SET is_published = 1, updated_at = NOW()
+                    SET is_featured = 1
                     WHERE id IN (${placeholders}) AND model_id = ?
                 `, [...testimonialIds, req.user.id]);
-                message = 'Testimonials published successfully';
+                message = 'Testimonials featured successfully';
                 break;
 
-            case 'unpublish':
+            case 'unfeature':
                 await db.execute(`
                     UPDATE testimonials 
-                    SET is_published = 0, updated_at = NOW()
+                    SET is_featured = 0
                     WHERE id IN (${placeholders}) AND model_id = ?
                 `, [...testimonialIds, req.user.id]);
-                message = 'Testimonials unpublished successfully';
+                message = 'Testimonials unfeatured successfully';
                 break;
 
-            case 'approve':
+            case 'activate':
                 await db.execute(`
                     UPDATE testimonials 
-                    SET is_approved = 1, updated_at = NOW()
+                    SET is_active = 1
                     WHERE id IN (${placeholders}) AND model_id = ?
                 `, [...testimonialIds, req.user.id]);
-                message = 'Testimonials approved successfully';
+                message = 'Testimonials activated successfully';
                 break;
 
-            case 'unapprove':
+            case 'deactivate':
                 await db.execute(`
                     UPDATE testimonials 
-                    SET is_approved = 0, updated_at = NOW()
+                    SET is_active = 0
                     WHERE id IN (${placeholders}) AND model_id = ?
                 `, [...testimonialIds, req.user.id]);
-                message = 'Testimonials unapproved successfully';
+                message = 'Testimonials deactivated successfully';
                 break;
 
             case 'delete':
@@ -508,7 +475,7 @@ router.post('/bulk', auth, async (req, res) => {
             default:
                 return res.status(400).json({
                     success: false,
-                    message: 'Invalid action. Use publish, unpublish, approve, unapprove, or delete'
+                    message: 'Invalid action. Use feature, unfeature, activate, deactivate, or delete'
                 });
         }
 

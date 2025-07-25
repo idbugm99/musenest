@@ -117,6 +117,10 @@
                     <i class="fas fa-star w-5"></i>
                     <span class="ml-3">Testimonials</span>
                 </a>
+                <a href="#" data-tab="pages" class="nav-item flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                    <i class="fas fa-file-alt w-5"></i>
+                    <span class="ml-3">Page Content</span>
+                </a>
                 <a href="#" data-tab="settings" class="nav-item flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
                     <i class="fas fa-cog w-5"></i>
                     <span class="ml-3">Settings</span>
@@ -124,6 +128,11 @@
                 <a href="#" data-tab="themes" class="nav-item flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
                     <i class="fas fa-palette w-5"></i>
                     <span class="ml-3">Themes</span>
+                </a>
+                
+                <a href="#" data-tab="calendar" class="nav-item flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                    <i class="fas fa-calendar-alt w-5"></i>
+                    <span class="ml-3">Calendar</span>
                 </a>
                 <div class="border-t border-gray-200 pt-4 mt-4">
                     <a href="#" id="viewSiteBtn" class="flex items-center px-4 py-2 text-blue-600 rounded-lg hover:bg-blue-50" target="_blank">
@@ -145,7 +154,7 @@
             </div>
 
             <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
                 <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
@@ -185,6 +194,30 @@
                 <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
+                            <i class="fas fa-file-alt text-orange-500 text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600">Page Sections</p>
+                            <p class="text-2xl font-bold text-gray-900" id="pageSectionsCount">0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-calendar-alt text-blue-500 text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600">Calendar Events</p>
+                            <p class="text-2xl font-bold text-gray-900" id="calendarEventsCount">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
                             <i class="fas fa-palette text-purple-500 text-2xl"></i>
                         </div>
                         <div class="ml-4">
@@ -212,6 +245,14 @@
                         <div class="text-left">
                             <p class="font-semibold text-gray-900">Add FAQ</p>
                             <p class="text-sm text-gray-600">Create new FAQ item</p>
+                        </div>
+                    </button>
+
+                    <button data-tab="pages" class="quick-action-btn flex items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors">
+                        <i class="fas fa-edit text-orange-500 text-xl mr-3"></i>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-900">Edit Pages</p>
+                            <p class="text-sm text-gray-600">Manage page content</p>
                         </div>
                     </button>
 
@@ -347,6 +388,120 @@
             </div>
         </div>
 
+        <!-- Page Content Tab -->
+        <div id="pages-tab" class="tab-content p-6 hidden">
+            <div class="mb-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Page Content Management</h2>
+                    <p class="text-gray-600">Manage your site's page content and sections</p>
+                </div>
+                <button id="createPageBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                    <i class="fas fa-plus mr-2"></i>
+                    Add Page Section
+                </button>
+            </div>
+
+            <!-- Page Type Filter -->
+            <div class="mb-6">
+                <div class="flex items-center space-x-4">
+                    <label class="text-sm font-medium text-gray-700">Filter by Page Type:</label>
+                    <select id="pageTypeFilter" class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+                        <option value="">All Pages</option>
+                        <option value="home">Home</option>
+                        <option value="about">About</option>
+                        <option value="contact">Contact</option>
+                        <option value="etiquette">Etiquette</option>
+                    </select>
+                    <div class="flex items-center space-x-2 ml-4">
+                        <input type="checkbox" id="showInactivePages" class="rounded border-gray-300">
+                        <label for="showInactivePages" class="text-sm text-gray-600">Show hidden sections</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pages Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Page Types Column -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Page Types</h3>
+                        <span class="text-sm text-gray-500" id="pageTypesCount">0 types</span>
+                    </div>
+                    <div id="pageTypesList" class="space-y-3">
+                        <!-- Page types will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Page Sections Column -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Page Sections</h3>
+                        <span class="text-sm text-gray-500" id="pageSectionsDisplayCount">0 sections</span>
+                    </div>
+                    <div id="pageSectionsList" class="space-y-3 max-h-96 overflow-y-auto">
+                        <!-- Page sections will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selected Page Content Editor -->
+            <div id="pageContentEditor" class="mt-6 bg-white rounded-lg shadow-sm border border-gray-200 p-6 hidden">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900" id="editorTitle">Edit Page Section</h3>
+                        <p class="text-sm text-gray-600" id="editorSubtitle">No section selected</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="savePageContent" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">
+                            <i class="fas fa-save mr-1"></i>
+                            Save Changes
+                        </button>
+                        <button id="cancelPageEdit" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm">
+                            <i class="fas fa-times mr-1"></i>
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Content Editor Form -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Basic Information -->
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Section Title</label>
+                            <input type="text" id="sectionTitle" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" placeholder="Enter section title">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Section Key</label>
+                            <input type="text" id="sectionKey" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" placeholder="section_key" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Sort Order</label>
+                            <input type="number" id="sectionSortOrder" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" min="0" max="100">
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="sectionVisible" class="rounded border-gray-300 mr-2">
+                            <label for="sectionVisible" class="text-sm text-gray-700">Section is visible</label>
+                        </div>
+                    </div>
+
+                    <!-- JSON Content Editor -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Content (JSON)</label>
+                        <div class="relative">
+                            <textarea id="sectionContent" class="w-full h-64 border border-gray-300 rounded-md px-3 py-2 text-sm font-mono" placeholder='{"key": "value"}'></textarea>
+                            <div class="absolute top-2 right-2">
+                                <button id="formatJson" class="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded">
+                                    Format JSON
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Content must be valid JSON format</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Settings Tab -->
         <div id="settings-tab" class="tab-content p-6 hidden">
             <div class="mb-6">
@@ -392,12 +547,232 @@
         <!-- Themes Tab -->
         <div id="themes-tab" class="tab-content p-6 hidden">
             <div class="mb-6">
-                <h2 class="text-2xl font-bold text-gray-900">Theme Selection</h2>
-                <p class="text-gray-600">Choose the perfect look for your portfolio</p>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Theme & Design</h2>
+                        <p class="text-gray-600">Choose templates and customize colors for your portfolio</p>
+                    </div>
+                    <button id="customizeColorsBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center">
+                        <i class="fas fa-palette mr-2"></i>
+                        Customize Colors
+                    </button>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="themesGrid">
-                <!-- Theme cards will be loaded here -->
+            <!-- Theme Templates -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Choose a Template</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="templatesGrid">
+                    <!-- Template cards will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Color Schemes -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Existing Color Schemes</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="themesGrid">
+                    <!-- Theme cards will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Color Customization Modal -->
+        <div id="colorCustomModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-96 overflow-y-auto">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-semibold text-gray-900">Customize Colors</h3>
+                    <button data-close-modal class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Color Controls -->
+                    <div>
+                        <h4 class="text-lg font-medium text-gray-900 mb-4">Color Settings</h4>
+                        <div id="colorControls" class="space-y-4">
+                            <!-- Color input controls will be generated here -->
+                        </div>
+                        
+                        <div class="flex space-x-3 mt-6">
+                            <button id="resetColorsBtn" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                                Reset to Defaults
+                            </button>
+                            <button id="saveColorsBtn" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Live Preview -->
+                    <div>
+                        <h4 class="text-lg font-medium text-gray-900 mb-4">Preview</h4>
+                        <div id="colorPreview" class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                            <div class="space-y-3">
+                                <div class="h-8 rounded" style="background-color: var(--preview-primary, #3B82F6)">
+                                    <div class="h-full flex items-center px-3 text-white text-sm font-medium">
+                                        Primary Color
+                                    </div>
+                                </div>
+                                <div class="h-6 rounded" style="background-color: var(--preview-secondary, #6B7280)">
+                                    <div class="h-full flex items-center px-3 text-white text-xs">
+                                        Secondary Color
+                                    </div>
+                                </div>
+                                <div class="h-4 rounded" style="background-color: var(--preview-accent, #10B981)">
+                                    <div class="h-full flex items-center px-3 text-white text-xs">
+                                        Accent Color
+                                    </div>
+                                </div>
+                                <div class="p-3 rounded border" style="background-color: var(--preview-background, #FFFFFF); color: var(--preview-text, #1F2937)">
+                                    <p class="text-sm">Sample text content with background and text colors</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar Tab -->
+        <div id="calendar-tab" class="tab-content p-6 hidden">
+            <div class="mb-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Calendar Management</h2>
+                        <p class="text-gray-600">Manage your availability and schedule</p>
+                    </div>
+                    <button id="addEventBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                        <i class="fas fa-plus mr-2"></i>
+                        Add Event
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Calendar View -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <button id="prevMonth" class="text-gray-600 hover:text-gray-900">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <h3 id="monthYear" class="text-lg font-semibold text-gray-900">July 2025</h3>
+                        <button id="nextMonth" class="text-gray-600 hover:text-gray-900">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div id="calendarGrid">
+                        <!-- Calendar grid will be generated here -->
+                    </div>
+                </div>
+
+                <!-- Events List -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Events</h3>
+                    <div id="eventsList" class="space-y-3 max-h-96 overflow-y-auto">
+                        <!-- Events will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Event Modal -->
+        <div id="eventModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 id="modalTitle" class="text-lg font-semibold text-gray-900">Add New Event</h3>
+                    <button data-close-modal class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <form id="eventForm" class="space-y-4">
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                        <input type="text" id="title" name="title" required
+                               class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                        <textarea id="description" name="description" rows="2"
+                                  class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date</label>
+                            <input type="date" id="start_date" name="start_date" required
+                                   class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label for="end_date" class="block text-sm font-medium text-gray-700">End Date</label>
+                            <input type="date" id="end_date" name="end_date" required
+                                   class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label for="start_time" class="block text-sm font-medium text-gray-700">Start Time</label>
+                            <input type="time" id="start_time" name="start_time"
+                                   class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label for="end_time" class="block text-sm font-medium text-gray-700">End Time</label>
+                            <input type="time" id="end_time" name="end_time"
+                                   class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="all_day" name="all_day" class="mr-2">
+                            <span class="text-sm text-gray-700">All Day</span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
+                        <input type="text" id="location" name="location"
+                               class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                            <select id="status" name="status"
+                                    class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <option value="available">Available</option>
+                                <option value="vacation">Vacation</option>
+                                <option value="unavailable">Unavailable</option>
+                                <option value="busy">Busy</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="color" class="block text-sm font-medium text-gray-700">Color</label>
+                            <input type="color" id="color" name="color" value="#3B82F6"
+                                   class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 h-10 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
+                        <textarea id="notes" name="notes" rows="2"
+                                  class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" data-close-modal
+                                class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Save Event
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -420,7 +795,9 @@
     <script src="js/gallery.js"></script>
     <script src="js/faq.js"></script>
     <script src="js/testimonials.js"></script>
+    <script src="js/pages.js"></script>
     <script src="js/settings.js"></script>
     <script src="js/themes.js"></script>
+    <script src="js/calendar.js"></script>
 </body>
 </html>
