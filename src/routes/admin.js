@@ -45,14 +45,15 @@ router.get('/pages/types', async (req, res) => {
         const pageTypes = await query(`
             SELECT 
                 pt.id,
-                pt.slug,
                 pt.name,
+                pt.display_name,
+                pt.category,
                 COUNT(ps.id) as section_count
             FROM page_types pt
             LEFT JOIN pages p ON pt.id = p.page_type_id AND p.model_id = ?
             LEFT JOIN page_sections ps ON p.id = ps.page_id
-            GROUP BY pt.id, pt.slug, pt.name
-            ORDER BY pt.name
+            GROUP BY pt.id, pt.name, pt.display_name, pt.category
+            ORDER BY pt.display_name
         `, [modelId]);
 
         console.log('Page types found:', pageTypes.length);
@@ -92,13 +93,13 @@ router.get('/pages/sections', async (req, res) => {
                 ps.sort_order,
                 ps.is_visible,
                 pt.name as page_type_name,
-                pt.slug as page_type_slug,
+                pt.display_name as page_type_display_name,
                 p.title as page_title
             FROM page_sections ps
             JOIN pages p ON ps.page_id = p.id
             JOIN page_types pt ON p.page_type_id = pt.id
             WHERE p.model_id = ?
-            ORDER BY pt.name, ps.sort_order, ps.title
+            ORDER BY pt.display_name, ps.sort_order, ps.title
         `, [modelId]);
 
         console.log('Page sections found:', sections.length);
@@ -137,7 +138,7 @@ router.get('/pages/sections/:sectionId', async (req, res) => {
                 ps.sort_order,
                 ps.is_visible,
                 pt.name as page_type_name,
-                pt.slug as page_type_slug,
+                pt.display_name as page_type_display_name,
                 p.title as page_title
             FROM page_sections ps
             JOIN pages p ON ps.page_id = p.id
@@ -296,7 +297,7 @@ router.delete('/pages/sections/:sectionId', async (req, res) => {
 
 // Create new page section
 router.post('/pages/sections', [
-    body('page_type_slug')
+    body('page_type_name')
         .trim()
         .isLength({ min: 1 })
         .withMessage('Page type is required'),
@@ -344,10 +345,10 @@ router.post('/pages/sections', [
             });
         }
 
-        const { page_type_slug, section_key, title, content, sort_order, is_visible } = req.body;
+        const { page_type_name, section_key, title, content, sort_order, is_visible } = req.body;
 
         // Get or create page for this page type
-        const pageTypes = await query('SELECT id FROM page_types WHERE slug = ?', [page_type_slug]);
+        const pageTypes = await query('SELECT id FROM page_types WHERE name = ?', [page_type_name]);
         if (pageTypes.length === 0) {
             return res.status(400).json({
                 error: 'Invalid page type',
@@ -369,7 +370,7 @@ router.post('/pages/sections', [
             const pageResult = await query(`
                 INSERT INTO pages (model_id, page_type_id, title, is_visible, created_at, updated_at)
                 VALUES (?, ?, ?, true, NOW(), NOW())
-            `, [modelId, pageTypeId, page_type_slug.charAt(0).toUpperCase() + page_type_slug.slice(1)]);
+            `, [modelId, pageTypeId, page_type_name.charAt(0).toUpperCase() + page_type_name.slice(1)]);
             pageId = pageResult.insertId;
         } else {
             pageId = pages[0].id;
