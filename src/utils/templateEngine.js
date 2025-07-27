@@ -121,18 +121,35 @@ class TemplateEngine {
 
     // Process conditional blocks
     processConditionals(template, context) {
-        // Handle {{#if condition}} blocks
-        template = template.replace(/\{\{#if\s+([^}]+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (match, condition, content) => {
-            const value = this.getValue(context, condition.trim());
-            return value ? content : '';
-        });
+        let maxIterations = 10;
+        let iteration = 0;
+        
+        while (iteration < maxIterations) {
+            const originalTemplate = template;
+            
+            // Handle {{#if condition}}...{{else}}...{{/if}} blocks first (more specific)
+            template = template.replace(/\{\{#if\s+([^}]+)\}\}([\s\S]*?)\{\{else\}\}([\s\S]*?)\{\{\/if\}\}/g, (match, condition, trueContent, falseContent) => {
+                const value = this.getValue(context, condition.trim());
+                return value ? trueContent : falseContent;
+            });
 
-        // Handle {{#if condition}}...{{else}}...{{/if}} blocks
-        template = template.replace(/\{\{#if\s+([^}]+)\}\}([\s\S]*?)\{\{else\}\}([\s\S]*?)\{\{\/if\}\}/g, (match, condition, trueContent, falseContent) => {
-            const value = this.getValue(context, condition.trim());
-            return value ? trueContent : falseContent;
-        });
+            // Handle simple {{#if condition}} blocks
+            template = template.replace(/\{\{#if\s+([^}]+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (match, condition, content) => {
+                const value = this.getValue(context, condition.trim());
+                return value ? content : '';
+            });
+            
+            // If no changes were made, break out of the loop
+            if (template === originalTemplate) {
+                break;
+            }
+            
+            iteration++;
+        }
 
+        // Clean up any remaining orphaned {{/if}} tags
+        template = template.replace(/\{\{\/if\}\}/g, '');
+        
         return template;
     }
 
@@ -283,8 +300,8 @@ class TemplateEngine {
             // Check cache first
             if (this.templateCache.has(templatePath)) {
                 const template = this.templateCache.get(templatePath);
-                let processed = this.render(template, context);
-                return await this.processComponents(processed, context);
+                let processed = await this.renderWithComponents(template, context);
+                return processed;
             }
 
             // Read template file
@@ -295,12 +312,84 @@ class TemplateEngine {
                 this.templateCache.set(templatePath, template);
             }
 
-            let processed = this.render(template, context);
-            return await this.processComponents(processed, context);
+            let processed = await this.renderWithComponents(template, context);
+            return processed;
         } catch (error) {
             console.error(`Template file error for ${templatePath}:`, error);
             return `<!-- Template File Error: ${error.message} -->`;
         }
+    }
+
+    // Render template with async component processing
+    async renderWithComponents(template, context = {}) {
+        try {
+            // First, process components asynchronously
+            let processed = await this.processDirectComponents(template, context);
+            
+            // Then process the rest of the template syntax
+            processed = this.processConditionals(processed, context);
+            processed = this.processLoops(processed, context);
+            processed = this.processVariables(processed, context);
+            
+            return processed;
+        } catch (error) {
+            console.error('Template rendering with components error:', error);
+            return `<!-- Template Error: ${error.message} -->`;
+        }
+    }
+
+    // Process direct component calls like {{component "navigation" theme="glamour"}}
+    async processDirectComponents(template, context) {
+        const componentRegex = /\{\{component\s+["']([^"']+)["'](.*?)\}\}/g;
+        let match;
+        let processed = template;
+        
+        // Process all components
+        const componentMatches = [];
+        while ((match = componentRegex.exec(template)) !== null) {
+            componentMatches.push(match);
+        }
+        
+        // Process components in reverse order to avoid index shifting
+        for (let i = componentMatches.length - 1; i >= 0; i--) {
+            const match = componentMatches[i];
+            const componentName = match[1];
+            const paramsString = match[2].trim();
+            
+            // Parse component parameters
+            const params = { ...context };
+            if (paramsString) {
+                const paramRegex = /(\w+)=([^"\s]+|"[^"]*")/g;
+                let paramMatch;
+                while ((paramMatch = paramRegex.exec(paramsString)) !== null) {
+                    const key = paramMatch[1];
+                    let value = paramMatch[2];
+                    
+                    // Remove quotes if present
+                    if (value.startsWith('"') && value.endsWith('"')) {
+                        value = value.slice(1, -1);
+                    } else {
+                        // Try to get value from context
+                        value = this.getValue(context, value) || value;
+                    }
+                    
+                    params[key] = value;
+                }
+            }
+            
+            const theme = params.theme || 'basic';
+            
+            try {
+                const componentHtml = await this.renderComponent(componentName, params, theme);
+                processed = processed.substring(0, match.index) + componentHtml + processed.substring(match.index + match[0].length);
+            } catch (error) {
+                console.error(`Error rendering component ${componentName}:`, error);
+                const errorHtml = `<!-- Component ${componentName} failed to render: ${error.message} -->`;
+                processed = processed.substring(0, match.index) + errorHtml + processed.substring(match.index + match[0].length);
+            }
+        }
+        
+        return processed;
     }
 
     // Get theme template path

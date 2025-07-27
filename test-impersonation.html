@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Impersonation System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Impersonation System Test</h1>
+        
+        <!-- Test Controls -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Test Controls</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button onclick="startImpersonation()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-user-shield mr-2"></i>
+                    Start Test Impersonation
+                </button>
+                <button onclick="checkStatus()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Check Status
+                </button>
+                <button onclick="viewAuditLog()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-list mr-2"></i>
+                    View Audit Log
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Display -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">Results</h2>
+            <pre id="results" class="bg-gray-100 p-4 rounded-lg text-sm overflow-auto max-h-96">
+Click a button above to test the impersonation system...
+            </pre>
+        </div>
+    </div>
+
+    <script src="/public/js/impersonation.js"></script>
+    <script>
+        async function startImpersonation() {
+            try {
+                updateResults('Starting impersonation for client ID 15...');
+                
+                const response = await fetch('/api/impersonation/start', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model_id: 15,
+                        restrictions: {
+                            blocked_routes: ['/api/billing/*'],
+                            blocked_actions: ['delete'],
+                            read_only_fields: ['stripe_customer_id']
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                updateResults('Impersonation Start Response:\n' + JSON.stringify(data, null, 2));
+                
+                if (data.success) {
+                    // Check if impersonation manager detected it
+                    setTimeout(() => {
+                        if (window.impersonationManager) {
+                            window.impersonationManager.checkImpersonationStatus();
+                        }
+                    }, 1000);
+                }
+            } catch (error) {
+                updateResults('Error: ' + error.message);
+            }
+        }
+
+        async function checkStatus() {
+            try {
+                updateResults('Checking impersonation status...');
+                
+                const response = await fetch('/api/impersonation/status');
+                const data = await response.json();
+                updateResults('Status Response:\n' + JSON.stringify(data, null, 2));
+            } catch (error) {
+                updateResults('Error: ' + error.message);
+            }
+        }
+
+        async function viewAuditLog() {
+            try {
+                updateResults('Fetching audit log...');
+                
+                const response = await fetch('/api/impersonation/audit?page=1&limit=10');
+                const data = await response.json();
+                updateResults('Audit Log Response:\n' + JSON.stringify(data, null, 2));
+            } catch (error) {
+                updateResults('Error: ' + error.message);
+            }
+        }
+
+        function updateResults(text) {
+            document.getElementById('results').textContent = text;
+        }
+
+        // Show current impersonation status on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkStatus();
+        });
+    </script>
+</body>
+</html>

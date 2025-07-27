@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MuseNest - Get Started</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .step-indicator-line {
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: calc(100% - 2rem);
+            height: 2px;
+            background-color: #e5e7eb;
+            z-index: -1;
+        }
+        .step-indicator-line.completed {
+            background-color: #10b981;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b">
+        <div class="max-w-4xl mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <h1 class="text-3xl font-bold text-gray-900">MuseNest</h1>
+                <p class="text-gray-600">Create Your Professional Website</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Step Indicator -->
+        <div class="flex items-center justify-center mb-12">
+            <div class="flex items-center space-x-8">
+                <div class="flex items-center">
+                    <div id="stepIndicator1" class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-semibold">1</div>
+                    <span class="ml-2 text-sm text-gray-600">Industry</span>
+                </div>
+                <div class="w-12 h-0.5 bg-gray-300"></div>
+                <div class="flex items-center">
+                    <div id="stepIndicator2" class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-semibold">2</div>
+                    <span class="ml-2 text-sm text-gray-600">Pages</span>
+                </div>
+                <div class="w-12 h-0.5 bg-gray-300"></div>
+                <div class="flex items-center">
+                    <div id="stepIndicator3" class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-semibold">3</div>
+                    <span class="ml-2 text-sm text-gray-600">Theme</span>
+                </div>
+                <div class="w-12 h-0.5 bg-gray-300"></div>
+                <div class="flex items-center">
+                    <div id="stepIndicator4" class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-semibold">4</div>
+                    <span class="ml-2 text-sm text-gray-600">Details</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 1: Business Type Selection -->
+        <div id="step1" class="step-content">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">What type of business are you?</h2>
+                <p class="text-gray-600">Choose the industry that best describes your business model</p>
+            </div>
+            <div id="businessTypesContainer" class="min-h-96">
+                <!-- Business types will be loaded here -->
+                <div class="flex items-center justify-center h-64">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Page Set Selection -->
+        <div id="step2" class="step-content hidden">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Choose your page set</h2>
+                <p class="text-gray-600">Select the combination of pages that best fits your needs</p>
+            </div>
+            <div id="pageSetsContainer" class="min-h-96">
+                <!-- Page sets will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Step 3: Theme Selection -->
+        <div id="step3" class="step-content hidden">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Pick your theme</h2>
+                <p class="text-gray-600">Choose a theme that matches your brand and style</p>
+            </div>
+            <div id="themesContainer" class="min-h-96">
+                <!-- Themes will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Step 4: Model Details -->
+        <div id="step4" class="step-content hidden">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Tell us about yourself</h2>
+                <p class="text-gray-600">Enter your basic information to complete setup</p>
+            </div>
+            
+            <div class="max-w-md mx-auto">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="mb-4">
+                        <label for="modelName" class="block text-sm font-medium text-gray-700 mb-2">
+                            Your Name / Business Name *
+                        </label>
+                        <input type="text" id="modelName" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               placeholder="Enter your name or business name" required
+                               oninput="generateSlug()">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="slug" class="block text-sm font-medium text-gray-700 mb-2">
+                            Website URL *
+                        </label>
+                        <div class="flex">
+                            <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                                musenest.com/
+                            </span>
+                            <input type="text" id="slug" 
+                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="your-name" required>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Choose a unique URL for your website</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                            Email Address
+                        </label>
+                        <input type="email" id="email" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               placeholder="your@email.com">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                            Phone Number
+                        </label>
+                        <input type="tel" id="phone" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               placeholder="(555) 123-4567">
+                    </div>
+                    
+                    <!-- Summary of selections -->
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                        <h3 class="font-semibold text-gray-900 mb-3">Your Selections:</h3>
+                        <div class="space-y-2 text-sm">
+                            <div>
+                                <span class="text-gray-600">Industry:</span>
+                                <span id="summaryIndustry" class="font-medium text-gray-900 ml-1">-</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Page Set:</span>
+                                <span id="summaryPageSet" class="font-medium text-gray-900 ml-1">-</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Theme:</span>
+                                <span id="summaryTheme" class="font-medium text-gray-900 ml-1">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="flex justify-between items-center mt-12">
+            <button id="prevStep" 
+                    class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                    style="display: none;">
+                Previous
+            </button>
+            <div class="flex-1"></div>
+            <button id="nextStep" 
+                    class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    disabled>
+                Next Step
+            </button>
+            <button id="completeOnboarding" 
+                    class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                    style="display: none;">
+                Create My Website
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function generateSlug() {
+            const modelName = document.getElementById('modelName').value;
+            const slug = modelName
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+                .replace(/\s+/g, '-') // Replace spaces with hyphens
+                .replace(/-+/g, '-') // Replace multiple hyphens with single
+                .trim();
+            
+            document.getElementById('slug').value = slug;
+        }
+    </script>
+    <script src="/js/onboarding-wizard.js"></script>
+</body>
+</html>

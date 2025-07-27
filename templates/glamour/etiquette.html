@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{#if site_settings.site_name}}{{site_settings.site_name}}{{else}}{{model.name}}{{/if}}</title>
+    <title>Etiquette - {{site_settings.model_name}}</title>
     <meta name="description" content="{{site_settings.meta_description}}">
-    <meta name="og:title" content="{{site_settings.site_name}} - {{model.name}}">
+    <meta name="og:title" content="Etiquette - {{site_settings.model_name}}">
     <meta name="og:description" content="{{site_settings.meta_description}}">
     <meta name="og:type" content="website">
     <meta name="og:image" content="{{site_settings.og_image}}">
@@ -18,7 +18,6 @@
     <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
     
     <style>
-        /* Glamour Theme Styles */
         
         /* Glamour Theme Colors */
         :root {
@@ -36,6 +35,16 @@
         .glamour-gradient {
             background: linear-gradient(135deg, var(--glamour-primary) 0%, var(--glamour-secondary) 100%);
         }
+        
+        .luxury-grain::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: url('/uploads/grain.png');
+            opacity: 0.15;
+            pointer-events: none;
+        }
             
     </style>
 </head>
@@ -44,14 +53,9 @@
     {{component "navigation" theme="glamour" model=model navigation=navigation}}
     
     <!-- Page Content -->
-    
-
-Etiquette - {{#if current_model}}{{site_settings.model_name if site_settings and site_settings.model_name else (current_model.name}}{{else}}{{'Model Example')}}{{/if}}
-
-
+    Etiquette - {{#if current_model}}{{#if site_settings.model_name}}{{site_settings.model_name}}{{else}}{{model.name}}{{/if}}{{/if}}
 <section class="py-16 bg-background text-charcoal">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
         <!-- Page Title -->
         {{#if etiquette_content.etiquette_header_visible}}
         <div class="text-center mb-16">
@@ -64,7 +68,6 @@ Etiquette - {{#if current_model}}{{site_settings.model_name if site_settings and
             </p>
         </div>
         {{/if}}
-        
         <div class="grid md:grid-cols-2 gap-8 gap-y-12 mb-12">
             <!-- Booking & Screening -->
             {{#if etiquette_content.etiquette_booking_visible}}
@@ -87,7 +90,6 @@ Etiquette - {{#if current_model}}{{site_settings.model_name if site_settings and
                 </div>
             </section>
             {{/if}}
-            
             <!-- Respect & Boundaries -->
             {{#if etiquette_content.etiquette_respect_visible}}
             <section class="bg-gradient-to-tr from-yellow-700/30 to-yellow-600/20 border border-yellow-500/30 text-white p-8 sm:p-8 lg:p-8 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_10px_40px_rgba(234,179,8,0.3)] hover:ring-2 hover:ring-yellow-500/30 hover:ring-offset-2 hover:ring-offset-black group" data-aos="fade-up" data-aos-delay="200">
@@ -110,7 +112,6 @@ Etiquette - {{#if current_model}}{{site_settings.model_name if site_settings and
             </section>
             {{/if}}
         </div>
-        
         <div class="grid md:grid-cols-2 gap-8 gap-y-12 mb-12">
             <!-- Hygiene & Presentation -->
             {{#if etiquette_content.etiquette_hygiene_visible}}
@@ -133,7 +134,6 @@ Etiquette - {{#if current_model}}{{site_settings.model_name if site_settings and
                 </div>
             </section>
             {{/if}}
-            
             <!-- Cancellation Policy -->
             {{#if etiquette_content.etiquette_cancellation_visible}}
             <section class="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700/50 p-8 sm:p-8 lg:p-8 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_10px_40px_rgba(234,179,8,0.3)] group" data-aos="fade-up" data-aos-delay="400">
@@ -156,10 +156,8 @@ Etiquette - {{#if current_model}}{{site_settings.model_name if site_settings and
             </section>
             {{/if}}
         </div>
-        
         <!-- Section Divider -->
         <div class="w-full h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent mb-12"></div>
-        
         <!-- Safety & Discretion -->
         {{#if etiquette_content.etiquette_ty_visible}}
         <section class="bg-black text-white p-8 sm:p-8 lg:p-8 rounded-2xl shadow-lg mb-12 border border-gray-700 transition-all duration-300 hover:shadow-[0_10px_40px_rgba(234,179,8,0.3)]" data-aos="fade-up" data-aos-delay="500">
@@ -199,7 +197,6 @@ Etiquette - {{#if current_model}}{{site_settings.model_name if site_settings and
             </div>
         </section>
         {{/if}}
-        
         <!-- Contact Information -->
         {{#if etiquette_content.etiquette_questions_visible}}
         <section class="text-center bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700/50 p-8 sm:p-8 lg:p-8 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_10px_40px_rgba(234,179,8,0.3)] group" data-aos="fade-up" data-aos-delay="600">
@@ -209,14 +206,12 @@ Etiquette - {{#if current_model}}{{site_settings.model_name if site_settings and
             <a href="/contact" class="inline-block bg-yellow-500 hover:bg-yellow-400 text-black px-8 py-4 rounded-full font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-200 shadow-md">{{etiquette_content.questions_button_text or 'Contact Me'}}</a>
         </section>
         {{/if}}
-        
         <!-- Mobile Dividers for Better Section Separation -->
         <div class="block md:hidden">
             <div class="border-t border-gray-600 my-8"></div>
         </div>
     </div>
 </section>
-
     
     <script>
         // Initialize AOS

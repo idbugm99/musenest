@@ -94,6 +94,36 @@ app.get('/admin/test-impersonation.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'test-impersonation.html'));
 });
 
+// Test upload page for AI moderation
+app.get('/test-upload.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'test-upload.html'));
+});
+
+// Real NudeNet file upload test page
+app.get('/test-file-upload.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'test-file-upload.html'));
+});
+
+// Real analysis demo page
+app.get('/demo-real-analysis.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'demo-real-analysis.html'));
+});
+
+// Admin content review tool
+app.get('/admin-content-review.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin-content-review.html'));
+});
+
+// Enhanced moderation test page
+app.get('/enhanced-moderation-test.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'enhanced-moderation-test.html'));
+});
+
+// Admin moderation dashboard
+app.get('/admin-moderation-dashboard.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin-moderation-dashboard.html'));
+});
+
 // Health check
 app.get('/health', async (req, res) => {
     const dbStatus = await testConnection();
@@ -121,6 +151,9 @@ app.use('/api/onboarding', require('./routes/api/onboarding'));
 app.use('/api/admin-business', require('./routes/api/admin-business'));
 app.use('/api/system-management', require('./routes/api/system-management'));
 app.use('/api/impersonation', require('./routes/api/impersonation'));
+app.use('/api/content-moderation', require('./routes/api/content-moderation'));
+app.use('/api/enhanced-content-moderation', require('./routes/api/enhanced-content-moderation'));
+app.use('/api/media-review-queue', require('./routes/api/media-review-queue'));
 
 // Dynamic model routes (Theme Sets + Modular Pages)
 app.use('/', require('./src/routes/dynamic_new'));

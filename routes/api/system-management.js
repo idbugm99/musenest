@@ -160,6 +160,7 @@ router.put('/clients/:id', async (req, res) => {
             slug,
             email,
             phone,
+            password,
             status,
             business_type_id,
             subscription_status,
@@ -185,6 +186,23 @@ router.put('/clients/:id', async (req, res) => {
             }
         }
 
+        // Convert undefined values to null for MySQL
+        const params = [
+            name || null,
+            slug || null, 
+            email || null,
+            phone || null,
+            status || null,
+            business_type_id || null,
+            subscription_status || null,
+            stripe_customer_id || null,
+            stripe_subscription_id || null,
+            trial_ends_at || null,
+            next_billing_at || null,
+            balance_due || null,
+            id
+        ];
+
         // Update model record
         await db.execute(`
             UPDATE models SET
@@ -202,20 +220,51 @@ router.put('/clients/:id', async (req, res) => {
                 balance_due = COALESCE(?, balance_due),
                 updated_at = NOW()
             WHERE id = ?
-        `, [
-            name, slug, email, phone, status, business_type_id,
-            subscription_status, stripe_customer_id, stripe_subscription_id,
-            trial_ends_at, next_billing_at, balance_due, id
-        ]);
+        `, params);
 
         // Update corresponding user record if email is provided
         if (email) {
-            await db.execute(`
-                UPDATE users SET 
-                    email = ?,
-                    updated_at = NOW()
-                WHERE email = (SELECT email FROM models WHERE id = ?)
-            `, [email, id]);
+            // First get the current email from the model
+            const [currentModel] = await db.execute('SELECT email FROM models WHERE id = ?', [id]);
+            
+            if (currentModel.length > 0) {
+                if (currentModel[0].email) {
+                    // Update existing user record with the new email
+                    await db.execute(`
+                        UPDATE users SET 
+                            email = ?,
+                            updated_at = NOW()
+                        WHERE email = ?
+                    `, [email, currentModel[0].email]);
+                } else {
+                    // No existing email - create new user account
+                    const defaultPassword = await bcrypt.hash('defaultpassword123', 10);
+                    await db.execute(`
+                        INSERT INTO users (email, password_hash, role, is_active, created_at, updated_at)
+                        VALUES (?, ?, 'model', 1, NOW(), NOW())
+                    `, [email, defaultPassword]);
+                }
+            }
+        }
+
+        // Update password if provided
+        if (password) {
+            // Use the email from the form data (since it might be newly set) or get from model
+            let emailToUse = email;
+            if (!emailToUse) {
+                const [currentModel] = await db.execute('SELECT email FROM models WHERE id = ?', [id]);
+                emailToUse = currentModel.length > 0 ? currentModel[0].email : null;
+            }
+            
+            if (emailToUse) {
+                const hashedPassword = await bcrypt.hash(password, 10);
+                await db.execute(`
+                    UPDATE users SET 
+                        password_hash = ?,
+                        updated_at = NOW()
+                    WHERE email = ?
+                `, [hashedPassword, emailToUse]);
+            }
         }
 
         res.json({
@@ -225,9 +274,16 @@ router.put('/clients/:id', async (req, res) => {
 
     } catch (error) {
         console.error('Error updating client:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            code: error.code,
+            sqlMessage: error.sqlMessage
+        });
         res.status(500).json({
             success: false,
-            error: 'Failed to update client'
+            error: 'Failed to update client',
+            details: error.message
         });
     }
 });
@@ -606,6 +662,88 @@ router.get('/business-types', async (req, res) => {
         res.status(500).json({
             success: false,
             error: 'Failed to fetch business types'
+        });
+    }
+});
+
+// Get all theme sets for template builder
+router.get('/theme-sets', async (req, res) => {
+    try {
+        const [themeSets] = await db.execute(`
+            SELECT 
+                ts.*,
+                bt.display_name as business_type_name
+            FROM theme_sets ts
+            LEFT JOIN business_types bt ON ts.business_type_id = bt.id
+            WHERE ts.is_active = 1
+            ORDER BY ts.category, ts.display_name
+        `);
+
+        // Parse JSON fields
+        const processedThemeSets = themeSets.map(theme => ({
+            ...theme,
+            default_color_scheme: typeof theme.default_color_scheme === 'string' 
+                ? JSON.parse(theme.default_color_scheme) 
+                : theme.default_color_scheme,
+            features: typeof theme.features === 'string' 
+                ? JSON.parse(theme.features) 
+                : theme.features,
+            industry_features: typeof theme.industry_features === 'string' 
+                ? JSON.parse(theme.industry_features) 
+                : theme.industry_features
+        }));
+
+        res.json({
+            success: true,
+            data: processedThemeSets
+        });
+
+    } catch (error) {
+        console.error('Error fetching theme sets:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch theme sets'
+        });
+    }
+});
+
+// Get all page sets for template builder
+router.get('/page-sets', async (req, res) => {
+    try {
+        const [pageSets] = await db.execute(`
+            SELECT 
+                bps.*,
+                bt.display_name as business_type_name
+            FROM business_page_sets bps
+            LEFT JOIN business_types bt ON bps.business_type_id = bt.id
+            WHERE bps.is_active = 1
+            ORDER BY bt.display_name, bps.tier, bps.display_name
+        `);
+
+        // Parse JSON fields
+        const processedPageSets = pageSets.map(pageSet => ({
+            ...pageSet,
+            included_pages: typeof pageSet.included_pages === 'string' 
+                ? JSON.parse(pageSet.included_pages) 
+                : pageSet.included_pages,
+            features: typeof pageSet.features === 'string' 
+                ? JSON.parse(pageSet.features) 
+                : pageSet.features,
+            integrations: typeof pageSet.integrations === 'string' 
+                ? JSON.parse(pageSet.integrations) 
+                : pageSet.integrations
+        }));
+
+        res.json({
+            success: true,
+            data: processedPageSets
+        });
+
+    } catch (error) {
+        console.error('Error fetching page sets:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch page sets'
         });
     }
 });

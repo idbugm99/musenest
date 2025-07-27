@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛡️ Admin Content Review & Blur Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .image-container {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+        }
+        
+        .blur-overlay {
+            position: absolute;
+            backdrop-filter: blur(var(--blur-strength, 10px));
+            background: rgba(255, 255, 255, var(--blur-opacity, 0.3));
+            border: 2px solid #dc3545;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: var(--blur-shape, 0px);
+        }
+        
+        .blur-overlay.shape-oval {
+            border-radius: 50%;
+        }
+        
+        .blur-overlay.shape-rounded {
+            border-radius: 15px;
+        }
+        
+        .blur-overlay.shape-square {
+            border-radius: 0px;
+        }
+        
+        .blur-overlay:hover {
+            border-color: #ffc107;
+            background: rgba(255, 255, 0, 0.2);
+        }
+        
+        .blur-overlay.disabled {
+            backdrop-filter: none;
+            background: rgba(0, 255, 0, 0.1);
+            border-color: #28a745;
+        }
+        
+        .violation-label {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            background: #dc3545;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .image-preview {
+            max-width: 100%;
+            max-height: 600px;
+            object-fit: contain;
+        }
+        
+        .control-panel {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .violation-item {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background: #fff;
+        }
+        
+        .violation-item.blurred {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+        
+        .violation-item.approved {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h2>🛡️ Admin Content Review & Selective Blur Tool</h2>
+                <div class="alert alert-info">
+                    <strong>Instructions:</strong> Upload an image to analyze violations, then click on detected areas to toggle blur on/off. 
+                    Adjust blur strength and opacity with the controls below.
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Upload & Controls -->
+            <div class="col-md-4">
+                <div class="control-panel">
+                    <h5>📤 Upload Image for Review</h5>
+                    <div class="mb-3">
+                        <input type="file" class="form-control" id="imageUpload" accept="image/*">
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="analyzeImage()">
+                        🔍 Analyze Violations
+                    </button>
+                </div>
+                
+                <div id="blurControls" class="control-panel" style="display: none;">
+                    <h5>🎛️ Blur Controls</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Blur Strength:</label>
+                        <input type="range" class="form-range" id="blurStrength" min="1" max="30" value="10" 
+                               onchange="updateBlurSettings()">
+                        <small class="text-muted">Current: <span id="blurStrengthValue">10</span>px</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Blur Opacity:</label>
+                        <input type="range" class="form-range" id="blurOpacity" min="0" max="1" step="0.1" value="0.3" 
+                               onchange="updateBlurSettings()">
+                        <small class="text-muted">Current: <span id="blurOpacityValue">30</span>%</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Blur Shape:</label>
+                        <select class="form-select" id="blurShape" onchange="updateBlurSettings()">
+                            <option value="square">🔲 Square/Rectangle</option>
+                            <option value="rounded">🔳 Rounded Rectangle</option>
+                            <option value="oval">🔴 Oval/Circle</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-warning" onclick="toggleAllBlurs()">
+                            🔄 Toggle All Blurs
+                        </button>
+                        <button class="btn btn-success" onclick="saveModeratedImage()">
+                            💾 Save Moderated Version
+                        </button>
+                        <button class="btn btn-danger" onclick="rejectImage()">
+                            ❌ Reject Image
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="violationsList" class="control-panel" style="display: none;">
+                    <h5>🚨 Detected Violations</h5>
+                    <div id="violationsContent"></div>
+                </div>
+            </div>
+            
+            <!-- Image Preview -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>🖼️ Image Review</h5>
+                        <small class="text-muted">Click on highlighted areas to toggle blur on/off</small>
+                    </div>
+                    <div class="card-body text-center">
+                        <div id="imageContainer">
+                            <div class="text-muted py-5">
+                                <i class="bi bi-image" style="font-size: 4rem;"></i>
+                                <h4>Upload an image to begin review</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="analysisResults" class="mt-3" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6>📊 AI Analysis Results</h6>
+                        </div>
+                        <div class="card-body">
+                            <div id="analysisContent"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentImage = null;
+        let analysisData = null;
+        let blurStates = {};
+        
+        function analyzeImage() {
+            const fileInput = document.getElementById('imageUpload');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select an image first');
+                return;
+            }
+            
+            // Create FormData for upload
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('context_type', 'public_gallery');
+            formData.append('model_id', 1);
+            
+            // Show loading
+            document.getElementById('imageContainer').innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <h5 class="mt-3">Analyzing image for violations...</h5>
+                </div>
+            `;
+            
+            // Upload and analyze
+            fetch('/api/content-moderation/proxy-upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayImageWithViolations(file, data.result);
+                } else {
+                    alert('Analysis failed: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Upload failed: ' + error.message);
+            });
+        }
+        
+        function displayImageWithViolations(file, analysis) {
+            analysisData = analysis;
+            
+            // Create image element
+            const img = new Image();
+            img.onload = function() {
+                const container = document.getElementById('imageContainer');
+                
+                // Debug image dimensions
+                console.log(`Image loaded - Natural size: ${img.naturalWidth}x${img.naturalHeight}`);
+                
+                // Create image container with overlays
+                let overlaysHtml = '';
+                let violationsHtml = '';
+                
+                if (analysis.part_locations) {
+                    Object.entries(analysis.part_locations).forEach(([part, location]) => {
+                        const overlayId = `overlay-${part}`;
+                        blurStates[part] = true; // Default to blurred
+                        
+                        // Debug coordinates vs image size
+                        console.log(`Creating overlay for ${part}:`, location);
+                        console.log(`Coordinates: x=${location.x}, y=${location.y}, w=${location.width}, h=${location.height}`);
+                        console.log(`Image bounds: 0-${img.naturalWidth} x 0-${img.naturalHeight}`);
+                        
+                        // Check if coordinates are within image bounds
+                        const isWithinBounds = location.x >= 0 && location.y >= 0 && 
+                                             location.x < img.naturalWidth && location.y < img.naturalHeight;
+                        console.log(`Overlay within bounds: ${isWithinBounds}`);
+                        
+                        // Calculate scaling factor for displayed image vs natural size
+                        // This will be done after image is inserted into DOM
+                        
+                        overlaysHtml += `
+                            <div id="${overlayId}" 
+                                 class="blur-overlay shape-square" 
+                                 onclick="toggleBlur('${part}')"
+                                 data-original-x="${location.x}"
+                                 data-original-y="${location.y}"
+                                 data-original-width="${location.width}"
+                                 data-original-height="${location.height}"
+                                 style="
+                                     left: ${location.x}px; 
+                                     top: ${location.y}px; 
+                                     width: ${location.width}px; 
+                                     height: ${location.height}px;
+                                     --blur-strength: 10px;
+                                     --blur-opacity: 0.3;
+                                     z-index: 10;
+                                 ">
+                                <div class="violation-label">${part.toUpperCase()} (${location.confidence}%)</div>
+                            </div>
+                        `;
+                        
+                        violationsHtml += `
+                            <div id="violation-${part}" class="violation-item blurred">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>${part.toUpperCase()}</strong>
+                                        <br><small>Confidence: ${location.confidence}% | Location: ${location.x}, ${location.y}</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="toggleBlur('${part}')">
+                                        <span id="btn-${part}">🟦 Blurred</span>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                container.innerHTML = `
+                    <div class="image-container">
+                        <img src="${img.src}" class="image-preview" alt="Content under review" onload="scaleOverlays()">
+                        ${overlaysHtml}
+                    </div>
+                `;
+                
+                // Show controls and violations
+                document.getElementById('blurControls').style.display = 'block';
+                document.getElementById('violationsList').style.display = 'block';
+                document.getElementById('violationsContent').innerHTML = violationsHtml;
+                
+                // Show analysis results
+                displayAnalysisResults(analysis);
+                
+                // Scale overlays after image is rendered
+                setTimeout(scaleOverlays, 100);
+            };
+            
+            img.src = URL.createObjectURL(file);
+            currentImage = img;
+        }
+        
+        function scaleOverlays() {
+            const imageElement = document.querySelector('.image-preview');
+            if (!imageElement || !currentImage) return;
+            
+            // Get displayed vs natural image dimensions
+            const displayedWidth = imageElement.clientWidth;
+            const displayedHeight = imageElement.clientHeight;
+            const naturalWidth = currentImage.naturalWidth;
+            const naturalHeight = currentImage.naturalHeight;
+            
+            // Calculate scaling factors
+            const scaleX = displayedWidth / naturalWidth;
+            const scaleY = displayedHeight / naturalHeight;
+            
+            console.log(`Image scaling - Natural: ${naturalWidth}x${naturalHeight}, Displayed: ${displayedWidth}x${displayedHeight}`);
+            console.log(`Scale factors: X=${scaleX.toFixed(3)}, Y=${scaleY.toFixed(3)}`);
+            
+            // Update all blur overlays with scaled coordinates
+            document.querySelectorAll('.blur-overlay').forEach(overlay => {
+                const originalX = parseInt(overlay.dataset.originalX);
+                const originalY = parseInt(overlay.dataset.originalY);
+                const originalWidth = parseInt(overlay.dataset.originalWidth);
+                const originalHeight = parseInt(overlay.dataset.originalHeight);
+                
+                // Apply scaling
+                const scaledX = Math.round(originalX * scaleX);
+                const scaledY = Math.round(originalY * scaleY);
+                const scaledWidth = Math.round(originalWidth * scaleX);
+                const scaledHeight = Math.round(originalHeight * scaleY);
+                
+                console.log(`Scaling overlay - Original: ${originalX},${originalY} ${originalWidth}x${originalHeight} -> Scaled: ${scaledX},${scaledY} ${scaledWidth}x${scaledHeight}`);
+                
+                // Update overlay position and size
+                overlay.style.left = `${scaledX}px`;
+                overlay.style.top = `${scaledY}px`;
+                overlay.style.width = `${scaledWidth}px`;
+                overlay.style.height = `${scaledHeight}px`;
+            });
+        }
+        
+        function toggleBlur(part) {
+            blurStates[part] = !blurStates[part];
+            const overlay = document.getElementById(`overlay-${part}`);
+            const violation = document.getElementById(`violation-${part}`);
+            const button = document.getElementById(`btn-${part}`);
+            
+            if (blurStates[part]) {
+                // Enable blur
+                overlay.classList.remove('disabled');
+                violation.classList.remove('approved');
+                violation.classList.add('blurred');
+                button.innerHTML = '🟦 Blurred';
+            } else {
+                // Disable blur
+                overlay.classList.add('disabled');
+                violation.classList.remove('blurred');
+                violation.classList.add('approved');
+                button.innerHTML = '✅ Approved';
+            }
+        }
+        
+        function updateBlurSettings() {
+            const strength = document.getElementById('blurStrength').value;
+            const opacity = document.getElementById('blurOpacity').value;
+            const shape = document.getElementById('blurShape').value;
+            
+            document.getElementById('blurStrengthValue').textContent = strength;
+            document.getElementById('blurOpacityValue').textContent = Math.round(opacity * 100);
+            
+            console.log(`Updating blur settings: strength=${strength}px, opacity=${opacity}, shape=${shape}`);
+            
+            // Update all blur overlays
+            document.querySelectorAll('.blur-overlay').forEach(overlay => {
+                // Update blur strength - this controls the actual blur intensity
+                overlay.style.setProperty('--blur-strength', `${strength}px`);
+                
+                // Update background opacity - this controls the white overlay visibility
+                overlay.style.setProperty('--blur-opacity', opacity);
+                
+                // Remove existing shape classes
+                overlay.classList.remove('shape-square', 'shape-rounded', 'shape-oval');
+                
+                // Add new shape class
+                overlay.classList.add(`shape-${shape}`);
+                
+                console.log(`Updated overlay: blur-strength=${strength}px, blur-opacity=${opacity}`);
+            });
+        }
+        
+        function toggleAllBlurs() {
+            const allBlurred = Object.values(blurStates).every(state => state);
+            
+            Object.keys(blurStates).forEach(part => {
+                if (allBlurred) {
+                    // If all are blurred, approve all
+                    if (blurStates[part]) toggleBlur(part);
+                } else {
+                    // If not all are blurred, blur all
+                    if (!blurStates[part]) toggleBlur(part);
+                }
+            });
+        }
+        
+        function displayAnalysisResults(analysis) {
+            const content = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="badge bg-${analysis.moderation_status === 'approved' ? 'success' : 'danger'} fs-6">
+                            ${analysis.moderation_status.toUpperCase()}
+                        </div>
+                        <br><small>Moderation Status</small>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="badge bg-warning fs-6">${analysis.nudity_score.toFixed(1)}%</div>
+                        <br><small>Nudity Score</small>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <strong>Pose Classification:</strong> ${analysis.pose_classification}<br>
+                    <strong>AI Caption:</strong> "${analysis.generated_caption}"
+                </div>
+            `;
+            
+            document.getElementById('analysisContent').innerHTML = content;
+            document.getElementById('analysisResults').style.display = 'block';
+        }
+        
+        function saveModeratedImage() {
+            if (!analysisData) {
+                alert('No image to save');
+                return;
+            }
+            
+            const moderationData = {
+                analysis: analysisData,
+                blurSettings: {
+                    strength: document.getElementById('blurStrength').value,
+                    opacity: document.getElementById('blurOpacity').value,
+                    shape: document.getElementById('blurShape').value,
+                    blurredParts: Object.entries(blurStates)
+                        .filter(([part, isBlurred]) => isBlurred)
+                        .map(([part]) => part)
+                },
+                adminDecision: 'approved_with_blur'
+            };
+            
+            console.log('Saving moderated image:', moderationData);
+            alert('Image saved with blur settings!\\nBlurred parts: ' + moderationData.blurSettings.blurredParts.join(', '));
+        }
+        
+        function rejectImage() {
+            if (!analysisData) {
+                alert('No image to reject');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to reject this image?')) {
+                const rejectionData = {
+                    analysis: analysisData,
+                    adminDecision: 'rejected',
+                    reason: 'Administrative review'
+                };
+                
+                console.log('Rejecting image:', rejectionData);
+                alert('Image rejected by admin review');
+            }
+        }
+        
+        // Handle window resize to rescale overlays
+        window.addEventListener('resize', function() {
+            if (currentImage && analysisData && analysisData.part_locations) {
+                setTimeout(scaleOverlays, 100);
+            }
+        });
+
+        // URL Parameter handling for Media Queue integration
+        let mediaQueueMode = false;
+        let currentMediaId = null;
+
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                mediaId: urlParams.get('mediaId'),
+                imagePath: urlParams.get('imagePath'),
+                modelName: urlParams.get('modelName'),
+                autoLoad: urlParams.get('autoLoad') === 'true'
+            };
+        }
+
+        // Auto-load functionality for Media Queue integration
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = getUrlParams();
+            
+            if (params.autoLoad && params.mediaId && params.imagePath) {
+                mediaQueueMode = true;
+                currentMediaId = params.mediaId;
+                
+                // Update page title
+                document.title = `🛡️ Blur Review - ${params.modelName || 'Media Item'}`;
+                
+                // Auto-load the image
+                loadMediaQueueImage(params.imagePath, params.mediaId);
+                
+                // Update button text for Media Queue context
+                updateButtonsForMediaQueue();
+            }
+        });
+
+        async function loadMediaQueueImage(imagePath, mediaId) {
+            try {
+                // Convert absolute path to web-accessible path
+                const webPath = imagePath.replace('/Users/programmer/Projects/musenest/public', '');
+                
+                // Create image element
+                const img = new Image();
+                img.onload = function() {
+                    currentImage = img;
+                    document.getElementById('imagePreview').innerHTML = '';
+                    document.getElementById('imagePreview').appendChild(img);
+                    
+                    // Auto-analyze the image
+                    analyzeImageFromMediaQueue(mediaId);
+                };
+                
+                img.onerror = function() {
+                    console.error('Failed to load image:', webPath);
+                    alert('Failed to load image. Please check the file path.');
+                };
+                
+                img.src = webPath;
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+                
+            } catch (error) {
+                console.error('Error loading media queue image:', error);
+                alert('Error loading image: ' + error.message);
+            }
+        }
+
+        async function analyzeImageFromMediaQueue(mediaId) {
+            try {
+                // Get the analysis data from the media queue API
+                const response = await fetch(`/api/media-review-queue/item/${mediaId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const item = data.item;
+                    
+                    // Convert the media queue data to the expected analysis format
+                    analysisData = {
+                        nudity_score: item.nudity_score,
+                        detected_parts: item.detected_parts,
+                        part_locations: item.part_locations,
+                        pose_classification: item.pose_classification,
+                        explicit_pose_score: item.explicit_pose_score,
+                        generated_caption: `Media content from ${item.model_name}`,
+                        moderation_status: item.review_status === 'pending' ? 'flagged' : item.review_status
+                    };
+                    
+                    // Display analysis results
+                    displayAnalysisResults(analysisData);
+                    
+                    // Create blur overlays if there are part locations
+                    if (analysisData.part_locations && Object.keys(analysisData.part_locations).length > 0) {
+                        createBlurOverlays(analysisData.part_locations);
+                    } else {
+                        // If no specific locations, create overlays based on detected parts
+                        createDefaultOverlaysFromDetectedParts(analysisData.detected_parts);
+                    }
+                    
+                } else {
+                    throw new Error(data.error || 'Failed to get media analysis');
+                }
+                
+            } catch (error) {
+                console.error('Error analyzing media queue image:', error);
+                alert('Error analyzing image: ' + error.message);
+            }
+        }
+
+        function createDefaultOverlaysFromDetectedParts(detectedParts) {
+            if (!detectedParts || Object.keys(detectedParts).length === 0) return;
+            
+            // Create default overlay positions for detected parts
+            const defaultPositions = {
+                'genitalia': { x: 0.4, y: 0.6, width: 0.2, height: 0.3 },
+                'breast': { x: 0.35, y: 0.3, width: 0.3, height: 0.3 },
+                'buttocks': { x: 0.3, y: 0.5, width: 0.4, height: 0.4 },
+                'anus': { x: 0.45, y: 0.65, width: 0.1, height: 0.1 }
+            };
+            
+            const partLocations = {};
+            Object.keys(detectedParts).forEach(part => {
+                if (defaultPositions[part]) {
+                    partLocations[part] = defaultPositions[part];
+                }
+            });
+            
+            if (Object.keys(partLocations).length > 0) {
+                createBlurOverlays(partLocations);
+            }
+        }
+
+        function updateButtonsForMediaQueue() {
+            // Update the save button to integrate with Media Queue
+            const saveBtn = document.querySelector('button[onclick="saveModeratedImage()"]');
+            if (saveBtn) {
+                saveBtn.innerHTML = '💾 Approve with Blur Settings';
+                saveBtn.onclick = saveMediaQueueBlurApproval;
+            }
+            
+            // Update the reject button
+            const rejectBtn = document.querySelector('button[onclick="rejectImage()"]');
+            if (rejectBtn) {
+                rejectBtn.onclick = rejectMediaQueueImage;
+            }
+        }
+
+        async function saveMediaQueueBlurApproval() {
+            if (!analysisData || !currentMediaId) {
+                alert('No media item to approve');
+                return;
+            }
+            
+            const blurredParts = Object.entries(blurStates)
+                .filter(([part, isBlurred]) => isBlurred)
+                .map(([part]) => part);
+            
+            if (blurredParts.length === 0) {
+                if (!confirm('No blur effects applied. Continue with approval?')) {
+                    return;
+                }
+            }
+            
+            const notes = prompt('Add approval notes (optional):') || '';
+            
+            const blurSettings = {
+                strength: parseInt(document.getElementById('blurStrength').value),
+                opacity: parseFloat(document.getElementById('blurOpacity').value),
+                shape: document.getElementById('blurShape').value,
+                blurredParts: blurredParts
+            };
+            
+            try {
+                const response = await fetch(`/api/media-review-queue/approve-blur/${currentMediaId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        blur_settings: blurSettings,
+                        admin_notes: notes,
+                        reviewed_by: 1 // TODO: Get actual admin user ID
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Notify parent window (Media Queue) that approval is complete
+                    if (window.opener) {
+                        window.opener.postMessage({
+                            type: 'BLUR_APPROVAL_COMPLETE',
+                            mediaId: currentMediaId,
+                            blurSettings: blurSettings
+                        }, window.location.origin);
+                    }
+                    
+                    alert('Media approved with blur settings successfully!');
+                    window.close();
+                } else {
+                    throw new Error(data.error || 'Failed to approve media');
+                }
+                
+            } catch (error) {
+                console.error('Error approving media with blur:', error);
+                alert('Error approving media: ' + error.message);
+            }
+        }
+
+        async function rejectMediaQueueImage() {
+            if (!currentMediaId) {
+                alert('No media item to reject');
+                return;
+            }
+            
+            const reason = prompt('Reason for rejection (required):');
+            if (!reason || !reason.trim()) {
+                alert('Rejection reason is required');
+                return;
+            }
+            
+            if (!confirm('Are you sure you want to reject this media?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/media-review-queue/reject/${currentMediaId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        admin_notes: reason,
+                        reviewed_by: 1 // TODO: Get actual admin user ID
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Notify parent window that rejection is complete
+                    if (window.opener) {
+                        window.opener.postMessage({
+                            type: 'BLUR_APPROVAL_COMPLETE', // Same message type to refresh queue
+                            mediaId: currentMediaId,
+                            action: 'rejected'
+                        }, window.location.origin);
+                    }
+                    
+                    alert('Media rejected successfully!');
+                    window.close();
+                } else {
+                    throw new Error(data.error || 'Failed to reject media');
+                }
+                
+            } catch (error) {
+                console.error('Error rejecting media:', error);
+                alert('Error rejecting media: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

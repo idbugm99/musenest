@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Management - MuseNest Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-semibold text-gray-900">MuseNest Admin</h1>
+                    <span class="ml-4 text-gray-500">Business Management</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/admin" class="text-gray-600 hover:text-gray-900">Dashboard</a>
+                    <a href="/onboarding" class="text-blue-600 hover:text-blue-800">Test Onboarding</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Tab Navigation -->
+        <div class="mb-6">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8">
+                    <button id="businessTypesTab" 
+                            class="tab-button active border-b-2 border-blue-500 py-2 px-1 text-sm font-medium text-blue-600">
+                        Business Types
+                    </button>
+                    <button id="pageSetsTab" 
+                            class="tab-button border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        Page Sets
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Business Types Tab -->
+        <div id="businessTypesContent" class="tab-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Business Types</h2>
+                <button id="addBusinessTypeBtn" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center">
+                    <i class="fas fa-plus mr-2"></i>Add Business Type
+                </button>
+            </div>
+
+            <!-- Business Types Table -->
+            <div class="bg-white shadow overflow-hidden sm:rounded-md">
+                <div id="businessTypesTable" class="min-h-96">
+                    <!-- Loading state -->
+                    <div class="flex items-center justify-center h-64">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Sets Tab -->
+        <div id="pageSetsContent" class="tab-content hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Page Sets</h2>
+                <button id="addPageSetBtn" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center">
+                    <i class="fas fa-plus mr-2"></i>Add Page Set
+                </button>
+            </div>
+
+            <!-- Page Sets Table -->
+            <div class="bg-white shadow overflow-hidden sm:rounded-md">
+                <div id="pageSetsTable" class="min-h-96">
+                    <!-- Loading state -->
+                    <div class="flex items-center justify-center h-64">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Business Type Modal -->
+    <div id="businessTypeModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div class="flex items-center justify-between mb-4">
+                <h3 id="businessTypeModalTitle" class="text-lg font-semibold text-gray-900">Add Business Type</h3>
+                <button id="closeBusinessTypeModal" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="businessTypeForm" class="space-y-4">
+                <input type="hidden" id="businessTypeId" name="id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="businessTypeName" class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                        <input type="text" id="businessTypeName" name="name" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label for="businessTypeDisplayName" class="block text-sm font-medium text-gray-700 mb-1">Display Name *</label>
+                        <input type="text" id="businessTypeDisplayName" name="display_name" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="businessTypeDescription" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea id="businessTypeDescription" name="description" rows="3"
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="businessTypeCategory" class="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                        <select id="businessTypeCategory" name="category" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select Category</option>
+                            <option value="adult">Adult</option>
+                            <option value="beauty">Beauty</option>
+                            <option value="hospitality">Hospitality</option>
+                            <option value="professional">Professional</option>
+                            <option value="retail">Retail</option>
+                            <option value="entertainment">Entertainment</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="businessTypePricingModel" class="block text-sm font-medium text-gray-700 mb-1">Pricing Model</label>
+                        <select id="businessTypePricingModel" name="pricing_model"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="subscription">Subscription</option>
+                            <option value="commission">Commission</option>
+                            <option value="flat_rate">Flat Rate</option>
+                            <option value="hybrid">Hybrid</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="businessTypeAgeVerification" name="age_verification_required"
+                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <label for="businessTypeAgeVerification" class="ml-2 block text-sm text-gray-900">
+                            Age Verification Required
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <input type="checkbox" id="businessTypeContentWarnings" name="content_warnings_required"
+                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <label for="businessTypeContentWarnings" class="ml-2 block text-sm text-gray-900">
+                            Content Warnings Required
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" id="cancelBusinessType" 
+                            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                        Save Business Type
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Page Set Modal -->
+    <div id="pageSetModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-10 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-2/3 shadow-lg rounded-md bg-white">
+            <div class="flex items-center justify-between mb-4">
+                <h3 id="pageSetModalTitle" class="text-lg font-semibold text-gray-900">Add Page Set</h3>
+                <button id="closePageSetModal" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="pageSetForm" class="space-y-4">
+                <input type="hidden" id="pageSetId" name="id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="pageSetBusinessType" class="block text-sm font-medium text-gray-700 mb-1">Business Type *</label>
+                        <select id="pageSetBusinessType" name="business_type_id" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select Business Type</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="pageSetName" class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                        <input type="text" id="pageSetName" name="name" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label for="pageSetDisplayName" class="block text-sm font-medium text-gray-700 mb-1">Display Name *</label>
+                        <input type="text" id="pageSetDisplayName" name="display_name" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="pageSetDescription" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea id="pageSetDescription" name="description" rows="2"
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="pageSetTier" class="block text-sm font-medium text-gray-700 mb-1">Tier</label>
+                        <select id="pageSetTier" name="tier"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="basic">Basic</option>
+                            <option value="professional">Professional</option>
+                            <option value="premium">Premium</option>
+                            <option value="enterprise">Enterprise</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="pageSetPricingTier" class="block text-sm font-medium text-gray-700 mb-1">Pricing Tier</label>
+                        <select id="pageSetPricingTier" name="pricing_tier"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="free">Free</option>
+                            <option value="premium">Premium</option>
+                            <option value="enterprise">Enterprise</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="pageSetSortOrder" class="block text-sm font-medium text-gray-700 mb-1">Sort Order</label>
+                        <input type="number" id="pageSetSortOrder" name="sort_order" min="0" value="0"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Included Pages *</label>
+                    <div id="includedPagesContainer" class="grid grid-cols-2 md:grid-cols-4 gap-2 p-4 border border-gray-300 rounded-md max-h-40 overflow-y-auto">
+                        <!-- Available pages will be loaded here -->
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="pageSetIsDefault" name="is_default"
+                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <label for="pageSetIsDefault" class="ml-2 block text-sm text-gray-900">
+                            Default Page Set
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" id="cancelPageSet" 
+                            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                        Save Page Set
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/business-management.js"></script>
+</body>
+</html>

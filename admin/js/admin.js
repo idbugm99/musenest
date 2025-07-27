@@ -103,6 +103,7 @@ class AdminDashboard {
                 console.log('User loaded successfully:', this.currentUser);
                 this.updateUserDisplay();
                 this.updateViewSiteLink();
+                this.applyRoleBasedUI();
             } else {
                 console.error('No user in response:', response);
                 throw new Error('Failed to load user');
@@ -148,6 +149,89 @@ class AdminDashboard {
             if (viewSiteBtn) {
                 viewSiteBtn.style.display = 'none';
             }
+        }
+    }
+
+    applyRoleBasedUI() {
+        if (!this.currentUser) return;
+        
+        const userRole = this.currentUser.role;
+        const hasModels = this.currentUser.models && this.currentUser.models.length > 0;
+        
+        console.log('Applying role-based UI for role:', userRole, 'hasModels:', hasModels);
+        
+        // Get navigation elements
+        const systemManagementLink = document.querySelector('a[href="system-management.html"]');
+        const businessManagementLink = document.querySelector('a[href="business-management.html"]');
+        const viewSiteBtn = document.getElementById('viewSiteBtn');
+        
+        // Get model dashboard elements (sidebar navigation items)
+        const dashboardLink = document.querySelector('.nav-item[data-tab="dashboard"]');
+        const galleryLink = document.querySelector('.nav-item[data-tab="gallery"]');
+        const faqLink = document.querySelector('.nav-item[data-tab="faq"]'); 
+        const testimonialsLink = document.querySelector('.nav-item[data-tab="testimonials"]');
+        const pageContentLink = document.querySelector('.nav-item[data-tab="pages"]');
+        const settingsLink = document.querySelector('.nav-item[data-tab="settings"]');
+        const themesLink = document.querySelector('.nav-item[data-tab="themes"]');
+        const calendarLink = document.querySelector('.nav-item[data-tab="calendar"]');
+        
+        if (userRole === 'admin' || userRole === 'sysadmin') {
+            // SYSTEM ADMIN: Show only system management, hide model dashboard
+            console.log('Configuring UI for system admin');
+            
+            // Show system management links
+            if (systemManagementLink) systemManagementLink.style.display = 'flex';
+            if (businessManagementLink) businessManagementLink.style.display = 'flex';
+            
+            // Hide model dashboard elements
+            if (dashboardLink) dashboardLink.style.display = 'none';
+            if (galleryLink) galleryLink.style.display = 'none';
+            if (faqLink) faqLink.style.display = 'none';
+            if (testimonialsLink) testimonialsLink.style.display = 'none';
+            if (pageContentLink) pageContentLink.style.display = 'none';
+            if (settingsLink) settingsLink.style.display = 'none';
+            if (themesLink) themesLink.style.display = 'none';
+            if (calendarLink) calendarLink.style.display = 'none';
+            if (viewSiteBtn) viewSiteBtn.style.display = 'none';
+            
+            // Redirect to comprehensive system admin dashboard
+            if (window.location.pathname.includes('index.html') || window.location.pathname.endsWith('/admin/')) {
+                console.log('Redirecting system admin to comprehensive dashboard');
+                window.location.href = 'system-admin-dashboard.html';
+                return;
+            }
+            
+        } else if (userRole === 'model' && hasModels) {
+            // MODEL USER: Show only model dashboard, hide system management
+            console.log('Configuring UI for model user');
+            
+            // Hide system management links
+            if (systemManagementLink) systemManagementLink.style.display = 'none';
+            if (businessManagementLink) businessManagementLink.style.display = 'none';
+            
+            // Show model dashboard elements
+            if (dashboardLink) dashboardLink.style.display = 'flex';
+            if (galleryLink) galleryLink.style.display = 'flex';
+            if (faqLink) faqLink.style.display = 'flex';
+            if (testimonialsLink) testimonialsLink.style.display = 'flex';
+            if (pageContentLink) pageContentLink.style.display = 'flex';
+            if (settingsLink) settingsLink.style.display = 'flex';
+            if (themesLink) themesLink.style.display = 'flex';
+            if (calendarLink) calendarLink.style.display = 'flex';
+            if (viewSiteBtn) viewSiteBtn.style.display = 'flex';
+            
+            // Redirect away from system management if they somehow got there
+            if (window.location.pathname.includes('system-management.html') || 
+                window.location.pathname.includes('business-management.html')) {
+                console.log('Redirecting model user away from system management');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+        } else {
+            // FALLBACK: User with no proper role or no models
+            console.log('User has invalid role or no models, redirecting to login');
+            this.redirectToLogin();
         }
     }
 
@@ -365,8 +449,58 @@ class AdminDashboard {
         }
     }
 
-    logout() {
+    async logout() {
+        try {
+            // Call server logout endpoint to invalidate session
+            const token = localStorage.getItem('musenest_token');
+            if (token) {
+                try {
+                    await fetch('/api/auth/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                } catch (error) {
+                    console.warn('Server logout failed, continuing with client cleanup:', error);
+                }
+            }
+        } catch (error) {
+            console.warn('Logout API call failed:', error);
+        } finally {
+            // Always perform complete client-side cleanup regardless of server response
+            this.performCompleteLogout();
+        }
+    }
+
+    performCompleteLogout() {
+        // Clear all localStorage items related to authentication
         localStorage.removeItem('musenest_token');
+        localStorage.removeItem('musenest_user');
+        localStorage.removeItem('musenest_session');
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('impersonation_data');
+        
+        // Clear all sessionStorage items
+        sessionStorage.clear();
+        
+        // Clear any cookies (if using cookies for session management)
+        document.cookie.split(";").forEach(function(c) { 
+            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+        });
+        
+        // Clear browser cache for this domain (where possible)
+        if ('caches' in window) {
+            caches.keys().then(names => {
+                names.forEach(name => {
+                    caches.delete(name);
+                });
+            });
+        }
+        
+        // Force redirect with cache busting
         this.redirectToLogin();
     }
 
@@ -375,8 +509,15 @@ class AdminDashboard {
             return; // Prevent multiple redirects
         }
         this.isRedirecting = true;
-        localStorage.removeItem('musenest_token');
-        window.location.href = 'login.html';
+        
+        // Add cache busting parameter to force fresh login page
+        const timestamp = new Date().getTime();
+        window.location.href = `login.html?t=${timestamp}`;
+        
+        // As backup, also try to replace the current history entry
+        setTimeout(() => {
+            window.location.replace(`login.html?t=${timestamp}`);
+        }, 100);
     }
 
     showNotification(message, type = 'info') {

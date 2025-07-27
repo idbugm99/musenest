@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{#if site_settings.site_name}}{{site_settings.site_name}}{{else}}{{model.name}}{{/if}}</title>
+    <title>Etiquette - {{site_settings.model_name}}</title>
     <meta name="description" content="{{site_settings.meta_description}}">
-    <meta name="og:title" content="{{site_settings.site_name}} - {{model.name}}">
+    <meta name="og:title" content="Etiquette - {{site_settings.model_name}}">
     <meta name="og:description" content="{{site_settings.meta_description}}">
     <meta name="og:type" content="website">
     <meta name="og:image" content="{{site_settings.og_image}}">
@@ -18,7 +18,6 @@
     <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
     
     <style>
-        /* Luxury Theme Styles */
         
         /* Luxury Theme Colors */
         :root {
@@ -44,11 +43,7 @@
     {{component "navigation" theme="luxury" model=model navigation=navigation}}
     
     <!-- Page Content -->
-    
-
-Etiquette - {{#if current_model}}{{site_settings.model_name if site_settings and site_settings.model_name else (current_model.name}}{{else}}{{'Model Example')}}{{/if}}
-
-
+    Etiquette - {{#if current_model}}{{#if site_settings.model_name}}{{site_settings.model_name}}{{else}}{{model.name}}{{/if}}{{/if}}
 <section class="py-16 bg-background text-charcoal">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {{#if etiquette_content.etiquette_header_visible}}
@@ -59,7 +54,6 @@ Etiquette - {{#if current_model}}{{site_settings.model_name if site_settings and
             </p>
         </div>
         {{/if}}
-        
         <div class="grid md:grid-cols-2 gap-8 mb-12">
             <!-- Booking & Screening -->
             {{#if etiquette_content.etiquette_booking_visible}}
@@ -82,7 +76,6 @@ Etiquette - {{#if current_model}}{{site_settings.model_name if site_settings and
                 </div>
             </div>
             {{/if}}
-            
             <!-- Respect & Boundaries -->
             {{#if etiquette_content.etiquette_respect_visible}}
             <div class="bg-accent text-charcoal p-8 rounded-2xl shadow-lg">
@@ -105,7 +98,6 @@ Etiquette - {{#if current_model}}{{site_settings.model_name if site_settings and
             </div>
             {{/if}}
         </div>
-        
         <div class="grid md:grid-cols-2 gap-8 mb-12">
             <!-- Hygiene & Presentation -->
             {{#if etiquette_content.etiquette_hygiene_visible}}
@@ -128,7 +120,6 @@ Etiquette - {{#if current_model}}{{site_settings.model_name if site_settings and
                 </div>
             </div>
             {{/if}}
-            
             <!-- Cancellation Policy -->
             {{#if etiquette_content.etiquette_cancellation_visible}}
             <div class="bg-primary border border-accent p-8 rounded-2xl shadow-lg">
@@ -151,7 +142,6 @@ Etiquette - {{#if current_model}}{{site_settings.model_name if site_settings and
             </div>
             {{/if}}
         </div>
-        
         <!-- Safety & Discretion -->
         {{#if etiquette_content.etiquette_ty_visible}}
         <div class="bg-charcoal text-white p-8 rounded-2xl shadow-lg mb-12">
@@ -188,7 +178,6 @@ Etiquette - {{#if current_model}}{{site_settings.model_name if site_settings and
             </div>
         </div>
         {{/if}}
-        
         <!-- Contact Information -->
         {{#if etiquette_content.etiquette_questions_visible}}
         <div class="text-center bg-primary border border-accent p-8 rounded-2xl shadow-lg">
@@ -200,7 +189,6 @@ Etiquette - {{#if current_model}}{{site_settings.model_name if site_settings and
         {{/if}}
     </div>
 </section>
-
     
     <script>
         // Initialize AOS

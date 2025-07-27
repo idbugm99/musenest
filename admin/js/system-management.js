@@ -10,7 +10,10 @@ class SystemManagement {
         this.init();
     }
 
-    init() {
+    async init() {
+        // Check if user has permission to access system management
+        await this.checkSystemAccessPermission();
+        
         this.setupEventListeners();
         this.loadInitialData();
         
@@ -21,6 +24,52 @@ class SystemManagement {
                 window.impersonationManager = new window.ImpersonationManager();
             }
         }, 1000);
+    }
+
+    async checkSystemAccessPermission() {
+        try {
+            const token = localStorage.getItem('musenest_token');
+            if (!token) {
+                this.redirectToLogin();
+                return;
+            }
+
+            const response = await fetch('/api/auth/me', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to verify user');
+            }
+
+            const data = await response.json();
+            const userRole = data.user?.role;
+
+            // Only admin and sysadmin roles can access system management
+            if (userRole !== 'admin' && userRole !== 'sysadmin') {
+                console.warn('Access denied: User role', userRole, 'cannot access system management');
+                alert('Access Denied: You do not have permission to access System Management.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            console.log('System management access granted for role:', userRole);
+        } catch (error) {
+            console.error('Permission check failed:', error);
+            alert('Authentication error. Please log in again.');
+            this.redirectToLogin();
+        }
+    }
+
+    redirectToLogin() {
+        // Clear all authentication data
+        localStorage.removeItem('musenest_token');
+        sessionStorage.clear();
+        window.location.href = 'login.html';
     }
 
     setupEventListeners() {
@@ -385,6 +434,9 @@ class SystemManagement {
                 document.getElementById('modalStripeCustomerId').value = client.stripe_customer_id || '';
                 document.getElementById('modalStripeSubscriptionId').value = client.stripe_subscription_id || '';
                 document.getElementById('modalBalanceDue').value = client.balance_due || '0.00';
+                
+                // Clear password field (we don't want to show existing password)
+                document.getElementById('modalPassword').value = '';
 
                 // Format dates for datetime-local inputs
                 if (client.trial_ends_at) {
@@ -407,6 +459,7 @@ class SystemManagement {
         document.getElementById('modalSlug').value = '';
         document.getElementById('modalEmail').value = '';
         document.getElementById('modalPhone').value = '';
+        document.getElementById('modalPassword').value = '';
         document.getElementById('modalStatus').value = 'trial';
         document.getElementById('modalBusinessType').value = '';
         document.getElementById('modalSubscriptionStatus').value = '';
@@ -424,6 +477,7 @@ class SystemManagement {
                 slug: document.getElementById('modalSlug').value,
                 email: document.getElementById('modalEmail').value,
                 phone: document.getElementById('modalPhone').value,
+                password: document.getElementById('modalPassword').value || null,
                 status: document.getElementById('modalStatus').value,
                 business_type_id: document.getElementById('modalBusinessType').value || null,
                 subscription_status: document.getElementById('modalSubscriptionStatus').value || null,
@@ -896,10 +950,62 @@ class SystemManagement {
         }, 5000);
     }
 
-    logout() {
+    async logout() {
         if (confirm('Are you sure you want to logout?')) {
-            window.location.href = '/admin/login.html';
+            try {
+                // Call server logout endpoint to invalidate session
+                const token = localStorage.getItem('musenest_token');
+                if (token) {
+                    try {
+                        await fetch('/api/auth/logout', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                    } catch (error) {
+                        console.warn('Server logout failed, continuing with client cleanup:', error);
+                    }
+                }
+            } catch (error) {
+                console.warn('Logout API call failed:', error);
+            } finally {
+                // Always perform complete client-side cleanup regardless of server response
+                this.performCompleteLogout();
+            }
         }
+    }
+
+    performCompleteLogout() {
+        // Clear all localStorage items related to authentication
+        localStorage.removeItem('musenest_token');
+        localStorage.removeItem('musenest_user');
+        localStorage.removeItem('musenest_session');
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('impersonation_data');
+        
+        // Clear all sessionStorage items
+        sessionStorage.clear();
+        
+        // Clear any cookies (if using cookies for session management)
+        document.cookie.split(";").forEach(function(c) { 
+            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+        });
+        
+        // Clear browser cache for this domain (where possible)
+        if ('caches' in window) {
+            caches.keys().then(names => {
+                names.forEach(name => {
+                    caches.delete(name);
+                });
+            });
+        }
+        
+        // Force redirect with cache busting
+        const timestamp = new Date().getTime();
+        window.location.href = `/admin/login.html?t=${timestamp}`;
     }
 }
 

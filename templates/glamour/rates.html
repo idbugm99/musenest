@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{#if site_settings.site_name}}{{site_settings.site_name}}{{else}}{{model.name}}{{/if}}</title>
+    <title>Rates & Services - {{site_settings.model_name}}</title>
     <meta name="description" content="{{site_settings.meta_description}}">
-    <meta name="og:title" content="{{site_settings.site_name}} - {{model.name}}">
+    <meta name="og:title" content="Rates & Services - {{site_settings.model_name}}">
     <meta name="og:description" content="{{site_settings.meta_description}}">
     <meta name="og:type" content="website">
     <meta name="og:image" content="{{site_settings.og_image}}">
@@ -18,7 +18,6 @@
     <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
     
     <style>
-        /* Glamour Theme Styles */
         
         /* Glamour Theme Colors */
         :root {
@@ -36,6 +35,16 @@
         .glamour-gradient {
             background: linear-gradient(135deg, var(--glamour-primary) 0%, var(--glamour-secondary) 100%);
         }
+        
+        .luxury-grain::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: url('/uploads/grain.png');
+            opacity: 0.15;
+            pointer-events: none;
+        }
             
     </style>
 </head>
@@ -44,79 +53,14 @@
     {{component "navigation" theme="glamour" model=model navigation=navigation}}
     
     <!-- Page Content -->
-    
-
-Rates - {{#if current_model}}{{site_settings.model_name if site_settings and site_settings.model_name else (current_model.name}}{{else}}{{'Model Example')}}{{/if}}
-
-
-<section class="py-16 bg-background text-charcoal">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <!-- Header & Introduction -->
-        {{#if rates_settings.rates_header_visible}}
-        <header class="text-center mb-16">
-            <div class="max-w-4xl mx-auto rounded-2xl border border-[{{color_theme.primary}}] bg-gradient-to-br from-background via-white/5 to-background shadow-xl p-8">
-                <h1 class="text-4xl font-heading font-bold mb-6 text-accent page-title" data-aos="zoom-in" data-aos-duration="600" style="text-shadow: 0 0 10px rgba({{color_theme.primary | replace('#', '') | list | batch(2) | map('join') | map('int', base=16) | join(', ')}}, 0.3);">
-                    {{rates_settings.page_title or 'Rates & Donations'}}
-                </h1>
-                <p class="text-xl text-charcoal/70 max-w-3xl mx-auto leading-relaxed intro-text" data-aos="zoom-in" data-aos-duration="600" data-aos-delay="200">
-                    {{rates_settings.page_subtitle or 'Investment in time together. All arrangements are for companionship and social time only.'}}
-                </p>
-            </div>
-        </header>
-        {{/if}}
-        
-        <!-- Rates Table -->
-        {{#if rates_settings.rates_table_visible}}
-        <div class="max-w-6xl mx-auto">
-            <!-- Rate Boxes (only show if they exist) -->
-            {% set has_incall = incall_rates and incall_rates|.length > 0 and rates_settings.rates_incall_visible %}
-            {% set has_outcall = outcall_rates and outcall_rates|.length > 0 and rates_settings.rates_outcall_visible %}
-            
-            {{#if has_incall or has_outcall}}
-            <div class="flex flex-col md:flex-row gap-6 justify-center my-12">
-                {{#if has_incall}}
-                <!-- Incall Rates -->
-                <div class="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700/50 rounded-2xl shadow-lg p-8 hover:scale-[1.01] hover:bg-[radial-gradient(circle,rgba(255,255,255,0.05)_1%,transparent_60%)] transition-all duration-300 ease-in-out flex-1 max-w-lg min-h-[440px] group" data-aos="fade-up" data-aos-delay="100">
-                    <p class="text-gray-400 text-xs uppercase tracking-widest mb-2">Premium Service</p>
-                    <h2 class="text-2xl font-heading font-bold mb-6 text-center text-yellow-500">Incall</h2>
-                    <div class="space-y-3">
-                        {{#each rate in incall_rates}}
-                        <div class="flex justify-between items-center {{#if not loop.last}}border-b border-yellow-500/30 py-2{{else}}py-2{{/if}} hover:scale-[1.01] transition-transform duration-300 ease-in-out" data-aos="fade-up" data-aos-delay="{{200 + (loop.index0 * 50)}}">
+    Rates - {{#if current_model}}{{#if site_settings.model_name}}{{site_settings.model_name}}{{else}}{{model.name}}{{/if}}{{/if}} hover:scale-[1.01] transition-transform duration-300 ease-in-out" data-aos="fade-up" data-aos-delay="{{200 + (loop.index0 * 50)}}">
                             <div class="flex-1">
-                                {% set visible_parts = [] %}
-                                {{#if rates_settings.incall_show_service_name}}
-                                    {% set _ = visible_parts.append('<span class="font-medium font-heading text-white">' + (rate.service_name or 'Service') + '</span>') %}
-                                {{/if}}
-                                {{#if rates_settings.incall_show_duration}}
-                                    {% set _ = visible_parts.append('<span class="text-gray-300">' + (rate.duration or 'Duration') + '</span>') %}
-                                {{/if}}
-                                <span class="text-lg text-gray-300 group-hover:text-white transition-colors duration-300">{{visible_parts|join(' — ')|}}</span>
-                            </div>
-                            {{#if rates_settings.incall_show_price}}
-                            <span class="ml-auto bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-semibold shadow-sm">{{rate.price}}</span>
-                            {{/if}}
-                        </div>
-                        {{/each}}
-                    </div>
-                </div>
-                {{/if}}
-                
-                {{#if has_outcall}}
-                <!-- Outcall Rates -->
-                <div class="bg-gradient-to-tr from-yellow-700/30 to-yellow-600/20 border border-yellow-500/30 text-white rounded-2xl shadow-lg p-8 hover:scale-[1.01] hover:bg-[radial-gradient(circle,rgba(255,255,255,0.05)_1%,transparent_60%)] transition-all duration-300 ease-in-out flex-1 max-w-lg min-h-[440px] group" data-aos="fade-up" data-aos-delay="200">
-                    <p class="text-yellow-200/80 text-xs uppercase tracking-widest mb-2">Mobile Service</p>
-                    <h2 class="text-2xl font-heading font-bold mb-6 text-center text-yellow-300">Outcall</h2>
-                    <div class="space-y-3">
-                        {{#each rate in outcall_rates}}
-                        <div class="flex justify-between items-center {{#if not loop.last}}border-b border-yellow-500/30 py-2{{else}}py-2{{/if}} hover:scale-[1.01] transition-transform duration-300 ease-in-out" data-aos="fade-up" data-aos-delay="{{200 + (loop.index0 * 50)}}">
-                            <div class="flex-1">
-                                {% set visible_parts = [] %}
+                                
                                 {{#if rates_settings.outcall_show_service_name}}
-                                    {% set _ = visible_parts.append('<span class="font-medium font-heading text-white">' + (rate.service_name or 'Service') + '</span>') %}
+                                    
                                 {{/if}}
                                 {{#if rates_settings.outcall_show_duration}}
-                                    {% set _ = visible_parts.append('<span class="text-gray-200">' + (rate.duration or 'Duration') + '</span>') %}
+                                    
                                 {{/if}}
                                 <span class="text-lg text-gray-200">{{visible_parts|join(' — ')|}}</span>
                             </div>
@@ -130,9 +74,8 @@ Rates - {{#if current_model}}{{site_settings.model_name if site_settings and sit
                 {{/if}}
             </div>
             {{/if}}
-            
             <!-- Extended Engagements (only show if they exist) -->
-            {{#if extended_rates and extended_rates|.length > 0 and rates_settings.rates_extended_visible}}
+            {{#if extended_rates and extended_rates.length > 0}}{{#if rates_settings.rates_extended_visible}}
             <section class="bg-background mb-12" data-aos="fade-up" data-aos-delay="300">
                 <div class="bg-gradient-to-br from-yellow-600/25 to-yellow-800/20 border border-yellow-500/30 text-white p-8 rounded-2xl shadow-lg hover:scale-[1.01] transition-all duration-300 ease-in-out">
                     <p class="text-yellow-200/80 text-xs uppercase tracking-widest mb-2 text-center">Extended Options</p>
@@ -155,12 +98,10 @@ Rates - {{#if current_model}}{{site_settings.model_name if site_settings and sit
                 </div>
             </section>
             {{/if}}
-            
             <!-- Payment Terms & Add-Ons -->
-            {% set has_payment_terms = payment_terms and payment_terms|.length > 0 and rates_settings.rates_payment_visible %}
-            {% set has_additional_services = additional_services and additional_services|.length > 0 and rates_settings.rates_additional_visible %}
             
-            {{#if has_payment_terms or has_additional_services}}
+            
+            {{#if has_payment_terms}}
             <div class="grid md:grid-cols-2 gap-6 my-12" data-aos="fade-up" data-aos-delay="400">
                 {{#if has_payment_terms}}
                 <section class="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700/50 p-6 lg:p-8 rounded-2xl shadow-lg hover:scale-[1.01] transition-transform duration-300 ease-in-out min-h-[300px] group">
@@ -175,7 +116,6 @@ Rates - {{#if current_model}}{{site_settings.model_name if site_settings and sit
                     </ul>
                 </section>
                 {{/if}}
-                
                 {{#if has_additional_services}}
                 <section class="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700/50 p-6 lg:p-8 rounded-2xl shadow-lg hover:scale-[1.01] transition-transform duration-300 ease-in-out min-h-[300px] group">
                     <h3 class="text-xl font-heading font-bold mb-6 text-yellow-500">Additional Services</h3>
@@ -193,7 +133,6 @@ Rates - {{#if current_model}}{{site_settings.model_name if site_settings and sit
             {{/if}}
         </div>
         {{/if}}
-        
         <!-- Donations Section -->
         {{#if rates_settings.donations_visible}}
         <section class="max-w-4xl mx-auto my-12" data-aos="fade-up" data-aos-delay="500">
@@ -209,7 +148,6 @@ Rates - {{#if current_model}}{{site_settings.model_name if site_settings and sit
             </div>
         </section>
         {{/if}}
-        
         <!-- Terms & Conditions Section -->
         {{#if rates_settings.terms_visible}}
         <section class="max-w-4xl mx-auto my-12" data-aos="fade-up" data-aos-delay="600">
@@ -222,7 +160,6 @@ Rates - {{#if current_model}}{{site_settings.model_name if site_settings and sit
             </div>
         </section>
         {{/if}}
-        
         <!-- Call to Action Section -->
         {{#if rates_settings.cta_visible}}
         <section class="max-w-4xl mx-auto my-12" data-aos="fade-up" data-aos-delay="700">
@@ -245,7 +182,6 @@ Rates - {{#if current_model}}{{site_settings.model_name if site_settings and sit
         {{/if}}
     </div>
 </section>
-
     
     <script>
         // Initialize AOS

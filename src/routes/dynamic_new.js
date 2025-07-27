@@ -67,6 +67,7 @@ async function getNavigationItems(modelId, baseUrl) {
     return pages.map(page => ({
         name: page.navigation_label || page.display_name,
         path: page.custom_slug || page.name,
+        url: `${baseUrl}/${page.custom_slug || page.name}`,
         category: page.category
     }));
 }

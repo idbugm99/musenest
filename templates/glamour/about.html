@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{#if site_settings.site_name}}{{site_settings.site_name}}{{else}}{{model.name}}{{/if}}</title>
+    <title>About - {{site_settings.model_name}}</title>
     <meta name="description" content="{{site_settings.meta_description}}">
-    <meta name="og:title" content="{{site_settings.site_name}} - {{model.name}}">
+    <meta name="og:title" content="About - {{site_settings.model_name}}">
     <meta name="og:description" content="{{site_settings.meta_description}}">
     <meta name="og:type" content="website">
     <meta name="og:image" content="{{site_settings.og_image}}">
@@ -18,7 +18,6 @@
     <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
     
     <style>
-        /* Glamour Theme Styles */
         
         /* Glamour Theme Colors */
         :root {
@@ -36,310 +35,41 @@
         .glamour-gradient {
             background: linear-gradient(135deg, var(--glamour-primary) 0%, var(--glamour-secondary) 100%);
         }
-            
     </style>
 </head>
 <body class="bg-glamour-background font-serif">
     <!-- Navigation Component -->
     {{component "navigation" theme="glamour" model=model navigation=navigation}}
     
-    <!-- Page Content -->
-    <!-- about_glamour.html -->
-
-
-
-{{#if about_content}}{{about_content.page_title}}{{else}}{{'About'}}{{/if}} - {{#if current_model}}{{site_settings.model_name if site_settings and site_settings.model_name else (current_model.name}}{{else}}{{'Model Example')}}{{/if}}
-
-
-  {{super()}}
-  <!-- AOS Animation Library -->
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      AOS.init({
-        duration: 800,
-        once: true,
-        offset: 100
-      });
-    });
-  </script>
-
-
-
-
-<section class="text-center py-20 bg-black text-white">
-  {{#if about_content and about_content.page_title_visible}}
-  <h1 class="text-4xl md:text-5xl font-extrabold text-[{{color_theme.primary_color}}] mb-4">
-    {{about_content.page_title}}
-  </h1>
-  {{else}}
-  <h1 class="text-4xl md:text-5xl font-extrabold text-[{{color_theme.primary_color}}] mb-4">
-    About Me
-  </h1>
-  {{/if}}
-  {{#if about_content and about_content.main_paragraph_1}}
-  <p class="max-w-2xl mx-auto text-lg md:text-xl opacity-80">
-    {{about_content.main_paragraph_1[:120]}}...
-  </p>
-  {{else}}
-  <p class="max-w-2xl mx-auto text-lg md:text-xl opacity-80">
-    A glimpse into the woman behind the glamour. Refined. Intelligent. Discreet.
-  </p>
-  {{/if}}
-</section>
-
-<!-- Hero Image + Statement Block -->
-<section class="relative h-[500px] overflow-hidden">
-  {{#if about_content and about_content.portrait_image and about_content.portrait_visible}}
-  <img src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), about_content.portrait_image.filename))}}"
-       alt="{{about_content.portrait_alt or 'Glamour Shot'}}"
-       class="absolute inset-0 object-cover w-full h-full opacity-80">
-  {% elif gallery_images and gallery_images|.length > 0 %}
-  <img src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), gallery_images[0].filename))}}"
-       alt="{{gallery_images[0].caption or 'Glamour Shot'}}"
-       class="absolute inset-0 object-cover w-full h-full opacity-80">
-  {{else}}
-  <img src="{{url_for('static', filename='images/glamour_hero.jpg')}}"
-       alt="Glamour Shot"
-       class="absolute inset-0 object-cover w-full h-full opacity-80">
-  {{/if}}
-
-  <div class="relative z-10 flex items-center justify-center h-full bg-black/50">
-    <div class="text-center px-6">
-      {{#if about_content and about_content.main_paragraph_2}}
-      <p class="text-2xl md:text-3xl font-light italic text-white">
-        "{{about_content.main_paragraph_2[:80]}}..."
-      </p>
-      {{else}}
-      <p class="text-2xl md:text-3xl font-light italic text-white">
-        "Elegance is when the inside is as beautiful as the outside."
-      </p>
-      {{/if}}
-      {{#if about_content and about_content.services_visible and about_content.service_1}}
-      <p class="mt-4 text-[{{color_theme.primary_color}}] tracking-widest font-semibold uppercase text-sm">
-        {{#if about_content.service_1}}{{about_content.service_1.split(' ')[0]}}{{else}}{{'Discretion'}}{{/if}} • {{#if about_content.service_2}}{{about_content.service_2.split(' ')[0]}}{{else}}{{'Class'}}{{/if}} • {{#if about_content.service_3}}{{about_content.service_3.split(' ')[0]}}{{else}}{{'Confidence'}}{{/if}}
-      </p>
-      {{else}}
-      <p class="mt-4 text-[{{color_theme.primary_color}}] tracking-widest font-semibold uppercase text-sm">
-        Discretion • Class • Confidence
-      </p>
-      {{/if}}
-    </div>
-  </div>
-</section>
-
-<!-- Glamour Quote Overlay -->
-<div class="bg-black py-8">
-  <p class="text-white/80 italic text-xl text-center mt-6">
-    "True elegance is unforgettable. Let me show you why."
-  </p>
-</div>
-
-<!-- Glamour Photo Strip -->
-<section class="bg-black py-16 px-4">
-  <div class="max-w-6xl mx-auto">
-    <p class="text-center text-white/70 text-lg mb-8 italic" data-aos="fade-up">
-      My life in moments — a visual diary of elegance and escape.
-    </p>
-    <div class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4">
-      {{#each photo in gallery_images[:5]}}
-        <img 
-          src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), photo.filename))}}" 
-          alt="{{photo.caption or 'Glamour Photo'}}" 
-          class="rounded-xl shadow-md w-[200px] h-[280px] object-cover border-2 border-[{{color_theme.primary_color}}] snap-start flex-shrink-0 hover:shadow-[0_0_8px_{{color_theme.primary_color}}] transition-all duration-300" 
-        />
-      {{/each}}
-    </div>
-  </div>
-</section>
-
-<!-- Biography Section -->
-<section class="bg-black py-20 px-4 md:px-12">
-  <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center md:items-start gap-12">
-
-    <!-- Profile Image -->
-    <div class="flex-shrink-0 w-full md:w-1/3 rounded-2xl overflow-hidden shadow-md">
-      {{#if about_content and about_content.portrait_image and about_content.portrait_visible}}
-      <img src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), about_content.portrait_image.filename))}}"
-           alt="{{about_content.portrait_alt}}"
-           class="w-full h-auto object-cover">
-      {% elif gallery_images and gallery_images|.length > 1 %}
-      <img src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), gallery_images[1].filename))}}"
-           alt="{{gallery_images[1].caption or 'Glamour Profile'}}"
-           class="w-full h-auto object-cover">
-      {{else}}
-      <img src="{{url_for('static', filename='images/glamour_profile.jpg')}}"
-           alt="Glamour Profile"
-           class="w-full h-auto object-cover">
-      {{/if}}
-    </div>
-
-    <!-- Biography Text -->
-    <div class="text-white md:w-2/3 space-y-6">
-      {{#if about_content and about_content.page_title}}
-      <h2 class="text-2xl font-bold text-[{{color_theme.primary_color}}]">{{about_content.page_title.replace('About', 'Who I Am')}}</h2>
-      {{else}}
-      <h2 class="text-2xl font-bold text-[{{color_theme.primary_color}}]">Who I Am</h2>
-      {{/if}}
-      
-      {{#if about_content and about_content.main_content_visible}}
-        {{#if about_content.main_paragraph_3}}
-        <p class="text-lg leading-relaxed">
-          {{about_content.main_paragraph_3}}
-        </p>
-        {{/if}}
-        {{#if about_content.main_paragraph_4}}
-        <p class="text-lg leading-relaxed">
-          {{about_content.main_paragraph_4}}
-        </p>
-        {{/if}}
-      {{else}}
-      <p class="text-lg leading-relaxed">
-        With charm, grace, and depth, I offer not just beauty—but a true experience of connection. My background blends
-        refinement and education with a love for exploration and intelligent conversation. Whether you're seeking companionship
-        for a quiet evening or a luxurious weekend escape, I provide discretion, elegance, and authenticity.
-      </p>
-      <p class="text-lg leading-relaxed">
-        My time is reserved for those who appreciate the rarest of encounters: sincere, effortless, unforgettable.
-      </p>
-      {{/if}}
-    </div>
-
-  </div>
-</section>
-
-<!-- Luxury Divider -->
-<div class="my-12 border-t-[1.5px] border-[{{color_theme.primary_color}}] w-1/3 mx-auto"></div>
-
-<!-- Services & Interests Section -->
-{{#if about_content and (about_content.services_visible or about_content.interests_visible)}}
-<section class="bg-zinc-900 py-20 px-4 md:px-12">
-  <div class="max-w-5xl mx-auto">
-    <div class="grid md:grid-cols-2 gap-12">
-      
-      <!-- Services -->
-      {{#if about_content.services_visible}}
-      <div class="text-white">
-        <h2 class="text-2xl font-bold text-[{{color_theme.primary_color}}] mb-6" data-aos="fade-up" data-aos-delay="100">{{about_content.services_title}}</h2>
-        <ul class="space-y-4">
-          {{#if about_content.service_1}}
-          <li class="flex items-start">
-            <span class="text-[{{color_theme.primary_color}}] mr-3 text-lg">✦</span>
-            <span class="text-lg">{{about_content.service_1}}</span>
-          </li>
-          {{/if}}
-          {{#if about_content.service_2}}
-          <li class="flex items-start">
-            <span class="text-[{{color_theme.primary_color}}] mr-3 text-lg">✦</span>
-            <span class="text-lg">{{about_content.service_2}}</span>
-          </li>
-          {{/if}}
-          {{#if about_content.service_3}}
-          <li class="flex items-start">
-            <span class="text-[{{color_theme.primary_color}}] mr-3 text-lg">✦</span>
-            <span class="text-lg">{{about_content.service_3}}</span>
-          </li>
-          {{/if}}
-          {{#if about_content.service_4}}
-          <li class="flex items-start">
-            <span class="text-[{{color_theme.primary_color}}] mr-3 text-lg">✦</span>
-            <span class="text-lg">{{about_content.service_4}}</span>
-          </li>
-          {{/if}}
-          {{#if about_content.service_5}}
-          <li class="flex items-start">
-            <span class="text-[{{color_theme.primary_color}}] mr-3 text-lg">✦</span>
-            <span class="text-lg">{{about_content.service_5}}</span>
-          </li>
-          {{/if}}
-        </ul>
-      </div>
-      {{/if}}
-      
-      <!-- Quick Facts & Interests -->
-      <div class="text-white space-y-8">
-        <!-- Quick Facts -->
-        {{#if quick_facts}}
-        <div>
-          <h2 class="text-2xl font-bold text-[{{color_theme.primary_color}}] mb-6" data-aos="fade-up" data-aos-delay="200">Quick Facts</h2>
-          <div class="space-y-3">
-            {{#each fact in quick_facts}}
-            {{#if fact.is_visible}}
-            <p class="text-lg">
-              <span class="text-[{{color_theme.primary_color}}] font-semibold">{{fact.question}}:</span> 
-              <span class="text-white/90">{{fact.answer}}</span>
-            </p>
-            {{/if}}
-            {{/each}}
-          </div>
+    <!-- About Page Content -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold mb-6 text-glamour-primary">About {{site_settings.model_name}}</h1>
+                <p class="text-xl text-glamour-text max-w-3xl mx-auto">
+                    Learn more about my background and services
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-2xl font-bold mb-4 text-glamour-primary">Professional Services</h2>
+                    <p class="text-lg text-glamour-text mb-6">
+                        I provide professional companion services with complete discretion and elegance.
+                    </p>
+                    <p class="text-lg text-glamour-text mb-6">
+                        Experience sophistication and genuine connection in every interaction.
+                    </p>
+                    <a href="/{{model.slug}}/contact" class="bg-glamour-primary text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity">
+                        Get In Touch
+                    </a>
+                </div>
+                <div class="bg-gray-200 h-96 rounded-lg flex items-center justify-center">
+                    <span class="text-gray-500">Professional Photo</span>
+                </div>
+            </div>
         </div>
-        {{/if}}
-        
-        <!-- Interests -->
-        {{#if about_content.interests_visible}}
-        <div>
-          <h2 class="text-2xl font-bold text-[{{color_theme.primary_color}}] mb-6" data-aos="fade-up" data-aos-delay="300">{{about_content.interests_title}}</h2>
-          <div class="flex flex-wrap gap-2">
-            {{#if about_content.interests}}
-              {{#each interest in about_content.interests.split(',')}}
-                {{#if interest.strip()}}
-                <span class="bg-[{{color_theme.primary_color}}] text-black px-3 py-1 rounded-full text-sm font-medium">{{interest.strip()}}</span>
-                {{/if}}
-              {{/each}}
-            {{/if}}
-          </div>
-        </div>
-        {{/if}}
-      </div>
-      
-    </div>
-  </div>
-</section>
-{{/if}}
-
-<!-- CTA Banner -->
-<section class="bg-gradient-to-br from-zinc-900 via-black to-zinc-800 py-20 px-4 md:px-12 text-center border-[1.5px] border-[{{color_theme.primary_color}}] mx-4 rounded-2xl">
-  <div class="max-w-3xl mx-auto space-y-6">
-    {{#if about_content and about_content.about_cta_visible and about_content.cta_title}}
-    <h2 class="text-3xl md:text-4xl font-bold text-[{{color_theme.primary_color}}]">{{about_content.cta_title}}</h2>
-    {{else}}
-    <h2 class="text-3xl md:text-4xl font-bold text-[{{color_theme.primary_color}}]">Refined. Intelligent. Yours.</h2>
-    {{/if}}
-    
-    {{#if about_content and about_content.about_cta_visible and about_content.cta_description}}
-    <p class="text-lg text-white/90">
-      {{about_content.cta_description}}
-    </p>
-    {{else}}
-    <p class="text-lg text-white/90">
-      I invite you to indulge in a connection unlike any other. Let's make memories that last beyond the moment.
-    </p>
-    {{/if}}
-    
-    <div class="flex justify-center gap-6 mt-8 flex-wrap">
-      {{#if about_content and about_content.about_cta_visible}}
-      <a href="{{#if about_content.cta_button_1_link == 'calendar'}}/{{model.slug}}/calendar{% elif about_content.cta_button_1_link == 'contact' %}/{{model.slug}}/contact{% elif about_content.cta_button_1_link == 'gallery' %}/{{model.slug}}/gallery{% elif about_content.cta_button_1_link == 'rates' %}/{{model.slug}}/rates{{else}}/{{model.slug}}/contact{{/if}}" 
-         class="bg-[{{color_theme.primary_color}}] hover:bg-white text-black font-semibold text-lg px-8 py-4 rounded-full transition shadow-xl hover:shadow-[0_0_10px_{{color_theme.primary_color}}]">
-        {{about_content.cta_button_1_text}}
-      </a>
-      <a href="{{#if about_content.cta_button_2_link == 'calendar'}}/{{model.slug}}/calendar{% elif about_content.cta_button_2_link == 'contact' %}/{{model.slug}}/contact{% elif about_content.cta_button_2_link == 'gallery' %}/{{model.slug}}/gallery{% elif about_content.cta_button_2_link == 'rates' %}/{{model.slug}}/rates{% elif about_content.cta_button_2_link == 'etiquette' %}/{{model.slug}}/etiquette{{else}}/{{model.slug}}/etiquette{{/if}}" 
-         class="bg-white/10 hover:bg-white/20 text-white font-medium text-lg px-8 py-4 rounded-full transition shadow-xl">
-        {{about_content.cta_button_2_text}}
-      </a>
-      {{else}}
-      <a href="/contact" class="bg-[{{color_theme.primary_color}}] hover:bg-white text-black font-semibold text-lg px-8 py-4 rounded-full transition shadow-xl hover:shadow-[0_0_10px_{{color_theme.primary_color}}]">
-        Request a Meeting
-      </a>
-      <a href="/etiquette" class="bg-white/10 hover:bg-white/20 text-white font-medium text-lg px-8 py-4 rounded-full transition shadow-xl">
-        Read My Etiquette
-      </a>
-      {{/if}}
-    </div>
-  </div>
-</section>
-
-
+    </section>
     
     <script>
         // Initialize AOS

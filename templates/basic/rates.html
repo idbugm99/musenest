@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{#if site_settings.site_name}}{{site_settings.site_name}}{{else}}{{model.name}}{{/if}}</title>
+    <title>Rates & Services - {{site_settings.model_name}}</title>
     <meta name="description" content="{{site_settings.meta_description}}">
-    <meta name="og:title" content="{{site_settings.site_name}} - {{model.name}}">
+    <meta name="og:title" content="Rates & Services - {{site_settings.model_name}}">
     <meta name="og:description" content="{{site_settings.meta_description}}">
     <meta name="og:type" content="website">
     <meta name="og:image" content="{{site_settings.og_image}}">
@@ -18,7 +18,6 @@
     <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
     
     <style>
-        /* Basic Theme Styles */
         
         /* Basic Theme Colors */
         :root {
@@ -40,113 +39,7 @@
     {{component "navigation" theme="basic" model=model navigation=navigation}}
     
     <!-- Page Content -->
-    
-
-Rates - {{#if current_model}}{{site_settings.model_name if site_settings and site_settings.model_name else (current_model.name}}{{else}}{{'Model Example')}}{{/if}}
-
-
-<section class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {{#if rates_settings.rates_header_visible}}
-        <div class="text-center mb-12">
-            <h1 class="text-4xl font-heading font-bold mb-6">{{rates_settings.page_title or 'Rates & Donations'}}</h1>
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                {{rates_settings.page_subtitle or 'Investment in time together. All arrangements are for companionship and social time only.'}}
-            </p>
-        </div>
-        {{/if}}
-        
-        <!-- Rates Table -->
-        {{#if rates_settings.rates_table_visible}}
-        <div class="max-w-4xl mx-auto">
-            <!-- Rate Boxes (only show if they exist) -->
-            {% set has_incall = incall_rates and incall_rates|.length > 0 and rates_settings.rates_incall_visible %}
-            {% set has_outcall = outcall_rates and outcall_rates|.length > 0 and rates_settings.rates_outcall_visible %}
-            
-            {{#if has_incall or has_outcall}}
-            <div class="{{#if has_incall and has_outcall}}grid md:grid-cols-2 gap-8{% elif has_incall or has_outcall %}max-w-md mx-auto{{/if}} mb-12">
-                {{#if has_incall}}
-                <!-- Incall Rates -->
-                <div class="bg-background p-8 rounded-lg">
-                    <h2 class="text-2xl font-heading font-bold mb-6 text-center">Incall</h2>
-                    <div class="space-y-4">
-                        {{#each rate in incall_rates}}
-                        <div class="flex justify-between items-center py-3 {{#if not loop.last}}border-b border-gray-200{{/if}}">
-                            <div class="flex-1">
-                                {% set visible_parts = [] %}
-                                {{#if rates_settings.incall_show_service_name}}
-                                    {% set _ = visible_parts.append('<span class="font-medium">' + (rate.service_name or 'Service') + '</span>') %}
-                                {{/if}}
-                                {{#if rates_settings.incall_show_duration}}
-                                    {% set _ = visible_parts.append('<span>' + (rate.duration or 'Duration') + '</span>') %}
-                                {{/if}}
-                                <span class="text-lg">{{visible_parts|join(' — ')|}}</span>
-                            </div>
-                            {{#if rates_settings.incall_show_price}}
-                            <span class="text-lg font-semibold text-primary">{{rate.price}}</span>
-                            {{/if}}
-                        </div>
-                        {{/each}}
-                    </div>
-                </div>
-                {{/if}}
-                
-                {{#if has_outcall}}
-                <!-- Outcall Rates -->
-                <div class="bg-primary text-white p-8 rounded-lg">
-                    <h2 class="text-2xl font-heading font-bold mb-6 text-center">Outcall</h2>
-                    <div class="space-y-4">
-                        {{#each rate in outcall_rates}}
-                        <div class="flex justify-between items-center py-3 {{#if not loop.last}}border-b border-white border-opacity-30{{/if}}">
-                            <div class="flex-1">
-                                {% set visible_parts = [] %}
-                                {{#if rates_settings.outcall_show_service_name}}
-                                    {% set _ = visible_parts.append('<span class="font-medium">' + (rate.service_name or 'Service') + '</span>') %}
-                                {{/if}}
-                                {{#if rates_settings.outcall_show_duration}}
-                                    {% set _ = visible_parts.append('<span>' + (rate.duration or 'Duration') + '</span>') %}
-                                {{/if}}
-                                <span class="text-lg">{{visible_parts|join(' — ')|}}</span>
-                            </div>
-                            {{#if rates_settings.outcall_show_price}}
-                            <span class="text-lg font-semibold">{{rate.price}}</span>
-                            {{/if}}
-                        </div>
-                        {{/each}}
-                    </div>
-                </div>
-                {{/if}}
-            </div>
-            {{/if}}
-            
-            <!-- Extended Engagements (only show if they exist) -->
-            {{#if extended_rates and extended_rates|.length > 0 and rates_settings.rates_extended_visible}}
-            <div class="bg-accent text-white p-8 rounded-lg mb-12">
-                <h2 class="text-2xl font-heading font-bold mb-6 text-center">Extended Engagements</h2>
-                <div class="grid md:grid-cols-3 gap-6">
-                    {{#each rate in extended_rates}}
-                    <div class="text-center">
-                        {{#if rates_settings.extended_show_service_name}}
-                        <h3 class="text-xl font-bold mb-2">{{rate.service_name}}</h3>
-                        {{/if}}
-                        {{#if rates_settings.extended_show_price}}
-                        <p class="text-2xl font-bold">{{rate.price}}</p>
-                        {{/if}}
-                        {{#if rates_settings.extended_show_duration}}
-                        <p class="text-sm opacity-90">{{rate.duration}}</p>
-                        {{/if}}
-                    </div>
-                    {{/each}}
-                </div>
-            </div>
-            {{/if}}
-            
-            <!-- Important Information (only show boxes that have content) -->
-            {% set has_payment_terms = payment_terms and payment_terms|.length > 0 and rates_settings.rates_payment_visible %}
-            {% set has_additional_services = additional_services and additional_services|.length > 0 and rates_settings.rates_additional_visible %}
-            
-            {{#if has_payment_terms or has_additional_services}}
-            <div class="{{#if has_payment_terms and has_additional_services}}grid md:grid-cols-2 gap-8{% elif has_payment_terms or has_additional_services %}max-w-md mx-auto{{/if}}">
+    Rates - {{#if current_model}}{{#if site_settings.model_name}}{{site_settings.model_name}}{{else}}{{model.name}}{{/if}}{{/if}}">
                 {{#if has_payment_terms}}
                 <div class="bg-gray-50 p-6 rounded-lg{{#if not has_additional_services}} mb-8{{/if}}">
                     <h3 class="text-xl font-heading font-bold mb-4">Payment & Booking</h3>
@@ -160,7 +53,6 @@ Rates - {{#if current_model}}{{site_settings.model_name if site_settings and sit
                     </ul>
                 </div>
                 {{/if}}
-                
                 {{#if has_additional_services}}
                 <div class="bg-gray-50 p-6 rounded-lg">
                     <h3 class="text-xl font-heading font-bold mb-4">Additional Services</h3>
@@ -178,7 +70,6 @@ Rates - {{#if current_model}}{{site_settings.model_name if site_settings and sit
             {{/if}}
         </div>
         {{/if}}
-        
         <!-- Donations Section -->
         {{#if rates_settings.donations_visible}}
         <div class="max-w-4xl mx-auto mb-12">
@@ -188,7 +79,6 @@ Rates - {{#if current_model}}{{site_settings.model_name if site_settings and sit
             </div>
         </div>
         {{/if}}
-        
         <!-- Terms & Conditions Section -->
         {{#if rates_settings.terms_visible}}
         <div class="max-w-4xl mx-auto mb-12">
@@ -200,7 +90,6 @@ Rates - {{#if current_model}}{{site_settings.model_name if site_settings and sit
             </div>
         </div>
         {{/if}}
-        
         <!-- Call to Action Section -->
         {{#if rates_settings.cta_visible}}
         <div class="max-w-4xl mx-auto">
@@ -216,7 +105,6 @@ Rates - {{#if current_model}}{{site_settings.model_name if site_settings and sit
         {{/if}}
     </div>
 </section>
-
     
     <script>
         // Initialize AOS

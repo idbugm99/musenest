@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{site_settings.model_name}} - Book Appointment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #fffef7 0%, #fef3c7 100%);
+            font-family: 'Inter', sans-serif;
+        }
+        .salon-gradient {
+            background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+        }
+        .content-card {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .time-slot {
+            transition: all 0.3s ease;
+        }
+        .time-slot:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .time-slot.selected {
+            background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+            color: white;
+        }
+        .service-option {
+            transition: all 0.3s ease;
+        }
+        .service-option:hover {
+            border-color: #d4af37;
+            background-color: #fffbeb;
+        }
+        .service-option.selected {
+            border-color: #d4af37;
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        }
+        .step-indicator {
+            background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+        }
+        .step-inactive {
+            background: #e5e7eb;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navigation -->
+    {{> navigation}}
+
+    <!-- Hero Section -->
+    <div class="salon-gradient text-white py-16">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-light mb-4">Book Your Appointment</h1>
+            <p class="text-xl text-yellow-100 font-light">Easy online booking in just a few steps</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <!-- Booking Steps Indicator -->
+        <div class="flex items-center justify-center mb-12">
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center">
+                    <div id="step1Indicator" class="step-indicator w-10 h-10 rounded-full text-white flex items-center justify-center font-bold text-sm">1</div>
+                    <span class="ml-2 text-sm text-gray-600">Service</span>
+                </div>
+                <div class="w-12 h-0.5 bg-gray-300"></div>
+                <div class="flex items-center">
+                    <div id="step2Indicator" class="step-inactive w-10 h-10 rounded-full text-gray-600 flex items-center justify-center font-bold text-sm">2</div>
+                    <span class="ml-2 text-sm text-gray-600">Date & Time</span>
+                </div>
+                <div class="w-12 h-0.5 bg-gray-300"></div>
+                <div class="flex items-center">
+                    <div id="step3Indicator" class="step-inactive w-10 h-10 rounded-full text-gray-600 flex items-center justify-center font-bold text-sm">3</div>
+                    <span class="ml-2 text-sm text-gray-600">Details</span>
+                </div>
+                <div class="w-12 h-0.5 bg-gray-300"></div>
+                <div class="flex items-center">
+                    <div id="step4Indicator" class="step-inactive w-10 h-10 rounded-full text-gray-600 flex items-center justify-center font-bold text-sm">4</div>
+                    <span class="ml-2 text-sm text-gray-600">Confirm</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 1: Service Selection -->
+        <div id="step1" class="booking-step">
+            <div class="content-card rounded-xl p-8 shadow-lg">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Choose Your Service</h3>
+                
+                <div class="grid md:grid-cols-2 gap-4 mb-8">
+                    <!-- Hair Cut Services -->
+                    <div class="service-option border-2 border-gray-200 rounded-lg p-4 cursor-pointer" data-service="womens-cut" data-price="65" data-duration="60">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-gray-800">Women's Cut & Style</h4>
+                            <span class="text-yellow-600 font-bold">$65</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">Precision cut with consultation, wash, and styling</p>
+                        <div class="text-xs text-gray-500">
+                            <i class="fas fa-clock mr-1"></i> 60 minutes
+                        </div>
+                    </div>
+
+                    <div class="service-option border-2 border-gray-200 rounded-lg p-4 cursor-pointer" data-service="mens-cut" data-price="45" data-duration="45">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-gray-800">Men's Cut & Style</h4>
+                            <span class="text-yellow-600 font-bold">$45</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">Classic or modern cuts with wash and styling</p>
+                        <div class="text-xs text-gray-500">
+                            <i class="fas fa-clock mr-1"></i> 45 minutes
+                        </div>
+                    </div>
+
+                    <div class="service-option border-2 border-gray-200 rounded-lg p-4 cursor-pointer" data-service="color-highlights" data-price="110" data-duration="180">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-gray-800">Partial Highlights</h4>
+                            <span class="text-yellow-600 font-bold">$110</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">Professional highlights for natural dimension</p>
+                        <div class="text-xs text-gray-500">
+                            <i class="fas fa-clock mr-1"></i> 3 hours
+                        </div>
+                    </div>
+
+                    <div class="service-option border-2 border-gray-200 rounded-lg p-4 cursor-pointer" data-service="full-color" data-price="95" data-duration="150">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-gray-800">Full Color</h4>
+                            <span class="text-yellow-600 font-bold">$95+</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">Complete color transformation or root touch-up</p>
+                        <div class="text-xs text-gray-500">
+                            <i class="fas fa-clock mr-1"></i> 2.5 hours
+                        </div>
+                    </div>
+
+                    <div class="service-option border-2 border-gray-200 rounded-lg p-4 cursor-pointer" data-service="blowout" data-price="55" data-duration="45">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-gray-800">Blowout & Style</h4>
+                            <span class="text-yellow-600 font-bold">$55</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">Professional styling with premium products</p>
+                        <div class="text-xs text-gray-500">
+                            <i class="fas fa-clock mr-1"></i> 45 minutes
+                        </div>
+                    </div>
+
+                    <div class="service-option border-2 border-gray-200 rounded-lg p-4 cursor-pointer" data-service="special-event" data-price="85" data-duration="90">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-gray-800">Special Event Styling</h4>
+                            <span class="text-yellow-600 font-bold">$85</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">Elegant updo for weddings or special occasions</p>
+                        <div class="text-xs text-gray-500">
+                            <i class="fas fa-clock mr-1"></i> 90 minutes
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button id="nextToStep2" class="salon-gradient text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        Continue to Date & Time
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Date & Time Selection -->
+        <div id="step2" class="booking-step hidden">
+            <div class="content-card rounded-xl p-8 shadow-lg">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Select Date & Time</h3>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Calendar -->
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-4">Choose Date</h4>
+                        <div class="bg-white rounded-lg p-4 border border-gray-200">
+                            <div class="grid grid-cols-7 gap-1 mb-4">
+                                <div class="text-center text-sm font-semibold text-gray-600 p-2">Sun</div>
+                                <div class="text-center text-sm font-semibold text-gray-600 p-2">Mon</div>
+                                <div class="text-center text-sm font-semibold text-gray-600 p-2">Tue</div>
+                                <div class="text-center text-sm font-semibold text-gray-600 p-2">Wed</div>
+                                <div class="text-center text-sm font-semibold text-gray-600 p-2">Thu</div>
+                                <div class="text-center text-sm font-semibold text-gray-600 p-2">Fri</div>
+                                <div class="text-center text-sm font-semibold text-gray-600 p-2">Sat</div>
+                            </div>
+                            <div class="grid grid-cols-7 gap-1" id="calendar-dates">
+                                <!-- Calendar dates will be generated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Time Slots -->
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-4">Available Times</h4>
+                        <div id="timeSlots" class="space-y-2 max-h-64 overflow-y-auto">
+                            <p class="text-gray-500 text-center py-8">Please select a date first</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-8">
+                    <button id="backToStep1" class="border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                        Back to Services
+                    </button>
+                    <button id="nextToStep3" class="salon-gradient text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        Continue to Details
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Personal Details -->
+        <div id="step3" class="booking-step hidden">
+            <div class="content-card rounded-xl p-8 shadow-lg">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Your Information</h3>
+                
+                <form id="bookingForm" class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                            <input type="text" id="firstName" name="firstName" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        </div>
+                        <div>
+                            <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
+                            <input type="text" id="lastName" name="lastName" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                            <input type="email" id="email" name="email" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="isNewClient" class="flex items-center">
+                            <input type="checkbox" id="isNewClient" name="isNewClient" class="mr-3 h-4 w-4 text-yellow-600 rounded">
+                            <span class="text-sm text-gray-700">I am a new client</span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label for="specialRequests" class="block text-sm font-medium text-gray-700 mb-2">Special Requests or Notes</label>
+                        <textarea id="specialRequests" name="specialRequests" rows="4"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                                  placeholder="Any special requests, allergies, or important information..."></textarea>
+                    </div>
+                </form>
+
+                <div class="flex justify-between mt-8">
+                    <button id="backToStep2" class="border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                        Back to Date & Time
+                    </button>
+                    <button id="nextToStep4" class="salon-gradient text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                        Review Booking
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Confirmation -->
+        <div id="step4" class="booking-step hidden">
+            <div class="content-card rounded-xl p-8 shadow-lg">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Confirm Your Appointment</h3>
+                
+                <div class="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-lg p-6 border border-yellow-200 mb-8">
+                    <h4 class="font-semibold text-gray-800 mb-4">Appointment Summary</h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Service:</span>
+                            <span id="confirmService" class="font-semibold text-gray-800">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Date:</span>
+                            <span id="confirmDate" class="font-semibold text-gray-800">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Time:</span>
+                            <span id="confirmTime" class="font-semibold text-gray-800">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Duration:</span>
+                            <span id="confirmDuration" class="font-semibold text-gray-800">-</span>
+                        </div>
+                        <div class="border-t border-yellow-300 pt-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-800 font-semibold">Total Price:</span>
+                                <span id="confirmPrice" class="font-bold text-yellow-700 text-lg">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 rounded-lg p-4 border border-blue-200 mb-6">
+                    <h5 class="font-semibold text-gray-800 mb-2">Important Reminders:</h5>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Please arrive 10 minutes before your appointment</li>
+                        <li>• Cancellations require 24-hour notice</li>
+                        <li>• A credit card will be required to secure your booking</li>
+                        <li>• You'll receive a confirmation email with all details</li>
+                    </ul>
+                </div>
+
+                <div class="flex justify-between">
+                    <button id="backToStep3" class="border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                        Back to Details
+                    </button>
+                    <button id="confirmBooking" class="salon-gradient text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                        <i class="fas fa-calendar-check mr-2"></i>
+                        Confirm Appointment
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="booking-step hidden">
+            <div class="content-card rounded-xl p-8 shadow-lg text-center">
+                <div class="mb-6">
+                    <i class="fas fa-check-circle text-green-500 text-6xl mb-4"></i>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-2">Appointment Confirmed!</h3>
+                    <p class="text-gray-600">Your appointment has been successfully booked.</p>
+                </div>
+
+                <div class="bg-green-50 rounded-lg p-6 border border-green-200 mb-8">
+                    <p class="text-green-800 mb-4">
+                        A confirmation email has been sent to your email address with all the details.
+                        We look forward to seeing you soon!
+                    </p>
+                    <div class="text-sm text-green-700">
+                        <p>Reference Number: <strong id="bookingReference">APT-12345</strong></p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/{{model.slug}}/services" 
+                       class="inline-flex items-center px-6 py-3 salon-gradient text-white rounded-lg font-medium hover:shadow-lg transition-all duration-300">
+                        <i class="fas fa-list mr-2"></i>
+                        View All Services
+                    </a>
+                    <a href="/{{model.slug}}/contact" 
+                       class="inline-flex items-center px-6 py-3 border-2 border-yellow-600 text-yellow-700 rounded-lg font-medium hover:bg-yellow-50 transition-all duration-300">
+                        <i class="fas fa-phone mr-2"></i>
+                        Contact Us
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Spacer -->
+    <div class="h-16"></div>
+
+    <script>
+        // Booking system JavaScript
+        class SalonBooking {
+            constructor() {
+                this.currentStep = 1;
+                this.selectedService = null;
+                this.selectedDate = null;
+                this.selectedTime = null;
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.generateCalendar();
+                this.generateTimeSlots();
+            }
+
+            setupEventListeners() {
+                // Service selection
+                document.querySelectorAll('.service-option').forEach(option => {
+                    option.addEventListener('click', () => this.selectService(option));
+                });
+
+                // Navigation buttons
+                document.getElementById('nextToStep2').addEventListener('click', () => this.nextStep());
+                document.getElementById('nextToStep3').addEventListener('click', () => this.nextStep());
+                document.getElementById('nextToStep4').addEventListener('click', () => this.nextStep());
+                document.getElementById('backToStep1').addEventListener('click', () => this.prevStep());
+                document.getElementById('backToStep2').addEventListener('click', () => this.prevStep());
+                document.getElementById('backToStep3').addEventListener('click', () => this.prevStep());
+                document.getElementById('confirmBooking').addEventListener('click', () => this.confirmBooking());
+            }
+
+            selectService(option) {
+                // Remove previous selection
+                document.querySelectorAll('.service-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+
+                // Select new service
+                option.classList.add('selected');
+                this.selectedService = {
+                    name: option.querySelector('h4').textContent,
+                    price: option.dataset.price,
+                    duration: option.dataset.duration,
+                    id: option.dataset.service
+                };
+
+                document.getElementById('nextToStep2').disabled = false;
+            }
+
+            generateCalendar() {
+                const container = document.getElementById('calendar-dates');
+                const today = new Date();
+                const currentMonth = today.getMonth();
+                const currentYear = today.getFullYear();
+                
+                // Generate next 30 days
+                for (let i = 0; i < 30; i++) {
+                    const date = new Date(today);
+                    date.setDate(today.getDate() + i);
+                    
+                    const dateElement = document.createElement('div');
+                    dateElement.className = 'text-center p-2 cursor-pointer hover:bg-yellow-100 rounded transition-colors';
+                    dateElement.textContent = date.getDate();
+                    dateElement.dataset.date = date.toISOString().split('T')[0];
+                    
+                    if (i === 0) {
+                        dateElement.classList.add('bg-yellow-200');
+                    }
+                    
+                    dateElement.addEventListener('click', () => this.selectDate(dateElement, date));
+                    container.appendChild(dateElement);
+                }
+            }
+
+            selectDate(element, date) {
+                // Remove previous selection
+                document.querySelectorAll('#calendar-dates > div').forEach(el => {
+                    el.classList.remove('bg-yellow-500', 'text-white');
+                });
+
+                // Select new date
+                element.classList.add('bg-yellow-500', 'text-white');
+                this.selectedDate = date;
+                this.generateTimeSlots();
+            }
+
+            generateTimeSlots() {
+                const container = document.getElementById('timeSlots');
+                if (!this.selectedDate) return;
+
+                const times = ['9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', 
+                              '1:00 PM', '1:30 PM', '2:00 PM', '2:30 PM', '3:00 PM', '3:30 PM', '4:00 PM'];
+                
+                container.innerHTML = '';
+                times.forEach(time => {
+                    const timeElement = document.createElement('div');
+                    timeElement.className = 'time-slot bg-white border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-yellow-500';
+                    timeElement.textContent = time;
+                    timeElement.addEventListener('click', () => this.selectTime(timeElement, time));
+                    container.appendChild(timeElement);
+                });
+            }
+
+            selectTime(element, time) {
+                // Remove previous selection
+                document.querySelectorAll('.time-slot').forEach(slot => {
+                    slot.classList.remove('selected');
+                });
+
+                // Select new time
+                element.classList.add('selected');
+                this.selectedTime = time;
+                document.getElementById('nextToStep3').disabled = false;
+            }
+
+            nextStep() {
+                if (this.currentStep < 4) {
+                    // Hide current step
+                    document.getElementById(`step${this.currentStep}`).classList.add('hidden');
+                    
+                    this.currentStep++;
+                    
+                    // Show next step
+                    document.getElementById(`step${this.currentStep}`).classList.remove('hidden');
+                    
+                    // Update step indicators
+                    this.updateStepIndicators();
+                    
+                    // Update confirmation if on step 4
+                    if (this.currentStep === 4) {
+                        this.updateConfirmation();
+                    }
+                }
+            }
+
+            prevStep() {
+                if (this.currentStep > 1) {
+                    // Hide current step
+                    document.getElementById(`step${this.currentStep}`).classList.add('hidden');
+                    
+                    this.currentStep--;
+                    
+                    // Show previous step
+                    document.getElementById(`step${this.currentStep}`).classList.remove('hidden');
+                    
+                    // Update step indicators
+                    this.updateStepIndicators();
+                }
+            }
+
+            updateStepIndicators() {
+                for (let i = 1; i <= 4; i++) {
+                    const indicator = document.getElementById(`step${i}Indicator`);
+                    if (i <= this.currentStep) {
+                        indicator.classList.remove('step-inactive');
+                        indicator.classList.add('step-indicator');
+                        indicator.classList.add('text-white');
+                    } else {
+                        indicator.classList.add('step-inactive');
+                        indicator.classList.remove('step-indicator', 'text-white');
+                    }
+                }
+            }
+
+            updateConfirmation() {
+                if (this.selectedService) {
+                    document.getElementById('confirmService').textContent = this.selectedService.name;
+                    document.getElementById('confirmPrice').textContent = `$${this.selectedService.price}`;
+                    document.getElementById('confirmDuration').textContent = `${this.selectedService.duration} minutes`;
+                }
+                
+                if (this.selectedDate) {
+                    document.getElementById('confirmDate').textContent = this.selectedDate.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                }
+                
+                if (this.selectedTime) {
+                    document.getElementById('confirmTime').textContent = this.selectedTime;
+                }
+            }
+
+            confirmBooking() {
+                // Hide step 4
+                document.getElementById('step4').classList.add('hidden');
+                
+                // Show success message
+                document.getElementById('successMessage').classList.remove('hidden');
+                
+                // Generate booking reference
+                const reference = 'APT-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+                document.getElementById('bookingReference').textContent = reference;
+            }
+        }
+
+        // Initialize booking system
+        const booking = new SalonBooking();
+    </script>
+</body>
+</html>

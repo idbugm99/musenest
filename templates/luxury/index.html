@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{#if site_settings.site_name}}{{site_settings.site_name}}{{else}}{{model.name}}{{/if}}</title>
+    <title>Home - {{site_settings.model_name}}</title>
     <meta name="description" content="{{site_settings.meta_description}}">
-    <meta name="og:title" content="{{site_settings.site_name}} - {{model.name}}">
+    <meta name="og:title" content="Home - {{site_settings.model_name}}">
     <meta name="og:description" content="{{site_settings.meta_description}}">
     <meta name="og:type" content="website">
     <meta name="og:image" content="{{site_settings.og_image}}">
@@ -18,457 +18,56 @@
     <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
     
     <style>
-        /* Luxury Theme Styles */
         
         /* Luxury Theme Colors */
         :root {
-            --luxury-primary: var(--color-primary, #7C3AED);
-            --luxury-secondary: var(--color-secondary, #5B21B6);
-            --luxury-accent: var(--color-accent, #F59E0B);
-            --luxury-text: var(--color-text, #581C87);
-            --luxury-background: var(--color-background, #FAF5FF);
+            --luxury-primary: var(--color-primary, #D4AF37);
+            --luxury-secondary: var(--color-secondary, #1A1A1A);
+            --luxury-accent: var(--color-accent, #FFD700);
+            --luxury-text: var(--color-text, #FFFFFF);
+            --luxury-background: var(--color-background, #000000);
         }
         
         .text-luxury-primary { color: var(--luxury-primary); }
         .bg-luxury-primary { background-color: var(--luxury-primary); }
         .border-luxury-primary { border-color: var(--luxury-primary); }
         
-        .luxury-gradient {
-            background: linear-gradient(135deg, var(--luxury-primary) 0%, var(--luxury-secondary) 100%);
+        .luxury-grain::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: url('/uploads/grain.png');
+            opacity: 0.15;
+            pointer-events: none;
         }
-            
     </style>
 </head>
-<body class="bg-luxury-background font-serif">
+<body class="bg-luxury-background font-serif text-luxury-text">
     <!-- Navigation Component -->
     {{component "navigation" theme="luxury" model=model navigation=navigation}}
     
-    <!-- Page Content -->
-    
-
-Home - {{#if site_settings}}{{site_settings.site_name}}{{else}}{{'Rose Mastos'}}{{/if}}
-
-<!--
-FUTURE IMAGE OPTIMIZATION RECOMMENDATIONS:
-1. Convert all hero/gallery images to WebP format for better compression
-2. Implement responsive images with srcset for different device sizes
-3. Add image compression during upload process
-4. Consider CDN integration for faster global loading
-5. Implement progressive image loading for better perceived performance
-6. Add blur-up effect while images load for premium feel
--->
-
-
-    <!-- Luxury Landing Page SEO Meta Tags -->
-    <meta name="description" content="{{#if home_content.about_paragraph_1}}{{home_content.about_paragraph_1[:155]}}{{else}}{{'Experience elegance and sophistication with professional companionship services. Luxury encounters with discretion and class.'}}{{/if}}">
-    <meta name="keywords" content="luxury companion, professional escort, {{#if site_settings.city}}{{site_settings.city}}{{else}}{{'escort services'}}{{/if}}, elegance, sophistication, discretion">
-    
-    <!-- Open Graph Meta Tags for Social Media -->
-    <meta property="og:title" content="{{#if site_settings.model_name}}{{site_settings.model_name}}{{else}}{{'Rose Mastos'}}{{/if}} - Luxury Companion">
-    <meta property="og:description" content="{{#if home_content.about_paragraph_1}}{{home_content.about_paragraph_1[:155]}}{{else}}{{'Experience elegance and sophistication with professional companionship services.'}}{{/if}}">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{request.url}}">
-    {{#if home_content.hero_background_image}}
-    <meta property="og:image" content="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), home_content.hero_background_image.filename), _external=True)}}">
-    {% elif home_content.portrait_image %}
-    <meta property="og:image" content="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), home_content.portrait_image.filename), _external=True)}}">
-    {{/if}}
-    <meta property="og:site_name" content="{{#if site_settings.site_name}}{{site_settings.site_name}}{{else}}{{'Rose Mastos'}}{{/if}}">
-    
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{#if site_settings.model_name}}{{site_settings.model_name}}{{else}}{{'Rose Mastos'}}{{/if}} - Luxury Companion">
-    <meta name="twitter:description" content="{{#if home_content.about_paragraph_1}}{{home_content.about_paragraph_1[:200]}}{{else}}{{'Experience elegance and sophistication with professional companionship services.'}}{{/if}}">
-    {{#if home_content.hero_background_image}}
-    <meta name="twitter:image" content="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), home_content.hero_background_image.filename), _external=True)}}">
-    {% elif home_content.portrait_image %}
-    <meta name="twitter:image" content="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), home_content.portrait_image.filename), _external=True)}}">
-    {{/if}}
-    
-    <!-- Structured Data for Luxury Services -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "ProfessionalService",
-        "name": "{{#if site_settings.model_name}}{{site_settings.model_name}}{{else}}{{'Rose Mastos'}}{{/if}}",
-        "description": "{{#if home_content.about_paragraph_1}}{{home_content.about_paragraph_1}}{{else}}{{'Professional luxury companion services with elegance and discretion.'}}{{/if}}",
-        {{#if site_settings.city}}"address": {
-            "@type": "PostalAddress",
-            "addressLocality": "{{site_settings.city}}"
-        },{{/if}}
-        {{#if site_settings.contact_email}}"email": "{{site_settings.contact_email}}",{{/if}}
-        "url": "{{request.url}}",
-        "serviceType": "Luxury Companionship"
-    }
-    </script>
-
-
-<!-- Add luxury styling enhancements -->
-<style>
-    /* Subtle grain texture for luxury feel */
-    .luxury-grain {
-        position: relative;
-    }
-    .luxury-grain::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: 
-            radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0),
-            radial-gradient(circle at 3px 3px, rgba(255,255,255,0.03) 1px, transparent 0);
-        background-size: 50px 50px, 100px 100px;
-        background-position: 0 0, 25px 25px;
-        pointer-events: none;
-        z-index: 1;
-    }
-    
-    /* Enhanced parallax for better performance */
-    .parallax-hero {
-        background-attachment: fixed;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-        will-change: transform;
-    }
-    
-    /* Mobile parallax fallback - iOS Safari and mobile browsers often ignore background-attachment: fixed */
-    @media (max-width: 768px) {
-        .parallax-hero {
-            background-attachment: scroll;
-        }
-    }
-    
-    /* Smooth scrolling for better UX */
-    html {
-        scroll-behavior: smooth;
-    }
-    
-    /* Enhanced font rendering for cross-platform consistency */
-    body {
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-rendering: optimizeLegibility;
-    }
-    
-    /* Specific font smoothing for headings (Playfair Display) */
-    .font-heading {
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        font-feature-settings: "liga" 1, "kern" 1;
-    }
-    
-</style>
-
-
-<!-- Hero Section - Full Screen Parallax -->
-{{#if home_content.hero_section_visible != False}}
-<section class="relative h-screen bg-fixed bg-cover bg-center flex items-center justify-center parallax-hero luxury-grain" 
-         style="background-image: url('{{#if home_content.hero_background_image}}{{url_for('static', filename=get_model_image_path(get_current_model_slug(), home_content.hero_background_image.filename))}}{{else}}{{url_for('static', filename='images/escortmodel/Parallax_Sample.png')}}{{/if}}')">
-    <!-- Dynamic overlay for better text contrast with adjustable opacity -->
-    <div class="absolute inset-0 bg-black z-20" style="opacity: {{#if home_content.hero_background_opacity}}{{1 - (home_content.hero_background_opacity}}{{else}}{{0.6)}}{{/if}};"></div>
-    
-    <!-- Luxury grain texture overlay for premium feel -->
-    <div class="absolute inset-0 opacity-40 mix-blend-soft-light pointer-events-none z-30" style="background-image: url('{{url_for('static', filename='images/grain.png')}}'); background-repeat: repeat;"></div>
-    
-    <!-- Fallback content in case background doesn't load -->
-    <div class="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary opacity-90" style="background-blend-mode: multiply; z-index: 10;"></div>
-    
-    <!-- Hero content -->
-    <div class="relative z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center text-white">
-            <h1 class="text-5xl md:text-7xl font-heading font-bold mb-8 tracking-wide" data-aos="fade-up">{{#if site_settings}}{{site_settings.model_name}}{{else}}{{'Rose Mastos'}}{{/if}}</h1>
-            <p class="text-2xl md:text-3xl mb-12 max-w-4xl mx-auto leading-relaxed" data-aos="fade-up" data-aos-delay="200">{{#if site_settings}}{{site_settings.tagline}}{{else}}{{'Elegant companionship with discretion and sophistication'}}{{/if}}</p>
-            <div class="space-x-6" data-aos="fade-up" data-aos-delay="400">
-                {% set button_1_page = home_content.hero_button_1_link or 'calendar' %}
-                {{#if button_1_page == 'calendar'}}
-                    {% set button_1_url = model_url_for('model.calendar_view') %}
-                {% elif button_1_page == 'contact' %}
-                    {% set button_1_url = model_url_for('model.contact') %}
-                {% elif button_1_page == 'gallery' %}
-                    {% set button_1_url = model_url_for('content.gallery') %}
-                {% elif button_1_page == 'rates' %}
-                    {% set button_1_url = model_url_for('model.rates') %}
-                {{else}}
-                    {% set button_1_url = model_url_for('model.index') %}
-                {{/if}}
-                {% set button_2_page = home_content.hero_button_2_link or 'contact' %}
-                {{#if button_2_page == 'calendar'}}
-                    {% set button_2_url = model_url_for('model.calendar_view') %}
-                {% elif button_2_page == 'contact' %}
-                    {% set button_2_url = model_url_for('model.contact') %}
-                {% elif button_2_page == 'gallery' %}
-                    {% set button_2_url = model_url_for('content.gallery') %}
-                {% elif button_2_page == 'rates' %}
-                    {% set button_2_url = model_url_for('model.rates') %}
-                {{else}}
-                    {% set button_2_url = model_url_for('model.index') %}
-                {{/if}}
-                <!-- Elegant rounded buttons with luxury styling -->
-                <a href="{{button_1_url}}" class="inline-block bg-white text-primary px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-white/30 transform hover:-translate-y-2 hover:scale-105 backdrop-blur-sm">{{home_content.hero_button_1}}</a>
-                <a href="{{button_2_url}}" class="inline-block border-2 border-white text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-white hover:text-primary transition-all duration-300 shadow-2xl hover:shadow-white/30 transform hover:-translate-y-2 hover:scale-105 backdrop-blur-sm">{{home_content.hero_button_2}}</a>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Elegant scroll indicator -->
-    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white text-center z-30" data-aos="fade-up" data-aos-delay="800">
-        <div class="flex flex-col items-center space-y-2 animate-bounce">
-            <span class="text-sm font-light tracking-wide">Scroll to explore</span>
-            <svg class="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-            </svg>
-        </div>
-    </div>
-</section>
-{{/if}}
-
-<!-- About Preview - Enhanced with animations -->
-{{#if home_content.about_section_visible != False}}
-<section class="py-20 bg-white mt-12" data-aos="fade-up">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {% set about_link_page = home_content.about_link_destination or 'about' %}
-        {{#if about_link_page == 'about'}}
-            {% set about_link_url = model_url_for('model.about') %}
-        {% elif about_link_page == 'contact' %}
-            {% set about_link_url = model_url_for('model.contact') %}
-        {% elif about_link_page == 'gallery' %}
-            {% set about_link_url = model_url_for('content.gallery') %}
-        {% elif about_link_page == 'rates' %}
-            {% set about_link_url = model_url_for('model.rates') %}
-        {% elif about_link_page == 'calendar' %}
-            {% set about_link_url = model_url_for('model.calendar_view') %}
-        {{else}}
-            {% set about_link_url = model_url_for('model.about') %}
-        {{/if}}
-        {{#if home_content.portrait_section_visible != False}}
-        <div class="grid md:grid-cols-2 gap-16 items-center">
-            <div data-aos="fade-right" data-aos-delay="200">
-                <h2 class="text-4xl font-heading font-bold mb-8 text-gray-900">{{home_content.about_title}}</h2>
-                <p class="text-xl text-gray-700 mb-8 leading-relaxed">{{home_content.about_paragraph_1}}</p>
-                <p class="text-xl text-gray-700 mb-10 leading-relaxed">{{home_content.about_paragraph_2}}</p>
-                <a href="{{about_link_url}}" class="inline-block text-primary hover:text-accent font-semibold text-lg border-b-2 border-primary hover:border-accent transition-colors duration-300">{{home_content.about_link_text}}</a>
-            </div>
-            <!-- Circular portrait with elegant border -->
-            <div class="flex justify-center" data-aos="fade-left" data-aos-delay="400">
-                <div class="w-80 h-80 rounded-full overflow-hidden border-4 border-white shadow-2xl bg-gray-200 flex items-center justify-center">
-                    {{#if home_content.portrait_image}}
-                    <img src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), home_content.portrait_image.filename))}}" 
-                         alt="{{home_content.portrait_alt}}"
-                         loading="lazy"
-                         class="w-full h-full object-cover object-center" style="object-position: 50% 20%;">
-                    {{else}}
-                    <p class="text-gray-500 text-center px-4">{{home_content.portrait_alt}}</p>
-                    {{/if}}
+    <!-- Index Page Content -->
+    <section class="py-16 bg-gradient-to-r from-luxury-primary to-accent text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                    {{site_settings.model_name}}
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+                    {{site_settings.tagline}}
+                </p>
+                <div class="space-x-4">
+                    <a href="/{{model.slug}}/contact" class="bg-white text-luxury-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                        Contact Me
+                    </a>
+                    <a href="/{{model.slug}}/gallery" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-luxury-primary transition-colors">
+                        View Gallery
+                    </a>
                 </div>
             </div>
         </div>
-        {{else}}
-        <div class="max-w-5xl mx-auto text-center" data-aos="fade-up">
-            <h2 class="text-4xl font-heading font-bold mb-8 text-gray-900">{{home_content.about_title}}</h2>
-            <p class="text-xl text-gray-700 mb-8 leading-relaxed">{{home_content.about_paragraph_1}}</p>
-            <p class="text-xl text-gray-700 mb-10 leading-relaxed">{{home_content.about_paragraph_2}}</p>
-            <a href="{{about_link_url}}" class="inline-block text-primary hover:text-accent font-semibold text-lg border-b-2 border-primary hover:border-accent transition-colors duration-300">{{home_content.about_link_text}}</a>
-        </div>
-        {{/if}}
-    </div>
-</section>
-{{/if}}
-
-<!-- Gallery Preview - Enhanced with hover effects -->
-{{#if home_content.gallery_section_visible != False}}
-<section class="py-20 bg-background mt-12" data-aos="fade-up">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-4xl font-heading font-bold text-center mb-16 text-gray-900" data-aos="fade-up">
-            {{home_content.gallery_section_title or 'Gallery'}}
-        </h2>
-        <!-- Responsive rectangles with hover effects -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {{#each image in gallery_images}}
-            <div class="aspect-[3/4] rounded-xl overflow-hidden bg-gray-200 transform hover:scale-105 transition-all duration-500 shadow-lg hover:shadow-2xl group relative" data-aos="zoom-in" data-aos-delay="{{loop.index * 100}}">
-                <img src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), image.filename))}}" 
-                     alt="{{image.caption or 'Gallery image'}}" 
-                     loading="lazy"
-                     class="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-500">
-                <!-- Subtle overlay on hover -->
-                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-500"></div>
-            </div>
-            {{else}}
-            {{#each i in range(6)}}
-            <div class="bg-gradient-to-br from-gray-100 to-gray-300 aspect-[3/4] rounded-xl flex items-center justify-center transform hover:scale-105 transition-all duration-500 shadow-lg hover:shadow-2xl group" data-aos="zoom-in" data-aos-delay="{{i * 100}}">
-                <p class="text-gray-600 text-sm font-medium group-hover:text-gray-800 transition-colors">Photo {{i + 1}}</p>
-            </div>
-            {{/each}}
-            {{/each}}
-        </div>
-        <div class="text-center mt-12" data-aos="fade-up" data-aos-delay="600">
-            <a href="{{model_url_for('content.gallery')}}" class="inline-block bg-primary text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                {{home_content.gallery_button_text or 'View Full Gallery'}}
-            </a>
-        </div>
-    </div>
-</section>
-{{/if}}
-
-<!-- Testimonials - Luxury quote card layout -->
-{{#if home_content.testimonials_section_visible != False}}
-<section class="py-20 bg-white mt-12" data-aos="fade-up">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-4xl font-heading font-bold text-center mb-16 text-gray-900" data-aos="fade-up">{{home_content.testimonials_section_title or 'What Clients Say'}}</h2>
-        <div class="grid md:grid-cols-3 gap-10">
-            {{#each testimonial in testimonials}}
-            <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 relative" data-aos="fade-up" data-aos-delay="{{loop.index * 200}}">
-                <!-- Quote icon -->
-                <div class="absolute -top-4 left-8">
-                    <div class="bg-primary w-8 h-8 rounded-full flex items-center justify-center">
-                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M3.5 2A1.5 1.5 0 002 3.5V18l3-3h11.5A1.5 1.5 0 0018 13.5V3.5A1.5 1.5 0 0016.5 2h-13zM5 6a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm0 3a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm0 3a1 1 0 011-1h4a1 1 0 110 2H6a1 1 0 01-1-1z"/>
-                        </svg>
-                    </div>
-                </div>
-                
-                <div class="flex text-accent mb-6 pt-4">
-                    {{#each i in range(testimonial.rating)}}
-                    <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                    </svg>
-                    {{/each}}
-                </div>
-                
-                <!-- Italic quote text -->
-                <p class="text-gray-700 mb-6 text-lg italic leading-relaxed">"{{testimonial.text}}"</p>
-                
-                <!-- Larger name styling -->
-                <p class="font-bold text-xl text-gray-900">{{testimonial.name}}</p>
-            </div>
-            {{else}}
-            <!-- Default testimonials with luxury styling -->
-            <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 relative" data-aos="fade-up" data-aos-delay="200">
-                <div class="absolute -top-4 left-8">
-                    <div class="bg-primary w-8 h-8 rounded-full flex items-center justify-center">
-                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M3.5 2A1.5 1.5 0 002 3.5V18l3-3h11.5A1.5 1.5 0 0018 13.5V3.5A1.5 1.5 0 0016.5 2h-13zM5 6a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm0 3a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm0 3a1 1 0 011-1h4a1 1 0 110 2H6a1 1 0 01-1-1z"/>
-                        </svg>
-                    </div>
-                </div>
-                <div class="flex text-accent mb-6 pt-4">
-                    {{#each i in range(5)}}
-                    <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                    </svg>
-                    {{/each}}
-                </div>
-                <p class="text-gray-700 mb-6 text-lg italic leading-relaxed">"Rose is absolutely wonderful. Professional, elegant, and truly caring. An unforgettable experience."</p>
-                <p class="font-bold text-xl text-gray-900">Michael D.</p>
-            </div>
-            
-            <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 relative" data-aos="fade-up" data-aos-delay="400">
-                <div class="absolute -top-4 left-8">
-                    <div class="bg-primary w-8 h-8 rounded-full flex items-center justify-center">
-                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M3.5 2A1.5 1.5 0 002 3.5V18l3-3h11.5A1.5 1.5 0 0018 13.5V3.5A1.5 1.5 0 0016.5 2h-13zM5 6a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm0 3a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm0 3a1 1 0 011-1h4a1 1 0 110 2H6a1 1 0 01-1-1z"/>
-                        </svg>
-                    </div>
-                </div>
-                <div class="flex text-accent mb-6 pt-4">
-                    {{#each i in range(5)}}
-                    <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                    </svg>
-                    {{/each}}
-                </div>
-                <p class="text-gray-700 mb-6 text-lg italic leading-relaxed">"Discretion and class personified. Rose made our evening magical."</p>
-                <p class="font-bold text-xl text-gray-900">James S.</p>
-            </div>
-            
-            <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 relative" data-aos="fade-up" data-aos-delay="600">
-                <div class="absolute -top-4 left-8">
-                    <div class="bg-primary w-8 h-8 rounded-full flex items-center justify-center">
-                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M3.5 2A1.5 1.5 0 002 3.5V18l3-3h11.5A1.5 1.5 0 0018 13.5V3.5A1.5 1.5 0 0016.5 2h-13zM5 6a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm0 3a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm0 3a1 1 0 011-1h4a1 1 0 110 2H6a1 1 0 01-1-1z"/>
-                        </svg>
-                    </div>
-                </div>
-                <div class="flex text-accent mb-6 pt-4">
-                    {{#each i in range(5)}}
-                    <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                    </svg>
-                    {{/each}}
-                </div>
-                <p class="text-gray-700 mb-6 text-lg italic leading-relaxed">"Exceptional service and genuine warmth. Highly recommended."</p>
-                <p class="font-bold text-xl text-gray-900">Robert T.</p>
-            </div>
-            {{/each}}
-        </div>
-    </div>
-</section>
-{{/if}}
-
-<!-- CTA Section - Luxury gradient with glowing buttons -->
-{{#if home_content.cta_section_visible != False}}
-                {% set cta_button_1_page = home_content.cta_button_1_link or 'calendar' %}
-                {{#if cta_button_1_page == 'calendar'}}
-                    {% set cta_button_1_url = model_url_for('model.calendar_view') %}
-                {% elif cta_button_1_page == 'contact' %}
-                    {% set cta_button_1_url = model_url_for('model.contact') %}
-                {% elif cta_button_1_page == 'gallery' %}
-                    {% set cta_button_1_url = model_url_for('content.gallery') %}
-                {% elif cta_button_1_page == 'rates' %}
-                    {% set cta_button_1_url = model_url_for('model.rates') %}
-                {% elif cta_button_1_page == 'about' %}
-                    {% set cta_button_1_url = model_url_for('model.about') %}
-                {% elif cta_button_1_page == 'etiquette' %}
-                    {% set cta_button_1_url = model_url_for('model.etiquette') %}
-                {{else}}
-                    {% set cta_button_1_url = model_url_for('model.index') %}
-                {{/if}}
-                {% set cta_button_2_page = home_content.cta_button_2_link or 'contact' %}
-                {{#if cta_button_2_page == 'calendar'}}
-                    {% set cta_button_2_url = model_url_for('model.calendar_view') %}
-                {% elif cta_button_2_page == 'contact' %}
-                    {% set cta_button_2_url = model_url_for('model.contact') %}
-                {% elif cta_button_2_page == 'gallery' %}
-                    {% set cta_button_2_url = model_url_for('content.gallery') %}
-                {% elif cta_button_2_page == 'rates' %}
-                    {% set cta_button_2_url = model_url_for('model.rates') %}
-                {% elif cta_button_2_page == 'about' %}
-                    {% set cta_button_2_url = model_url_for('model.about') %}
-                {% elif cta_button_2_page == 'etiquette' %}
-                    {% set cta_button_2_url = model_url_for('model.etiquette') %}
-                {{else}}
-                    {% set cta_button_2_url = model_url_for('model.index') %}
-                {{/if}}
-<!-- Elegant gradient background with centered content -->
-<section class="py-24 bg-gradient-to-br from-accent to-primary text-white mt-16 pt-16" data-aos="fade-up">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center justify-center min-h-[50vh]">
-        <h2 class="text-5xl font-heading font-bold mb-8 tracking-wide" data-aos="fade-up">{{home_content.cta_section_title or 'Ready to Meet?'}}</h2>
-        <p class="text-2xl mb-12 max-w-4xl mx-auto leading-relaxed" data-aos="fade-up" data-aos-delay="200">{{home_content.cta_section_subtitle or 'Experience elegance and sophistication with professional companionship services'}}</p>
-        <div class="space-x-6" data-aos="fade-up" data-aos-delay="400">
-            <!-- Glowing luxury buttons -->
-            <a href="{{cta_button_1_url}}" class="inline-block bg-white text-primary px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-white/30 transform hover:-translate-y-1 ring-4 ring-white/20 hover:ring-white/40">{{home_content.cta_button_1 or 'View Calendar'}}</a>
-            <a href="{{cta_button_2_url}}" class="inline-block border-2 border-white text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-white hover:text-primary transition-all duration-300 shadow-2xl hover:shadow-white/30 transform hover:-translate-y-1 ring-4 ring-white/20 hover:ring-white/40">{{home_content.cta_button_2 or 'Contact Me'}}</a>
-        </div>
-        
-        <!-- Elegant Social Proof -->
-        <div class="mt-12" data-aos="fade-up" data-aos-delay="600">
-            <p class="text-white/70 text-sm mb-4 font-light tracking-wide">Follow my journey</p>
-            <a href="https://instagram.com/{{#if site_settings}}{{site_settings.model_name.lower().replace(' ', '')}}{{else}}{{'rosemastos'}}{{/if}}" 
-               target="_blank" 
-               rel="noopener noreferrer"
-               class="inline-flex items-center space-x-2 text-white/80 hover:text-white transition-colors duration-300 group">
-                <svg class="w-6 h-6 group-hover:scale-110 transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                </svg>
-                <span class="text-sm font-light tracking-wide">@{{#if site_settings}}{{site_settings.model_name.lower().replace(' ', '')}}{{else}}{{'rosemastos'}}{{/if}}</span>
-            </a>
-        </div>
-    </div>
-</section>
-{{/if}}
-
+    </section>
     
     <script>
         // Initialize AOS

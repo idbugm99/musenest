@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{#if site_settings.site_name}}{{site_settings.site_name}}{{else}}{{model.name}}{{/if}}</title>
+    <title>About - {{site_settings.model_name}}</title>
     <meta name="description" content="{{site_settings.meta_description}}">
-    <meta name="og:title" content="{{site_settings.site_name}} - {{model.name}}">
+    <meta name="og:title" content="About - {{site_settings.model_name}}">
     <meta name="og:description" content="{{site_settings.meta_description}}">
     <meta name="og:type" content="website">
     <meta name="og:image" content="{{site_settings.og_image}}">
@@ -18,7 +18,6 @@
     <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
     
     <style>
-        /* Basic Theme Styles */
         
         /* Basic Theme Colors */
         :root {
@@ -32,141 +31,41 @@
         .text-basic-primary { color: var(--basic-primary); }
         .bg-basic-primary { background-color: var(--basic-primary); }
         .border-basic-primary { border-color: var(--basic-primary); }
-            
     </style>
 </head>
 <body class="bg-basic-background font-sans">
     <!-- Navigation Component -->
     {{component "navigation" theme="basic" model=model navigation=navigation}}
     
-    <!-- Page Content -->
-    
-
-About - {{#if current_model}}{{site_settings.model_name if site_settings and site_settings.model_name else (current_model.name}}{{else}}{{'Model Example')}}{{/if}}
-
-
-<section class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid md:grid-cols-2 gap-12 items-start">
-            <div>
-                {{#if about_content.page_title_visible}}
-                <h1 class="text-4xl font-heading font-bold mb-8">{{about_content.page_title}}</h1>
-                {{/if}}
-                
-                {{#if about_content.main_content_visible}}
-                <div class="space-y-6 text-lg text-gray-600">
-                    <p>{{about_content.main_paragraph_1}}</p>
-                    
-                    <p>{{about_content.main_paragraph_2}}</p>
-                    
-                    <p>{{about_content.main_paragraph_3}}</p>
-                    
-                    <p>{{about_content.main_paragraph_4}}</p>
-                </div>
-                {{/if}}
-                
-                {{#if about_content.services_visible}}
-                <div class="mt-8">
-                    <h2 class="text-2xl font-heading font-bold mb-4">{{about_content.services_title}}</h2>
-                    <ul class="space-y-2 text-gray-600">
-                        {{#if about_content.service_1}}
-                        <li class="flex items-start">
-                            <span class="text-primary mr-2">•</span>
-                            <span>{{about_content.service_1}}</span>
-                        </li>
-                        {{/if}}
-                        {{#if about_content.service_2}}
-                        <li class="flex items-start">
-                            <span class="text-primary mr-2">•</span>
-                            <span>{{about_content.service_2}}</span>
-                        </li>
-                        {{/if}}
-                        {{#if about_content.service_3}}
-                        <li class="flex items-start">
-                            <span class="text-primary mr-2">•</span>
-                            <span>{{about_content.service_3}}</span>
-                        </li>
-                        {{/if}}
-                        {{#if about_content.service_4}}
-                        <li class="flex items-start">
-                            <span class="text-primary mr-2">•</span>
-                            <span>{{about_content.service_4}}</span>
-                        </li>
-                        {{/if}}
-                        {{#if about_content.service_5}}
-                        <li class="flex items-start">
-                            <span class="text-primary mr-2">•</span>
-                            <span>{{about_content.service_5}}</span>
-                        </li>
-                        {{/if}}
-                    </ul>
-                </div>
-                {{/if}}
-                
-                {{#if about_content.interests_visible}}
-                <div class="mt-8">
-                    <h2 class="text-2xl font-heading font-bold mb-4">{{about_content.interests_title}}</h2>
-                    <div class="flex flex-wrap gap-2">
-                        {{#if about_content.interests}}
-                            {{#each interest in about_content.interests.split(',')}}
-                                {{#if interest.strip()}}
-                                <span class="bg-primary text-white px-3 py-1 rounded-full text-sm">{{interest.strip()}}</span>
-                                {{/if}}
-                            {{/each}}
-                        {{/if}}
-                    </div>
-                </div>
-                {{/if}}
+    <!-- About Page Content -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold mb-6 text-basic-primary">About {{site_settings.model_name}}</h1>
+                <p class="text-xl text-basic-text max-w-3xl mx-auto">
+                    Learn more about my background and services
+                </p>
             </div>
             
-            <div class="space-y-6">
-                {{#if about_content.portrait_visible}}
-                <div class="bg-gray-200 h-96 rounded-lg flex items-center justify-center overflow-hidden">
-                    {{#if about_content.portrait_image}}
-                    <img src="{{url_for('static', filename=get_model_image_path(get_current_model_slug(), about_content.portrait_image.filename))}}" 
-                         alt="{{about_content.portrait_alt}}"
-                         class="w-full h-full object-cover object-top">
-                    {{else}}
-                    <p class="text-gray-500">{{about_content.portrait_alt}}</p>
-                    {{/if}}
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-2xl font-bold mb-4 text-basic-primary">Professional Services</h2>
+                    <p class="text-lg text-basic-text mb-6">
+                        I provide professional companion services with complete discretion and elegance.
+                    </p>
+                    <p class="text-lg text-basic-text mb-6">
+                        Experience sophistication and genuine connection in every interaction.
+                    </p>
+                    <a href="/{{model.slug}}/contact" class="bg-basic-primary text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity">
+                        Get In Touch
+                    </a>
                 </div>
-                {{/if}}
-                
-                <div class="bg-background p-6 rounded-lg">
-                    <h3 class="text-xl font-heading font-bold mb-4">Quick Facts</h3>
-                    <div class="space-y-2 text-gray-600">
-                        <!-- Quick Facts from database table only -->
-                        {{#if quick_facts}}
-                        {{#each fact in quick_facts}}
-                        {{#if fact.is_visible}}
-                        <p><span class="font-semibold">{{fact.question}}:</span> {{fact.answer}}</p>
-                        {{/if}}
-                        {{/each}}
-                        {{/if}}
-                    </div>
+                <div class="bg-gray-200 h-96 rounded-lg flex items-center justify-center">
+                    <span class="text-gray-500">Professional Photo</span>
                 </div>
-                
-                {{#if about_content.about_cta_visible}}
-                <div class="bg-primary text-white p-6 rounded-lg">
-                    <h3 class="text-xl font-heading font-bold mb-4">{{about_content.cta_title}}</h3>
-                    <p class="mb-4">{{about_content.cta_description}}</p>
-                    <div class="space-y-2">
-                        <a href="{{#if about_content.cta_button_1_link == 'calendar'}}{{model_url_for('model.calendar_view')}}{% elif about_content.cta_button_1_link == 'contact' %}{{model_url_for('model.contact')}}{% elif about_content.cta_button_1_link == 'gallery' %}{{model_url_for('content.gallery')}}{% elif about_content.cta_button_1_link == 'rates' %}{{model_url_for('model.rates')}}{% elif about_content.cta_button_1_link == 'about' %}{{model_url_for('model.about')}}{{else}}{{model_url_for('model.calendar_view')}}{{/if}}" 
-                           class="block bg-white text-primary px-4 py-2 rounded text-center font-semibold hover:bg-gray-100 transition-colors">
-                           {{about_content.cta_button_1_text}}
-                        </a>
-                        <a href="{{#if about_content.cta_button_2_link == 'calendar'}}{{model_url_for('model.calendar_view')}}{% elif about_content.cta_button_2_link == 'contact' %}{{model_url_for('model.contact')}}{% elif about_content.cta_button_2_link == 'gallery' %}{{model_url_for('content.gallery')}}{% elif about_content.cta_button_2_link == 'rates' %}{{model_url_for('model.rates')}}{% elif about_content.cta_button_2_link == 'about' %}{{model_url_for('model.about')}}{{else}}{{model_url_for('model.contact')}}{{/if}}" 
-                           class="block border-2 border-white text-white px-4 py-2 rounded text-center font-semibold hover:bg-white hover:text-primary transition-colors">
-                           {{about_content.cta_button_2_text}}
-                        </a>
-                    </div>
-                </div>
-                {{/if}}
             </div>
         </div>
-    </div>
-</section>
-
+    </section>
     
     <script>
         // Initialize AOS

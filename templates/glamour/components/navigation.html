@@ -1,364 +1,67 @@
 <!-- Glamour Theme Navigation -->
-<nav class="glamour-nav">
-    <div class="nav-backdrop"></div>
-    <div class="nav-container">
-        <!-- Elegant Brand -->
-        <div class="nav-brand">
-            <a href="{{base_url}}" class="brand-link">
-                {{#if site_settings.logo_image}}
-                    <img src="{{site_settings.logo_image}}" alt="{{site_settings.site_name}}" class="brand-logo">
-                {{else}}
-                    <span class="brand-text">{{site_settings.site_name}}</span>
-                {{/if}}
-            </a>
-        </div>
-
-        <!-- Glamour Navigation Menu -->
-        <div class="nav-menu" id="nav-menu">
-            <ul class="nav-list">
-                {{#each nav_items}}
-                <li class="nav-item {{#if is_active}}active{{/if}}">
-                    <a href="{{url}}" class="nav-link">
-                        <span class="nav-text">{{label}}</span>
-                        <span class="nav-accent"></span>
-                    </a>
-                </li>
-                {{/each}}
-            </ul>
-
-            {{#if user}}
-            <div class="nav-user">
-                <button class="user-toggle" data-toggle="user-menu">
-                    <span class="user-avatar">{{user.initials}}</span>
-                    <span class="user-name">{{user.name}}</span>
-                </button>
-                <div class="user-menu" id="user-menu">
-                    <a href="/admin/" class="user-link">Admin Panel</a>
-                    <a href="/logout" class="user-link">Logout</a>
-                </div>
+<nav class="bg-gradient-to-r from-pink-900 via-pink-800 to-pink-900 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <!-- Logo/Brand -->
+            <div class="flex items-center">
+                <a href="/{{model.slug}}" class="text-2xl font-light text-pink-100 hover:text-pink-300 transition-colors">
+                    {{site_settings.model_name}}
+                </a>
             </div>
-            {{/if}}
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center space-x-8">
+                {{#each navigation.nav_items}}
+                <a href="{{this.url}}" 
+                   class="text-pink-100 hover:text-pink-300 transition-colors font-medium px-3 py-2 rounded-lg hover:bg-black hover:bg-opacity-10">
+                    {{this.name}}
+                </a>
+                {{/each}}
+            </div>
+            
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden">
+                <button type="button" 
+                        class="text-pink-100 hover:text-pink-300 focus:outline-none transition-colors"
+                        onclick="toggleMobileMenu()">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
         </div>
-
-        <!-- Mobile Toggle -->
-        <button class="nav-toggle" data-toggle="nav-menu">
-            <span class="toggle-line"></span>
-            <span class="toggle-line"></span>
-            <span class="toggle-line"></span>
-        </button>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="md:hidden hidden bg-black bg-opacity-95 backdrop-blur-md border-t border-white border-opacity-20">
+        <div class="px-2 pt-2 pb-3 space-y-1">
+            {{#each navigation.nav_items}}
+            <a href="{{this.url}}" 
+               class="block px-3 py-2 text-pink-100 hover:text-pink-300 transition-colors font-medium rounded-lg hover:bg-white hover:bg-opacity-10">
+                {{this.name}}
+            </a>
+            {{/each}}
+        </div>
     </div>
 </nav>
 
-<style>
-.glamour-nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    background: rgba(0, 0, 0, 0.95);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 215, 0, 0.3);
-    transition: all 0.3s ease;
-}
-
-.nav-backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(20, 20, 20, 0.95) 100%);
-}
-
-.nav-container {
-    position: relative;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 80px;
-}
-
-.brand-link {
-    color: #FFD700;
-    text-decoration: none;
-    font-size: 1.8rem;
-    font-weight: 300;
-    letter-spacing: 2px;
-    transition: all 0.3s ease;
-}
-
-.brand-link:hover {
-    color: #FFF;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-}
-
-.brand-logo {
-    height: 50px;
-    filter: brightness(1.2);
-}
-
-.nav-list {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    gap: 3rem;
-}
-
-.nav-item {
-    position: relative;
-}
-
-.nav-link {
-    position: relative;
-    color: rgba(255, 255, 255, 0.8);
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 300;
-    letter-spacing: 1px;
-    padding: 1rem 0;
-    transition: all 0.3s ease;
-    display: block;
-}
-
-.nav-text {
-    position: relative;
-    z-index: 2;
-}
-
-.nav-accent {
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #FFD700, #FFF);
-    transition: width 0.3s ease;
-}
-
-.nav-link:hover {
-    color: #FFD700;
-}
-
-.nav-link:hover .nav-accent,
-.nav-item.active .nav-accent {
-    width: 100%;
-}
-
-.nav-item.active .nav-link {
-    color: #FFD700;
-}
-
-.nav-user {
-    position: relative;
-    margin-left: 2rem;
-}
-
-.user-toggle {
-    display: flex;
-    align-items: center;
-    background: none;
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    color: rgba(255, 255, 255, 0.8);
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.user-toggle:hover {
-    border-color: #FFD700;
-    color: #FFD700;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
-}
-
-.user-avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #FFD700, #FFA500);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    color: #000;
-    margin-right: 0.5rem;
-}
-
-.user-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background: rgba(0, 0, 0, 0.95);
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    border-radius: 8px;
-    min-width: 180px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-    margin-top: 0.5rem;
-}
-
-.user-menu.active {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-.user-link {
-    display: block;
-    color: rgba(255, 255, 255, 0.8);
-    text-decoration: none;
-    padding: 0.75rem 1rem;
-    transition: all 0.3s ease;
-    border-bottom: 1px solid rgba(255, 215, 0, 0.1);
-}
-
-.user-link:hover {
-    color: #FFD700;
-    background: rgba(255, 215, 0, 0.1);
-}
-
-.nav-toggle {
-    display: none;
-    flex-direction: column;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.5rem;
-}
-
-.toggle-line {
-    width: 25px;
-    height: 2px;
-    background: #FFD700;
-    margin: 3px 0;
-    transition: all 0.3s ease;
-}
-
-.nav-toggle.active .toggle-line:nth-child(1) {
-    transform: rotate(45deg) translate(6px, 6px);
-}
-
-.nav-toggle.active .toggle-line:nth-child(2) {
-    opacity: 0;
-}
-
-.nav-toggle.active .toggle-line:nth-child(3) {
-    transform: rotate(-45deg) translate(6px, -6px);
-}
-
-/* Mobile Styles */
-@media (max-width: 768px) {
-    .nav-container {
-        padding: 0 1rem;
-        height: 70px;
-    }
-    
-    .nav-menu {
-        position: fixed;
-        top: 70px;
-        left: 0;
-        right: 0;
-        background: rgba(0, 0, 0, 0.98);
-        border-top: 1px solid rgba(255, 215, 0, 0.3);
-        transform: translateY(-100%);
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-        padding: 2rem;
-    }
-    
-    .nav-menu.active {
-        transform: translateY(0);
-        opacity: 1;
-        visibility: visible;
-    }
-    
-    .nav-list {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-    }
-    
-    .nav-toggle {
-        display: flex;
-    }
-    
-    .nav-user {
-        margin: 2rem 0 0 0;
-        text-align: center;
-    }
-}
-
-/* Add body padding to account for fixed nav */
-body {
-    padding-top: 80px;
-}
-
-@media (max-width: 768px) {
-    body {
-        padding-top: 70px;
-    }
-}
-</style>
-
 <script>
-(function() {
-    const navToggle = document.querySelector('[data-toggle="nav-menu"]');
-    const navMenu = document.getElementById('nav-menu');
-    const userToggle = document.querySelector('[data-toggle="user-menu"]');
-    const userMenu = document.getElementById('user-menu');
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    if (menu.classList.contains('hidden')) {
+        menu.classList.remove('hidden');
+    } else {
+        menu.classList.add('hidden');
+    }
+}
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById('mobileMenu');
+    const button = event.target.closest('button');
     
-    if (navToggle && navMenu) {
-        navToggle.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
-            navToggle.classList.toggle('active');
-        });
+    if (!menu.contains(event.target) && !button) {
+        menu.classList.add('hidden');
     }
-
-    if (userToggle && userMenu) {
-        userToggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            userMenu.classList.toggle('active');
-        });
-
-        document.addEventListener('click', function(event) {
-            if (!userToggle.contains(event.target) && !userMenu.contains(event.target)) {
-                userMenu.classList.remove('active');
-            }
-        });
-    }
-
-    // Close mobile menu when clicking nav links
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            navMenu.classList.remove('active');
-            navToggle.classList.remove('active');
-        });
-    });
-
-    // Add scroll effect
-    let lastScroll = 0;
-    window.addEventListener('scroll', function() {
-        const nav = document.querySelector('.glamour-nav');
-        const currentScroll = window.pageYOffset;
-        
-        if (currentScroll > 100) {
-            nav.style.background = 'rgba(0, 0, 0, 0.98)';
-            nav.style.backdropFilter = 'blur(15px)';
-        } else {
-            nav.style.background = 'rgba(0, 0, 0, 0.95)';
-            nav.style.backdropFilter = 'blur(10px)';
-        }
-        
-        lastScroll = currentScroll;
-    });
-})();
+});
 </script>

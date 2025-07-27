@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Customization Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-8">Theme Customization Test</h1>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">API Test Results</h2>
+            <div id="testResults"></div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">Templates</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="templatesGrid">
+                <!-- Templates will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock admin dashboard for testing
+        window.adminDashboard = {
+            apiRequest: async (url, options = {}) => {
+                const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1pbkB0ZXN0bW9kZWwuY29tIiwicm9sZSI6Im1vZGVsIiwiaWF0IjoxNzUzNDY1NDMxLCJleHAiOjE3NTQwNzAyMzF9.kRvyPpmU-bkS9WktOwPMA2nJHe6-uBgPq_vFeOGWCGM';
+                
+                const fetchOptions = {
+                    method: options.method || 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                        ...options.headers
+                    }
+                };
+
+                if (options.body) {
+                    fetchOptions.body = options.body;
+                }
+
+                const response = await fetch(`http://localhost:3000${url}`, fetchOptions);
+                return await response.json();
+            }
+        };
+
+        // Test API endpoints
+        async function testAPIs() {
+            const results = document.getElementById('testResults');
+            
+            try {
+                // Test templates endpoint
+                console.log('Testing templates endpoint...');
+                const templatesResponse = await window.adminDashboard.apiRequest('/api/theme-custom/templates');
+                console.log('Templates response:', templatesResponse);
+                
+                if (templatesResponse.success) {
+                    results.innerHTML += `<div class="text-green-600 mb-2">✅ Templates API: ${templatesResponse.templates.length} templates loaded</div>`;
+                    
+                    // Load templates into grid
+                    const grid = document.getElementById('templatesGrid');
+                    grid.innerHTML = templatesResponse.templates.map(template => `
+                        <div class="border rounded-lg p-4 hover:shadow-lg transition-shadow cursor-pointer">
+                            <h3 class="font-semibold mb-2">${template.display_name}</h3>
+                            <p class="text-sm text-gray-600 mb-3">${template.description}</p>
+                            <div class="flex space-x-1">
+                                ${Object.entries(template.color_variables).slice(0, 3).map(([key, color]) => 
+                                    `<div class="w-4 h-4 rounded-full border" style="background-color: ${color}" title="${key}"></div>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    results.innerHTML += `<div class="text-red-600 mb-2">❌ Templates API failed: ${templatesResponse.message}</div>`;
+                }
+
+                // Test current theme endpoint
+                console.log('Testing current theme endpoint...');
+                const currentResponse = await window.adminDashboard.apiRequest('/api/theme-custom/current');
+                console.log('Current theme response:', currentResponse);
+                
+                if (currentResponse.success) {
+                    results.innerHTML += `<div class="text-green-600 mb-2">✅ Current Theme API: ${currentResponse.theme.display_name} with ${Object.keys(currentResponse.customColors).length} custom colors</div>`;
+                } else {
+                    results.innerHTML += `<div class="text-red-600 mb-2">❌ Current Theme API failed: ${currentResponse.message}</div>`;
+                }
+
+            } catch (error) {
+                console.error('API test error:', error);
+                results.innerHTML += `<div class="text-red-600 mb-2">❌ API test failed: ${error.message}</div>`;
+            }
+        }
+
+        // Run tests when page loads
+        window.addEventListener('load', testAPIs);
+    </script>
+</body>
+</html>

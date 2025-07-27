@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛡️ Admin Moderation Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .moderation-item {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .moderation-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .moderation-item.priority-urgent {
+            border-left: 4px solid #dc3545;
+        }
+        .moderation-item.priority-high {
+            border-left: 4px solid #fd7e14;
+        }
+        .moderation-item.priority-medium {
+            border-left: 4px solid #ffc107;
+        }
+        .moderation-item.priority-low {
+            border-left: 4px solid #6c757d;
+        }
+        .image-preview {
+            max-width: 200px;
+            max-height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .violation-badge {
+            font-size: 0.75em;
+            padding: 4px 8px;
+        }
+        .queue-stats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .action-buttons .btn {
+            margin: 2px;
+        }
+        .filter-panel {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .appeal-box {
+            background: #e3f2fd;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <!-- Header -->
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>🛡️ Admin Moderation Dashboard</h2>
+                    <div>
+                        <button class="btn btn-outline-primary me-2" onclick="refreshQueue()">
+                            🔄 Refresh Queue
+                        </button>
+                        <button class="btn btn-outline-success" onclick="openBulkActions()">
+                            📋 Bulk Actions
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Queue Statistics -->
+        <div class="row">
+            <div class="col-12">
+                <div class="queue-stats">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <h3 id="totalQueue">0</h3>
+                            <small>Total Queue</small>
+                        </div>
+                        <div class="col-md-3">
+                            <h3 id="urgentItems">0</h3>
+                            <small>Urgent</small>
+                        </div>
+                        <div class="col-md-3">
+                            <h3 id="appealItems">0</h3>
+                            <small>Appeals</small>
+                        </div>
+                        <div class="col-md-3">
+                            <h3 id="autoFlagged">0</h3>
+                            <small>Auto-Flagged</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="row">
+            <div class="col-12">
+                <div class="filter-panel">
+                    <div class="row align-items-end">
+                        <div class="col-md-2">
+                            <label class="form-label">Priority:</label>
+                            <select class="form-select form-select-sm" id="priorityFilter">
+                                <option value="">All Priorities</option>
+                                <option value="urgent">🔴 Urgent</option>
+                                <option value="high">🟠 High</option>
+                                <option value="medium">🟡 Medium</option>
+                                <option value="low">⚪ Low</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Queue Type:</label>
+                            <select class="form-select form-select-sm" id="queueTypeFilter">
+                                <option value="">All Types</option>
+                                <option value="auto_flagged">🤖 Auto-Flagged</option>
+                                <option value="manual_review">👥 Manual Review</option>
+                                <option value="appeal">📝 Appeal</option>
+                                <option value="admin_override">⚡ Admin Override</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Usage Intent:</label>
+                            <select class="form-select form-select-sm" id="usageIntentFilter">
+                                <option value="">All Intents</option>
+                                <option value="public_site">🌐 Public Site</option>
+                                <option value="paysite">💰 Paysite</option>
+                                <option value="store">🛒 Store</option>
+                                <option value="private">🔒 Private</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Model Search:</label>
+                            <input type="text" class="form-control form-control-sm" id="modelSearch" placeholder="Search by model name...">
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-primary btn-sm" onclick="applyFilters()">Apply Filters</button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="clearFilters()">Clear</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Moderation Queue -->
+        <div class="row">
+            <div class="col-12">
+                <div id="moderationQueue">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-2">Loading moderation queue...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Moderation Action Modal -->
+    <div class="modal fade" id="moderationModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Content Moderation Review</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div id="modalImageContainer"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <div id="modalContentDetails"></div>
+                            <div id="modalActionButtons"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Actions Modal -->
+    <div class="modal fade" id="bulkActionsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bulk Actions</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Select Action:</label>
+                        <select class="form-select" id="bulkAction">
+                            <option value="">Select Action</option>
+                            <option value="approve_all">✅ Approve All Filtered</option>
+                            <option value="reject_all">❌ Reject All Filtered</option>
+                            <option value="assign_to">👤 Assign to Admin</option>
+                            <option value="change_priority">⚡ Change Priority</option>
+                        </select>
+                    </div>
+                    <div id="bulkActionOptions"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="executeBulkAction()">Execute Action</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentQueue = [];
+        let filteredQueue = [];
+        let selectedItems = new Set();
+
+        // Load queue on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshQueue();
+        });
+
+        async function refreshQueue() {
+            try {
+                const response = await fetch('/api/enhanced-content-moderation/admin/queue');
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentQueue = result.queue;
+                    filteredQueue = [...currentQueue];
+                    updateStatistics();
+                    displayQueue();
+                } else {
+                    console.error('Failed to load queue:', result.error);
+                }
+            } catch (error) {
+                console.error('Error loading queue:', error);
+                document.getElementById('moderationQueue').innerHTML = `
+                    <div class="alert alert-danger">Failed to load moderation queue: ${error.message}</div>
+                `;
+            }
+        }
+
+        function updateStatistics() {
+            const stats = {
+                total: currentQueue.length,
+                urgent: currentQueue.filter(item => item.priority === 'urgent').length,
+                appeals: currentQueue.filter(item => item.queue_type === 'appeal').length,
+                autoFlagged: currentQueue.filter(item => item.queue_type === 'auto_flagged').length
+            };
+
+            document.getElementById('totalQueue').textContent = stats.total;
+            document.getElementById('urgentItems').textContent = stats.urgent;
+            document.getElementById('appealItems').textContent = stats.appeals;
+            document.getElementById('autoFlagged').textContent = stats.autoFlagged;
+        }
+
+        function displayQueue() {
+            const container = document.getElementById('moderationQueue');
+            
+            if (filteredQueue.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-5">
+                        <h4>🎉 Queue is Empty!</h4>
+                        <p class="text-muted">No items require moderation review</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const queueHTML = filteredQueue.map(item => createQueueItemHTML(item)).join('');
+            container.innerHTML = queueHTML;
+        }
+
+        function createQueueItemHTML(item) {
+            const priorityIcons = {
+                urgent: '🔴',
+                high: '🟠', 
+                medium: '🟡',
+                low: '⚪'
+            };
+
+            const queueTypeLabels = {
+                auto_flagged: '🤖 Auto-Flagged',
+                manual_review: '👥 Manual Review',
+                appeal: '📝 Appeal',
+                admin_override: '⚡ Admin Override'
+            };
+
+            const usageIntentLabels = {
+                public_site: '🌐 Public Site',
+                paysite: '💰 Paysite',
+                store: '🛒 Store',
+                private: '🔒 Private'
+            };
+
+            const detectedParts = typeof item.detected_parts === 'string' 
+                ? JSON.parse(item.detected_parts || '{}') 
+                : item.detected_parts || {};
+
+            const violationBadges = Object.entries(detectedParts)
+                .map(([part, confidence]) => 
+                    `<span class="badge bg-danger violation-badge">${part.toUpperCase()}: ${confidence.toFixed(1)}%</span>`
+                ).join(' ');
+
+            const appealSection = item.appeal_reason ? `
+                <div class="appeal-box">
+                    <strong>📝 Appeal Reason:</strong> ${item.appeal_reason}<br>
+                    ${item.appeal_message ? `<small class="text-muted">"${item.appeal_message}"</small>` : ''}
+                </div>
+            ` : '';
+
+            return `
+                <div class="moderation-item priority-${item.priority}" data-id="${item.id}">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <img src="/placeholder-image.jpg" alt="Content Preview" class="image-preview">
+                                <div class="text-center mt-2">
+                                    <input type="checkbox" class="form-check-input" 
+                                           onchange="toggleSelection(${item.id})" id="select-${item.id}">
+                                    <label class="form-check-label" for="select-${item.id}">Select</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="mb-0">
+                                        <strong>${item.model_name}</strong>
+                                        <span class="badge bg-primary ms-2">${usageIntentLabels[item.usage_intent]}</span>
+                                    </h6>
+                                    <div>
+                                        <span class="badge bg-${getPriorityColor(item.priority)}">${priorityIcons[item.priority]} ${item.priority.toUpperCase()}</span>
+                                        <span class="badge bg-info ms-1">${queueTypeLabels[item.queue_type]}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-2">
+                                    <strong>Nudity Score:</strong> 
+                                    <span class="badge bg-${getNudityScoreColor(item.nudity_score)} fs-6">${item.nudity_score.toFixed(1)}%</span>
+                                </div>
+                                
+                                <div class="mb-2">
+                                    <strong>Detected Violations:</strong><br>
+                                    ${violationBadges || '<small class="text-muted">No specific violations detected</small>'}
+                                </div>
+                                
+                                ${appealSection}
+                                
+                                <small class="text-muted">
+                                    <i class="bi bi-clock"></i> Flagged: ${new Date(item.created_at).toLocaleString()}
+                                </small>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="action-buttons">
+                                    <button class="btn btn-success btn-sm" onclick="openModerationModal(${item.id}, 'approve')">
+                                        ✅ Approve
+                                    </button>
+                                    <button class="btn btn-warning btn-sm" onclick="openModerationModal(${item.id}, 'approve_blur')">
+                                        🔍 Approve with Blur
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="openModerationModal(${item.id}, 'reject')">
+                                        ❌ Reject
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="openModerationModal(${item.id}, 'review')">
+                                        👁️ Full Review
+                                    </button>
+                                </div>
+                                
+                                <div class="mt-2">
+                                    <select class="form-select form-select-sm" onchange="assignToAdmin(${item.id}, this.value)">
+                                        <option value="">Assign to Admin</option>
+                                        <option value="1">Admin User 1</option>
+                                        <option value="2">Admin User 2</option>
+                                        <option value="3">Admin User 3</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mt-2">
+                                    <select class="form-select form-select-sm" onchange="changePriority(${item.id}, this.value)">
+                                        <option value="">Change Priority</option>
+                                        <option value="urgent">🔴 Urgent</option>
+                                        <option value="high">🟠 High</option>
+                                        <option value="medium">🟡 Medium</option>
+                                        <option value="low">⚪ Low</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getPriorityColor(priority) {
+            const colors = {
+                urgent: 'danger',
+                high: 'warning',
+                medium: 'info',
+                low: 'secondary'
+            };
+            return colors[priority] || 'secondary';
+        }
+
+        function getNudityScoreColor(score) {
+            if (score >= 80) return 'danger';
+            if (score >= 60) return 'warning';
+            if (score >= 40) return 'info';
+            return 'success';
+        }
+
+        function toggleSelection(itemId) {
+            if (selectedItems.has(itemId)) {
+                selectedItems.delete(itemId);
+            } else {
+                selectedItems.add(itemId);
+            }
+            console.log('Selected items:', Array.from(selectedItems));
+        }
+
+        function applyFilters() {
+            const priority = document.getElementById('priorityFilter').value;
+            const queueType = document.getElementById('queueTypeFilter').value;
+            const usageIntent = document.getElementById('usageIntentFilter').value;
+            const modelSearch = document.getElementById('modelSearch').value.toLowerCase();
+
+            filteredQueue = currentQueue.filter(item => {
+                if (priority && item.priority !== priority) return false;
+                if (queueType && item.queue_type !== queueType) return false;
+                if (usageIntent && item.usage_intent !== usageIntent) return false;
+                if (modelSearch && !item.model_name.toLowerCase().includes(modelSearch)) return false;
+                return true;
+            });
+
+            displayQueue();
+        }
+
+        function clearFilters() {
+            document.getElementById('priorityFilter').value = '';
+            document.getElementById('queueTypeFilter').value = '';
+            document.getElementById('usageIntentFilter').value = '';
+            document.getElementById('modelSearch').value = '';
+            filteredQueue = [...currentQueue];
+            displayQueue();
+        }
+
+        async function openModerationModal(itemId, action) {
+            const item = currentQueue.find(i => i.id === itemId);
+            if (!item) return;
+
+            const modal = new bootstrap.Modal(document.getElementById('moderationModal'));
+            
+            // Populate modal content
+            document.getElementById('modalImageContainer').innerHTML = `
+                <img src="/placeholder-image.jpg" class="img-fluid" alt="Content under review">
+                <div class="mt-2">
+                    <small class="text-muted">Original path: ${item.original_path || item.image_path}</small>
+                </div>
+            `;
+
+            document.getElementById('modalContentDetails').innerHTML = `
+                <h6>${item.model_name} - ${item.usage_intent}</h6>
+                <p><strong>Nudity Score:</strong> ${item.nudity_score.toFixed(1)}%</p>
+                <p><strong>Priority:</strong> ${item.priority}</p>
+                <p><strong>Queue Type:</strong> ${item.queue_type}</p>
+                ${item.appeal_reason ? `<p><strong>Appeal:</strong> ${item.appeal_reason}</p>` : ''}
+            `;
+
+            document.getElementById('modalActionButtons').innerHTML = createModalActionButtons(itemId, action);
+            modal.show();
+        }
+
+        function createModalActionButtons(itemId, action) {
+            return `
+                <div class="d-grid gap-2">
+                    <button class="btn btn-success" onclick="approveContent(${itemId})">
+                        ✅ Approve (No Blur)
+                    </button>
+                    <button class="btn btn-warning" onclick="approveWithBlur(${itemId})">
+                        🔍 Approve with Blur
+                    </button>
+                    <button class="btn btn-danger" onclick="rejectContent(${itemId})">
+                        ❌ Reject Content
+                    </button>
+                </div>
+                <div class="mt-3">
+                    <label class="form-label">Admin Notes:</label>
+                    <textarea class="form-control" id="adminNotes-${itemId}" rows="3" 
+                              placeholder="Add notes about your decision..."></textarea>
+                </div>
+            `;
+        }
+
+        async function approveContent(itemId) {
+            const notes = document.getElementById(`adminNotes-${itemId}`).value;
+            
+            try {
+                const response = await fetch('/api/enhanced-content-moderation/admin/approve', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content_moderation_id: itemId,
+                        admin_notes: notes,
+                        reviewed_by: 1, // Replace with actual admin user ID
+                        final_location: 'public'
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('moderationModal')).hide();
+                    refreshQueue();
+                    alert('Content approved successfully!');
+                } else {
+                    alert('Error approving content: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function approveWithBlur(itemId) {
+            const notes = document.getElementById(`adminNotes-${itemId}`).value;
+            
+            try {
+                const response = await fetch('/api/enhanced-content-moderation/admin/approve-with-blur', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content_moderation_id: itemId,
+                        blur_settings: {
+                            strength: 15,
+                            opacity: 0.8,
+                            shape: 'rounded'
+                        },
+                        admin_notes: notes,
+                        reviewed_by: 1 // Replace with actual admin user ID
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('moderationModal')).hide();
+                    refreshQueue();
+                    alert('Content approved with blur successfully!');
+                } else {
+                    alert('Error approving content: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function rejectContent(itemId) {
+            const notes = document.getElementById(`adminNotes-${itemId}`).value;
+            
+            if (!notes.trim()) {
+                alert('Please provide a reason for rejection in the admin notes.');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/enhanced-content-moderation/admin/reject', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content_moderation_id: itemId,
+                        admin_notes: notes,
+                        reviewed_by: 1 // Replace with actual admin user ID
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('moderationModal')).hide();
+                    refreshQueue();
+                    alert('Content rejected successfully!');
+                } else {
+                    alert('Error rejecting content: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function openBulkActions() {
+            const modal = new bootstrap.Modal(document.getElementById('bulkActionsModal'));
+            modal.show();
+        }
+
+        function executeBulkAction() {
+            const action = document.getElementById('bulkAction').value;
+            if (!action) {
+                alert('Please select an action');
+                return;
+            }
+
+            if (selectedItems.size === 0) {
+                alert('Please select items to perform bulk action on');
+                return;
+            }
+
+            // Implement bulk action logic here
+            console.log('Executing bulk action:', action, 'on items:', Array.from(selectedItems));
+            alert(`Bulk action "${action}" would be executed on ${selectedItems.size} items`);
+        }
+
+        async function assignToAdmin(itemId, adminId) {
+            if (!adminId) return;
+            
+            console.log(`Assigning item ${itemId} to admin ${adminId}`);
+            // Implement assign logic here
+        }
+
+        async function changePriority(itemId, priority) {
+            if (!priority) return;
+            
+            console.log(`Changing item ${itemId} priority to ${priority}`);
+            // Implement priority change logic here
+        }
+    </script>
+</body>
+</html>

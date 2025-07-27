@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Enhanced Content Moderation Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .usage-intent-card {
+            border: 2px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .usage-intent-card:hover {
+            border-color: #0d6efd;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .usage-intent-card.selected {
+            border-color: #0d6efd;
+            background-color: #f8f9ff;
+        }
+        .workflow-step {
+            background: #f8f9fa;
+            border-left: 4px solid #0d6efd;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .status-badge {
+            font-size: 0.9em;
+            padding: 8px 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h2>🚀 Enhanced Content Moderation Test</h2>
+                <div class="alert alert-info">
+                    <strong>New Workflow:</strong> Upload → Set Usage Intent → AI Analysis → Auto-Moderation Rules → Approval/Flagging
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Upload Form -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>📤 Step 1: Upload Image</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="imageFile" class="form-label">Select Image:</label>
+                                <input type="file" class="form-control" id="imageFile" name="image" accept="image/*" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="modelSelect" class="form-label">Model:</label>
+                                <select class="form-select" id="modelSelect" required>
+                                    <option value="">Select Model</option>
+                                    <option value="1:escort-example">Escort Example</option>
+                                    <option value="2:cam-girl">Cam Girl</option>
+                                    <option value="3:test-model">Test Model</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Step 2: Usage Intent</label>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <div class="usage-intent-card card text-center p-2" data-intent="public_site">
+                                            <div class="card-body p-2">
+                                                <h6 class="card-title mb-1">🌐 Public Site</h6>
+                                                <small class="text-muted">Strict rules<br>20% max nudity</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="usage-intent-card card text-center p-2" data-intent="paysite">
+                                            <div class="card-body p-2">
+                                                <h6 class="card-title mb-1">💰 Paysite</h6>
+                                                <small class="text-muted">Moderate rules<br>80% max nudity</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="usage-intent-card card text-center p-2" data-intent="store">
+                                            <div class="card-body p-2">
+                                                <h6 class="card-title mb-1">🛒 Store</h6>
+                                                <small class="text-muted">Lenient rules<br>90% max nudity</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="usage-intent-card card text-center p-2" data-intent="private">
+                                            <div class="card-body p-2">
+                                                <h6 class="card-title mb-1">🔒 Private</h6>
+                                                <small class="text-muted">Minimal rules<br>95% max nudity</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="usageIntent" name="usage_intent" required>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                🚀 Upload & Process
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Workflow Steps -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h6>🔄 Workflow Status</h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="workflowSteps">
+                            <div class="workflow-step">
+                                <strong>Step 1:</strong> Upload to /originals/ ⏳
+                            </div>
+                            <div class="workflow-step">
+                                <strong>Step 2:</strong> Set Usage Intent ⏳
+                            </div>
+                            <div class="workflow-step">
+                                <strong>Step 3:</strong> AI Analysis ⏳
+                            </div>
+                            <div class="workflow-step">
+                                <strong>Step 4:</strong> Auto-Moderation Rules ⏳
+                            </div>
+                            <div class="workflow-step">
+                                <strong>Step 5:</strong> Final Decision ⏳
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>📊 Processing Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="results">
+                            <div class="text-center text-muted py-5">
+                                <i class="bi bi-upload" style="font-size: 3rem;"></i>
+                                <h4>Ready to Test Enhanced Workflow</h4>
+                                <p>Select an image and usage intent to see the automated moderation in action</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Admin Queue Preview -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5>🛡️ Admin Moderation Queue</h5>
+                        <button class="btn btn-sm btn-outline-primary" onclick="refreshQueue()">
+                            🔄 Refresh Queue
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="moderationQueue">
+                            <div class="text-center text-muted py-3">
+                                <small>No items in moderation queue</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedIntent = null;
+        
+        // Usage intent selection
+        document.querySelectorAll('.usage-intent-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selection from all cards
+                document.querySelectorAll('.usage-intent-card').forEach(c => c.classList.remove('selected'));
+                
+                // Select this card
+                this.classList.add('selected');
+                selectedIntent = this.dataset.intent;
+                document.getElementById('usageIntent').value = selectedIntent;
+                
+                console.log('Selected usage intent:', selectedIntent);
+            });
+        });
+        
+        // Form submission
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!selectedIntent) {
+                alert('Please select a usage intent');
+                return;
+            }
+            
+            const formData = new FormData();
+            const fileInput = document.getElementById('imageFile');
+            const modelSelect = document.getElementById('modelSelect');
+            
+            if (!fileInput.files[0]) {
+                alert('Please select an image file');
+                return;
+            }
+            
+            if (!modelSelect.value) {
+                alert('Please select a model');
+                return;
+            }
+            
+            const [modelId, modelSlug] = modelSelect.value.split(':');
+            
+            formData.append('image', fileInput.files[0]);
+            formData.append('model_id', modelId);
+            formData.append('model_slug', modelSlug);
+            formData.append('usage_intent', selectedIntent);
+            formData.append('context_type', 'public_gallery');
+            
+            // Update workflow status
+            updateWorkflowStep(1, 'completed', 'Upload to /originals/');
+            updateWorkflowStep(2, 'completed', `Set Usage Intent: ${selectedIntent}`);
+            updateWorkflowStep(3, 'in_progress', 'AI Analysis');
+            
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2">🤖 Processing with enhanced workflow...</p>
+                    <small class="text-muted">Running AI analysis and auto-moderation rules</small>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch('/api/enhanced-content-moderation/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                console.log('Upload result:', result);
+                
+                if (result.success) {
+                    updateWorkflowStep(3, 'completed', 'AI Analysis');
+                    updateWorkflowStep(4, 'completed', 'Auto-Moderation Rules Applied');
+                    updateWorkflowStep(5, 'completed', `Decision: ${result.data.moderation_status.toUpperCase()}`);
+                    
+                    displayResults(result);
+                } else {
+                    resultsDiv.innerHTML = `<div class="alert alert-danger">Error: ${result.error}</div>`;
+                }
+                
+                // Refresh the moderation queue
+                setTimeout(refreshQueue, 1000);
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                resultsDiv.innerHTML = `<div class="alert alert-danger">Upload failed: ${error.message}</div>`;
+            }
+        });
+        
+        function updateWorkflowStep(step, status, description) {
+            const steps = document.querySelectorAll('.workflow-step');
+            if (steps[step - 1]) {
+                let icon = '⏳';
+                let color = '';
+                
+                if (status === 'completed') {
+                    icon = '✅';
+                    color = 'text-success';
+                } else if (status === 'in_progress') {
+                    icon = '🔄';
+                    color = 'text-primary';
+                } else if (status === 'error') {
+                    icon = '❌';
+                    color = 'text-danger';
+                }
+                
+                steps[step - 1].innerHTML = `<strong class="${color}">Step ${step}:</strong> ${description} ${icon}`;
+            }
+        }
+        
+        function displayResults(result) {
+            const data = result.data;
+            let statusClass = 'success';
+            let statusIcon = '✅';
+            
+            if (data.moderation_status === 'flagged') {
+                statusClass = 'warning';
+                statusIcon = '⚠️';
+            } else if (data.moderation_status === 'rejected') {
+                statusClass = 'danger';
+                statusIcon = '❌';
+            }
+            
+            const resultsHtml = `
+                <div class="alert alert-${statusClass}">
+                    <h6>${statusIcon} ${data.moderation_status.toUpperCase()}</h6>
+                    <small>${result.message}</small>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="badge bg-primary fs-6">${data.nudity_score.toFixed(1)}%</div>
+                            <br><small>Nudity Score</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="badge bg-info fs-6">${data.usage_intent}</div>
+                            <br><small>Usage Intent</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="badge bg-secondary fs-6">${data.final_location}</div>
+                            <br><small>Final Location</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="badge bg-${data.flagged ? 'warning' : 'success'} fs-6">
+                                ${data.flagged ? 'FLAGGED' : 'CLEAN'}
+                            </div>
+                            <br><small>Auto-Flag Status</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>🔍 Detected Parts:</strong><br>
+                    <code>${JSON.stringify(data.detected_parts, null, 2)}</code>
+                </div>
+                
+                ${data.part_locations ? `
+                <div class="mb-3">
+                    <strong>📍 Bounding Boxes:</strong><br>
+                    <div class="small">
+                        ${Object.entries(data.part_locations).map(([part, loc]) => 
+                            `<span class="badge bg-secondary me-1">
+                                ${part.toUpperCase()}: ${loc.x},${loc.y} (${loc.width}x${loc.height})
+                            </span>`
+                        ).join('')}
+                    </div>
+                </div>
+                ` : ''}
+                
+                ${data.human_review_required ? 
+                    '<div class="alert alert-info"><small>👥 <strong>Flagged for Human Review</strong> - Added to moderation queue</small></div>' : 
+                    ''
+                }
+            `;
+            
+            document.getElementById('results').innerHTML = resultsHtml;
+        }
+        
+        async function refreshQueue() {
+            try {
+                const response = await fetch('/api/enhanced-content-moderation/admin/queue');
+                const result = await response.json();
+                
+                if (result.success && result.queue.length > 0) {
+                    const queueHtml = result.queue.map(item => `
+                        <div class="border rounded p-3 mb-2">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong>${item.model_name}</strong> - ${item.usage_intent}
+                                    <br><small class="text-muted">Nudity: ${item.nudity_score}% | Queue: ${item.queue_type}</small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-${item.priority === 'urgent' ? 'danger' : item.priority === 'high' ? 'warning' : 'secondary'}">
+                                        ${item.priority.toUpperCase()}
+                                    </span>
+                                    <br><small class="text-muted">${new Date(item.created_at).toLocaleString()}</small>
+                                </div>
+                            </div>
+                            ${item.appeal_reason ? `
+                                <div class="mt-2 p-2 bg-light rounded">
+                                    <strong>Appeal:</strong> ${item.appeal_reason}
+                                    ${item.appeal_message ? `<br><small>${item.appeal_message}</small>` : ''}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('');
+                    
+                    document.getElementById('moderationQueue').innerHTML = queueHtml;
+                } else {
+                    document.getElementById('moderationQueue').innerHTML = `
+                        <div class="text-center text-muted py-3">
+                            <small>No items in moderation queue</small>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error refreshing queue:', error);
+            }
+        }
+        
+        // Load queue on page load
+        refreshQueue();
+    </script>
+</body>
+</html>
