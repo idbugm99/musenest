@@ -2497,6 +2497,8 @@ class SystemAdminDashboard {
         let pos = location || this.getDefaultPartPosition(part);
         
         if (pos) {
+            // API now returns coordinates in landscape coordinate system - no transformation needed
+            console.log(`Using direct coordinates for ${part}: x=${pos.x} y=${pos.y} w=${pos.width} h=${pos.height}`);
             let scaledX, scaledY, scaledWidth, scaledHeight;
             
             // Check if coordinates are absolute pixels (from part_locations) or normalized (0-1)
@@ -2548,8 +2550,7 @@ class SystemAdminDashboard {
             
             // Initialize with blur effect (since parts default to blurred state)
             if (this.blurStates[part]) {
-                overlay.style.backdropFilter = 'blur(15px)';
-                overlay.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+                this.applyCanvasBlur(overlay, image, 15, 0.8);
                 overlay.style.borderColor = '#28a745';
             }
             
@@ -2785,7 +2786,7 @@ class SystemAdminDashboard {
     getDefaultPartPosition(part) {
         const defaultPositions = {
             'genitalia': { x: 0.4, y: 0.6, width: 0.2, height: 0.3 },
-            'breast': { x: 0.35, y: 0.3, width: 0.3, height: 0.3 },
+            'breasts': { x: 0.35, y: 0.3, width: 0.3, height: 0.3 },
             'buttocks': { x: 0.3, y: 0.5, width: 0.4, height: 0.4 },
             'anus': { x: 0.45, y: 0.65, width: 0.1, height: 0.1 }
         };
@@ -2803,13 +2804,14 @@ class SystemAdminDashboard {
         
         if (overlay) {
             if (this.blurStates[part]) {
-                // Apply blur effect
-                overlay.style.backdropFilter = `blur(${document.getElementById('blurStrength').value}px)`;
-                overlay.style.backgroundColor = `rgba(255, 255, 255, ${document.getElementById('blurOpacity').value})`;
+                // Apply blur effect using canvas
+                const strength = document.getElementById('blurStrength').value;
+                const opacity = document.getElementById('blurOpacity').value;
+                this.applyCanvasBlur(overlay, this.getCurrentImage(), strength, opacity);
                 overlay.style.borderColor = '#28a745';
             } else {
                 // Remove blur effect
-                overlay.style.backdropFilter = 'none';
+                this.removeCanvasBlur(overlay);
                 overlay.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
                 overlay.style.borderColor = '#dc3545';
             }
@@ -2840,8 +2842,7 @@ class SystemAdminDashboard {
             if (this.blurStates[part]) {
                 const overlay = document.querySelector(`.blur-overlay-${part}`);
                 if (overlay) {
-                    overlay.style.backdropFilter = `blur(${strength}px)`;
-                    overlay.style.backgroundColor = `rgba(255, 255, 255, ${opacity})`;
+                    this.applyCanvasBlur(overlay, this.getCurrentImage(), strength, opacity);
                     
                     // Update shape
                     overlay.style.borderRadius = shape === 'oval' ? '50%' : 
@@ -2849,6 +2850,21 @@ class SystemAdminDashboard {
                 }
             }
         });
+    }
+
+    applyCanvasBlur(overlay, sourceImage, blurStrength, opacity) {
+        BlurUtils.applyCanvasBlur(overlay, sourceImage, blurStrength, opacity);
+    }
+    
+    removeCanvasBlur(overlay) {
+        BlurUtils.removeCanvasBlur(overlay);
+    }
+    
+
+    getCurrentImage() {
+        // Find the current image being edited
+        const imageElement = document.querySelector('.image-container img, .media-viewer img');
+        return imageElement;
     }
 
     toggleAllBlurs() {
@@ -2987,6 +3003,12 @@ class SystemAdminDashboard {
                 const scaleX = image.naturalWidth > 0 ? image.naturalWidth / image.offsetWidth : 1;
                 const scaleY = image.naturalHeight > 0 ? image.naturalHeight / image.offsetHeight : 1;
                 
+                console.log(`SCALING DEBUG for ${part}:`);
+                console.log(`Natural: ${image.naturalWidth}x${image.naturalHeight}`);
+                console.log(`Display: ${image.offsetWidth}x${image.offsetHeight}`);
+                console.log(`Scale factors: ${scaleX.toFixed(3)}x${scaleY.toFixed(3)}`);
+                console.log(`Display coords: ${left},${top} ${width}x${height}`);
+                
                 const naturalCoords = {
                     x: Math.round(left * scaleX),
                     y: Math.round(top * scaleY),
@@ -2994,6 +3016,9 @@ class SystemAdminDashboard {
                     height: Math.round(height * scaleY),
                     confidence: part.startsWith('custom_') ? 100 : (this.currentBlurItem.detected_parts && this.currentBlurItem.detected_parts[part] ? this.currentBlurItem.detected_parts[part] : 0)
                 };
+                
+                console.log(`Natural coords: ${naturalCoords.x},${naturalCoords.y} ${naturalCoords.width}x${naturalCoords.height}`);
+                console.log(`Expected backend range: 0-${image.naturalWidth} x 0-${image.naturalHeight}`);
                 
                 overlayData[part] = naturalCoords;
             } else {

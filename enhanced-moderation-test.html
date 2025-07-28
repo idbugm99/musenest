@@ -253,9 +253,16 @@
                 console.log('Upload result:', result);
                 
                 if (result.success) {
-                    updateWorkflowStep(3, 'completed', 'AI Analysis');
-                    updateWorkflowStep(4, 'completed', 'Auto-Moderation Rules Applied');
-                    updateWorkflowStep(5, 'completed', `Decision: ${result.data.moderation_status.toUpperCase()}`);
+                    // Check if this was a fallback response
+                    if (result.data.detected_parts && result.data.detected_parts['FALLBACK_ANALYSIS']) {
+                        updateWorkflowStep(3, 'error', '⚠️ Enhanced API Unavailable - Using Fallback');
+                        updateWorkflowStep(4, 'completed', 'Conservative Auto-Flagging Applied');
+                        updateWorkflowStep(5, 'completed', `Decision: ${result.data.moderation_status.toUpperCase()} (FALLBACK)`);
+                    } else {
+                        updateWorkflowStep(3, 'completed', 'AI Analysis (MediaPipe + NudeNet)');
+                        updateWorkflowStep(4, 'completed', 'Auto-Moderation Rules Applied');
+                        updateWorkflowStep(5, 'completed', `Decision: ${result.data.moderation_status.toUpperCase()}`);
+                    }
                     
                     displayResults(result);
                 } else {
@@ -344,6 +351,92 @@
                     <strong>🔍 Detected Parts:</strong><br>
                     <code>${JSON.stringify(data.detected_parts, null, 2)}</code>
                 </div>
+                
+                ${data.pose_analysis ? `
+                <div class="mb-3">
+                    <strong>🎭 Pose Analysis:</strong><br>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body p-2">
+                                    <h6 class="card-title">Position Detection</h6>
+                                    <p class="mb-1"><strong>Category:</strong> 
+                                        <span class="badge ${data.pose_analysis.pose_category === 'highly_suggestive' ? 'bg-danger' : 
+                                                            data.pose_analysis.pose_category === 'moderately_suggestive' ? 'bg-warning' : 
+                                                            data.pose_analysis.pose_category === 'no_pose_detected' ? 'bg-secondary' : 'bg-success'}">
+                                            ${data.pose_analysis.pose_category || 'unknown'}
+                                        </span>
+                                    </p>
+                                    <p class="mb-1"><strong>Pose Score:</strong> ${((data.pose_analysis.suggestive_score || 0) * 100).toFixed(1)}%</p>
+                                    <p class="mb-0"><strong>Detected:</strong> ${data.pose_analysis.pose_detected ? '✅ Yes' : '❌ No'}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body p-2">
+                                    <h6 class="card-title">Position Details</h6>
+                                    ${data.pose_analysis.details ? `
+                                        ${data.pose_analysis.details.reasoning ? `
+                                            <p class="mb-1"><strong>Reasoning:</strong> 
+                                                ${data.pose_analysis.details.reasoning.map(reason => 
+                                                    `<span class="badge bg-info me-1">${reason}</span>`
+                                                ).join('')}
+                                            </p>
+                                        ` : ''}
+                                        ${data.pose_analysis.details.torso_angle !== undefined ? `
+                                            <p class="mb-1"><strong>Torso Angle:</strong> ${data.pose_analysis.details.torso_angle.toFixed(1)}°</p>
+                                        ` : ''}
+                                        ${data.pose_analysis.details.hip_bend_angle !== undefined ? `
+                                            <p class="mb-1"><strong>Hip Bend:</strong> ${data.pose_analysis.details.hip_bend_angle.toFixed(1)}°</p>
+                                        ` : ''}
+                                        ${data.pose_analysis.details.body_orientation ? `
+                                            <p class="mb-0"><strong>Orientation:</strong> ${data.pose_analysis.details.body_orientation}</p>
+                                        ` : ''}
+                                    ` : '<p class="mb-0 text-muted">No detailed metrics available</p>'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+                
+                ${data.combined_assessment ? `
+                <div class="mb-3">
+                    <strong>⚖️ Combined Risk Assessment:</strong><br>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <div class="badge ${data.combined_assessment.risk_level === 'high' ? 'bg-danger' : 
+                                                    data.combined_assessment.risk_level === 'medium' ? 'bg-warning' : 'bg-success'} fs-6">
+                                    ${data.combined_assessment.final_risk_score ? data.combined_assessment.final_risk_score.toFixed(1) : 0}%
+                                </div>
+                                <br><small>Final Risk Score</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <div class="badge bg-primary fs-6">${data.combined_assessment.nudity_contribution ? data.combined_assessment.nudity_contribution.toFixed(1) : 0}%</div>
+                                <br><small>Nudity Contribution</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <div class="badge bg-info fs-6">${data.combined_assessment.pose_contribution ? data.combined_assessment.pose_contribution.toFixed(1) : 0}%</div>
+                                <br><small>Pose Contribution</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <small><strong>Risk Level:</strong> 
+                            <span class="badge ${data.combined_assessment.risk_level === 'high' ? 'bg-danger' : 
+                                                data.combined_assessment.risk_level === 'medium' ? 'bg-warning' : 'bg-success'}">
+                                ${data.combined_assessment.risk_level ? data.combined_assessment.risk_level.toUpperCase() : 'UNKNOWN'}
+                            </span>
+                        </small>
+                    </div>
+                </div>
+                ` : ''}
                 
                 ${data.part_locations ? `
                 <div class="mb-3">

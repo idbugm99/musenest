@@ -14,8 +14,9 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-from PIL import Image
+from PIL import Image, ExifTags
 import torch
+import tempfile
 import requests
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -146,11 +147,60 @@ class ContentModerator:
             logger.error(f"Error initializing models: {e}")
             return False
     
-    def analyze_nudity(self, image_path: str) -> Tuple[float, Dict[str, float]]:
-        """Analyze nudity using NudeNet"""
+    def normalize_image_orientation(self, image_path: str) -> str:
+        """Convert to landscape for moderation, EXIF restoration happens after blur"""
         try:
-            # Detect nudity
-            results = self.nude_detector.detect(image_path)
+            img = Image.open(image_path)
+            
+            # First apply EXIF rotation to get visual orientation
+            try:
+                exif = img._getexif()
+                if exif is not None:
+                    for key, value in ExifTags.TAGS.items():
+                        if value == 'Orientation':
+                            orientation = exif.get(key)
+                            if orientation == 3:
+                                img = img.rotate(180, expand=True)
+                                logger.info(f"Applied 180° rotation for EXIF orientation 3")
+                            elif orientation == 6:
+                                img = img.rotate(270, expand=True)
+                                logger.info(f"Applied 270° rotation for EXIF orientation 6")
+                            elif orientation == 8:
+                                img = img.rotate(90, expand=True)
+                                logger.info(f"Applied 90° rotation for EXIF orientation 8")
+                            else:
+                                logger.info(f"No rotation needed for EXIF orientation {orientation}")
+                            break
+            except Exception as e:
+                logger.warning(f"EXIF orientation correction failed: {e}")
+            
+            # Force to landscape for consistent moderation coordinates
+            if img.height > img.width:
+                logger.info(f"🔄 Converting to landscape for AI analysis: {img.width}x{img.height} → {img.height}x{img.width}")
+                img = img.rotate(-90, expand=True)  # Counter-clockwise to match frontend
+            
+            logger.info(f"✅ Landscape moderation image: {img.width}x{img.height}")
+            
+            # Save landscape image (EXIF stripped) - restoration happens after blur in backend
+            temp_fd, temp_path = tempfile.mkstemp(suffix='.jpg')
+            os.close(temp_fd)
+            img.save(temp_path, 'JPEG', quality=95, exif=b'')
+            logger.info(f"Saved landscape moderation image to: {temp_path}")
+            return temp_path
+            
+        except Exception as e:
+            logger.error(f"Image landscape conversion failed: {e}")
+            return image_path
+
+    def analyze_nudity(self, image_path: str) -> Tuple[float, Dict[str, float]]:
+        """Analyze nudity using NudeNet with EXIF-normalized image"""
+        normalized_path = None
+        try:
+            # Normalize image orientation first
+            normalized_path = self.normalize_image_orientation(image_path)
+            
+            # Detect nudity on normalized image
+            results = self.nude_detector.detect(normalized_path)
             
             # Parse results
             detected_parts = {}
@@ -162,7 +212,7 @@ class ContentModerator:
                 
                 # Map NudeNet classes to our categories
                 if class_name in ['BREAST_F', 'BREAST_M']:
-                    detected_parts['breast'] = max(detected_parts.get('breast', 0), score)
+                    detected_parts['breasts'] = max(detected_parts.get('breasts', 0), score)
                 elif class_name in ['BUTTOCKS_EXPOSED']:
                     detected_parts['buttocks'] = max(detected_parts.get('buttocks', 0), score)
                 elif class_name in ['GENITAL_F', 'GENITAL_M']:
@@ -179,12 +229,24 @@ class ContentModerator:
         except Exception as e:
             logger.error(f"Error in nudity analysis: {e}")
             return 0.0, {}
+        finally:
+            # Clean up temporary file
+            if normalized_path and normalized_path != image_path:
+                try:
+                    os.unlink(normalized_path)
+                    logger.info(f"Cleaned up temporary file: {normalized_path}")
+                except Exception as e:
+                    logger.warning(f"Failed to cleanup temp file {normalized_path}: {e}")
     
     def analyze_pose(self, image_path: str) -> Tuple[str, float, Optional[Dict]]:
-        """Analyze pose using MediaPipe"""
+        """Analyze pose using MediaPipe with EXIF-normalized image"""
+        normalized_path = None
         try:
-            # Load image
-            image = cv2.imread(image_path)
+            # Normalize image orientation first
+            normalized_path = self.normalize_image_orientation(image_path)
+            
+            # Load normalized image
+            image = cv2.imread(normalized_path)
             image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             
             # Process with MediaPipe
@@ -243,7 +305,15 @@ class ContentModerator:
                 
         except Exception as e:
             logger.error(f"Error in pose classification: {e}")
-            return "error", 0.0
+            return "error", 0.0, None
+        finally:
+            # Clean up temporary file
+            if normalized_path and normalized_path != image_path:
+                try:
+                    os.unlink(normalized_path)
+                    logger.info(f"Cleaned up temporary file: {normalized_path}")
+                except Exception as e:
+                    logger.warning(f"Failed to cleanup temp file {normalized_path}: {e}")
     
     def generate_caption(self, image_path: str) -> str:
         """Generate image caption using BLIP"""

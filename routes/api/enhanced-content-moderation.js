@@ -82,7 +82,8 @@ router.post('/upload', upload.single('image'), async (req, res) => {
             });
         }
 
-        console.log(`Processing upload for model ${model_slug} with intent: ${usage_intent}`);
+        console.log(`🚀 Processing upload for model ${model_slug} with intent: ${usage_intent}`);
+        const processStartTime = Date.now();
 
         // Process through moderation workflow
         const result = await moderationService.processUploadedImage({
@@ -96,11 +97,16 @@ router.post('/upload', upload.single('image'), async (req, res) => {
             description
         });
 
+        const processTime = Date.now() - processStartTime;
+        console.log(`✅ Upload processing completed in ${processTime}ms`);
+        console.log(`📊 Result: success=${result.success}, status=${result.moderation_status}, nudity=${result.nudity_score}`);
+
         // Clean up temp file
         fs.unlink(req.file.path, () => {});
 
         if (result.success) {
-            res.json({
+            console.log('📤 Sending successful response to client...');
+            const response = {
                 success: true,
                 message: getStatusMessage(result),
                 data: {
@@ -112,15 +118,28 @@ router.post('/upload', upload.single('image'), async (req, res) => {
                     human_review_required: result.human_review_required,
                     final_location: result.final_location,
                     detected_parts: result.detected_parts,
-                    part_locations: result.part_locations
+                    part_locations: result.part_locations,
+                    
+                    // Include pose analysis data from MediaPipe
+                    pose_analysis: result.pose_analysis || null,
+                    pose_category: result.pose_category || 'unknown',
+                    explicit_pose_score: result.explicit_pose_score || 0,
+                    final_risk_score: result.final_risk_score || result.nudity_score,
+                    risk_level: result.risk_level || 'unknown',
+                    combined_assessment: result.combined_assessment || null
                 }
-            });
+            };
+            
+            res.json(response);
+            console.log('✅ Response sent successfully');
         } else {
+            console.log('❌ Sending error response to client...');
             res.status(500).json({
                 success: false,
                 error: result.error,
                 message: 'Upload processing failed'
             });
+            console.log('✅ Error response sent');
         }
 
     } catch (error) {
@@ -239,12 +258,33 @@ router.get('/admin/queue', async (req, res) => {
         
         const [results] = await db.execute(query, params);
         
-        // Parse JSON fields
-        const processedResults = results.map(row => ({
-            ...row,
-            detected_parts: JSON.parse(row.detected_parts || '{}'),
-            part_locations: JSON.parse(row.part_locations || '{}')
-        }));
+        // Parse JSON fields safely
+        const processedResults = results.map(row => {
+            let detectedParts = {};
+            let partLocations = {};
+            
+            try {
+                detectedParts = typeof row.detected_parts === 'string' ? 
+                    JSON.parse(row.detected_parts) : (row.detected_parts || {});
+            } catch (e) {
+                console.error('Error parsing detected_parts:', e);
+                detectedParts = {};
+            }
+            
+            try {
+                partLocations = typeof row.part_locations === 'string' ? 
+                    JSON.parse(row.part_locations) : (row.part_locations || {});
+            } catch (e) {
+                console.error('Error parsing part_locations:', e);
+                partLocations = {};
+            }
+            
+            return {
+                ...row,
+                detected_parts: detectedParts,
+                part_locations: partLocations
+            };
+        });
         
         res.json({
             success: true,

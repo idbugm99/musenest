@@ -114,6 +114,11 @@ app.get('/admin-content-review.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin-content-review.html'));
 });
 
+// Admin content review tool (with /admin prefix)
+app.get('/admin/admin-content-review.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin-content-review.html'));
+});
+
 // Enhanced moderation test page
 app.get('/enhanced-moderation-test.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'enhanced-moderation-test.html'));
@@ -154,8 +159,10 @@ app.use('/api/impersonation', require('./routes/api/impersonation'));
 app.use('/api/content-moderation', require('./routes/api/content-moderation'));
 app.use('/api/enhanced-content-moderation', require('./routes/api/enhanced-content-moderation'));
 app.use('/api/media-review-queue', require('./routes/api/media-review-queue'));
+app.use('/api/admin-models', require('./routes/api/admin-models'));
 
-// Dynamic model routes (Theme Sets + Modular Pages)
+// Dynamic model routes (Theme Sets + Modular Pages) - MOVED TO END
+// This catches all remaining routes, so it must be last before 404 handler
 app.use('/', require('./src/routes/dynamic_new'));
 
 // 404 handler

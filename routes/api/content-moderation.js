@@ -15,11 +15,10 @@ try {
     dbName = null;
 }
 
-// Configure multer for file uploads
+// Configure multer for file uploads - simplified for proxy-upload
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const modelSlug = req.body.model_slug || 'temp';
-        const uploadPath = path.join(__dirname, '../../public/uploads', modelSlug);
+        const uploadPath = path.join(__dirname, '../../public/uploads/temp');
         
         // Create directory if it doesn't exist
         fs.mkdirSync(uploadPath, { recursive: true });
@@ -38,6 +37,7 @@ const upload = multer({
         fileSize: 10 * 1024 * 1024 // 10MB limit
     },
     fileFilter: function (req, file, cb) {
+        console.log('Multer fileFilter - file:', file.originalname, 'mimetype:', file.mimetype);
         // Check file type
         if (file.mimetype.startsWith('image/')) {
             cb(null, true);
@@ -48,7 +48,7 @@ const upload = multer({
 });
 
 // AI Moderation Service Configuration
-const AI_SERVICE_URL = process.env.AI_MODERATION_URL || 'http://18.191.50.72:5001';
+const AI_SERVICE_URL = process.env.AI_MODERATION_URL || 'http://52.15.235.216:5000';
 
 // Mock AI results for testing when service is unavailable
 const MOCK_AI_RESULTS = {
@@ -267,14 +267,25 @@ router.post('/upload', upload.single('image'), async (req, res) => {
  * Proxy upload to EC2 NudeNet service via SSH
  * POST /api/content-moderation/proxy-upload
  */
-router.post('/proxy-upload', upload.single('file'), async (req, res) => {
+router.post('/proxy-upload', (req, res, next) => {
+    console.log('=== PROXY-UPLOAD ROUTE HIT ===');
+    console.log('URL:', req.url);
+    console.log('Method:', req.method);
+    console.log('Headers:', req.headers);
+    next();
+}, upload.single('file'), async (req, res) => {
     try {
         const { spawn } = require('child_process');
         const fs = require('fs');
         const path = require('path');
         
+        console.log('=== PROXY UPLOAD DEBUG ===');
+        console.log('req.file:', req.file);
+        console.log('req.body:', req.body);
+        console.log('req.files:', req.files);
+        
         if (!req.file) {
-            return res.status(400).json({ error: 'No file uploaded' });
+            return res.status(400).json({ error: 'No image file provided', success: false });
         }
         
         const contextType = req.body.context_type || 'public_gallery';
@@ -292,7 +303,7 @@ router.post('/proxy-upload', upload.single('file'), async (req, res) => {
             '-o', 'ConnectTimeout=10',
             '-o', 'StrictHostKeyChecking=no',
             req.file.path,
-            `ubuntu@18.191.50.72:${remoteFilePath}`
+            `ubuntu@52.15.235.216:${remoteFilePath}`
         ]);
         
         let scpError = '';
@@ -324,8 +335,8 @@ router.post('/proxy-upload', upload.single('file'), async (req, res) => {
                 '-i', '/Users/programmer/Projects/nudenet-key.pem',
                 '-o', 'ConnectTimeout=10',
                 '-o', 'StrictHostKeyChecking=no',
-                'ubuntu@18.191.50.72',
-                `curl -s -X POST "http://localhost:5001/analyze" -H "Content-Type: application/json" -d '${analysisData}'`
+                'ubuntu@52.15.235.216',
+                `curl -s -X POST "http://localhost:5000/analyze" -H "Content-Type: application/json" -d '${analysisData}'`
             ]);
             
             let output = '';
@@ -363,7 +374,7 @@ router.post('/proxy-upload', upload.single('file'), async (req, res) => {
                     spawn('ssh', [
                         '-i', '/Users/programmer/Projects/nudenet-key.pem',
                         '-o', 'ConnectTimeout=5',
-                        'ubuntu@18.191.50.72',
+                        'ubuntu@52.15.235.216',
                         `rm -f ${remoteFilePath}`
                     ]);
                     
@@ -378,7 +389,7 @@ router.post('/proxy-upload', upload.single('file'), async (req, res) => {
                     fs.unlink(req.file.path, () => {});
                     spawn('ssh', [
                         '-i', '/Users/programmer/Projects/nudenet-key.pem',
-                        'ubuntu@18.191.50.72',
+                        'ubuntu@52.15.235.216',
                         `rm -f ${remoteFilePath}`
                     ]);
                     

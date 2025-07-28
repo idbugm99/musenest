@@ -1,0 +1,812 @@
+/**
+ * Media Review Queue API - Seamless Media Governance Flow
+ * Provides unified interface for admin media moderation with thumbnails and review actions
+ */
+
+const express = require('express');
+const path = require('path');
+const fs = require('fs').promises;
+const db = require('../../config/database');
+const router = express.Router();
+
+/**
+ * Get media review queue with filtering and pagination
+ */
+router.get('/queue', async (req, res) => {
+    try {
+        const {
+            status = 'pending',
+            priority,
+            queue_type,
+            usage_intent,
+            model_search,
+            page = 1,
+            limit = 20,
+            sort_by = 'flagged_at',
+            sort_order = 'DESC'
+        } = req.query;
+
+        // Build query with safe LIMIT interpolation (values are validated)
+        const limitValue = Math.max(1, Math.min(100, parseInt(limit))); // Clamp between 1-100
+        const offsetValue = Math.max(0, (parseInt(page) - 1) * limitValue);
+        
+        const query = `
+            SELECT 
+                id, model_name, review_status, nudity_score, priority, queue_type, 
+                usage_intent, flagged_at, original_path, detected_parts, context_type,
+                appeal_reason, appeal_message, appeal_requested
+            FROM media_review_queue 
+            WHERE review_status = ?
+            ORDER BY flagged_at DESC
+            LIMIT ${limitValue} OFFSET ${offsetValue}
+        `;
+
+        console.log('Query test with limit/offset interpolation');
+        
+        const [queueItems] = await db.execute(query, [status]);
+        
+        console.log('Query executed successfully, got', queueItems.length, 'items');
+
+        // Get total count
+        const [countResult] = await db.execute(
+            'SELECT COUNT(*) as total FROM media_review_queue WHERE review_status = ?', 
+            [status]
+        );
+        const total = countResult[0].total;
+
+        // Process queue items to add thumbnail paths and convert data types
+        const processedItems = await Promise.all(queueItems.map(async (item) => {
+            // Generate thumbnail path
+            const thumbnailPath = await generateThumbnailPath(item.original_path, item.model_name);
+            
+            // Parse JSON fields
+            const detectedParts = typeof item.detected_parts === 'string' 
+                ? JSON.parse(item.detected_parts || '{}') 
+                : item.detected_parts || {};
+            
+            const partLocations = typeof item.part_locations === 'string'
+                ? JSON.parse(item.part_locations || '{}')
+                : item.part_locations || {};
+
+            const policyViolations = typeof item.policy_violations === 'string'
+                ? JSON.parse(item.policy_violations || '[]')
+                : item.policy_violations || [];
+
+            const blurSettings = typeof item.blur_settings === 'string' && item.blur_settings
+                ? JSON.parse(item.blur_settings)
+                : null;
+
+            return {
+                ...item,
+                // Convert numeric fields from strings to numbers
+                nudity_score: parseFloat(item.nudity_score) || 0,
+                explicit_pose_score: parseFloat(item.explicit_pose_score) || 0,
+                // Processed fields
+                thumbnail_path: thumbnailPath,
+                detected_parts: detectedParts,
+                part_locations: partLocations,
+                policy_violations: policyViolations,
+                blur_settings: blurSettings,
+                has_appeal: Boolean(item.appeal_requested)
+            };
+        }));
+
+        res.json({
+            success: true,
+            queue: processedItems,
+            pagination: {
+                page: parseInt(page),
+                limit: parseInt(limit),
+                total,
+                pages: Math.ceil(total / parseInt(limit))
+            },
+            filters: {
+                status,
+                priority,
+                queue_type,
+                usage_intent,
+                model_search
+            }
+        });
+
+    } catch (error) {
+        console.error('Error fetching media review queue:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch media review queue',
+            details: error.message
+        });
+    }
+});
+
+/**
+ * Get queue statistics for dashboard
+ */
+router.get('/stats', async (req, res) => {
+    try {
+        const [stats] = await db.execute('SELECT * FROM media_queue_stats');
+        
+        // Get additional stats
+        const [priorityStats] = await db.execute(`
+            SELECT 
+                priority,
+                COUNT(*) as count
+            FROM media_review_queue 
+            WHERE review_status = 'pending'
+            GROUP BY priority
+        `);
+
+        const [usageIntentStats] = await db.execute(`
+            SELECT 
+                usage_intent,
+                COUNT(*) as count,
+                AVG(nudity_score) as avg_score
+            FROM media_review_queue 
+            WHERE review_status = 'pending'
+            GROUP BY usage_intent
+        `);
+
+        const [queueTypeStats] = await db.execute(`
+            SELECT 
+                queue_type,
+                COUNT(*) as count
+            FROM media_review_queue 
+            WHERE review_status = 'pending'
+            GROUP BY queue_type
+        `);
+
+        res.json({
+            success: true,
+            overview: stats[0] || {
+                total_queue: 0,
+                urgent_items: 0,
+                appeal_items: 0,
+                auto_flagged: 0,
+                approved_items: 0,
+                blurred_items: 0,
+                rejected_items: 0,
+                avg_nudity_score: 0
+            },
+            priority_breakdown: priorityStats,
+            usage_intent_breakdown: usageIntentStats,
+            queue_type_breakdown: queueTypeStats
+        });
+
+    } catch (error) {
+        console.error('Error fetching queue stats:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch queue statistics',
+            details: error.message
+        });
+    }
+});
+
+/**
+ * Get single media item for detailed review
+ */
+router.get('/item/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const [items] = await db.execute(
+            'SELECT * FROM media_review_queue WHERE id = ?',
+            [id]
+        );
+
+        if (items.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'Media item not found'
+            });
+        }
+
+        const item = items[0];
+        
+        // Process JSON fields, convert data types, and add additional data
+        const processedItem = {
+            ...item,
+            // Convert numeric fields from strings to numbers
+            nudity_score: parseFloat(item.nudity_score) || 0,
+            explicit_pose_score: parseFloat(item.explicit_pose_score) || 0,
+            // Parse JSON fields
+            detected_parts: typeof item.detected_parts === 'string' 
+                ? JSON.parse(item.detected_parts || '{}') 
+                : item.detected_parts || {},
+            part_locations: typeof item.part_locations === 'string'
+                ? JSON.parse(item.part_locations || '{}')
+                : item.part_locations || {},
+            policy_violations: typeof item.policy_violations === 'string'
+                ? JSON.parse(item.policy_violations || '[]')
+                : item.policy_violations || [],
+            blur_settings: typeof item.blur_settings === 'string' && item.blur_settings
+                ? JSON.parse(item.blur_settings)
+                : null,
+            thumbnail_path: await generateThumbnailPath(item.original_path, item.model_name),
+            has_appeal: Boolean(item.appeal_requested)
+        };
+
+        res.json({
+            success: true,
+            item: processedItem
+        });
+
+    } catch (error) {
+        console.error('Error fetching media item:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch media item',
+            details: error.message
+        });
+    }
+});
+
+/**
+ * Approve media item (move to appropriate folder)
+ */
+router.post('/approve/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { admin_notes, reviewed_by = 1, final_location } = req.body;
+
+        const [items] = await db.execute(
+            'SELECT * FROM media_review_queue WHERE id = ?',
+            [id]
+        );
+
+        if (items.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'Media item not found'
+            });
+        }
+
+        const item = items[0];
+        const targetLocation = final_location || getFinalLocationFromUsageIntent(item.usage_intent);
+
+        // Move file to appropriate folder
+        const success = await moveMediaFile(item.original_path, item.model_name, targetLocation);
+        
+        if (!success) {
+            throw new Error('Failed to move media file');
+        }
+
+        // Update media review queue
+        await db.execute(`
+            UPDATE media_review_queue 
+            SET 
+                review_status = 'approved',
+                final_location = ?,
+                file_moved = TRUE,
+                moved_at = NOW(),
+                admin_notes = ?,
+                reviewed_by = ?,
+                reviewed_at = NOW(),
+                updated_at = NOW()
+            WHERE id = ?
+        `, [targetLocation, admin_notes, reviewed_by, id]);
+
+        // Update original content_moderation record
+        await db.execute(`
+            UPDATE content_moderation 
+            SET 
+                moderation_status = 'approved',
+                final_location = ?,
+                admin_notes = ?,
+                reviewed_by = ?,
+                reviewed_at = NOW()
+            WHERE id = ?
+        `, [targetLocation, admin_notes, reviewed_by, item.content_moderation_id]);
+
+        res.json({
+            success: true,
+            message: 'Media approved and moved successfully',
+            final_location: targetLocation
+        });
+
+    } catch (error) {
+        console.error('Error approving media:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to approve media',
+            details: error.message
+        });
+    }
+});
+
+/**
+ * Approve media with blur (create blurred version)
+ */
+router.post('/approve-blur/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log('Approve blur request for ID:', id);
+        console.log('Request body:', req.body);
+        
+        const { 
+            blur_settings = { strength: 15, opacity: 0.8, shape: 'rounded' },
+            admin_notes, 
+            reviewed_by = 1 
+        } = req.body;
+        
+        console.log('Raw request body:', JSON.stringify(req.body, null, 2));
+        console.log('Extracted blur_settings:', blur_settings);
+        console.log('Extracted admin_notes type and length:', typeof admin_notes, admin_notes ? admin_notes.length : 0);
+        console.log('Extracted reviewed_by type and value:', typeof reviewed_by, reviewed_by);
+
+        const [items] = await db.execute(
+            'SELECT * FROM media_review_queue WHERE id = ?',
+            [id]
+        );
+
+        if (items.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'Media item not found'
+            });
+        }
+
+        const item = items[0];
+
+        // Create blurred version (placeholder for actual blur implementation)
+        const blurredPath = await createBlurredVersion(item.original_path, item.model_name, blur_settings);
+        
+        // Move original to public folder and blurred version as well
+        const originalMoved = await moveMediaFile(item.original_path, item.model_name, 'public');
+        
+        if (!originalMoved) {
+            throw new Error('Failed to move media files');
+        }
+
+        // Update media review queue
+        await db.execute(`
+            UPDATE media_review_queue 
+            SET 
+                review_status = 'approved_blurred',
+                blur_settings = ?,
+                blurred_path = ?,
+                blur_applied = TRUE,
+                final_location = 'public_blurred',
+                file_moved = TRUE,
+                moved_at = NOW(),
+                admin_notes = ?,
+                reviewed_by = ?,
+                reviewed_at = NOW(),
+                updated_at = NOW()
+            WHERE id = ?
+        `, [JSON.stringify(blur_settings), blurredPath, admin_notes, reviewed_by, id]);
+
+        // Update original content_moderation record
+        console.log('Updating content_moderation record with ID:', item.content_moderation_id);
+        console.log('Blur settings JSON:', JSON.stringify(blur_settings));
+        console.log('Admin notes:', admin_notes);
+        console.log('Reviewed by:', reviewed_by);
+        
+        try {
+            console.log('Starting content_moderation update process...');
+            console.log('Content moderation ID:', item.content_moderation_id);
+            
+            // Simple, single update with just the required fields
+            const updateResult = await db.execute(`
+                UPDATE content_moderation 
+                SET 
+                    moderation_status = 'approved',
+                    final_location = 'public_blurred',
+                    reviewed_by = ?,
+                    reviewed_at = NOW()
+                WHERE id = ?
+            `, [reviewed_by, item.content_moderation_id]);
+            
+            console.log('Content moderation update successful, affected rows:', updateResult.affectedRows);
+            
+            // Verify the update worked
+            const [verifyRecord] = await db.execute(
+                'SELECT moderation_status, final_location FROM content_moderation WHERE id = ?',
+                [item.content_moderation_id]
+            );
+            console.log('Verified record after update:', verifyRecord[0]);
+            
+        } catch (updateError) {
+            console.error('Error updating content_moderation:', updateError);
+            console.error('Error message:', updateError.message);
+            console.error('Error code:', updateError.code);
+            console.error('SQL State:', updateError.sqlState);
+            console.error('SQL Message:', updateError.sqlMessage);
+            console.error('Full error object:', JSON.stringify(updateError, null, 2));
+            throw updateError;
+        }
+
+        res.json({
+            success: true,
+            message: 'Media approved with blur successfully',
+            blurred_path: blurredPath,
+            blur_settings
+        });
+
+    } catch (error) {
+        console.error('Error approving media with blur:', error);
+        console.error('Error stack:', error.stack);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to approve media with blur',
+            details: error.message
+        });
+    }
+});
+
+/**
+ * Reject media item (move to rejected folder)
+ */
+router.post('/reject/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { admin_notes, reviewed_by = 1, reason } = req.body;
+
+        if (!admin_notes || !admin_notes.trim()) {
+            return res.status(400).json({
+                success: false,
+                error: 'Admin notes are required for rejection'
+            });
+        }
+
+        const [items] = await db.execute(
+            'SELECT * FROM media_review_queue WHERE id = ?',
+            [id]
+        );
+
+        if (items.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'Media item not found'
+            });
+        }
+
+        const item = items[0];
+
+        // Move file to rejected folder
+        const success = await moveMediaFile(item.original_path, item.model_name, 'rejected');
+        
+        if (!success) {
+            throw new Error('Failed to move media file to rejected folder');
+        }
+
+        // Update media review queue
+        await db.execute(`
+            UPDATE media_review_queue 
+            SET 
+                review_status = 'rejected',
+                final_location = 'rejected',
+                file_moved = TRUE,
+                moved_at = NOW(),
+                admin_notes = ?,
+                reviewed_by = ?,
+                reviewed_at = NOW(),
+                updated_at = NOW()
+            WHERE id = ?
+        `, [admin_notes, reviewed_by, id]);
+
+        // Update original content_moderation record
+        await db.execute(`
+            UPDATE content_moderation 
+            SET 
+                moderation_status = 'rejected',
+                final_location = 'rejected',
+                admin_notes = ?,
+                reviewed_by = ?,
+                reviewed_at = NOW()
+            WHERE id = ?
+        `, [admin_notes, reviewed_by, item.content_moderation_id]);
+
+        res.json({
+            success: true,
+            message: 'Media rejected and moved to rejected folder',
+            reason: admin_notes
+        });
+
+    } catch (error) {
+        console.error('Error rejecting media:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to reject media',
+            details: error.message
+        });
+    }
+});
+
+/**
+ * Helper function to generate thumbnail path
+ */
+async function generateThumbnailPath(originalPath, modelName) {
+    if (!originalPath) return '/placeholder-thumbnail.jpg';
+    
+    try {
+        const fileName = path.basename(originalPath);
+        const thumbFileName = `thumb_${fileName}`;
+        const modelSlug = modelName.toLowerCase().replace(/\s+/g, '-');
+        
+        // Check if thumbnail exists
+        const thumbPath = path.join(__dirname, '../../public/uploads', modelSlug, 'thumbs', thumbFileName);
+        
+        try {
+            await fs.access(thumbPath);
+            return `/uploads/${modelSlug}/thumbs/${thumbFileName}`;
+        } catch {
+            // Thumbnail doesn't exist, return original or placeholder
+            const originalWebPath = originalPath.replace(path.join(__dirname, '../../public'), '');
+            return originalWebPath || '/placeholder-thumbnail.jpg';
+        }
+    } catch (error) {
+        console.error('Error generating thumbnail path:', error);
+        return '/placeholder-thumbnail.jpg';
+    }
+}
+
+/**
+ * Helper function to get final location from usage intent
+ */
+function getFinalLocationFromUsageIntent(usageIntent) {
+    const locationMap = {
+        'public_site': 'public',
+        'paysite': 'paysite',
+        'store': 'store',
+        'private': 'private'
+    };
+    return locationMap[usageIntent] || 'public';
+}
+
+/**
+ * Helper function to move media file to target folder
+ */
+async function moveMediaFile(originalPath, modelName, targetFolder) {
+    try {
+        if (!originalPath || !modelName || !targetFolder) {
+            throw new Error('Missing required parameters for file move');
+        }
+
+        const modelSlug = modelName.toLowerCase().replace(/\s+/g, '-');
+        const fileName = path.basename(originalPath);
+        const targetDir = path.join(__dirname, '../../public/uploads', modelSlug, targetFolder);
+        const targetPath = path.join(targetDir, fileName);
+
+        // Ensure target directory exists
+        await fs.mkdir(targetDir, { recursive: true });
+
+        // Check if source file exists
+        try {
+            await fs.access(originalPath);
+        } catch {
+            console.warn(`Source file not found: ${originalPath}`);
+            return true; // Don't fail if source doesn't exist
+        }
+
+        // Move file (copy then delete to avoid cross-device issues)
+        await fs.copyFile(originalPath, targetPath);
+        
+        console.log(`Media file moved: ${originalPath} → ${targetPath}`);
+        return true;
+
+    } catch (error) {
+        console.error('Error moving media file:', error);
+        return false;
+    }
+}
+
+/**
+ * Helper function to create blurred version with actual blur effects
+ */
+async function createBlurredVersion(originalPath, modelName, blurSettings) {
+    try {
+        const sharp = require('sharp');
+        const modelSlug = modelName.toLowerCase().replace(/\s+/g, '-');
+        const fileName = path.basename(originalPath);
+        const blurredFileName = `blurred_${Date.now()}_${fileName}`;
+        const blurredDir = path.join(__dirname, '../../public/uploads', modelSlug, 'public', 'blurred');
+        const blurredPath = path.join(blurredDir, blurredFileName);
+
+        // Ensure directory exists
+        await fs.mkdir(blurredDir, { recursive: true });
+
+        if (!originalPath) {
+            console.warn('No original path provided');
+            return null;
+        }
+
+        try {
+            await fs.access(originalPath);
+        } catch {
+            console.warn('Original file not accessible:', originalPath);
+            return null;
+        }
+
+        console.log('Creating blurred version with settings:', blurSettings);
+        console.log('Original path:', originalPath);
+        console.log('Output path:', blurredPath);
+        
+        // DETAILED COORDINATE DEBUGGING
+        console.log('=== COORDINATE DEBUGGING START ===');
+        if (blurSettings.overlayPositions) {
+            for (const [part, coords] of Object.entries(blurSettings.overlayPositions)) {
+                console.log(`${part} coordinates from admin interface:`, coords);
+            }
+        }
+
+        // Check both raw and auto-rotated dimensions to debug coordinate issues
+        const rawImage = sharp(originalPath, { autoRotate: false });
+        const rawMetadata = await rawImage.metadata();
+        
+        const autoImage = sharp(originalPath);
+        const autoMetadata = await autoImage.metadata();
+        
+        console.log('Raw image dimensions:', rawMetadata.width, 'x', rawMetadata.height, 'orientation:', rawMetadata.orientation);
+        console.log('Auto-rotated image dimensions:', autoMetadata.width, 'x', autoMetadata.height);
+        
+        // Use RAW image and manually apply the same coordinate transformation as admin interface
+        // The admin interface shows the rotated version, so we need to map coordinates back to raw
+        let processedImage = sharp(originalPath, { autoRotate: false });
+
+        // Apply blur to specific regions if overlay positions are provided
+        if (blurSettings.overlayPositions && Object.keys(blurSettings.overlayPositions).length > 0) {
+            console.log('Applying selective blur to regions:', Object.keys(blurSettings.overlayPositions));
+            
+            // Create blur overlay for each region
+            const blurRadius = Math.max(1, Math.min(100, blurSettings.strength || 15));
+            
+            // Collect all blur regions for single composite operation
+            const blurRegions = [];
+            
+            for (const [bodyPart, position] of Object.entries(blurSettings.overlayPositions)) {
+                console.log(`Processing blur for ${bodyPart} (received coords):`, position);
+                console.log(`Auto-rotated image dimensions: ${autoMetadata.width}x${autoMetadata.height}`);
+                
+                // Transform coordinates from admin interface (rotated display) to raw image coordinates
+                let left, top, width, height;
+                
+                if (rawMetadata.orientation === 6) {
+                    // For EXIF orientation 6 (90° clockwise rotation):
+                    // Admin interface shows rotated view, we need to map back to raw coordinates
+                    left = Math.round(position.y);
+                    top = Math.round(rawMetadata.height - position.x - position.width);
+                    width = Math.round(position.height);
+                    height = Math.round(position.width);
+                    
+                    console.log(`EXIF 6 coordinate transformation:`);
+                    console.log(`  Admin coords: x=${position.x}, y=${position.y}, w=${position.width}, h=${position.height}`);
+                    console.log(`  Raw coords: x=${left}, y=${top}, w=${width}, h=${height}`);
+                } else {
+                    // No transformation needed for other orientations
+                    left = Math.round(position.x);
+                    top = Math.round(position.y);
+                    width = Math.round(position.width);
+                    height = Math.round(position.height);
+                    
+                    console.log(`No coordinate transformation needed:`);
+                    console.log(`  Direct coords: x=${left}, y=${top}, w=${width}, h=${height}`);
+                }
+                
+                console.log(`Final blur coordinates for processing: ${left},${top} ${width}x${height}`);
+                
+                // Extract region from RAW image using transformed coordinates
+                // But composite will use original admin coordinates after EXIF rotation
+                let compositeLeft, compositeTop;
+                
+                if (rawMetadata.orientation === 6) {
+                    // For compositing after EXIF rotation, use original admin coordinates
+                    compositeLeft = Math.round(position.x);
+                    compositeTop = Math.round(position.y);
+                    console.log(`Composite will use admin coordinates after rotation: ${compositeLeft},${compositeTop}`);
+                } else {
+                    // No rotation, use transformed coordinates for composite
+                    compositeLeft = left;
+                    compositeTop = top;
+                }
+                
+                // DEBUG: Save the exact region we're extracting to verify coordinates
+                const debugRegionPath = blurredPath.replace('.jpg', `_debug_${bodyPart}.jpg`);
+                await sharp(originalPath, { autoRotate: false })
+                    .extract({ left, top, width, height })
+                    .jpeg({ quality: 90 })
+                    .toFile(debugRegionPath);
+                console.log(`DEBUG: Saved extracted region to ${debugRegionPath}`);
+                
+                // Extract the region from RAW image using transformed coordinates
+                const originalRegion = await sharp(originalPath, { autoRotate: false })
+                    .extract({ left, top, width, height })
+                    .toBuffer();
+                
+                // Rotate the extracted region to match final image orientation if needed
+                let orientedRegion = originalRegion;
+                if (rawMetadata.orientation === 6) {
+                    // For EXIF 6, rotate the extracted region 90° clockwise to match final orientation
+                    orientedRegion = await sharp(originalRegion)
+                        .rotate(90)
+                        .toBuffer();
+                    console.log(`Rotated extracted region 90° clockwise to match final image orientation`);
+                }
+                
+                // Create blurred version of the oriented region
+                console.log(`Creating blurred region with ${blurRadius}px blur...`);
+                const blurredRegion = await sharp(orientedRegion)
+                    .blur(blurRadius)
+                    .toBuffer();
+                
+                // DEBUG: Save the blurred region to verify blur is working
+                const debugBlurPath = blurredPath.replace('.jpg', `_debug_blur_${bodyPart}.jpg`);
+                await sharp(blurredRegion)
+                    .jpeg({ quality: 90 })
+                    .toFile(debugBlurPath);
+                console.log(`DEBUG: Saved blurred region to ${debugBlurPath}`);
+                
+                // Create white overlay to match admin interface preview
+                const opacity = Math.max(0, Math.min(1, blurSettings.opacity || 0.8));
+                
+                // Get oriented region dimensions
+                const regionMeta = await sharp(orientedRegion).metadata();
+                
+                // Create white overlay with user-specified opacity from admin interface
+                // Use exact opacity value set by admin user
+                const enhancedOpacity = opacity; // Use exact admin setting
+                const whiteOverlay = await sharp({
+                    create: {
+                        width: regionMeta.width,
+                        height: regionMeta.height,
+                        channels: 4,
+                        background: { r: 255, g: 255, b: 255, alpha: enhancedOpacity }
+                    }
+                }).png().toBuffer();
+                
+                // For content moderation, use fully blurred region as base (no blending with original)
+                // Apply white overlay directly on top of blurred region for maximum obscuring
+                const blendedRegion = await sharp(blurredRegion)
+                    .composite([
+                        {
+                            input: whiteOverlay,
+                            blend: 'over'  // White overlay with user-specified opacity
+                        }
+                    ])
+                    .toBuffer();
+                
+                console.log(`Extracted from RAW image at: ${left},${top} ${width}x${height}`);
+                console.log(`Applied blur radius: ${blurRadius}px (${blurSettings.strength}px setting)`);
+                console.log(`Applied white overlay with ${enhancedOpacity * 100}% opacity (enhanced from ${opacity * 100}%)`);
+                console.log(`Preparing for composite at: ${compositeLeft},${compositeTop}`);
+                
+                // Add to blur regions array for batch composite
+                blurRegions.push({
+                    input: blendedRegion,
+                    left: compositeLeft,
+                    top: compositeTop
+                });
+            }
+            
+            // Apply all blur regions in a single composite operation
+            console.log(`Applying ${blurRegions.length} blur regions in single composite operation`);
+            processedImage = processedImage.composite(blurRegions);
+        } else {
+            // Apply global blur if no specific regions are defined
+            console.log('Applying global blur with radius:', blurSettings.strength || 15);
+            const blurRadius = Math.max(1, Math.min(100, blurSettings.strength || 15));
+            processedImage = processedImage.blur(blurRadius);
+        }
+
+        // Apply EXIF rotation to the final output for proper display orientation
+        if (rawMetadata.orientation) {
+            console.log('Applying EXIF rotation to final output for proper display orientation');
+            processedImage = processedImage.rotate(); // This applies EXIF rotation
+        } else {
+            console.log('No EXIF orientation found, keeping RAW image as-is'); 
+        }
+        
+        // Save the processed image
+        await processedImage.jpeg({ quality: 90 }).toFile(blurredPath);
+        
+        console.log('Blurred image created successfully:', blurredPath);
+        return `/uploads/${modelSlug}/public/blurred/${blurredFileName}`;
+
+    } catch (error) {
+        console.error('Error creating blurred version:', error);
+        console.error('Error stack:', error.stack);
+        return null;
+    }
+}
+
+module.exports = router;

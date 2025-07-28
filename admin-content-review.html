@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🛡️ Admin Content Review & Blur Tool</title>
+    <title>🛡️ Admin Content Review & Gaussian Blur Tool</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .image-container {
@@ -12,21 +12,49 @@
             max-width: 100%;
         }
         
+        .portrait-rotated {
+            transform: rotate(90deg) !important;
+            transform-origin: center center !important;
+        }
+        
+        .portrait-container {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
+        
         .blur-overlay {
             position: absolute;
-            backdrop-filter: blur(var(--blur-strength, 10px));
-            background: rgba(255, 255, 255, var(--blur-opacity, 0.3));
             border: 2px solid #dc3545;
             cursor: pointer;
             transition: all 0.3s ease;
             border-radius: var(--blur-shape, 0px);
+            overflow: hidden;
         }
+        
+        .blur-preview-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
         
         .blur-overlay.shape-oval {
             border-radius: 50%;
         }
         
+        .blur-overlay.shape-oval .blur-preview-canvas {
+            border-radius: 50%;
+        }
+        
         .blur-overlay.shape-rounded {
+            border-radius: 15px;
+        }
+        
+        .blur-overlay.shape-rounded .blur-preview-canvas {
             border-radius: 15px;
         }
         
@@ -40,9 +68,7 @@
         }
         
         .blur-overlay.disabled {
-            backdrop-filter: none;
-            background: rgba(0, 255, 0, 0.1);
-            border-color: #28a745;
+            display: none !important;
         }
         
         .violation-label {
@@ -87,13 +113,42 @@
             background: #d4edda;
             border-color: #28a745;
         }
+        
+        /* Drag/Resize Handles */
+        .resize-handle {
+            position: absolute;
+            background: #007bff;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            width: 12px;
+            height: 12px;
+            z-index: 20;
+            cursor: pointer;
+        }
+        
+        .resize-handle.nw { top: -6px; left: -6px; cursor: nw-resize; }
+        .resize-handle.ne { top: -6px; right: -6px; cursor: ne-resize; }
+        .resize-handle.sw { bottom: -6px; left: -6px; cursor: sw-resize; }
+        .resize-handle.se { bottom: -6px; right: -6px; cursor: se-resize; }
+        .resize-handle.n { top: -6px; left: 50%; margin-left: -6px; cursor: n-resize; }
+        .resize-handle.s { bottom: -6px; left: 50%; margin-left: -6px; cursor: s-resize; }
+        .resize-handle.w { top: 50%; left: -6px; margin-top: -6px; cursor: w-resize; }
+        .resize-handle.e { top: 50%; right: -6px; margin-top: -6px; cursor: e-resize; }
+        
+        .blur-overlay:hover .resize-handle {
+            background: #ffc107;
+        }
+        
+        .blur-overlay.dragging {
+            cursor: move;
+        }
     </style>
 </head>
 <body>
     <div class="container-fluid mt-4">
         <div class="row">
             <div class="col-12">
-                <h2>🛡️ Admin Content Review & Selective Blur Tool</h2>
+                <h2>🛡️ Admin Content Review & Gaussian Blur Tool</h2>
                 <div class="alert alert-info">
                     <strong>Instructions:</strong> Upload an image to analyze violations, then click on detected areas to toggle blur on/off. 
                     Adjust blur strength and opacity with the controls below.
@@ -106,11 +161,29 @@
             <div class="col-md-4">
                 <div class="control-panel">
                     <h5>📤 Upload Image for Review</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Select Model:</label>
+                        <select class="form-select" id="modelSelect">
+                            <option value="">Loading models...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Context Type:</label>
+                        <select class="form-select" id="contextType">
+                            <option value="public_gallery">Public Gallery</option>
+                            <option value="private_collection">Private Collection</option>
+                            <option value="paysite_content">Paysite Content</option>
+                            <option value="store_media">Store Media</option>
+                        </select>
+                    </div>
+                    
                     <div class="mb-3">
                         <input type="file" class="form-control" id="imageUpload" accept="image/*">
                     </div>
                     
-                    <button class="btn btn-primary" onclick="analyzeImage()">
+                    <button class="btn btn-primary" onclick="analyzeImage()" id="analyzeButton" disabled>
                         🔍 Analyze Violations
                     </button>
                 </div>
@@ -125,12 +198,6 @@
                         <small class="text-muted">Current: <span id="blurStrengthValue">10</span>px</small>
                     </div>
                     
-                    <div class="mb-3">
-                        <label class="form-label">Blur Opacity:</label>
-                        <input type="range" class="form-range" id="blurOpacity" min="0" max="1" step="0.1" value="0.3" 
-                               onchange="updateBlurSettings()">
-                        <small class="text-muted">Current: <span id="blurOpacityValue">30</span>%</small>
-                    </div>
                     
                     <div class="mb-3">
                         <label class="form-label">Blur Shape:</label>
@@ -139,6 +206,13 @@
                             <option value="rounded">🔳 Rounded Rectangle</option>
                             <option value="oval">🔴 Oval/Circle</option>
                         </select>
+                    </div>
+                    
+                    
+                    <div class="mb-3">
+                        <button class="btn btn-info btn-sm w-100" onclick="addManualBlurArea()">
+                            ➕ Add Blur Area
+                        </button>
                     </div>
                     
                     <div class="d-grid gap-2">
@@ -198,6 +272,8 @@
         
         function analyzeImage() {
             const fileInput = document.getElementById('imageUpload');
+            const modelSelect = document.getElementById('modelSelect');
+            const contextTypeSelect = document.getElementById('contextType');
             const file = fileInput.files[0];
             
             if (!file) {
@@ -205,29 +281,40 @@
                 return;
             }
             
+            if (!modelSelect.value) {
+                alert('Please select a model first');
+                return;
+            }
+            
+            const selectedModel = JSON.parse(modelSelect.value);
+            
             // Create FormData for upload
             const formData = new FormData();
-            formData.append('file', file);
-            formData.append('context_type', 'public_gallery');
-            formData.append('model_id', 1);
+            formData.append('image', file);
+            formData.append('context_type', contextTypeSelect.value);
+            formData.append('model_id', selectedModel.id);
+            formData.append('model_slug', selectedModel.slug);
+            
+            console.log(`Analyzing image for model: ${selectedModel.name} (ID: ${selectedModel.id})`);
             
             // Show loading
             document.getElementById('imageContainer').innerHTML = `
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <h5 class="mt-3">Analyzing image for violations...</h5>
+                    <h5 class="mt-3">Analyzing image for ${selectedModel.name}...</h5>
+                    <p class="text-muted">Context: ${contextTypeSelect.options[contextTypeSelect.selectedIndex].text}</p>
                 </div>
             `;
             
             // Upload and analyze
-            fetch('/api/content-moderation/proxy-upload', {
+            fetch('/api/enhanced-content-moderation/upload', {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    displayImageWithViolations(file, data.result);
+                    displayImageWithViolations(file, data.data);
                 } else {
                     alert('Analysis failed: ' + data.error);
                 }
@@ -241,13 +328,56 @@
         function displayImageWithViolations(file, analysis) {
             analysisData = analysis;
             
-            // Create image element
-            const img = new Image();
-            img.onload = function() {
+            console.log('📸 Loading image in EXIF-stripped mode to match NudeNet coordinate space...');
+            
+            // Load image with EXIF orientation disabled to match backend processing  
+            loadImage(file, function (canvas) {
+                if (canvas.type === "error") {
+                    console.error("Failed to load image in EXIF-stripped mode:", canvas);
+                    return;
+                }
+                
+                console.log('✅ Using EXIF-stripped coordinate space (matching NudeNet and backend blur processing)');
+                
+                // Use the raw EXIF-stripped canvas directly - no landscape conversion
+                let finalCanvas = canvas;
+                
+                console.log('🖼️ Moderation canvas (EXIF-stripped):', finalCanvas.width, 'x', finalCanvas.height);
+                
+                const container = document.getElementById('imageContainer');
+                container.innerHTML = `<div class="image-container"></div>`;
+                const imageContainer = container.querySelector('.image-container');
+                
+                finalCanvas.className = 'image-preview';
+                finalCanvas.style.maxWidth = '100%';
+                finalCanvas.style.height = 'auto';
+                finalCanvas.style.display = 'block';
+                
+                imageContainer.appendChild(finalCanvas);
+                
+                currentImage = {
+                    naturalWidth: finalCanvas.width,
+                    naturalHeight: finalCanvas.height,
+                    canvas: finalCanvas
+                };
+                
+                processImageWithAnalysis(finalCanvas, analysis);
+                
+            }, {
+                orientation: 1,
+                canvas: true
+            });
+        }
+            
+        function processImageWithAnalysis(canvas, analysis) {
                 const container = document.getElementById('imageContainer');
                 
-                // Debug image dimensions
-                console.log(`Image loaded - Natural size: ${img.naturalWidth}x${img.naturalHeight}`);
+                // Store the canvas as current image for consistent access
+                currentImage = {
+                    naturalWidth: canvas.width,
+                    naturalHeight: canvas.height,
+                    canvas: canvas
+                };
                 
                 // Create image container with overlays
                 let overlaysHtml = '';
@@ -258,48 +388,94 @@
                         const overlayId = `overlay-${part}`;
                         blurStates[part] = true; // Default to blurred
                         
-                        // Debug coordinates vs image size
-                        console.log(`Creating overlay for ${part}:`, location);
-                        console.log(`Coordinates: x=${location.x}, y=${location.y}, w=${location.width}, h=${location.height}`);
-                        console.log(`Image bounds: 0-${img.naturalWidth} x 0-${img.naturalHeight}`);
+                        // Debug coordinates with canvas
+                        console.log(`=== CANVAS COORDINATES DEBUG for ${part} ===`);
+                        console.log('Raw location object:', location);
+                        console.log('Location properties:', Object.keys(location));
+                        console.log(`x: ${location.x}, y: ${location.y}, width: ${location.width}, height: ${location.height}`);
+                        console.log(`Canvas dimensions: ${canvas.width} x ${canvas.height}`);
                         
-                        // Check if coordinates are within image bounds
-                        const isWithinBounds = location.x >= 0 && location.y >= 0 && 
-                                             location.x < img.naturalWidth && location.y < img.naturalHeight;
-                        console.log(`Overlay within bounds: ${isWithinBounds}`);
+                        // 🔍 SIZE DEBUGGING: Log actual pixel areas to verify labeling
+                        const actualArea = Math.abs(location.width) * Math.abs(location.height);
+                        console.log(`🔍 ${part} AREA ANALYSIS:`);
+                        console.log(`   Dimensions: ${Math.abs(location.width)} x ${Math.abs(location.height)}`);
+                        console.log(`   Total Area: ${actualArea} pixels`);
+                        console.log(`   Shape: ${Math.abs(location.width) > Math.abs(location.height) ? 'WIDE/HORIZONTAL' : 'TALL/VERTICAL'}`);
                         
-                        // Calculate scaling factor for displayed image vs natural size
-                        // This will be done after image is inserted into DOM
+                        // Mark this detection for verification
+                        if (part === 'BUTTOCKS_EXPOSED') {
+                            console.log(`🍑 BUTTOCKS should typically be WIDE/HORIZONTAL - is this correct?`);
+                        } else if (part === 'FEMALE_GENITALIA_EXPOSED') {
+                            console.log(`🌸 GENITALIA should typically be smaller area - is this correct?`);
+                        }
+                        
+                        // Transform AI coordinates if we rotated portrait to landscape for moderation
+                        let x = location.x;
+                        let y = location.y;
+                        let width = Math.abs(location.width);
+                        let height = Math.abs(location.height);
+                        
+                        // Handle negative dimensions by adjusting position
+                        if (location.width < 0) {
+                            x = x - width;
+                        }
+                        if (location.height < 0) {
+                            y = y - height;
+                        }
+                        
+                        // No coordinate transformation needed - both AI and frontend use upright orientation
+                        
+                        console.log(`=== USING UPRIGHT COORDINATES ===`);
+                        console.log(`AI coordinates: x=${x}, y=${y}, w=${width}, h=${height}`);
+                        console.log(`Canvas natural size: ${canvas.width} x ${canvas.height}`);
                         
                         overlaysHtml += `
                             <div id="${overlayId}" 
                                  class="blur-overlay shape-square" 
-                                 onclick="toggleBlur('${part}')"
-                                 data-original-x="${location.x}"
-                                 data-original-y="${location.y}"
-                                 data-original-width="${location.width}"
-                                 data-original-height="${location.height}"
+                                 data-original-x="${x}"
+                                 data-original-y="${y}"
+                                 data-original-width="${width}"
+                                 data-original-height="${height}"
+                                 data-part="${part}"
                                  style="
-                                     left: ${location.x}px; 
-                                     top: ${location.y}px; 
-                                     width: ${location.width}px; 
-                                     height: ${location.height}px;
+                                     left: 0px; 
+                                     top: 0px; 
+                                     width: 100px; 
+                                     height: 100px;
                                      --blur-strength: 10px;
-                                     --blur-opacity: 0.3;
                                      z-index: 10;
+                                     border: 3px solid ${part === 'BUTTOCKS_EXPOSED' ? '#FF6B35' : part === 'FEMALE_GENITALIA_EXPOSED' ? '#8E44AD' : '#FF0000'};
+                                     box-shadow: 0 0 10px ${part === 'BUTTOCKS_EXPOSED' ? '#FF6B35' : part === 'FEMALE_GENITALIA_EXPOSED' ? '#8E44AD' : '#FF0000'};
                                  ">
-                                <div class="violation-label">${part.toUpperCase()} (${location.confidence}%)</div>
+                                <canvas class="blur-preview-canvas" width="100" height="100"></canvas>
+                                <div class="violation-label" style="background: ${part === 'BUTTOCKS_EXPOSED' ? '#FF6B35' : part === 'FEMALE_GENITALIA_EXPOSED' ? '#8E44AD' : 'red'}; color: white; font-weight: bold;">
+                                    ${part === 'BUTTOCKS_EXPOSED' ? '🍑 BUTTOCKS' : part === 'FEMALE_GENITALIA_EXPOSED' ? '🌸 GENITALIA' : part.toUpperCase()} (${Math.round(location.confidence)}%)
+                                    <br><small style="color: white;">AREA: ${Math.round(width*height)} px² | ${Math.round(x)},${Math.round(y)} ${Math.round(width)}x${Math.round(height)}</small>
+                                    <br><small style="color: white; font-weight: bold;">${width > height ? 'WIDE/HORIZONTAL' : 'TALL/VERTICAL'} ${Math.round(width*height) > 1000000 ? 'LARGE' : Math.round(width*height) > 300000 ? 'MEDIUM' : 'SMALL'}</small>
+                                </div>
+                                
+                                <!-- Resize Handles -->
+                                <div class="resize-handle nw" data-direction="nw"></div>
+                                <div class="resize-handle ne" data-direction="ne"></div>
+                                <div class="resize-handle sw" data-direction="sw"></div>
+                                <div class="resize-handle se" data-direction="se"></div>
+                                <div class="resize-handle n" data-direction="n"></div>
+                                <div class="resize-handle s" data-direction="s"></div>
+                                <div class="resize-handle w" data-direction="w"></div>
+                                <div class="resize-handle e" data-direction="e"></div>
                             </div>
                         `;
                         
+                        console.log(`Created overlay HTML for ${part} with canvas dimensions: ${width}x${height}`);
+                        
                         violationsHtml += `
-                            <div id="violation-${part}" class="violation-item blurred">
+                            <div id="violation-${part}" class="violation-item blurred" style="border-left: 4px solid ${part === 'BUTTOCKS_EXPOSED' ? '#FF6B35' : part === 'FEMALE_GENITALIA_EXPOSED' ? '#8E44AD' : '#FF0000'};">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <strong>${part.toUpperCase()}</strong>
-                                        <br><small>Confidence: ${location.confidence}% | Location: ${location.x}, ${location.y}</small>
+                                        <strong style="color: ${part === 'BUTTOCKS_EXPOSED' ? '#FF6B35' : part === 'FEMALE_GENITALIA_EXPOSED' ? '#8E44AD' : '#FF0000'};">${part === 'BUTTOCKS_EXPOSED' ? '🍑 BUTTOCKS' : part === 'FEMALE_GENITALIA_EXPOSED' ? '🌸 GENITALIA' : part.toUpperCase()}</strong>
+                                        <br><small>Confidence: ${Math.round(location.confidence)}% | Area: ${Math.round(width*height)} px² | ${width > height ? 'WIDE' : 'TALL'}</small>
                                     </div>
-                                    <button class="btn btn-sm btn-outline-primary" onclick="toggleBlur('${part}')">
+                                    <button class="btn btn-sm" style="border-color: ${part === 'BUTTOCKS_EXPOSED' ? '#FF6B35' : part === 'FEMALE_GENITALIA_EXPOSED' ? '#8E44AD' : '#FF0000'}; color: ${part === 'BUTTOCKS_EXPOSED' ? '#FF6B35' : part === 'FEMALE_GENITALIA_EXPOSED' ? '#8E44AD' : '#FF0000'};" onclick="toggleBlur('${part}')">
                                         <span id="btn-${part}">🟦 Blurred</span>
                                     </button>
                                 </div>
@@ -310,10 +486,37 @@
                 
                 container.innerHTML = `
                     <div class="image-container">
-                        <img src="${img.src}" class="image-preview" alt="Content under review" onload="scaleOverlays()">
                         ${overlaysHtml}
                     </div>
                 `;
+                
+                // Add the canvas to the container
+                container.querySelector('.image-container').appendChild(canvas);
+                canvas.className = 'image-preview';
+                canvas.setAttribute('alt', 'Content under review');
+                
+                // Initialize canvas-based blur previews and drag/resize functionality
+                setTimeout(() => {
+                    console.log('Initializing canvas blur previews...');
+                    document.querySelectorAll('.blur-overlay').forEach((overlay, index) => {
+                        console.log(`Initializing overlay ${index}:`, overlay);
+                        const canvas = overlay.querySelector('.blur-preview-canvas');
+                        const part = overlay.dataset.part;
+                        console.log(`Canvas found for ${part}:`, canvas);
+                        if (canvas) {
+                            console.log(`Canvas dimensions: ${canvas.width}x${canvas.height}`);
+                            updateCanvasBlurPreview(overlay, 10); // Initialize with default 10px blur
+                        } else {
+                            console.error(`No canvas found for overlay ${part}`);
+                        }
+                        
+                        // Initialize drag and resize functionality
+                        initializeDragResize(overlay);
+                    });
+                    
+                    // ✅ Immediately re-render blur canvas previews after overlays are placed
+                    syncAllBlurPreviews();
+                }, 500); // Increased delay to ensure image is fully loaded
                 
                 // Show controls and violations
                 document.getElementById('blurControls').style.display = 'block';
@@ -325,27 +528,86 @@
                 
                 // Scale overlays after image is rendered
                 setTimeout(scaleOverlays, 100);
-            };
+            }
+        
+        function transformCoordinatesForOrientation(x, y, width, height, imageWidth, imageHeight, orientation) {
+            // Transform coordinates from displayed/rotated view to raw image coordinates
+            switch (orientation) {
+                case 6: // 90° clockwise rotation
+                    return {
+                        x: Math.round(y),
+                        y: Math.round(imageHeight - x - width),
+                        width: Math.round(height),
+                        height: Math.round(width)
+                    };
+                case 8: // 90° counter-clockwise rotation  
+                    return {
+                        x: Math.round(imageWidth - y - height),
+                        y: Math.round(x),
+                        width: Math.round(height),
+                        height: Math.round(width)
+                    };
+                case 3: // 180° rotation
+                    return {
+                        x: Math.round(imageWidth - x - width),
+                        y: Math.round(imageHeight - y - height),
+                        width: Math.round(width),
+                        height: Math.round(height)
+                    };
+                default: // No transformation needed (orientation 1)
+                    return { x, y, width, height };
+            }
+        }
+        
+        function getImageDisplayInfo() {
+            const imageElement = document.querySelector('.image-preview');
+            if (!imageElement || !currentImage) return null;
             
-            img.src = URL.createObjectURL(file);
-            currentImage = img;
+            // For now, let's add better debugging to understand the coordinate issue
+            console.log(`DEBUG: Image natural dimensions: ${currentImage.naturalWidth}x${currentImage.naturalHeight}`);
+            console.log(`DEBUG: Container dimensions: ${imageElement.clientWidth}x${imageElement.clientHeight}`);
+            console.log(`DEBUG: Current analysisData:`, analysisData);
+            
+            // Calculate the actual image display size (accounting for object-fit: contain)
+            const naturalAspectRatio = currentImage.naturalWidth / currentImage.naturalHeight;
+            const containerAspectRatio = imageElement.clientWidth / imageElement.clientHeight;
+            
+            let actualDisplayWidth, actualDisplayHeight, offsetX, offsetY;
+            
+            if (naturalAspectRatio > containerAspectRatio) {
+                // Image is wider than container - width is constrained
+                actualDisplayWidth = imageElement.clientWidth;
+                actualDisplayHeight = actualDisplayWidth / naturalAspectRatio;
+                offsetX = 0;
+                offsetY = (imageElement.clientHeight - actualDisplayHeight) / 2;
+            } else {
+                // Image is taller than container - height is constrained
+                actualDisplayHeight = imageElement.clientHeight;
+                actualDisplayWidth = actualDisplayHeight * naturalAspectRatio;
+                offsetX = (imageElement.clientWidth - actualDisplayWidth) / 2;
+                offsetY = 0;
+            }
+            
+            return {
+                actualDisplayWidth,
+                actualDisplayHeight,
+                offsetX,
+                offsetY,
+                scaleX: actualDisplayWidth / currentImage.naturalWidth,
+                scaleY: actualDisplayHeight / currentImage.naturalHeight
+            };
         }
         
         function scaleOverlays() {
-            const imageElement = document.querySelector('.image-preview');
-            if (!imageElement || !currentImage) return;
+            const displayInfo = getImageDisplayInfo();
+            if (!displayInfo) return;
             
-            // Get displayed vs natural image dimensions
-            const displayedWidth = imageElement.clientWidth;
-            const displayedHeight = imageElement.clientHeight;
-            const naturalWidth = currentImage.naturalWidth;
-            const naturalHeight = currentImage.naturalHeight;
+            const { actualDisplayWidth, actualDisplayHeight, offsetX, offsetY, scaleX, scaleY } = displayInfo;
             
-            // Calculate scaling factors
-            const scaleX = displayedWidth / naturalWidth;
-            const scaleY = displayedHeight / naturalHeight;
-            
-            console.log(`Image scaling - Natural: ${naturalWidth}x${naturalHeight}, Displayed: ${displayedWidth}x${displayedHeight}`);
+            console.log(`Image scaling - Natural: ${currentImage.naturalWidth}x${currentImage.naturalHeight}`);
+            console.log(`Container: ${document.querySelector('.image-preview').clientWidth}x${document.querySelector('.image-preview').clientHeight}`);
+            console.log(`Actual display: ${actualDisplayWidth}x${actualDisplayHeight}`);
+            console.log(`Offset: ${offsetX}, ${offsetY}`);
             console.log(`Scale factors: X=${scaleX.toFixed(3)}, Y=${scaleY.toFixed(3)}`);
             
             // Update all blur overlays with scaled coordinates
@@ -355,27 +617,290 @@
                 const originalWidth = parseInt(overlay.dataset.originalWidth);
                 const originalHeight = parseInt(overlay.dataset.originalHeight);
                 
-                // Apply scaling
-                const scaledX = Math.round(originalX * scaleX);
-                const scaledY = Math.round(originalY * scaleY);
+                // Apply scaling and offset
+                const scaledX = Math.round(originalX * scaleX + offsetX);
+                const scaledY = Math.round(originalY * scaleY + offsetY);
                 const scaledWidth = Math.round(originalWidth * scaleX);
                 const scaledHeight = Math.round(originalHeight * scaleY);
                 
-                console.log(`Scaling overlay - Original: ${originalX},${originalY} ${originalWidth}x${originalHeight} -> Scaled: ${scaledX},${scaledY} ${scaledWidth}x${scaledHeight}`);
+                console.log(`=== SCALING DEBUG for ${overlay.dataset.part} ===`);
+                console.log(`  Original (stored): ${originalX},${originalY} ${originalWidth}x${originalHeight}`);
+                console.log(`  Image natural: ${currentImage.naturalWidth}x${currentImage.naturalHeight}`);
+                console.log(`  Display area: ${actualDisplayWidth}x${actualDisplayHeight}`);
+                console.log(`  Scale factors: ${scaleX.toFixed(3)}, ${scaleY.toFixed(3)}`);
+                console.log(`  Offset: ${offsetX}, ${offsetY}`);
+                console.log(`  Scaled result: ${scaledX},${scaledY} ${scaledWidth}x${scaledHeight}`);
                 
                 // Update overlay position and size
                 overlay.style.left = `${scaledX}px`;
                 overlay.style.top = `${scaledY}px`;
                 overlay.style.width = `${scaledWidth}px`;
                 overlay.style.height = `${scaledHeight}px`;
+                
+                // Update canvas dimensions and redraw blur preview
+                const canvas = overlay.querySelector('.blur-preview-canvas');
+                if (canvas) {
+                    canvas.width = scaledWidth;
+                    canvas.height = scaledHeight;
+                    // Trigger canvas blur preview update with current blur strength
+                    const currentBlur = document.getElementById('blurStrength')?.value || 10;
+                    updateCanvasBlurPreview(overlay, parseInt(currentBlur));
+                }
             });
         }
         
+        // Drag and Resize functionality
+        let dragState = {
+            isDragging: false,
+            isResizing: false,
+            overlay: null,
+            startX: 0,
+            startY: 0,
+            startLeft: 0,
+            startTop: 0,
+            startWidth: 0,
+            startHeight: 0,
+            resizeDirection: null
+        };
+        
+        function initializeDragResize(overlay) {
+            console.log('Initializing drag/resize for:', overlay.dataset.part);
+            
+            // Make overlay draggable (on the overlay itself, not handles)
+            overlay.addEventListener('mousedown', (e) => {
+                // Only start drag if not clicking on a resize handle
+                if (!e.target.classList.contains('resize-handle')) {
+                    e.preventDefault();
+                    startDrag(e, overlay);
+                }
+            });
+            
+            // Add resize handle listeners
+            const handles = overlay.querySelectorAll('.resize-handle');
+            handles.forEach(handle => {
+                handle.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation(); // Prevent triggering drag
+                    startResize(e, overlay, handle.dataset.direction);
+                });
+            });
+        }
+        
+        function startDrag(e, overlay) {
+            console.log('Starting drag for:', overlay.dataset.part);
+            dragState.isDragging = true;
+            dragState.overlay = overlay;
+            dragState.startX = e.clientX;
+            dragState.startY = e.clientY;
+            dragState.startLeft = parseInt(overlay.style.left);
+            dragState.startTop = parseInt(overlay.style.top);
+            
+            overlay.classList.add('dragging');
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+        }
+        
+        function startResize(e, overlay, direction) {
+            console.log('Starting resize for:', overlay.dataset.part, 'direction:', direction);
+            dragState.isResizing = true;
+            dragState.overlay = overlay;
+            dragState.resizeDirection = direction;
+            dragState.startX = e.clientX;
+            dragState.startY = e.clientY;
+            dragState.startLeft = parseInt(overlay.style.left);
+            dragState.startTop = parseInt(overlay.style.top);
+            dragState.startWidth = parseInt(overlay.style.width);
+            dragState.startHeight = parseInt(overlay.style.height);
+            
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+        }
+        
+        function handleMouseMove(e) {
+            if (!dragState.isDragging && !dragState.isResizing) return;
+            
+            e.preventDefault(); // Prevent text selection and other interference
+            
+            const deltaX = e.clientX - dragState.startX;
+            const deltaY = e.clientY - dragState.startY;
+            
+            // Get display info once for the entire function
+            const displayInfo = getImageDisplayInfo();
+            
+            if (dragState.isDragging) {
+                // Update position with smooth movement
+                const newLeft = dragState.startLeft + deltaX;
+                const newTop = dragState.startTop + deltaY;
+                
+                // Use transform for smoother movement
+                dragState.overlay.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                
+            } else if (dragState.isResizing) {
+                // Update size and position based on direction
+                const direction = dragState.resizeDirection;
+                let newLeft = dragState.startLeft;
+                let newTop = dragState.startTop;
+                let newWidth = dragState.startWidth;
+                let newHeight = dragState.startHeight;
+                
+                if (direction.includes('n')) {
+                    newTop = dragState.startTop + deltaY;
+                    newHeight = dragState.startHeight - deltaY;
+                }
+                if (direction.includes('s')) {
+                    newHeight = dragState.startHeight + deltaY;
+                }
+                if (direction.includes('w')) {
+                    newLeft = dragState.startLeft + deltaX;
+                    newWidth = dragState.startWidth - deltaX;
+                }
+                if (direction.includes('e')) {
+                    newWidth = dragState.startWidth + deltaX;
+                }
+                
+                // Boundary and size constraints
+                if (!displayInfo) return;
+                
+                const { actualDisplayWidth, actualDisplayHeight, offsetX, offsetY } = displayInfo;
+                const minLeft = offsetX;
+                const minTop = offsetY;
+                const maxRight = offsetX + actualDisplayWidth;
+                const maxBottom = offsetY + actualDisplayHeight;
+                
+                // Minimum and maximum size constraints
+                if (newWidth < 20) newWidth = 20;
+                if (newHeight < 20) newHeight = 20;
+                
+                // Boundary constraints - prevent overlay from going outside actual image area
+                if (newLeft < minLeft) {
+                    newWidth += (newLeft - minLeft); // Reduce width by the amount it extends left
+                    newLeft = minLeft;
+                }
+                if (newTop < minTop) {
+                    newHeight += (newTop - minTop); // Reduce height by the amount it extends up
+                    newTop = minTop;
+                }
+                if (newLeft + newWidth > maxRight) {
+                    newWidth = maxRight - newLeft; // Trim width to fit
+                }
+                if (newTop + newHeight > maxBottom) {
+                    newHeight = maxBottom - newTop; // Trim height to fit
+                }
+                
+                // Final minimum size check after boundary adjustments
+                if (newWidth < 20) newWidth = 20;
+                if (newHeight < 20) newHeight = 20;
+                
+                dragState.overlay.style.left = newLeft + 'px';
+                dragState.overlay.style.top = newTop + 'px';
+                dragState.overlay.style.width = newWidth + 'px';
+                dragState.overlay.style.height = newHeight + 'px';
+                
+                // Update canvas size
+                const canvas = dragState.overlay.querySelector('.blur-preview-canvas');
+                if (canvas) {
+                    canvas.width = newWidth;
+                    canvas.height = newHeight;
+                    // Update blur preview
+                    const currentBlur = document.getElementById('blurStrength')?.value || 10;
+                    updateCanvasBlurPreview(dragState.overlay, parseInt(currentBlur));
+                }
+            }
+        }
+        
+        function handleMouseUp(e) {
+            const wasDragging = dragState.isDragging;
+            const wasResizing = dragState.isResizing;
+            const overlay = dragState.overlay;
+            
+            // Get display info for coordinate conversions
+            const displayInfo = getImageDisplayInfo();
+            
+            if (wasDragging) {
+                console.log('Finished dragging');
+                overlay.classList.remove('dragging');
+                
+                // Convert transform back to actual position
+                const deltaX = e.clientX - dragState.startX;
+                const deltaY = e.clientY - dragState.startY;
+                
+                if (Math.abs(deltaX) < 5 && Math.abs(deltaY) < 5) {
+                    // This was a click, not a drag - toggle blur
+                    const part = overlay.dataset.part;
+                    console.log('Click detected on overlay, toggling blur for:', part);
+                    toggleBlur(part);
+                } else {
+                    // This was a real drag - update actual position with boundary constraints
+                    if (!displayInfo) return;
+                    
+                    const { actualDisplayWidth, actualDisplayHeight, offsetX, offsetY } = displayInfo;
+                    const overlayWidth = parseInt(overlay.style.width);
+                    const overlayHeight = parseInt(overlay.style.height);
+                    
+                    // Calculate boundaries (actual image display area)
+                    const minLeft = offsetX;
+                    const minTop = offsetY;
+                    const maxLeft = offsetX + actualDisplayWidth - overlayWidth;
+                    const maxTop = offsetY + actualDisplayHeight - overlayHeight;
+                    
+                    // Constrain position within actual image boundaries
+                    const newLeft = Math.max(minLeft, Math.min(maxLeft, dragState.startLeft + deltaX));
+                    const newTop = Math.max(minTop, Math.min(maxTop, dragState.startTop + deltaY));
+                    
+                    overlay.style.left = newLeft + 'px';
+                    overlay.style.top = newTop + 'px';
+                    
+                    // Convert display coordinates back to original image coordinates  
+                    if (displayInfo) {
+                        const { offsetX: dragOffsetX, offsetY: dragOffsetY, scaleX, scaleY } = displayInfo;
+                        overlay.dataset.originalX = Math.round((newLeft - dragOffsetX) / scaleX);
+                        overlay.dataset.originalY = Math.round((newTop - dragOffsetY) / scaleY);
+                    }
+                    
+                    // Update the canvas blur preview with new position
+                    const currentBlur = document.getElementById('blurStrength')?.value || 10;
+                    updateCanvasBlurPreview(overlay, parseInt(currentBlur));
+                }
+                
+                // Clear transform
+                overlay.style.transform = '';
+            } else if (wasResizing) {
+                console.log('Finished resizing');
+                // Convert display coordinates back to original image coordinates  
+                if (displayInfo) {
+                    const { offsetX, offsetY, scaleX, scaleY } = displayInfo;
+                    overlay.dataset.originalX = Math.round((parseInt(overlay.style.left) - offsetX) / scaleX);
+                    overlay.dataset.originalY = Math.round((parseInt(overlay.style.top) - offsetY) / scaleY);
+                    overlay.dataset.originalWidth = Math.round(parseInt(overlay.style.width) / scaleX);
+                    overlay.dataset.originalHeight = Math.round(parseInt(overlay.style.height) / scaleY);
+                }
+                
+                // Update the canvas blur preview with new size/position
+                const currentBlur = document.getElementById('blurStrength')?.value || 10;
+                updateCanvasBlurPreview(overlay, parseInt(currentBlur));
+            }
+            
+            // Reset drag state
+            dragState.isDragging = false;
+            dragState.isResizing = false;
+            dragState.overlay = null;
+            dragState.resizeDirection = null;
+            
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        }
+        
         function toggleBlur(part) {
+            console.log(`Toggle blur called for: ${part}`);
+            console.log(`Current blur state: ${blurStates[part]}`);
+            
             blurStates[part] = !blurStates[part];
             const overlay = document.getElementById(`overlay-${part}`);
             const violation = document.getElementById(`violation-${part}`);
             const button = document.getElementById(`btn-${part}`);
+            
+            console.log(`New blur state: ${blurStates[part]}`);
+            console.log(`Found elements:`, { overlay, violation, button });
             
             if (blurStates[part]) {
                 // Enable blur
@@ -383,32 +908,87 @@
                 violation.classList.remove('approved');
                 violation.classList.add('blurred');
                 button.innerHTML = '🟦 Blurred';
+                console.log(`Enabled blur for ${part}`);
             } else {
                 // Disable blur
                 overlay.classList.add('disabled');
                 violation.classList.remove('blurred');
                 violation.classList.add('approved');
                 button.innerHTML = '✅ Approved';
+                console.log(`Disabled blur for ${part}`);
             }
         }
         
+        function updateCanvasBlurPreview(overlay, blurStrength) {
+            const canvas = overlay.querySelector("canvas");
+            if (!canvas) return;
+
+            // Get current position and size from overlay
+            const width = overlay.offsetWidth;
+            const height = overlay.offsetHeight;
+
+            canvas.width = width;
+            canvas.height = height;
+
+            const ctx = canvas.getContext("2d");
+
+            // Find the canvas element (now our image source)
+            const sourceCanvas = document.querySelector('.image-preview');
+            if (!sourceCanvas || !currentImage) return;
+
+            const canvasRect = sourceCanvas.getBoundingClientRect();
+            const overlayRect = overlay.getBoundingClientRect();
+
+            const scaleX = currentImage.naturalWidth / sourceCanvas.clientWidth;
+            const scaleY = currentImage.naturalHeight / sourceCanvas.clientHeight;
+
+            // Calculate position of overlay relative to canvas
+            const sx = (overlayRect.left - canvasRect.left) * scaleX;
+            const sy = (overlayRect.top - canvasRect.top) * scaleY;
+            const sw = width * scaleX;
+            const sh = height * scaleY;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+
+            try {
+                ctx.filter = `blur(${blurStrength}px)`;
+                ctx.drawImage(sourceCanvas, sx, sy, sw, sh, 0, 0, width, height);
+                ctx.filter = "none";
+            } catch (err) {
+                console.warn("Failed to draw blurred canvas:", err);
+            }
+
+            console.log(`🔄 Re-rendered blur for ${overlay.dataset.part}: overlay ${width}x${height}, source ${Math.round(sx)},${Math.round(sy)} ${Math.round(sw)}x${Math.round(sh)}`);
+        }
+        
+        function syncAllBlurPreviews() {
+            const strength = parseInt(document.getElementById('blurStrength')?.value || 10);
+            document.querySelectorAll('.blur-overlay').forEach(overlay => {
+                console.log(`🔁 Syncing canvas for: ${overlay.dataset.part}`);
+                updateCanvasBlurPreview(overlay, strength);
+            });
+        }
+
         function updateBlurSettings() {
             const strength = document.getElementById('blurStrength').value;
-            const opacity = document.getElementById('blurOpacity').value;
             const shape = document.getElementById('blurShape').value;
             
             document.getElementById('blurStrengthValue').textContent = strength;
-            document.getElementById('blurOpacityValue').textContent = Math.round(opacity * 100);
             
-            console.log(`Updating blur settings: strength=${strength}px, opacity=${opacity}, shape=${shape}`);
+            console.log(`Updating blur settings: strength=${strength}px, shape=${shape}`);
             
-            // Update all blur overlays
+            // Update all blur overlays with real-time preview
             document.querySelectorAll('.blur-overlay').forEach(overlay => {
-                // Update blur strength - this controls the actual blur intensity
-                overlay.style.setProperty('--blur-strength', `${strength}px`);
+                const part = overlay.dataset.part;
+                const canvas = overlay.querySelector('canvas');
                 
-                // Update background opacity - this controls the white overlay visibility
-                overlay.style.setProperty('--blur-opacity', opacity);
+                // Debug logging to catch desync
+                console.log(`Overlay ${part}:`, overlay.style.left, overlay.style.top, overlay.style.width, overlay.style.height);
+                console.log(`Canvas ${part}:`, canvas.width, canvas.height);
+                
+                // Update canvas blur preview in real-time
+                updateCanvasBlurPreview(overlay, parseInt(strength));
                 
                 // Remove existing shape classes
                 overlay.classList.remove('shape-square', 'shape-rounded', 'shape-oval');
@@ -416,8 +996,125 @@
                 // Add new shape class
                 overlay.classList.add(`shape-${shape}`);
                 
-                console.log(`Updated overlay: blur-strength=${strength}px, blur-opacity=${opacity}`);
+                console.log(`DEBUG: Applied shape-${shape} class to overlay ${part}`);
+                
+                console.log(`Updated overlay ${overlay.dataset.part}: blur-strength=${strength}px, shape=${shape}`);
             });
+        }
+        
+        let manualBlurCounter = 0;
+        
+        function addManualBlurArea() {
+            const displayInfo = getImageDisplayInfo();
+            if (!displayInfo) {
+                alert('Please upload and analyze an image first');
+                return;
+            }
+            
+            manualBlurCounter++;
+            const partName = `manual_blur_${manualBlurCounter}`;
+            
+            const { actualDisplayWidth, actualDisplayHeight, offsetX, offsetY, scaleX, scaleY } = displayInfo;
+            
+            // Create a default blur area in the center of the actual image area
+            const defaultWidth = Math.min(200, actualDisplayWidth * 0.3);
+            const defaultHeight = Math.min(150, actualDisplayHeight * 0.3);
+            const defaultX = offsetX + (actualDisplayWidth - defaultWidth) / 2;
+            const defaultY = offsetY + (actualDisplayHeight - defaultHeight) / 2;
+            
+            // Convert to original image coordinates
+            const originalX = Math.round((defaultX - offsetX) / scaleX);
+            const originalY = Math.round((defaultY - offsetY) / scaleY);
+            const originalWidth = Math.round(defaultWidth / scaleX);
+            const originalHeight = Math.round(defaultHeight / scaleY);
+            
+            // Create overlay HTML
+            const overlayId = `overlay-${partName}`;
+            const overlayHtml = `
+                <div id="${overlayId}" 
+                     class="blur-overlay shape-square" 
+                     data-original-x="${originalX}"
+                     data-original-y="${originalY}"
+                     data-original-width="${originalWidth}"
+                     data-original-height="${originalHeight}"
+                     data-part="${partName}"
+                     style="
+                         left: ${defaultX}px; 
+                         top: ${defaultY}px; 
+                         width: ${defaultWidth}px; 
+                         height: ${defaultHeight}px;
+                         --blur-strength: 10px;
+                         z-index: 10;
+                     ">
+                    <canvas class="blur-preview-canvas" width="${defaultWidth}" height="${defaultHeight}"></canvas>
+                    <div class="violation-label">MANUAL BLUR ${manualBlurCounter}</div>
+                    
+                    <!-- Resize Handles -->
+                    <div class="resize-handle nw" data-direction="nw"></div>
+                    <div class="resize-handle ne" data-direction="ne"></div>
+                    <div class="resize-handle sw" data-direction="sw"></div>
+                    <div class="resize-handle se" data-direction="se"></div>
+                    <div class="resize-handle n" data-direction="n"></div>
+                    <div class="resize-handle s" data-direction="s"></div>
+                    <div class="resize-handle w" data-direction="w"></div>
+                    <div class="resize-handle e" data-direction="e"></div>
+                </div>
+            `;
+            
+            // Add to image container
+            const imageContainer = document.querySelector('.image-container');
+            imageContainer.insertAdjacentHTML('beforeend', overlayHtml);
+            
+            // Initialize the new overlay
+            const newOverlay = document.getElementById(overlayId);
+            blurStates[partName] = true;
+            
+            // Initialize drag/resize and canvas blur
+            setTimeout(() => {
+                initializeDragResize(newOverlay);
+                updateCanvasBlurPreview(newOverlay, parseInt(document.getElementById('blurStrength').value || 10));
+            }, 100);
+            
+            // Add to violations list
+            const violationsContent = document.getElementById('violationsContent');
+            const violationHtml = `
+                <div id="violation-${partName}" class="violation-item blurred">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>MANUAL BLUR ${manualBlurCounter}</strong>
+                            <br><small>Manual blur area | Location: ${Math.round(defaultX)}, ${Math.round(defaultY)}</small>
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary" onclick="toggleBlur('${partName}')">
+                                <span id="btn-${partName}">🟦 Blurred</span>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="removeManualBlurArea('${partName}')">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            violationsContent.insertAdjacentHTML('beforeend', violationHtml);
+            
+            console.log(`Added manual blur area: ${partName}`);
+        }
+        
+        function removeManualBlurArea(partName) {
+            if (confirm('Remove this blur area?')) {
+                // Remove overlay
+                const overlay = document.getElementById(`overlay-${partName}`);
+                if (overlay) overlay.remove();
+                
+                // Remove from violations list
+                const violation = document.getElementById(`violation-${partName}`);
+                if (violation) violation.remove();
+                
+                // Remove from blur states
+                delete blurStates[partName];
+                
+                console.log(`Removed manual blur area: ${partName}`);
+            }
         }
         
         function toggleAllBlurs() {
@@ -450,8 +1147,9 @@
                 </div>
                 
                 <div class="mt-3">
-                    <strong>Pose Classification:</strong> ${analysis.pose_classification}<br>
-                    <strong>AI Caption:</strong> "${analysis.generated_caption}"
+                    <strong>Pose Classification:</strong> ${analysis.pose_category || 'Unknown'}<br>
+                    <strong>Risk Level:</strong> ${analysis.risk_level || 'Unknown'}<br>
+                    <strong>Final Risk Score:</strong> ${analysis.final_risk_score ? analysis.final_risk_score.toFixed(1) + '%' : 'N/A'}
                 </div>
             `;
             
@@ -459,27 +1157,155 @@
             document.getElementById('analysisResults').style.display = 'block';
         }
         
-        function saveModeratedImage() {
+        async function saveModeratedImage() {
             if (!analysisData) {
                 alert('No image to save');
                 return;
             }
             
-            const moderationData = {
-                analysis: analysisData,
-                blurSettings: {
-                    strength: document.getElementById('blurStrength').value,
-                    opacity: document.getElementById('blurOpacity').value,
-                    shape: document.getElementById('blurShape').value,
-                    blurredParts: Object.entries(blurStates)
-                        .filter(([part, isBlurred]) => isBlurred)
-                        .map(([part]) => part)
-                },
-                adminDecision: 'approved_with_blur'
+            if (!analysisData.content_moderation_id) {
+                alert('Error: No content moderation ID found');
+                return;
+            }
+            
+            // Collect current blur settings and overlay positions
+            const blurredParts = Object.entries(blurStates)
+                .filter(([part, isBlurred]) => isBlurred)
+                .map(([part]) => part);
+            
+            if (blurredParts.length === 0) {
+                if (!confirm('No blur effects applied. Continue with approval?')) {
+                    return;
+                }
+            }
+            
+            // Collect current overlay positions and transform for backend processing
+            const overlayPositions = {};
+            document.querySelectorAll('.blur-overlay').forEach(overlay => {
+                const part = overlay.dataset.part;
+                if (blurStates[part]) { // Only include active blur areas
+                    const displayCoords = {
+                        x: parseFloat(overlay.dataset.originalX),
+                        y: parseFloat(overlay.dataset.originalY),
+                        width: parseFloat(overlay.dataset.originalWidth),
+                        height: parseFloat(overlay.dataset.originalHeight)
+                    };
+                    
+                    console.log(`DEBUG: Display coordinates for ${part}:`, displayCoords);
+                    console.log(`DEBUG: Image natural dimensions: ${currentImage.naturalWidth}x${currentImage.naturalHeight}`);
+                    
+                    // Debug container size vs natural size
+                    const imageElement = document.querySelector('.image-preview');
+                    const containerWidth = imageElement.clientWidth;
+                    const containerHeight = imageElement.clientHeight;
+                    console.log(`DEBUG: Container dimensions: ${containerWidth}x${containerHeight}`);
+                    console.log(`DEBUG: ScaleX:`, currentImage.naturalWidth / containerWidth);
+                    console.log(`DEBUG: ScaleY:`, currentImage.naturalHeight / containerHeight);
+                    
+                    // Backend now uses normalized images, so coordinates need to match
+                    // For now, assume no additional transformation needed since backend normalizes the image
+                    // and coordinates are already in natural image pixel space
+                    const backendCoords = {
+                        x: displayCoords.x,
+                        y: displayCoords.y, 
+                        width: displayCoords.width,
+                        height: displayCoords.height
+                    };
+                    
+                    // Verify coordinates are in natural image space
+                    const scaleX = currentImage.naturalWidth / containerWidth;
+                    const scaleY = currentImage.naturalHeight / containerHeight;
+                    
+                    console.log(`DEBUG: Coordinate verification for ${part}:`);
+                    console.log(`  Display coords: x=${displayCoords.x}, y=${displayCoords.y}, w=${displayCoords.width}, h=${displayCoords.height}`);
+                    console.log(`  Scale factors: scaleX=${scaleX.toFixed(3)}, scaleY=${scaleY.toFixed(3)}`);
+                    console.log(`  Should be natural coords: x=${displayCoords.x}, y=${displayCoords.y} (already scaled)`);
+                    console.log(`  As percentage of image: x=${(displayCoords.x/currentImage.naturalWidth*100).toFixed(1)}%, y=${(displayCoords.y/currentImage.naturalHeight*100).toFixed(1)}%`);
+                    
+                    console.log(`DEBUG: Backend coordinates for ${part}:`, backendCoords);
+                    overlayPositions[part] = backendCoords;
+                }
+            });
+            
+            const blurSettings = {
+                strength: parseInt(document.getElementById('blurStrength').value),
+                shape: document.getElementById('blurShape').value,
+                blurredParts: blurredParts,
+                overlayPositions: overlayPositions
             };
             
-            console.log('Saving moderated image:', moderationData);
-            alert('Image saved with blur settings!\\nBlurred parts: ' + moderationData.blurSettings.blurredParts.join(', '));
+            const adminNotes = prompt('Add approval notes (optional):') || '';
+            
+            console.log('Saving moderated image with blur settings:', blurSettings);
+            
+            // DEBUG: Log coordinate data
+            console.log('DEBUG: Current image dimensions:', currentImage.naturalWidth, 'x', currentImage.naturalHeight);
+            const imageElement = document.querySelector('.image-preview');
+            console.log('DEBUG: Display dimensions:', imageElement.clientWidth, 'x', imageElement.clientHeight);
+            
+            // Show loading state
+            const saveButton = document.querySelector('button[onclick="saveModeratedImage()"]');
+            const originalText = saveButton.innerHTML;
+            saveButton.innerHTML = '⏳ Saving...';
+            saveButton.disabled = true;
+            
+            try {
+                
+                const response = await fetch('/api/enhanced-content-moderation/admin/approve-with-blur', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        content_moderation_id: analysisData.content_moderation_id,
+                        blur_settings: blurSettings,
+                        admin_notes: adminNotes,
+                        reviewed_by: 1 // TODO: Get actual admin user ID from session
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const modelSelect = document.getElementById('modelSelect');
+                    const selectedModel = modelSelect.value ? JSON.parse(modelSelect.value) : null;
+                    const modelName = selectedModel ? selectedModel.name : 'Unknown Model';
+                    
+                    alert(`✅ Image saved successfully with blur settings!
+                    
+Model: ${modelName}
+Blurred parts: ${blurSettings.blurredParts.join(', ') || 'None'}
+Blur strength: ${blurSettings.strength}px
+Blur opacity: ${Math.round(blurSettings.opacity * 100)}%
+Shape: ${blurSettings.shape}
+
+The blurred version has been saved to the blurred folder.`);
+                    
+                    // Reset form
+                    document.getElementById('imageUpload').value = '';
+                    document.getElementById('imageContainer').innerHTML = `
+                        <div class="text-muted py-5">
+                            <i class="bi bi-image" style="font-size: 4rem;"></i>
+                            <h4>Upload an image to begin review</h4>
+                        </div>
+                    `;
+                    document.getElementById('blurControls').style.display = 'none';
+                    document.getElementById('violationsList').style.display = 'none';
+                    document.getElementById('analysisResults').style.display = 'none';
+                    
+                } else {
+                    throw new Error(result.error || 'Unknown error occurred');
+                }
+                
+            } catch (error) {
+                console.error('Error saving moderated image:', error);
+                alert(`❌ Error saving image: ${error.message}`);
+            } finally {
+                // Restore button state
+                const saveButton = document.querySelector('button[onclick="saveModeratedImage()"]');
+                saveButton.innerHTML = originalText;
+                saveButton.disabled = false;
+            }
         }
         
         function rejectImage() {
@@ -500,11 +1326,55 @@
             }
         }
         
+        // Load available models when page loads
+        async function loadModels() {
+            try {
+                const response = await fetch('/api/admin-models');
+                const data = await response.json();
+                
+                const modelSelect = document.getElementById('modelSelect');
+                modelSelect.innerHTML = '<option value="">Select a model...</option>';
+                
+                if (data.success && data.models) {
+                    data.models.forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = JSON.stringify({
+                            id: model.id,
+                            name: model.name,
+                            slug: model.slug
+                        });
+                        option.textContent = `${model.name} (${model.model_type})`;
+                        modelSelect.appendChild(option);
+                    });
+                    
+                    // Enable analyze button once models are loaded
+                    document.getElementById('analyzeButton').disabled = false;
+                } else {
+                    modelSelect.innerHTML = '<option value="">Error loading models</option>';
+                }
+            } catch (error) {
+                console.error('Error loading models:', error);
+                const modelSelect = document.getElementById('modelSelect');
+                modelSelect.innerHTML = '<option value="">Error loading models</option>';
+            }
+        }
+        
+        // Enable/disable analyze button based on model selection
+        document.getElementById('modelSelect').addEventListener('change', function() {
+            const analyzeButton = document.getElementById('analyzeButton');
+            analyzeButton.disabled = !this.value;
+        });
+        
         // Handle window resize to rescale overlays
         window.addEventListener('resize', function() {
             if (currentImage && analysisData && analysisData.part_locations) {
                 setTimeout(scaleOverlays, 100);
             }
+        });
+        
+        // Load models when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadModels();
         });
 
         // URL Parameter handling for Media Queue integration
@@ -618,7 +1488,7 @@
             // Create default overlay positions for detected parts
             const defaultPositions = {
                 'genitalia': { x: 0.4, y: 0.6, width: 0.2, height: 0.3 },
-                'breast': { x: 0.35, y: 0.3, width: 0.3, height: 0.3 },
+                'breasts': { x: 0.35, y: 0.3, width: 0.3, height: 0.3 },
                 'buttocks': { x: 0.3, y: 0.5, width: 0.4, height: 0.4 },
                 'anus': { x: 0.45, y: 0.65, width: 0.1, height: 0.1 }
             };
@@ -668,11 +1538,25 @@
             
             const notes = prompt('Add approval notes (optional):') || '';
             
+            // Collect current overlay positions for backend processing
+            const overlayPositions = {};
+            document.querySelectorAll('.blur-overlay').forEach(overlay => {
+                const part = overlay.dataset.part;
+                if (blurStates[part]) { // Only include active blur areas
+                    overlayPositions[part] = {
+                        x: parseFloat(overlay.dataset.originalX),
+                        y: parseFloat(overlay.dataset.originalY),
+                        width: parseFloat(overlay.dataset.originalWidth),
+                        height: parseFloat(overlay.dataset.originalHeight)
+                    };
+                }
+            });
+            
             const blurSettings = {
                 strength: parseInt(document.getElementById('blurStrength').value),
-                opacity: parseFloat(document.getElementById('blurOpacity').value),
                 shape: document.getElementById('blurShape').value,
-                blurredParts: blurredParts
+                blurredParts: blurredParts,
+                overlayPositions: overlayPositions
             };
             
             try {
@@ -763,6 +1647,12 @@
                 alert('Error rejecting media: ' + error.message);
             }
         }
+        // 🧪 Optional: Add Debug After Page Load
+        window.addEventListener('load', () => {
+            console.log("🔍 Forcing initial canvas sync after page load...");
+            syncAllBlurPreviews();
+        });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/blueimp-load-image@5.16.0/js/load-image.all.min.js"></script>
 </body>
 </html>

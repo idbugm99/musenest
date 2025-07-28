@@ -3,9 +3,13 @@
  * Provides unified interface for admin media moderation with thumbnails and review actions
  */
 
+// DEBUG: Test if this file is even being loaded
+const fs = require('fs');
+fs.appendFileSync('/tmp/blur_debug.log', `Media review queue API loaded at ${new Date()}\n`);
+
 const express = require('express');
 const path = require('path');
-const fs = require('fs').promises;
+const fsPromises = require('fs').promises;
 const db = require('../../config/database');
 const router = express.Router();
 
@@ -323,6 +327,10 @@ router.post('/approve-blur/:id', async (req, res) => {
         console.log('Approve blur request for ID:', id);
         console.log('Request body:', req.body);
         
+        fs.appendFileSync('/tmp/blur_debug.log', `=== APPROVE-BLUR ENDPOINT CALLED ===\n`);
+        fs.appendFileSync('/tmp/blur_debug.log', `ID: ${id}\n`);
+        fs.appendFileSync('/tmp/blur_debug.log', `Request body: ${JSON.stringify(req.body, null, 2)}\n`);
+        
         const { 
             blur_settings = { strength: 15, opacity: 0.8, shape: 'rounded' },
             admin_notes, 
@@ -333,6 +341,11 @@ router.post('/approve-blur/:id', async (req, res) => {
         console.log('Extracted blur_settings:', blur_settings);
         console.log('Extracted admin_notes type and length:', typeof admin_notes, admin_notes ? admin_notes.length : 0);
         console.log('Extracted reviewed_by type and value:', typeof reviewed_by, reviewed_by);
+        console.log('=== SHAPE DEBUG START ===');
+        console.log('blur_settings received:', JSON.stringify(blur_settings, null, 2));
+        console.log('shape value:', blur_settings.shape);
+        console.log('shape type:', typeof blur_settings.shape);
+        console.log('=== SHAPE DEBUG END ===');
 
         const [items] = await db.execute(
             'SELECT * FROM media_review_queue WHERE id = ?',
@@ -348,8 +361,22 @@ router.post('/approve-blur/:id', async (req, res) => {
 
         const item = items[0];
 
-        // Create blurred version (placeholder for actual blur implementation)
-        const blurredPath = await createBlurredVersion(item.original_path, item.model_name, blur_settings);
+        // Create blurred version with error handling
+        console.log('Starting blur processing...');
+        
+        fs.appendFileSync('/tmp/blur_debug.log', `About to call createBlurredVersion with settings: ${JSON.stringify(blur_settings, null, 2)}\n`);
+        
+        let blurredPath;
+        try {
+            blurredPath = await createBlurredVersion(item.original_path, item.model_name, blur_settings);
+            console.log('Blur processing completed, path:', blurredPath);
+            fs.appendFileSync('/tmp/blur_debug.log', `Blur processing completed successfully\n`);
+        } catch (blurError) {
+            console.error('BLUR PROCESSING FAILED:', blurError);
+            console.error('Blur error stack:', blurError.stack);
+            fs.appendFileSync('/tmp/blur_debug.log', `BLUR ERROR: ${blurError.message}\n`);
+            throw new Error(`Blur processing failed: ${blurError.message}`);
+        }
         
         // Move original to public folder and blurred version as well
         const originalMoved = await moveMediaFile(item.original_path, item.model_name, 'public');
@@ -528,7 +555,7 @@ async function generateThumbnailPath(originalPath, modelName) {
         const thumbPath = path.join(__dirname, '../../public/uploads', modelSlug, 'thumbs', thumbFileName);
         
         try {
-            await fs.access(thumbPath);
+            await fsPromises.access(thumbPath);
             return `/uploads/${modelSlug}/thumbs/${thumbFileName}`;
         } catch {
             // Thumbnail doesn't exist, return original or placeholder
@@ -569,18 +596,18 @@ async function moveMediaFile(originalPath, modelName, targetFolder) {
         const targetPath = path.join(targetDir, fileName);
 
         // Ensure target directory exists
-        await fs.mkdir(targetDir, { recursive: true });
+        await fsPromises.mkdir(targetDir, { recursive: true });
 
         // Check if source file exists
         try {
-            await fs.access(originalPath);
+            await fsPromises.access(originalPath);
         } catch {
             console.warn(`Source file not found: ${originalPath}`);
             return true; // Don't fail if source doesn't exist
         }
 
         // Move file (copy then delete to avoid cross-device issues)
-        await fs.copyFile(originalPath, targetPath);
+        await fsPromises.copyFile(originalPath, targetPath);
         
         console.log(`Media file moved: ${originalPath} → ${targetPath}`);
         return true;
@@ -596,6 +623,11 @@ async function moveMediaFile(originalPath, modelName, targetFolder) {
  */
 async function createBlurredVersion(originalPath, modelName, blurSettings) {
     try {
+        fs.appendFileSync('/tmp/blur_debug.log', `=== createBlurredVersion called ===\n`);
+        fs.appendFileSync('/tmp/blur_debug.log', `blurSettings: ${JSON.stringify(blurSettings, null, 2)}\n`);
+        fs.appendFileSync('/tmp/blur_debug.log', `overlayPositions exists: ${!!blurSettings.overlayPositions}\n`);
+        fs.appendFileSync('/tmp/blur_debug.log', `overlayPositions keys: ${blurSettings.overlayPositions ? Object.keys(blurSettings.overlayPositions) : 'none'}\n`);
+        
         const sharp = require('sharp');
         const modelSlug = modelName.toLowerCase().replace(/\s+/g, '-');
         const fileName = path.basename(originalPath);
@@ -604,7 +636,7 @@ async function createBlurredVersion(originalPath, modelName, blurSettings) {
         const blurredPath = path.join(blurredDir, blurredFileName);
 
         // Ensure directory exists
-        await fs.mkdir(blurredDir, { recursive: true });
+        await fsPromises.mkdir(blurredDir, { recursive: true });
 
         if (!originalPath) {
             console.warn('No original path provided');
@@ -612,7 +644,7 @@ async function createBlurredVersion(originalPath, modelName, blurSettings) {
         }
 
         try {
-            await fs.access(originalPath);
+            await fsPromises.access(originalPath);
         } catch {
             console.warn('Original file not accessible:', originalPath);
             return null;
@@ -621,6 +653,14 @@ async function createBlurredVersion(originalPath, modelName, blurSettings) {
         console.log('Creating blurred version with settings:', blurSettings);
         console.log('Original path:', originalPath);
         console.log('Output path:', blurredPath);
+        
+        // DETAILED COORDINATE DEBUGGING
+        console.log('=== COORDINATE DEBUGGING START ===');
+        if (blurSettings.overlayPositions) {
+            for (const [part, coords] of Object.entries(blurSettings.overlayPositions)) {
+                console.log(`${part} coordinates from admin interface:`, coords);
+            }
+        }
 
         // Check both raw and auto-rotated dimensions to debug coordinate issues
         const rawImage = sharp(originalPath, { autoRotate: false });
@@ -632,87 +672,295 @@ async function createBlurredVersion(originalPath, modelName, blurSettings) {
         console.log('Raw image dimensions:', rawMetadata.width, 'x', rawMetadata.height, 'orientation:', rawMetadata.orientation);
         console.log('Auto-rotated image dimensions:', autoMetadata.width, 'x', autoMetadata.height);
         
-        // Use raw image processing to avoid rotation issues, apply rotation at the end
+        // Use RAW image and manually apply the same coordinate transformation as admin interface
+        // The admin interface shows the rotated version, so we need to map coordinates back to raw
         let processedImage = sharp(originalPath, { autoRotate: false });
 
         // Apply blur to specific regions if overlay positions are provided
         if (blurSettings.overlayPositions && Object.keys(blurSettings.overlayPositions).length > 0) {
             console.log('Applying selective blur to regions:', Object.keys(blurSettings.overlayPositions));
+            fs.appendFileSync('/tmp/blur_debug.log', `Entering overlayPositions loop with ${Object.keys(blurSettings.overlayPositions).length} regions\n`);
             
-            // Create blur overlay for each region
-            const blurRadius = Math.max(1, Math.min(100, blurSettings.strength || 15));
+            // Create blur overlay for each region with calibration factor to match admin interface
+            const blurCalibrationFactor = 2.5; // Calibrate to match admin preview intensity
+            const rawBlurRadius = blurSettings.strength || 15;
+            const blurRadius = Math.max(1, Math.min(100, rawBlurRadius * blurCalibrationFactor));
+            console.log(`Blur calibration: admin setting ${rawBlurRadius}px → actual ${blurRadius}px (${blurCalibrationFactor}x factor)`);
             
             // Collect all blur regions for single composite operation
             const blurRegions = [];
             
             for (const [bodyPart, position] of Object.entries(blurSettings.overlayPositions)) {
                 console.log(`Processing blur for ${bodyPart} (received coords):`, position);
-                console.log(`Image dimensions for coordinate validation: auto=${autoMetadata.width}x${autoMetadata.height}, raw=${rawMetadata.width}x${rawMetadata.height}`);
+                console.log(`Auto-rotated image dimensions: ${autoMetadata.width}x${autoMetadata.height}`);
                 
-                // Use coordinates directly - admin interface shows raw image dimensions
-                let left = Math.max(0, Math.min(rawMetadata.width - 1, Math.round(position.x)));
-                let top = Math.max(0, Math.min(rawMetadata.height - 1, Math.round(position.y)));
-                let width = Math.max(1, Math.min(rawMetadata.width - left, Math.round(position.width)));
-                let height = Math.max(1, Math.min(rawMetadata.height - top, Math.round(position.height)));
+                // Transform coordinates from admin interface (rotated display) to raw image coordinates
+                let left, top, width, height;
                 
-                console.log(`Using raw image coordinates directly:`);
-                console.log(`  Admin coords: x=${position.x}, y=${position.y}, w=${position.width}, h=${position.height}`);
-                console.log(`  Raw processing coords: x=${left}, y=${top}, w=${width}, h=${height}`);
+                if (rawMetadata.orientation === 6) {
+                    // For EXIF orientation 6 (90° clockwise rotation):
+                    // Admin interface shows rotated view, we need to map back to raw coordinates
+                    left = Math.round(position.y);
+                    top = Math.round(rawMetadata.height - position.x - position.width);
+                    width = Math.round(position.height);
+                    height = Math.round(position.width);
+                    
+                    console.log(`EXIF 6 coordinate transformation:`);
+                    console.log(`  Admin coords: x=${position.x}, y=${position.y}, w=${position.width}, h=${position.height}`);
+                    console.log(`  Raw coords: x=${left}, y=${top}, w=${width}, h=${height}`);
+                } else {
+                    // No transformation needed for other orientations
+                    left = Math.round(position.x);
+                    top = Math.round(position.y);
+                    width = Math.round(position.width);
+                    height = Math.round(position.height);
+                    
+                    console.log(`No coordinate transformation needed:`);
+                    console.log(`  Direct coords: x=${left}, y=${top}, w=${width}, h=${height}`);
+                }
                 
                 console.log(`Final blur coordinates for processing: ${left},${top} ${width}x${height}`);
                 
-                // Extract region from raw image using raw coordinates
-                let compositeLeft = left;
-                let compositeTop = top;
+                // Extract region from RAW image using transformed coordinates
+                // But composite will use original admin coordinates after EXIF rotation
+                let compositeLeft, compositeTop;
                 
-                // Extract the region from raw image
+                if (rawMetadata.orientation === 6) {
+                    // For compositing after EXIF rotation, use original admin coordinates
+                    compositeLeft = Math.round(position.x);
+                    compositeTop = Math.round(position.y);
+                    console.log(`Composite will use admin coordinates after rotation: ${compositeLeft},${compositeTop}`);
+                } else {
+                    // No rotation, use transformed coordinates for composite
+                    compositeLeft = left;
+                    compositeTop = top;
+                }
+                
+                // Debug coordinates (no longer saving debug images)
+                console.log(`DEBUG: Would extract region at ${left},${top} ${width}x${height}`);
+                
+                // Validate extraction bounds before calling sharp.extract()
+                if (left < 0 || top < 0 || width <= 0 || height <= 0) {
+                    console.error(`Invalid extraction bounds: left=${left}, top=${top}, width=${width}, height=${height}`);
+                    throw new Error(`Invalid extraction coordinates: bounds must be positive and within image dimensions`);
+                }
+                
+                if (left + width > rawMetadata.width || top + height > rawMetadata.height) {
+                    console.error(`Extraction bounds exceed image dimensions:`);
+                    console.error(`  Requested: ${left},${top} ${width}x${height}`);
+                    console.error(`  Image size: ${rawMetadata.width}x${rawMetadata.height}`);
+                    console.error(`  Right edge: ${left + width} (max: ${rawMetadata.width})`);
+                    console.error(`  Bottom edge: ${top + height} (max: ${rawMetadata.height})`);
+                    throw new Error(`Extraction area exceeds image boundaries`);
+                }
+                
+                // Extract the region from RAW image using validated coordinates
                 const originalRegion = await sharp(originalPath, { autoRotate: false })
                     .extract({ left, top, width, height })
                     .toBuffer();
                 
-                // Create blurred version of the region
-                const blurredRegion = await sharp(originalRegion)
+                // Rotate the extracted region to match final image orientation if needed
+                let orientedRegion = originalRegion;
+                if (rawMetadata.orientation === 6) {
+                    // For EXIF 6, rotate the extracted region 90° clockwise to match final orientation
+                    orientedRegion = await sharp(originalRegion)
+                        .rotate(90)
+                        .toBuffer();
+                    console.log(`Rotated extracted region 90° clockwise to match final image orientation`);
+                }
+                
+                // Create blurred version of the oriented region
+                console.log(`Creating blurred region with ${blurRadius}px blur...`);
+                let blurredRegion = await sharp(orientedRegion)
                     .blur(blurRadius)
                     .toBuffer();
+                
+                // Apply shape mask if not rectangular
+                const blurShape = (blurSettings.shape || 'square').toString().trim().toLowerCase();
+                console.log(`Blur shape setting received: '${blurShape}' (type: ${typeof blurShape})`);
+                
+                // TEMPORARY: Disable force oval to see if that's breaking things
+                const debugForceOval = false;
+                const actualShape = debugForceOval ? 'oval' : blurShape;
+                console.log(`DEBUG: Using shape = '${actualShape}' (original was '${blurShape}')`);
+                
+                // Apply oval shape if requested - simple approach
+                console.log(`TESTING: actualShape='${actualShape}', blurShape='${blurShape}'`);
+                
+                // Write debug info to file to track what's happening
+                fs.appendFileSync('/tmp/blur_debug.log', `Shape test: actualShape='${actualShape}', blurShape='${blurShape}'\n`);
+                
+                if (actualShape === 'oval') {
+                    console.log(`*** OVAL SHAPE DETECTED - APPLYING CIRCULAR MASK ***`);
+                    fs.appendFileSync('/tmp/blur_debug.log', `*** OVAL CONDITION MATCHED ***\n`);
+                    console.log(`Applying oval shape to ${bodyPart} blur region`);
+                    try {
+                        // Simple oval mask: create a circular crop
+                        const regionMeta = await sharp(blurredRegion).metadata();
+                        const minDim = Math.min(regionMeta.width, regionMeta.height);
+                        const radius = Math.floor(minDim / 2) - 2;
+                        
+                        console.log(`Creating oval mask with radius ${radius} for ${regionMeta.width}x${regionMeta.height} region`);
+                        
+                        // Create circular SVG mask (compatible with older Sharp versions)
+                        const size = Math.min(regionMeta.width, regionMeta.height);
+                        
+                        // Create circular SVG mask
+                        const circularMask = Buffer.from(
+                            `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="${size/2}" cy="${size/2}" r="${size/2 - 1}" fill="white"/>
+                            </svg>`
+                        );
+                        
+                        // Resize blur region to square and apply circular mask
+                        blurredRegion = await sharp(blurredRegion)
+                            .resize(size, size, { fit: 'cover', position: 'center' })
+                            .composite([{ input: circularMask, blend: 'dest-in' }])
+                            .png()
+                            .toBuffer();
+                        
+                        console.log(`Applied circular mask using SVG with radius ${size/2 - 1}`);
+                        console.log(`Successfully applied oval mask to ${bodyPart}`);
+                    } catch (ovalError) {
+                        console.error(`Oval mask failed for ${bodyPart}:`, ovalError.message);
+                        console.log(`Continuing with rectangular blur for ${bodyPart}`);
+                        // blurredRegion remains unchanged - rectangular blur
+                    }
+                } else if (actualShape === 'rounded') {
+                    console.log(`*** ROUNDED SHAPE DETECTED - APPLYING ROUNDED RECTANGLE MASK ***`);
+                    fs.appendFileSync('/tmp/blur_debug.log', `*** ROUNDED CONDITION MATCHED ***\n`);
+                    console.log(`Applying rounded rectangle shape to ${bodyPart} blur region`);
+                    try {
+                        const regionMeta = await sharp(blurredRegion).metadata();
+                        const cornerRadius = Math.min(regionMeta.width, regionMeta.height) * 0.2; // 20% of smallest dimension
+                        
+                        console.log(`Creating rounded rectangle mask with ${cornerRadius}px corners for ${regionMeta.width}x${regionMeta.height} region`);
+                        
+                        // Create rounded rectangle SVG mask
+                        const roundedRectMask = Buffer.from(
+                            `<svg width="${regionMeta.width}" height="${regionMeta.height}" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="0" y="0" width="${regionMeta.width}" height="${regionMeta.height}" rx="${cornerRadius}" ry="${cornerRadius}" fill="white"/>
+                            </svg>`
+                        );
+                        
+                        // Apply rounded rectangle mask
+                        blurredRegion = await sharp(blurredRegion)
+                            .composite([{ input: roundedRectMask, blend: 'dest-in' }])
+                            .png()
+                            .toBuffer();
+                        
+                        console.log(`Applied rounded rectangle mask with ${cornerRadius}px corners`);
+                        console.log(`Successfully applied rounded mask to ${bodyPart}`);
+                    } catch (roundedError) {
+                        console.error(`Rounded mask failed for ${bodyPart}:`, roundedError.message);
+                        console.log(`Continuing with rectangular blur for ${bodyPart}`);
+                        // blurredRegion remains unchanged - rectangular blur
+                    }
+                } else {
+                    console.log(`Using rectangular blur for ${bodyPart} (shape: ${actualShape})`);
+                }
+                
+                // Debug blur processing (no longer saving debug images)
+                console.log(`DEBUG: Applied ${blurRadius}px blur to ${bodyPart} region`);
                 
                 // Create white overlay to match admin interface preview
                 const opacity = Math.max(0, Math.min(1, blurSettings.opacity || 0.8));
                 
-                // Get region dimensions
-                const regionMeta = await sharp(originalRegion).metadata();
+                // Get blurred region dimensions (might be different if oval was applied)
+                const blurredMeta = await sharp(blurredRegion).metadata();
                 
-                // Create white overlay with specified opacity
-                const whiteOverlay = await sharp({
+                // Create white overlay with user-specified opacity from admin interface
+                // Apply calibration factor to match admin interface preview (similar to blur calibration)
+                const opacityCalibrationFactor = 2.5; // Calibrate to match admin preview opacity
+                const enhancedOpacity = Math.min(1.0, opacity * opacityCalibrationFactor);
+                console.log(`Creating white overlay with opacity: ${enhancedOpacity} (${enhancedOpacity * 100}%)`);
+                fs.appendFileSync('/tmp/blur_debug.log', `Creating white overlay with opacity: ${enhancedOpacity} (${enhancedOpacity * 100}%)\n`);
+                
+                let whiteOverlay = await sharp({
                     create: {
-                        width: regionMeta.width,
-                        height: regionMeta.height,
+                        width: blurredMeta.width,
+                        height: blurredMeta.height,
                         channels: 4,
-                        background: { r: 255, g: 255, b: 255, alpha: opacity }
+                        background: { r: 255, g: 255, b: 255, alpha: enhancedOpacity }
                     }
                 }).png().toBuffer();
                 
-                // Create the backdrop-filter effect: apply blur at the specified radius,
-                // then add white overlay for the admin interface look
+                // Apply matching shape to white overlay
+                if (actualShape === 'oval') {
+                    try {
+                        console.log(`Applying circular shape to white overlay to match blur`);
+                        fs.appendFileSync('/tmp/blur_debug.log', `Attempting to apply circular shape to white overlay\n`);
+                        
+                        const overlaySize = Math.min(blurredMeta.width, blurredMeta.height);
+                        
+                        // Create circular SVG mask for white overlay (same as blur region)
+                        const overlayCircularMask = Buffer.from(
+                            `<svg width="${overlaySize}" height="${overlaySize}" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="${overlaySize/2}" cy="${overlaySize/2}" r="${overlaySize/2 - 1}" fill="white"/>
+                            </svg>`
+                        );
+                        
+                        // Apply circular mask to white overlay using SVG
+                        whiteOverlay = await sharp(whiteOverlay)
+                            .resize(overlaySize, overlaySize, { fit: 'cover', position: 'center' })
+                            .composite([{ input: overlayCircularMask, blend: 'dest-in' }])
+                            .png()
+                            .toBuffer();
+                            
+                        fs.appendFileSync('/tmp/blur_debug.log', `Successfully applied circular shape to white overlay using SVG\n`);
+                    } catch (overlayError) {
+                        console.error(`White overlay circular processing failed:`, overlayError.message);
+                        fs.appendFileSync('/tmp/blur_debug.log', `WHITE OVERLAY ERROR: ${overlayError.message}\n`);
+                        // Continue with rectangular white overlay if circular fails
+                    }
+                } else if (actualShape === 'rounded') {
+                    try {
+                        console.log(`Applying rounded rectangle shape to white overlay to match blur`);
+                        fs.appendFileSync('/tmp/blur_debug.log', `Attempting to apply rounded rectangle shape to white overlay\n`);
+                        
+                        const cornerRadius = Math.min(blurredMeta.width, blurredMeta.height) * 0.2; // Same as blur region
+                        
+                        // Create rounded rectangle SVG mask for white overlay (same as blur region)
+                        const overlayRoundedMask = Buffer.from(
+                            `<svg width="${blurredMeta.width}" height="${blurredMeta.height}" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="0" y="0" width="${blurredMeta.width}" height="${blurredMeta.height}" rx="${cornerRadius}" ry="${cornerRadius}" fill="white"/>
+                            </svg>`
+                        );
+                        
+                        // Apply rounded rectangle mask to white overlay using SVG
+                        whiteOverlay = await sharp(whiteOverlay)
+                            .composite([{ input: overlayRoundedMask, blend: 'dest-in' }])
+                            .png()
+                            .toBuffer();
+                            
+                        fs.appendFileSync('/tmp/blur_debug.log', `Successfully applied rounded rectangle shape to white overlay using SVG\n`);
+                    } catch (overlayError) {
+                        console.error(`White overlay rounded processing failed:`, overlayError.message);
+                        fs.appendFileSync('/tmp/blur_debug.log', `WHITE OVERLAY ERROR: ${overlayError.message}\n`);
+                        // Continue with rectangular white overlay if rounded fails
+                    }
+                }
                 
-                // For backdrop-filter effect, we want strong blur but controlled by opacity
-                // Use the blurred region at full strength but control visibility with opacity
-                const blendedRegion = await sharp(originalRegion)
+                // For content moderation, use fully blurred region as base (no blending with original)
+                // Apply white overlay directly on top of blurred region for maximum obscuring
+                console.log(`Compositing white overlay onto blurred region...`);
+                fs.appendFileSync('/tmp/blur_debug.log', `Compositing white overlay with ${enhancedOpacity * 100}% opacity onto blurred region\n`);
+                
+                const blendedRegion = await sharp(blurredRegion)
                     .composite([
                         {
                             input: whiteOverlay,
                             blend: 'over'  // White overlay with user-specified opacity
-                        },
-                        {
-                            input: blurredRegion,
-                            blend: 'multiply', // Use multiply to create backdrop-filter effect
-                            opacity: 0.7  // Strong blur effect that shows through the white overlay
                         }
                     ])
                     .toBuffer();
                 
-                console.log(`Extracted from raw image at: ${left},${top} ${width}x${height}`);
+                console.log(`White overlay composite completed`);
+                fs.appendFileSync('/tmp/blur_debug.log', `White overlay composite completed successfully\n`);
+                
+                console.log(`Extracted from RAW image at: ${left},${top} ${width}x${height}`);
                 console.log(`Applied blur radius: ${blurRadius}px (${blurSettings.strength}px setting)`);
-                console.log(`Applied white overlay with ${opacity * 100}% opacity`);
+                console.log(`Applied white overlay with ${enhancedOpacity * 100}% opacity (enhanced from ${opacity * 100}%)`);
                 console.log(`Preparing for composite at: ${compositeLeft},${compositeTop}`);
                 
                 // Add to blur regions array for batch composite
@@ -727,25 +975,37 @@ async function createBlurredVersion(originalPath, modelName, blurSettings) {
             console.log(`Applying ${blurRegions.length} blur regions in single composite operation`);
             processedImage = processedImage.composite(blurRegions);
         } else {
-            // Apply global blur if no specific regions are defined
-            console.log('Applying global blur with radius:', blurSettings.strength || 15);
-            const blurRadius = Math.max(1, Math.min(100, blurSettings.strength || 15));
+            // Apply global blur if no specific regions are defined with calibration factor
+            const blurCalibrationFactor = 2.5; // Same calibration as selective blur
+            const rawBlurRadius = blurSettings.strength || 15;
+            const blurRadius = Math.max(1, Math.min(100, rawBlurRadius * blurCalibrationFactor));
+            console.log(`Applying global blur: admin setting ${rawBlurRadius}px → actual ${blurRadius}px (${blurCalibrationFactor}x factor)`);
             processedImage = processedImage.blur(blurRadius);
         }
 
-        // Apply auto-rotation to the final output for proper display orientation
+        // Apply EXIF rotation to the final output for proper display orientation
         if (rawMetadata.orientation) {
-            console.log('Applying auto-rotation to final output for proper display orientation');
+            console.log('Applying EXIF rotation to final output for proper display orientation');
             processedImage = processedImage.rotate(); // This applies EXIF rotation
         } else {
-            console.log('No EXIF orientation found, keeping image as-is');
+            console.log('No EXIF orientation found, keeping RAW image as-is'); 
         }
         
-        // Save the processed image
-        await processedImage.jpeg({ quality: 90 }).toFile(blurredPath);
-        
-        console.log('Blurred image created successfully:', blurredPath);
-        return `/uploads/${modelSlug}/public/blurred/${blurredFileName}`;
+        // Save the processed image with detailed logging
+        console.log('Attempting to save processed image to:', blurredPath);
+        try {
+            await processedImage.jpeg({ quality: 90 }).toFile(blurredPath);
+            console.log('SUCCESS: Blurred image saved successfully to:', blurredPath);
+            
+            // Verify the file was actually created
+            const stats = await fsPromises.stat(blurredPath);
+            console.log('File verification - Size:', stats.size, 'bytes');
+            
+            return `/uploads/${modelSlug}/public/blurred/${blurredFileName}`;
+        } catch (saveError) {
+            console.error('FAILED to save blurred image:', saveError);
+            throw saveError;
+        }
 
     } catch (error) {
         console.error('Error creating blurred version:', error);
