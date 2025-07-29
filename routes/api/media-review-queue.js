@@ -1014,4 +1014,137 @@ async function createBlurredVersion(originalPath, modelName, blurSettings) {
     }
 }
 
+/**
+ * Generate Sharp.js blur preview without saving
+ */
+router.post('/preview-blur', async (req, res) => {
+    try {
+        const { 
+            mediaId,
+            filePath, 
+            blurSettings,
+            overlayPositions 
+        } = req.body;
+
+        if (!blurSettings) {
+            return res.status(400).json({
+                success: false,
+                error: 'Blur settings are required'
+            });
+        }
+
+        let absoluteFilePath;
+        let modelName = 'Preview';
+
+        if (mediaId) {
+            // Handle media queue image
+            console.log('🔍 Processing media queue image with ID:', mediaId);
+            
+            const [items] = await db.execute(
+                'SELECT original_path, model_name FROM media_review_queue WHERE id = ?',
+                [mediaId]
+            );
+            
+            if (!items.length) {
+                return res.status(404).json({
+                    success: false,
+                    error: 'Media item not found'
+                });
+            }
+            
+            const item = items[0];
+            absoluteFilePath = item.original_path;
+            modelName = item.model_name || 'Preview';
+            
+            console.log('🔍 Retrieved from media queue:', absoluteFilePath);
+            
+        } else if (filePath && filePath !== 'unknown') {
+            // Handle uploaded image
+            console.log('🔍 Processing uploaded image with path:', filePath);
+            
+            // Convert relative path to absolute filesystem path
+            if (!path.isAbsolute(filePath)) {
+                if (filePath.startsWith('/uploads')) {
+                    absoluteFilePath = path.join(__dirname, '../../public', filePath);
+                } else if (filePath.startsWith('uploads')) {
+                    absoluteFilePath = path.join(__dirname, '../../public', filePath);
+                } else {
+                    absoluteFilePath = path.join(__dirname, '../../public/uploads', filePath);
+                }
+            } else {
+                absoluteFilePath = filePath;
+            }
+            
+            // Extract model name from file path
+            const pathParts = absoluteFilePath.split('/');
+            const modelSlug = pathParts.find(part => part.includes('escort') || part.includes('model')) || 'preview';
+            modelName = modelSlug.charAt(0).toUpperCase() + modelSlug.slice(1);
+            
+        } else {
+            return res.status(400).json({
+                success: false,
+                error: 'Either mediaId or filePath is required'
+            });
+        }
+
+        console.log('🔍 Final file path for preview:', absoluteFilePath);
+        console.log('🔍 Model name:', modelName);
+        console.log('🔍 Blur settings:', blurSettings);
+        console.log('🔍 Overlay positions:', overlayPositions);
+        
+        // Create preview blur settings with overlay positions
+        const previewBlurSettings = {
+            ...blurSettings,
+            overlayPositions: overlayPositions
+        };
+        
+        // Check if file exists before calling createBlurredVersion
+        try {
+            await fsPromises.access(absoluteFilePath);
+            console.log('✅ File exists and is accessible:', absoluteFilePath);
+        } catch (err) {
+            console.error('❌ File not accessible:', absoluteFilePath, 'Error:', err.message);
+            return res.status(404).json({
+                success: false,
+                error: 'File not found or not accessible',
+                details: `Cannot access file: ${absoluteFilePath}`
+            });
+        }
+        
+        const blurredPath = await createBlurredVersion(absoluteFilePath, modelName, previewBlurSettings);
+        
+        console.log('🔍 createBlurredVersion returned:', blurredPath);
+        console.log('🔍 blurredPath type:', typeof blurredPath);
+
+        if (blurredPath) {
+            // Return the preview image path for frontend to display
+            const publicDir = path.join(__dirname, '../../public');
+            const relativePath = blurredPath.replace(publicDir, '');
+            
+            console.log('✅ Sharp.js preview generated:', blurredPath);
+            console.log('✅ Relative path for frontend:', relativePath);
+            
+            res.json({
+                success: true,
+                previewPath: relativePath,
+                message: 'Sharp.js blur preview generated successfully'
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                error: 'Failed to generate blur preview',
+                details: 'createBlurredVersion returned null'
+            });
+        }
+
+    } catch (error) {
+        console.error('Error generating blur preview:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error during preview generation',
+            details: error.message
+        });
+    }
+});
+
 module.exports = router;

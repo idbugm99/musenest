@@ -822,9 +822,11 @@ class ContentModerationService {
                 console.log('Applying selective blur to regions:', Object.keys(blurSettings.overlayPositions));
                 
                 // Create blur overlay for each region
+                // Sharp.js .blur() expects sigma (standard deviation)
+                // Use moderate multiplier for effective blur without over-diffusion
                 const rawBlurRadius = blurSettings.strength || 15;
-                const blurRadius = Math.max(1, Math.min(100, rawBlurRadius)); // 1:1 ratio, no multiplier
-                console.log(`Blur setting: ${rawBlurRadius}px (1:1 ratio)`);
+                const blurRadius = Math.max(1, Math.min(50, rawBlurRadius * 0.6)); // 60% of backend value
+                console.log(`Blur setting: ${rawBlurRadius}px backend → ${blurRadius}px Sharp.js sigma`);
                 
                 // Collect all blur regions for single composite operation
                 const blurRegions = [];
@@ -920,17 +922,101 @@ class ContentModerationService {
                     console.log(`DEBUG: About to apply ${blurRadius}px blur to ${bodyPart} region`);
                     let blurredRegion = await sharp(orientedRegion).blur(blurRadius).toBuffer();
                     
-                    // TEMPORARY: Save debug image to verify blur is working
-                    const debugBlurPath = `/Users/programmer/Projects/musenest/debug_blur_${bodyPart}_${Date.now()}.jpg`;
-                    await sharp(blurredRegion).jpeg().toFile(debugBlurPath);
-                    console.log(`DEBUG: Saved blurred region to ${debugBlurPath}`);
+                    // Apply shape processing based on blur settings
+                    const shape = blurSettings.shape || 'square';
+                    console.log(`DEBUG: ==========================================`);
+                    console.log(`DEBUG: Processing ${bodyPart} with shape: "${shape}"`);
+                    console.log(`DEBUG: Shape comparison: shape === 'oval' is ${shape === 'oval'}`);
+                    console.log(`DEBUG: Shape comparison: shape === 'rounded' is ${shape === 'rounded'}`);
+                    console.log(`DEBUG: Shape comparison: shape === 'square' is ${shape === 'square'}`);
+                    console.log(`DEBUG: Full blur settings:`, JSON.stringify(blurSettings, null, 2));
+                    console.log(`DEBUG: ==========================================`);
                     
-                    // No shape processing - just use the pure Gaussian blur
-                    console.log(`DEBUG: Using pure Gaussian blur for ${bodyPart}`);
+                    let finalBlurredRegion = blurredRegion;
                     
-                    // Add to blur regions array - use blurred region directly
+                    if (shape === 'oval') {
+                        console.log(`DEBUG: FORCING OVAL SHAPE for ${bodyPart} - creating custom SVG blur`);
+                        
+                        // Force oval by using SVG blur filter directly
+                        const ovalSvg = `
+                            <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+                                        <feGaussianBlur in="SourceGraphic" stdDeviation="${blurRadius}"/>
+                                    </filter>
+                                    <clipPath id="oval">
+                                        <ellipse cx="${width/2}" cy="${height/2}" rx="${width/2}" ry="${height/2}"/>
+                                    </clipPath>
+                                </defs>
+                                <image href="data:image/jpeg;base64,${orientedRegion.toString('base64')}" 
+                                       width="${width}" height="${height}" filter="url(#blur)" clip-path="url(#oval)"/>
+                            </svg>
+                        `;
+                        
+                        try {
+                            finalBlurredRegion = await sharp(Buffer.from(ovalSvg))
+                                .png()
+                                .toBuffer();
+                            console.log(`DEBUG: Created SVG oval blur for ${bodyPart}`);
+                        } catch (svgError) {
+                            console.error(`SVG oval failed: ${svgError.message}`);
+                            // Simple fallback - just use rectangular blur for now
+                            finalBlurredRegion = blurredRegion;
+                        }
+                        
+                    } else if (shape === 'rounded') {
+                        // Simple approach: Create blurred rounded rectangle that composites naturally
+                        const cornerRadius = Math.min(width, height) * 0.15; // 15% corner radius
+                        
+                        // Step 1: Create rounded rectangle mask as grayscale
+                        const roundedMask = await sharp({
+                            create: {
+                                width: width,
+                                height: height,
+                                channels: 3,
+                                background: { r: 0, g: 0, b: 0 }
+                            }
+                        })
+                        .composite([{
+                            input: Buffer.from(`<svg width="${width}" height="${height}">
+                                <rect x="0" y="0" width="${width}" height="${height}" rx="${cornerRadius}" ry="${cornerRadius}" fill="white"/>
+                            </svg>`),
+                            blend: 'over'
+                        }])
+                        .raw()
+                        .toBuffer();
+                        
+                        // Step 2: Use the mask to blend original and blurred versions
+                        const originalBuffer = await sharp(orientedRegion).raw().toBuffer();
+                        const blurredBuffer = await sharp(orientedRegion).blur(blurRadius).raw().toBuffer();
+                        
+                        // Step 3: Manual pixel blending based on mask
+                        const resultBuffer = Buffer.alloc(originalBuffer.length);
+                        const channels = 3; // RGB
+                        
+                        for (let i = 0; i < originalBuffer.length; i += channels) {
+                            const maskValue = roundedMask[i] / 255; // Normalize to 0-1
+                            
+                            // Blend: original * (1-mask) + blurred * mask
+                            resultBuffer[i] = Math.round(originalBuffer[i] * (1 - maskValue) + blurredBuffer[i] * maskValue);     // R
+                            resultBuffer[i + 1] = Math.round(originalBuffer[i + 1] * (1 - maskValue) + blurredBuffer[i + 1] * maskValue); // G
+                            resultBuffer[i + 2] = Math.round(originalBuffer[i + 2] * (1 - maskValue) + blurredBuffer[i + 2] * maskValue); // B
+                        }
+                        
+                        // Convert back to image buffer
+                        finalBlurredRegion = await sharp(resultBuffer, { 
+                            raw: { width: width, height: height, channels: channels } 
+                        }).jpeg().toBuffer();
+                        
+                        console.log(`DEBUG: Applied rounded rectangle blur blending to ${bodyPart}`);
+                    } else {
+                        // Square/rectangle - no additional processing needed
+                        console.log(`DEBUG: Using square/rectangle shape for ${bodyPart}`);
+                    }
+                    
+                    // Add to blur regions array - use shaped blur region
                     blurRegions.push({
-                        input: blurredRegion,
+                        input: finalBlurredRegion,
                         left: left,
                         top: top
                     });
