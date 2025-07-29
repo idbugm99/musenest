@@ -25,11 +25,51 @@
         
         .blur-overlay {
             position: absolute;
-            border: 2px solid #dc3545;
+            border: 3px solid rgba(220, 53, 69, 0.8);
+            background: rgba(220, 53, 69, 0.15);
             cursor: pointer;
             transition: all 0.3s ease;
-            border-radius: var(--blur-shape, 0px);
+            border-radius: 8px;
             overflow: hidden;
+            backdrop-filter: blur(1px);
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+        }
+        
+        .blur-overlay:hover {
+            border-color: rgba(220, 53, 69, 1);
+            background: rgba(220, 53, 69, 0.25);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        }
+        
+        /* Violation type specific colors */
+        .blur-overlay[data-part*="GENITALIA"] {
+            border-color: rgba(142, 68, 173, 0.8);
+            background: rgba(142, 68, 173, 0.15);
+            box-shadow: 0 2px 8px rgba(142, 68, 173, 0.3);
+        }
+        
+        .blur-overlay[data-part*="BREAST"] {
+            border-color: rgba(231, 76, 60, 0.8);
+            background: rgba(231, 76, 60, 0.15);
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+        }
+        
+        .blur-overlay[data-part*="BUTTOCKS"] {
+            border-color: rgba(255, 107, 53, 0.8);
+            background: rgba(255, 107, 53, 0.15);
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+        }
+        
+        .blur-overlay[data-part*="ARMPITS"] {
+            border-color: rgba(243, 156, 18, 0.8);
+            background: rgba(243, 156, 18, 0.15);
+            box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+        }
+        
+        .blur-overlay[data-part*="FACE"] {
+            border-color: rgba(52, 152, 219, 0.8);
+            background: rgba(52, 152, 219, 0.15);
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
         }
         
         /* Shape styling for blur overlays */
@@ -42,13 +82,43 @@
         }
         
         .blur-overlay.shape-square {
-            border-radius: 0px;
+            border-radius: 8px;
         }
         
-        .blur-overlay:hover {
-            border-color: #ffc107;
-            background: rgba(255, 255, 0, 0.2);
+        /* Confidence label styling */
+        .confidence-label {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            z-index: 100;
+            pointer-events: none;
         }
+        
+        /* Progress bar styling */
+        .score-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        
+        .score-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+        
+        .score-fill.high { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+        .score-fill.medium { background: linear-gradient(90deg, #f39c12, #e67e22); }
+        .score-fill.low { background: linear-gradient(90deg, #2ecc71, #27ae60); }
         
         .blur-overlay.disabled {
             display: none !important;
@@ -446,6 +516,9 @@
                         console.log(`AI coordinates: x=${x}, y=${y}, w=${width}, h=${height}`);
                         console.log(`Canvas natural size: ${canvas.width} x ${canvas.height}`);
                         
+                        // Get confidence score for this part
+                        const confidence = analysis.detected_parts[part] || location.confidence || 0;
+                        
                         overlaysHtml += `
                             <div id="${overlayId}" 
                                  class="blur-overlay shape-square" 
@@ -461,8 +534,6 @@
                                      height: 100px;
                                      --blur-strength: 10px;
                                      z-index: 10;
-                                     border: 3px solid ${part === 'BUTTOCKS_EXPOSED' ? '#FF6B35' : part === 'FEMALE_GENITALIA_EXPOSED' ? '#8E44AD' : '#FF0000'};
-                                     box-shadow: 0 0 10px ${part === 'BUTTOCKS_EXPOSED' ? '#FF6B35' : part === 'FEMALE_GENITALIA_EXPOSED' ? '#8E44AD' : '#FF0000'};
                                  ">
                                 <div class="violation-label" style="background: ${part === 'BUTTOCKS_EXPOSED' ? '#FF6B35' : part === 'FEMALE_GENITALIA_EXPOSED' ? '#8E44AD' : 'red'}; color: white; font-weight: bold;">
                                     ${part === 'BUTTOCKS_EXPOSED' ? 'BUTTOCKS' : part === 'FEMALE_GENITALIA_EXPOSED' ? 'GENITALIA' : part.toUpperCase()}
@@ -482,16 +553,46 @@
                         
                         console.log(`Created overlay HTML for ${part} with canvas dimensions: ${width}x${height}`);
                         
+                        // Get area info for this part (reuse confidence from above)
+                        const area = Math.abs(width * height);
+                        const shape = width > height ? 'Wide' : 'Tall';
+                        
+                        // Determine icon and colors based on part type
+                        let icon, color, bgColor;
+                        if (part.includes('GENITALIA')) {
+                            icon = '🟪'; color = '#8E44AD'; bgColor = 'rgba(142, 68, 173, 0.1)';
+                        } else if (part.includes('BREAST')) {
+                            icon = '🔴'; color = '#E74C3C'; bgColor = 'rgba(231, 76, 60, 0.1)';
+                        } else if (part.includes('BUTTOCKS')) {
+                            icon = '🟧'; color = '#FF6B35'; bgColor = 'rgba(255, 107, 53, 0.1)';
+                        } else if (part.includes('ARMPITS')) {
+                            icon = '🟨'; color = '#F39C12'; bgColor = 'rgba(243, 156, 18, 0.1)';
+                        } else if (part.includes('FACE')) {
+                            icon = '🔵'; color = '#3498DB'; bgColor = 'rgba(52, 152, 219, 0.1)';
+                        } else {
+                            icon = '🔴'; color = '#E74C3C'; bgColor = 'rgba(231, 76, 60, 0.1)';
+                        }
+                        
+                        const partName = part.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+                        
                         violationsHtml += `
-                            <div id="violation-${part}" class="violation-item blurred" style="border-left: 4px solid ${part === 'BUTTOCKS_EXPOSED' ? '#FF6B35' : part === 'FEMALE_GENITALIA_EXPOSED' ? '#8E44AD' : '#FF0000'};">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong style="color: ${part === 'BUTTOCKS_EXPOSED' ? '#FF6B35' : part === 'FEMALE_GENITALIA_EXPOSED' ? '#8E44AD' : '#FF0000'};">${part === 'BUTTOCKS_EXPOSED' ? 'BUTTOCKS' : part === 'FEMALE_GENITALIA_EXPOSED' ? 'GENITALIA' : part.toUpperCase()}</strong>
-                                        <br><small>Detected content area</small>
+                            <div id="violation-${part}" class="card mb-2 violation-item blurred" style="background: ${bgColor}; border-left: 4px solid ${color};">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span class="me-2" style="font-size: 1.2em;">${icon}</span>
+                                                <strong style="color: ${color};">${partName}</strong>
+                                                <span class="badge ms-2" style="background: ${color}; color: white;">${confidence.toFixed(0)}%</span>
+                                            </div>
+                                            <div class="small text-muted">
+                                                📐 ${(area/1000).toFixed(0)}k px² • Shape: ${shape} • Status: <span id="status-${part}">✅ Blurred</span>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-secondary ms-3" onclick="toggleBlur('${part}')" style="border-color: ${color}; color: ${color};">
+                                            <span id="btn-${part}">🟦 Blurred</span>
+                                        </button>
                                     </div>
-                                    <button class="btn btn-sm" style="border-color: ${part === 'BUTTOCKS_EXPOSED' ? '#FF6B35' : part === 'FEMALE_GENITALIA_EXPOSED' ? '#8E44AD' : '#FF0000'}; color: ${part === 'BUTTOCKS_EXPOSED' ? '#FF6B35' : part === 'FEMALE_GENITALIA_EXPOSED' ? '#8E44AD' : '#FF0000'};" onclick="toggleBlur('${part}')">
-                                        <span id="btn-${part}">🟦 Blurred</span>
-                                    </button>
                                 </div>
                             </div>
                         `;
@@ -1226,25 +1327,189 @@
         }
         
         function displayAnalysisResults(analysis) {
+            // Build detected parts list with confidence scores
+            let detectedPartsHtml = '';
+            if (analysis.detected_parts) {
+                detectedPartsHtml = Object.entries(analysis.detected_parts)
+                    .map(([part, confidence]) => {
+                        const badgeColor = confidence > 80 ? 'danger' : confidence > 60 ? 'warning' : 'secondary';
+                        const partName = part.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+                        return `<span class="badge bg-${badgeColor} me-1 mb-1">${partName}: ${confidence.toFixed(1)}%</span>`;
+                    }).join('');
+            }
+            
+            // Build pose analysis details
+            let poseDetailsHtml = '';
+            if (analysis.pose_analysis && analysis.pose_analysis.details) {
+                const pose = analysis.pose_analysis.details;
+                poseDetailsHtml = `
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            <strong>Body Orientation:</strong> ${pose.body_orientation || 'N/A'}<br>
+                            <strong>Torso Angle:</strong> ${pose.torso_angle ? pose.torso_angle.toFixed(1) + '°' : 'N/A'}<br>
+                            <strong>Hip Bend:</strong> ${pose.hip_bend_angle ? pose.hip_bend_angle.toFixed(1) + '°' : 'N/A'}<br>
+                            <strong>Leg Spread:</strong> ${pose.leg_spread ? pose.leg_spread.toFixed(3) : 'N/A'}
+                        </small>
+                    </div>
+                `;
+            }
+            
+            // Build combined assessment details
+            let assessmentHtml = '';
+            if (analysis.combined_assessment) {
+                const assessment = analysis.combined_assessment;
+                assessmentHtml = `
+                    <div class="mt-3">
+                        <h6>📋 Combined Assessment</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small><strong>Nudity Contribution:</strong> ${assessment.nudity_contribution ? assessment.nudity_contribution.toFixed(1) + '%' : 'N/A'}</small>
+                            </div>
+                            <div class="col-md-6">
+                                <small><strong>Pose Contribution:</strong> ${assessment.pose_contribution ? assessment.pose_contribution.toFixed(1) + '%' : assessment.pose_contribution}</small>
+                            </div>
+                        </div>
+                        ${assessment.reasoning && assessment.reasoning.length > 0 ? 
+                            `<div class="mt-2"><small><strong>Reasoning:</strong> ${assessment.reasoning.join(', ')}</small></div>` : ''
+                        }
+                    </div>
+                `;
+            }
+            
+            // Helper function to get score color class
+            function getScoreClass(score) {
+                if (score >= 70) return 'high';
+                if (score >= 40) return 'medium';
+                return 'low';
+            }
+            
             const content = `
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="badge bg-${analysis.moderation_status === 'approved' ? 'success' : 'danger'} fs-6">
-                            ${analysis.moderation_status.toUpperCase()}
+                    <!-- Nudity & Risk Overview Card -->
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">🔶 Nudity & Risk Overview</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <strong>Nudity Score:</strong>
+                                        <span class="badge bg-warning">${analysis.nudity_score.toFixed(1)}%</span>
+                                    </div>
+                                    <div class="score-bar">
+                                        <div class="score-fill ${getScoreClass(analysis.nudity_score)}" style="width: ${analysis.nudity_score}%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <strong>Final Risk Score:</strong>
+                                        <span class="badge bg-info">${analysis.final_risk_score ? analysis.final_risk_score.toFixed(1) + '%' : 'N/A'}</span>
+                                    </div>
+                                    <div class="score-bar">
+                                        <div class="score-fill ${getScoreClass(analysis.final_risk_score || 0)}" style="width: ${analysis.final_risk_score || 0}%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row text-center">
+                                    <div class="col-6">
+                                        <div class="badge bg-${analysis.moderation_status === 'approved' ? 'success' : 'danger'} mb-1">
+                                            ${analysis.moderation_status.toUpperCase()}
+                                        </div>
+                                        <br><small class="text-muted">Status</small>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="badge bg-${analysis.risk_level === 'high' ? 'danger' : analysis.risk_level === 'medium' ? 'warning' : 'success'} mb-1">
+                                            ${analysis.risk_level || 'Unknown'}
+                                        </div>
+                                        <br><small class="text-muted">Risk Level</small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <br><small>Moderation Status</small>
                     </div>
-                    <div class="col-md-6">
-                        <div class="badge bg-warning fs-6">${analysis.nudity_score.toFixed(1)}%</div>
-                        <br><small>Nudity Score</small>
+                    
+                    <!-- Pose & Orientation Info Card -->
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">🧍‍♀️ Pose & Orientation Info</h6>
+                            </div>
+                            <div class="card-body">
+                                ${analysis.pose_analysis ? `
+                                    <div class="mb-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="me-2">🎯</span>
+                                            <strong>Pose:</strong>
+                                            <span class="badge ms-2 bg-${analysis.pose_analysis.pose_detected ? 'success' : 'secondary'}">
+                                                ${analysis.pose_analysis.pose_detected ? 'Detected' : 'Not Detected'}
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="me-2">🎨</span>
+                                            <strong>Category:</strong>
+                                            <span class="badge ms-2 bg-${analysis.pose_analysis.pose_category === 'explicit' ? 'danger' : 'success'}">
+                                                ${analysis.pose_analysis.pose_category || 'Unknown'}
+                                            </span>
+                                        </div>
+                                        
+                                        ${analysis.pose_analysis.details ? `
+                                            <div class="small text-muted mt-3">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <strong>Facing:</strong> ${analysis.pose_analysis.details.body_orientation || 'N/A'}<br>
+                                                        <strong>Tilt:</strong> ${analysis.pose_analysis.details.torso_angle ? analysis.pose_analysis.details.torso_angle.toFixed(1) + '°' : 'N/A'}
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <strong>Hip:</strong> ${analysis.pose_analysis.details.hip_bend_angle ? analysis.pose_analysis.details.hip_bend_angle.toFixed(1) + '°' : 'N/A'}<br>
+                                                        <strong>Spread:</strong> ${analysis.pose_analysis.details.leg_spread ? analysis.pose_analysis.details.leg_spread.toFixed(3) : 'N/A'}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                ` : `
+                                    <div class="text-center text-muted py-3">
+                                        <span style="font-size: 2em;">🤷‍♀️</span>
+                                        <p class="mb-0">No pose analysis available</p>
+                                    </div>
+                                `}
+                                
+                                <div class="mt-3 pt-3 border-top">
+                                    <div class="row text-center small">
+                                        <div class="col-4">
+                                            <strong>Intent:</strong><br>
+                                            <span class="text-muted">${analysis.usage_intent || 'Unknown'}</span>
+                                        </div>
+                                        <div class="col-4">
+                                            <strong>Location:</strong><br>
+                                            <span class="text-muted">${analysis.final_location || 'Unknown'}</span>
+                                        </div>
+                                        <div class="col-4">
+                                            <strong>Review:</strong><br>
+                                            <span class="text-muted">${analysis.human_review_required ? 'Required' : 'Not Required'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="mt-3">
-                    <strong>Pose Classification:</strong> ${analysis.pose_category || 'Unknown'}<br>
-                    <strong>Risk Level:</strong> ${analysis.risk_level || 'Unknown'}<br>
-                    <strong>Final Risk Score:</strong> ${analysis.final_risk_score ? analysis.final_risk_score.toFixed(1) + '%' : 'N/A'}
-                </div>
+                ${detectedPartsHtml ? `
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">🎯 Detected Content Areas</h6>
+                        </div>
+                        <div class="card-body">
+                            <div>${detectedPartsHtml}</div>
+                        </div>
+                    </div>
+                ` : ''}
+                
+                ${assessmentHtml}
             `;
             
             document.getElementById('analysisContent').innerHTML = content;
