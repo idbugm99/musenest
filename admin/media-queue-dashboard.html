@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Admin Dashboard - MuseNest</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .admin-sidebar {
+            transition: all 0.3s ease-in-out;
+        }
+        .admin-sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+        .content-area {
+            transition: all 0.3s ease-in-out;
+        }
+        .nav-item.active {
+            background-color: #3B82F6;
+            color: white;
+        }
+        .nav-item:hover {
+            background-color: #EBF4FF;
+        }
+        .nav-item.active:hover {
+            background-color: #2563EB;
+        }
+        .status-badge {
+            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+        }
+        .status-active { @apply bg-green-100 text-green-800; }
+        .status-pending { @apply bg-yellow-100 text-yellow-800; }
+        .status-suspended { @apply bg-red-100 text-red-800; }
+        .status-rejected { @apply bg-red-100 text-red-800; }
+        .verification-approved { @apply bg-green-100 text-green-800; }
+        .verification-pending { @apply bg-yellow-100 text-yellow-800; }
+        .verification-rejected { @apply bg-red-100 text-red-800; }
+        .modal {
+            animation: modalAppear 0.2s ease-out;
+        }
+        @keyframes modalAppear {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Main Layout -->
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="admin-sidebar bg-white shadow-lg w-64 fixed inset-y-0 left-0 z-50">
+            <!-- Header -->
+            <div class="flex items-center justify-between h-16 px-4 border-b border-gray-200">
+                <div class="flex items-center">
+                    <i class="fas fa-shield-alt text-2xl text-blue-600 mr-3"></i>
+                    <h1 class="text-lg font-bold text-gray-900">System Admin</h1>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="mt-5 flex-1 px-2 space-y-1">
+                <!-- Dashboard -->
+                <a href="#" class="nav-item flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-900" data-tab="overview">
+                    <i class="fas fa-chart-line mr-3 w-5"></i>
+                    System Overview
+                </a>
+
+                <!-- Client Management -->
+                <div class="pt-4">
+                    <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Client Management</h3>
+                    <a href="#" class="nav-item flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-900 mt-1" data-tab="client-accounts">
+                        <i class="fas fa-users mr-3 w-5"></i>
+                        Client Accounts
+                    </a>
+                    <a href="#" class="nav-item flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-900" data-tab="model-screening">
+                        <i class="fas fa-user-check mr-3 w-5"></i>
+                        Model Screening
+                    </a>
+                    <a href="#" class="nav-item flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-900" data-tab="verification-queue">
+                        <i class="fas fa-clipboard-check mr-3 w-5"></i>
+                        Verification Queue
+                    </a>
+                </div>
+
+                <!-- Business Management -->
+                <div class="pt-4">
+                    <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Business Operations</h3>
+                    <a href="#" class="nav-item flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-900 mt-1" data-tab="subscription-management">
+                        <i class="fas fa-credit-card mr-3 w-5"></i>
+                        Subscriptions & Billing
+                    </a>
+                    <a href="#" class="nav-item flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-900" data-tab="revenue-tracking">
+                        <i class="fas fa-chart-bar mr-3 w-5"></i>
+                        Revenue Tracking
+                    </a>
+                    <a href="#" class="nav-item flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-900" data-tab="whitelabel-partners">
+                        <i class="fas fa-handshake mr-3 w-5"></i>
+                        Whitelabel Partners
+                    </a>
+                </div>
+
+                <!-- Media Moderation -->
+                <div class="pt-4">
+                    <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Media Moderation</h3>
+                    <a href="#" class="nav-item flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-900 mt-1" data-tab="media-queue">
+                        <i class="fas fa-images mr-3 w-5"></i>
+                        Media Queue
+                    </a>
+                    <a href="#" class="nav-item flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-900" data-tab="blurred-approved">
+                        <i class="fas fa-eye-slash mr-3 w-5"></i>
+                        Blurred/Approved
+                    </a>
+                    <a href="#" class="nav-item flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-900" data-tab="rejected-removed">
+                        <i class="fas fa-trash-alt mr-3 w-5"></i>
+                        Rejected/Removed
+                    </a>
+                </div>
+
+                <!-- System Configuration -->
+                <div class="pt-4">
+                    <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">System Configuration</h3>
+                    <a href="#" class="nav-item flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-900 mt-1" data-tab="template-builder">
+                        <i class="fas fa-layer-group mr-3 w-5"></i>
+                        Template Sets
+                    </a>
+                    <a href="#" class="nav-item flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-900" data-tab="content-moderation">
+                        <i class="fas fa-shield-alt mr-3 w-5"></i>
+                        Content Moderation
+                    </a>
+                    <a href="#" class="nav-item flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-900" data-tab="staff-management">
+                        <i class="fas fa-user-cog mr-3 w-5"></i>
+                        Staff Management
+                    </a>
+                    <a href="#" class="nav-item flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-900" data-tab="system-settings">
+                        <i class="fas fa-cogs mr-3 w-5"></i>
+                        System Settings
+                    </a>
+                </div>
+
+                <!-- Reports & Analytics -->
+                <div class="pt-4">
+                    <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Reports & Analytics</h3>
+                    <a href="#" class="nav-item flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-900 mt-1" data-tab="financial-reports">
+                        <i class="fas fa-file-invoice-dollar mr-3 w-5"></i>
+                        Financial Reports
+                    </a>
+                    <a href="#" class="nav-item flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-900" data-tab="audit-logs">
+                        <i class="fas fa-clipboard-list mr-3 w-5"></i>
+                        Audit Logs
+                    </a>
+                </div>
+            </nav>
+
+            <!-- Footer -->
+            <div class="flex-shrink-0 flex border-t border-gray-200 p-4">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-semibold" id="userInitials">SA</span>
+                        </div>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-700" id="userName">System Admin</p>
+                        <button id="logoutBtn" class="text-xs text-gray-500 hover:text-gray-700">Sign out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 ml-64">
+            <!-- Top Bar -->
+            <header class="bg-white shadow-sm border-b border-gray-200">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900" id="pageTitle">System Overview</h1>
+                        <p class="text-gray-600" id="pageDescription">Comprehensive system administration and management</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button id="notificationsBtn" class="text-gray-400 hover:text-gray-600 relative">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                        </button>
+                        <button id="settingsBtn" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-cog text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="flex-1 p-6">
+                <div id="content-area">
+                    <!-- Content will be loaded here -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
+            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+            <span class="text-gray-700">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notifications" class="fixed top-20 right-4 z-50 space-y-2">
+        <!-- Notifications will appear here -->
+    </div>
+
+    <script src="js/blur-utils.js"></script>
+    <script src="js/media-queue-dashboard.js"></script>
+</body>
+</html>

@@ -11,6 +11,7 @@ const express = require('express');
 const path = require('path');
 const fsPromises = require('fs').promises;
 const db = require('../../config/database');
+const ContentModerationService = require('../../src/services/ContentModerationService');
 const router = express.Router();
 
 /**
@@ -38,7 +39,8 @@ router.get('/queue', async (req, res) => {
             SELECT 
                 id, model_name, review_status, nudity_score, priority, queue_type, 
                 usage_intent, flagged_at, original_path, detected_parts, context_type,
-                appeal_reason, appeal_message, appeal_requested
+                appeal_reason, appeal_message, appeal_requested, final_risk_score,
+                risk_level, combined_assessment, pose_category, explicit_pose_score
             FROM media_review_queue 
             WHERE review_status = ?
             ORDER BY flagged_at DESC
@@ -80,17 +82,23 @@ router.get('/queue', async (req, res) => {
                 ? JSON.parse(item.blur_settings)
                 : null;
 
+            const combinedAssessment = typeof item.combined_assessment === 'string' 
+                ? JSON.parse(item.combined_assessment || '{}') 
+                : item.combined_assessment || {};
+
             return {
                 ...item,
                 // Convert numeric fields from strings to numbers
                 nudity_score: parseFloat(item.nudity_score) || 0,
                 explicit_pose_score: parseFloat(item.explicit_pose_score) || 0,
+                final_risk_score: parseFloat(item.final_risk_score) || null,
                 // Processed fields
                 thumbnail_path: thumbnailPath,
                 detected_parts: detectedParts,
                 part_locations: partLocations,
                 policy_violations: policyViolations,
                 blur_settings: blurSettings,
+                combined_assessment: combinedAssessment,
                 has_appeal: Boolean(item.appeal_requested)
             };
         }));
@@ -213,6 +221,7 @@ router.get('/item/:id', async (req, res) => {
             // Convert numeric fields from strings to numbers
             nudity_score: parseFloat(item.nudity_score) || 0,
             explicit_pose_score: parseFloat(item.explicit_pose_score) || 0,
+            final_risk_score: parseFloat(item.final_risk_score) || null,
             // Parse JSON fields
             detected_parts: typeof item.detected_parts === 'string' 
                 ? JSON.parse(item.detected_parts || '{}') 
@@ -223,6 +232,9 @@ router.get('/item/:id', async (req, res) => {
             policy_violations: typeof item.policy_violations === 'string'
                 ? JSON.parse(item.policy_violations || '[]')
                 : item.policy_violations || [],
+            combined_assessment: typeof item.combined_assessment === 'string' 
+                ? JSON.parse(item.combined_assessment || '{}') 
+                : item.combined_assessment || {},
             blur_settings: typeof item.blur_settings === 'string' && item.blur_settings
                 ? JSON.parse(item.blur_settings)
                 : null,
@@ -332,7 +344,7 @@ router.post('/approve-blur/:id', async (req, res) => {
         fs.appendFileSync('/tmp/blur_debug.log', `Request body: ${JSON.stringify(req.body, null, 2)}\n`);
         
         const { 
-            blur_settings = { strength: 15, opacity: 0.8, shape: 'rounded' },
+            blur_settings = { strength: 6, opacity: 0.8, shape: 'rounded' },
             admin_notes, 
             reviewed_by = 1 
         } = req.body;
@@ -368,7 +380,9 @@ router.post('/approve-blur/:id', async (req, res) => {
         
         let blurredPath;
         try {
-            blurredPath = await createBlurredVersion(item.original_path, item.model_name, blur_settings);
+            // Use the working ContentModerationService instead of custom logic
+            const moderationService = new ContentModerationService(db);
+            blurredPath = await moderationService.generateBlurredVersion(item.content_moderation_id, blur_settings);
             console.log('Blur processing completed, path:', blurredPath);
             fs.appendFileSync('/tmp/blur_debug.log', `Blur processing completed successfully\n`);
         } catch (blurError) {
@@ -682,8 +696,8 @@ async function createBlurredVersion(originalPath, modelName, blurSettings) {
             fs.appendFileSync('/tmp/blur_debug.log', `Entering overlayPositions loop with ${Object.keys(blurSettings.overlayPositions).length} regions\n`);
             
             // Create blur overlay for each region with calibration factor to match admin interface
-            const blurCalibrationFactor = 2.5; // Calibrate to match admin preview intensity
-            const rawBlurRadius = blurSettings.strength || 15;
+            const blurCalibrationFactor = 1.25; // Calibrate to match admin preview intensity (2.5 / 2 for new range)
+            const rawBlurRadius = blurSettings.strength || 6;
             const blurRadius = Math.max(1, Math.min(100, rawBlurRadius * blurCalibrationFactor));
             console.log(`Blur calibration: admin setting ${rawBlurRadius}px → actual ${blurRadius}px (${blurCalibrationFactor}x factor)`);
             
@@ -694,30 +708,15 @@ async function createBlurredVersion(originalPath, modelName, blurSettings) {
                 console.log(`Processing blur for ${bodyPart} (received coords):`, position);
                 console.log(`Auto-rotated image dimensions: ${autoMetadata.width}x${autoMetadata.height}`);
                 
-                // Transform coordinates from admin interface (rotated display) to raw image coordinates
-                let left, top, width, height;
+                // Frontend already sends coordinates in EXIF-stripped coordinate space (matching NudeNet)
+                // No transformation needed - use coordinates directly
+                let left = Math.round(position.x);
+                let top = Math.round(position.y);
+                let width = Math.round(position.width);
+                let height = Math.round(position.height);
                 
-                if (rawMetadata.orientation === 6) {
-                    // For EXIF orientation 6 (90° clockwise rotation):
-                    // Admin interface shows rotated view, we need to map back to raw coordinates
-                    left = Math.round(position.y);
-                    top = Math.round(rawMetadata.height - position.x - position.width);
-                    width = Math.round(position.height);
-                    height = Math.round(position.width);
-                    
-                    console.log(`EXIF 6 coordinate transformation:`);
-                    console.log(`  Admin coords: x=${position.x}, y=${position.y}, w=${position.width}, h=${position.height}`);
-                    console.log(`  Raw coords: x=${left}, y=${top}, w=${width}, h=${height}`);
-                } else {
-                    // No transformation needed for other orientations
-                    left = Math.round(position.x);
-                    top = Math.round(position.y);
-                    width = Math.round(position.width);
-                    height = Math.round(position.height);
-                    
-                    console.log(`No coordinate transformation needed:`);
-                    console.log(`  Direct coords: x=${left}, y=${top}, w=${width}, h=${height}`);
-                }
+                console.log(`Using EXIF-stripped coordinates directly (matching NudeNet space):`);
+                console.log(`  Coords: x=${left}, y=${top}, w=${width}, h=${height}`);
                 
                 console.log(`Final blur coordinates for processing: ${left},${top} ${width}x${height}`);
                 
@@ -976,8 +975,8 @@ async function createBlurredVersion(originalPath, modelName, blurSettings) {
             processedImage = processedImage.composite(blurRegions);
         } else {
             // Apply global blur if no specific regions are defined with calibration factor
-            const blurCalibrationFactor = 2.5; // Same calibration as selective blur
-            const rawBlurRadius = blurSettings.strength || 15;
+            const blurCalibrationFactor = 1.25; // Same calibration as selective blur (2.5 / 2 for new range)
+            const rawBlurRadius = blurSettings.strength || 6;
             const blurRadius = Math.max(1, Math.min(100, rawBlurRadius * blurCalibrationFactor));
             console.log(`Applying global blur: admin setting ${rawBlurRadius}px → actual ${blurRadius}px (${blurCalibrationFactor}x factor)`);
             processedImage = processedImage.blur(blurRadius);

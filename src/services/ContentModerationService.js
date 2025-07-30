@@ -15,6 +15,32 @@ class ContentModerationService {
     }
 
     /**
+     * Get webhook URL for BLIP data delivery
+     * 🚨 DEV ONLY: Uses ngrok for local development
+     * 🚨 TODO: Remove ngrok logic before production deployment
+     */
+    getWebhookUrl() {
+        // 🚨 DEVELOPMENT ONLY - REMOVE BEFORE PRODUCTION 🚨
+        if (process.env.NODE_ENV !== 'production') {
+            // Check for ngrok URL first (for local development)
+            if (process.env.NGROK_URL) {
+                const webhookUrl = `${process.env.NGROK_URL}/api/blip/webhook`;
+                console.log('🚨 DEV MODE: Using ngrok URL for webhooks:', webhookUrl);
+                return webhookUrl;
+            }
+            
+            // Fallback: disable webhooks in local dev if no ngrok
+            console.log('⚠️ DEV MODE: No NGROK_URL set - webhooks disabled');
+            return null;
+        }
+        // 🚨 END DEVELOPMENT ONLY SECTION 🚨
+        
+        // Production webhook URL
+        const baseUrl = process.env.WEBHOOK_BASE_URL || 'https://musenest.com';
+        return `${baseUrl}/api/blip/webhook`;
+    }
+
+    /**
      * Load moderation rules from database for specific usage intent
      */
     async loadModerationRules(usageIntent) {
@@ -213,7 +239,7 @@ class ContentModerationService {
      */
     async analyzeWithNudeNet(imagePath, contextType, modelId) {
         console.log(`🚀 Starting enhanced analysis for image: ${imagePath}`);
-        console.log(`📡 Target: 52.15.235.216:5000/analyze`);
+        console.log(`📡 Target: 18.221.22.72:5000/analyze`);
         
         return new Promise((resolve, reject) => {
             const FormData = require('form-data');
@@ -225,14 +251,25 @@ class ContentModerationService {
             form.append('image', fs.createReadStream(imagePath));
             form.append('context_type', contextType);
             form.append('model_id', modelId.toString());
+            
+            // Add webhook URL for automatic BLIP delivery
+            const webhookUrl = this.getWebhookUrl();
+            if (webhookUrl) {
+                form.append('webhook_url', webhookUrl);
+                console.log(`📡 Webhook URL provided: ${webhookUrl}`);
+            } else {
+                console.log('⚠️ No webhook URL configured - BLIP data will need manual retrieval');
+            }
 
             console.log(`📝 Form data prepared: context_type=${contextType}, model_id=${modelId}`);
+            console.log(`📡 Webhook URL: ${webhookUrl || 'NONE'}`);
+            console.log(`🚀 Sending request to EC2 server...`);
             
             const startTime = Date.now();
             
             // Send to enhanced MediaPipe API with proper connection handling
             const req = http.request({
-                hostname: '52.15.235.216',
+                hostname: '18.221.22.72',
                 port: 5000,
                 path: '/analyze',
                 method: 'POST',
@@ -257,20 +294,34 @@ class ContentModerationService {
                 res.on('end', () => {
                     const totalTime = Date.now() - startTime;
                     console.log(`🏁 Complete response received in ${totalTime}ms, size: ${data.length} bytes`);
+                    console.log(`📄 Raw response preview: ${data.substring(0, 500)}...`);
                     
                     try {
                         const result = JSON.parse(data);
                         console.log(`✅ JSON parsed successfully, success: ${result.success}`);
                         
-                        if (result.success) {
+                        // Check if this is a valid response (either has success=true OR has batch_id + detected_parts)
+                        const isValidResponse = result.success === true || 
+                                              (result.batch_id && result.detected_parts);
+                        
+                        console.log(`🔍 Response validation: isValid=${isValidResponse}, hasBatchId=${!!result.batch_id}, hasDetectedParts=${!!result.detected_parts}`);
+                        
+                        if (isValidResponse) {
                             console.log('🎯 Transforming enhanced API response...');
                             
-                            // Log key response data for debugging
-                            const nudityScore = result.image_analysis?.nudity_detection?.nudity_score;
-                            const poseCategory = result.image_analysis?.pose_analysis?.pose_category;
-                            const suggestiveScore = result.image_analysis?.pose_analysis?.suggestive_score;
+                            // DEBUG: Log the complete raw API response structure
+                            console.log('🔍 DEBUG - Complete API response structure:');
+                            console.log(JSON.stringify(result, null, 2));
                             
-                            console.log(`📊 Raw API results: nudity=${nudityScore}, pose=${poseCategory}, suggestive=${suggestiveScore}`);
+                            // Log key response data for debugging (v3.0 format)
+                            const nudityScore = result.image_analysis?.nudity_detection?.nudity_score;
+                            const faceCount = result.image_analysis?.face_analysis?.face_count;
+                            const minAge = result.image_analysis?.face_analysis?.min_age;
+                            const riskLevel = result.image_analysis?.combined_assessment?.risk_level;
+                            const imageDescription = result.image_analysis?.image_description;
+                            
+                            console.log(`📊 Raw API results: nudity=${nudityScore}, faces=${faceCount}, minAge=${minAge}, risk=${riskLevel}`);
+                            console.log(`📝 Image description found:`, imageDescription);
                             
                             // Transform enhanced API response to match expected format
                             const transformedResult = this.transformEnhancedResponse(result);
@@ -283,8 +334,10 @@ class ContentModerationService {
                             resolve(transformedResult);
                         } else {
                             console.error('❌ Enhanced API returned success: false');
+                            console.error('Full API response:', JSON.stringify(result, null, 2));
                             console.error('Error details:', result.error);
-                            reject(new Error(result.error || 'Enhanced analysis failed'));
+                            const errorMessage = result.error || 'Enhanced analysis failed - no error details provided';
+                            reject(new Error(errorMessage));
                         }
                     } catch (parseError) {
                         console.error('❌ JSON parse error:', parseError.message);
@@ -388,57 +441,345 @@ class ContentModerationService {
     }
 
     /**
-     * Transform enhanced MediaPipe API response to match existing format
+     * Validate pose analysis to catch AI hallucinations
+     * @param {Object} poseAnalysis - Raw pose analysis from AI
+     * @param {Object} nudityDetection - Nudity detection results for context
+     * @returns {Object} Validated pose analysis
+     */
+    validatePoseAnalysis(poseAnalysis, nudityDetection) {
+        if (!poseAnalysis || !poseAnalysis.pose_detected) {
+            return poseAnalysis;
+        }
+
+        // Check if only face/head parts detected (indicates close-up)
+        const detectedParts = nudityDetection.detected_parts || {};
+        const partTypes = Object.keys(detectedParts);
+        const onlyFaceDetected = partTypes.length === 1 && 
+                                partTypes[0].includes('FACE');
+
+        // If only face detected but AI claims pose detection, it's likely a false positive
+        if (onlyFaceDetected && poseAnalysis.pose_detected) {
+            console.log('⚠️ Pose validation: Detected face-only with pose claims - likely AI hallucination');
+            
+            return {
+                ...poseAnalysis,
+                pose_detected: false,
+                pose_category: 'face_only_no_pose',
+                suggestive_score: 0,
+                details: {
+                    ...poseAnalysis.details,
+                    reasoning: ['face_only_image_no_body_visible'],
+                    validation_override: 'pose_detection_disabled_for_face_only_image'
+                },
+                raw_metrics: {
+                    ...poseAnalysis.raw_metrics,
+                    validation_note: 'Original metrics ignored due to face-only detection'
+                }
+            };
+        }
+
+        // Additional validation: Check for unrealistic pose metrics
+        const metrics = poseAnalysis.raw_metrics;
+        if (metrics && (
+            metrics.leg_spread > 0.8 ||  // Extremely wide leg spread unlikely
+            metrics.hip_bend_angle > 5   // Extreme hip angles unlikely
+        )) {
+            console.log('⚠️ Pose validation: Detected extreme pose metrics - may be AI error');
+            
+            return {
+                ...poseAnalysis,
+                pose_category: 'uncertain_pose_detection',
+                details: {
+                    ...poseAnalysis.details,
+                    reasoning: [...(poseAnalysis.details?.reasoning || []), 'extreme_metrics_detected'],
+                    validation_warning: 'Pose metrics appear unrealistic'
+                }
+            };
+        }
+
+        return poseAnalysis;
+    }
+
+    /**
+     * Create structured fallback when server returns analysis errors
+     */
+    createStructuredFallback() {
+        return {
+            // Conservative nudity analysis
+            detected_parts: { 'SERVER_ANALYSIS_ERROR': 95.0 },
+            part_locations: {},
+            nudity_score: 95.0,
+            has_nudity: true,
+            
+            // Face analysis simulation
+            face_analysis: {
+                faces_detected: false,
+                face_count: 0,
+                min_age: null,
+                underage_detected: false,
+                simulation_note: 'Server NudeNet analysis failed'
+            },
+            face_count: 0,
+            min_detected_age: null,
+            max_detected_age: null,
+            underage_detected: false,
+            age_risk_multiplier: 1.0,
+            
+            // Image description fallback
+            image_description: {
+                description: 'Image analysis failed on server',
+                tags: [],
+                generation_method: 'server_error_fallback'
+            },
+            description_text: 'Analysis unavailable due to server error',
+            description_tags: [],
+            contains_children: false,
+            description_risk: 0.0,
+            
+            // Risk assessment
+            final_risk_score: 95.0,
+            risk_level: 'critical',
+            risk_reasoning: ['SERVER_ANALYSIS_ERROR', 'CONSERVATIVE_FALLBACK_APPLIED'],
+            
+            // Pose analysis compatibility
+            pose_analysis: {
+                pose_detected: false,
+                pose_category: 'server_analysis_error',
+                suggestive_score: 0,
+                details: { reasoning: ['SERVER_NUDENET_FAILED', 'using_conservative_fallback'] }
+            },
+            
+            // Combined assessment
+            combined_assessment: {
+                final_risk_score: 95.0,
+                risk_level: 'critical',
+                reasoning: ['SERVER_ANALYSIS_ERROR', 'NUDENET_FAILED_ON_EC2']
+            },
+            
+            // Moderation decision
+            moderation_decision: {
+                status: 'flagged_for_review',
+                action: 'require_human_review',
+                human_review_required: true
+            },
+            moderation_status: 'flagged',
+            human_review_required: true,
+            flagged: true,
+            auto_rejected: false,
+            rejection_reason: null,
+            
+            // Metadata
+            success: true,
+            analysis_version: 'server_error_fallback'
+        };
+    }
+
+    /**
+     * Transform webhook-style response (flat structure) to v3 format
+     */
+    transformWebhookResponse(webhookResult) {
+        return {
+            // NudeNet results from webhook
+            detected_parts: webhookResult.detected_parts || {},
+            part_locations: webhookResult.part_locations || {},
+            nudity_score: webhookResult.nudity_score || 0,
+            has_nudity: webhookResult.nudity_score > 30,
+            
+            // Simulated face analysis (webhook doesn't include face data yet)
+            face_analysis: {
+                faces_detected: false,
+                face_count: 0,
+                min_age: null,
+                underage_detected: false,
+                simulation_note: 'Face analysis pending - BLIP webhook will follow'
+            },
+            face_count: 0,
+            min_detected_age: null,
+            max_detected_age: null,
+            underage_detected: false,
+            age_risk_multiplier: 1.0,
+            
+            // Image description placeholder (BLIP webhook will follow)
+            image_description: {
+                description: 'BLIP analysis in progress via webhook',
+                tags: [],
+                generation_method: 'webhook_pending',
+                batch_id: webhookResult.batch_id
+            },
+            description_text: 'BLIP description will arrive via webhook',
+            description_tags: [],
+            contains_children: false,
+            description_risk: 0.0,
+            
+            // Risk assessment from webhook
+            final_risk_score: webhookResult.final_risk_score || webhookResult.nudity_score || 0,
+            risk_level: webhookResult.risk_level || 'unknown',
+            risk_reasoning: ['webhook_nudity_analysis', `batch_id_${webhookResult.batch_id}`],
+            
+            // Combined assessment placeholder
+            combined_assessment: {
+                final_risk_score: webhookResult.final_risk_score || webhookResult.nudity_score || 0,
+                risk_level: webhookResult.risk_level || 'unknown',
+                reasoning: ['webhook_response', 'blip_analysis_pending'],
+                batch_id: webhookResult.batch_id
+            },
+            
+            // Pose analysis compatibility
+            pose_analysis: {
+                pose_detected: false,
+                pose_category: 'webhook_analysis_pending',
+                suggestive_score: 0,
+                details: { 
+                    reasoning: ['webhook_nudity_complete', 'blip_pending'],
+                    batch_id: webhookResult.batch_id
+                }
+            },
+            
+            // Moderation decision
+            moderation_decision: {
+                status: webhookResult.moderation_status || 'pending',
+                action: webhookResult.human_review_required ? 'require_human_review' : 'auto_approve',
+                human_review_required: webhookResult.human_review_required || false
+            },
+            moderation_status: webhookResult.moderation_status || 'pending',
+            human_review_required: webhookResult.human_review_required || false,
+            flagged: webhookResult.flagged || false,
+            auto_rejected: false,
+            rejection_reason: null,
+            
+            // Webhook metadata
+            batch_id: webhookResult.batch_id,
+            success: true,
+            analysis_version: 'webhook_v3_with_blip_pending'
+        };
+    }
+
+    /**
+     * Transform v1 API response to clean format (no legacy compatibility)
      */
     transformEnhancedResponse(enhancedResult) {
+        // Check if this is an analysis error response
+        if (enhancedResult.image_analysis?.nudity_detection?.detected_parts?.ANALYSIS_ERROR) {
+            console.log('🚨 Server returned ANALYSIS_ERROR - using structured fallback');
+            return this.createStructuredFallback();
+        }
+
+        // Check if this is a webhook-style response (flat structure)
+        if (enhancedResult.batch_id && enhancedResult.detected_parts && !enhancedResult.image_analysis) {
+            console.log('🔄 Detected webhook-style response - transforming to v3 structure');
+            return this.transformWebhookResponse(enhancedResult);
+        }
+
         const analysis = enhancedResult.image_analysis;
-        const nudityDetection = analysis.nudity_detection;
-        const poseAnalysis = analysis.pose_analysis;
-        const combinedAssessment = analysis.combined_assessment;
+        const nudityDetection = analysis?.nudity_detection;
+        const faceAnalysis = analysis?.face_analysis;
+        const imageDescription = analysis?.image_description;
+        const combinedAssessment = analysis?.combined_assessment;
         const decision = enhancedResult.moderation_decision;
 
-        // Convert detected parts to expected format
+        // Process nudity detection results
         const detectedParts = {};
         const partLocations = {};
         let maxNudityScore = 0;
 
-        // Process nudity detection results
-        Object.entries(nudityDetection.detected_parts).forEach(([part, confidence]) => {
-            detectedParts[part] = confidence;
-            maxNudityScore = Math.max(maxNudityScore, confidence);
-            
-            // Use actual part locations from enhanced API response
-            if (nudityDetection.part_locations && nudityDetection.part_locations[part]) {
-                partLocations[part] = nudityDetection.part_locations[part];
-            } else {
-                // Fallback if no location data available for this part
-                partLocations[part] = {
-                    x: 0, y: 0, width: 100, height: 100, confidence: confidence
-                };
-            }
-        });
+        if (nudityDetection?.detected_parts) {
+            Object.entries(nudityDetection.detected_parts).forEach(([part, confidence]) => {
+                detectedParts[part] = confidence;
+                maxNudityScore = Math.max(maxNudityScore, confidence);
+                
+                if (nudityDetection.part_locations?.[part]) {
+                    partLocations[part] = nudityDetection.part_locations[part];
+                } else {
+                    partLocations[part] = {
+                        x: 0, y: 0, width: 100, height: 100, confidence: confidence
+                    };
+                }
+            });
+        }
+
+        // Extract image description details
+        const descriptionText = imageDescription?.description || 'No description available';
+        const descriptionTags = imageDescription?.tags || [];
+        const containsChildren = this.checkForChildrenInDescription(descriptionText, descriptionTags);
 
         return {
+            // NudeNet results
             detected_parts: detectedParts,
             part_locations: partLocations,
             nudity_score: maxNudityScore,
-            has_nudity: nudityDetection.has_nudity,
+            has_nudity: nudityDetection?.has_nudity || false,
             
-            // Enhanced fields from pose analysis
-            pose_analysis: poseAnalysis,
+            // Face analysis results
+            face_analysis: faceAnalysis,
+            face_count: faceAnalysis?.face_count || 0,
+            min_detected_age: faceAnalysis?.min_age,
+            max_detected_age: faceAnalysis?.max_age,
+            underage_detected: faceAnalysis?.underage_detected || false,
+            age_risk_multiplier: combinedAssessment?.age_risk_multiplier || 1.0,
+            
+            // Image description results
+            image_description: imageDescription,
+            description_text: descriptionText,
+            description_tags: descriptionTags,
+            contains_children: containsChildren,
+            description_risk: combinedAssessment?.description_risk || 0.0,
+            
+            // Risk assessment
+            final_risk_score: combinedAssessment?.final_risk_score || 0,
+            risk_level: combinedAssessment?.risk_level || 'unknown',
+            risk_reasoning: combinedAssessment?.reasoning || [],
+            
+            // Combined assessment (for display compatibility)
             combined_assessment: combinedAssessment,
+            
+            // Pose analysis compatibility (map from face analysis)
+            pose_analysis: {
+                pose_detected: faceAnalysis?.faces_detected || false,
+                pose_category: faceAnalysis?.underage_detected ? 'underage_detected' : 'age_verified',
+                suggestive_score: 0,
+                details: {
+                    reasoning: [`face_analysis_${faceAnalysis?.face_count || 0}_faces`],
+                    min_age: faceAnalysis?.min_age,
+                    face_count: faceAnalysis?.face_count || 0
+                }
+            },
+            
+            // Moderation decision
             moderation_decision: decision,
+            moderation_status: decision?.status || 'pending',
+            auto_rejected: decision?.status === 'auto_rejected',
+            rejection_reason: decision?.rejection_reason || null,
             
-            // Derived fields for compatibility
-            explicit_pose_score: poseAnalysis.suggestive_score || 0,
-            final_risk_score: combinedAssessment.final_risk_score,
-            risk_level: combinedAssessment.risk_level,
-            pose_category: poseAnalysis.pose_category,
-            
-            // Legacy compatibility
+            // Metadata
             success: true,
-            analysis_version: '2.0_enhanced_with_pose'
+            analysis_version: enhancedResult.metadata?.analysis_version || 'v3_real_analysis'
         };
+    }
+
+    /**
+     * Check if image description indicates presence of children
+     */
+    checkForChildrenInDescription(description, tags) {
+        const childKeywords = [
+            'child', 'children', 'kid', 'kids', 'baby', 'babies', 'toddler', 'infant',
+            'boy', 'girl', 'daughter', 'son', 'student', 'school', 'playground',
+            'mother with child', 'father with child', 'family with children'
+        ];
+        
+        const descriptionLower = description.toLowerCase();
+        const allTags = tags.map(tag => tag.toLowerCase());
+        
+        // Check description text
+        const hasChildKeyword = childKeywords.some(keyword => 
+            descriptionLower.includes(keyword)
+        );
+        
+        // Check tags
+        const hasChildTag = childKeywords.some(keyword =>
+            allTags.includes(keyword)
+        );
+        
+        return hasChildKeyword || hasChildTag;
     }
 
     /**
@@ -542,30 +883,46 @@ class ContentModerationService {
         const query = `
             INSERT INTO content_moderation (
                 image_path, original_path, model_id, context_type, usage_intent,
-                nudity_score, detected_parts, part_locations, pose_classification,
-                explicit_pose_score, generated_caption, policy_violations,
-                moderation_status, human_review_required, flagged, auto_blocked,
-                confidence_score, final_location
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                nudity_score, detected_parts, part_locations, has_nudity,
+                face_analysis, face_count, min_detected_age, max_detected_age, 
+                underage_detected, age_risk_multiplier,
+                image_description, description_text, description_tags, 
+                contains_children, description_risk,
+                final_risk_score, risk_level, risk_reasoning,
+                moderation_status, human_review_required, flagged, 
+                auto_rejected, rejection_reason, confidence_score, final_location
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const values = [
-            data.image_path || data.originalPath || null,
-            data.originalPath || null,
+            data.image_path || data.originalPath || '',
+            data.originalPath || data.image_path || '',
             data.modelId || null,
-            data.contextType || null,
-            data.usageIntent || null,
+            data.contextType || '',
+            data.usageIntent || '',
             data.nudity_score || 0,
             JSON.stringify(data.detected_parts || {}),
             JSON.stringify(data.part_locations || {}),
-            data.pose_classification || null,
-            data.explicit_pose_score || 0,
-            data.generated_caption || null,
-            JSON.stringify(data.policy_violations || []),
-            data.moderation_status || null,
+            data.has_nudity ? 1 : 0,
+            JSON.stringify(data.face_analysis || {}),
+            data.face_count || 0,
+            data.min_detected_age || null,
+            data.max_detected_age || null,
+            data.underage_detected ? 1 : 0,
+            data.age_risk_multiplier || 1.0,
+            JSON.stringify(data.image_description || {}),
+            data.description_text || '',
+            JSON.stringify(data.description_tags || []),
+            data.contains_children ? 1 : 0,
+            data.description_risk || 0.0,
+            data.final_risk_score || null,
+            data.risk_level || '',
+            JSON.stringify(data.risk_reasoning || []),
+            data.moderation_status || 'pending',
             data.human_review_required ? 1 : 0,
             data.flagged ? 1 : 0,
-            data.auto_blocked ? 1 : 0,
+            data.auto_rejected ? 1 : 0,
+            data.rejection_reason || '',
             data.confidence_score || 0,
             data.final_location || 'originals'
         ];

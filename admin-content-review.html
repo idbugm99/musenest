@@ -263,9 +263,9 @@
                     
                     <div class="mb-3">
                         <label class="form-label">Blur Strength:</label>
-                        <input type="range" class="form-range" id="blurStrength" min="1" max="10" value="3" 
+                        <input type="range" class="form-range" id="blurStrength" min="1" max="20" value="6" 
                                onchange="updateBlurSettings()" oninput="updateBlurSettings()">
-                        <small class="text-muted">Strength: <span id="blurStrengthValue">3</span></small>
+                        <small class="text-muted">Strength: <span id="blurStrengthValue">6</span></small>
                     </div>
                     
                     
@@ -752,7 +752,7 @@
                 overlay.style.height = `${scaledHeight}px`;
                 
                 // Update blur preview with current blur strength
-                const currentBlur = document.getElementById('blurStrength')?.value || 10;
+                const currentBlur = document.getElementById('blurStrength')?.value || 6;
                 updateCanvasBlurPreview(overlay, parseInt(currentBlur));
             });
         }
@@ -905,7 +905,7 @@
                 dragState.overlay.style.height = newHeight + 'px';
                 
                 // Update blur preview
-                const currentBlur = document.getElementById('blurStrength')?.value || 10;
+                const currentBlur = document.getElementById('blurStrength')?.value || 6;
                 updateCanvasBlurPreview(dragState.overlay, parseInt(currentBlur));
             }
         }
@@ -960,7 +960,7 @@
                     }
                     
                     // Update the canvas blur preview with new position
-                    const currentBlur = document.getElementById('blurStrength')?.value || 10;
+                    const currentBlur = document.getElementById('blurStrength')?.value || 6;
                     updateCanvasBlurPreview(overlay, parseInt(currentBlur));
                 }
                 
@@ -978,7 +978,7 @@
                 }
                 
                 // Update the canvas blur preview with new size/position
-                const currentBlur = document.getElementById('blurStrength')?.value || 10;
+                const currentBlur = document.getElementById('blurStrength')?.value || 6;
                 updateCanvasBlurPreview(overlay, parseInt(currentBlur));
             }
             
@@ -1060,7 +1060,7 @@
         }
         
         function syncAllBlurPreviews() {
-            const strength = parseInt(document.getElementById('blurStrength')?.value || 10);
+            const strength = parseInt(document.getElementById('blurStrength')?.value || 6);
             document.querySelectorAll('.blur-overlay').forEach(overlay => {
                 console.log(`🔁 Syncing blur for: ${overlay.dataset.part}`);
                 updateCanvasBlurPreview(overlay, strength);
@@ -1102,7 +1102,7 @@
                 eyeIcon.innerHTML = '●'; // Open eye (simple white circle)
                 eyeIcon.title = 'Hide blur preview';
                 
-                const userStrength = parseInt(document.getElementById('blurStrength').value) || 3;
+                const userStrength = parseInt(document.getElementById('blurStrength').value) || 6;
                 
                 // Convert 1-10 scale to backend values and then to CSS
                 const backendStrength = Math.round(userStrength * 8 + 2);
@@ -1134,7 +1134,7 @@
         }
 
         function activateInitialPreview() {
-            const userStrength = parseInt(document.getElementById('blurStrength').value) || 3;
+            const userStrength = parseInt(document.getElementById('blurStrength').value) || 6;
             const backendStrength = Math.round(userStrength * 8 + 2);
             const cssCalibrationFactor = 5.5;
             const cssBlurStrength = Math.max(1, Math.round(backendStrength / cssCalibrationFactor));
@@ -1267,7 +1267,7 @@
             // Initialize drag/resize and canvas blur
             setTimeout(() => {
                 initializeDragResize(newOverlay);
-                updateCanvasBlurPreview(newOverlay, parseInt(document.getElementById('blurStrength').value || 10));
+                updateCanvasBlurPreview(newOverlay, parseInt(document.getElementById('blurStrength').value || 6));
             }, 100);
             
             // Add to violations list
@@ -2046,7 +2046,7 @@ The blurred version has been saved to the blurred folder.`);
             // Reset blur strength to default value if needed
             const blurStrength = document.getElementById('blurStrength');
             if (blurStrength) {
-                blurStrength.value = 3; // Default blur strength
+                blurStrength.value = 6; // Default blur strength
             }
             
             console.log('🔄 Reset blur controls to default state');

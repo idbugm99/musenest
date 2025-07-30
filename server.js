@@ -99,6 +99,10 @@ app.get('/test-upload.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'test-upload.html'));
 });
 
+app.get('/test-db-flow.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'test-db-flow.html'));
+});
+
 // Real NudeNet file upload test page
 app.get('/test-file-upload.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'test-file-upload.html'));
@@ -160,6 +164,8 @@ app.use('/api/content-moderation', require('./routes/api/content-moderation'));
 app.use('/api/enhanced-content-moderation', require('./routes/api/enhanced-content-moderation'));
 app.use('/api/media-review-queue', require('./routes/api/media-review-queue'));
 app.use('/api/admin-models', require('./routes/api/admin-models'));
+app.use('/api/test', require('./routes/api/test'));
+app.use('/api/blip', require('./routes/api/blip-webhook'));
 
 // Dynamic model routes (Theme Sets + Modular Pages) - MOVED TO END
 // This catches all remaining routes, so it must be last before 404 handler
