@@ -213,5 +213,128 @@
 
     <script src="js/blur-utils.js"></script>
     <script src="js/system-admin-dashboard.js"></script>
+    <script>
+        // Override clientManager with detailed logging for debugging
+        window.clientManager = {
+            async deleteClient(clientId) {
+                console.log('=== DELETE CLIENT FUNCTION CALLED ===');
+                console.log('Client ID:', clientId);
+                
+                if (!confirm('Are you sure you want to delete this client? This action cannot be undone and will remove all associated data including their website, uploads, and user account.')) {
+                    console.log('User cancelled deletion');
+                    return;
+                }
+                
+                console.log('User confirmed deletion, making API call to:', `/api/system-management/clients/${clientId}`);
+                
+                try {
+                    // Get auth token from localStorage or session
+                    const authToken = localStorage.getItem('musenest_token') || 
+                                    sessionStorage.getItem('musenest_token') || 
+                                    (window.systemAdminDashboard && window.systemAdminDashboard.authToken);
+                    
+                    const headers = {
+                        'Content-Type': 'application/json'
+                    };
+                    
+                    // Add authorization header if token exists
+                    if (authToken) {
+                        headers['Authorization'] = `Bearer ${authToken}`;
+                        console.log('Using auth token for request');
+                    } else {
+                        console.log('No auth token found - making request without authorization');
+                    }
+                    
+                    console.log('Request headers:', headers);
+                    
+                    const response = await fetch(`/api/system-management/clients/${clientId}`, {
+                        method: 'DELETE',
+                        headers: headers
+                    });
+                    
+                    console.log('=== API RESPONSE ===');
+                    console.log('Status:', response.status);
+                    console.log('Status Text:', response.statusText);
+                    console.log('OK:', response.ok);
+                    
+                    const result = await response.json();
+                    console.log('Response Body:', result);
+                    
+                    if (result.success) {
+                        alert('Client deleted successfully! Page will reload.');
+                        console.log('SUCCESS: Reloading page...');
+                        window.location.reload();
+                    } else {
+                        console.log('ERROR: API returned failure:', result.error);
+                        alert('Error deleting client: ' + result.error);
+                    }
+                } catch (error) {
+                    console.error('=== EXCEPTION OCCURRED ===');
+                    console.error('Error details:', error);
+                    console.error('Error message:', error.message);
+                    console.error('Error stack:', error.stack);
+                    alert('Failed to delete client. Check console for details. Error: ' + error.message);
+                }
+            },
+            
+            async viewClient(clientId) {
+                console.log('View client called with ID:', clientId);
+                window.open(`/api/system-management/clients/${clientId}`, '_blank');
+            },
+            
+            async resetPassword(clientId) {
+                console.log('Reset password called with ID:', clientId);
+                alert('Password reset functionality will be implemented soon');
+            },
+            
+            async suspendAccount(clientId) {
+                console.log('Suspend account called with ID:', clientId);
+                alert('Account suspension functionality will be implemented soon');
+            },
+            
+            async impersonateClient(clientId) {
+                console.log('Impersonate client called with ID:', clientId);
+                alert('Impersonation functionality will be implemented soon');
+            }
+        };
+        
+        console.log('=== CLIENT MANAGER LOADED ===');
+        console.log('clientManager exists:', !!window.clientManager);
+        console.log('deleteClient method exists:', typeof window.clientManager.deleteClient);
+        
+        // Fix clientManager.deleteClient function after page loads
+        setTimeout(function() {
+            console.log('=== APPLYING CLIENT MANAGER FIX ===');
+            
+            // Replace the deleteClient function with working version
+            if (window.clientManager) {
+                window.clientManager.deleteClient = function(clientId) {
+                    console.log('Delete client:', clientId);
+                    
+                    if (confirm('Are you sure you want to delete this client? This action cannot be undone.')) {
+                        fetch('/api/system-management/clients/' + clientId, {
+                            method: 'DELETE',
+                            headers: {'Content-Type': 'application/json'}
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            console.log('API Result:', result);
+                            if (result.success) {
+                                alert('Client deleted successfully!');
+                                location.reload();
+                            } else {
+                                alert('Error: ' + result.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Delete failed');
+                        });
+                    }
+                };
+                console.log('Client Manager deleteClient function fixed');
+            }
+        }, 1000);
+    </script>
 </body>
 </html>

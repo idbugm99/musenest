@@ -3729,3 +3729,102 @@ function openContentReviewTool() {
 function openModerationDashboard() {
     window.open('/admin-moderation-dashboard.html', '_blank', 'width=1600,height=1000,scrollbars=yes,resizable=yes');
 }
+
+// Client Manager for dropdown actions
+window.clientManager = {
+    async deleteClient(clientId) {
+        console.log('Delete client called with ID:', clientId);
+        
+        if (!confirm('Are you sure you want to delete this client? This action cannot be undone and will remove all associated data including their website, uploads, and user account.')) {
+            console.log('User cancelled deletion');
+            return;
+        }
+        
+        console.log('User confirmed deletion, making API call...');
+        
+        try {
+            const response = await fetch(`/api/system-management/clients/${clientId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            console.log('API Response status:', response.status);
+            console.log('API Response headers:', response.headers);
+            
+            const result = await response.json();
+            console.log('API Response body:', result);
+            
+            if (result.success) {
+                alert('Client deleted successfully');
+                console.log('SUCCESS: Client deleted, reloading page...');
+                // Reload the page to refresh the client list
+                window.location.reload();
+            } else {
+                console.log('ERROR: API returned error:', result.error);
+                alert('Error deleting client: ' + result.error);
+            }
+        } catch (error) {
+            console.error('Delete client exception:', error);
+            alert('Failed to delete client. Please try again. Check console for details.');
+        }
+    },
+    
+    async viewClient(clientId) {
+        window.open(`/api/system-management/clients/${clientId}`, '_blank');
+    },
+    
+    async resetPassword(clientId) {
+        alert('Password reset functionality will be implemented soon');
+    },
+    
+    async suspendAccount(clientId) {
+        alert('Account suspension functionality will be implemented soon');
+    },
+    
+    async impersonateClient(clientId) {
+        alert('Impersonation functionality will be implemented soon');
+    }
+};
+
+// Global functions for data table actions
+async function deleteItem(id) {
+    if (!confirm('Are you sure you want to delete this client? This action cannot be undone.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/system-management/clients/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Client deleted successfully');
+            // Refresh the current tab to update the client list
+            if (window.systemAdminDashboard) {
+                window.systemAdminDashboard.loadTabContent(window.systemAdminDashboard.currentTab);
+            }
+        } else {
+            alert('Error deleting client: ' + result.error);
+        }
+    } catch (error) {
+        console.error('Delete client error:', error);
+        alert('Failed to delete client. Please try again.');
+    }
+}
+
+function editItem(id) {
+    // TODO: Implement edit functionality - could open a modal or navigate to edit page
+    alert(`Edit client ID: ${id} - This feature will be implemented soon`);
+}
+
+function viewItem(id) {
+    // Open the client details in a new window/tab
+    window.open(`/api/system-management/clients/${id}`, '_blank');
+}

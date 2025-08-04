@@ -29,10 +29,10 @@ async function testConnection() {
     }
 }
 
-// Execute query with error handling
+// Execute query with error handling (using query instead of execute for MySQL 9.3.0 compatibility)
 async function query(sql, params = []) {
     try {
-        const [rows] = await pool.execute(sql, params);
+        const [rows] = await pool.query(sql, params);
         return rows;
     } catch (error) {
         console.error('Database query error:', error);

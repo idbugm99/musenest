@@ -397,13 +397,29 @@ class OnboardingWizard {
     }
 
     async completeOnboarding() {
+        // Get all form values
         const modelName = document.getElementById('modelName').value;
         const slug = document.getElementById('slug').value;
         const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
         const phone = document.getElementById('phone').value;
+        const contactEmail = document.getElementById('contactEmail').value;
+        const secondaryPhone = document.getElementById('secondaryPhone').value;
+        const preferredContact = document.getElementById('preferredContact').value;
+        const dateOfBirth = document.getElementById('dateOfBirth').value;
+        const nationality = document.getElementById('nationality').value;
+        const currentLocation = document.getElementById('currentLocation').value;
+        const referralCode = document.getElementById('referralCode').value;
 
-        if (!modelName || !slug) {
-            alert('Please fill in required fields');
+        // Validate required fields
+        if (!modelName || !slug || !email || !password) {
+            alert('Please fill in all required fields (Name, URL, Email, and Password)');
+            return;
+        }
+
+        // Basic password validation
+        if (password.length < 8) {
+            alert('Password must be at least 8 characters long');
             return;
         }
 
@@ -420,15 +436,43 @@ class OnboardingWizard {
                     page_set_id: this.selectedData.pageSet.id,
                     theme_set_id: this.selectedData.theme.id,
                     email: email,
-                    phone: phone
+                    password: password,
+                    phone: phone,
+                    contact_email: contactEmail,
+                    secondary_phone: secondaryPhone,
+                    preferred_contact_method: preferredContact,
+                    date_of_birth: dateOfBirth,
+                    nationality: nationality,
+                    current_location: currentLocation,
+                    referral_code_used: referralCode,
+                    client_type: 'muse_owned',
+                    status: 'trial'
                 })
             });
 
             const data = await response.json();
             
             if (data.success) {
-                // Show success message and redirect to business management
-                alert(`🎉 Success! Your website "${data.data.slug}" has been created!\n\nYou can now manage your business settings and view your new model in the admin dashboard.`);
+                // Show detailed success message
+                let successMessage = `🎉 Welcome to MuseNest!\n\n`;
+                successMessage += `✅ Your account has been created successfully\n`;
+                successMessage += `🌐 Website URL: ${data.data.website_url}\n`;
+                successMessage += `📧 Login Email: ${data.data.email}\n`;
+                successMessage += `🔐 Account Password: ${data.data.default_password}\n`;
+                successMessage += `📱 Account Number: ${data.data.account_number}\n\n`;
+                
+                if (data.data.referral_processed) {
+                    successMessage += `🎁 Referral code applied successfully!\n\n`;
+                }
+                
+                successMessage += `You can now:\n`;
+                successMessage += `• Login to your account at: ${data.data.login_url}\n`;
+                successMessage += `• Customize your website settings\n`;
+                successMessage += `• Upload photos and content\n`;
+                successMessage += `• Start building your online presence\n\n`;
+                successMessage += `Click OK to access your dashboard!`;
+                
+                alert(successMessage);
                 window.location.href = '/admin/business-management.html';
             } else {
                 alert('Error: ' + data.error);

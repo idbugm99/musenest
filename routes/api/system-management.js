@@ -7,33 +7,52 @@ const crypto = require('crypto');
 // Get system statistics
 router.get('/stats', async (req, res) => {
     try {
-        // Total clients
-        const [totalClients] = await db.execute('SELECT COUNT(*) as count FROM models');
-        
-        // Active subscriptions
-        const [activeSubscriptions] = await db.execute(
-            'SELECT COUNT(*) as count FROM models WHERE subscription_status = "active"'
+        // Total clients (only MuseNest-owned clients for business metrics)
+        const [totalClients] = await db.execute(
+            'SELECT COUNT(*) as count FROM models WHERE client_type = "muse_owned"'
         );
         
-        // Trial accounts
+        // Active subscriptions (MuseNest-owned only)
+        const [activeSubscriptions] = await db.execute(
+            'SELECT COUNT(*) as count FROM models WHERE subscription_status = "active" AND client_type = "muse_owned"'
+        );
+        
+        // Trial accounts (MuseNest-owned only)
         const [trialAccounts] = await db.execute(
-            'SELECT COUNT(*) as count FROM models WHERE status = "trial"'
+            'SELECT COUNT(*) as count FROM models WHERE status = "trial" AND client_type = "muse_owned"'
         );
         
         // Monthly revenue estimation (placeholder - would integrate with Stripe in production)
         const [revenueData] = await db.execute(`
             SELECT COUNT(*) * 29.99 as estimated_revenue 
             FROM models 
-            WHERE subscription_status = "active"
+            WHERE subscription_status = "active" AND client_type = "muse_owned"
         `);
+
+        // Additional metrics by client type for future expansion
+        const [whiteLabelCount] = await db.execute(
+            'SELECT COUNT(*) as count FROM models WHERE client_type = "white_label"'
+        );
+        
+        const [subClientCount] = await db.execute(
+            'SELECT COUNT(*) as count FROM models WHERE client_type = "sub_client"'
+        );
 
         res.json({
             success: true,
             data: {
+                // Primary MuseNest business metrics
                 total_clients: totalClients[0].count,
                 active_subscriptions: activeSubscriptions[0].count,
                 trial_accounts: trialAccounts[0].count,
-                monthly_revenue: revenueData[0].estimated_revenue || 0
+                monthly_revenue: revenueData[0].estimated_revenue || 0,
+                
+                // Client type breakdown for advanced analytics
+                client_types: {
+                    muse_owned: totalClients[0].count,
+                    white_label: whiteLabelCount[0].count,
+                    sub_clients: subClientCount[0].count
+                }
             }
         });
 
@@ -54,19 +73,42 @@ router.get('/clients', async (req, res) => {
             limit = 10,
             search = '',
             status = '',
-            subscription_status = ''
+            subscription_status = '',
+            client_type = '', // New filter for client type
+            include_admin = 'false' // Option to include admin models
         } = req.query;
 
         const offset = (page - 1) * limit;
         
-        // Simple query without complex WHERE conditions for now
-        const [totalResult] = await db.execute('SELECT COUNT(*) as total FROM models');
+        // Build WHERE clause based on filters
+        let whereClause = 'WHERE 1=1';
+        if (include_admin === 'false') {
+            whereClause += ' AND client_type != "admin"';
+        }
+        if (client_type) {
+            whereClause += ` AND client_type = "${client_type}"`;
+        }
+        if (status) {
+            whereClause += ` AND status = "${status}"`;
+        }
+        if (subscription_status) {
+            whereClause += ` AND subscription_status = "${subscription_status}"`;
+        }
+        if (search) {
+            whereClause += ` AND (name LIKE "%${search}%" OR email LIKE "%${search}%")`;
+        }
+
+        // Get total count with same filters
+        const [totalResult] = await db.execute(`SELECT COUNT(*) as total FROM models ${whereClause}`);
         const total = totalResult[0].total;
 
         // Get clients with pagination - use template literal for now to avoid parameter binding issues
         const limitNum = parseInt(limit);
         const offsetNum = parseInt(offset);
         
+        // Build WHERE clause for main query (with table aliases)
+        let mainWhereClause = whereClause.replace(/\b(client_type|status|subscription_status|name|email)\b/g, 'm.$1');
+
         const [clients] = await db.execute(`
             SELECT 
                 m.id,
@@ -75,6 +117,9 @@ router.get('/clients', async (req, res) => {
                 m.email,
                 m.phone,
                 m.status,
+                m.client_type,
+                m.account_number,
+                m.parent_client_id,
                 m.subscription_status,
                 m.stripe_customer_id,
                 m.stripe_subscription_id,
@@ -84,9 +129,12 @@ router.get('/clients', async (req, res) => {
                 m.created_at,
                 m.updated_at,
                 bt.display_name as business_type,
-                bt.id as business_type_id
+                bt.id as business_type_id,
+                parent.name as parent_client_name
             FROM models m
             LEFT JOIN business_types bt ON m.business_type_id = bt.id
+            LEFT JOIN models parent ON m.parent_client_id = parent.id
+            ${mainWhereClause}
             ORDER BY m.created_at DESC
             LIMIT ${limitNum} OFFSET ${offsetNum}
         `);
@@ -123,10 +171,17 @@ router.get('/clients/:id', async (req, res) => {
                 m.*,
                 bt.display_name as business_type_name,
                 u.role as user_role,
-                u.is_active as user_active
+                u.is_active as user_active,
+                u.referral_code_used,
+                u.referred_by_user_id,
+                referrer.email as referrer_email,
+                referrer_model.name as referrer_name
             FROM models m
             LEFT JOIN business_types bt ON m.business_type_id = bt.id
             LEFT JOIN users u ON m.email = u.email
+            LEFT JOIN users referrer ON u.referred_by_user_id = referrer.id
+            LEFT JOIN model_users mu ON referrer.id = mu.user_id AND mu.role = 'owner'
+            LEFT JOIN models referrer_model ON mu.model_id = referrer_model.id
             WHERE m.id = ?
         `, [id]);
 
@@ -151,6 +206,74 @@ router.get('/clients/:id', async (req, res) => {
     }
 });
 
+// DELETE /api/system-management/clients/:id - Delete a client
+router.delete('/clients/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Get client info before deletion for cleanup
+        const [clientInfo] = await db.execute(`
+                SELECT m.slug, m.email, u.id as user_id 
+                FROM models m 
+                LEFT JOIN users u ON m.email = u.email 
+                WHERE m.id = ?
+        `, [id]);
+        
+        if (clientInfo.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'Client not found'
+            });
+        }
+            
+        const client = clientInfo[0];
+        
+        // Delete related records first (foreign key constraints)
+        
+        // Delete referral usage logs
+        if (client.user_id) {
+            await db.execute('DELETE FROM referral_usage_log WHERE referred_user_id = ? OR referrer_user_id = ?', [client.user_id, client.user_id]);
+        }
+        
+        // Delete referral codes
+        if (client.user_id) {
+            await db.execute('DELETE FROM referral_codes WHERE client_id = ?', [client.user_id]);
+        }
+        
+        // Delete model-user relationships
+        await db.execute('DELETE FROM model_users WHERE model_id = ?', [id]);
+        
+        // Delete user subscriptions
+        if (client.user_id) {
+            await db.execute('DELETE FROM user_subscriptions WHERE user_id = ?', [client.user_id]);
+        }
+        
+        // Delete user account
+        if (client.user_id) {
+            await db.execute('DELETE FROM users WHERE id = ?', [client.user_id]);
+        }
+        
+        // Delete model record
+        await db.execute('DELETE FROM models WHERE id = ?', [id]);
+            
+        // TODO: Clean up file system directories for the client
+        // This would include removing /public/uploads/{slug}/ directory
+        
+        res.json({
+            success: true,
+            message: 'Client deleted successfully',
+            deleted_slug: client.slug
+        });
+        
+    } catch (error) {
+        console.error('Error deleting client:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to delete client: ' + error.message
+        });
+    }
+});
+
 // Update client information
 router.put('/clients/:id', async (req, res) => {
     try {
@@ -168,7 +291,14 @@ router.put('/clients/:id', async (req, res) => {
             stripe_subscription_id,
             trial_ends_at,
             next_billing_at,
-            balance_due
+            balance_due,
+            // Additional profile fields (will be handled separately if needed)
+            date_of_birth,
+            nationality,
+            current_location,
+            contact_email,
+            preferred_contact_method,
+            secondary_phone
         } = req.body;
 
         // Check if slug is unique (excluding current record)
@@ -186,41 +316,38 @@ router.put('/clients/:id', async (req, res) => {
             }
         }
 
-        // Convert undefined values to null for MySQL
-        const params = [
-            name || null,
-            slug || null, 
-            email || null,
-            phone || null,
-            status || null,
-            business_type_id || null,
-            subscription_status || null,
-            stripe_customer_id || null,
-            stripe_subscription_id || null,
-            trial_ends_at || null,
-            next_billing_at || null,
-            balance_due || null,
-            id
-        ];
-
-        // Update model record
-        await db.execute(`
-            UPDATE models SET
-                name = COALESCE(?, name),
-                slug = COALESCE(?, slug),
-                email = COALESCE(?, email),
-                phone = COALESCE(?, phone),
-                status = COALESCE(?, status),
-                business_type_id = COALESCE(?, business_type_id),
-                subscription_status = COALESCE(?, subscription_status),
-                stripe_customer_id = COALESCE(?, stripe_customer_id),
-                stripe_subscription_id = COALESCE(?, stripe_subscription_id),
-                trial_ends_at = COALESCE(?, trial_ends_at),
-                next_billing_at = COALESCE(?, next_billing_at),
-                balance_due = COALESCE(?, balance_due),
-                updated_at = NOW()
-            WHERE id = ?
-        `, params);
+        // Build dynamic UPDATE query based on provided fields
+        let updateFields = [];
+        let updateParams = [];
+        
+        if (name !== undefined) { updateFields.push('name = ?'); updateParams.push(name); }
+        if (slug !== undefined) { updateFields.push('slug = ?'); updateParams.push(slug); }
+        if (email !== undefined) { updateFields.push('email = ?'); updateParams.push(email); }
+        if (phone !== undefined) { updateFields.push('phone = ?'); updateParams.push(phone); }
+        if (contact_email !== undefined) { updateFields.push('contact_email = ?'); updateParams.push(contact_email); }
+        if (secondary_phone !== undefined) { updateFields.push('secondary_phone = ?'); updateParams.push(secondary_phone); }
+        if (preferred_contact_method !== undefined) { updateFields.push('preferred_contact_method = ?'); updateParams.push(preferred_contact_method); }
+        if (date_of_birth !== undefined) { updateFields.push('date_of_birth = ?'); updateParams.push(date_of_birth); }
+        if (nationality !== undefined) { updateFields.push('nationality = ?'); updateParams.push(nationality); }
+        if (current_location !== undefined) { updateFields.push('current_location = ?'); updateParams.push(current_location); }
+        if (status !== undefined) { updateFields.push('status = ?'); updateParams.push(status); }
+        if (business_type_id !== undefined) { updateFields.push('business_type_id = ?'); updateParams.push(business_type_id); }
+        if (subscription_status !== undefined) { updateFields.push('subscription_status = ?'); updateParams.push(subscription_status); }
+        if (stripe_customer_id !== undefined) { updateFields.push('stripe_customer_id = ?'); updateParams.push(stripe_customer_id); }
+        if (stripe_subscription_id !== undefined) { updateFields.push('stripe_subscription_id = ?'); updateParams.push(stripe_subscription_id); }
+        if (trial_ends_at !== undefined) { updateFields.push('trial_ends_at = ?'); updateParams.push(trial_ends_at); }
+        if (next_billing_at !== undefined) { updateFields.push('next_billing_at = ?'); updateParams.push(next_billing_at); }
+        if (balance_due !== undefined) { updateFields.push('balance_due = ?'); updateParams.push(balance_due); }
+        
+        // Always add updated_at
+        updateFields.push('updated_at = NOW()');
+        updateParams.push(id);
+        
+        if (updateFields.length > 1) { // More than just updated_at
+            await db.execute(`
+                UPDATE models SET ${updateFields.join(', ')} WHERE id = ?
+            `, updateParams);
+        }
 
         // Update corresponding user record if email is provided
         if (email) {

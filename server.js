@@ -7,6 +7,9 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const { testConnection } = require('./config/database');
+const db = require('./config/database');
+const ApiKeyAuth = require('./src/middleware/apiKeyAuth');
+const AnalysisConfigAPI = require('./src/routes/analysisConfigApi');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -70,6 +73,7 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use('/admin', express.static(path.join(__dirname, 'admin')));
 app.use('/js', express.static(path.join(__dirname, 'public/js')));
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 // Disable built-in template engine - we use our custom one
 app.set('view engine', false);
@@ -123,6 +127,30 @@ app.get('/admin/admin-content-review.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin-content-review.html'));
 });
 
+// AI Server Management admin page
+app.get('/admin/ai-server-management.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin', 'ai-server-management.html'));
+});
+
+// Site Configuration Management admin page
+app.get('/admin/site-configuration.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin', 'site-configuration.html'));
+});
+
+// Enhanced Site Configuration Management admin page
+app.get('/admin/site-configuration-enhanced.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin', 'site-configuration-enhanced.html'));
+});
+
+// Admin Dashboard (main admin index)
+app.get('/admin/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin', 'index.html'));
+});
+
+app.get('/admin/index.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin', 'index.html'));
+});
+
 // Enhanced moderation test page
 app.get('/enhanced-moderation-test.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'enhanced-moderation-test.html'));
@@ -166,6 +194,14 @@ app.use('/api/media-review-queue', require('./routes/api/media-review-queue'));
 app.use('/api/admin-models', require('./routes/api/admin-models'));
 app.use('/api/test', require('./routes/api/test'));
 app.use('/api/blip', require('./routes/api/blip-webhook'));
+app.use('/api/ai-server-management', require('./routes/api/ai-server-management'));
+app.use('/api/site-configuration', require('./routes/api/site-configuration'));
+app.use('/api/clients', require('./routes/api/clients'));
+
+// Analysis Configuration API (for remote NudeNet/BLIP settings management)
+const apiKeyAuth = new ApiKeyAuth(db);
+const analysisConfigAPI = new AnalysisConfigAPI(db, apiKeyAuth);
+app.use('/api/v1/analysis', analysisConfigAPI.getRouter());
 
 // Dynamic model routes (Theme Sets + Modular Pages) - MOVED TO END
 // This catches all remaining routes, so it must be last before 404 handler

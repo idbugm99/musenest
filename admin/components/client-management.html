@@ -1,0 +1,1584 @@
+<!-- Client Management Component -->
+<!-- Full client list interface with KPIs, data table, and profile modal -->
+<!-- Dependencies: Bootstrap 5, Font Awesome, Auto-Save Input Component, Data Table Component -->
+
+<div class="client-management-container">
+    <!-- Client KPI Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="metric-icon" style="background-color: rgba(34, 197, 94, 0.1);">
+                    <i class="fas fa-users" style="color: #22c55e;"></i>
+                </div>
+                <div class="metric-value" id="total-clients-metric">0</div>
+                <div class="metric-label">Total Clients</div>
+                <div class="metric-trend trend-up" id="clients-trend">
+                    <i class="fas fa-arrow-up"></i> +3 this week
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="metric-icon" style="background-color: rgba(59, 130, 246, 0.1);">
+                    <i class="fas fa-user-check" style="color: #3b82f6;"></i>
+                </div>
+                <div class="metric-value" id="active-clients-metric">0</div>
+                <div class="metric-label">Active Clients</div>
+                <div class="metric-trend trend-up" id="active-trend">
+                    <i class="fas fa-arrow-up"></i> 94% active
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="metric-icon" style="background-color: rgba(245, 158, 11, 0.1);">
+                    <i class="fas fa-dollar-sign" style="color: #f59e0b;"></i>
+                </div>
+                <div class="metric-value" id="revenue-per-client-metric">$0</div>
+                <div class="metric-label">Avg Revenue/Client</div>
+                <div class="metric-trend trend-up" id="revenue-trend">
+                    <i class="fas fa-arrow-up"></i> +12% MoM
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="metric-icon" style="background-color: rgba(239, 68, 68, 0.1);">
+                    <i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i>
+                </div>
+                <div class="metric-value" id="churn-risk-metric">0</div>
+                <div class="metric-label">Churn Risk</div>
+                <div class="metric-trend trend-down" id="churn-trend">
+                    <i class="fas fa-arrow-down"></i> -8% this month
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client Management Controls -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">Client Management</h4>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary" onclick="exportClients()">
+                <i class="fas fa-download me-2"></i>Export CSV
+            </button>
+            <button class="btn btn-outline-primary" onclick="bulkImport()">
+                <i class="fas fa-upload me-2"></i>Bulk Import
+            </button>
+            <button class="btn btn-primary" onclick="openOnboardingWizard()">
+                <i class="fas fa-user-plus me-2"></i>Add New Client
+            </button>
+        </div>
+    </div>
+
+    <!-- Enhanced Client Data Table -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <!-- Search and Filter Controls -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" id="client-search" placeholder="Search clients...">
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="d-flex gap-2">
+                        <select class="form-select" id="status-filter">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="suspended">Suspended</option>
+                            <option value="trial">Trial</option>
+                        </select>
+                        <select class="form-select" id="tier-filter">
+                            <option value="">All Tiers</option>
+                            <option value="basic">Basic</option>
+                            <option value="premium">Premium</option>
+                            <option value="enterprise">Enterprise</option>
+                        </select>
+                        <select class="form-select" id="business-type-filter">
+                            <option value="">All Types</option>
+                            <option value="escort">Escort</option>
+                            <option value="camgirl">Camgirl</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <select class="form-select" id="client-type-filter">
+                            <option value="">All Client Types</option>
+                            <option value="muse_owned">💼 MuseNest</option>
+                            <option value="white_label">🏷️ White Label</option>
+                            <option value="sub_client">👥 Sub-clients</option>
+                            <option value="admin">⚙️ System Templates</option>
+                        </select>
+                        <button class="btn btn-outline-secondary" id="refresh-clients">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Client Table -->
+            <div class="table-responsive">
+                <table class="table table-hover" id="clients-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="select-all-clients" class="form-check-input">
+                            </th>
+                            <th class="sortable" data-sort="name">
+                                Client <i class="fas fa-sort text-muted"></i>
+                            </th>
+                            <th class="sortable" data-sort="account_number">
+                                Account # <i class="fas fa-sort text-muted"></i>
+                            </th>
+                            <th class="sortable" data-sort="email">
+                                Email <i class="fas fa-sort text-muted"></i>
+                            </th>
+                            <th class="sortable" data-sort="subscription_tier">
+                                Subscription <i class="fas fa-sort text-muted"></i>
+                            </th>
+                            <th class="sortable" data-sort="business_type">
+                                Business Type <i class="fas fa-sort text-muted"></i>
+                            </th>
+                            <th class="sortable" data-sort="status">
+                                Status <i class="fas fa-sort text-muted"></i>
+                            </th>
+                            <th class="sortable" data-sort="last_login">
+                                Last Activity <i class="fas fa-sort text-muted"></i>
+                            </th>
+                            <th class="sortable" data-sort="monthly_revenue">
+                                Revenue <i class="fas fa-sort text-muted"></i>
+                            </th>
+                            <th width="120">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clients-table-body">
+                        <!-- Client rows populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <nav aria-label="Client pagination" class="mt-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-muted">
+                        Showing <span id="clients-showing">0</span> of <span id="clients-total">0</span> clients
+                    </div>
+                    <ul class="pagination mb-0" id="clients-pagination">
+                        <!-- Pagination populated by JavaScript -->
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Client Profile Modal -->
+<div class="modal fade" id="clientProfileModal" tabindex="-1" aria-labelledby="clientProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen-lg-down modal-client-profile">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clientProfileModalLabel">
+                    <i class="fas fa-user-circle me-2"></i>Client Profile
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Client Info Column -->
+                    <div class="col-md-8">
+                        <!-- Account Information Section -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6 class="mb-0"><i class="fas fa-id-card me-2"></i>Account Information</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Account Number</label>
+                                            <div class="d-flex align-items-center">
+                                                <div class="font-monospace text-primary fw-bold fs-5 me-3" id="client-account-number">
+                                                    N/A
+                                                </div>
+                                                <button class="btn btn-sm btn-outline-secondary" onclick="copyAccountNumber()" title="Copy Account Number">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
+                                            </div>
+                                            <div class="text-muted small mt-1" id="client-account-description">
+                                                Legacy Account
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Client Type</label>
+                                            <div id="client-type-display">
+                                                <span class="badge bg-secondary">Unknown</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Referred By</label>
+                                            <div id="client-referral-info">
+                                                <span class="text-muted">No referral information</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Acquisition Channel</label>
+                                            <div id="client-acquisition-channel">
+                                                <span class="badge bg-info" id="client-channel-badge">Unknown</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Basic Information Section -->
+                        <div class="card mb-3">
+                            <div class="card-header" role="button" data-bs-toggle="collapse" data-bs-target="#basic-info-collapse" aria-expanded="true">
+                                <h6 class="mb-0 d-flex align-items-center justify-content-between">
+                                    <span><i class="fas fa-user me-2"></i>Basic Information</span>
+                                    <i class="fas fa-chevron-down collapse-icon"></i>
+                                </h6>
+                            </div>
+                            <div class="collapse show" id="basic-info-collapse">
+                                <div class="card-body">
+                                    <form id="client-basic-form">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <div class="form-group position-relative mb-3">
+                                                    <label for="client-name" class="form-label">Full Name</label>
+                                                    <input type="text" class="form-control auto-save" id="client-name" name="name" 
+                                                           data-endpoint="/api/system-management/clients" data-save-mode="field">
+                                                    <div class="save-indicator position-absolute" style="right: 10px; top: 32px; display: none;">
+                                                        <i class="fas fa-check-circle text-success" data-status="success"></i>
+                                                        <i class="fas fa-exclamation-circle text-danger" data-status="error"></i>
+                                                        <i class="fas fa-spinner fa-spin text-primary" data-status="saving"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group position-relative mb-3">
+                                                    <label for="client-business-type" class="form-label">Business Type</label>
+                                                    <select class="form-select auto-save" id="client-business-type" name="business_type" 
+                                                            data-endpoint="/api/system-management/clients" data-save-mode="field">
+                                                        <option value="escort">Escort Services</option>
+                                                        <option value="camgirl">Camgirl/Streaming</option>
+                                                        <option value="other">Other</option>
+                                                    </select>
+                                                    <div class="save-indicator position-absolute" style="right: 10px; top: 32px; display: none;">
+                                                        <i class="fas fa-check-circle text-success" data-status="success"></i>
+                                                        <i class="fas fa-exclamation-circle text-danger" data-status="error"></i>
+                                                        <i class="fas fa-spinner fa-spin text-primary" data-status="saving"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group position-relative mb-3">
+                                                    <label for="client-email" class="form-label">Login Email</label>
+                                                    <input type="email" class="form-control auto-save" id="client-email" name="email" 
+                                                           data-endpoint="/api/system-management/clients" data-save-mode="field">
+                                                    <div class="save-indicator position-absolute" style="right: 10px; top: 32px; display: none;">
+                                                        <i class="fas fa-check-circle text-success" data-status="success"></i>
+                                                        <i class="fas fa-exclamation-circle text-danger" data-status="error"></i>
+                                                        <i class="fas fa-spinner fa-spin text-primary" data-status="saving"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group position-relative mb-3">
+                                                    <label for="client-status" class="form-label">Account Status</label>
+                                                    <select class="form-select auto-save" id="client-status" name="status" 
+                                                            data-endpoint="/api/system-management/clients" data-save-mode="field">
+                                                        <option value="active">Active</option>
+                                                        <option value="inactive">Inactive</option>
+                                                        <option value="suspended">Suspended</option>
+                                                        <option value="trial">Trial</option>
+                                                    </select>
+                                                    <div class="save-indicator position-absolute" style="right: 10px; top: 32px; display: none;">
+                                                        <i class="fas fa-check-circle text-success" data-status="success"></i>
+                                                        <i class="fas fa-exclamation-circle text-danger" data-status="error"></i>
+                                                        <i class="fas fa-spinner fa-spin text-primary" data-status="saving"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group position-relative mb-3">
+                                                    <label for="client-contact-email" class="form-label">Contact Email</label>
+                                                    <input type="email" class="form-control auto-save" id="client-contact-email" name="contact_email" 
+                                                           data-endpoint="/api/system-management/clients" data-save-mode="field">
+                                                    <div class="save-indicator position-absolute" style="right: 10px; top: 32px; display: none;">
+                                                        <i class="fas fa-check-circle text-success" data-status="success"></i>
+                                                        <i class="fas fa-exclamation-circle text-danger" data-status="error"></i>
+                                                        <i class="fas fa-spinner fa-spin text-primary" data-status="saving"></i>
+                                                    </div>
+                                                    <div class="form-text">Primary email for client communication</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group position-relative mb-3">
+                                                    <label for="client-phone" class="form-label">Phone Number</label>
+                                                    <input type="tel" class="form-control auto-save" id="client-phone" name="phone" 
+                                                           data-endpoint="/api/system-management/clients" data-save-mode="field">
+                                                    <div class="save-indicator position-absolute" style="right: 10px; top: 32px; display: none;">
+                                                        <i class="fas fa-check-circle text-success" data-status="success"></i>
+                                                        <i class="fas fa-exclamation-circle text-danger" data-status="error"></i>
+                                                        <i class="fas fa-spinner fa-spin text-primary" data-status="saving"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group position-relative mb-3">
+                                                    <label for="client-preferred-contact" class="form-label">Preferred Contact Method</label>
+                                                    <select class="form-select auto-save" id="client-preferred-contact" name="preferred_contact_method" 
+                                                            data-endpoint="/api/system-management/clients" data-save-mode="field">
+                                                        <option value="email">Email</option>
+                                                        <option value="phone">Phone</option>
+                                                        <option value="sms">SMS/Text</option>
+                                                        <option value="whatsapp">WhatsApp</option>
+                                                        <option value="telegram">Telegram</option>
+                                                    </select>
+                                                    <div class="save-indicator position-absolute" style="right: 10px; top: 32px; display: none;">
+                                                        <i class="fas fa-check-circle text-success" data-status="success"></i>
+                                                        <i class="fas fa-exclamation-circle text-danger" data-status="error"></i>
+                                                        <i class="fas fa-spinner fa-spin text-primary" data-status="saving"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group position-relative mb-3">
+                                                    <label for="client-secondary-phone" class="form-label">Secondary Phone</label>
+                                                    <input type="tel" class="form-control auto-save" id="client-secondary-phone" name="secondary_phone" 
+                                                           data-endpoint="/api/system-management/clients" data-save-mode="field">
+                                                    <div class="save-indicator position-absolute" style="right: 10px; top: 32px; display: none;">
+                                                        <i class="fas fa-check-circle text-success" data-status="success"></i>
+                                                        <i class="fas fa-exclamation-circle text-danger" data-status="error"></i>
+                                                        <i class="fas fa-spinner fa-spin text-primary" data-status="saving"></i>
+                                                    </div>
+                                                    <div class="form-text">Backup contact number</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Demographics & Screening Section -->
+                        <div class="card mb-3">
+                            <div class="card-header" role="button" data-bs-toggle="collapse" data-bs-target="#demographics-collapse" aria-expanded="false">
+                                <h6 class="mb-0 d-flex align-items-center justify-content-between">
+                                    <span><i class="fas fa-id-badge me-2"></i>Demographics & Screening</span>
+                                    <i class="fas fa-chevron-down collapse-icon"></i>
+                                </h6>
+                            </div>
+                            <div class="collapse" id="demographics-collapse">
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="client-dob" class="form-label">Date of Birth</label>
+                                                <input type="date" class="form-control auto-save" id="client-dob" name="date_of_birth" 
+                                                       data-endpoint="/api/system-management/clients" data-save-mode="field">
+                                                <div class="save-indicator position-absolute" style="right: 10px; top: 32px; display: none;">
+                                                    <i class="fas fa-check-circle text-success" data-status="success"></i>
+                                                    <i class="fas fa-exclamation-circle text-danger" data-status="error"></i>
+                                                    <i class="fas fa-spinner fa-spin text-primary" data-status="saving"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-3">
+                                                <label class="form-label">Calculated Age</label>
+                                                <div class="form-control-plaintext fw-bold" id="client-calculated-age">
+                                                    Not available
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="client-nationality" class="form-label">Nationality</label>
+                                                <input type="text" class="form-control auto-save" id="client-nationality" name="nationality" 
+                                                       data-endpoint="/api/system-management/clients" data-save-mode="field">
+                                                <div class="save-indicator position-absolute" style="right: 10px; top: 32px; display: none;">
+                                                    <i class="fas fa-check-circle text-success" data-status="success"></i>
+                                                    <i class="fas fa-exclamation-circle text-danger" data-status="error"></i>
+                                                    <i class="fas fa-spinner fa-spin text-primary" data-status="saving"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="client-location" class="form-label">Current Location</label>
+                                                <input type="text" class="form-control auto-save" id="client-location" name="current_location" 
+                                                       data-endpoint="/api/system-management/clients" data-save-mode="field" placeholder="City, Country">
+                                                <div class="save-indicator position-absolute" style="right: 10px; top: 32px; display: none;">
+                                                    <i class="fas fa-check-circle text-success" data-status="success"></i>
+                                                    <i class="fas fa-exclamation-circle text-danger" data-status="error"></i>
+                                                    <i class="fas fa-spinner fa-spin text-primary" data-status="saving"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group mb-3">
+                                                <label class="form-label">Identity Verification Photo</label>
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <div class="verification-photo-preview" id="verification-photo-preview">
+                                                        <div class="placeholder-photo d-flex align-items-center justify-content-center">
+                                                            <i class="fas fa-camera fa-2x text-muted"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <input type="file" class="form-control mb-2" id="verification-photo-upload" accept="image/*">
+                                                        <div class="form-text">
+                                                            Upload a clear selfie for identity verification and future facial recognition.
+                                                            <br><strong>Privacy:</strong> This photo is encrypted and used only for security purposes.
+                                                        </div>
+                                                        <div class="mt-2">
+                                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeVerificationPhoto()" style="display: none;" id="remove-photo-btn">
+                                                                <i class="fas fa-trash me-1"></i>Remove Photo
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group mb-3">
+                                                <label class="form-label">Screening Status</label>
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <div id="screening-status-display">
+                                                        <span class="badge bg-warning">Pending Verification</span>
+                                                    </div>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="updateScreeningStatus()">
+                                                        Update Status
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Subscription Information Section -->
+                        <div class="card mb-3">
+                            <div class="card-header" role="button" data-bs-toggle="collapse" data-bs-target="#subscription-collapse" aria-expanded="false">
+                                <h6 class="mb-0 d-flex align-items-center justify-content-between">
+                                    <span><i class="fas fa-credit-card me-2"></i>Subscription & Billing</span>
+                                    <i class="fas fa-chevron-down collapse-icon"></i>
+                                </h6>
+                            </div>
+                            <div class="collapse" id="subscription-collapse">
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Current Tier</label>
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge bg-primary me-2" id="current-tier-badge">Premium</span>
+                                                <button class="btn btn-sm btn-outline-primary" onclick="changeSubscription()">
+                                                    Change Plan
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Monthly Revenue</label>
+                                            <div class="h5 text-success mb-0" id="client-monthly-revenue">$39.95</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Usage This Month</label>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar" role="progressbar" id="usage-progress" style="width: 0%">
+                                                    0 / 0 requests
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Next Billing</label>
+                                            <div class="text-muted" id="next-billing-date">Sep 15, 2025</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Activity Timeline -->
+                        <div class="card">
+                            <div class="card-header" role="button" data-bs-toggle="collapse" data-bs-target="#activity-collapse" aria-expanded="false">
+                                <h6 class="mb-0 d-flex align-items-center justify-content-between">
+                                    <span><i class="fas fa-clock me-2"></i>Recent Activity</span>
+                                    <i class="fas fa-chevron-down collapse-icon"></i>
+                                </h6>
+                            </div>
+                            <div class="collapse" id="activity-collapse">
+                                <div class="card-body">
+                                    <div class="timeline" id="client-activity-timeline">
+                                        <!-- Activity items populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats & Quick Actions Column -->
+                    <div class="col-md-4">
+                        <!-- Client Stats -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Client Stats</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="stat-item mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-muted">Sites Active</span>
+                                        <span class="fw-bold" id="client-sites-count">2</span>
+                                    </div>
+                                </div>
+                                <div class="stat-item mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-muted">AI Requests</span>
+                                        <span class="fw-bold" id="client-ai-requests">2,547</span>
+                                    </div>
+                                </div>
+                                <div class="stat-item mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-muted">Last Login</span>
+                                        <span class="fw-bold" id="client-last-login">2 hours ago</span>
+                                    </div>
+                                </div>
+                                <div class="stat-item mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-muted">Account Age</span>
+                                        <span class="fw-bold" id="client-account-age">3 months</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary btn-sm" onclick="impersonateClient()">
+                                        <i class="fas fa-user-secret me-2"></i>Impersonate Client
+                                    </button>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="resetPassword()">
+                                        <i class="fas fa-key me-2"></i>Reset Password
+                                    </button>
+                                    <button class="btn btn-outline-info btn-sm" onclick="sendNotification()">
+                                        <i class="fas fa-envelope me-2"></i>Send Notification
+                                    </button>
+                                    <button class="btn btn-outline-warning btn-sm" onclick="viewAIConfig()">
+                                        <i class="fas fa-robot me-2"></i>AI Configuration
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm" onclick="suspendAccount()">
+                                        <i class="fas fa-ban me-2"></i>Suspend Account
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Churn Risk Indicator -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Churn Risk</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-success" role="progressbar" id="churn-risk-bar" style="width: 25%"></div>
+                                        </div>
+                                    </div>
+                                    <span class="ms-2 fw-bold text-success" id="churn-risk-label">Low</span>
+                                </div>
+                                <div class="mt-2">
+                                    <small class="text-muted" id="churn-risk-factors">
+                                        Regular usage, on-time payments
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="openClientSettings()">
+                    <i class="fas fa-cog me-2"></i>Advanced Settings
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Client Management Class
+class ClientManagement {
+    constructor() {
+        this.clients = [];
+        this.currentPage = 1;
+        this.pageSize = 20;
+        this.currentSort = '';
+        this.currentSearch = '';
+        this.currentFilters = {};
+        this.selectedClient = null;
+        
+        this.init();
+    }
+    
+    init() {
+        this.setupEventListeners();
+        this.loadClientData();
+        this.loadClientMetrics();
+        this.setupAutoSave();
+        this.setupCollapsibleSections();
+        this.setupPhotoUpload();
+    }
+    
+    setupEventListeners() {
+        // Search
+        document.getElementById('client-search').addEventListener('input', (e) => {
+            this.currentSearch = e.target.value;
+            this.currentPage = 1;
+            this.loadClientData();
+        });
+        
+        // Filters
+        ['status-filter', 'tier-filter', 'business-type-filter', 'client-type-filter'].forEach(filterId => {
+            document.getElementById(filterId).addEventListener('change', (e) => {
+                const filterKey = filterId.replace('-filter', '').replace('-', '_'); // Convert client-type to client_type
+                this.currentFilters[filterKey] = e.target.value;
+                this.currentPage = 1;
+                this.loadClientData();
+            });
+        });
+        
+        // Refresh
+        document.getElementById('refresh-clients').addEventListener('click', () => {
+            this.loadClientData();
+            this.loadClientMetrics();
+        });
+        
+        // Select all checkbox
+        document.getElementById('select-all-clients').addEventListener('change', (e) => {
+            const checkboxes = document.querySelectorAll('.client-checkbox');
+            checkboxes.forEach(checkbox => checkbox.checked = e.target.checked);
+        });
+        
+        // Sorting
+        document.querySelectorAll('.sortable').forEach(header => {
+            header.addEventListener('click', () => {
+                const sortKey = header.dataset.sort;
+                this.currentSort = this.currentSort === sortKey ? `-${sortKey}` : sortKey;
+                this.loadClientData();
+            });
+        });
+    }
+    
+    async loadClientData() {
+        try {
+            const params = new URLSearchParams({
+                page: this.currentPage,
+                limit: this.pageSize,
+                search: this.currentSearch,
+                sort: this.currentSort,
+                include_admin: 'true', // Include admin models in the list
+                ...this.currentFilters
+            });
+            
+            const response = await fetch(`/api/system-management/clients?${params}`);
+            const result = await response.json();
+            
+            if (result.success) {
+                this.clients = result.data.clients || [];
+                this.renderClientTable();
+                this.renderPagination(result.data.pagination || {});
+            }
+        } catch (error) {
+            console.error('Failed to load client data:', error);
+        }
+    }
+    
+    async loadClientMetrics() {
+        try {
+            const response = await fetch('/api/system-management/stats');
+            const result = await response.json();
+            
+            if (result.success) {
+                const stats = result.data; // API returns data in 'data' property, not 'stats'
+                document.getElementById('total-clients-metric').textContent = stats.total_clients || 0;
+                document.getElementById('active-clients-metric').textContent = stats.active_subscriptions || 0;
+                
+                // Calculate churn risk (simple calculation: trial accounts / total clients)
+                const churnRisk = stats.total_clients > 0 ? 
+                    Math.round((stats.trial_accounts / stats.total_clients) * 100) : 0;
+                document.getElementById('churn-risk-metric').textContent = churnRisk;
+            }
+            
+            // Load subscription analytics for revenue metrics
+            const analyticsResponse = await fetch('/api/site-configuration/subscription/analytics');
+            const analyticsResult = await analyticsResponse.json();
+            
+            if (analyticsResult.success) {
+                const analytics = analyticsResult.analytics;
+                const avgRevenue = analytics.active_subscribers > 0 ? 
+                    (analytics.monthly_revenue / analytics.active_subscribers) : 0;
+                document.getElementById('revenue-per-client-metric').textContent = '$' + avgRevenue.toFixed(2);
+            }
+        } catch (error) {
+            console.error('Failed to load client metrics:', error);
+        }
+    }
+    
+    renderClientTable() {
+        const tbody = document.getElementById('clients-table-body');
+        tbody.innerHTML = '';
+        
+        this.clients.forEach(client => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <input type="checkbox" class="form-check-input client-checkbox" value="${client.id}">
+                </td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3">
+                            ${this.getInitials(client.name || client.email)}
+                        </div>
+                        <div>
+                            <div class="fw-semibold">${client.name || 'Unnamed Client'}</div>
+                            <div class="text-muted small">ID: ${client.id}</div>
+                            ${this.getClientTypeBadge(client.client_type, client.parent_client_name)}
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="font-monospace text-primary fw-bold">
+                        ${client.account_number || 'N/A'}
+                    </div>
+                    <div class="text-muted small">
+                        ${this.getAccountTypeDescription(client.account_number)}
+                    </div>
+                </td>
+                <td>${client.email}</td>
+                <td>
+                    <span class="badge ${this.getTierBadgeClass(client.subscription_tier)}">
+                        ${client.subscription_tier || 'No Subscription'}
+                    </span>
+                </td>
+                <td>
+                    <span class="badge bg-secondary">
+                        ${client.business_type || 'Not Set'}
+                    </span>
+                </td>
+                <td>
+                    <span class="badge ${this.getStatusBadgeClass(client.status)}">
+                        ${client.status || 'inactive'}
+                    </span>
+                </td>
+                <td>
+                    <div class="text-muted small">
+                        ${client.last_login ? this.formatDate(client.last_login) : 'Never'}
+                    </div>
+                </td>
+                <td class="text-success fw-semibold">
+                    $${client.monthly_revenue || '0.00'}
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="clientManager.viewClient(${client.id})" title="View Profile">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-outline-info" onclick="clientManager.impersonateClient(${client.id})" title="Impersonate">
+                            <i class="fas fa-user-secret"></i>
+                        </button>
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" title="More">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="clientManager.resetPassword(${client.id})">
+                                    <i class="fas fa-key me-2"></i>Reset Password
+                                </a></li>
+                                <li><a class="dropdown-item" href="#" onclick="clientManager.suspendAccount(${client.id})">
+                                    <i class="fas fa-ban me-2"></i>Suspend Account
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#" onclick="clientManager.deleteClient(${client.id})">
+                                    <i class="fas fa-trash me-2"></i>Delete Client
+                                </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+        
+        // Update showing count
+        document.getElementById('clients-showing').textContent = this.clients.length;
+    }
+    
+    renderPagination(pagination) {
+        document.getElementById('clients-total').textContent = pagination.total || 0;
+        // Pagination implementation here
+    }
+    
+    async viewClient(clientId) {
+        try {
+            const response = await fetch(`/api/system-management/clients/${clientId}`);
+            const result = await response.json();
+            
+            if (result.success) {
+                this.selectedClient = result.data;
+                this.populateClientModal(result.data);
+                
+                const modal = new bootstrap.Modal(document.getElementById('clientProfileModal'));
+                modal.show();
+            }
+        } catch (error) {
+            console.error('Failed to load client details:', error);
+        }
+    }
+    
+    populateClientModal(client) {
+        // Populate account information
+        this.populateAccountInfo(client);
+        
+        // Populate basic information
+        document.getElementById('client-name').value = client.name || '';
+        document.getElementById('client-email').value = client.email || '';
+        document.getElementById('client-business-type').value = client.business_type || 'escort';
+        document.getElementById('client-status').value = client.status || 'active';
+        
+        // Populate contact information
+        document.getElementById('client-contact-email').value = client.contact_email || '';
+        document.getElementById('client-phone').value = client.phone || '';
+        document.getElementById('client-preferred-contact').value = client.preferred_contact_method || 'email';
+        document.getElementById('client-secondary-phone').value = client.secondary_phone || '';
+        
+        // Populate demographics
+        document.getElementById('client-dob').value = client.date_of_birth || '';
+        document.getElementById('client-nationality').value = client.nationality || '';
+        document.getElementById('client-location').value = client.current_location || '';
+        
+        // Calculate and display age
+        this.updateCalculatedAge(client.date_of_birth);
+        
+        // Set resource ID for auto-save
+        document.querySelectorAll('.auto-save').forEach(field => {
+            field.dataset.resourceId = client.id;
+        });
+        
+        // Populate subscription info
+        if (client.subscription) {
+            document.getElementById('current-tier-badge').textContent = client.subscription.tier || 'None';
+            document.getElementById('current-tier-badge').className = `badge ${this.getTierBadgeClass(client.subscription.tier)} me-2`;
+            document.getElementById('client-monthly-revenue').textContent = '$' + (client.subscription.monthly_price || '0.00');
+        }
+        
+        // Populate stats
+        if (client.usage_stats) {
+            document.getElementById('client-sites-count').textContent = client.usage_stats.sites_active || 0;
+            document.getElementById('client-ai-requests').textContent = (client.usage_stats.ai_requests_month || 0).toLocaleString();
+            document.getElementById('client-last-login').textContent = client.usage_stats.last_activity ? 
+                this.formatRelativeTime(client.usage_stats.last_activity) : 'Never';
+        }
+        
+        // Update modal title
+        document.getElementById('clientProfileModalLabel').innerHTML = 
+            `<i class="fas fa-user-circle me-2"></i>${client.name || client.email}`;
+    }
+    
+    populateAccountInfo(client) {
+        // Account Number
+        const accountNumberEl = document.getElementById('client-account-number');
+        const accountDescEl = document.getElementById('client-account-description');
+        
+        if (client.account_number && client.account_number !== 'N/A') {
+            accountNumberEl.textContent = client.account_number;
+            accountDescEl.textContent = this.getAccountTypeDescription(client.account_number);
+        } else {
+            accountNumberEl.textContent = 'N/A';
+            accountDescEl.textContent = 'Legacy Account';
+        }
+        
+        // Client Type
+        const clientTypeEl = document.getElementById('client-type-display');
+        clientTypeEl.innerHTML = this.getClientTypeBadge(client.client_type, client.parent_client_name);
+        
+        // Referral Information
+        const referralInfoEl = document.getElementById('client-referral-info');
+        if (client.referral_code_used && client.referred_by_user_id) {
+            const referrerName = client.referrer_name || client.referrer_email || `User #${client.referred_by_user_id}`;
+            referralInfoEl.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-user-friends text-primary me-2"></i>
+                    <div>
+                        <div class="fw-semibold">Code: <span class="badge bg-success">${client.referral_code_used}</span></div>
+                        <div class="text-muted small">Referred by: <span class="fw-semibold">${referrerName}</span></div>
+                        ${client.referrer_email ? `<div class="text-muted small">${client.referrer_email}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        } else {
+            referralInfoEl.innerHTML = '<span class="text-muted">No referral information</span>';
+        }
+        
+        // Acquisition Channel (from account number)
+        const channelEl = document.getElementById('client-channel-badge');
+        if (client.account_number && client.account_number.length === 12) {
+            try {
+                const channelCode = parseInt(client.account_number.substring(4, 6));
+                const channelMap = { 
+                    10: { name: 'Website', class: 'bg-primary' },
+                    20: { name: 'Referral', class: 'bg-success' }, 
+                    30: { name: 'Manual', class: 'bg-secondary' },
+                    40: { name: 'API', class: 'bg-info' },
+                    50: { name: 'Partner', class: 'bg-warning' },
+                    99: { name: 'System', class: 'bg-dark' }
+                };
+                const channel = channelMap[channelCode] || { name: 'Unknown', class: 'bg-secondary' };
+                channelEl.textContent = channel.name;
+                channelEl.className = `badge ${channel.class}`;
+            } catch (error) {
+                channelEl.textContent = 'Unknown';
+                channelEl.className = 'badge bg-secondary';
+            }
+        } else {
+            channelEl.textContent = 'Legacy';
+            channelEl.className = 'badge bg-secondary';
+        }
+    }
+    
+    setupAutoSave() {
+        document.querySelectorAll('.auto-save').forEach(field => {
+            field.addEventListener('blur', async (e) => {
+                await this.autoSaveField(e.target);
+            });
+        });
+    }
+    
+    async autoSaveField(element) {
+        const endpoint = element.dataset.endpoint;
+        const resourceId = element.dataset.resourceId;
+        const fieldName = element.name;
+        const value = element.value;
+        
+        if (!endpoint || !resourceId) return;
+        
+        const indicator = element.parentElement.querySelector('.save-indicator');
+        
+        // Show saving indicator
+        this.showSaveIndicator(indicator, 'saving');
+        
+        try {
+            const response = await fetch(`${endpoint}/${resourceId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                },
+                body: JSON.stringify({ [fieldName]: value })
+            });
+            
+            if (response.ok) {
+                this.showSaveIndicator(indicator, 'success');
+                element.classList.remove('is-invalid');
+                
+                // Refresh client list to show updated data
+                setTimeout(() => this.loadClientData(), 1000);
+            } else {
+                const errorData = await response.json();
+                this.showSaveIndicator(indicator, 'error');
+                element.classList.add('is-invalid');
+            }
+        } catch (error) {
+            this.showSaveIndicator(indicator, 'error');
+            element.classList.add('is-invalid');
+            console.error('Auto-save failed:', error);
+        }
+    }
+    
+    showSaveIndicator(indicator, status) {
+        // Hide all status icons
+        indicator.querySelectorAll('[data-status]').forEach(icon => {
+            icon.style.display = 'none';
+        });
+        
+        // Show current status
+        const statusIcon = indicator.querySelector(`[data-status="${status}"]`);
+        if (statusIcon) {
+            statusIcon.style.display = 'inline';
+            indicator.style.display = 'block';
+        }
+        
+        // Auto-hide after 2 seconds
+        if (status === 'success' || status === 'error') {
+            setTimeout(() => {
+                indicator.style.display = 'none';
+            }, 2000);
+        }
+    }
+    
+    // Utility methods
+    getInitials(name) {
+        return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+    }
+    
+    getTierBadgeClass(tier) {
+        switch (tier) {
+            case 'basic': return 'bg-success';
+            case 'premium': return 'bg-primary';
+            case 'enterprise': return 'bg-purple';
+            default: return 'bg-secondary';
+        }
+    }
+    
+    getStatusBadgeClass(status) {
+        switch (status) {
+            case 'active': return 'bg-success';
+            case 'inactive': return 'bg-secondary';
+            case 'suspended': return 'bg-danger';
+            case 'trial': return 'bg-warning';
+            default: return 'bg-secondary';
+        }
+    }
+    
+    getClientTypeBadge(clientType, parentClientName) {
+        let badge = '';
+        let icon = '';
+        let classes = '';
+        let text = '';
+        
+        switch (clientType) {
+            case 'white_label':
+                icon = '🏷️';
+                classes = 'badge bg-info text-dark me-1';
+                text = 'White Label';
+                break;
+            case 'muse_owned':
+                icon = '💼';
+                classes = 'badge bg-primary me-1';
+                text = 'MuseNest';
+                break;
+            case 'sub_client':
+                icon = '👥';
+                classes = 'badge bg-secondary me-1';
+                text = `Sub-client${parentClientName ? ' of ' + parentClientName : ''}`;
+                break;
+            case 'admin':
+                icon = '⚙️';
+                classes = 'badge bg-dark me-1';
+                text = 'System Template';
+                break;
+            default:
+                icon = '💼';
+                classes = 'badge bg-secondary me-1';
+                text = 'Unknown';
+        }
+        
+        return `<span class="${classes}" title="${text}">${icon} ${text}</span>`;
+    }
+    
+    getAccountTypeDescription(accountNumber) {
+        if (!accountNumber || accountNumber.length !== 12) {
+            return 'Legacy Account';
+        }
+        
+        try {
+            // Parse account number components
+            const typeCode = parseInt(accountNumber.substring(0, 2));
+            const regionCode = parseInt(accountNumber.substring(2, 4));
+            const channelCode = parseInt(accountNumber.substring(4, 6));
+            
+            // Map codes to descriptions
+            const typeMap = { 1: 'MuseNest', 2: 'White Label', 3: 'Sub-client', 9: 'System' };
+            const channelMap = { 10: 'Website', 20: 'Referral', 30: 'Manual', 40: 'API', 50: 'Partner', 99: 'System' };
+            
+            const typeDesc = typeMap[typeCode] || 'Unknown';
+            const channelDesc = channelMap[channelCode] || 'Unknown';
+            
+            return `${typeDesc} • ${channelDesc}`;
+            
+        } catch (error) {
+            return 'Invalid Format';
+        }
+    }
+    
+    formatDate(dateString) {
+        return new Date(dateString).toLocaleDateString();
+    }
+    
+    formatRelativeTime(dateString) {
+        const now = new Date();
+        const date = new Date(dateString);
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMins / 60);
+        const diffDays = Math.floor(diffHours / 24);
+        
+        if (diffMins < 60) return `${diffMins} minutes ago`;
+        if (diffHours < 24) return `${diffHours} hours ago`;
+        return `${diffDays} days ago`;
+    }
+    
+    setupCollapsibleSections() {
+        // Handle collapse icon rotation
+        document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(trigger => {
+            trigger.addEventListener('click', function() {
+                const icon = this.querySelector('.collapse-icon');
+                const target = document.querySelector(this.getAttribute('data-bs-target'));
+                
+                target.addEventListener('shown.bs.collapse', () => {
+                    icon.style.transform = 'rotate(180deg)';
+                });
+                
+                target.addEventListener('hidden.bs.collapse', () => {
+                    icon.style.transform = 'rotate(0deg)';
+                });
+            });
+        });
+    }
+    
+    setupPhotoUpload() {
+        // Set up photo upload functionality
+        const uploadInput = document.getElementById('verification-photo-upload');
+        if (uploadInput) {
+            uploadInput.addEventListener('change', (e) => {
+                this.handlePhotoUpload(e.target.files[0]);
+            });
+        }
+    }
+    
+    handlePhotoUpload(file) {
+        if (!file) return;
+        
+        if (file.size > 5 * 1024 * 1024) { // 5MB limit
+            alert('File size must be less than 5MB');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const preview = document.getElementById('verification-photo-preview');
+            const removeBtn = document.getElementById('remove-photo-btn');
+            
+            preview.innerHTML = `
+                <img src="${e.target.result}" alt="Verification Photo" class="verification-photo">
+            `;
+            removeBtn.style.display = 'inline-block';
+        };
+        reader.readAsDataURL(file);
+    }
+    
+    updateCalculatedAge(dateOfBirth) {
+        const ageDisplay = document.getElementById('client-calculated-age');
+        if (!dateOfBirth) {
+            ageDisplay.textContent = 'Not available';
+            return;
+        }
+        
+        const birthDate = new Date(dateOfBirth);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        
+        ageDisplay.textContent = `${age} years old`;
+    }
+    
+    // Action methods (to be implemented)
+    async impersonateClient(clientId) {
+        console.log('Impersonate client:', clientId);
+        // Implementation here
+    }
+    
+    async resetPassword(clientId) {
+        if (confirm('Reset password for this client?')) {
+            console.log('Reset password for client:', clientId);
+            // Implementation here
+        }
+    }
+    
+    async suspendAccount(clientId) {
+        if (confirm('Suspend this client account?')) {
+            console.log('Suspend client:', clientId);
+            // Implementation here
+        }
+    }
+    
+    async deleteClient(clientId) {
+        if (!confirm('Are you sure you want to delete this client? This action cannot be undone and will remove all associated data including their website, uploads, and user account.')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/api/system-management/clients/${clientId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('Client deleted successfully');
+                // Refresh the client list data without page reload
+                if (window.clientManager && typeof window.clientManager.loadClientData === 'function') {
+                    window.clientManager.loadClientData();
+                } else if (window.clientManager && typeof window.clientManager.loadClients === 'function') {
+                    window.clientManager.loadClients();
+                } else {
+                    console.warn('Client refresh methods not available - removing row manually');
+                    // Remove the row from the table manually as fallback
+                    const row = document.querySelector(`tr[data-client-id="${clientId}"]`);
+                    if (row) {
+                        row.remove();
+                    }
+                }
+            } else {
+                alert('Error deleting client: ' + result.error);
+            }
+        } catch (error) {
+            console.error('Delete client error:', error);
+            alert('Failed to delete client. Please try again.');
+        }
+    }
+}
+
+// Global functions
+function exportClients() {
+    window.open('/api/system-management/clients/export/csv', '_blank');
+}
+
+function bulkImport() {
+    console.log('Bulk import clients');
+    // Implementation here
+}
+
+function openOnboardingWizard() {
+    // Navigate to onboarding section
+    if (window.businessManager) {
+        window.businessManager.navigateToSection('clients-onboard');
+    }
+}
+
+function changeSubscription() {
+    console.log('Change subscription for client');
+    // Implementation here
+}
+
+function impersonateClient() {
+    if (window.clientManager && window.clientManager.selectedClient) {
+        window.clientManager.impersonateClient(window.clientManager.selectedClient.id);
+    }
+}
+
+function resetPassword() {
+    if (window.clientManager && window.clientManager.selectedClient) {
+        window.clientManager.resetPassword(window.clientManager.selectedClient.id);
+    }
+}
+
+function sendNotification() {
+    console.log('Send notification to client');
+    // Implementation here
+}
+
+function viewAIConfig() {
+    console.log('View AI configuration for client');
+    // Implementation here
+}
+
+function suspendAccount() {
+    if (window.clientManager && window.clientManager.selectedClient) {
+        window.clientManager.suspendAccount(window.clientManager.selectedClient.id);
+    }
+}
+
+function openClientSettings() {
+    console.log('Open advanced client settings');
+    // Implementation here
+}
+
+function copyAccountNumber() {
+    const accountNumber = document.getElementById('client-account-number').textContent;
+    if (accountNumber && accountNumber !== 'N/A') {
+        navigator.clipboard.writeText(accountNumber).then(() => {
+            // Show tooltip or toast notification
+            const button = event.target.closest('button');
+            const originalIcon = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-check text-success"></i>';
+            setTimeout(() => {
+                button.innerHTML = originalIcon;
+            }, 1500);
+        }).catch(err => {
+            console.error('Failed to copy account number:', err);
+        });
+    }
+}
+
+function updateScreeningStatus() {
+    console.log('Update screening status');
+    // Implementation for screening status update modal
+}
+
+function removeVerificationPhoto() {
+    const preview = document.getElementById('verification-photo-preview');
+    const removeBtn = document.getElementById('remove-photo-btn');
+    const uploadInput = document.getElementById('verification-photo-upload');
+    
+    preview.innerHTML = `
+        <div class="placeholder-photo d-flex align-items-center justify-content-center">
+            <i class="fas fa-camera fa-2x text-muted"></i>
+        </div>
+    `;
+    removeBtn.style.display = 'none';
+    uploadInput.value = '';
+}
+
+// Initialize when loaded
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.querySelector('.client-management-container')) {
+        window.clientManager = new ClientManagement();
+    }
+});
+</script>
+
+<style>
+.metric-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.metric-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+}
+
+.metric-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.metric-trend {
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+.trend-up {
+    color: #059669;
+}
+
+.trend-down {
+    color: #dc2626;
+}
+
+.avatar-sm {
+    width: 36px;
+    height: 36px;
+    font-size: 0.875rem;
+}
+
+.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.sortable:hover {
+    background-color: rgba(0,0,0,0.05);
+}
+
+.timeline {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.save-indicator {
+    z-index: 10;
+}
+
+.save-indicator i {
+    font-size: 14px;
+}
+
+.bg-purple {
+    background-color: #8b5cf6 !important;
+}
+
+.stat-item {
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.stat-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+/* Collapsible sections */
+.collapse-icon {
+    transition: transform 0.3s ease;
+}
+
+.card-header[role="button"] {
+    cursor: pointer;
+    user-select: none;
+}
+
+.card-header[role="button"]:hover {
+    background-color: rgba(0,0,0,0.02);
+}
+
+/* Photo upload styling */
+.verification-photo-preview {
+    width: 120px;
+    height: 120px;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f8f9fa;
+    flex-shrink: 0;
+}
+
+.placeholder-photo {
+    width: 100%;
+    height: 100%;
+    background-color: #f8f9fa;
+}
+
+.verification-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Form enhancements */
+.form-control-plaintext {
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem;
+    margin-bottom: 0;
+    background-color: transparent;
+    border: solid transparent;
+    border-width: 1px 0;
+}
+
+/* DOB input age calculation */
+#client-dob {
+    position: relative;
+}
+
+#client-dob:valid + .save-indicator + .form-text {
+    color: #28a745;
+}
+
+/* Screening status badges */
+.badge.bg-warning {
+    color: #212529 !important;
+}
+
+/* Contact method icons */
+select[name="preferred_contact_method"] {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+}
+
+/* Custom modal size for client profile */
+.modal-client-profile {
+    max-width: 1400px;
+    width: 95%;
+}
+
+/* Ensure proper Bootstrap grid spacing */
+.modal-body .row.g-3 {
+    --bs-gutter-x: 1rem;
+    --bs-gutter-y: 1rem;
+}
+
+/* Better card spacing */
+.modal-body .card {
+    margin-bottom: 1.5rem;
+}
+
+/* Force ALL col-md-6 elements inside the modal to be 50% width */
+#clientProfileModal .col-md-6 {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+    min-width: 280px;
+}
+
+/* Make sure the left column is wide enough */
+#clientProfileModal .col-md-8 {
+    min-width: 650px;
+}
+
+/* Force rows to display flex */
+#clientProfileModal .row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+}
+
+/* Mobile stacking only on very small screens */
+@media (max-width: 575px) {
+    #clientProfileModal .col-md-6 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        min-width: auto;
+    }
+    
+    #clientProfileModal .col-md-8 {
+        min-width: auto;
+    }
+    
+    .modal-client-profile {
+        max-width: 100%;
+        margin: 0;
+    }
+}
+</style>
+
+<script>
+// Client management functionality is handled by the ClientManagement class instance
+</script>

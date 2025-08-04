@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require('../../config/database');
 const fs = require('fs').promises;
 const path = require('path');
+const bcrypt = require('bcrypt');
 
 // GET /api/onboarding/business-types - Get all available business types
 router.get('/business-types', async (req, res) => {
@@ -144,7 +145,22 @@ router.post('/complete', async (req, res) => {
             page_set_id,
             theme_set_id,
             email,
-            phone
+            phone,
+            // Additional contact information
+            contact_email,
+            secondary_phone,
+            preferred_contact_method,
+            // Personal information
+            date_of_birth,
+            nationality,
+            current_location,
+            // Business information
+            client_type,
+            status,
+            // Referral information
+            referral_code_used,
+            // Account settings
+            password
         } = req.body;
 
         // Validate required fields
@@ -168,7 +184,32 @@ router.post('/complete', async (req, res) => {
             });
         }
 
-        // Create the model with industry-specific configuration
+        // Process referral code if provided
+        let referrerUserId = null;
+        if (referral_code_used) {
+            try {
+                // Look up the referral code and get the owner
+                const [referralCode] = await db.execute(`
+                    SELECT rc.client_id as referrer_user_id 
+                    FROM referral_codes rc 
+                    WHERE rc.code = ? AND rc.is_active = true 
+                    AND (rc.expires_at IS NULL OR rc.expires_at > NOW())
+                    AND (rc.usage_limit IS NULL OR rc.usage_count < rc.usage_limit)
+                `, [referral_code_used]);
+                
+                if (referralCode.length > 0) {
+                    referrerUserId = referralCode[0].referrer_user_id;
+                }
+            } catch (referralError) {
+                console.error('Error processing referral code:', referralError);
+                // Don't fail onboarding if referral processing fails
+            }
+        }
+
+        // Generate account number (format: 09 + random 10 digits)
+        const account_number = '09' + Math.floor(Math.random() * 10000000000).toString().padStart(10, '0');
+
+        // Create the model with complete information
         const [result] = await db.execute(`
             INSERT INTO models (
                 name, 
@@ -177,14 +218,101 @@ router.post('/complete', async (req, res) => {
                 page_set_id, 
                 theme_set_id,
                 email,
+                contact_email,
                 phone,
+                secondary_phone,
+                preferred_contact_method,
+                date_of_birth,
+                nationality,
+                current_location,
+                client_type,
+                status,
+                account_number,
                 is_active,
                 created_at,
                 updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, true, NOW(), NOW())
-        `, [model_name, slug, business_type_id, page_set_id, theme_set_id, email, phone]);
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, true, NOW(), NOW())
+        `, [
+            model_name, 
+            slug, 
+            business_type_id, 
+            page_set_id, 
+            theme_set_id,
+            email,
+            contact_email || email, // Use main email as backup
+            phone,
+            secondary_phone,
+            preferred_contact_method || 'email',
+            date_of_birth,
+            nationality,
+            current_location,
+            client_type || 'muse_owned', // Default to muse_owned
+            status || 'trial', // Default to trial status
+            account_number
+        ]);
 
         const modelId = result.insertId;
+
+        // Create user account if email is provided
+        let userId = null;
+        if (email) {
+            try {
+                const defaultPassword = password || 'welcome123'; // Default password if none provided
+                const hashedPassword = await bcrypt.hash(defaultPassword, 12);
+
+                const [userResult] = await db.execute(`
+                    INSERT INTO users (
+                        email,
+                        password_hash,
+                        role,
+                        is_active,
+                        referral_code_used,
+                        referred_by_user_id,
+                        created_at,
+                        updated_at
+                    ) VALUES (?, ?, 'model', true, ?, ?, NOW(), NOW())
+                `, [email, hashedPassword, referral_code_used, referrerUserId]);
+
+                userId = userResult.insertId;
+
+                // Create model-user relationship
+                await db.execute(`
+                    INSERT INTO model_users (model_id, user_id, role, created_at)
+                    VALUES (?, ?, 'owner', NOW())
+                `, [modelId, userId]);
+
+                // Log referral usage if applicable
+                if (referral_code_used && referrerUserId) {
+                    try {
+                        const [referralCodeInfo] = await db.execute(`
+                            SELECT id FROM referral_codes 
+                            WHERE code = ? AND client_id = ?
+                        `, [referral_code_used, referrerUserId]);
+
+                        if (referralCodeInfo.length > 0) {
+                            await db.execute(`
+                                INSERT INTO referral_usage_log (
+                                    referral_code_id,
+                                    referred_user_id,
+                                    referrer_user_id,
+                                    signup_ip,
+                                    commission_eligible,
+                                    used_at
+                                ) VALUES (?, ?, ?, ?, true, NOW())
+                            `, [referralCodeInfo[0].id, userId, referrerUserId, req.ip || null]);
+                        }
+                    } catch (referralLogError) {
+                        console.error('Error logging referral usage:', referralLogError);
+                        // Don't fail onboarding if referral logging fails
+                    }
+                }
+
+            } catch (userError) {
+                console.error('Error creating user account:', userError);
+                // Don't fail onboarding if user creation fails, just log it
+                console.log('Model created successfully but user account creation failed');
+            }
+        }
 
         // Create model directories for uploads, images, and videos
         try {
@@ -216,9 +344,16 @@ router.post('/complete', async (req, res) => {
             success: true,
             data: {
                 model_id: modelId,
+                user_id: userId,
                 slug: slug,
+                account_number: account_number,
+                email: email,
+                default_password: password || 'welcome123',
+                referral_processed: !!(referral_code_used && referrerUserId),
                 message: 'Onboarding completed successfully',
-                directories_created: true
+                directories_created: true,
+                login_url: `${req.protocol}://${req.get('host')}/login`,
+                website_url: `${req.protocol}://${req.get('host')}/${slug}`
             }
         });
 
