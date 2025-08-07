@@ -1,6 +1,9 @@
 /**
  * MuseNest Admin Dashboard - Theme Management
  */
+if (window.ComponentRegistryClient) {
+    window.ComponentRegistryClient.register('admin-themes', 'admin/js/themes.js');
+}
 
 class ThemesManager {
     constructor() {

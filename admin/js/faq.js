@@ -1,6 +1,9 @@
 /**
  * MuseNest Admin Dashboard - FAQ Management
  */
+if (window.ComponentRegistryClient) {
+    window.ComponentRegistryClient.register('admin-faq', 'admin/js/faq.js');
+}
 
 class FAQManager {
     constructor() {

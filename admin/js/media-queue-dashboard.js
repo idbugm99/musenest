@@ -1,7 +1,9 @@
 /**
- * MuseNest System Admin Dashboard - Main Controller
- * Comprehensive system administration interface
+ * Media Queue Dashboard (Admin)
  */
+if (window.ComponentRegistryClient) {
+    window.ComponentRegistryClient.register('media-queue-dashboard', 'admin/js/media-queue-dashboard.js');
+}
 
 class SystemAdminDashboard {
     constructor() {

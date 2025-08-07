@@ -1,6 +1,9 @@
 /**
  * MuseNest Admin Dashboard - Calendar Management
  */
+if (window.ComponentRegistryClient) {
+    window.ComponentRegistryClient.register('admin-calendar', 'admin/js/calendar.js');
+}
 
 class CalendarManager {
     constructor() {

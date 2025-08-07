@@ -1,3 +1,7 @@
+if (window.ComponentRegistryClient) {
+    window.ComponentRegistryClient.register('admin-pages', 'admin/js/pages.js');
+}
+
 class PageContentManager {
     constructor() {
         this.currentSection = null;
