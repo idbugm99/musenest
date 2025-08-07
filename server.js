@@ -188,59 +188,42 @@ app.use('/sysadmin', (req, res, next) => {
     next();
 });
 
+// Safe DB helpers for sysadmin rendering
+async function safeCount(query, params = []) {
+    try {
+        const [rows] = await db.execute(query, params);
+        const key = Object.keys(rows?.[0] || { c: 0 })[0];
+        return rows?.[0]?.[key] ?? 0;
+    } catch (e) {
+        console.warn('safeCount warning:', e.message);
+        return 0;
+    }
+}
+
 // System Admin Dashboard Route (Handlebars) - Comprehensive Business Manager
 app.get('/sysadmin', async (req, res) => {
-    try {
-        // Get dashboard statistics
-        const [modelsResult] = await db.execute('SELECT COUNT(*) as total, SUM(CASE WHEN status = "active" THEN 1 ELSE 0 END) as active FROM models');
-        const [themesResult] = await db.execute('SELECT COUNT(*) as assigned FROM models WHERE theme_set_id IS NOT NULL');
-        const [contentResult] = await db.execute('SELECT COUNT(DISTINCT CONCAT(model_id, "-", page_type_id)) as pages FROM content_templates');
-        
-        const stats = {
-            totalClients: modelsResult[0]?.total || 0,
-            activeClients: modelsResult[0]?.active || 0,
-            assignedThemes: themesResult[0]?.assigned || 0,
-            contentPages: contentResult[0]?.pages || 0
-        };
+    // Collect stats, but never fail the page render
+    const totalClients = await safeCount('SELECT COUNT(*) AS c FROM models');
+    const activeClients = await safeCount('SELECT COUNT(*) AS c FROM models WHERE status = "active"');
+    const assignedThemes = await safeCount('SELECT COUNT(*) AS c FROM models WHERE theme_set_id IS NOT NULL');
+    const contentPages = await safeCount('SELECT COUNT(DISTINCT CONCAT(model_id, "-", page_type_id)) AS c FROM content_templates');
 
-        // Recent activity (mock data for now)
-        const recentActivity = [
-            {
-                title: 'Theme Assignment',
-                description: 'Glamour theme assigned to Model Example',
-                timestamp: 'Just now',
-                type: 'success',
-                icon: 'palette'
-            },
-            {
-                title: 'Content Update',
-                description: 'Contact page content updated',
-                timestamp: '5 minutes ago',
-                type: 'info',
-                icon: 'edit'
-            }
-        ];
+    const stats = { totalClients, activeClients, assignedThemes, contentPages };
 
-        console.log('📊 SysAdmin Dashboard stats:', stats);
-        
-        // Check if a section is requested
-        const requestedSection = req.query.section;
-        if (requestedSection) {
-            console.log('🔍 Section requested via URL:', requestedSection);
-        }
-        
-        renderSysadmin(res, 'admin/pages/dashboard', {
-            pageSubtitle: 'MuseNest Business Manager - Comprehensive CRM',
-            stats,
-            recentActivity,
-            clientCount: stats.totalClients,
-            initialSection: requestedSection
-        });
-    } catch (error) {
-        console.error('❌ Error loading sysadmin dashboard:', error);
-        console.error('Stack trace:', error.stack);
-        res.status(500).send(`Error loading sysadmin dashboard: ${error.message}`);
-    }
+    // Recent activity (mock data for now)
+    const recentActivity = [
+        { title: 'Theme Assignment', description: 'Glamour theme assigned to Model Example', timestamp: 'Just now', type: 'success', icon: 'palette' },
+        { title: 'Content Update', description: 'Contact page content updated', timestamp: '5 minutes ago', type: 'info', icon: 'edit' }
+    ];
+
+    const requestedSection = req.query.section;
+    renderSysadmin(res, 'admin/pages/dashboard', {
+        pageSubtitle: 'MuseNest Business Manager - Comprehensive CRM',
+        stats,
+        recentActivity,
+        clientCount: stats.totalClients,
+        initialSection: requestedSection
+    });
 });
 
 // Model Admin Dashboard Route - Individual model management
