@@ -88,6 +88,20 @@ app.use('/admin/components', express.static(path.join(__dirname, 'admin/componen
 app.use('/admin/assets', express.static(path.join(__dirname, 'admin/assets')));
 app.use('/admin/js', express.static(path.join(__dirname, 'admin/js')));
 
+// Dev-only legacy admin redirect middleware (catch most /admin/*.html)
+app.use('/admin', (req, res, next) => {
+    if (process.env.NODE_ENV === 'production') return next();
+    if (!req.path.endsWith('.html')) return next();
+    const allowlist = new Set(['media-queue-review']);
+    const match = req.path.match(/^\/(.+)\.html$/);
+    const base = match ? match[1] : '';
+    if (!allowlist.has(base)) {
+        const target = `/sysadmin?legacy=${encodeURIComponent('/admin' + req.path)}`;
+        return res.redirect(target);
+    }
+    next();
+});
+
 // Serve the media queue review page
 app.get('/admin/media-queue-review.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin', 'media-queue-review.html'));
