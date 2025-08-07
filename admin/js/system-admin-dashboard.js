@@ -1442,11 +1442,15 @@ class SystemAdminDashboard {
     // Content Moderation Management
     async loadContentModerationContent() {
         try {
-            // Get moderation queue
-            const queueResponse = await sysFetch('/api/content-moderation/queue', {
+            // Get moderation queue with pagination
+            const cmPage = this.cmPage || 1;
+            const cmLimit = this.cmLimit || parseInt(localStorage.getItem('cm_page_size') || '20');
+            const queueResponse = await sysFetch(`/api/content-moderation/queue?page=${cmPage}&limit=${cmLimit}`, {
                 headers: { 'Authorization': `Bearer ${this.authToken}` }
             });
             const queueData = await queueResponse.json();
+            this.cmPage = queueData.pagination?.page || cmPage;
+            this.cmLimit = queueData.pagination?.limit || cmLimit;
 
             // Get AI service status
             const statusResponse = await sysFetch('/api/content-moderation/test', {
@@ -1509,7 +1513,7 @@ class SystemAdminDashboard {
                                 <h5 class="mb-0">
                                     <i class="bi bi-list-check"></i> Human Review Queue
                                 </h5>
-                                <div class="queue-controls">
+                                <div class="queue-controls d-flex align-items-center" style="gap:8px;">
                                     <select class="form-select form-select-sm me-2" id="priorityFilter" onchange="filterModerationQueue()">
                                         <option value="">All Priorities</option>
                                         <option value="urgent">Urgent</option>
@@ -1526,6 +1530,12 @@ class SystemAdminDashboard {
                                     <button class="btn btn-primary btn-sm" onclick="refreshModerationQueue()">
                                         <i class="bi bi-arrow-clockwise"></i> Refresh
                                     </button>
+                                    <span class="text-muted small ms-2">Page ${this.cmPage} · ${queueData.pagination?.total || queue.length} total</span>
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="window.systemAdminDashboard.cmPrevPage()" ${this.cmPage<=1?'disabled':''}>Prev</button>
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="window.systemAdminDashboard.cmNextPage()" ${(queueData.pagination?.pages||1)<=this.cmPage?'disabled':''}>Next</button>
+                                    <select class="form-select form-select-sm" onchange="window.systemAdminDashboard.cmChangePageSize(this.value)" style="width:auto;">
+                                        ${[10,20,50,100].map(n => `<option value=\"${n}\" ${this.cmLimit===n?'selected':''}>${n}/page</option>`).join('')}
+                                    </select>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -1654,6 +1664,24 @@ class SystemAdminDashboard {
                 </div>
             `;
         }
+    }
+
+    cmPrevPage() {
+        if ((this.cmPage || 1) > 1) {
+            this.cmPage -= 1;
+            this.loadTabContent('content-moderation');
+        }
+    }
+    cmNextPage() {
+        this.cmPage = (this.cmPage || 1) + 1;
+        this.loadTabContent('content-moderation');
+    }
+    cmChangePageSize(val) {
+        const n = parseInt(val) || 20;
+        this.cmLimit = n;
+        localStorage.setItem('cm_page_size', String(n));
+        this.cmPage = 1;
+        this.loadTabContent('content-moderation');
     }
 
     getContextBadgeColor(contextType) {
