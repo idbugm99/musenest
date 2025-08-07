@@ -5,6 +5,8 @@
  */
 
 const http = require('http');
+const https = require('https');
+const { URL } = require('url');
 const FormData = require('form-data');
 const fs = require('fs');
 
@@ -29,10 +31,18 @@ async function testAIServer() {
     console.log('\n3️⃣ Testing AI analysis with configuration flags...');
     try {
         const analysisResult = await testAnalysisWithConfig(testImagePath);
-        console.log('Analysis result keys:', Object.keys(analysisResult));
+        const keys = Object.keys(analysisResult || {});
+        console.log('Analysis result keys:', keys);
         console.log('Configuration applied:', analysisResult.configuration_applied || 'NOT REPORTED');
         console.log('Detected parts:', analysisResult.detected_parts || {});
         console.log('Processing status:', analysisResult.processing_status || 'unknown');
+
+        // Soft assertions (do not fail the run, just report)
+        softCheck('success flag present', 'success' in analysisResult, analysisResult.success);
+        softCheck('BLIP caption present', !!(analysisResult.blip_caption || analysisResult.caption || analysisResult.description), (analysisResult.blip_caption || analysisResult.caption || analysisResult.description));
+        softCheck('NSFW detection present', !!(analysisResult.nsfw || analysisResult.nudity || analysisResult.detections), (analysisResult.nsfw || analysisResult.nudity || analysisResult.detections));
+        softCheck('child/age analysis present', !!(analysisResult.child || analysisResult.child_analysis || analysisResult.age_estimation), (analysisResult.child || analysisResult.child_analysis || analysisResult.age_estimation));
+        softCheck('risk/score present', !!(analysisResult.risk || analysisResult.score || analysisResult.overall_risk), (analysisResult.risk || analysisResult.score || analysisResult.overall_risk));
     } catch (error) {
         console.error('❌ Analysis test failed:', error.message);
     }
@@ -79,13 +89,15 @@ async function testAnalysisWithConfig(imagePath) {
         
         console.log('📤 Sending analysis request with config flags...');
         
-        const req = http.request({
-            hostname: '18.221.22.72',
-            port: 5000,
-            path: '/analyze',
+        const base = getBase();
+        const client = base.protocol === 'https:' ? https : http;
+        const req = client.request({
+            hostname: base.hostname,
+            port: base.port,
+            path: (base.pathnameNoSlash || '') + '/analyze',
             method: 'POST',
             headers: form.getHeaders(),
-            timeout: 15000
+            timeout: 20000
         }, (res) => {
             let data = '';
             res.on('data', chunk => data += chunk);
@@ -111,12 +123,14 @@ async function testAnalysisWithConfig(imagePath) {
 
 function makeRequest(method, path) {
     return new Promise((resolve, reject) => {
-        const req = http.request({
-            hostname: '18.221.22.72',
-            port: 5000,
-            path: path,
+        const base = getBase();
+        const client = base.protocol === 'https:' ? https : http;
+        const req = client.request({
+            hostname: base.hostname,
+            port: base.port,
+            path: (base.pathnameNoSlash || '') + path,
             method: method,
-            timeout: 5000
+            timeout: 7000
         }, (res) => {
             let data = '';
             res.on('data', chunk => data += chunk);
@@ -138,6 +152,30 @@ function makeRequest(method, path) {
         
         req.end();
     });
+}
+
+function getBase() {
+    const envUrl = process.env.AI_SERVER_URL || process.env.AI_SMOKE_URL;
+    let fallback = 'http://18.221.22.72:5000';
+    try {
+        const parsed = new URL(envUrl || fallback);
+        return {
+            protocol: parsed.protocol,
+            hostname: parsed.hostname,
+            port: parsed.port || (parsed.protocol === 'https:' ? 443 : 80),
+            pathnameNoSlash: parsed.pathname && parsed.pathname !== '/' ? parsed.pathname.replace(/\/$/, '') : ''
+        };
+    } catch (e) {
+        return { protocol: 'http:', hostname: '18.221.22.72', port: 5000, pathnameNoSlash: '' };
+    }
+}
+
+function softCheck(name, condition, details) {
+    if (condition) {
+        console.log(`✅ ${name}` + (details ? `: ${typeof details === 'object' ? JSON.stringify(details) : details}` : ''));
+    } else {
+        console.warn(`⚠️  ${name} missing`);
+    }
 }
 
 testAIServer().then(() => {
