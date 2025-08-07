@@ -15,7 +15,11 @@ SET @sql := IF(@col_exists = 0, 'ALTER TABLE content_templates ADD COLUMN is_req
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 -- Ensure composite index exists (portable across MySQL versions)
-DROP INDEX IF EXISTS idx_ct_model_page ON content_templates;
-CREATE INDEX idx_ct_model_page ON content_templates (model_id, page_type_id);
+SET @idx_exists := (
+  SELECT COUNT(1) FROM INFORMATION_SCHEMA.STATISTICS 
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'content_templates' AND INDEX_NAME = 'idx_ct_model_page'
+);
+SET @sql := IF(@idx_exists > 0, 'SELECT 1', 'CREATE INDEX idx_ct_model_page ON content_templates (model_id, page_type_id)');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 

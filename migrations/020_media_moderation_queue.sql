@@ -62,10 +62,19 @@ SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN polic
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 -- Ensure indexes exist (portable across MySQL versions)
-DROP INDEX IF EXISTS idx_mrq_status ON media_review_queue;
-CREATE INDEX idx_mrq_status ON media_review_queue (review_status);
+-- Drop/create indexes in a compatible way
+SET @idx_exists := (
+  SELECT COUNT(1) FROM INFORMATION_SCHEMA.STATISTICS 
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'media_review_queue' AND INDEX_NAME = 'idx_mrq_status'
+);
+SET @sql := IF(@idx_exists > 0, 'SELECT 1', 'CREATE INDEX idx_mrq_status ON media_review_queue (review_status)');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
-DROP INDEX IF EXISTS idx_mrq_created_at ON media_review_queue;
-CREATE INDEX idx_mrq_created_at ON media_review_queue (created_at);
+SET @idx_exists := (
+  SELECT COUNT(1) FROM INFORMATION_SCHEMA.STATISTICS 
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'media_review_queue' AND INDEX_NAME = 'idx_mrq_created_at'
+);
+SET @sql := IF(@idx_exists > 0, 'SELECT 1', 'CREATE INDEX idx_mrq_created_at ON media_review_queue (created_at)');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 
