@@ -1694,7 +1694,7 @@ class SystemAdminDashboard {
     // Media Queue Content
     async loadMediaQueueContent() {
         try {
-            const response = await sysFetch('/api/media-review-queue/queue?status=pending', {
+            const response = await sysFetch('/api/media-review-queue/queue?status=pending&page=1&limit=20', {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -1879,7 +1879,7 @@ class SystemAdminDashboard {
     // Rejected/Removed Content
     async loadRejectedRemovedContent() {
         try {
-            const response = await sysFetch('/api/media-review-queue/queue?status=rejected', {
+            const response = await sysFetch('/api/media-review-queue/queue?status=rejected&page=1&limit=20', {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'

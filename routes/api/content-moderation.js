@@ -464,9 +464,13 @@ router.get('/results/:model_id', async (req, res) => {
  */
 router.get('/queue', async (req, res) => {
     try {
-        const { priority, assigned_to } = req.query;
+        const { priority, assigned_to, page = 1, limit = 20 } = req.query;
 
-        let query = `
+        const currentPage = Math.max(1, parseInt(page));
+        const perPage = Math.max(1, Math.min(100, parseInt(limit)));
+        const offset = (currentPage - 1) * perPage;
+
+        let baseSelect = `
             SELECT 
                 mq.*,
                 cm.image_path,
@@ -482,28 +486,48 @@ router.get('/queue', async (req, res) => {
             LEFT JOIN models m ON cm.model_id = m.id
             WHERE 1=1
         `;
+        let baseCount = `
+            SELECT COUNT(*) as total
+            FROM moderation_queue mq
+            JOIN content_moderation cm ON mq.content_moderation_id = cm.id
+            LEFT JOIN models m ON cm.model_id = m.id
+            WHERE 1=1
+        `;
         const params = [];
+        const countParams = [];
 
         if (priority) {
-            query += ` AND mq.priority = ?`;
+            baseSelect += ` AND mq.priority = ?`;
+            baseCount += ` AND mq.priority = ?`;
             params.push(priority);
+            countParams.push(priority);
         }
 
         if (assigned_to) {
-            query += ` AND mq.assigned_to = ?`;
+            baseSelect += ` AND mq.assigned_to = ?`;
+            baseCount += ` AND mq.assigned_to = ?`;
             params.push(assigned_to);
+            countParams.push(assigned_to);
         }
 
-        query += ` ORDER BY 
+        const orderBy = ` ORDER BY 
             FIELD(mq.priority, 'urgent', 'high', 'medium', 'low'),
-            mq.created_at ASC
-        `;
+            mq.created_at ASC`;
 
-        const [results] = await dbName.query(query, params);
+        const pagedQuery = `${baseSelect}${orderBy} LIMIT ? OFFSET ?`;
+        const [countRows] = await dbName.query(baseCount, countParams);
+        const total = countRows[0]?.total || 0;
+        const [results] = await dbName.query(pagedQuery, [...params, perPage, offset]);
 
         res.json({
             success: true,
-            queue: results
+            queue: results,
+            pagination: {
+                page: currentPage,
+                limit: perPage,
+                total,
+                pages: Math.ceil(total / perPage)
+            }
         });
 
     } catch (error) {
