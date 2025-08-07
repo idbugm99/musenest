@@ -1,3 +1,7 @@
+if (window.ComponentRegistryClient) {
+    window.ComponentRegistryClient.register('business-management', 'admin/js/business-management.js');
+}
+
 class BusinessManagement {
     constructor() {
         this.businessTypes = [];

@@ -11,11 +11,20 @@ require('dotenv').config();
 
 const { testConnection } = require('./config/database');
 const db = require('./config/database');
+const { validateConfig } = require('./utils/validateConfig');
 const ApiKeyAuth = require('./src/middleware/apiKeyAuth');
 const AnalysisConfigAPI = require('./src/routes/analysisConfigApi');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Validate configuration early
+try {
+    validateConfig(process.env);
+} catch (e) {
+    console.error('Fatal configuration error:', e.message);
+    process.exit(1);
+}
 
 // Security middleware (disabled HTTPS redirect in development)
 if (process.env.NODE_ENV === 'production') {

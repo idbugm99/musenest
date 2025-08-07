@@ -1,6 +1,9 @@
 /**
  * MuseNest Admin Dashboard - Main Controller
  */
+if (window.ComponentRegistryClient) {
+    window.ComponentRegistryClient.register('admin-dashboard', 'admin/js/admin.js');
+}
 
 class AdminDashboard {
     constructor() {

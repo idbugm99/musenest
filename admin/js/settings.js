@@ -1,6 +1,9 @@
 /**
  * MuseNest Admin Dashboard - Settings Management
  */
+if (window.ComponentRegistryClient) {
+    window.ComponentRegistryClient.register('admin-settings', 'admin/js/settings.js');
+}
 
 class SettingsManager {
     constructor() {

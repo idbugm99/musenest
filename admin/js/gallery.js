@@ -1,6 +1,9 @@
 /**
  * MuseNest Admin Dashboard - Gallery Management
  */
+if (window.ComponentRegistryClient) {
+    window.ComponentRegistryClient.register('admin-gallery', 'admin/js/gallery.js');
+}
 
 class GalleryManager {
     constructor() {
