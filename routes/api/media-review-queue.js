@@ -447,6 +447,19 @@ router.post('/approve-blur/:id', async (req, res) => {
             );
             console.log('Verified record after update:', verifyRecord[0]);
             
+            // CRITICAL FIX: Update media_review_queue status to approved_blurred
+            console.log('Updating media_review_queue status to approved_blurred...');
+            const queueUpdateResult = await db.execute(`
+                UPDATE media_review_queue 
+                SET 
+                    review_status = 'approved_blurred',
+                    reviewed_at = NOW(),
+                    updated_at = NOW()
+                WHERE id = ?
+            `, [id]);
+            
+            console.log('Media review queue update successful, affected rows:', queueUpdateResult.affectedRows);
+            
         } catch (updateError) {
             console.error('Error updating content_moderation:', updateError);
             console.error('Error message:', updateError.message);

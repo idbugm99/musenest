@@ -1,0 +1,438 @@
+<!-- Model Dashboard Component - Bootstrap Version -->
+<!-- Enhanced model-centric view for Blurred/Approved Images -->
+<!-- Created: August 7, 2025 - Updated for Bootstrap compatibility -->
+
+<div class="container-fluid">
+    <!-- Dashboard Header with Search and Filters -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-3 mb-lg-0">
+                    <h2 class="h3 mb-1 text-dark fw-bold">Model Media Dashboard</h2>
+                    <p class="text-muted mb-0 small">Manage approved and blurred content across all models</p>
+                </div>
+                
+                <!-- Search and Filter Controls -->
+                <div class="col-lg-6">
+                    <div class="row g-2">
+                        <!-- Search Input -->
+                        <div class="col-md-5">
+                            <div class="position-relative">
+                                <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                                <input 
+                                    type="text" 
+                                    id="modelSearchInput" 
+                                    class="form-control ps-5" 
+                                    placeholder="Search models..." 
+                                    autocomplete="off"
+                                >
+                            </div>
+                        </div>
+                        
+                        <!-- Sort Dropdown -->
+                        <div class="col-md-3">
+                            <select id="modelSortSelect" class="form-select">
+                                <option value="newest">Newest First</option>
+                                <option value="oldest">Oldest First</option>
+                                <option value="most_pending">Most Pending</option>
+                                <option value="most_violations">Most Violations</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Filter Dropdown -->
+                        <div class="col-md-4">
+                            <select id="modelFilterSelect" class="form-select">
+                                <option value="all">All Models</option>
+                                <option value="has_pending">Has Pending</option>
+                                <option value="has_violations">Has Violations</option>
+                                <option value="active_7d">Active (7 days)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Summary Cards -->
+    <div class="row mb-4" id="statisticsSummary">
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 bg-primary bg-opacity-10 h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-users text-primary fs-2 mb-2"></i>
+                    <div class="h4 mb-1 text-primary fw-bold" id="totalModelsCount">0</div>
+                    <div class="text-muted small">Total Models</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 bg-warning bg-opacity-10 h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock text-warning fs-2 mb-2"></i>
+                    <div class="h4 mb-1 text-warning fw-bold" id="totalPendingCount">0</div>
+                    <div class="text-muted small">Pending Review</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 bg-success bg-opacity-10 h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-check-circle text-success fs-2 mb-2"></i>
+                    <div class="h4 mb-1 text-success fw-bold" id="totalApprovedCount">0</div>
+                    <div class="text-muted small">Approved</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 bg-danger bg-opacity-10 h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-exclamation-triangle text-danger fs-2 mb-2"></i>
+                    <div class="h4 mb-1 text-danger fw-bold" id="totalViolationsCount">0</div>
+                    <div class="text-muted small">Violations (30d)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading State -->
+    <div id="modelDashboardLoading" class="text-center py-5 d-none">
+        <div class="spinner-border text-primary me-2" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <span class="text-muted">Loading models...</span>
+    </div>
+    
+    <!-- Model Cards Container -->
+    <div id="modelCardsContainer" class="d-none">
+        <div class="row" id="modelCardsGrid">
+            <!-- Model cards will be inserted here -->
+        </div>
+        
+        <!-- Pagination -->
+        <nav aria-label="Model dashboard pagination" id="modelPagination" class="mt-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="text-muted small">
+                    Showing <span id="showingFrom">1</span> to <span id="showingTo">20</span> of <span id="showingTotal">0</span> models
+                </div>
+                <div class="d-flex gap-2">
+                    <button id="prevPage" class="btn btn-outline-primary btn-sm" disabled>
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <div id="pageNumbers" class="d-flex gap-1">
+                        <!-- Page numbers will be generated dynamically -->
+                    </div>
+                    <button id="nextPage" class="btn btn-outline-primary btn-sm" disabled>
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <!-- Mobile pagination -->
+                <div class="d-md-none">
+                    <button id="prevPageMobile" class="btn btn-outline-primary btn-sm me-2" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button id="nextPageMobile" class="btn btn-outline-primary btn-sm" disabled>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </div>
+    
+    <!-- Empty State -->
+    <div id="modelCardsEmpty" class="text-center py-5 d-none">
+        <i class="fas fa-users text-muted display-1 mb-3"></i>
+        <h4 class="text-muted">No models found</h4>
+        <p class="text-muted">Try adjusting your search or filter criteria.</p>
+    </div>
+    
+    <!-- Model Card Template -->
+    <template id="modelCardTemplate">
+        <div class="col-lg-6 col-xl-4 mb-4">
+            <div class="card model-card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <!-- Header with Model Info -->
+                    <div class="d-flex align-items-center mb-3">
+                        <img class="model-avatar rounded-circle model-profile-image me-3" src="" alt="Model Profile">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="model-name fw-bold mb-1 text-dark">Model Name</h5>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="model-status badge bg-light text-dark">Status</span>
+                                        <span class="badge activity-badge bg-success">
+                                            <i class="activity-dot fas fa-circle me-1" style="font-size: 0.5rem;"></i>
+                                            <span class="activity-text">Active</span>
+                                        </span>
+                                    </div>
+                                    <p class="model-type text-muted small mb-0 mt-1">Type</p>
+                                </div>
+                                <div class="priority-indicator d-none">
+                                    <i class="fas fa-exclamation-triangle text-warning fs-5"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Last Activity -->
+                    <div class="mb-3">
+                        <p class="last-activity text-muted small mb-0">
+                            <i class="fas fa-clock me-1"></i>
+                            Last upload: Never
+                        </p>
+                    </div>
+                    
+                    <!-- Statistics Cards -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="bg-primary bg-opacity-10 rounded p-2 text-center">
+                                <div class="total-media h5 fw-bold text-primary mb-0">0</div>
+                                <small class="text-muted">Total</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="bg-warning bg-opacity-10 rounded p-2 text-center">
+                                <div class="pending-count h5 fw-bold text-warning mb-0">0</div>
+                                <small class="text-muted">Pending</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="bg-success bg-opacity-10 rounded p-2 text-center">
+                                <div class="approved-count h6 fw-bold text-success mb-0">0</div>
+                                <small class="text-muted">Approved</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="bg-info bg-opacity-10 rounded p-2 text-center">
+                                <div class="blurred-count h6 fw-bold text-info mb-0">0</div>
+                                <small class="text-muted">Blurred</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="bg-danger bg-opacity-10 rounded p-2 text-center">
+                                <div class="rejected-count h6 fw-bold text-danger mb-0">0</div>
+                                <small class="text-muted">Rejected</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Violation Metrics -->
+                    <div class="violation-metrics mb-3 p-2 bg-light rounded">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="small fw-medium text-dark">Violations (30d)</span>
+                            <div class="d-flex align-items-center gap-1">
+                                <span class="violations-count fw-bold text-success">0</span>
+                                <i class="violation-trend-icon fas fa-arrow-up text-success" style="font-size: 0.75rem;"></i>
+                            </div>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;">
+                            <div class="severity-level progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="small text-muted">Severity Score</span>
+                            <span class="avg-severity small fw-bold text-dark">0.0</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-2 mt-auto">
+                        <button type="button" class="btn btn-primary btn-sm flex-fill view-media-btn">
+                            <i class="fas fa-images me-2"></i>
+                            View Media
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm quick-actions-btn px-3">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    
+    <!-- Error State -->
+    <div id="modelCardsError" class="alert alert-danger d-none" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <strong>Error loading models:</strong>
+        <span id="errorMessage">An unexpected error occurred.</span>
+        <button id="retryLoadModels" class="btn btn-outline-danger btn-sm mt-2">
+            <i class="fas fa-retry me-1"></i>
+            Try Again
+        </button>
+    </div>
+</div>
+
+<!-- Model Detail Modal Template -->
+<template id="modelDetailModalTemplate">
+    <div class="model-detail-modal position-fixed top-0 start-0 w-100 h-100" style="z-index: 1060; background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="d-flex align-items-center">
+                        <img class="modal-model-profile rounded-circle me-3" src="" alt="Model Profile" style="width: 48px; height: 48px; object-fit: cover;">
+                        <div>
+                            <h5 class="modal-model-name mb-0">Model Name</h5>
+                            <p class="modal-model-status text-muted small mb-0">Status</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close close-modal-btn" aria-label="Close"></button>
+                </div>
+                <div class="modal-body modal-content" style="max-height: 70vh; overflow-y: auto;">
+                    <!-- Model detail content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style>
+/* Professional Model Dashboard Styles */
+.model-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border-radius: 12px !important;
+    overflow: hidden;
+}
+
+.model-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12) !important;
+}
+
+.model-avatar {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.activity-badge {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.activity-badge.bg-success {
+    background: linear-gradient(135deg, #28a745, #20c997) !important;
+}
+
+.activity-badge .activity-dot {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Statistics Cards */
+.model-card .bg-primary.bg-opacity-10 {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.1), rgba(13, 110, 253, 0.05)) !important;
+    border: 1px solid rgba(13, 110, 253, 0.15);
+    transition: all 0.2s ease;
+}
+
+.model-card .bg-warning.bg-opacity-10 {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.05)) !important;
+    border: 1px solid rgba(255, 193, 7, 0.15);
+}
+
+.model-card .bg-success.bg-opacity-10 {
+    background: linear-gradient(135deg, rgba(25, 135, 84, 0.1), rgba(25, 135, 84, 0.05)) !important;
+    border: 1px solid rgba(25, 135, 84, 0.15);
+}
+
+.model-card .bg-info.bg-opacity-10 {
+    background: linear-gradient(135deg, rgba(13, 202, 240, 0.1), rgba(13, 202, 240, 0.05)) !important;
+    border: 1px solid rgba(13, 202, 240, 0.15);
+}
+
+.model-card .bg-danger.bg-opacity-10 {
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.1), rgba(220, 53, 69, 0.05)) !important;
+    border: 1px solid rgba(220, 53, 69, 0.15);
+}
+
+/* Violation Metrics */
+.violation-metrics {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef) !important;
+    border: 1px solid #dee2e6;
+}
+
+/* Button Styles */
+.model-card .btn-primary {
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.model-card .btn-primary:hover {
+    background: linear-gradient(135deg, #0b5ed7, #0a58ca);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+.model-card .btn-outline-secondary {
+    border-radius: 8px;
+    border: 2px solid #6c757d;
+    transition: all 0.2s ease;
+}
+
+.model-card .btn-outline-secondary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2);
+}
+
+/* Progress Bar */
+.progress {
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.progress-bar {
+    border-radius: 10px;
+}
+
+/* Form Controls */
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+/* Typography Enhancements */
+.model-card h5.model-name {
+    color: #2c3e50;
+    letter-spacing: -0.2px;
+}
+
+.model-card .text-muted {
+    color: #6c757d !important;
+}
+
+/* Badge Improvements */
+.badge.bg-light {
+    background: #f8f9fa !important;
+    border: 1px solid #e9ecef;
+    color: #495057 !important;
+    font-weight: 500;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .model-card {
+        margin-bottom: 1rem;
+    }
+    
+    .model-avatar {
+        width: 48px;
+        height: 48px;
+    }
+}
+</style>

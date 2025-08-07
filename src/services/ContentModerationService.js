@@ -1641,7 +1641,17 @@ except Exception as e:
             contentModerationId
         ]);
 
-        // Remove from moderation queue
+        // CRITICAL FIX: Update media_review_queue status to approved_blurred
+        await this.db.execute(`
+            UPDATE media_review_queue 
+            SET 
+                review_status = 'approved_blurred',
+                reviewed_at = NOW(),
+                updated_at = NOW()
+            WHERE content_moderation_id = ?
+        `, [contentModerationId]);
+
+        // Remove from moderation queue (legacy table)
         await this.db.execute(
             'DELETE FROM moderation_queue WHERE content_moderation_id = ?',
             [contentModerationId]
