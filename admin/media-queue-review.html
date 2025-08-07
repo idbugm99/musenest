@@ -145,6 +145,8 @@
 </head>
 <body class="bg-light">
     <div class="container-fluid py-4">
+        <!-- Legacy Banner -->
+        <div id="legacyBanner"></div>
         <!-- Header -->
         <div class="row mb-4">
             <div class="col-12">
@@ -299,6 +301,17 @@
     </div>
     
     <script>
+        // Inject legacy banner in development
+        (function(){
+            var banner = document.getElementById('legacyBanner');
+            if (banner) {
+                fetch('/admin/components/legacy-banner.html')
+                  .then(function(r){ return r.text(); })
+                  .then(function(html){ banner.innerHTML = html; })
+                  .catch(function(){});
+            }
+        })();
+        
         // Global variables
         let currentMediaItem = null;
         let blurStates = {};
