@@ -101,36 +101,13 @@ app.use('/api', (req, _res, next) => {
     next();
 });
 
-// Dev-only legacy admin redirect middleware (catch most /admin/*.html)
-app.use('/admin', (req, res, next) => {
-    if (process.env.NODE_ENV === 'production') return next();
-    if (!req.path.endsWith('.html')) return next();
-    const allowlist = new Set(['media-queue-review']);
-    const match = req.path.match(/^\/(.+)\.html$/);
-    const base = match ? match[1] : '';
-    if (!allowlist.has(base)) {
-        const target = `/sysadmin?legacy=${encodeURIComponent('/admin' + req.path)}`;
-        return res.redirect(target);
-    }
-    next();
-});
-
-// Dev-only: explicit 404 handler for unknown legacy admin pages (non-allowlisted)
-app.use('/admin', (req, res, next) => {
-    if (process.env.NODE_ENV === 'production') return next();
-    if (!req.path.endsWith('.html')) return next();
-    return res.status(404).send(`Legacy admin page not available in development. Go to <a href="/sysadmin">/sysadmin</a>.`);
-});
-
 // Serve the media queue review page
 app.get('/admin/media-queue-review.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin', 'media-queue-review.html'));
 });
 
 // Redirect old admin paths to system admin
-app.get('/admin/musenest-business-manager.html', (req, res) => {
-    res.redirect('/sysadmin');
-});
+app.get('/admin/musenest-business-manager.html', (req, res) => res.redirect('/sysadmin'));
 
 // Test route for system admin Handlebars 
 app.get('/sysadmin/test', (req, res) => {
@@ -143,10 +120,7 @@ app.get('/sysadmin/test', (req, res) => {
     });
 });
 
-// Serve the old business manager as backup  
-app.get('/admin/backup', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin/musenest-business-manager-backup.html'));
-});
+// Remove backup route; use sysadmin instead
 app.use('/js', express.static(path.join(__dirname, 'public/js')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
