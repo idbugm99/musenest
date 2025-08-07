@@ -1,3 +1,7 @@
+if (window.ComponentRegistryClient) {
+    window.ComponentRegistryClient.register('system-management', 'admin/js/system-management.js');
+}
+
 class SystemManagement {
     constructor() {
         this.currentPage = 1;

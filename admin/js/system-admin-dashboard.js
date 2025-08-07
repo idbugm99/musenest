@@ -3,6 +3,10 @@
  * Comprehensive system administration interface
  */
 
+if (window.ComponentRegistryClient) {
+    window.ComponentRegistryClient.register('system-admin-dashboard', 'admin/js/system-admin-dashboard.js');
+}
+
 class SystemAdminDashboard {
     constructor() {
         this.currentUser = null;
@@ -249,7 +253,15 @@ class SystemAdminDashboard {
                     content = await this.loadMediaQueueContent();
                     break;
                 case 'blurred-approved':
-                    content = await this.loadBlurredApprovedContent();
+                    console.log('🎯 About to call loadBlurredApprovedContent function');
+                    console.log('🔍 Function exists?', typeof this.loadBlurredApprovedContent);
+                    try {
+                        content = await this.loadBlurredApprovedContent();
+                        console.log('✅ loadBlurredApprovedContent returned:', content ? `${content.length} characters` : 'null/empty');
+                    } catch (error) {
+                        console.error('❌ loadBlurredApprovedContent failed:', error);
+                        content = `<div>Error: ${error.message}</div>`;
+                    }
                     break;
                 case 'rejected-removed':
                     content = await this.loadRejectedRemovedContent();
@@ -958,8 +970,34 @@ class SystemAdminDashboard {
             case 'model-screening':
                 // Initialize screening functionality
                 break;
+            case 'blurred-approved':
+                this.initializeModelDashboard();
+                break;
             // Add more cases as needed
         }
+    }
+
+    initializeModelDashboard() {
+        // Initialize the ModelDashboard class after the component loads
+        console.log('initializeModelDashboard called');
+        console.log('ModelDashboard class available:', !!window.ModelDashboard);
+        console.log('Dashboard container exists:', !!document.querySelector('.model-dashboard-container'));
+        
+        setTimeout(() => {
+            if (window.ModelDashboard && !window.modelDashboard) {
+                console.log('Creating new ModelDashboard instance');
+                window.modelDashboard = new ModelDashboard();
+                console.log('Model Dashboard initialized successfully');
+            } else if (window.modelDashboard) {
+                // Dashboard already exists, just reload data
+                console.log('Reloading existing ModelDashboard');
+                window.modelDashboard.loadModels();
+                console.log('Model Dashboard reloaded');
+            } else {
+                console.error('ModelDashboard class not found or dashboard container missing');
+                console.error('Available classes:', Object.keys(window).filter(key => key.includes('Dashboard')));
+            }
+        }, 200); // Increased delay to ensure DOM elements are ready
     }
 
     initializeTemplateBuilder() {
@@ -1790,58 +1828,51 @@ class SystemAdminDashboard {
         }
     }
 
-    // Blurred/Approved Content
+    // Blurred/Approved Content - New Model-Centric Dashboard
     async loadBlurredApprovedContent() {
         try {
-            const response = await fetch('/api/media-review-queue/queue?status=approved_blurred', {
-                headers: {
-                    'Authorization': `Bearer ${this.authToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const data = await response.json();
+            console.log('🚀 Starting loadBlurredApprovedContent...');
             
-            if (!data.success) {
-                throw new Error(data.error);
+            // Load the model dashboard component
+            console.log('📥 Fetching model dashboard component...');
+            const response = await fetch('/admin/components/model-dashboard.html');
+            console.log('📦 Component fetch response status:', response.status);
+            
+            if (!response.ok) {
+                throw new Error(`Failed to fetch component: ${response.status} ${response.statusText}`);
             }
-
-            return `
-                <div class="space-y-6">
-                    <div class="bg-white rounded-lg shadow border border-gray-200 p-4">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Blurred & Approved Media (${data.queue.length})</h3>
-                        
-                        ${data.queue.length === 0 ? 
-                            '<div class="text-center py-8 text-gray-500">No blurred/approved media found</div>' :
-                            `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                ${data.queue.map(item => `
-                                    <div class="border border-gray-200 rounded-lg p-4">
-                                        <div class="aspect-w-16 aspect-h-9 mb-3">
-                                            <img src="${item.thumbnail_path}" alt="Blurred content" class="w-full h-32 object-cover rounded">
-                                        </div>
-                                        <div class="space-y-2">
-                                            <h4 class="font-medium text-sm">${item.model_name}</h4>
-                                            <div class="flex items-center justify-between text-xs text-gray-500">
-                                                <span>Score: ${item.nudity_score.toFixed(1)}%</span>
-                                                <span>${new Date(item.reviewed_at).toLocaleDateString()}</span>
-                                            </div>
-                                            <div class="flex space-x-2">
-                                                <button onclick="window.systemAdminDashboard.viewMediaDetails(${item.id})" class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                                    View Details
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>`
-                        }
-                    </div>
-                </div>
-            `;
+            
+            const componentHTML = await response.text();
+            console.log('📄 Component HTML loaded, length:', componentHTML.length);
+            
+            // Load the dashboard JavaScript if not already loaded
+            if (!window.ModelDashboard) {
+                console.log('📜 Loading ModelDashboard JavaScript...');
+                await this.loadScript(`/admin/js/model-dashboard.js?v=${Date.now()}`);
+                console.log('✅ ModelDashboard JavaScript loaded. Class available:', !!window.ModelDashboard);
+            } else {
+                console.log('♻️ ModelDashboard class already loaded');
+            }
+            
+            console.log('🎉 loadBlurredApprovedContent completed successfully');
+            return componentHTML;
 
         } catch (error) {
-            console.error('Error loading blurred/approved content:', error);
-            return `<div class="text-center py-8 text-red-600">Error loading content: ${error.message}</div>`;
+            console.error('Error loading model dashboard:', error);
+            return `
+                <div class="text-center py-8 text-red-600">
+                    <div class="w-24 h-24 mx-auto mb-4 text-red-300">
+                        <i class="fas fa-exclamation-triangle text-6xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Error loading model dashboard</h3>
+                    <p class="text-sm text-gray-500 mb-4">${error.message}</p>
+                    <button onclick="window.systemAdminDashboard.switchTab('blurred-approved')" 
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
+                        <i class="fas fa-redo mr-2"></i>
+                        Try Again
+                    </button>
+                </div>
+            `;
         }
     }
 
@@ -3828,3 +3859,36 @@ function viewItem(id) {
     // Open the client details in a new window/tab
     window.open(`/api/system-management/clients/${id}`, '_blank');
 }
+
+// Utility method for loading external scripts
+SystemAdminDashboard.prototype.loadScript = function(src) {
+    return new Promise((resolve, reject) => {
+        console.log('🔧 loadScript called with:', src);
+        
+        // Check if script is already loaded
+        const existingScript = document.querySelector(`script[src="${src}"]`);
+        if (existingScript) {
+            console.log('📋 Script already loaded:', src);
+            resolve();
+            return;
+        }
+        
+        console.log('🔄 Creating new script element for:', src);
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = true;
+        
+        script.onload = () => {
+            console.log('✅ Script loaded successfully:', src);
+            resolve();
+        };
+        
+        script.onerror = (error) => {
+            console.error('❌ Script failed to load:', src, error);
+            reject(new Error(`Failed to load script: ${src}`));
+        };
+        
+        document.head.appendChild(script);
+        console.log('📤 Script element added to head:', src);
+    });
+};

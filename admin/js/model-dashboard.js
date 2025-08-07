@@ -4,6 +4,10 @@
  * Created: August 7, 2025
  */
 
+if (window.ComponentRegistryClient) {
+    window.ComponentRegistryClient.register('model-dashboard', 'admin/js/model-dashboard.js');
+}
+
 class ModelDashboard {
     constructor() {
         this.currentPage = 1;
