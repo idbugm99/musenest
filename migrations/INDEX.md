@@ -35,7 +35,7 @@ Existing (auto-listed):
 
 
 Variants (to consolidate):
-- 006: `006_enhanced_content_moderation_fixed.sql` (canonical), superseded: `006_enhanced_content_moderation.sql`, `006_enhanced_content_moderation_simple.sql`.
+- 006: `006_enhanced_content_moderation.sql` (canonical), superseded: `006_enhanced_content_moderation_fixed.sql`, `006_enhanced_content_moderation_simple.sql`.
   - Note: `006_add_calendar_events.sql` is a separate feature with conflicting prefix; plan to renumber in a future migration.
 - 007: `007_media_review_queue.sql` (canonical), superseded: `007_add_custom_theme_colors.sql` (fold into later theme work).
 - 008: `008_theme_sets_architecture_clean.sql` (canonical), superseded: `008_theme_sets_architecture.sql`.
