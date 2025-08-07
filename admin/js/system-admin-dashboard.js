@@ -28,6 +28,13 @@ class SystemAdminDashboard {
         this.mediaQueuePage = (this.mediaQueuePage || 1) + 1;
         this.loadTabContent('media-queue');
     }
+    mqChangePageSize(val) {
+        const n = parseInt(val) || 20;
+        this.mediaQueueLimit = n;
+        localStorage.setItem('mq_page_size', String(n));
+        this.mediaQueuePage = 1;
+        this.loadTabContent('media-queue');
+    }
 
     async init() {
         console.log('Initializing System Admin Dashboard...');
@@ -453,7 +460,7 @@ class SystemAdminDashboard {
     async loadClientsData() {
         try {
             const page = this.clientsPage || 1;
-            const limit = this.clientsLimit || 25;
+            const limit = this.clientsLimit || parseInt(localStorage.getItem('clients_page_size') || '25');
             const response = await sysFetch(`/api/system-management/clients?page=${page}&limit=${limit}`, {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
@@ -614,6 +621,13 @@ class SystemAdminDashboard {
     }
     clientsNextPage() {
         this.clientsPage = (this.clientsPage || 1) + 1;
+        this.switchTab('client-accounts');
+    }
+    clientsChangePageSize(val) {
+        const n = parseInt(val) || 25;
+        this.clientsLimit = n;
+        localStorage.setItem('clients_page_size', String(n));
+        this.clientsPage = 1;
         this.switchTab('client-accounts');
     }
 
@@ -829,6 +843,9 @@ class SystemAdminDashboard {
                         <div class="space-x-2">
                             <button class="px-3 py-1 border rounded" onclick="window.systemAdminDashboard.clientsPrevPage()" ${clientsData.pagination.current_page <= 1 ? 'disabled' : ''}>Prev</button>
                             <button class="px-3 py-1 border rounded" onclick="window.systemAdminDashboard.clientsNextPage()" ${clientsData.pagination.current_page >= clientsData.pagination.total_pages ? 'disabled' : ''}>Next</button>
+                            <select class="px-2 py-1 border rounded" onchange="window.systemAdminDashboard.clientsChangePageSize(this.value)">
+                                ${[10,25,50,100].map(n => `<option value=\"${n}\" ${this.clientsLimit===n?'selected':''}>${n}/page</option>`).join('')}
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -1710,7 +1727,7 @@ class SystemAdminDashboard {
     async loadMediaQueueContent() {
         try {
             const page = this.mediaQueuePage || 1;
-            const limit = this.mediaQueueLimit || 20;
+            const limit = this.mediaQueueLimit || parseInt(localStorage.getItem('mq_page_size') || '20');
             const response = await sysFetch(`/api/media-review-queue/queue?status=pending&page=${page}&limit=${limit}`, {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
@@ -1831,6 +1848,9 @@ class SystemAdminDashboard {
                         <div class="space-x-2">
                             <button class="px-2 py-1 border rounded" onclick="window.systemAdminDashboard.mqPrevPage()" ${this.mediaQueuePage <= 1 ? 'disabled' : ''}>Prev</button>
                             <button class="px-2 py-1 border rounded" onclick="window.systemAdminDashboard.mqNextPage()" ${this.mediaQueuePage >= (data.pagination?.pages || 1) ? 'disabled' : ''}>Next</button>
+                            <select class="px-2 py-1 border rounded" onchange="window.systemAdminDashboard.mqChangePageSize(this.value)">
+                                ${[10,20,50,100].map(n => `<option value="${n}" ${this.mediaQueueLimit===n?'selected':''}>${n}/page</option>`).join('')}
+                            </select>
                         </div>
                     </div>
                     <div id="mediaQueueItems" class="space-y-4 mt-3">
