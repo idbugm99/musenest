@@ -35,14 +35,18 @@ Existing (auto-listed):
 
 
 Variants (to consolidate):
-- 006: `006_enhanced_content_moderation.sql`, `006_enhanced_content_moderation_simple.sql`, `006_enhanced_content_moderation_fixed.sql` (choose 1 canonical; mark others superseded)
-- 007: `007_add_custom_theme_colors.sql`, `007_media_review_queue.sql`
-- 008: `008_theme_sets_architecture.sql`, `008_theme_sets_architecture_clean.sql`
-- 009: `009_account_permissions.sql`, `009_industry_specific_architecture.sql`, `009_industry_specific_architecture_fixed.sql`
-- 011: `011_comprehensive_pose_analysis_schema.sql`, `011_comprehensive_pose_analysis_schema_safe.sql`
-- 016: `016_clean_v1_schema.sql`, `016_create_ai_moderation_management.sql`, `016_create_ai_moderation_management_fixed.sql`
-- 017: `017_analysis_configuration_system.sql`, `017_component_registry.sql`
-- 018: `018_model_dashboard_enhancements.sql`, `018_model_dashboard_enhancements_safe.sql`, `018_referral_tracking_system.sql`
+- 006: `006_enhanced_content_moderation_fixed.sql` (canonical), superseded: `006_enhanced_content_moderation.sql`, `006_enhanced_content_moderation_simple.sql`.
+  - Note: `006_add_calendar_events.sql` is a separate feature with conflicting prefix; plan to renumber in a future migration.
+- 007: `007_media_review_queue.sql` (canonical), superseded: `007_add_custom_theme_colors.sql` (fold into later theme work).
+- 008: `008_theme_sets_architecture_clean.sql` (canonical), superseded: `008_theme_sets_architecture.sql`.
+- 009: `009_industry_specific_architecture_fixed.sql` (canonical), superseded: `009_industry_specific_architecture.sql`. Keep `009_account_permissions.sql` to be renumbered if needed.
+- 011: `011_comprehensive_pose_analysis_schema_safe.sql` (canonical), superseded: `011_comprehensive_pose_analysis_schema.sql`.
+- 016: `016_create_ai_moderation_management_fixed.sql` (canonical), superseded: `016_create_ai_moderation_management.sql`. `016_clean_v1_schema.sql` to be reviewed/renumbered.
+- 017: `017_analysis_configuration_system.sql` (canonical), superseded: `017_component_registry.sql` (documented separately, code-based).
+- 018: `018_model_dashboard_enhancements_safe.sql` (canonical), superseded: `018_model_dashboard_enhancements.sql`. `018_referral_tracking_system.sql` to be renumbered.
+
+Renumber plan:
+- Introduce a new migration to reconcile conflicts and adjust numbering for independent features sharing a prefix (calendar, account_permissions, referral_tracking, etc.).
 
 
 Planned:
