@@ -116,4 +116,32 @@ SET @idx_exists := (SELECT COUNT(1) FROM INFORMATION_SCHEMA.STATISTICS WHERE TAB
 SET @sql := IF(@col_exists > 0 AND @idx_exists = 0, 'CREATE INDEX idx_mq_created_at ON moderation_queue (created_at)', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
+-- site_configurations
+SET @tbl := 'site_configurations';
+SET @idx := 'idx_sc_active';
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME=@tbl AND COLUMN_NAME='is_active');
+SET @idx_exists := (SELECT COUNT(1) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME=@tbl AND INDEX_NAME=@idx);
+SET @sql := IF(@col_exists > 0 AND @idx_exists = 0, 'CREATE INDEX idx_sc_active ON site_configurations (is_active)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @idx := 'idx_sc_server_id';
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='site_configurations' AND COLUMN_NAME='server_id');
+SET @idx_exists := (SELECT COUNT(1) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='site_configurations' AND INDEX_NAME=@idx);
+SET @sql := IF(@col_exists > 0 AND @idx_exists = 0, 'CREATE INDEX idx_sc_server_id ON site_configurations (server_id)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @idx := 'idx_sc_created_at';
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='site_configurations' AND COLUMN_NAME='created_at');
+SET @idx_exists := (SELECT COUNT(1) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='site_configurations' AND INDEX_NAME=@idx);
+SET @sql := IF(@col_exists > 0 AND @idx_exists = 0, 'CREATE INDEX idx_sc_created_at ON site_configurations (created_at)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- industry_templates
+SET @tbl := 'industry_templates';
+SET @idx := 'idx_it_industry_type';
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME=@tbl AND COLUMN_NAME='industry_type');
+SET @idx_exists := (SELECT COUNT(1) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME=@tbl AND INDEX_NAME=@idx);
+SET @sql := IF(@col_exists > 0 AND @idx_exists = 0, 'CREATE INDEX idx_it_industry_type ON industry_templates (industry_type)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
 

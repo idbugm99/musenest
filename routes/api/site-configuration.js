@@ -61,9 +61,40 @@ function makeHttpRequest(url, options = {}) {
  */
 router.get('/sites', async (req, res) => {
     try {
-        const { server_id, industry_type, status } = req.query;
-        
-        let query = `
+        const { server_id, industry_type, status, page = 1, limit = 20 } = req.query;
+        const currentPage = Math.max(1, parseInt(page));
+        const perPage = Math.max(1, Math.min(100, parseInt(limit)));
+        const offset = (currentPage - 1) * perPage;
+
+        let baseFrom = `
+            FROM site_configurations sc
+            JOIN ai_moderation_servers s ON sc.server_id = s.id
+            JOIN industry_templates it ON sc.industry_template_id = it.id
+            LEFT JOIN configuration_deployments cd ON sc.id = cd.site_config_id 
+                AND cd.id = (SELECT MAX(id) FROM configuration_deployments WHERE site_config_id = sc.id)
+            WHERE sc.is_active = 1
+        `;
+
+        const params = [];
+        const countParams = [];
+
+        if (server_id) {
+            baseFrom += ' AND sc.server_id = ?';
+            params.push(server_id);
+            countParams.push(server_id);
+        }
+        if (industry_type) {
+            baseFrom += ' AND it.industry_type = ?';
+            params.push(industry_type);
+            countParams.push(industry_type);
+        }
+        if (status) {
+            baseFrom += ' AND sc.deployment_status = ?';
+            params.push(status);
+            countParams.push(status);
+        }
+
+        const selectQuery = `
             SELECT 
                 sc.*,
                 s.name as server_name,
@@ -74,39 +105,27 @@ router.get('/sites', async (req, res) => {
                 it.industry_type,
                 cd.deployment_status as last_deployment_status,
                 cd.completed_at as last_deployment_completed
-            FROM site_configurations sc
-            JOIN ai_moderation_servers s ON sc.server_id = s.id
-            JOIN industry_templates it ON sc.industry_template_id = it.id
-            LEFT JOIN configuration_deployments cd ON sc.id = cd.site_config_id 
-                AND cd.id = (SELECT MAX(id) FROM configuration_deployments WHERE site_config_id = sc.id)
-            WHERE sc.is_active = 1
+            ${baseFrom}
+            ORDER BY sc.created_at DESC
+            LIMIT ? OFFSET ?
         `;
-        
-        const params = [];
-        
-        if (server_id) {
-            query += ' AND sc.server_id = ?';
-            params.push(server_id);
-        }
-        
-        if (industry_type) {
-            query += ' AND it.industry_type = ?';
-            params.push(industry_type);
-        }
-        
-        if (status) {
-            query += ' AND sc.deployment_status = ?';
-            params.push(status);
-        }
-        
-        query += ' ORDER BY sc.created_at DESC';
-        
-        const [sites] = await db.execute(query, params);
+        const countQuery = `SELECT COUNT(*) as total ${baseFrom}`;
 
+        const [[countRow]] = await db.query(countQuery, countParams);
+        const total = countRow?.total || 0;
+
+        const [sites] = await db.execute(selectQuery, [...params, perPage, offset]);
+
+        res.set('Cache-Control', 'private, max-age=15');
         res.json({
             success: true,
-            sites: sites,
-            total: sites.length
+            sites,
+            pagination: {
+                page: currentPage,
+                limit: perPage,
+                total,
+                pages: Math.ceil(total / perPage)
+            }
         });
 
     } catch (error) {
