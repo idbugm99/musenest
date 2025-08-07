@@ -76,6 +76,9 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Request logging (after body parsing to capture JSON when enabled)
+app.use(require('./middleware/requestLogger'));
+
 // Standard response envelope
 app.use(require('./middleware/responseEnvelope'));
 

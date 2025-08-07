@@ -5,15 +5,9 @@ const fs = require('fs');
 const axios = require('axios');
 const router = express.Router();
 
-// Database connection
-let dbName;
-try {
-    dbName = require('../../config/database').dbName;
-} catch (error) {
-    console.error('Database connection error:', error.message);
-    // Fallback for testing without database
-    dbName = null;
-}
+// Database and logger
+const db = require('../../config/database');
+const logger = require('../../utils/logger');
 
 // Configure multer for file uploads - simplified for proxy-upload
 const storage = multer.diskStorage({
@@ -104,17 +98,11 @@ const MOCK_AI_RESULTS = {
  */
 router.post('/upload', upload.single('image'), async (req, res) => {
     try {
-        if (!req.file) {
-            return res.status(400).json({ error: 'No file uploaded' });
-        }
+        if (!req.file) return res.fail(400, 'No file uploaded');
 
         const { model_id, context_type } = req.body;
         
-        if (!model_id || !context_type) {
-            return res.status(400).json({ 
-                error: 'model_id and context_type are required' 
-            });
-        }
+        if (!model_id || !context_type) return res.fail(400, 'model_id and context_type are required');
 
         const imagePath = req.file.path;
         const relativePath = path.relative(path.join(__dirname, '../../public'), imagePath);
@@ -136,7 +124,7 @@ router.post('/upload', upload.single('image'), async (req, res) => {
                 const result = moderationResponse.data.result;
                 
                 // Store moderation result in database (if available)
-                if (dbName) {
+                if (db && db.query) {
                     try {
                         const query = `
                             INSERT INTO content_moderation (
@@ -161,7 +149,7 @@ router.post('/upload', upload.single('image'), async (req, res) => {
                             result.confidence_score
                         ];
 
-                        await dbName.query(query, values);
+                        await db.query(query, values);
 
                         // If flagged for human review, add to moderation queue
                         if (result.human_review_required) {
@@ -169,24 +157,19 @@ router.post('/upload', upload.single('image'), async (req, res) => {
                                 INSERT INTO moderation_queue (content_moderation_id, priority)
                                 VALUES (LAST_INSERT_ID(), 'medium')
                             `;
-                            await dbName.query(queueQuery);
+                            await db.query(queueQuery);
                         }
                     } catch (dbError) {
-                        console.error('Database error:', dbError.message);
+                        logger.error('content-moderation DB error', { error: dbError.message });
                     }
                 }
 
                 // Return result to client
-                res.json({
-                    success: true,
-                    file_path: relativePath,
-                    moderation_result: result
-                });
+                res.success({ file_path: relativePath, moderation_result: result });
 
             } else {
                 // AI service failed, but file was uploaded
-                res.json({
-                    success: true,
+                res.success({
                     file_path: relativePath,
                     moderation_result: {
                         moderation_status: 'pending',
@@ -197,7 +180,7 @@ router.post('/upload', upload.single('image'), async (req, res) => {
             }
 
         } catch (aiError) {
-            console.error('AI moderation service error:', aiError.message);
+            logger.error('ai moderation service error', { error: aiError.message });
             
             // AI service unavailable, use mock results for demo
             const mockResult = MOCK_AI_RESULTS[context_type] || MOCK_AI_RESULTS['public_gallery'];
@@ -209,7 +192,7 @@ router.post('/upload', upload.single('image'), async (req, res) => {
             };
             
             // Store mock result in database (if available)
-            if (dbName) {
+            if (db && db.query) {
                 try {
                     const query = `
                         INSERT INTO content_moderation (
@@ -234,7 +217,7 @@ router.post('/upload', upload.single('image'), async (req, res) => {
                         result.confidence_score
                     ];
 
-                    await dbName.query(query, values);
+                    await db.query(query, values);
 
                     // If flagged for human review, add to moderation queue
                     if (result.human_review_required) {
@@ -242,24 +225,19 @@ router.post('/upload', upload.single('image'), async (req, res) => {
                             INSERT INTO moderation_queue (content_moderation_id, priority)
                             VALUES (LAST_INSERT_ID(), 'medium')
                         `;
-                        await dbName.query(queueQuery);
+                        await db.query(queueQuery);
                     }
                 } catch (dbError) {
-                    console.error('Database error storing mock result:', dbError.message);
+                    logger.error('content-moderation DB mock error', { error: dbError.message });
                 }
             }
             
-            res.json({
-                success: true,
-                file_path: relativePath,
-                moderation_result: result,
-                note: 'Using mock AI results (EC2 service not accessible)'
-            });
+            res.success({ file_path: relativePath, moderation_result: result, note: 'Using mock AI results (EC2 service not accessible)' });
         }
 
     } catch (error) {
-        console.error('Upload error:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('content-moderation.upload error', { error: error.message });
+        res.fail(500, 'Upload error', error.message);
     }
 });
 
@@ -284,9 +262,7 @@ router.post('/proxy-upload', (req, res, next) => {
         console.log('req.body:', req.body);
         console.log('req.files:', req.files);
         
-        if (!req.file) {
-            return res.status(400).json({ error: 'No image file provided', success: false });
-        }
+        if (!req.file) return res.fail(400, 'No image file provided');
         
         const contextType = req.body.context_type || 'public_gallery';
         const modelId = req.body.model_id || 1;
@@ -315,13 +291,7 @@ router.post('/proxy-upload', (req, res, next) => {
             console.log(`SCP exit code: ${scpCode}`);
             if (scpError) console.log(`SCP error output: ${scpError}`);
             
-            if (scpCode !== 0) {
-                return res.status(500).json({ 
-                    error: 'Failed to copy file to EC2',
-                    details: scpError,
-                    exitCode: scpCode
-                });
-            }
+                if (scpCode !== 0) return res.fail(500, 'Failed to copy file to EC2', scpError || `code ${scpCode}`);
             
             console.log('File copied, analyzing...');
             // Analyze via SSH
@@ -355,13 +325,7 @@ router.post('/proxy-upload', (req, res, next) => {
                 if (sshError) console.log(`SSH error output: ${sshError}`);
                 console.log(`Analysis output: ${output}`);
                 
-                if (sshCode !== 0) {
-                    return res.status(500).json({ 
-                        error: 'Failed to analyze image on EC2',
-                        details: sshError,
-                        exitCode: sshCode
-                    });
-                }
+                if (sshCode !== 0) return res.fail(500, 'Failed to analyze image on EC2', sshError || `code ${sshCode}`);
                 try {
                     const result = JSON.parse(output);
                     
@@ -379,7 +343,7 @@ router.post('/proxy-upload', (req, res, next) => {
                     ]);
                     
                     console.log('Analysis complete:', result);
-                    res.json(result);
+                    res.success(result);
                 } catch (parseError) {
                     console.error('Parse error:', parseError.message);
                     console.error('Raw output:', output);
@@ -393,19 +357,14 @@ router.post('/proxy-upload', (req, res, next) => {
                         `rm -f ${remoteFilePath}`
                     ]);
                     
-                    res.status(500).json({ 
-                        error: 'Failed to parse AI response', 
-                        parseError: parseError.message,
-                        rawOutput: output,
-                        sshError: sshError
-                    });
+                    res.fail(500, 'Failed to parse AI response', parseError.message);
                 }
             });
         });
         
     } catch (error) {
-        console.error('Proxy upload error:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('content-moderation.proxy-upload error', { error: error.message });
+        res.fail(500, 'Proxy upload error', error.message);
     }
 });
 
@@ -438,7 +397,7 @@ router.get('/results/:model_id', async (req, res) => {
 
         query += ` ORDER BY cm.created_at DESC`;
 
-        const [results] = await dbName.query(query, params);
+        const [results] = await db.query(query, params);
         
         // Parse JSON fields
         const processedResults = results.map(row => ({
@@ -447,14 +406,11 @@ router.get('/results/:model_id', async (req, res) => {
             policy_violations: JSON.parse(row.policy_violations || '[]')
         }));
 
-        res.json({
-            success: true,
-            results: processedResults
-        });
+        res.success({ results: processedResults });
 
     } catch (error) {
-        console.error('Get results error:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('content-moderation.results error', { error: error.message });
+        res.fail(500, 'Failed to get results', error.message);
     }
 });
 
@@ -515,24 +471,15 @@ router.get('/queue', async (req, res) => {
             mq.created_at ASC`;
 
         const pagedQuery = `${baseSelect}${orderBy} LIMIT ? OFFSET ?`;
-        const [countRows] = await dbName.query(baseCount, countParams);
+        const [countRows] = await db.query(baseCount, countParams);
         const total = countRows[0]?.total || 0;
-        const [results] = await dbName.query(pagedQuery, [...params, perPage, offset]);
+        const [results] = await db.query(pagedQuery, [...params, perPage, offset]);
 
-        res.json({
-            success: true,
-            queue: results,
-            pagination: {
-                page: currentPage,
-                limit: perPage,
-                total,
-                pages: Math.ceil(total / perPage)
-            }
-        });
+        res.success({ queue: results, pagination: { page: currentPage, limit: perPage, total, pages: Math.ceil(total / perPage) } });
 
     } catch (error) {
-        console.error('Get queue error:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('content-moderation.queue error', { error: error.message });
+        res.fail(500, 'Failed to get queue', error.message);
     }
 });
 
@@ -545,11 +492,7 @@ router.put('/review/:id', async (req, res) => {
         const { id } = req.params;
         const { moderation_status, notes, reviewed_by } = req.body;
 
-        if (!moderation_status || !reviewed_by) {
-            return res.status(400).json({ 
-                error: 'moderation_status and reviewed_by are required' 
-            });
-        }
+        if (!moderation_status || !reviewed_by) return res.fail(400, 'moderation_status and reviewed_by are required');
 
         // Update content moderation record
         const updateQuery = `
@@ -557,7 +500,7 @@ router.put('/review/:id', async (req, res) => {
             SET moderation_status = ?, reviewed_by = ?, reviewed_at = NOW()
             WHERE id = ?
         `;
-        await dbName.query(updateQuery, [moderation_status, reviewed_by, id]);
+        await db.query(updateQuery, [moderation_status, reviewed_by, id]);
 
         // Update/remove from moderation queue
         if (notes) {
@@ -566,7 +509,7 @@ router.put('/review/:id', async (req, res) => {
                 SET notes = ?, assigned_to = ?
                 WHERE content_moderation_id = ?
             `;
-            await dbName.query(queueUpdateQuery, [notes, reviewed_by, id]);
+            await db.query(queueUpdateQuery, [notes, reviewed_by, id]);
         }
 
         // If approved/rejected, remove from queue
@@ -575,17 +518,14 @@ router.put('/review/:id', async (req, res) => {
                 DELETE FROM moderation_queue 
                 WHERE content_moderation_id = ?
             `;
-            await dbName.query(removeQueueQuery, [id]);
+            await db.query(removeQueueQuery, [id]);
         }
 
-        res.json({
-            success: true,
-            message: 'Moderation status updated successfully'
-        });
+        res.success({}, { message: 'Moderation status updated successfully' });
 
     } catch (error) {
-        console.error('Review error:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('content-moderation.review error', { error: error.message });
+        res.fail(500, 'Failed to update moderation status', error.message);
     }
 });
 
@@ -610,7 +550,7 @@ router.get('/rules', async (req, res) => {
 
         query += ` ORDER BY context_type, rule_name`;
 
-        const [results] = await dbName.query(query, params);
+        const [results] = await db.query(query, params);
 
         // Parse JSON rule values
         const processedResults = results.map(row => ({
@@ -618,14 +558,11 @@ router.get('/rules', async (req, res) => {
             rule_value: JSON.parse(row.rule_value)
         }));
 
-        res.json({
-            success: true,
-            rules: processedResults
-        });
+        res.success({ rules: processedResults });
 
     } catch (error) {
-        console.error('Get rules error:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('content-moderation.rules error', { error: error.message });
+        res.fail(500, 'Failed to get moderation rules', error.message);
     }
 });
 
@@ -639,18 +576,10 @@ router.get('/test', async (req, res) => {
             timeout: 5000
         });
 
-        res.json({
-            success: true,
-            ai_service_status: 'connected',
-            ai_service_response: healthResponse.data
-        });
+        res.success({ ai_service_status: 'connected', ai_service_response: healthResponse.data });
 
     } catch (error) {
-        res.json({
-            success: false,
-            ai_service_status: 'disconnected',
-            error: error.message
-        });
+        res.fail(200, 'AI service disconnected', error.message);
     }
 });
 

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const logger = require('../../utils/logger');
 const db = require('../../config/database');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
@@ -38,9 +39,7 @@ router.get('/stats', async (req, res) => {
             'SELECT COUNT(*) as count FROM models WHERE client_type = "sub_client"'
         );
 
-        res.json({
-            success: true,
-            data: {
+        res.success({
                 // Primary MuseNest business metrics
                 total_clients: totalClients[0].count,
                 active_subscriptions: activeSubscriptions[0].count,
@@ -53,15 +52,11 @@ router.get('/stats', async (req, res) => {
                     white_label: whiteLabelCount[0].count,
                     sub_clients: subClientCount[0].count
                 }
-            }
         });
 
     } catch (error) {
-        console.error('Error fetching system stats:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch system statistics'
-        });
+        logger.error('system stats error', { error: error.message });
+        res.fail(500, 'Failed to fetch system statistics', error.message);
     }
 });
 
@@ -140,25 +135,19 @@ router.get('/clients', async (req, res) => {
         `);
 
         res.set('Cache-Control', 'private, max-age=30');
-        res.json({
-            success: true,
-            data: {
-                clients,
-                pagination: {
-                    current_page: parseInt(page),
-                    per_page: parseInt(limit),
-                    total: total,
-                    total_pages: Math.ceil(total / limit)
-                }
+        res.success({
+            clients,
+            pagination: {
+                current_page: parseInt(page),
+                per_page: parseInt(limit),
+                total: total,
+                total_pages: Math.ceil(total / limit)
             }
         });
 
     } catch (error) {
-        console.error('Error fetching clients:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch clients'
-        });
+        logger.error('clients list error', { error: error.message });
+        res.fail(500, 'Failed to fetch clients', error.message);
     }
 });
 
@@ -187,23 +176,14 @@ router.get('/clients/:id', async (req, res) => {
         `, [id]);
 
         if (client.length === 0) {
-            return res.status(404).json({
-                success: false,
-                error: 'Client not found'
-            });
+            return res.fail(404, 'Client not found');
         }
 
-        res.json({
-            success: true,
-            data: client[0]
-        });
+        res.success(client[0]);
 
     } catch (error) {
-        console.error('Error fetching client:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch client details'
-        });
+        logger.error('client detail error', { error: error.message });
+        res.fail(500, 'Failed to fetch client details', error.message);
     }
 });
 
@@ -221,10 +201,7 @@ router.delete('/clients/:id', async (req, res) => {
         `, [id]);
         
         if (clientInfo.length === 0) {
-            return res.status(404).json({
-                success: false,
-                error: 'Client not found'
-            });
+            return res.fail(404, 'Client not found');
         }
             
         const client = clientInfo[0];
@@ -260,18 +237,11 @@ router.delete('/clients/:id', async (req, res) => {
         // TODO: Clean up file system directories for the client
         // This would include removing /public/uploads/{slug}/ directory
         
-        res.json({
-            success: true,
-            message: 'Client deleted successfully',
-            deleted_slug: client.slug
-        });
+        res.success({ deleted_slug: client.slug }, { message: 'Client deleted successfully' });
         
     } catch (error) {
-        console.error('Error deleting client:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to delete client: ' + error.message
-        });
+        logger.error('delete client error', { error: error.message });
+        res.fail(500, 'Failed to delete client', error.message);
     }
 });
 
@@ -310,10 +280,7 @@ router.put('/clients/:id', async (req, res) => {
             );
 
             if (existingSlug.length > 0) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Slug already exists'
-                });
+                return res.fail(400, 'Slug already exists');
             }
         }
 
@@ -395,24 +362,11 @@ router.put('/clients/:id', async (req, res) => {
             }
         }
 
-        res.json({
-            success: true,
-            message: 'Client updated successfully'
-        });
+        res.success({}, { message: 'Client updated successfully' });
 
     } catch (error) {
-        console.error('Error updating client:', error);
-        console.error('Error details:', {
-            message: error.message,
-            stack: error.stack,
-            code: error.code,
-            sqlMessage: error.sqlMessage
-        });
-        res.status(500).json({
-            success: false,
-            error: 'Failed to update client',
-            details: error.message
-        });
+        logger.error('update client error', { error: error.message });
+        res.fail(500, 'Failed to update client', error.message);
     }
 });
 
@@ -432,10 +386,7 @@ router.post('/clients', async (req, res) => {
 
         // Validate required fields
         if (!name || !slug || !email) {
-            return res.status(400).json({
-                success: false,
-                error: 'Name, slug, and email are required'
-            });
+            return res.fail(400, 'Name, slug, and email are required');
         }
 
         // Check if slug and email are unique
@@ -443,17 +394,11 @@ router.post('/clients', async (req, res) => {
         const [existingEmail] = await db.execute('SELECT id FROM users WHERE email = ?', [email]);
 
         if (existingSlug.length > 0) {
-            return res.status(400).json({
-                success: false,
-                error: 'Slug already exists'
-            });
+            return res.fail(400, 'Slug already exists');
         }
 
         if (existingEmail.length > 0) {
-            return res.status(400).json({
-                success: false,
-                error: 'Email already exists'
-            });
+            return res.fail(400, 'Email already exists');
         }
 
         // Create user record first
@@ -472,21 +417,14 @@ router.post('/clients', async (req, res) => {
             ) VALUES (?, ?, ?, ?, ?, ?, ?, 1, 'trial', NOW(), NOW())
         `, [name, slug, business_type_id, page_set_id, theme_set_id, email, phone]);
 
-        res.json({
-            success: true,
-            message: 'Client created successfully',
-            data: {
-                model_id: modelResult.insertId,
-                user_id: userResult.insertId
-            }
-        });
+        res.success({
+            model_id: modelResult.insertId,
+            user_id: userResult.insertId
+        }, { message: 'Client created successfully' });
 
     } catch (error) {
-        console.error('Error creating client:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to create client'
-        });
+        logger.error('create client error', { error: error.message });
+        res.fail(500, 'Failed to create client', error.message);
     }
 });
 
@@ -500,10 +438,7 @@ router.post('/clients/:id/reset-password', async (req, res) => {
         const [client] = await db.execute('SELECT email FROM models WHERE id = ?', [id]);
         
         if (client.length === 0) {
-            return res.status(404).json({
-                success: false,
-                error: 'Client not found'
-            });
+            return res.fail(404, 'Client not found');
         }
 
         // Generate password if not provided
@@ -518,20 +453,11 @@ router.post('/clients/:id/reset-password', async (req, res) => {
             WHERE email = ?
         `, [hashedPassword, client[0].email]);
 
-        res.json({
-            success: true,
-            message: 'Password reset successfully',
-            data: {
-                new_password: password
-            }
-        });
+        res.success({ new_password: password }, { message: 'Password reset successfully' });
 
     } catch (error) {
-        console.error('Error resetting password:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to reset password'
-        });
+        logger.error('reset password error', { error: error.message });
+        res.fail(500, 'Failed to reset password', error.message);
     }
 });
 
@@ -541,10 +467,7 @@ router.post('/clients/bulk', async (req, res) => {
         const { action, client_ids } = req.body;
 
         if (!action || !client_ids || !Array.isArray(client_ids) || client_ids.length === 0) {
-            return res.status(400).json({
-                success: false,
-                error: 'Action and client_ids array are required'
-            });
+            return res.fail(400, 'Action and client_ids array are required');
         }
 
         const placeholders = client_ids.map(() => '?').join(',');
@@ -581,26 +504,16 @@ router.post('/clients/bulk', async (req, res) => {
                 successMessage = 'Clients deleted successfully';
                 break;
             default:
-                return res.status(400).json({
-                    success: false,
-                    error: 'Invalid action'
-                });
+                return res.fail(400, 'Invalid action');
         }
 
         await db.execute(query, client_ids);
 
-        res.json({
-            success: true,
-            message: successMessage,
-            affected_count: client_ids.length
-        });
+        res.success({ affected_count: client_ids.length }, { message: successMessage });
 
     } catch (error) {
-        console.error('Error performing bulk operation:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to perform bulk operation'
-        });
+        logger.error('bulk clients error', { error: error.message });
+        res.fail(500, 'Failed to perform bulk operation', error.message);
     }
 });
 
@@ -643,11 +556,8 @@ router.get('/clients/export/csv', async (req, res) => {
         res.send(csvData);
 
     } catch (error) {
-        console.error('Error exporting clients:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to export client data'
-        });
+        logger.error('export clients error', { error: error.message });
+        res.fail(500, 'Failed to export client data', error.message);
     }
 });
 
@@ -687,21 +597,15 @@ router.get('/subscriptions/analytics', async (req, res) => {
             FROM models
         `);
 
-        res.json({
-            success: true,
-            data: {
-                subscription_breakdown: subscriptionBreakdown,
-                monthly_revenue: monthlyRevenue,
-                trial_stats: trialStats[0]
-            }
+        res.success({
+            subscription_breakdown: subscriptionBreakdown,
+            monthly_revenue: monthlyRevenue,
+            trial_stats: trialStats[0]
         });
 
     } catch (error) {
-        console.error('Error fetching subscription analytics:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch subscription analytics'
-        });
+        logger.error('subscription analytics error', { error: error.message });
+        res.fail(500, 'Failed to fetch subscription analytics', error.message);
     }
 });
 
@@ -753,23 +657,14 @@ router.post('/clients/:id/subscription', async (req, res) => {
                 break;
 
             default:
-                return res.status(400).json({
-                    success: false,
-                    error: 'Invalid subscription action'
-                });
+                return res.fail(400, 'Invalid subscription action');
         }
 
-        res.json({
-            success: true,
-            message: 'Subscription updated successfully'
-        });
+        res.success({}, { message: 'Subscription updated successfully' });
 
     } catch (error) {
-        console.error('Error managing subscription:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to manage subscription'
-        });
+        logger.error('manage subscription error', { error: error.message });
+        res.fail(500, 'Failed to manage subscription', error.message);
     }
 });
 
@@ -780,17 +675,11 @@ router.get('/business-types', async (req, res) => {
             'SELECT id, name, display_name FROM business_types ORDER BY display_name'
         );
 
-        res.json({
-            success: true,
-            data: businessTypes
-        });
+        res.success(businessTypes);
 
     } catch (error) {
-        console.error('Error fetching business types:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch business types'
-        });
+        logger.error('business types list error', { error: error.message });
+        res.fail(500, 'Failed to fetch business types', error.message);
     }
 });
 
@@ -826,14 +715,11 @@ router.get('/theme-sets', async (req, res) => {
         }));
 
         const [[{ total }]] = await db.query(`SELECT COUNT(*) as total FROM theme_sets WHERE is_active = 1`);
-        res.json({ success: true, data: processedThemeSets, pagination: { page: parseInt(page), limit: perPage, total, pages: Math.ceil(total / perPage) } });
+        res.success(processedThemeSets, { pagination: { page: parseInt(page), limit: perPage, total, pages: Math.ceil(total / perPage) } });
 
     } catch (error) {
-        console.error('Error fetching theme sets:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch theme sets'
-        });
+        logger.error('theme sets list error', { error: error.message });
+        res.fail(500, 'Failed to fetch theme sets', error.message);
     }
 });
 
@@ -869,14 +755,11 @@ router.get('/page-sets', async (req, res) => {
         }));
 
         const [[{ total }]] = await db.query(`SELECT COUNT(*) as total FROM business_page_sets WHERE is_active = 1`);
-        res.json({ success: true, data: processedPageSets, pagination: { page: parseInt(page), limit: perPage, total, pages: Math.ceil(total / perPage) } });
+        res.success(processedPageSets, { pagination: { page: parseInt(page), limit: perPage, total, pages: Math.ceil(total / perPage) } });
 
     } catch (error) {
-        console.error('Error fetching page sets:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch page sets'
-        });
+        logger.error('page sets list error', { error: error.message });
+        res.fail(500, 'Failed to fetch page sets', error.message);
     }
 });
 

@@ -11,6 +11,7 @@ const express = require('express');
 const path = require('path');
 const fsPromises = require('fs').promises;
 const db = require('../../config/database');
+const logger = require('../../utils/logger');
 const ContentModerationService = require('../../src/services/ContentModerationService');
 const router = express.Router();
 
@@ -47,11 +48,11 @@ router.get('/queue', async (req, res) => {
             LIMIT ${limitValue} OFFSET ${offsetValue}
         `;
 
-        console.log('Query test with limit/offset interpolation');
+        logger.debug('media-review.queue list', { page, limit: limitValue, status });
         
         const [queueItems] = await db.execute(query, [status]);
         
-        console.log('Query executed successfully, got', queueItems.length, 'items');
+        logger.debug('media-review.queue list result', { count: queueItems.length });
 
         // Get total count
         const [countResult] = await db.execute(
@@ -104,8 +105,7 @@ router.get('/queue', async (req, res) => {
         }));
 
         res.set('Cache-Control', 'private, max-age=15');
-        res.json({
-            success: true,
+        res.success({
             queue: processedItems,
             pagination: {
                 page: parseInt(page),
@@ -113,22 +113,12 @@ router.get('/queue', async (req, res) => {
                 total,
                 pages: Math.ceil(total / parseInt(limit))
             },
-            filters: {
-                status,
-                priority,
-                queue_type,
-                usage_intent,
-                model_search
-            }
+            filters: { status, priority, queue_type, usage_intent, model_search }
         });
 
     } catch (error) {
-        console.error('Error fetching media review queue:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch media review queue',
-            details: error.message
-        });
+        logger.error('media-review.queue error', { error: error.message });
+        res.fail(500, 'Failed to fetch media review queue', error.message);
     }
 });
 
@@ -208,10 +198,7 @@ router.get('/item/:id', async (req, res) => {
         );
 
         if (items.length === 0) {
-            return res.status(404).json({
-                success: false,
-                error: 'Media item not found'
-            });
+            return res.fail(404, 'Media item not found');
         }
 
         const item = items[0];
@@ -243,18 +230,11 @@ router.get('/item/:id', async (req, res) => {
             has_appeal: Boolean(item.appeal_requested)
         };
 
-        res.json({
-            success: true,
-            item: processedItem
-        });
+        res.success({ item: processedItem });
 
     } catch (error) {
-        console.error('Error fetching media item:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch media item',
-            details: error.message
-        });
+        logger.error('media-review.item error', { error: error.message });
+        res.fail(500, 'Failed to fetch media item', error.message);
     }
 });
 
@@ -272,10 +252,7 @@ router.post('/approve/:id', async (req, res) => {
         );
 
         if (items.length === 0) {
-            return res.status(404).json({
-                success: false,
-                error: 'Media item not found'
-            });
+            return res.fail(404, 'Media item not found');
         }
 
         const item = items[0];
@@ -315,19 +292,11 @@ router.post('/approve/:id', async (req, res) => {
             WHERE id = ?
         `, [targetLocation, admin_notes, reviewed_by, item.content_moderation_id]);
 
-        res.json({
-            success: true,
-            message: 'Media approved and moved successfully',
-            final_location: targetLocation
-        });
+        res.success({ final_location: targetLocation }, { message: 'Media approved and moved successfully' });
 
     } catch (error) {
-        console.error('Error approving media:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to approve media',
-            details: error.message
-        });
+        logger.error('media-review.approve error', { error: error.message });
+        res.fail(500, 'Failed to approve media', error.message);
     }
 });
 
@@ -366,10 +335,7 @@ router.post('/approve-blur/:id', async (req, res) => {
         );
 
         if (items.length === 0) {
-            return res.status(404).json({
-                success: false,
-                error: 'Media item not found'
-            });
+            return res.fail(404, 'Media item not found');
         }
 
         const item = items[0];
@@ -471,21 +437,11 @@ router.post('/approve-blur/:id', async (req, res) => {
             throw updateError;
         }
 
-        res.json({
-            success: true,
-            message: 'Media approved with blur successfully',
-            blurred_path: blurredPath,
-            blur_settings
-        });
+        res.success({ blurred_path: blurredPath, blur_settings }, { message: 'Media approved with blur successfully' });
 
     } catch (error) {
-        console.error('Error approving media with blur:', error);
-        console.error('Error stack:', error.stack);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to approve media with blur',
-            details: error.message
-        });
+        logger.error('media-review.approve-blur error', { error: error.message });
+        res.fail(500, 'Failed to approve media with blur', error.message);
     }
 });
 
@@ -498,10 +454,7 @@ router.post('/reject/:id', async (req, res) => {
         const { admin_notes, reviewed_by = 1, reason } = req.body;
 
         if (!admin_notes || !admin_notes.trim()) {
-            return res.status(400).json({
-                success: false,
-                error: 'Admin notes are required for rejection'
-            });
+            return res.fail(400, 'Admin notes are required for rejection');
         }
 
         const [items] = await db.execute(
@@ -510,10 +463,7 @@ router.post('/reject/:id', async (req, res) => {
         );
 
         if (items.length === 0) {
-            return res.status(404).json({
-                success: false,
-                error: 'Media item not found'
-            });
+            return res.fail(404, 'Media item not found');
         }
 
         const item = items[0];
@@ -552,19 +502,11 @@ router.post('/reject/:id', async (req, res) => {
             WHERE id = ?
         `, [admin_notes, reviewed_by, item.content_moderation_id]);
 
-        res.json({
-            success: true,
-            message: 'Media rejected and moved to rejected folder',
-            reason: admin_notes
-        });
+        res.success({ reason: admin_notes }, { message: 'Media rejected and moved to rejected folder' });
 
     } catch (error) {
-        console.error('Error rejecting media:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to reject media',
-            details: error.message
-        });
+        logger.error('media-review.reject error', { error: error.message });
+        res.fail(500, 'Failed to reject media', error.message);
     }
 });
 
