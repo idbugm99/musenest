@@ -2185,12 +2185,31 @@ app.get('/admin-moderation-dashboard.html', (req, res) => {
 
 // Health check
 app.get('/health', async (req, res) => {
-    const dbStatus = await testConnection();
-    res.json({
+    const result = {
         status: 'OK',
-        database: dbStatus ? 'Connected' : 'Disconnected',
-        timestamp: new Date().toISOString()
-    });
+        timestamp: new Date().toISOString(),
+        database: 'Disconnected'
+    };
+    try {
+        const [versionRows] = await db.execute('SELECT VERSION() as v');
+        const mysqlVersion = versionRows?.[0]?.v || 'unknown';
+        const tables = ['models', 'content_templates', 'theme_sets', 'media_review_queue'];
+        const counts = {};
+        for (const t of tables) {
+            try {
+                const [rows] = await db.execute(`SELECT COUNT(*) AS c FROM ${t}`);
+                counts[t] = rows?.[0]?.c ?? null;
+            } catch (e) {
+                counts[t] = null;
+            }
+        }
+        result.database = 'Connected';
+        result.mysqlVersion = mysqlVersion;
+        result.tableCounts = counts;
+    } catch (e) {
+        result.error = e.message;
+    }
+    res.json(result);
 });
 
 // Dev-only: AI health proxy
