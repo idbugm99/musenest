@@ -2309,6 +2309,9 @@ app.use('/api/clients', require('./routes/api/clients'));
 app.use('/api/model-dashboard', require('./routes/api/model-dashboard'));
 app.use('/api/media-preview', require('./routes/api/media-preview'));
 
+// Consolidated sysadmin API namespace (keeps legacy mounts above for back-compat)
+app.use('/api/sysadmin', require('./routes/api/sysadmin'));
+
 // Theme Management API
 app.get('/api/theme-management/models', async (req, res) => {
     try {
