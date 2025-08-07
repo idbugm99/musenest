@@ -38,7 +38,7 @@ Status: In Progress (verify-db.js and scripts added)
 - Add `scripts/route-audit.js` (list and flag overlaps)
 - Add `utils/componentRegistry.js` warning helper
 
-Status: In Progress (route-audit.js added)
+Status: In Progress (route-audit.js added, componentRegistry added)
 
 ### Phase E — Documentation Consolidation
 - Create `docs/README.md` index
@@ -50,7 +50,7 @@ Status: In Progress (docs/README.md added)
 - Ensure all sysadmin pages render with null-safe locals (placeholders)
 - Add dev-only banner (route + DB status)
 
-Status: Planned
+Status: In Progress (null-safe render helper + dev banner middleware added)
 
 ### Phase G — AI (BLIP/NudeNet) Local Integration
 - Run Python AI service on `http://localhost:5005`

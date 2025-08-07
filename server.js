@@ -137,6 +137,43 @@ app.engine('handlebars', engine({
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'themes'));
 
+// Ensure sysadmin pages are rendered with null-safe defaults and a dev banner
+function renderSysadmin(res, viewPath, context = {}) {
+    const defaultStats = {
+        totalClients: 0,
+        activeClients: 0,
+        assignedThemes: 0,
+        contentPages: 0
+    };
+    const defaults = {
+        layout: 'admin/layouts/main',
+        pageTitle: 'System Administration',
+        pageSubtitle: 'MuseNest Business Manager',
+        currentPage: 'dashboard',
+        stats: defaultStats,
+        recentActivity: [],
+        clientCount: 0,
+        devBanner: {
+            env: process.env.NODE_ENV || 'development',
+            db: 'OK'
+        }
+    };
+    const merged = {
+        ...defaults,
+        ...context,
+        stats: { ...defaultStats, ...(context.stats || {}) }
+    };
+    return res.render(viewPath, merged);
+}
+
+// Dev banner middleware for all /sysadmin pages (even if a route forgets to set it)
+app.use('/sysadmin', (req, res, next) => {
+    if (!res.locals.devBanner && process.env.NODE_ENV !== 'production') {
+        res.locals.devBanner = { env: process.env.NODE_ENV || 'development', db: 'OK' };
+    }
+    next();
+});
+
 // System Admin Dashboard Route (Handlebars) - Comprehensive Business Manager
 app.get('/sysadmin', async (req, res) => {
     try {
@@ -178,19 +215,12 @@ app.get('/sysadmin', async (req, res) => {
             console.log('🔍 Section requested via URL:', requestedSection);
         }
         
-        res.render('admin/pages/dashboard', {
-            layout: 'admin/layouts/main',
-            pageTitle: 'System Administration',
+        renderSysadmin(res, 'admin/pages/dashboard', {
             pageSubtitle: 'MuseNest Business Manager - Comprehensive CRM',
-            currentPage: 'dashboard',
-            stats: stats,
-            recentActivity: recentActivity,
+            stats,
+            recentActivity,
             clientCount: stats.totalClients,
-            initialSection: requestedSection,
-            devBanner: {
-                env: process.env.NODE_ENV || 'development',
-                db: 'OK'
-            }
+            initialSection: requestedSection
         });
     } catch (error) {
         console.error('❌ Error loading sysadmin dashboard:', error);
@@ -241,7 +271,14 @@ app.get('/admin', async (req, res) => {
             pageSubtitle: 'Manage your content and view your site',
             currentPage: 'model-admin',
             model: model,
-            stats: stats
+            stats: stats,
+            devBanner: {
+                env: process.env.NODE_ENV || 'development',
+                db: 'OK'
+            },
+            legacyBanner: {
+                message: 'This is a legacy admin surface. System admin lives at /sysadmin.'
+            }
         });
     } catch (error) {
         console.error('❌ Error loading model admin:', error);
