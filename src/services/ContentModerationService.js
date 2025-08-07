@@ -11,7 +11,9 @@ class ContentModerationService {
     constructor(dbConnection) {
         this.db = dbConnection;
         this.baseUploadPath = path.join(__dirname, '../../public/uploads');
-        this.rules = new Map(); // Cache for moderation rules
+        this.rules = new Map(); // Cache for moderation rules (legacy)
+        this.analysisConfigs = new Map(); // Cache for new analysis configurations
+        this.configCacheExpiry = 10 * 60 * 1000; // 10 minutes
     }
 
     /**
@@ -41,7 +43,69 @@ class ContentModerationService {
     }
 
     /**
-     * Load moderation rules from database for specific usage intent
+     * Load analysis configuration from new system (preferred method)
+     */
+    async loadAnalysisConfiguration(usageIntent, modelId = null) {
+        const cacheKey = `analysis_config_${usageIntent}_${modelId || 'global'}`;
+        const cached = this.analysisConfigs.get(cacheKey);
+
+        if (cached && (Date.now() - cached.timestamp) < this.configCacheExpiry) {
+            return cached.data;
+        }
+
+        try {
+            // Try model-specific first, then global
+            const queries = modelId 
+                ? [
+                    [usageIntent, modelId],    // Model-specific
+                    [usageIntent, null]        // Global fallback
+                  ]
+                : [[usageIntent, null]];       // Global only
+
+            for (const [intent, mId] of queries) {
+                const [rows] = await this.db.execute(`
+                    SELECT * FROM analysis_configurations 
+                    WHERE usage_intent = ? AND model_id <=> ? AND is_active = true
+                    ORDER BY created_at DESC 
+                    LIMIT 1
+                `, [intent, mId]);
+
+                if (rows.length > 0) {
+                    const config = rows[0];
+                    
+                    // Parse JSON fields (handle both string and object formats)
+                    config.detection_config = typeof config.detection_config === 'string' 
+                        ? JSON.parse(config.detection_config) 
+                        : config.detection_config;
+                    config.scoring_config = typeof config.scoring_config === 'string' 
+                        ? JSON.parse(config.scoring_config) 
+                        : config.scoring_config;
+                    config.blip_config = typeof config.blip_config === 'string' 
+                        ? JSON.parse(config.blip_config) 
+                        : config.blip_config;
+
+                    // Cache the result
+                    this.analysisConfigs.set(cacheKey, {
+                        data: config,
+                        timestamp: Date.now()
+                    });
+
+                    console.log(`✅ Loaded analysis configuration for ${intent}${mId ? ` (model ${mId})` : ' (global)'}`);
+                    return config;
+                }
+            }
+
+            console.log(`⚠️ No analysis configuration found for ${usageIntent}${modelId ? ` (model ${modelId})` : ''}`);
+            return null;
+
+        } catch (error) {
+            console.error('Load analysis configuration error:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Load moderation rules from database for specific usage intent (legacy method)
      */
     async loadModerationRules(usageIntent) {
         try {
@@ -176,10 +240,49 @@ class ContentModerationService {
             const originalPath = await this.moveToOriginals(filePath, modelSlug, originalName);
 
             // 3. Get AI analysis
-            const aiAnalysis = await this.analyzeWithNudeNet(originalPath, contextType, modelId);
+            const aiAnalysis = await this.analyzeWithNudeNet(originalPath, contextType, modelId, usageIntent);
+            
+            console.log(`🔍 DEBUG aiAnalysis keys:`, Object.keys(aiAnalysis));
+            console.log(`🔍 DEBUG aiAnalysis.batch_id:`, aiAnalysis.batch_id);
+            console.log(`🔍 DEBUG aiAnalysis.moderation_status:`, aiAnalysis.moderation_status);
 
-            // 4. Apply auto-moderation rules
-            const moderationResult = await this.applyModerationRules(aiAnalysis, usageIntent);
+            // 4. Check if EC2 returned a complete response with batch_id
+            if (aiAnalysis.batch_id && aiAnalysis.moderation_status) {
+                console.log(`✅ EC2 returned complete response with batch_id: ${aiAnalysis.batch_id}`);
+                console.log(`📋 Saving EC2 response directly to database without modification`);
+                
+                // Store EC2 response directly in database
+                const contentModerationId = await this.storeModerationResult({
+                    batch_id: aiAnalysis.batch_id,
+                    originalPath,
+                    image_path: originalPath,
+                    modelId,
+                    usageIntent,
+                    contextType,
+                    // Use EC2's analysis results directly
+                    nudity_score: aiAnalysis.nudity_score,
+                    detected_parts: aiAnalysis.detected_parts,
+                    part_locations: aiAnalysis.part_locations,
+                    moderation_status: aiAnalysis.moderation_status,
+                    flagged: aiAnalysis.flagged || false,
+                    human_review_required: aiAnalysis.human_review_required || false,
+                    final_location: aiAnalysis.final_location,
+                    final_risk_score: aiAnalysis.final_risk_score,
+                    risk_level: aiAnalysis.risk_level,
+                    combined_assessment: aiAnalysis.combined_assessment,
+                    pose_analysis: aiAnalysis.pose_analysis
+                });
+                
+                return {
+                    success: true,
+                    contentModerationId,
+                    ...aiAnalysis
+                };
+            }
+
+            // 4. Apply local moderation rules (only if EC2 didn't provide complete response)
+            console.log(`⚠️ EC2 response incomplete, applying local moderation rules`);
+            const moderationResult = await this.applyModerationRules(aiAnalysis, usageIntent, modelId);
 
             // 5. Store in database
             const contentModerationId = await this.storeModerationResult({
@@ -188,7 +291,7 @@ class ContentModerationService {
                 modelId,
                 usageIntent,
                 contextType,
-                image_path: originalPath // Ensure image_path is set
+                image_path: originalPath
             });
 
             // 6. Handle flagged content
@@ -237,9 +340,21 @@ class ContentModerationService {
     /**
      * Analyze image with Enhanced MediaPipe API (NudeNet + Pose Analysis)
      */
-    async analyzeWithNudeNet(imagePath, contextType, modelId) {
+    async analyzeWithNudeNet(imagePath, contextType, modelId, usageIntent = 'public_site') {
         console.log(`🚀 Starting enhanced analysis for image: ${imagePath}`);
         console.log(`📡 Target: 18.221.22.72:5000/analyze`);
+        
+        // Get model slug from database for the API call
+        const [modelRows] = await this.db.execute('SELECT slug FROM models WHERE id = ?', [modelId]);
+        const modelSlug = modelRows[0]?.slug || `model-${modelId}`;
+        
+        // Load analysis configuration to determine what to analyze
+        const analysisConfig = await this.loadAnalysisConfiguration(usageIntent, modelId);
+        if (analysisConfig) {
+            console.log(`📋 Using analysis configuration: ${JSON.stringify(analysisConfig.detection_config)}`);
+        } else {
+            console.log(`⚠️ No specific analysis configuration found, using defaults`);
+        }
         
         return new Promise((resolve, reject) => {
             const FormData = require('form-data');
@@ -251,6 +366,39 @@ class ContentModerationService {
             form.append('image', fs.createReadStream(imagePath));
             form.append('context_type', contextType);
             form.append('model_id', modelId.toString());
+            form.append('model_slug', modelSlug);
+            form.append('usage_intent', usageIntent);
+            
+            console.log(`🔧 DEBUG: Sending fields - model_slug="${modelSlug}", usage_intent="${usageIntent}", model_id="${modelId}"`);
+            
+            // If the first request fails, we'll need to try a different format
+            // but for now, let's see what the exact error is
+            
+            // Add analysis configuration parameters
+            if (analysisConfig) {
+                const nudenetComponents = analysisConfig.detection_config.nudenet_components;
+                const blipComponents = analysisConfig.detection_config.blip_components;
+                
+                // Send component flags to API
+                form.append('enable_breast_detection', nudenetComponents.breast_detection.toString());
+                form.append('enable_genitalia_detection', nudenetComponents.genitalia_detection.toString());
+                form.append('enable_buttocks_detection', nudenetComponents.buttocks_detection.toString());
+                form.append('enable_anus_detection', nudenetComponents.anus_detection.toString());
+                form.append('enable_face_detection', nudenetComponents.face_detection.toString());
+                
+                form.append('enable_age_estimation', blipComponents.age_estimation.toString());
+                form.append('enable_child_detection', blipComponents.child_content_detection.toString());
+                form.append('enable_image_description', blipComponents.image_description.toString());
+                
+                // Send analysis configuration version for debugging
+                form.append('config_version', analysisConfig.version?.toString() || '1');
+                
+                console.log(`📊 Analysis components enabled:`);
+                console.log(`  NudeNet: breast=${nudenetComponents.breast_detection}, genitalia=${nudenetComponents.genitalia_detection}, face=${nudenetComponents.face_detection}`);
+                console.log(`  BLIP: age=${blipComponents.age_estimation}, child=${blipComponents.child_content_detection}, desc=${blipComponents.image_description}`);
+            } else {
+                console.log(`⚠️ No analysis config found - using default detection settings`);
+            }
             
             // Add webhook URL for automatic BLIP delivery
             const webhookUrl = this.getWebhookUrl();
@@ -261,7 +409,7 @@ class ContentModerationService {
                 console.log('⚠️ No webhook URL configured - BLIP data will need manual retrieval');
             }
 
-            console.log(`📝 Form data prepared: context_type=${contextType}, model_id=${modelId}`);
+            console.log(`📝 Form data prepared: context_type=${contextType}, model_id=${modelId}, model_slug=${modelSlug}, usage_intent=${usageIntent}`);
             console.log(`📡 Webhook URL: ${webhookUrl || 'NONE'}`);
             console.log(`🚀 Sending request to EC2 server...`);
             
@@ -324,7 +472,21 @@ class ContentModerationService {
                             console.log(`📝 Image description found:`, imageDescription);
                             
                             // Transform enhanced API response to match expected format
-                            const transformedResult = this.transformEnhancedResponse(result);
+                            // The actual data is nested under result.data
+                            const transformedResult = this.transformEnhancedResponse(result.data || result);
+                            
+                            // Add batch_id and paths from the response for tracking
+                            if (result.data?.batch_id) {
+                                transformedResult.batch_id = result.data.batch_id;
+                                console.log(`📋 Batch ID received: ${result.data.batch_id}`);
+                            }
+                            if (result.data?.original_path) {
+                                transformedResult.original_path = result.data.original_path;
+                            }
+                            if (result.data?.image_path) {
+                                transformedResult.image_path = result.data.image_path;
+                            }
+                            
                             console.log(`✅ Transformation complete, final nudity score: ${transformedResult.nudity_score}`);
                             console.log(`🎭 Pose analysis: ${transformedResult.pose_category} (${transformedResult.explicit_pose_score})`);
                             console.log(`🔍 Debug - Full transformed result keys:`, Object.keys(transformedResult));
@@ -333,11 +495,25 @@ class ContentModerationService {
                             
                             resolve(transformedResult);
                         } else {
-                            console.error('❌ Enhanced API returned success: false');
-                            console.error('Full API response:', JSON.stringify(result, null, 2));
-                            console.error('Error details:', result.error);
-                            const errorMessage = result.error || 'Enhanced analysis failed - no error details provided';
-                            reject(new Error(errorMessage));
+                            // Check if this is flagged content vs actual processing error
+                            if (result.data && (result.data.moderation_status === 'flagged' || result.data.human_review_required)) {
+                                console.log('✅ Content flagged for human review - processing as successful result');
+                                console.log(`📋 Flagged content details: status=${result.data.moderation_status}, nudity=${result.data.nudity_score}%`);
+                                console.log(`🔍 Detected parts:`, Object.keys(result.data.detected_parts || {}));
+                                
+                                // Transform flagged content response to expected format
+                                // The actual data is nested under result.data
+                                const flaggedResult = this.transformEnhancedResponse(result.data || result);
+                                console.log(`✅ Flagged content transformed successfully - final nudity: ${flaggedResult.nudity_score}%`);
+                                resolve(flaggedResult);
+                            } else {
+                                // This is an actual processing error
+                                console.error('❌ Enhanced API processing error (not flagged content)');
+                                console.error('Full API response:', JSON.stringify(result, null, 2));
+                                console.error('Error details:', result.error);
+                                const errorMessage = result.error || 'Enhanced analysis failed - processing error';
+                                reject(new Error(errorMessage));
+                            }
                         }
                     } catch (parseError) {
                         console.error('❌ JSON parse error:', parseError.message);
@@ -354,7 +530,7 @@ class ContentModerationService {
                 console.log('🚨 FALLING BACK TO CONSERVATIVE ANALYSIS');
                 
                 // Fallback to basic analysis when enhanced API is unavailable
-                this.fallbackToBasicAnalysis(imagePath, contextType, modelId)
+                this.fallbackToBasicAnalysis(imagePath, contextType, modelId, usageIntent)
                     .then(result => {
                         console.log('✅ Fallback analysis completed');
                         resolve(result);
@@ -372,7 +548,7 @@ class ContentModerationService {
                 console.log('🚨 FALLING BACK TO CONSERVATIVE ANALYSIS');
                 
                 // Fallback to basic analysis when enhanced API times out
-                this.fallbackToBasicAnalysis(imagePath, contextType, modelId)
+                this.fallbackToBasicAnalysis(imagePath, contextType, modelId, usageIntent)
                     .then(result => {
                         console.log('✅ Fallback analysis completed after timeout');
                         resolve(result);
@@ -404,13 +580,30 @@ class ContentModerationService {
     /**
      * Fallback to basic NudeNet analysis when enhanced API is unavailable
      */
-    async fallbackToBasicAnalysis(imagePath, contextType, modelId) {
-        console.log('🚨 Using HARDCODED conservative fallback - NO ACTUAL IMAGE ANALYSIS');
+    async fallbackToBasicAnalysis(imagePath, contextType, modelId, usageIntent = 'public_site') {
+        console.log('🔄 Fallback: Attempting direct NudeNet analysis...');
+        
+        // Load configuration to determine what to analyze locally
+        const analysisConfig = await this.loadAnalysisConfiguration(usageIntent, modelId);
+        
+        try {
+            // Try direct NudeNet analysis using Python script or local service
+            const result = await this.performDirectNudeNetAnalysis(imagePath, analysisConfig);
+            
+            if (result && result.success) {
+                console.log('✅ Direct NudeNet analysis successful');
+                return this.transformDirectNudeNetResponse(result, contextType, modelId, analysisConfig);
+            }
+        } catch (directError) {
+            console.error('❌ Direct NudeNet analysis failed:', directError.message);
+        }
+        
+        console.log('🚨 All analysis methods failed - using conservative fallback');
         
         // Return a conservative analysis structure that flags for review
-        // When enhanced API is unavailable, be extremely conservative
+        // When all analysis methods fail, be extremely conservative
         return {
-            detected_parts: { 'FALLBACK_ANALYSIS': 95.0 },
+            detected_parts: { 'ANALYSIS_FAILED': 95.0 },
             part_locations: {},
             nudity_score: 95.0, // High score to trigger moderation rules
             has_nudity: true, // Assume nudity present to be safe
@@ -418,14 +611,14 @@ class ContentModerationService {
             // Fallback fields  
             pose_analysis: {
                 pose_detected: false,
-                pose_category: 'enhanced_api_unavailable',
+                pose_category: 'analysis_failed',
                 suggestive_score: 0,
-                details: { reasoning: ['NO_REAL_ANALYSIS_PERFORMED', 'enhanced_api_unreachable'] }
+                details: { reasoning: ['ALL_ANALYSIS_METHODS_FAILED', 'using_conservative_fallback'] }
             },
             combined_assessment: {
                 final_risk_score: 95.0,
                 risk_level: 'high',
-                reasoning: ['HARDCODED_CONSERVATIVE_RESPONSE', 'EC2_API_UNREACHABLE']
+                reasoning: ['ALL_ANALYSIS_FAILED', 'CONSERVATIVE_FALLBACK_APPLIED']
             },
             moderation_decision: {
                 status: 'flagged_for_review',
@@ -435,9 +628,251 @@ class ContentModerationService {
             
             // Legacy compatibility
             success: true,
-            analysis_version: 'FALLBACK_NO_ANALYSIS',
-            warning: 'Enhanced MediaPipe API unavailable - using conservative hardcoded response'
+            analysis_version: 'CONSERVATIVE_FALLBACK',
+            warning: 'All image analysis methods failed - using conservative hardcoded response'
         };
+    }
+
+    /**
+     * Perform direct NudeNet analysis using local Python installation
+     */
+    async performDirectNudeNetAnalysis(imagePath, analysisConfig = null) {
+        console.log('🐍 Attempting direct NudeNet analysis via Python...');
+        
+        // Determine what components to analyze based on config
+        const enabledComponents = analysisConfig ? analysisConfig.detection_config.nudenet_components : null;
+        if (enabledComponents) {
+            console.log(`📋 Using configuration: breast=${enabledComponents.breast_detection}, genitalia=${enabledComponents.genitalia_detection}`);
+        }
+        
+        return new Promise((resolve, reject) => {
+            const { spawn } = require('child_process');
+            const path = require('path');
+            
+            // Create a simple Python script to run NudeNet locally
+            const pythonScript = `
+import sys
+import json
+from nudenet import NudeDetector
+
+try:
+    detector = NudeDetector()
+    image_path = sys.argv[1]
+    
+    # Run detection
+    detections = detector.detect(image_path)
+    
+    # Transform to expected format
+    detected_parts = {}
+    part_locations = {}
+    max_score = 0
+    
+    for detection in detections:
+        label = detection['class'].upper()
+        confidence = detection['score'] * 100
+        detected_parts[label] = confidence
+        max_score = max(max_score, confidence)
+        
+        # Store location info
+        part_locations[label] = {
+            'x': detection['box'][0],
+            'y': detection['box'][1], 
+            'width': detection['box'][2] - detection['box'][0],
+            'height': detection['box'][3] - detection['box'][1],
+            'confidence': confidence
+        }
+    
+    result = {
+        'success': True,
+        'detected_parts': detected_parts,
+        'part_locations': part_locations,
+        'nudity_score': max_score,
+        'has_nudity': max_score > 30,
+        'analysis_method': 'local_nudenet'
+    }
+    
+    print(json.dumps(result))
+    
+except Exception as e:
+    error_result = {
+        'success': False,
+        'error': str(e),
+        'analysis_method': 'local_nudenet_failed'
+    }
+    print(json.dumps(error_result))
+    sys.exit(1)
+`;
+            
+            // Write Python script to temp file
+            const fs = require('fs');
+            const os = require('os');
+            const scriptPath = path.join(os.tmpdir(), `nudenet_analysis_${Date.now()}.py`);
+            
+            fs.writeFileSync(scriptPath, pythonScript);
+            
+            // Execute Python script
+            const python = spawn('python3', [scriptPath, imagePath], {
+                timeout: 30000 // 30 second timeout
+            });
+            
+            let output = '';
+            let errorOutput = '';
+            
+            python.stdout.on('data', (data) => {
+                output += data.toString();
+            });
+            
+            python.stderr.on('data', (data) => {
+                errorOutput += data.toString();
+            });
+            
+            python.on('close', (code) => {
+                // Clean up temp script
+                try {
+                    fs.unlinkSync(scriptPath);
+                } catch (cleanup) {
+                    console.warn('Failed to cleanup temp script:', cleanup.message);
+                }
+                
+                if (code === 0) {
+                    try {
+                        const result = JSON.parse(output);
+                        console.log('✅ Python NudeNet analysis completed');
+                        resolve(result);
+                    } catch (parseError) {
+                        console.error('❌ Failed to parse Python output:', parseError.message);
+                        reject(new Error('Failed to parse NudeNet output'));
+                    }
+                } else {
+                    console.error('❌ Python script failed:', errorOutput);
+                    reject(new Error(`Python NudeNet failed with code ${code}: ${errorOutput}`));
+                }
+            });
+            
+            python.on('error', (error) => {
+                console.error('❌ Failed to spawn Python process:', error.message);
+                reject(error);
+            });
+        });
+    }
+
+    /**
+     * Transform direct NudeNet response to match expected format
+     */
+    transformDirectNudeNetResponse(directResult, contextType, modelId, analysisConfig = null) {
+        // Filter detected parts based on configuration
+        let detectedParts = directResult.detected_parts || {};
+        let partLocations = directResult.part_locations || {};
+        
+        if (analysisConfig && analysisConfig.detection_config.nudenet_components) {
+            const enabledComponents = analysisConfig.detection_config.nudenet_components;
+            const filteredParts = {};
+            const filteredLocations = {};
+            
+            // Map detection labels to configuration keys
+            const labelMapping = {
+                'BREAST_EXPOSED': 'breast_detection',
+                'GENITALIA': 'genitalia_detection', 
+                'BUTTOCKS_EXPOSED': 'buttocks_detection',
+                'ANUS_EXPOSED': 'anus_detection',
+                'FACE_DETECTED': 'face_detection'
+            };
+            
+            Object.entries(detectedParts).forEach(([label, confidence]) => {
+                const configKey = labelMapping[label];
+                if (!configKey || enabledComponents[configKey]) {
+                    filteredParts[label] = confidence;
+                    if (partLocations[label]) {
+                        filteredLocations[label] = partLocations[label];
+                    }
+                } else {
+                    console.log(`🚫 Filtered out ${label} (disabled in config)`);
+                }
+            });
+            
+            detectedParts = filteredParts;
+            partLocations = filteredLocations;
+        }
+        
+        return {
+            // NudeNet results (filtered by configuration)
+            detected_parts: detectedParts,
+            part_locations: partLocations,
+            nudity_score: directResult.nudity_score || 0,
+            has_nudity: directResult.has_nudity || false,
+            
+            // Basic face analysis (not available in direct NudeNet)
+            face_analysis: {
+                faces_detected: false,
+                face_count: 0,
+                min_age: null,
+                underage_detected: false,
+                analysis_note: 'Face analysis not available in direct NudeNet mode'
+            },
+            face_count: 0,
+            min_detected_age: null,
+            max_detected_age: null,
+            underage_detected: false,
+            age_risk_multiplier: 1.0,
+            
+            // Basic image description
+            image_description: {
+                description: 'Image analyzed via direct NudeNet',
+                tags: [],
+                generation_method: 'direct_nudenet_only'
+            },
+            description_text: 'Analyzed via direct NudeNet - no description available',
+            description_tags: [],
+            contains_children: false,
+            description_risk: 0.0,
+            
+            // Risk assessment based on nudity score
+            final_risk_score: directResult.nudity_score || 0,
+            risk_level: this.calculateRiskLevel(directResult.nudity_score || 0),
+            risk_reasoning: ['direct_nudenet_analysis', `nudity_score_${directResult.nudity_score || 0}`],
+            
+            // Combined assessment
+            combined_assessment: {
+                final_risk_score: directResult.nudity_score || 0,
+                risk_level: this.calculateRiskLevel(directResult.nudity_score || 0),
+                reasoning: ['direct_nudenet_only', 'no_face_or_description_analysis']
+            },
+            
+            // Pose analysis placeholder
+            pose_analysis: {
+                pose_detected: false,
+                pose_category: 'direct_nudenet_mode',
+                suggestive_score: 0,
+                details: { reasoning: ['direct_nudenet_analysis_only'] }
+            },
+            
+            // Moderation decision based on nudity score
+            moderation_decision: {
+                status: directResult.nudity_score > 50 ? 'flagged_for_review' : 'auto_approve',
+                action: directResult.nudity_score > 50 ? 'require_human_review' : 'auto_approve',
+                human_review_required: directResult.nudity_score > 50
+            },
+            moderation_status: directResult.nudity_score > 50 ? 'flagged' : 'approved',
+            human_review_required: directResult.nudity_score > 50,
+            flagged: directResult.nudity_score > 50,
+            auto_rejected: false,
+            rejection_reason: null,
+            
+            // Metadata
+            success: true,
+            analysis_version: 'direct_nudenet_v1'
+        };
+    }
+
+    /**
+     * Calculate risk level based on nudity score
+     */
+    calculateRiskLevel(nudityScore) {
+        if (nudityScore >= 80) return 'critical';
+        if (nudityScore >= 60) return 'high';
+        if (nudityScore >= 40) return 'medium';
+        if (nudityScore >= 20) return 'low';
+        return 'minimal';
     }
 
     /**
@@ -667,7 +1102,11 @@ class ContentModerationService {
         // Check if this is a webhook-style response (flat structure)
         if (enhancedResult.batch_id && enhancedResult.detected_parts && !enhancedResult.image_analysis) {
             console.log('🔄 Detected webhook-style response - transforming to v3 structure');
-            return this.transformWebhookResponse(enhancedResult);
+            console.log(`🔍 DEBUG: Input nudity_score = ${enhancedResult.nudity_score}`);
+            console.log(`🔍 DEBUG: Input detected_parts =`, Object.keys(enhancedResult.detected_parts));
+            const result = this.transformWebhookResponse(enhancedResult);
+            console.log(`🔍 DEBUG: Output nudity_score = ${result.nudity_score}`);
+            return result;
         }
 
         const analysis = enhancedResult.image_analysis;
@@ -785,7 +1224,16 @@ class ContentModerationService {
     /**
      * Apply moderation rules based on usage intent
      */
-    async applyModerationRules(aiAnalysis, usageIntent) {
+    async applyModerationRules(aiAnalysis, usageIntent, modelId = null) {
+        // Try new configuration system first
+        const analysisConfig = await this.loadAnalysisConfiguration(usageIntent, modelId);
+        
+        if (analysisConfig) {
+            return this.applyNewModerationRules(aiAnalysis, analysisConfig, usageIntent);
+        }
+        
+        // Fallback to legacy system
+        console.log('⚠️ Using legacy moderation rules - consider migrating to new configuration system');
         const rules = this.rules.get(usageIntent) || await this.loadModerationRules(usageIntent);
         
         const result = {
@@ -848,6 +1296,98 @@ class ContentModerationService {
     }
 
     /**
+     * Apply new configuration-based moderation rules
+     */
+    applyNewModerationRules(aiAnalysis, analysisConfig, usageIntent) {
+        const scoringConfig = analysisConfig.scoring_config;
+        const detectionConfig = analysisConfig.detection_config;
+        
+        console.log(`🎯 Applying new moderation rules for ${usageIntent}`);
+        
+        const result = {
+            ...aiAnalysis,
+            usage_intent: usageIntent,
+            flagged: false,
+            auto_blocked: false,
+            human_review_required: false,
+            final_location: 'originals',
+            config_version: analysisConfig.version || 1
+        };
+
+        // Calculate weighted nudity score based on configuration
+        let weightedScore = 0;
+        const detectionWeights = scoringConfig.detection_weights || {};
+        
+        if (result.detected_parts) {
+            for (const [bodyPart, confidence] of Object.entries(result.detected_parts)) {
+                const weight = detectionWeights[bodyPart] || 0;
+                const contribution = (confidence * weight) / 100;
+                weightedScore += contribution;
+                
+                console.log(`📊 ${bodyPart}: confidence=${confidence}%, weight=${weight}%, contribution=${contribution.toFixed(2)}`);
+            }
+        }
+
+        // Apply risk multipliers
+        const riskMultipliers = scoringConfig.risk_multipliers || {};
+        
+        if (result.underage_detected && riskMultipliers.underage_detected) {
+            weightedScore *= riskMultipliers.underage_detected;
+            console.log(`⚠️ Underage detected - applying ${riskMultipliers.underage_detected}x multiplier`);
+        }
+        
+        if (result.contains_children && riskMultipliers.child_content_blip) {
+            weightedScore *= riskMultipliers.child_content_blip;
+            console.log(`⚠️ Child content detected - applying ${riskMultipliers.child_content_blip}x multiplier`);
+        }
+
+        // Update the final score
+        result.weighted_nudity_score = Math.min(100, weightedScore);
+        result.original_nudity_score = result.nudity_score;
+        result.nudity_score = result.weighted_nudity_score;
+
+        console.log(`📈 Score calculation: original=${result.original_nudity_score}%, weighted=${result.weighted_nudity_score}%`);
+
+        // Apply thresholds
+        const thresholds = scoringConfig.thresholds || {};
+        
+        if (result.weighted_nudity_score <= (thresholds.auto_approve_under || 15)) {
+            result.moderation_status = 'approved';
+            result.final_location = this.getFinalLocation(usageIntent);
+            console.log(`✅ Auto-approved (${result.weighted_nudity_score}% <= ${thresholds.auto_approve_under || 15}%)`);
+        } else if (result.weighted_nudity_score >= (thresholds.auto_reject_over || 90)) {
+            result.flagged = true;
+            result.auto_blocked = true;
+            result.human_review_required = true;
+            result.moderation_status = 'auto_rejected';
+            result.rejection_reason = `Weighted nudity score too high: ${result.weighted_nudity_score}%`;
+            console.log(`❌ Auto-rejected (${result.weighted_nudity_score}% >= ${thresholds.auto_reject_over || 90}%)`);
+        } else if (result.weighted_nudity_score >= (thresholds.auto_flag_over || 70)) {
+            result.flagged = true;
+            result.human_review_required = true;
+            result.moderation_status = 'flagged';
+            console.log(`⚠️ Flagged for review (${result.weighted_nudity_score}% >= ${thresholds.auto_flag_over || 70}%)`);
+        } else {
+            // In the middle range - flag for review to be safe
+            result.flagged = true;
+            result.human_review_required = true;
+            result.moderation_status = 'flagged';
+            console.log(`🔍 Flagged for review (middle range: ${result.weighted_nudity_score}%)`);
+        }
+
+        // Force high priority for specific conditions
+        if (result.underage_detected || result.contains_children) {
+            result.flagged = true;
+            result.human_review_required = true;
+            result.moderation_status = 'flagged';
+            result.priority = 'urgent';
+            console.log(`🚨 Forced flagging due to underage/child content detection`);
+        }
+
+        return result;
+    }
+
+    /**
      * Map AI detection labels to standardized labels
      */
     mapDetectionToLabel(detection) {
@@ -882,7 +1422,7 @@ class ContentModerationService {
         
         const query = `
             INSERT INTO content_moderation (
-                image_path, original_path, model_id, context_type, usage_intent,
+                batch_id, image_path, original_path, model_id, context_type, usage_intent,
                 nudity_score, detected_parts, part_locations, has_nudity,
                 face_analysis, face_count, min_detected_age, max_detected_age, 
                 underage_detected, age_risk_multiplier,
@@ -891,10 +1431,11 @@ class ContentModerationService {
                 final_risk_score, risk_level, risk_reasoning,
                 moderation_status, human_review_required, flagged, 
                 auto_rejected, rejection_reason, confidence_score, final_location
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const values = [
+            data.batch_id || null,
             data.image_path || data.originalPath || '',
             data.originalPath || data.image_path || '',
             data.modelId || null,

@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Configuration Management - Enhanced - MuseNest Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .site-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #dee2e6;
+        }
+        .site-card.deployed { border-left-color: #28a745; }
+        .site-card.pending { border-left-color: #ffc107; }
+        .site-card.failed { border-left-color: #dc3545; }
+        .site-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .config-form-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e9ecef;
+        }
+        .config-form-section h6 {
+            color: #495057;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .threshold-input {
+            width: 100px;
+        }
+        .threshold-display {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+        .usage-intent-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #dee2e6;
+            transition: all 0.2s ease;
+        }
+        .usage-intent-card:hover {
+            border-color: #007bff;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.1);
+        }
+        .body-part-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        .body-part-item {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid #dee2e6;
+        }
+        .slider-container {
+            margin: 0.5rem 0;
+        }
+        .range-slider {
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+        .range-value {
+            font-weight: 600;
+            color: #007bff;
+        }
+        .keyword-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .keyword-tag {
+            background: #e9ecef;
+            border-radius: 20px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.85rem;
+            position: relative;
+        }
+        .keyword-tag .remove-keyword {
+            margin-left: 0.5rem;
+            cursor: pointer;
+            color: #dc3545;
+        }
+        .add-keyword-input {
+            border: none;
+            outline: none;
+            background: transparent;
+            min-width: 100px;
+        }
+        .config-preview {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .nav-pills .nav-link.active {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+        }
+        
+        /* Server Health Styles */
+        .server-health-card {
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .server-health-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .status-online { background-color: #28a745; }
+        .status-degraded { background-color: #ffc107; }
+        .status-offline { background-color: #dc3545; }
+        .response-time {
+            font-size: 0.85em;
+            color: #6c757d;
+        }
+        .performance-excellent { color: #28a745; }
+        .performance-good { color: #20c997; }
+        .performance-fair { color: #ffc107; }
+        .performance-slow { color: #fd7e14; }
+        .performance-very_slow { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h3 mb-0">
+                            <i class="fas fa-cogs text-primary me-2"></i>
+                            Site Configuration Management
+                        </h1>
+                        <p class="text-muted mb-0">Enhanced user-friendly configuration interface</p>
+                    </div>
+                    <div>
+                        <a href="subscription-tier-management.html" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-crown me-1"></i> Subscription Tiers
+                        </a>
+                        <button type="button" class="btn btn-outline-info me-2" onclick="pullRemoteConfigs()">
+                            <i class="fas fa-download me-1"></i> Pull Remote Configs
+                        </button>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addSiteModal">
+                            <i class="fas fa-plus me-1"></i> Add Site
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Server Health Dashboard -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-heartbeat text-success me-2"></i>
+                                AI Server Health Status
+                            </h5>
+                            <div>
+                                <span id="health-summary" class="badge bg-secondary">Checking...</span>
+                                <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="refreshServerHealth()">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="server-health-container" class="row">
+                            <!-- Server health cards will be populated here -->
+                            <div class="col-12 text-center text-muted">
+                                <i class="fas fa-spinner fa-spin me-2"></i>
+                                Loading server health status...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sites List -->
+        <div class="row">
+            <div class="col-12">
+                <div id="sitesContainer" class="row">
+                    <!-- Sites will be loaded here -->
+                </div>
+                <div id="noSitesMessage" class="text-center py-5" style="display: none;">
+                    <i class="fas fa-cogs fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No site configurations found</h5>
+                    <p class="text-muted">Add your first site configuration to get started</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Configuration Modal -->
+    <div class="modal fade" id="configModal" tabindex="-1">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-cogs me-2"></i>
+                        <span id="configModalTitle">Configure Site</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Configuration Tabs -->
+                        <div class="col-md-3">
+                            <div class="nav flex-column nav-pills" id="configTabs" role="tablist">
+                                <button class="nav-link active" id="basic-tab" data-bs-toggle="pill" data-bs-target="#basic-config" type="button">
+                                    <i class="fas fa-info-circle me-2"></i>Basic Info
+                                </button>
+                                <button class="nav-link" id="nudenet-tab" data-bs-toggle="pill" data-bs-target="#nudenet-config" type="button">
+                                    <i class="fas fa-eye me-2"></i>NudeNet Detection
+                                </button>
+                                <button class="nav-link" id="blip-tab" data-bs-toggle="pill" data-bs-target="#blip-config" type="button">
+                                    <i class="fas fa-image me-2"></i>BLIP Analysis
+                                </button>
+                                <button class="nav-link" id="rules-tab" data-bs-toggle="pill" data-bs-target="#rules-config" type="button">
+                                    <i class="fas fa-gavel me-2"></i>Moderation Rules
+                                </button>
+                                <button class="nav-link" id="intents-tab" data-bs-toggle="pill" data-bs-target="#intents-config" type="button">
+                                    <i class="fas fa-tags me-2"></i>Usage Contexts
+                                </button>
+                                <button class="nav-link" id="deployment-tab" data-bs-toggle="pill" data-bs-target="#deployment-info" type="button">
+                                    <i class="fas fa-rocket me-2"></i>Deployment
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Configuration Content -->
+                        <div class="col-md-9">
+                            <div class="tab-content" id="configTabContent">
+                                <!-- Basic Info Tab -->
+                                <div class="tab-pane fade show active" id="basic-config" role="tabpanel">
+                                    <div id="basicConfigContent">
+                                        <!-- Will be populated dynamically -->
+                                    </div>
+                                </div>
+
+                                <!-- NudeNet Detection Tab -->
+                                <div class="tab-pane fade" id="nudenet-config" role="tabpanel">
+                                    <div class="config-form-section">
+                                        <h6><i class="fas fa-eye text-primary"></i>Body Part Detection Thresholds</h6>
+                                        <p class="text-muted small">Configure sensitivity levels for different body parts (0.0 = Never detect, 1.0 = Always detect)</p>
+                                        
+                                        <div class="body-part-grid" id="bodyPartGrid">
+                                            <!-- Will be populated dynamically -->
+                                        </div>
+                                        
+                                        <div class="row mt-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Overall Detection Threshold</label>
+                                                <input type="range" class="form-range" id="detectionThreshold" min="0" max="1" step="0.1" value="0.6">
+                                                <div class="d-flex justify-content-between small text-muted">
+                                                    <span>Permissive (0.0)</span>
+                                                    <span class="range-value" id="detectionThresholdValue">0.6</span>
+                                                    <span>Strict (1.0)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- BLIP Analysis Tab -->
+                                <div class="tab-pane fade" id="blip-config" role="tabpanel">
+                                    <div class="config-form-section">
+                                        <h6><i class="fas fa-image text-info"></i>Image Description Analysis</h6>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Risk Multiplier</label>
+                                                    <input type="range" class="form-range" id="riskMultiplier" min="1" max="10" step="0.5" value="2">
+                                                    <div class="d-flex justify-content-between small text-muted">
+                                                        <span>Low (1x)</span>
+                                                        <span class="range-value" id="riskMultiplierValue">2.0x</span>
+                                                        <span>High (10x)</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="enableDescription" checked>
+                                                        <label class="form-check-label" for="enableDescription">
+                                                            Enable Image Description Analysis
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label">Child Safety Keywords</label>
+                                            <div class="keyword-tags" id="childKeywords">
+                                                <!-- Keywords will be populated here -->
+                                            </div>
+                                            <input type="text" class="form-control add-keyword-input mt-2" id="newKeywordInput" placeholder="Add keyword and press Enter">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Moderation Rules Tab -->
+                                <div class="tab-pane fade" id="rules-config" role="tabpanel">
+                                    <div class="config-form-section">
+                                        <h6><i class="fas fa-gavel text-warning"></i>Automatic Decision Thresholds</h6>
+                                        <p class="text-muted small">Configure when content should be automatically approved, flagged, or rejected</p>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label class="form-label text-success">Auto-Approve Threshold</label>
+                                                <input type="range" class="form-range" id="autoApproveThreshold" min="0" max="100" step="5" value="30">
+                                                <div class="text-center">
+                                                    <span class="range-value text-success" id="autoApproveValue">30%</span>
+                                                    <div class="threshold-display">Content below this score is automatically approved</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label text-warning">Human Review Threshold</label>
+                                                <input type="range" class="form-range" id="humanReviewThreshold" min="0" max="100" step="5" value="70">
+                                                <div class="text-center">
+                                                    <span class="range-value text-warning" id="humanReviewValue">70%</span>
+                                                    <div class="threshold-display">Content above this score requires human review</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label text-danger">Auto-Reject Threshold</label>
+                                                <input type="range" class="form-range" id="autoRejectThreshold" min="0" max="100" step="5" value="90">
+                                                <div class="text-center">
+                                                    <span class="range-value text-danger" id="autoRejectValue">90%</span>
+                                                    <div class="threshold-display">Content above this score is automatically rejected</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row mt-4">
+                                            <div class="col-12">
+                                                <h6>Additional Settings</h6>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" id="allowArtisticNudity">
+                                                            <label class="form-check-label" for="allowArtisticNudity">
+                                                                Allow Artistic Nudity
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" id="strictCompliance">
+                                                            <label class="form-check-label" for="strictCompliance">
+                                                                Strict Legal Compliance Mode
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Usage Intents Tab -->
+                                <div class="tab-pane fade" id="intents-config" role="tabpanel">
+                                    <div class="config-form-section">
+                                        <h6><i class="fas fa-tags text-primary"></i>Usage Context Rules</h6>
+                                        <p class="text-muted small">Configure different moderation standards for different usage contexts</p>
+                                        
+                                        <div id="usageIntentsContainer">
+                                            <!-- Usage intent cards will be populated here -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Deployment Tab -->
+                                <div class="tab-pane fade" id="deployment-info" role="tabpanel">
+                                    <div id="deploymentContent">
+                                        <!-- Will be populated dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-warning me-2" onclick="saveConfiguration()">
+                        <i class="fas fa-save me-1"></i> Save Configuration
+                    </button>
+                    <button type="button" class="btn btn-success btn-deploy" onclick="deployConfiguration()">
+                        <i class="fas fa-rocket me-1"></i> Deploy & Restart Server
+                    </button>
+                    <button type="button" class="btn btn-info ms-2" onclick="verifyConfiguration()">
+                        <i class="fas fa-check-circle me-1"></i> Verify Configuration
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentSiteId = null;
+        let currentSiteData = null;
+        let sites = [];
+        let currentConfig = {
+            nudenet: {},
+            blip: {},
+            rules: {},
+            intents: {}
+        };
+
+        // Body parts configuration
+        const BODY_PARTS = {
+            'EXPOSED_GENITALIA_F': { label: 'Female Genitalia (Exposed)', default: 0.8 },
+            'EXPOSED_GENITALIA_M': { label: 'Male Genitalia (Exposed)', default: 0.8 },
+            'EXPOSED_BREAST_F': { label: 'Female Breasts (Exposed)', default: 0.7 },
+            'EXPOSED_BUTTOCKS': { label: 'Buttocks (Exposed)', default: 0.6 },
+            'EXPOSED_BELLY': { label: 'Belly/Stomach (Exposed)', default: 0.3 },
+            'COVERED_GENITALIA_F': { label: 'Female Genitalia (Covered)', default: 0.4 },
+            'COVERED_GENITALIA_M': { label: 'Male Genitalia (Covered)', default: 0.4 },
+            'COVERED_BREAST_F': { label: 'Female Breasts (Covered)', default: 0.4 }
+        };
+
+        const USAGE_INTENTS = {
+            'public_site': { label: 'Public Website', icon: 'globe', description: 'Content visible to all users' },
+            'paysite': { label: 'Premium/Paysite', icon: 'credit-card', description: 'Paid subscriber content' },
+            'store': { label: 'Store/Commercial', icon: 'shopping-cart', description: 'Commercial product content' },
+            'private': { label: 'Private Content', icon: 'lock', description: 'Private user content' }
+        };
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSites();
+            setupRangeSliders();
+            setupKeywordInput();
+        });
+
+        // Setup range sliders
+        function setupRangeSliders() {
+            const sliders = ['detectionThreshold', 'riskMultiplier', 'autoApproveThreshold', 'humanReviewThreshold', 'autoRejectThreshold'];
+            
+            sliders.forEach(sliderId => {
+                const slider = document.getElementById(sliderId);
+                const valueDisplay = document.getElementById(sliderId + 'Value');
+                
+                if (slider && valueDisplay) {
+                    slider.addEventListener('input', function() {
+                        let value = this.value;
+                        if (sliderId === 'riskMultiplier') {
+                            valueDisplay.textContent = value + 'x';
+                        } else if (sliderId === 'detectionThreshold') {
+                            valueDisplay.textContent = value;
+                        } else {
+                            valueDisplay.textContent = value + '%';
+                        }
+                    });
+                }
+            });
+        }
+
+        // Setup keyword input
+        function setupKeywordInput() {
+            const keywordInput = document.getElementById('newKeywordInput');
+            if (keywordInput) {
+                keywordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && this.value.trim()) {
+                        addKeyword(this.value.trim());
+                        this.value = '';
+                    }
+                });
+            }
+        }
+
+        // Load all sites
+        async function loadSites() {
+            try {
+                const response = await fetch('/api/site-configuration/sites');
+                const result = await response.json();
+                
+                if (result.success) {
+                    sites = result.sites;
+                    renderSites();
+                }
+            } catch (error) {
+                console.error('Error loading sites:', error);
+            }
+        }
+
+        // Render sites
+        function renderSites() {
+            const container = document.getElementById('sitesContainer');
+            const noSitesMsg = document.getElementById('noSitesMessage');
+            
+            if (sites.length === 0) {
+                container.style.display = 'none';
+                noSitesMsg.style.display = 'block';
+                return;
+            }
+            
+            container.style.display = 'block';
+            noSitesMsg.style.display = 'none';
+            
+            container.innerHTML = sites.map(site => `
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card site-card ${site.deployment_status || 'pending'}" data-site-id="${site.id}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="card-title mb-0">${site.site_name}</h6>
+                                <span class="badge ${getIndustryClass(site.industry_type)}">${site.industry_name}</span>
+                            </div>
+                            
+                            <p class="card-text text-muted small mb-2">
+                                <i class="fas fa-globe me-1"></i> ${site.site_domain || site.site_identifier}
+                            </p>
+                            
+                            <div class="small mb-2">
+                                <div>${site.server_name} (${site.ip_address}:${site.port})</div>
+                                <div class="mt-1">
+                                    <i class="fas fa-${getDeploymentIcon(site.deployment_status)} me-1"></i>
+                                    <span class="badge ${getDeploymentClass(site.deployment_status)}">${site.deployment_status || 'pending'}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    ${site.last_deployed_at ? 'Deployed: ' + formatTime(site.last_deployed_at) : 'Never deployed'}
+                                </small>
+                                
+                                <button class="btn btn-sm btn-primary" onclick="configureSite(${site.id})">
+                                    <i class="fas fa-cogs me-1"></i>Configure
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Configure site
+        async function configureSite(siteId) {
+            try {
+                currentSiteId = siteId;
+                
+                const response = await fetch(`/api/site-configuration/sites/${siteId}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentSiteData = result.site;
+                    populateConfigurationModal();
+                    new bootstrap.Modal(document.getElementById('configModal')).show();
+                }
+            } catch (error) {
+                console.error('Error loading site configuration:', error);
+                alert('Error loading site configuration: ' + error.message);
+            }
+        }
+
+        // Populate configuration modal
+        function populateConfigurationModal() {
+            document.getElementById('configModalTitle').textContent = `Configure ${currentSiteData.site_name}`;
+            
+            // Load configurations
+            loadNudeNetConfig();
+            loadBlipConfig();
+            loadModerationRules();
+            loadUsageIntents();
+            loadBasicInfo();
+        }
+
+        // Load basic info
+        function loadBasicInfo() {
+            document.getElementById('basicConfigContent').innerHTML = `
+                <div class="config-form-section">
+                    <h6><i class="fas fa-info-circle text-primary"></i>Site Information</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr><td><strong>Name:</strong></td><td>${currentSiteData.site_name}</td></tr>
+                                <tr><td><strong>Domain:</strong></td><td>${currentSiteData.site_domain || 'Not set'}</td></tr>
+                                <tr><td><strong>Identifier:</strong></td><td>${currentSiteData.site_identifier}</td></tr>
+                                <tr><td><strong>Industry:</strong></td><td>${currentSiteData.industry_name}</td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr><td><strong>Server:</strong></td><td>${currentSiteData.server_name}</td></tr>
+                                <tr><td><strong>Status:</strong></td><td><span class="badge ${getDeploymentClass(currentSiteData.deployment_status)}">${currentSiteData.deployment_status}</span></td></tr>
+                                <tr><td><strong>Version:</strong></td><td>${currentSiteData.config_version}</td></tr>
+                                <tr><td><strong>Contact:</strong></td><td>${currentSiteData.contact_email || 'Not set'}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Load NudeNet configuration
+        function loadNudeNetConfig() {
+            const config = getEffectiveConfig('nudenet');
+            currentConfig.nudenet = config;
+            
+            // Set overall threshold
+            document.getElementById('detectionThreshold').value = config.detection_threshold || 0.6;
+            document.getElementById('detectionThresholdValue').textContent = config.detection_threshold || 0.6;
+            
+            // Populate body parts grid
+            const grid = document.getElementById('bodyPartGrid');
+            grid.innerHTML = Object.entries(BODY_PARTS).map(([key, info]) => {
+                const value = config.body_parts?.[key] || info.default;
+                return `
+                    <div class="body-part-item">
+                        <label class="form-label fw-bold">${info.label}</label>
+                        <input type="range" class="form-range body-part-slider" 
+                               data-part="${key}" min="0" max="1" step="0.1" value="${value}">
+                        <div class="d-flex justify-content-between small text-muted">
+                            <span>Never (0.0)</span>
+                            <span class="range-value body-part-value" data-part="${key}">${value}</span>
+                            <span>Always (1.0)</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Setup body part sliders
+            document.querySelectorAll('.body-part-slider').forEach(slider => {
+                slider.addEventListener('input', function() {
+                    const part = this.dataset.part;
+                    const value = this.value;
+                    document.querySelector(`[data-part="${part}"].body-part-value`).textContent = value;
+                    if (!currentConfig.nudenet.body_parts) currentConfig.nudenet.body_parts = {};
+                    currentConfig.nudenet.body_parts[part] = parseFloat(value);
+                });
+            });
+        }
+
+        // Load BLIP configuration
+        function loadBlipConfig() {
+            const config = getEffectiveConfig('blip');
+            currentConfig.blip = config;
+            
+            // Set risk multiplier
+            document.getElementById('riskMultiplier').value = config.risk_multiplier || 2;
+            document.getElementById('riskMultiplierValue').textContent = (config.risk_multiplier || 2) + 'x';
+            
+            // Set enable description
+            document.getElementById('enableDescription').checked = config.enable_description !== false;
+            
+            // Load keywords
+            const keywords = config.child_keywords || ['child', 'kid', 'minor', 'young', 'teen', 'school', 'underage'];
+            renderKeywords(keywords);
+        }
+
+        // Render keywords
+        function renderKeywords(keywords) {
+            const container = document.getElementById('childKeywords');
+            container.innerHTML = keywords.map(keyword => `
+                <span class="keyword-tag">
+                    ${keyword}
+                    <span class="remove-keyword" onclick="removeKeyword('${keyword}')">×</span>
+                </span>
+            `).join('');
+            currentConfig.blip.child_keywords = keywords;
+        }
+
+        // Add keyword
+        function addKeyword(keyword) {
+            const keywords = currentConfig.blip.child_keywords || [];
+            if (!keywords.includes(keyword)) {
+                keywords.push(keyword);
+                renderKeywords(keywords);
+            }
+        }
+
+        // Remove keyword
+        function removeKeyword(keyword) {
+            const keywords = currentConfig.blip.child_keywords || [];
+            const index = keywords.indexOf(keyword);
+            if (index > -1) {
+                keywords.splice(index, 1);
+                renderKeywords(keywords);
+            }
+        }
+
+        // Load moderation rules
+        function loadModerationRules() {
+            const config = getEffectiveConfig('rules');
+            currentConfig.rules = config;
+            
+            // Set thresholds
+            document.getElementById('autoApproveThreshold').value = config.auto_approve_threshold || 30;
+            document.getElementById('autoApproveValue').textContent = (config.auto_approve_threshold || 30) + '%';
+            
+            document.getElementById('humanReviewThreshold').value = config.require_human_review_threshold || 70;
+            document.getElementById('humanReviewValue').textContent = (config.require_human_review_threshold || 70) + '%';
+            
+            document.getElementById('autoRejectThreshold').value = config.auto_reject_threshold || 90;
+            document.getElementById('autoRejectValue').textContent = (config.auto_reject_threshold || 90) + '%';
+            
+            // Set checkboxes
+            document.getElementById('allowArtisticNudity').checked = config.allow_artistic_nudity || false;
+            document.getElementById('strictCompliance').checked = config.strict_compliance || false;
+        }
+
+        // Load usage intents
+        function loadUsageIntents() {
+            const config = getEffectiveConfig('intents');
+            currentConfig.intents = config;
+            
+            const container = document.getElementById('usageIntentsContainer');
+            container.innerHTML = Object.entries(USAGE_INTENTS).map(([key, info]) => {
+                const intentConfig = config[key] || { approval_threshold: 50, rejection_threshold: 80 };
+                return `
+                    <div class="usage-intent-card">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-${info.icon} text-primary me-2"></i>
+                            <div>
+                                <h6 class="mb-0">${info.label}</h6>
+                                <small class="text-muted">${info.description}</small>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label small">Approval Threshold</label>
+                                <input type="range" class="form-range" data-intent="${key}" data-type="approval" 
+                                       min="0" max="100" step="5" value="${intentConfig.approval_threshold}">
+                                <div class="text-center">
+                                    <span class="range-value text-success intent-approval-value" data-intent="${key}">${intentConfig.approval_threshold}%</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">Rejection Threshold</label>
+                                <input type="range" class="form-range" data-intent="${key}" data-type="rejection" 
+                                       min="0" max="100" step="5" value="${intentConfig.rejection_threshold}">
+                                <div class="text-center">
+                                    <span class="range-value text-danger intent-rejection-value" data-intent="${key}">${intentConfig.rejection_threshold}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Setup intent sliders
+            document.querySelectorAll('[data-intent]').forEach(slider => {
+                slider.addEventListener('input', function() {
+                    const intent = this.dataset.intent;
+                    const type = this.dataset.type;
+                    const value = parseInt(this.value);
+                    
+                    if (!currentConfig.intents[intent]) currentConfig.intents[intent] = {};
+                    currentConfig.intents[intent][type + '_threshold'] = value;
+                    
+                    document.querySelector(`.intent-${type}-value[data-intent="${intent}"]`).textContent = value + '%';
+                });
+            });
+        }
+
+        // Get effective configuration (template + custom overrides)
+        function getEffectiveConfig(type) {
+            const templateConfig = currentSiteData[`template_${type}_config`];
+            const customConfig = currentSiteData[`custom_${type}_config`];
+            
+            let template = typeof templateConfig === 'string' ? JSON.parse(templateConfig) : templateConfig;
+            let custom = customConfig ? (typeof customConfig === 'string' ? JSON.parse(customConfig) : customConfig) : {};
+            
+            return { ...template, ...custom };
+        }
+
+        // Save configuration
+        async function saveConfiguration() {
+            try {
+                // Collect form data
+                collectFormData();
+                
+                const configData = {
+                    custom_nudenet_config: currentConfig.nudenet,
+                    custom_blip_config: currentConfig.blip,
+                    custom_moderation_rules: currentConfig.rules,
+                    custom_usage_intents: currentConfig.intents
+                };
+                
+                const response = await fetch(`/api/site-configuration/sites/${currentSiteId}/config`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(configData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Auto-deploy configuration to AI server after saving
+                    console.log('Configuration saved to database, now deploying to AI server...');
+                    
+                    const deployResponse = await fetch(`/api/site-configuration/sites/${currentSiteId}/deploy`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            deployment_type: 'full',
+                            restart_server: false
+                        })
+                    });
+                    
+                    const deployResult = await deployResponse.json();
+                    
+                    if (deployResult.success) {
+                        alert('Configuration saved and deployed to AI server successfully!');
+                        console.log('Deployment successful:', deployResult);
+                    } else {
+                        alert(`Configuration saved to database, but deployment to AI server failed: ${deployResult.error}`);
+                        console.error('Deployment failed:', deployResult);
+                    }
+                    
+                    loadSites();
+                } else {
+                    throw new Error(result.error || 'Failed to save configuration');
+                }
+                
+            } catch (error) {
+                console.error('Error saving configuration:', error);
+                alert('Error saving configuration: ' + error.message);
+            }
+        }
+
+        // Collect form data
+        function collectFormData() {
+            // NudeNet config
+            currentConfig.nudenet.detection_threshold = parseFloat(document.getElementById('detectionThreshold').value);
+            
+            // BLIP config
+            currentConfig.blip.risk_multiplier = parseFloat(document.getElementById('riskMultiplier').value);
+            currentConfig.blip.enable_description = document.getElementById('enableDescription').checked;
+            
+            // Moderation rules
+            currentConfig.rules.auto_approve_threshold = parseInt(document.getElementById('autoApproveThreshold').value);
+            currentConfig.rules.require_human_review_threshold = parseInt(document.getElementById('humanReviewThreshold').value);
+            currentConfig.rules.auto_reject_threshold = parseInt(document.getElementById('autoRejectThreshold').value);
+            currentConfig.rules.allow_artistic_nudity = document.getElementById('allowArtisticNudity').checked;
+            currentConfig.rules.strict_compliance = document.getElementById('strictCompliance').checked;
+        }
+
+        // Deploy configuration with server restart
+        async function deployConfiguration() {
+            try {
+                // Collect form data
+                collectFormData();
+                
+                const configData = {
+                    custom_nudenet_config: currentConfig.nudenet,
+                    custom_blip_config: currentConfig.blip,
+                    custom_moderation_rules: currentConfig.rules,
+                    custom_usage_intents: currentConfig.intents
+                };
+                
+                // Save configuration
+                const response = await fetch(`/api/site-configuration/sites/${currentSiteId}/config`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(configData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Deploy configuration with restart enabled
+                    console.log('Configuration saved to database, now deploying with restart...');
+                    
+                    const deployResponse = await fetch(`/api/site-configuration/sites/${currentSiteId}/deploy`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            deployment_type: 'full',
+                            restart_server: true
+                        })
+                    });
+                    
+                    const deployResult = await deployResponse.json();
+                    
+                    if (deployResult.success) {
+                        alert('Configuration saved, deployed to AI server, and server restarted successfully!');
+                        console.log('Deployment with restart successful:', deployResult);
+                    } else {
+                        alert(`Configuration saved to database, but deployment/restart failed: ${deployResult.error}`);
+                        console.error('Deployment with restart failed:', deployResult);
+                    }
+                    
+                    loadSites();
+                } else {
+                    throw new Error(result.error || 'Failed to save configuration');
+                }
+                
+            } catch (error) {
+                console.error('Error deploying configuration:', error);
+                alert('Error deploying configuration: ' + error.message);
+            }
+        }
+
+        // Verify configuration matches between database and AI server
+        async function verifyConfiguration() {
+            if (!currentSiteId) {
+                alert('Please select a site first');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/site-configuration/sites/${currentSiteId}/verify`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const verification = result.verification;
+                    
+                    // Create detailed verification report
+                    let report = `Configuration Verification Report\n`;
+                    report += `Site: ${verification.site_name}\n`;
+                    report += `Server: ${verification.server_url}\n`;
+                    report += `Timestamp: ${new Date(verification.timestamp).toLocaleString()}\n\n`;
+                    
+                    // NudeNet verification
+                    report += `NudeNet Configuration:\n`;
+                    report += `Status: ${verification.nudenet.status}\n`;
+                    report += `Matches: ${verification.nudenet.matches ? '✅ YES' : '❌ NO'}\n`;
+                    if (verification.nudenet.differences.length > 0) {
+                        report += `Differences (${verification.nudenet.differences.length}):\n`;
+                        verification.nudenet.differences.forEach(diff => {
+                            report += `  - ${diff.path}: ${diff.type}\n`;
+                            if (diff.type === 'value_mismatch') {
+                                report += `    Expected: ${JSON.stringify(diff.expected)}\n`;
+                                report += `    Actual: ${JSON.stringify(diff.actual)}\n`;
+                            }
+                        });
+                    }
+                    
+                    report += `\nBLIP Configuration:\n`;
+                    report += `Status: ${verification.blip.status}\n`;
+                    report += `Matches: ${verification.blip.matches ? '✅ YES' : '❌ NO'}\n`;
+                    if (verification.blip.differences.length > 0) {
+                        report += `Differences (${verification.blip.differences.length}):\n`;
+                        verification.blip.differences.forEach(diff => {
+                            report += `  - ${diff.path}: ${diff.type}\n`;
+                        });
+                    }
+                    
+                    // Show report in a modal or alert
+                    alert(report);
+                    
+                    // Also log detailed results to console for debugging
+                    console.log('Detailed verification results:', verification);
+                    
+                } else {
+                    alert('Verification failed: ' + result.error);
+                }
+                
+            } catch (error) {
+                console.error('Error verifying configuration:', error);
+                alert('Error verifying configuration: ' + error.message);
+            }
+        }
+
+        // Utility functions
+        function getIndustryClass(industryType) {
+            switch (industryType) {
+                case 'adult_entertainment': return 'bg-primary';
+                case 'swingers_lifestyle': return 'bg-info';
+                case 'escort_services': return 'bg-warning';
+                default: return 'bg-secondary';
+            }
+        }
+
+        function getDeploymentIcon(status) {
+            switch (status) {
+                case 'deployed': return 'check-circle';
+                case 'pending': return 'clock';
+                case 'failed': return 'exclamation-triangle';
+                default: return 'question-circle';
+            }
+        }
+
+        function getDeploymentClass(status) {
+            switch (status) {
+                case 'deployed': return 'bg-success';
+                case 'pending': return 'bg-warning';
+                case 'failed': return 'bg-danger';
+                default: return 'bg-secondary';
+            }
+        }
+
+        function formatTime(dateString) {
+            return new Date(dateString).toLocaleString();
+        }
+
+        // Global drift status
+        let siteDriftStatus = {};
+
+        async function pullRemoteConfigs() {
+            if (!sites || sites.length === 0) {
+                alert('No sites found. Please add sites first.');
+                return;
+            }
+
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Checking...';
+            button.disabled = true;
+
+            try {
+                console.log('Pulling remote configurations for all sites...');
+                
+                // Check drift for all sites
+                const driftPromises = sites.map(site => checkSiteDrift(site.id));
+                const driftResults = await Promise.allSettled(driftPromises);
+                
+                let totalSites = sites.length;
+                let sitesWithDrift = 0;
+                let criticalDrift = 0;
+                
+                driftResults.forEach((result, index) => {
+                    if (result.status === 'fulfilled' && result.value) {
+                        const drift = result.value;
+                        siteDriftStatus[sites[index].id] = drift;
+                        
+                        if (drift.drift_detected) {
+                            sitesWithDrift++;
+                            if (drift.drift_severity === 'critical') {
+                                criticalDrift++;
+                            }
+                        }
+                    }
+                });
+
+                // Update UI with drift indicators
+                updateDriftIndicators();
+                
+                // Show summary
+                let message = `✅ Drift check complete!\n\n`;
+                message += `Sites checked: ${totalSites}\n`;
+                message += `Sites with drift: ${sitesWithDrift}\n`;
+                
+                if (criticalDrift > 0) {
+                    message += `🚨 Critical drift detected: ${criticalDrift} sites\n`;
+                    message += `\nCritical drift may affect child protection!`;
+                }
+                
+                alert(message);
+                
+            } catch (error) {
+                console.error('Error pulling remote configs:', error);
+                alert('Error checking drift: ' + error.message);
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+
+        async function checkSiteDrift(siteId) {
+            try {
+                const response = await fetch(`/api/site-configuration/sites/${siteId}/pull-remote`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log(`Drift check for site ${siteId}:`, result.drift_severity);
+                    return result;
+                } else {
+                    console.error(`Drift check failed for site ${siteId}:`, result.error);
+                    return null;
+                }
+            } catch (error) {
+                console.error(`Error checking drift for site ${siteId}:`, error);
+                return null;
+            }
+        }
+
+        function updateDriftIndicators() {
+            sites.forEach(site => {
+                const siteCard = document.querySelector(`[data-site-id="${site.id}"]`);
+                if (siteCard) {
+                    const drift = siteDriftStatus[site.id];
+                    updateSiteCardWithDrift(siteCard, drift);
+                }
+            });
+        }
+
+        function updateSiteCardWithDrift(siteCard, drift) {
+            // Remove existing drift indicators
+            const existingIndicator = siteCard.querySelector('.drift-indicator');
+            if (existingIndicator) {
+                existingIndicator.remove();
+            }
+
+            if (!drift || !drift.drift_detected) {
+                return; // No drift, no indicator needed
+            }
+
+            // Get site ID from the card's data attribute
+            const siteId = siteCard.getAttribute('data-site-id');
+
+            // Add drift indicator
+            const cardBody = siteCard.querySelector('.card-body');
+            const driftIndicator = document.createElement('div');
+            driftIndicator.className = `drift-indicator alert alert-${getDriftAlertClass(drift.drift_severity)} p-2 mt-2 mb-2`;
+            
+            const icon = getDriftIcon(drift.drift_severity);
+            const message = getDriftMessage(drift.drift_severity);
+            
+            driftIndicator.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <small><i class="fas ${icon} me-1"></i> ${message}</small>
+                    <div>
+                        <button class="btn btn-sm btn-outline-info me-1" onclick="showDriftDetails(${siteId})">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                        <button class="btn btn-sm btn-warning" onclick="autoSync(${siteId})">
+                            <i class="fas fa-sync"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            cardBody.insertBefore(driftIndicator, cardBody.lastElementChild);
+        }
+
+        function getDriftAlertClass(severity) {
+            switch (severity) {
+                case 'critical': return 'danger';
+                case 'high': return 'warning';
+                case 'medium': return 'info';
+                case 'low': return 'light';
+                default: return 'success';
+            }
+        }
+
+        function getDriftIcon(severity) {
+            switch (severity) {
+                case 'critical': return 'fa-exclamation-triangle';
+                case 'high': return 'fa-exclamation';
+                case 'medium': return 'fa-info-circle';
+                case 'low': return 'fa-check-circle';
+                default: return 'fa-check';
+            }
+        }
+
+        function getDriftMessage(severity) {
+            switch (severity) {
+                case 'critical': return 'CRITICAL: Child protection drift detected!';
+                case 'high': return 'High drift detected';
+                case 'medium': return 'Medium drift (BLIP POST endpoint pending)';
+                case 'low': return 'Low drift detected';
+                default: return 'No drift detected';
+            }
+        }
+
+        async function showDriftDetails(siteId) {
+            const drift = siteDriftStatus[siteId];
+            if (!drift) {
+                alert('No drift data available for this site.');
+                return;
+            }
+
+            let details = `Configuration Drift Details\n`;
+            details += `Site: ${drift.site_name}\n`;
+            details += `Server: ${drift.server_name}\n`;
+            details += `Severity: ${drift.drift_severity.toUpperCase()}\n\n`;
+
+            // NudeNet drift details
+            if (drift.drift_analysis.nudenet.differences.length > 0) {
+                details += `NudeNet Differences (${drift.drift_analysis.nudenet.differences.length}):\n`;
+                drift.drift_analysis.nudenet.differences.forEach(diff => {
+                    details += `  • ${diff.path}: ${diff.type}\n`;
+                });
+                details += `\n`;
+            }
+
+            // BLIP drift details
+            if (drift.drift_analysis.blip.differences.length > 0) {
+                details += `BLIP Differences (${drift.drift_analysis.blip.differences.length}):\n`;
+                drift.drift_analysis.blip.differences.forEach(diff => {
+                    details += `  • ${diff.path}: ${diff.type}\n`;
+                });
+            }
+
+            alert(details);
+        }
+
+        async function autoSync(siteId) {
+            if (!confirm('Sync database configuration to AI server? This will overwrite server settings.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/site-configuration/sites/${siteId}/auto-sync`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ direction: 'database_to_server' })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    let message = '✅ Configuration synced successfully!\n\n';
+                    
+                    // Check what was actually synced
+                    const deployResult = result.deployment_result;
+                    if (deployResult && deployResult.deployment_results) {
+                        const nudenet = deployResult.deployment_results.nudenet;
+                        const blip = deployResult.deployment_results.blip;
+                        
+                        if (nudenet && nudenet.ok) {
+                            message += '✅ NudeNet: Updated successfully\n';
+                        }
+                        if (blip && blip.ok) {
+                            message += '✅ BLIP: Updated successfully\n';
+                        } else {
+                            message += '⚠️ BLIP: POST endpoint not yet implemented\n';
+                            message += '   (Child protection keywords controlled via server files)\n';
+                        }
+                    }
+                    
+                    alert(message);
+                    
+                    // Re-check drift after sync
+                    const updatedDrift = await checkSiteDrift(siteId);
+                    if (updatedDrift) {
+                        siteDriftStatus[siteId] = updatedDrift;
+                        updateDriftIndicators();
+                    }
+                } else {
+                    alert('❌ Sync failed: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error syncing configuration:', error);
+                alert('❌ Sync error: ' + error.message);
+            }
+        }
+
+        // Server Health Management
+        let serverHealthData = {};
+        let healthCheckInterval = null;
+
+        async function refreshServerHealth() {
+            const button = event?.target || document.querySelector('[onclick="refreshServerHealth()"]');
+            const originalHTML = button?.innerHTML;
+            
+            if (button) {
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                button.disabled = true;
+            }
+
+            try {
+                console.log('🔍 Refreshing server health status...');
+                
+                const response = await fetch('/api/site-configuration/servers/health');
+                const result = await response.json();
+
+                if (result.success) {
+                    serverHealthData = result;
+                    updateHealthDashboard(result);
+                    console.log('✅ Server health updated:', result.summary);
+                } else {
+                    console.error('❌ Health check failed:', result.error);
+                    showHealthError('Failed to check server health: ' + result.error);
+                }
+
+            } catch (error) {
+                console.error('❌ Health check error:', error);
+                showHealthError('Error checking server health: ' + error.message);
+            } finally {
+                if (button) {
+                    button.innerHTML = originalHTML;
+                    button.disabled = false;
+                }
+            }
+        }
+
+        function updateHealthDashboard(healthData) {
+            // Update summary badge
+            const summaryBadge = document.getElementById('health-summary');
+            const summary = healthData.summary;
+            
+            summaryBadge.className = `badge bg-${getHealthBadgeClass(summary.overall_status)}`;
+            summaryBadge.textContent = `${summary.online_servers}/${summary.total_servers} Online (${summary.uptime_percentage}%)`;
+
+            // Update server health cards
+            const container = document.getElementById('server-health-container');
+            
+            if (healthData.servers.length === 0) {
+                container.innerHTML = '<div class="col-12 text-center text-muted">No AI servers configured</div>';
+                return;
+            }
+
+            container.innerHTML = healthData.servers.map(server => `
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card server-health-card border-0 shadow-sm">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="card-title mb-0">
+                                    <span class="status-indicator status-${server.health.online ? 'online' : 'offline'}"></span>
+                                    ${server.name}
+                                </h6>
+                                <span class="badge bg-${getStatusBadgeClass(server.health.status)}">${server.health.status}</span>
+                            </div>
+                            
+                            <p class="text-muted small mb-2">${server.ip_address}:${server.port}</p>
+                            
+                            ${server.health.online ? `
+                                <div class="mb-2">
+                                    <small class="response-time performance-${server.health.performance}">
+                                        <i class="fas fa-tachometer-alt me-1"></i>
+                                        ${server.health.response_time}ms (${server.health.performance})
+                                    </small>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-${server.health.endpoints?.nudenet ? 'success' : 'danger'}">
+                                        <i class="fas ${server.health.endpoints?.nudenet ? 'fa-check' : 'fa-times'} me-1"></i>
+                                        NudeNet
+                                    </small>
+                                    <small class="text-${server.health.endpoints?.blip ? 'success' : 'warning'}">
+                                        <i class="fas ${server.health.endpoints?.blip ? 'fa-check' : 'fa-exclamation-triangle'} me-1"></i>
+                                        BLIP
+                                    </small>
+                                </div>
+                            ` : `
+                                <div class="text-danger small">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    ${server.health.error || 'Server offline'}
+                                </div>
+                            `}
+                            
+                            <div class="text-muted small mt-2">
+                                Last checked: ${formatTime(server.health.last_checked)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getHealthBadgeClass(status) {
+            switch (status) {
+                case 'healthy': return 'success';
+                case 'warning': return 'warning';
+                case 'degraded': return 'warning';
+                case 'critical': return 'danger';
+                default: return 'secondary';
+            }
+        }
+
+        function getStatusBadgeClass(status) {
+            switch (status) {
+                case 'healthy': return 'success';
+                case 'unhealthy': return 'warning';
+                case 'offline': return 'danger';
+                case 'error': return 'danger';
+                default: return 'secondary';
+            }
+        }
+
+        function showHealthError(message) {
+            const container = document.getElementById('server-health-container');
+            container.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        ${message}
+                    </div>
+                </div>
+            `;
+        }
+
+        function startHealthMonitoring() {
+            // Initial health check
+            refreshServerHealth();
+            
+            // Set up automatic refresh every 30 seconds
+            healthCheckInterval = setInterval(refreshServerHealth, 30000);
+        }
+
+        function stopHealthMonitoring() {
+            if (healthCheckInterval) {
+                clearInterval(healthCheckInterval);
+                healthCheckInterval = null;
+            }
+        }
+
+        // Initialize page with health monitoring
+        loadSites();
+        startHealthMonitoring();
+    </script>
+</body>
+</html>

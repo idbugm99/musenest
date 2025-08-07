@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Flow Test</title>
+    <style>
+        body { font-family: monospace; margin: 20px; background: #f5f5f5; }
+        .section { background: white; margin: 10px 0; padding: 15px; border: 1px solid #ddd; }
+        .section h3 { margin-top: 0; color: #333; }
+        pre { background: #f8f8f8; padding: 10px; border: 1px solid #eee; overflow-x: auto; font-size: 12px; }
+        .status { padding: 5px 10px; margin: 5px 0; border-radius: 3px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 8px 15px; background: #007bff; color: white; border: none; cursor: pointer; }
+        input[type="file"] { margin: 10px 0; }
+        .step { border-left: 4px solid #007bff; padding-left: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Complete Database Flow Test</h1>
+    
+    <div class="section">
+        <h3>Step 1: Upload Image</h3>
+        <input type="file" id="imageFile" accept="image/*">
+        <button onclick="startTest()">Start Complete Test</button>
+        <div id="uploadStatus"></div>
+    </div>
+
+    <div class="section">
+        <h3>Step 2: AI Analysis Response</h3>
+        <div id="aiResponse"></div>
+    </div>
+
+    <div class="section">
+        <h3>Step 3: Database Insert</h3>
+        <div id="dbInsert"></div>
+    </div>
+
+    <div class="section">
+        <h3>Step 4: Database Retrieval</h3>
+        <div id="dbRetrieval"></div>
+    </div>
+
+    <div class="section">
+        <h3>Step 5: Media Review Queue</h3>
+        <div id="queueCheck"></div>
+    </div>
+
+    <div class="section">
+        <h3>Manual BLIP Analysis Request</h3>
+        <p>Request BLIP analysis for a specific batch_id from the webhook server:</p>
+        <input type="text" id="batchIdInput" placeholder="Enter batch_id (e.g. batch_1753850631_0716fe24)" style="width: 300px; padding: 5px;">
+        <button onclick="requestBlipAnalysis()">Request BLIP Analysis</button>
+        <div id="blipRequest"></div>
+    </div>
+
+    <script>
+        let testResults = {};
+
+        async function startTest() {
+            const fileInput = document.getElementById('imageFile');
+            const file = fileInput.files[0];
+            
+            console.log('🔍 File validation:', {
+                fileInput: !!fileInput,
+                filesLength: fileInput.files.length,
+                file: !!file,
+                fileName: file?.name,
+                fileSize: file?.size
+            });
+            
+            if (!file) {
+                alert('Please select a file first');
+                return;
+            }
+            
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                return;
+            }
+            
+            if (file.size === 0) {
+                alert('Selected file is empty');
+                return;
+            }
+
+            // Clear previous results
+            document.getElementById('uploadStatus').innerHTML = '';
+            document.getElementById('aiResponse').innerHTML = '';
+            document.getElementById('dbInsert').innerHTML = '';
+            document.getElementById('dbRetrieval').innerHTML = '';
+            document.getElementById('queueCheck').innerHTML = '';
+
+            await step1_upload(file);
+        }
+
+        async function step1_upload(file) {
+            const statusDiv = document.getElementById('uploadStatus');
+            statusDiv.innerHTML = '<div class="info">Uploading and processing...</div>';
+
+            try {
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('model_id', '1');
+                formData.append('model_slug', 'escortexample');
+                formData.append('usage_intent', 'public_site');
+                formData.append('context_type', 'public_gallery');
+
+                const response = await fetch('/api/enhanced-content-moderation/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                testResults.uploadResponse = result;
+
+                if (response.ok && result.success) {
+                    statusDiv.innerHTML = `
+                        <div class="success">✅ Upload successful!</div>
+                        <div class="info">Content Moderation ID: ${result.data.content_moderation_id}</div>
+                        <div class="info">Nudity Score: ${result.data.nudity_score}</div>
+                        <div class="info">Risk Score: ${result.data.final_risk_score}</div>
+                        <div class="info">Risk Level: ${result.data.risk_level}</div>
+                    `;
+                    testResults.contentModerationId = result.data.content_moderation_id;
+                    await step2_showAIResponse(result);
+                } else {
+                    statusDiv.innerHTML = `<div class="error">❌ Upload failed: ${result.error}</div>`;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Upload error: ${error.message}</div>`;
+            }
+        }
+
+        async function step2_showAIResponse(result) {
+            const aiDiv = document.getElementById('aiResponse');
+            
+            console.log('🔍 DEBUG: Full AI response:', result);
+            
+            // Show what we actually received
+            aiDiv.innerHTML = `
+                <div class="success">✅ AI Analysis Complete</div>
+                <h4>Analysis Type:</h4>
+                <pre>${result.data.analysis_version || 'unknown'}</pre>
+                <h4>Face Analysis:</h4>
+                <pre>${JSON.stringify(result.data.face_analysis || result.data.pose_analysis, null, 2)}</pre>
+                <h4>Risk Assessment:</h4>
+                <pre>${JSON.stringify(result.data.combined_assessment || {
+                    final_risk_score: result.data.final_risk_score,
+                    risk_level: result.data.risk_level,
+                    nudity_score: result.data.nudity_score
+                }, null, 2)}</pre>
+                <h4>Batch ID (if available):</h4>
+                <pre>${result.data.batch_id || 'No batch_id - using fallback analysis'}</pre>
+                <h4>Complete Response:</h4>
+                <pre>${JSON.stringify(result.data, null, 2)}</pre>
+            `;
+
+            await step3_checkDatabase();
+        }
+
+        async function step3_checkDatabase() {
+            const dbDiv = document.getElementById('dbInsert');
+            dbDiv.innerHTML = '<div class="info">Checking database storage...</div>';
+
+            try {
+                const response = await fetch('/api/test/database-check', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        content_moderation_id: testResults.contentModerationId 
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    dbDiv.innerHTML = `
+                        <div class="success">✅ Database storage verified</div>
+                        <h4>SQL Query Used:</h4>
+                        <pre>${result.sql_query}</pre>
+                        <h4>Database Record:</h4>
+                        <pre>${JSON.stringify(result.data, null, 2)}</pre>
+                    `;
+                    await step4_retrieveFromDB();
+                } else {
+                    dbDiv.innerHTML = `<div class="error">❌ Database check failed: ${result.error}</div>`;
+                }
+            } catch (error) {
+                dbDiv.innerHTML = `<div class="error">❌ Database check error: ${error.message}</div>`;
+            }
+        }
+
+        async function step4_retrieveFromDB() {
+            const retrievalDiv = document.getElementById('dbRetrieval');
+            retrievalDiv.innerHTML = '<div class="info">Retrieving from database...</div>';
+
+            try {
+                const response = await fetch('/api/test/database-retrieve', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        content_moderation_id: testResults.contentModerationId 
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    retrievalDiv.innerHTML = `
+                        <div class="success">✅ Database retrieval successful</div>
+                        <h4>Retrieval SQL Query:</h4>
+                        <pre>${result.sql_query}</pre>
+                        <h4>Retrieved Data:</h4>
+                        <pre>${JSON.stringify(result.data, null, 2)}</pre>
+                        <h4>Pose Analysis from DB:</h4>
+                        <pre>${JSON.stringify(result.data.pose_analysis_parsed, null, 2)}</pre>
+                    `;
+                    await step5_checkQueue();
+                } else {
+                    retrievalDiv.innerHTML = `<div class="error">❌ Database retrieval failed: ${result.error}</div>`;
+                }
+            } catch (error) {
+                retrievalDiv.innerHTML = `<div class="error">❌ Database retrieval error: ${error.message}</div>`;
+            }
+        }
+
+        async function step5_checkQueue() {
+            const queueDiv = document.getElementById('queueCheck');
+            queueDiv.innerHTML = '<div class="info">Checking media review queue...</div>';
+
+            try {
+                const response = await fetch('/api/test/queue-check', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        content_moderation_id: testResults.contentModerationId 
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    queueDiv.innerHTML = `
+                        <div class="success">✅ Media review queue verified</div>
+                        <h4>Queue SQL Query:</h4>
+                        <pre>${result.sql_query}</pre>
+                        <h4>Queue Record:</h4>
+                        <pre>${JSON.stringify(result.data, null, 2)}</pre>
+                        <div class="success">🎉 Complete flow test successful!</div>
+                    `;
+                } else {
+                    queueDiv.innerHTML = `<div class="error">❌ Queue check failed: ${result.error}</div>`;
+                }
+            } catch (error) {
+                queueDiv.innerHTML = `<div class="error">❌ Queue check error: ${error.message}</div>`;
+            }
+        }
+
+        async function requestBlipAnalysis() {
+            const batchIdInput = document.getElementById('batchIdInput');
+            const blipDiv = document.getElementById('blipRequest');
+            const batchId = batchIdInput.value.trim();
+            
+            if (!batchId) {
+                alert('Please enter a batch_id');
+                return;
+            }
+            
+            blipDiv.innerHTML = '<div class="info">Requesting BLIP analysis...</div>';
+            
+            try {
+                const response = await fetch('/api/test/request-blip', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ batch_id: batchId })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    blipDiv.innerHTML = `
+                        <div class="success">✅ BLIP analysis request sent</div>
+                        <h4>Request Details:</h4>
+                        <pre>${JSON.stringify(result.request_details, null, 2)}</pre>
+                        <h4>Server Response:</h4>
+                        <pre>${JSON.stringify(result.server_response, null, 2)}</pre>
+                        <div class="info">Check the server logs for processing updates</div>
+                    `;
+                } else {
+                    blipDiv.innerHTML = `<div class="error">❌ BLIP request failed: ${result.error}</div>`;
+                }
+            } catch (error) {
+                blipDiv.innerHTML = `<div class="error">❌ BLIP request error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

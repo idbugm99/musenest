@@ -1,6 +1,6 @@
 /**
- * BLIP Webhook Endpoint
- * Receives BLIP analysis results from AI moderation server
+ * BLIP Analysis Webhook Handler for Child Detection Updates
+ * Receives final child_detected boolean from AI server after BLIP processing
  */
 
 const express = require('express');
@@ -15,269 +15,169 @@ try {
 }
 
 /**
- * Receive BLIP analysis results webhook
  * POST /api/blip/webhook
+ * Receives updates from AI server when BLIP processing completes
  */
 router.post('/webhook', async (req, res) => {
+    
     try {
-        console.log('📨 BLIP webhook received:', JSON.stringify(req.body, null, 2));
-        
-        // Validate request
-        if (!req.is('json')) {
+        const {
+            batch_id,
+            timestamp,
+            status,
+            child_detected,
+            image_description,
+            combined_assessment
+        } = req.body;
+
+        // Validate required fields
+        if (!batch_id) {
             return res.status(400).json({
-                error: 'Content-Type must be application/json'
+                success: false,
+                error: 'batch_id is required'
             });
         }
 
-        const data = req.body;
-        const requiredFields = ['batch_id'];
+        // Find the content moderation record by batch_id
+        const findQuery = `
+            SELECT id, child_detected, moderation_status
+            FROM content_moderation 
+            WHERE batch_id = ? OR id = ?
+            LIMIT 1
+        `;
+        
+        const [records] = await db.execute(findQuery, [batch_id, batch_id]);
+        
+        if (records.length === 0) {
+            console.warn(`⚠️ No content moderation record found for batch_id: ${batch_id}`);
+            return res.status(404).json({
+                success: false,
+                error: 'Content moderation record not found',
+                batch_id: batch_id
+            });
+        }
 
-        for (const field of requiredFields) {
-            if (!data[field]) {
-                return res.status(400).json({
-                    error: `Missing required field: ${field}`
-                });
+        const record = records[0];
+
+        // Prepare update data
+        const updates = {
+            child_detected: child_detected === true ? 1 : 0
+        };
+
+        // Add description data if provided
+        if (image_description && image_description.description) {
+            updates.description_text = image_description.description;
+        }
+
+        // Add assessment data if provided
+        if (combined_assessment) {
+            if (combined_assessment.final_risk_score) {
+                updates.final_risk_score = combined_assessment.final_risk_score;
+            }
+            if (combined_assessment.risk_level) {
+                updates.risk_level = combined_assessment.risk_level;
             }
         }
 
-        const batchId = data.batch_id;
-        const imageDescription = data.image_description || {};
-        const timestamp = data.timestamp;
+        // Build dynamic update query
+        const updateFields = Object.keys(updates).map(field => `${field} = ?`).join(', ');
+        const updateValues = Object.values(updates);
+        updateValues.push(record.id); // Add ID for WHERE clause
 
-        console.log(`📨 Processing BLIP webhook for batch_id: ${batchId}`);
+        const updateQuery = `
+            UPDATE content_moderation 
+            SET ${updateFields}
+            WHERE id = ?
+        `;
 
-        // Check for child-related content in BLIP data
-        const description = imageDescription.description || '';
-        const tags = imageDescription.tags || [];
-        
-        const childKeywords = ['child', 'children', 'kid', 'kids', 'baby', 'infant', 'toddler', 'minor', 'young', 'school', 'girl', 'boy', 'little girl', 'little boy', 'small child'];
-        const familyKeywords = ['family', 'parent', 'mother', 'father', 'mom', 'dad'];
-        
-        const descriptionLower = description.toLowerCase();
-        const allTags = tags.map(tag => tag.toLowerCase());
-        
-        const hasChildContent = childKeywords.some(keyword => 
-            descriptionLower.includes(keyword) || allTags.includes(keyword)
-        );
-        
-        const hasFamilyContent = familyKeywords.some(keyword => 
-            descriptionLower.includes(keyword) || allTags.includes(keyword)
-        );
-        
-        console.log(`🔍 Description: "${descriptionLower}"`);
-        console.log(`🔍 Tags: ${JSON.stringify(allTags)}`);
-        console.log(`🔍 Child keywords checked: ${JSON.stringify(childKeywords)}`);
-        console.log(`🔍 Child content detection: ${hasChildContent}`);
-        console.log(`👨‍👩‍👧‍👦 Family content detection: ${hasFamilyContent}`);
-        
-        // Debug individual keyword matches
-        childKeywords.forEach(keyword => {
-            if (descriptionLower.includes(keyword)) {
-                console.log(`✅ Found child keyword: "${keyword}" in description`);
-            }
-        });
-        
-        // Determine new moderation status based on BLIP analysis
-        let newModerationStatus = null;
-        let newRiskLevel = null;
-        let newFinalRiskScore = null;
-        let statusChangeReason = null;
-        
-        if (hasChildContent) {
-            newModerationStatus = 'rejected';
-            newRiskLevel = 'high';
-            newFinalRiskScore = 100;
-            statusChangeReason = 'BLIP_CHILD_CONTENT_DETECTED';
-            console.log('🚨 CHILD CONTENT DETECTED - Setting status to REJECTED');
-        } else if (hasFamilyContent) {
-            newModerationStatus = 'flagged';
-            newRiskLevel = 'high';
-            statusChangeReason = 'BLIP_FAMILY_CONTENT_DETECTED';
-            console.log('⚠️ FAMILY CONTENT DETECTED - Setting status to FLAGGED for human review');
-        }
-        
-        // Update content_moderation record with BLIP data and potentially new status
-        let updateQuery, values;
-        
-        if (newModerationStatus) {
-            updateQuery = `
-                UPDATE content_moderation 
-                SET 
-                    image_description = ?,
-                    description_text = ?,
-                    description_tags = ?,
-                    moderation_status = ?,
-                    risk_level = ?,
-                    final_risk_score = COALESCE(?, final_risk_score),
-                    human_review_required = ?,
-                    auto_rejected = ?,
-                    rejection_reason = ?,
-                    updated_at = CURRENT_TIMESTAMP
-                WHERE JSON_EXTRACT(risk_reasoning, '$') LIKE ?
+        await db.execute(updateQuery, updateValues);
+
+        // If child detected, update priority and queue type
+        if (child_detected === true) {
+            
+            // Check if record exists in media_review_queue
+            const queueCheckQuery = `
+                SELECT id FROM media_review_queue 
+                WHERE content_moderation_id = ?
             `;
+            const [queueRecords] = await db.execute(queueCheckQuery, [record.id]);
             
-            values = [
-                JSON.stringify(imageDescription),
-                imageDescription.description || '',
-                JSON.stringify(imageDescription.tags || []),
-                newModerationStatus,
-                newRiskLevel,
-                newFinalRiskScore,
-                true, // human_review_required
-                newModerationStatus === 'rejected' ? true : false,
-                statusChangeReason,
-                `%batch_id_${batchId}%`
-            ];
-        } else {
-            updateQuery = `
-                UPDATE content_moderation 
-                SET 
-                    image_description = ?,
-                    description_text = ?,
-                    description_tags = ?,
-                    updated_at = CURRENT_TIMESTAMP
-                WHERE JSON_EXTRACT(risk_reasoning, '$') LIKE ?
-            `;
-            
-            values = [
-                JSON.stringify(imageDescription),
-                imageDescription.description || '',
-                JSON.stringify(imageDescription.tags || []),
-                `%batch_id_${batchId}%`
-            ];
-        }
-
-        console.log('📝 Updating content_moderation with BLIP data...');
-        const result = await db.query(updateQuery, values);
-
-        if (result.affectedRows > 0) {
-            console.log(`✅ Updated ${result.affectedRows} content_moderation record(s) with BLIP data`);
-            
-            // Log the BLIP data for debugging
-            console.log(`📝 BLIP Description: "${imageDescription.description}"`);
-            console.log(`🏷️ BLIP Tags: ${JSON.stringify(imageDescription.tags)}`);
-            
-            if (newModerationStatus) {
-                console.log(`🔄 Moderation status changed to: ${newModerationStatus} (${statusChangeReason})`);
+            if (queueRecords.length > 0) {
+                // Update existing queue record
+                const queueUpdateQuery = `
+                    UPDATE media_review_queue 
+                    SET priority = 'critical',
+                        queue_type = 'child_content_review',
+                        child_detected = 1,
+                        updated_at = NOW()
+                    WHERE content_moderation_id = ?
+                `;
+                await db.execute(queueUpdateQuery, [record.id]);
+            } else {
+                // Insert new queue record
+                const queueInsertQuery = `
+                    INSERT INTO media_review_queue 
+                    (content_moderation_id, priority, queue_type, child_detected, created_at)
+                    VALUES (?, 'critical', 'child_content_review', 1, NOW())
+                `;
+                await db.execute(queueInsertQuery, [record.id]);
             }
-            
-        } else {
-            console.log(`⚠️ No content_moderation records found for batch_id: ${batchId}`);
+
+            // TODO: Add notification system for critical child content
+            // notifyModerators(record.id, 'CHILD_CONTENT_DETECTED');
         }
 
+        // Log successful processing for audit purposes
+        console.log(`✅ BLIP webhook processed: batch_id=${batch_id}, child_detected=${child_detected}, content_id=${record.id}`);
+
+        // Send success response
         res.json({
-            status: 'received',
-            batch_id: batchId,
-            records_updated: result.affectedRows,
-            message: 'BLIP data processed successfully'
+            success: true,
+            message: 'Child detection status updated successfully',
+            data: {
+                content_moderation_id: record.id,
+                batch_id: batch_id,
+                child_detected: child_detected,
+                previous_value: record.child_detected,
+                updated_fields: Object.keys(updates)
+            }
         });
 
     } catch (error) {
-        console.error('❌ BLIP webhook error:', error);
+        console.error('❌ BLIP Webhook processing error:', error);
         res.status(500).json({
-            error: 'Internal server error',
-            message: error.message
+            success: false,
+            error: error.message,
+            timestamp: new Date().toISOString()
         });
     }
 });
 
 /**
- * Get BLIP data for a specific batch_id (manual retrieval)
- * GET /api/blip/:batch_id
+ * GET /api/blip/test
+ * Test endpoint to verify webhook is working
  */
-router.get('/:batch_id', async (req, res) => {
-    try {
-        const batchId = req.params.batch_id;
-        
-        console.log(`🔍 Manual BLIP retrieval requested for batch_id: ${batchId}`);
+router.get('/test', (req, res) => {
+    res.json({
+        success: true,
+        message: 'BLIP webhook endpoint is working',
+        timestamp: new Date().toISOString(),
+        endpoint: '/api/blip-webhook'
+    });
+});
 
-        // Try to get from database first
-        const dbQuery = `
-            SELECT image_description, description_text, description_tags, updated_at
-            FROM content_moderation 
-            WHERE JSON_EXTRACT(risk_reasoning, '$') LIKE ?
-            LIMIT 1
-        `;
-
-        const dbResult = await db.query(dbQuery, [`%batch_id_${batchId}%`]);
-
-        if (dbResult.length > 0) {
-            const record = dbResult[0];
-            return res.json({
-                success: true,
-                batch_id: batchId,
-                source: 'database',
-                image_description: JSON.parse(record.image_description || '{}'),
-                description_text: record.description_text,
-                description_tags: JSON.parse(record.description_tags || '[]'),
-                updated_at: record.updated_at
-            });
-        }
-
-        // If not in database, try to fetch from AI server
-        const http = require('http');
-        
-        const options = {
-            hostname: '18.221.22.72',
-            port: 5000,
-            path: `/blip/${batchId}`,
-            method: 'GET',
-            timeout: 5000
-        };
-
-        const aiRequest = http.request(options, (aiResponse) => {
-            let data = '';
-            
-            aiResponse.on('data', (chunk) => {
-                data += chunk;
-            });
-            
-            aiResponse.on('end', () => {
-                try {
-                    const result = JSON.parse(data);
-                    
-                    if (aiResponse.statusCode === 200 && result.success) {
-                        res.json({
-                            success: true,
-                            batch_id: batchId,
-                            source: 'ai_server',
-                            ...result
-                        });
-                    } else {
-                        res.status(404).json({
-                            success: false,
-                            batch_id: batchId,
-                            error: result.error || 'BLIP data not found'
-                        });
-                    }
-                } catch (parseError) {
-                    res.status(500).json({
-                        success: false,
-                        batch_id: batchId,
-                        error: 'Failed to parse AI server response'
-                    });
-                }
-            });
-        });
-
-        aiRequest.on('error', (error) => {
-            console.error(`❌ AI server request failed: ${error.message}`);
-            res.status(503).json({
-                success: false,
-                batch_id: batchId,
-                error: 'AI server unavailable'
-            });
-        });
-
-        aiRequest.end();
-
-    } catch (error) {
-        console.error('❌ BLIP retrieval error:', error);
-        res.status(500).json({
-            success: false,
-            error: error.message
-        });
-    }
+/**
+ * Catch-all route for unmatched requests
+ */
+router.all('*', (req, res) => {
+    res.status(404).json({
+        error: 'Not Found',
+        message: `The requested resource ${req.method} ${req.originalUrl} could not be found.`,
+        available_endpoints: [
+            'POST /api/blip/webhook',
+            'GET /api/blip/test'
+        ]
+    });
 });
 
 module.exports = router;

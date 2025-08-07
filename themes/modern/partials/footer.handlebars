@@ -1,0 +1,96 @@
+<footer class="bg-gray-50 border-t border-modern-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="modern-grid modern-grid-4">
+            <!-- Brand Section -->
+            <div class="col-span-2">
+                <h3 class="modern-brand text-2xl mb-4">
+                    {{siteName}}
+                </h3>
+                <p class="text-modern-muted mb-6 leading-relaxed">
+                    {{#if tagline}}
+                    {{tagline}}
+                    {{else}}
+                    Modern, professional services delivered with contemporary style and attention to detail.
+                    {{/if}}
+                </p>
+                {{#if socialLinks}}
+                <div class="flex space-x-3">
+                    {{#each socialLinks}}
+                    <a href="{{this.url}}" 
+                       class="w-10 h-10 bg-modern-primary rounded-lg flex items-center justify-center text-white hover:bg-modern-secondary transition-colors transform hover:scale-105">
+                        <i class="fab fa-{{this.icon}}"></i>
+                    </a>
+                    {{/each}}
+                </div>
+                {{/if}}
+            </div>
+            
+            <!-- Quick Links -->
+            <div>
+                <h4 class="modern-heading text-lg mb-4 text-modern-text">Navigation</h4>
+                <ul class="space-y-2">
+                    {{#each navigation}}
+                    <li>
+                        <a href="{{this.url}}" 
+                           class="text-modern-muted hover:text-modern-primary transition-colors duration-200 flex items-center group">
+                            <i class="fas fa-chevron-right mr-2 text-xs group-hover:translate-x-1 transition-transform"></i>
+                            {{this.name}}
+                        </a>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+            
+            <!-- Contact Info -->
+            <div>
+                <h4 class="modern-heading text-lg mb-4 text-modern-text">Contact</h4>
+                <ul class="space-y-3">
+                    {{#if contactEmail}}
+                    <li class="flex items-start">
+                        <div class="w-5 h-5 bg-modern-primary rounded-full flex items-center justify-center mr-3 mt-0.5">
+                            <i class="fas fa-envelope text-white text-xs"></i>
+                        </div>
+                        <a href="mailto:{{contactEmail}}" 
+                           class="text-modern-muted hover:text-modern-primary transition-colors duration-200 modern-mono text-sm">
+                            {{contactEmail}}
+                        </a>
+                    </li>
+                    {{/if}}
+                    {{#if contactPhone}}
+                    <li class="flex items-start">
+                        <div class="w-5 h-5 bg-modern-primary rounded-full flex items-center justify-center mr-3 mt-0.5">
+                            <i class="fas fa-phone text-white text-xs"></i>
+                        </div>
+                        <a href="tel:{{contactPhone}}" 
+                           class="text-modern-muted hover:text-modern-primary transition-colors duration-200 modern-mono text-sm">
+                            {{contactPhone}}
+                        </a>
+                    </li>
+                    {{/if}}
+                    {{#if location}}
+                    <li class="flex items-start">
+                        <div class="w-5 h-5 bg-modern-primary rounded-full flex items-center justify-center mr-3 mt-0.5">
+                            <i class="fas fa-map-marker-alt text-white text-xs"></i>
+                        </div>
+                        <span class="text-modern-muted text-sm">{{location}}</span>
+                    </li>
+                    {{/if}}
+                </ul>
+            </div>
+        </div>
+        
+        <div class="modern-divider"></div>
+        
+        <!-- Bottom Bar -->
+        <div class="flex flex-col md:flex-row justify-between items-center text-sm">
+            <p class="text-modern-muted">
+                © {{currentYear}} {{siteName}}. All rights reserved. | Privacy & Professional Service
+            </p>
+            <div class="flex items-center space-x-2 mt-4 md:mt-0">
+                <span class="text-modern-muted">Powered by</span>
+                <span class="modern-brand text-sm">MuseNest</span>
+                <span class="modern-badge">v2.0</span>
+            </div>
+        </div>
+    </div>
+</footer>

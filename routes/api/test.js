@@ -154,7 +154,7 @@ router.post('/queue-check', async (req, res) => {
                 id, content_moderation_id, model_id, model_name, image_path,
                 nudity_score, detected_parts, part_locations, 
                 final_risk_score, risk_level,
-                pose_category, review_status, priority, queue_type, flagged_at, created_at
+                review_status, priority, queue_type, flagged_at, created_at
             FROM media_review_queue 
             WHERE content_moderation_id = ?
             ORDER BY created_at DESC

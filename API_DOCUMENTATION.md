@@ -1,575 +1,447 @@
-# MuseNest REST API Documentation
+# MuseNest API Documentation
 
-## Overview
+**Version:** 1.0  
+**Date:** August 2, 2025  
+**Purpose:** Complete inventory of all REST API endpoints with detailed specifications
 
-MuseNest provides comprehensive REST APIs for dynamic content management across model portfolios. All APIs require JWT authentication unless otherwise specified.
+---
 
-## Authentication
+## 🔌 **API Architecture Overview**
 
-All protected endpoints require a JWT token in the Authorization header:
-```
-Authorization: Bearer <jwt_token>
-```
+### **Base URL Structure**
+- **Admin Routes:** `/api/`
+- **Public Routes:** `/` (theme-based routing)
+- **Authentication:** JWT-based with middleware protection
+- **Response Format:** JSON with consistent `{ success: boolean, data?: any, error?: string }` structure
 
-Get a token by authenticating with `/api/auth/login`.
+---
 
-## Gallery Management API
+## 🎯 **Core Business Management APIs**
 
-### Base URL: `/api/gallery`
+### **Client Management APIs**
 
-#### Get All Images
-```http
-GET /api/gallery/images
-```
-**Response:**
+#### **GET /api/clients**
+- **Purpose:** Retrieve paginated list of all clients with filtering and search
+- **Method:** GET
+- **Authentication:** Admin access required
+- **Auto-Save Trigger:** ❌ (Read operation)
+- **Parameters:**
+  - `page` (optional): Page number (default: 1)
+  - `limit` (optional): Items per page (default: 20)
+  - `search` (optional): Search term for email/model name
+  - `status` (optional): Filter by user role/status
+  - `sort` (optional): Sort field (default: created_at)
+- **Response Format:**
 ```json
 {
   "success": true,
-  "images": [
+  "data": [
     {
-      "id": 1,
-      "model_id": 1,
-      "section_id": 2,
-      "filename": "image-123456789.jpg",
-      "caption": "Professional headshot",
-      "alt_text": "Professional portrait of model",
-      "sort_order": 1,
-      "is_featured": 0,
-      "section_title": "Professional Photos",
-      "created_at": "2025-01-15T10:30:00Z"
+      "id": 8,
+      "email": "client@example.com",
+      "name": "client@example.com",
+      "status": "model",
+      "created_at": "2025-07-26T15:02:31.000Z",
+      "model_id": 5,
+      "model_name": "Client Site",
+      "model_slug": "clientsite"
     }
-  ]
-}
-```
-
-#### Get Gallery Sections
-```http
-GET /api/gallery/sections
-```
-**Response:**
-```json
-{
-  "success": true,
-  "sections": [
-    {
-      "id": 1,
-      "model_id": 1,
-      "title": "Professional Photos",
-      "description": "High-quality professional photography",
-      "sort_order": 1,
-      "image_count": 5
-    }
-  ]
-}
-```
-
-#### Upload Image
-```http
-POST /api/gallery/upload
-Content-Type: multipart/form-data
-```
-**Body:**
-- `image` (file): Image file (max 10MB)
-- `caption` (string, optional): Image caption
-- `alt_text` (string, optional): Alt text for accessibility
-- `section_id` (number, optional): Gallery section ID
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Image uploaded successfully",
-  "image": {
-    "id": 15,
-    "filename": "image-1642234567890.jpg",
-    "caption": "New photo",
-    "alt_text": "Description",
-    "section_id": 2
+  ],
+  "clients": [...], // Backward compatibility
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 25,
+    "pages": 2
   }
 }
 ```
 
-#### Update Image
-```http
-PUT /api/gallery/images/:id
-```
-**Body:**
-```json
-{
-  "caption": "Updated caption",
-  "alt_text": "Updated alt text",
-  "section_id": 2,
-  "is_featured": true
-}
-```
-
-#### Reorder Images
-```http
-POST /api/gallery/reorder
-```
-**Body:**
-```json
-{
-  "imageOrders": [
-    {"id": 1, "sort_order": 1},
-    {"id": 2, "sort_order": 2},
-    {"id": 3, "sort_order": 3}
-  ]
-}
-```
-
-#### Delete Image
-```http
-DELETE /api/gallery/images/:id
-```
-
-#### Create Gallery Section
-```http
-POST /api/gallery/sections
-```
-**Body:**
-```json
-{
-  "title": "Event Photos",
-  "description": "Photos from special events"
-}
-```
-
-#### Update Gallery Section
-```http
-PUT /api/gallery/sections/:id
-```
-**Body:**
-```json
-{
-  "title": "Updated Section Title",
-  "description": "Updated description"
-}
-```
-
-#### Delete Gallery Section
-```http
-DELETE /api/gallery/sections/:id
-```
-
----
-
-## FAQ Management API
-
-### Base URL: `/api/faq`
-
-#### Get All FAQs
-```http
-GET /api/faq
-```
-**Response:**
+#### **GET /api/clients/:id**
+- **Purpose:** Get detailed information for a specific client
+- **Method:** GET
+- **Authentication:** Admin access required
+- **Auto-Save Trigger:** ❌ (Read operation)
+- **Response Format:**
 ```json
 {
   "success": true,
-  "faqs": [
-    {
-      "id": 1,
-      "model_id": 1,
-      "question": "What are your rates?",
-      "answer": "Please contact me for current rates and availability.",
-      "sort_order": 1,
-      "is_active": 1,
-      "created_at": "2025-01-15T10:30:00Z"
-    }
-  ]
-}
-```
-
-#### Get Single FAQ
-```http
-GET /api/faq/:id
-```
-
-#### Create FAQ
-```http
-POST /api/faq
-```
-**Body:**
-```json
-{
-  "question": "How do I book an appointment?",
-  "answer": "You can book through the contact form or email me directly."
-}
-```
-
-#### Update FAQ
-```http
-PUT /api/faq/:id
-```
-**Body:**
-```json
-{
-  "question": "Updated question?",
-  "answer": "Updated answer content.",
-  "is_active": true
-}
-```
-
-#### Reorder FAQs
-```http
-POST /api/faq/reorder
-```
-**Body:**
-```json
-{
-  "faqOrders": [
-    {"id": 1, "sort_order": 1},
-    {"id": 2, "sort_order": 2}
-  ]
-}
-```
-
-#### Toggle FAQ Active Status
-```http
-PATCH /api/faq/:id/toggle
-```
-
-#### Delete FAQ
-```http
-DELETE /api/faq/:id
-```
-
-#### Bulk Operations
-```http
-POST /api/faq/bulk
-```
-**Body:**
-```json
-{
-  "action": "activate", // activate, deactivate, delete
-  "faqIds": [1, 2, 3]
-}
-```
-
----
-
-## Site Settings API
-
-### Base URL: `/api/settings`
-
-#### Get All Settings
-```http
-GET /api/settings
-```
-**Response:**
-```json
-{
-  "success": true,
-  "settings": {
-    "site_name": {
-      "value": "My Portfolio",
-      "category": "general",
-      "updated_at": "2025-01-15T10:30:00Z"
-    },
-    "theme": {
-      "value": "glamour",
-      "category": "appearance",
-      "updated_at": "2025-01-15T10:30:00Z"
+  "data": {
+    "id": 8,
+    "email": "client@example.com",
+    "name": "client@example.com",
+    "status": "model",
+    "created_at": "2025-07-26T15:02:31.000Z",
+    "model_id": 5,
+    "model_name": "Client Site",
+    "model_slug": "clientsite",
+    "subscription_id": 12,
+    "subscription_tier": "Premium Plan",
+    "subscription_price": "39.95",
+    "subscription_status": "active",
+    "ai_config": {
+      "auto_moderation": true,
+      "ai_chat": true,
+      "moderation_level": "moderate"
     }
   }
 }
 ```
 
-#### Get Settings by Category
-```http
-GET /api/settings/category/:category
-```
-
-#### Get Single Setting
-```http
-GET /api/settings/:key
-```
-
-#### Update Setting
-```http
-PUT /api/settings/:key
-```
-**Body:**
+#### **POST /api/clients**
+- **Purpose:** Create new client account with full onboarding setup and referral tracking
+- **Method:** POST
+- **Authentication:** Admin access required
+- **Auto-Save Trigger:** ✅ (Creates new client)
+- **Request Body:**
 ```json
 {
-  "value": "New Value",
-  "category": "general"
+  "name": "Client Name",
+  "email": "client@example.com",
+  "phone": "+1234567890",
+  "business_type": "escort",
+  "description": "Business description",
+  "template_id": 2,
+  "subscription_tier_id": 3,
+  "client_type": "muse_owned",
+  "region_id": 1,
+  "sales_channel_id": 30,
+  "referral_code": "MAYA2025",
+  "ai_config": {
+    "auto_moderation": true,
+    "ai_chat": true,
+    "content_generation": false,
+    "smart_scheduling": false,
+    "moderation_level": "moderate",
+    "ai_personality": "friendly"
+  },
+  "status": "active",
+  "trial_days": 7
 }
 ```
-
-#### Bulk Update Settings
-```http
-POST /api/settings/bulk
-```
-**Body:**
+- **Response Format:**
 ```json
 {
-  "settings": {
-    "site_name": {
-      "value": "Updated Site Name",
-      "category": "general"
-    },
-    "tagline": {
-      "value": "New tagline",
-      "category": "general"
+  "success": true,
+  "message": "Client created successfully",
+  "data": {
+    "user_id": 15,
+    "model_id": 8,
+    "account_number": "MO-US-30-240001",
+    "subscription_id": 12,
+    "temp_password": "abc123xyz",
+    "login_url": "/login?email=client%40example.com",
+    "site_url": "/clientsite_1722960231",
+    "referral_info": {
+      "code_used": "MAYA2025",
+      "referred_by": "maya@example.com"
     }
   }
 }
 ```
 
-#### Change Theme
-```http
-POST /api/settings/theme
-```
-**Body:**
+#### **PUT /api/clients/:id**
+- **Purpose:** Update client information and settings
+- **Method:** PUT
+- **Authentication:** Admin access required
+- **Auto-Save Trigger:** ✅ (Updates client data)
+- **Request Body (partial updates supported):**
 ```json
 {
-  "theme": "glamour" // basic, glamour, luxury, winter, modern, dark
+  "name": "Updated Name",
+  "email": "newemail@example.com",
+  "phone": "+1987654321",
+  "status": "active",
+  "business_type": "camgirl",
+  "site_name": "New Site Name",
+  "tagline": "New tagline"
 }
 ```
-
-#### Delete Setting
-```http
-DELETE /api/settings/:key
-```
-
-#### Get Available Categories
-```http
-GET /api/settings/meta/categories
-```
-
-#### Reset Settings
-```http
-POST /api/settings/reset
-```
-**Body (optional):**
-```json
-{
-  "category": "appearance" // Reset specific category, or omit to reset all
-}
-```
-
----
-
-## Testimonials API
-
-### Base URL: `/api/testimonials`
-
-#### Get All Testimonials
-```http
-GET /api/testimonials
-```
-**Response:**
+- **Response Format:**
 ```json
 {
   "success": true,
-  "testimonials": [
+  "message": "Client updated successfully"
+}
+```
+
+#### **GET /api/clients/templates**
+- **Purpose:** Get available templates for client onboarding
+- **Method:** GET
+- **Authentication:** Admin access required
+- **Auto-Save Trigger:** ❌ (Read operation)
+- **Response Format:**
+```json
+{
+  "success": true,
+  "templates": [
     {
-      "id": 1,
-      "model_id": 1,
-      "testimonial_text": "Amazing experience!",
-      "client_name": "John D.",
-      "client_initial": "J.D.",
-      "rating": 5,
-      "location": "New York",
-      "sort_order": 1,
-      "is_published": 1,
-      "is_approved": 1,
-      "created_at": "2025-01-15T10:30:00Z"
+      "id": 2,
+      "name": "Glamour Elite",
+      "description": "Sophisticated design with elegant animations",
+      "preview_image": "/assets/theme-previews/glamour.jpg",
+      "style": "luxury",
+      "category": "luxury",
+      "business_type": null
     }
   ]
 }
 ```
 
-#### Get Public Testimonials (No Auth Required)
-```http
-GET /api/testimonials/public/:modelSlug
-```
+### **Subscription Management APIs** (Enhanced)
 
-#### Get Single Testimonial
-```http
-GET /api/testimonials/:id
-```
+### **Client Management** (`/routes/api/system-management.js`)
 
-#### Create Testimonial
-```http
-POST /api/testimonials
-```
-**Body:**
-```json
-{
-  "testimonial_text": "Excellent service and professionalism!",
-  "client_name": "Jane Smith",
-  "client_initial": "J.S.",
-  "rating": 5,
-  "location": "Los Angeles",
-  "is_published": true,
-  "is_approved": true
-}
-```
+#### **Get System Statistics**
+- **Endpoint:** `GET /api/system-management/stats`
+- **Purpose:** Dashboard KPIs and system overview
+- **Authentication:** Required
+- **Auto-Save:** N/A (read-only)
 
-#### Update Testimonial
-```http
-PUT /api/testimonials/:id
-```
-**Body:**
-```json
-{
-  "testimonial_text": "Updated testimonial text",
-  "client_name": "Updated Name",
-  "rating": 4,
-  "is_published": true
-}
-```
+#### **List All Clients**
+- **Endpoint:** `GET /api/system-management/clients`
+- **Purpose:** Paginated client list with filtering
+- **Query Parameters:** `page`, `limit`, `status`, `search`
+- **Auto-Save:** N/A (read-only)
 
-#### Reorder Testimonials
-```http
-POST /api/testimonials/reorder
-```
-**Body:**
-```json
-{
-  "testimonialOrders": [
-    {"id": 1, "sort_order": 1},
-    {"id": 2, "sort_order": 2}
-  ]
-}
-```
-
-#### Toggle Published Status
-```http
-PATCH /api/testimonials/:id/publish
-```
-
-#### Toggle Approved Status
-```http
-PATCH /api/testimonials/:id/approve
-```
-
-#### Delete Testimonial
-```http
-DELETE /api/testimonials/:id
-```
-
-#### Bulk Operations
-```http
-POST /api/testimonials/bulk
-```
-**Body:**
-```json
-{
-  "action": "publish", // publish, unpublish, approve, unapprove, delete
-  "testimonialIds": [1, 2, 3]
-}
-```
+#### **Update Client Details**
+- **Endpoint:** `PUT /api/system-management/clients/:id`
+- **Purpose:** Modify client account information
+- **Auto-Save:** ✅ **Triggers on field blur**
 
 ---
 
-## Common Response Formats
+## 🤖 **AI Configuration Management** (`/routes/api/site-configuration.js`)
 
-### Success Response
-```json
-{
-  "success": true,
-  "message": "Operation completed successfully",
-  "data": {}
-}
-```
+#### **List All Sites**
+- **Endpoint:** `GET /api/site-configuration/sites`
+- **Purpose:** Multi-tenant site management overview
+- **Auto-Save:** N/A (read-only)
 
-### Error Response
-```json
-{
-  "success": false,
-  "message": "Error description"
-}
-```
+#### **Update Site Configuration**
+- **Endpoint:** `PUT /api/site-configuration/sites/:id/config`
+- **Purpose:** Modify AI detection settings
+- **Auto-Save:** ✅ **Triggers on slider/input change**
 
-### Validation Error
-```json
-{
-  "success": false,
-  "message": "Validation failed",
-  "errors": [
-    {
-      "field": "email",
-      "message": "Email is required"
-    }
-  ]
-}
-```
+#### **Deploy Configuration**
+- **Endpoints:** 
+  - `POST /api/site-configuration/sites/:id/deploy` (standard)
+  - `POST /api/site-configuration/sites/:id/deploy-resilient` (with retry)
+  - `POST /api/site-configuration/sites/:id/deploy-with-validation` (tier-gated)
+- **Purpose:** Deploy AI configuration to live servers
+- **Auto-Save:** N/A (explicit deployment action)
 
-## Status Codes
+#### **Server Health Check**
+- **Endpoint:** `GET /api/site-configuration/servers/health`
+- **Purpose:** Real-time AI server status monitoring
+- **Auto-Refresh:** ✅ **Updates every 30 seconds**
 
-- `200` - Success
-- `201` - Created
-- `400` - Bad Request
-- `401` - Unauthorized
-- `403` - Forbidden
-- `404` - Not Found
-- `429` - Too Many Requests
-- `500` - Internal Server Error
+---
 
-## Rate Limiting
+## 💳 **Subscription Management** (`/routes/api/site-configuration.js`)
 
-All APIs are rate-limited to 100 requests per 15-minute window per IP address.
+#### **Get All Tiers**
+- **Endpoint:** `GET /api/site-configuration/subscription/tiers`
+- **Purpose:** Available subscription packages
+- **Auto-Save:** N/A (read-only)
 
-## File Upload Specifications
+#### **Create/Update Tier**
+- **Endpoint:** `POST /api/site-configuration/subscription/tiers`
+- **Purpose:** Tier management (create new or update existing)
+- **Auto-Save:** ✅ **Triggers on form field changes**
 
-### Gallery Images
-- **Max Size:** 10MB
-- **Allowed Types:** JPEG, JPG, PNG, GIF, WebP
-- **Thumbnails:** Automatically generated at 300x300px
-- **Storage:** Model-specific directories (`/uploads/{model-slug}/`)
+#### **Get Subscription Analytics**
+- **Endpoint:** `GET /api/site-configuration/subscription/analytics`
+- **Purpose:** Business intelligence and revenue metrics
+- **Auto-Refresh:** ✅ **Updates every 5 minutes**
 
-## Security Features
+---
 
-- JWT Authentication
-- CORS Protection
-- Helmet Security Headers
-- Rate Limiting
-- Input Validation
-- SQL Injection Prevention
-- File Upload Security
+## 🔄 **Auto-Save Implementation Pattern**
 
-## Example Usage
-
-### JavaScript (Fetch API)
 ```javascript
-// Get JWT token
-const response = await fetch('/api/auth/login', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ email, password })
-});
-const { token } = await response.json();
+// Generic auto-save function for all forms
+async function autoSave(endpoint, data, fieldName) {
+    try {
+        const response = await fetch(endpoint, {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+            showSaveIndicator('success', fieldName);
+        } else {
+            showSaveIndicator('error', fieldName);
+        }
+    } catch (error) {
+        showSaveIndicator('error', fieldName, error.message);
+    }
+}
 
-// Use token for authenticated requests
-const galleriesResponse = await fetch('/api/gallery/images', {
-  headers: { 'Authorization': `Bearer ${token}` }
+// Attach to form fields
+document.querySelectorAll('.auto-save').forEach(field => {
+    field.addEventListener('blur', (e) => {
+        const data = { [e.target.name]: e.target.value };
+        autoSave(`/api/resource/${resourceId}`, data, e.target.name);
+    });
 });
-const galleries = await galleriesResponse.json();
 ```
 
-### cURL Examples
-```bash
-# Login
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"model@example.com","password":"password"}'
+---
 
-# Get FAQs
-curl -X GET http://localhost:3000/api/faq \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+## 🎫 **Referral System APIs**
 
-# Create FAQ
-curl -X POST http://localhost:3000/api/faq \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"question":"How do I book?","answer":"Contact me directly."}'
+### **Referral Code Management**
 
-# Upload Image
-curl -X POST http://localhost:3000/api/gallery/upload \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -F "image=@photo.jpg" \
-  -F "caption=Professional photo"
+#### **POST /api/clients/:id/referral-codes**
+- **Purpose:** Create new referral code for existing client
+- **Method:** POST
+- **Authentication:** Admin access required
+- **Auto-Save Trigger:** ✅ (Creates referral code)
+- **Request Body:**
+```json
+{
+  "code_name": "Maya VIP Code",
+  "usage_limit": 10,
+  "expires_at": "2025-12-31T23:59:59.000Z",
+  "custom_code": "MAYA2025"
+}
 ```
+- **Response Format:**
+```json
+{
+  "success": true,
+  "message": "Referral code created successfully",
+  "data": {
+    "id": 1,
+    "code": "MAYA2025",
+    "code_name": "Maya VIP Code",
+    "usage_limit": 10,
+    "usage_count": 0,
+    "expires_at": "2025-12-31T23:59:59.000Z",
+    "is_active": true,
+    "created_at": "2025-08-04T12:00:00.000Z"
+  }
+}
+```
+
+#### **GET /api/clients/:id/referral-codes**
+- **Purpose:** Retrieve all referral codes owned by client
+- **Method:** GET
+- **Authentication:** Admin access required
+- **Auto-Save Trigger:** ❌ (Read operation)
+- **Response Format:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "code": "MAYA2025",
+      "code_name": "Maya VIP Code",
+      "usage_limit": 10,
+      "usage_count": 3,
+      "actual_usage_count": 3,
+      "eligible_referrals": 3,
+      "total_commission_earned": "29.97",
+      "expires_at": null,
+      "is_active": true,
+      "created_at": "2025-08-04T12:00:00.000Z"
+    }
+  ]
+}
+```
+
+#### **GET /api/referral-codes/validate/:code**
+- **Purpose:** Validate referral code and get details (public endpoint)
+- **Method:** GET
+- **Authentication:** Not required
+- **Auto-Save Trigger:** ❌ (Read operation)
+- **Response Format:**
+```json
+{
+  "valid": true,
+  "data": {
+    "code": "MAYA2025",
+    "code_name": "Maya VIP Code",
+    "referrer_email": "maya@example.com",
+    "referrer_name": "Maya",
+    "usage_count": 3,
+    "usage_limit": 10,
+    "expires_at": null
+  }
+}
+```
+
+### **Referral Analytics**
+
+#### **GET /api/clients/:id/referral-analytics**
+- **Purpose:** Comprehensive referral performance data and commission tracking
+- **Method:** GET
+- **Authentication:** Admin access required
+- **Auto-Save Trigger:** ❌ (Read operation)
+- **Response Format:**
+```json
+{
+  "success": true,
+  "data": {
+    "codes": [
+      {
+        "id": 1,
+        "code": "MAYA2025",
+        "code_name": "Maya VIP Code",
+        "total_signups": 3,
+        "signups_last_30_days": 2,
+        "signups_last_7_days": 1,
+        "total_commission_earned": "29.97",
+        "commission_paid": "0.00"
+      }
+    ],
+    "recent_referrals": [
+      {
+        "used_at": "2025-08-04T15:30:00.000Z",
+        "referred_user_email": "newuser@example.com",
+        "referral_code_used": "MAYA2025",
+        "commission_amount": "9.99",
+        "commission_eligible": true
+      }
+    ],
+    "summary": {
+      "total_codes": 2,
+      "active_codes": 2,
+      "total_referrals": 7,
+      "total_commission_earned": 69.93,
+      "commission_pending": 69.93
+    }
+  }
+}
+```
+
+#### **POST /api/clients/:id/referral-codes/suggestions**
+- **Purpose:** Generate AI-powered referral code suggestions
+- **Method:** POST
+- **Authentication:** Admin access required
+- **Auto-Save Trigger:** ❌ (Suggestion generation)
+- **Response Format:**
+```json
+{
+  "success": true,
+  "suggestions": [
+    "MAYA2025",
+    "MAYAVIP",
+    "MAYA25",
+    "MUSE2025",
+    "REF8H92N"
+  ]
+}
+```
+
+---
+
+**Last Updated:** August 4, 2025  
+**Total Endpoints:** 80+ documented API endpoints  
+**Status:** Ready for Business Manager CRM integration with full referral system support

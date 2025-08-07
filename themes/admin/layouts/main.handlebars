@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{#if pageTitle}}{{pageTitle}} - {{/if}}MuseNest Business Manager</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Admin Styles -->
+    <style>
+        :root {
+            --primary-color: #3B82F6;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+            color: white;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            padding: 0 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: #e2e8f0;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #3B82F6;
+            border-right: 3px solid #3B82F6;
+        }
+
+        .nav-link i {
+            width: 1.25rem;
+            margin-right: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .badge {
+            margin-left: auto;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .content-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .content-body {
+            padding: 0 2rem 2rem;
+        }
+
+        .page-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .page-subtitle {
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        /* Component Styles */
+        .component-container {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+        }
+
+        /* Additional page-specific styles */
+        {{#if additionalCSS}}
+        {{{additionalCSS}}}
+        {{/if}}
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    {{> admin_sidebar}}
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="content-header">
+            <h1 class="page-title">{{pageTitle}}</h1>
+            {{#if pageSubtitle}}
+            <p class="page-subtitle">{{pageSubtitle}}</p>
+            {{/if}}
+        </div>
+        
+        <!-- Content Body -->
+        <div class="content-body">
+            {{{body}}}
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Admin Scripts -->
+    <script>
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('show');
+        }
+        
+        // Close sidebar on mobile when clicking outside
+        document.addEventListener('click', function(event) {
+            const sidebar = document.querySelector('.sidebar');
+            const toggleBtn = event.target.closest('.sidebar-toggle');
+            
+            if (window.innerWidth <= 768 && !sidebar.contains(event.target) && !toggleBtn) {
+                sidebar.classList.remove('show');
+            }
+        });
+        
+        // Global navigation function for sidebar
+        window.loadSection = function(sectionName) {
+            console.log('🔍 Loading section:', sectionName);
+            
+            // Check if we're on the dashboard page and if the dashboard function exists
+            if (typeof window.dashboardLoadSection === 'function') {
+                window.dashboardLoadSection(sectionName);
+            } else {
+                // Check which admin page we're on and stay on the same one
+                const currentPath = window.location.pathname;
+                let targetUrl;
+                
+                if (currentPath === '/sysadmin') {
+                    targetUrl = `/sysadmin?section=${sectionName}`;
+                } else if (currentPath === '/admin') {
+                    targetUrl = `/admin?section=${sectionName}`;
+                } else {
+                    // Default fallback
+                    targetUrl = `/sysadmin?section=${sectionName}`;
+                }
+                
+                console.log('Redirecting to:', targetUrl);
+                window.location.href = targetUrl;
+            }
+        };
+        
+        // Global show dashboard function
+        window.showDashboard = function() {
+            if (typeof window.dashboardShowDashboard === 'function') {
+                window.dashboardShowDashboard();
+            } else {
+                window.location.href = '/admin';
+            }
+        };
+    </script>
+    
+    <!-- Additional page-specific scripts -->
+    {{#if additionalJS}}
+    <script>
+        {{{additionalJS}}}
+    </script>
+    {{/if}}
+</body>
+</html>

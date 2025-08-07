@@ -1,0 +1,984 @@
+<!-- Client Onboarding Wizard Component -->
+<!-- Multi-step client onboarding with template selection and subscription setup -->
+<!-- Dependencies: Bootstrap 5, Font Awesome -->
+
+<div class="onboarding-wizard">
+    <!-- Progress Indicator -->
+    <div class="wizard-progress mb-4">
+        <div class="progress-container">
+            <div class="progress-step active" data-step="1">
+                <div class="step-icon"><i class="fas fa-user"></i></div>
+                <div class="step-label">Basic Info</div>
+            </div>
+            <div class="progress-step" data-step="2">
+                <div class="step-icon"><i class="fas fa-palette"></i></div>
+                <div class="step-label">Template</div>
+            </div>
+            <div class="progress-step" data-step="3">
+                <div class="step-icon"><i class="fas fa-crown"></i></div>
+                <div class="step-label">Subscription</div>
+            </div>
+            <div class="progress-step" data-step="4">
+                <div class="step-icon"><i class="fas fa-robot"></i></div>
+                <div class="step-label">AI Config</div>
+            </div>
+            <div class="progress-step" data-step="5">
+                <div class="step-icon"><i class="fas fa-check"></i></div>
+                <div class="step-label">Review</div>
+            </div>
+        </div>
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: 20%"></div>
+        </div>
+    </div>
+
+    <!-- Step 1: Basic Information -->
+    <div class="wizard-step active" id="step-1">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <h4><i class="fas fa-user me-2"></i>Client Basic Information</h4>
+                        <p class="mb-0 text-muted">Let's start with the essential client details</p>
+                    </div>
+                    <div class="card-body">
+                        <form id="basic-info-form">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="client-name" class="form-label">Full Name *</label>
+                                        <input type="text" class="form-control" id="client-name" name="name" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="client-email" class="form-label">Email Address *</label>
+                                        <input type="email" class="form-control" id="client-email" name="email" required>
+                                        <div id="email-validation-feedback" class="form-text"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="client-phone" class="form-label">Phone Number</label>
+                                        <input type="tel" class="form-control" id="client-phone" name="phone">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="business-type" class="form-label">Business Type *</label>
+                                        <select class="form-select" id="business-type" name="business_type" required>
+                                            <option value="">Select Business Type</option>
+                                            <option value="escort">Escort Services</option>
+                                            <option value="camgirl">Cam Girl/Adult Entertainment</option>
+                                            <option value="model">Professional Model</option>
+                                            <option value="other">Other (Custom)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="business-description" class="form-label">Business Description</label>
+                                <textarea class="form-control" id="business-description" name="description" rows="3" 
+                                         placeholder="Brief description of services offered..."></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="terms-agreement" required>
+                                    <label class="form-check-label" for="terms-agreement">
+                                        I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
+                                    </label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2: Template Selection -->
+    <div class="wizard-step" id="step-2">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-palette me-2"></i>Choose Your Template</h4>
+                <p class="mb-0 text-muted">Select a template that matches your business style</p>
+            </div>
+            <div class="card-body">
+                <div class="template-gallery">
+                    <div class="row g-4" id="template-options">
+                        <!-- Templates will be loaded here -->
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Note:</strong> You can customize colors, layout, and content after setup.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 3: Subscription Selection -->
+    <div class="wizard-step" id="step-3">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-crown me-2"></i>Choose Your Plan</h4>
+                <p class="mb-0 text-muted">Select the subscription tier that fits your needs</p>
+            </div>
+            <div class="card-body">
+                <div class="subscription-tiers">
+                    <div class="row g-4" id="subscription-options">
+                        <!-- Subscription tiers will be loaded here -->
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-credit-card me-2"></i>
+                        <strong>Billing:</strong> All subscriptions include a 7-day free trial. Cancel anytime.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 4: AI Configuration -->
+    <div class="wizard-step" id="step-4">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-robot me-2"></i>AI Configuration & Preferences</h4>
+                <p class="mb-0 text-muted">Configure AI features and content moderation</p>
+            </div>
+            <div class="card-body">
+                <form id="ai-config-form">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <h6>Content Moderation</h6>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="auto-moderation" name="auto_moderation" checked>
+                                    <label class="form-check-label" for="auto-moderation">
+                                        Enable automatic content moderation
+                                    </label>
+                                </div>
+                                <small class="text-muted">AI will automatically review and moderate uploaded content</small>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h6>AI Chat Assistant</h6>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="ai-chat" name="ai_chat" checked>
+                                    <label class="form-check-label" for="ai-chat">
+                                        Enable AI chat assistant
+                                    </label>
+                                </div>
+                                <small class="text-muted">AI will help respond to client inquiries</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <h6>Content Generation</h6>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="content-generation" name="content_generation">
+                                    <label class="form-check-label" for="content-generation">
+                                        Enable AI content generation
+                                    </label>
+                                </div>
+                                <small class="text-muted">AI will help create descriptions and marketing content</small>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h6>Smart Scheduling</h6>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="smart-scheduling" name="smart_scheduling">
+                                    <label class="form-check-label" for="smart-scheduling">
+                                        Enable smart scheduling
+                                    </label>
+                                </div>
+                                <small class="text-muted">AI will optimize your availability and booking management</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="moderation-level" class="form-label">Content Moderation Level</label>
+                        <select class="form-select" id="moderation-level" name="moderation_level">
+                            <option value="strict">Strict - High content filtering</option>
+                            <option value="moderate" selected>Moderate - Balanced filtering</option>
+                            <option value="lenient">Lenient - Minimal filtering</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="ai-personality" class="form-label">AI Assistant Personality</label>
+                        <select class="form-select" id="ai-personality" name="ai_personality">
+                            <option value="professional">Professional & Formal</option>
+                            <option value="friendly" selected>Friendly & Approachable</option>
+                            <option value="flirty">Flirty & Playful</option>
+                            <option value="custom">Custom (configure later)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 5: Review & Create -->
+    <div class="wizard-step" id="step-5">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-check me-2"></i>Review & Create Account</h4>
+                <p class="mb-0 text-muted">Please review your selections before creating the account</p>
+            </div>
+            <div class="card-body">
+                <div class="review-summary">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="summary-section mb-4">
+                                <h6><i class="fas fa-user me-2"></i>Client Information</h6>
+                                <div class="summary-content">
+                                    <p><strong>Name:</strong> <span id="review-name">-</span></p>
+                                    <p><strong>Email:</strong> <span id="review-email">-</span></p>
+                                    <p><strong>Business Type:</strong> <span id="review-business-type">-</span></p>
+                                </div>
+                            </div>
+                            
+                            <div class="summary-section mb-4">
+                                <h6><i class="fas fa-palette me-2"></i>Selected Template</h6>
+                                <div class="summary-content">
+                                    <div id="review-template" class="template-preview">
+                                        <!-- Template preview will be shown here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="summary-section mb-4">
+                                <h6><i class="fas fa-crown me-2"></i>Subscription Plan</h6>
+                                <div class="summary-content">
+                                    <div id="review-subscription">
+                                        <!-- Subscription details will be shown here -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="summary-section mb-4">
+                                <h6><i class="fas fa-robot me-2"></i>AI Configuration</h6>
+                                <div class="summary-content">
+                                    <div id="review-ai-config">
+                                        <!-- AI config summary will be shown here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <div class="alert alert-success">
+                        <i class="fas fa-gift me-2"></i>
+                        <strong>Welcome Bonus:</strong> 7-day free trial included with your new account!
+                    </div>
+                </div>
+                
+                <div class="creation-status" id="creation-status" style="display: none;">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Creating account...</span>
+                        </div>
+                        <h5>Creating Your Account</h5>
+                        <p class="text-muted">Setting up your site and configuring AI features...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="wizard-navigation mt-4">
+        <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-outline-secondary" id="prev-step" style="display: none;">
+                <i class="fas fa-arrow-left me-2"></i>Previous
+            </button>
+            <div class="ms-auto">
+                <button type="button" class="btn btn-primary" id="next-step">
+                    Next<i class="fas fa-arrow-right ms-2"></i>
+                </button>
+                <button type="button" class="btn btn-success" id="create-account" style="display: none;">
+                    <i class="fas fa-magic me-2"></i>Create Account
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+class ClientOnboarding {
+    constructor() {
+        this.currentStep = 1;
+        this.totalSteps = 5;
+        this.formData = {
+            basic_info: {},
+            template: null,
+            subscription: null,
+            ai_config: {}
+        };
+        
+        this.init();
+    }
+    
+    init() {
+        this.setupEventListeners();
+        this.loadTemplates();
+        this.loadSubscriptionTiers();
+        this.updateProgress();
+    }
+    
+    setupEventListeners() {
+        document.getElementById('next-step').addEventListener('click', () => this.nextStep());
+        document.getElementById('prev-step').addEventListener('click', () => this.prevStep());
+        document.getElementById('create-account').addEventListener('click', () => this.createAccount());
+        
+        // Form validation
+        document.getElementById('basic-info-form').addEventListener('input', () => this.validateCurrentStep());
+        document.getElementById('ai-config-form').addEventListener('change', () => this.validateCurrentStep());
+        
+        // Email validation
+        document.getElementById('client-email').addEventListener('blur', () => this.validateEmail());
+        document.getElementById('client-email').addEventListener('input', () => this.clearEmailValidation());
+    }
+    
+    async loadTemplates() {
+        try {
+            const response = await fetch('/api/clients/templates');
+            const result = await response.json();
+            
+            if (result.success) {
+                this.renderTemplates(result.templates);
+            }
+        } catch (error) {
+            console.error('Failed to load templates:', error);
+        }
+    }
+    
+    renderTemplates(templates) {
+        const container = document.getElementById('template-options');
+        container.innerHTML = '';
+        
+        templates.forEach(template => {
+            const templateCard = document.createElement('div');
+            templateCard.className = 'col-md-4';
+            templateCard.innerHTML = `
+                <div class="template-card card h-100" data-template-id="${template.id}">
+                    <div class="template-preview">
+                        <img src="${template.preview_image || '/assets/template-preview.jpg'}" 
+                             class="card-img-top" style="height: 200px; object-fit: cover;">
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title">${template.name}</h6>
+                        <p class="card-text small text-muted">${template.description}</p>
+                        <div class="template-features">
+                            <small class="text-muted">
+                                <i class="fas fa-palette me-1"></i>${template.style || 'Modern'}
+                                <i class="fas fa-mobile-alt ms-2 me-1"></i>Responsive
+                            </small>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-outline-primary btn-sm w-100 select-template">
+                            Select Template
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            templateCard.querySelector('.select-template').addEventListener('click', () => {
+                this.selectTemplate(template);
+            });
+            
+            container.appendChild(templateCard);
+        });
+    }
+    
+    selectTemplate(template) {
+        // Remove previous selection
+        document.querySelectorAll('.template-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        
+        // Mark as selected
+        const selectedCard = document.querySelector(`[data-template-id="${template.id}"]`);
+        selectedCard.classList.add('selected');
+        
+        this.formData.template = template;
+        this.validateCurrentStep();
+    }
+    
+    async loadSubscriptionTiers() {
+        try {
+            const response = await fetch('/api/site-configuration/subscription/tiers');
+            const result = await response.json();
+            
+            if (result.success) {
+                this.renderSubscriptionTiers(result.tiers);
+            }
+        } catch (error) {
+            console.error('Failed to load subscription tiers:', error);
+        }
+    }
+    
+    renderSubscriptionTiers(tiers) {
+        const container = document.getElementById('subscription-options');
+        container.innerHTML = '';
+        
+        tiers.forEach(tier => {
+            const tierCard = document.createElement('div');
+            tierCard.className = 'col-md-4';
+            tierCard.innerHTML = `
+                <div class="subscription-card card h-100 ${tier.popular ? 'border-primary' : ''}" 
+                     data-tier-id="${tier.id}">
+                    ${tier.popular ? '<div class="badge bg-primary position-absolute" style="top: -8px; right: 16px;">Popular</div>' : ''}
+                    <div class="card-header text-center">
+                        <h5>${tier.display_name || tier.tier_name}</h5>
+                        <div class="pricing">
+                            <span class="h3">$${tier.monthly_price}</span>
+                            <small class="text-muted">/month</small>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            ${Object.entries(tier.features || {}).filter(([key, value]) => value === true).map(([key, value]) => `
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-outline-primary w-100 select-tier">
+                            Choose Plan
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            tierCard.querySelector('.select-tier').addEventListener('click', () => {
+                this.selectSubscription(tier);
+            });
+            
+            container.appendChild(tierCard);
+        });
+    }
+    
+    selectSubscription(tier) {
+        // Remove previous selection
+        document.querySelectorAll('.subscription-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        
+        // Mark as selected
+        const selectedCard = document.querySelector(`[data-tier-id="${tier.id}"]`);
+        selectedCard.classList.add('selected');
+        
+        this.formData.subscription = tier;
+        this.validateCurrentStep();
+    }
+    
+    nextStep() {
+        if (this.validateCurrentStep() && this.currentStep < this.totalSteps) {
+            // Collect current step data
+            this.collectStepData();
+            
+            this.currentStep++;
+            this.updateStepDisplay();
+            this.updateProgress();
+            
+            if (this.currentStep === this.totalSteps) {
+                this.populateReview();
+            }
+        }
+    }
+    
+    prevStep() {
+        if (this.currentStep > 1) {
+            this.currentStep--;
+            this.updateStepDisplay();
+            this.updateProgress();
+        }
+    }
+    
+    collectStepData() {
+        switch (this.currentStep) {
+            case 1:
+                const basicForm = document.getElementById('basic-info-form');
+                const formData = new FormData(basicForm);
+                this.formData.basic_info = Object.fromEntries(formData);
+                break;
+            case 4:
+                const aiForm = document.getElementById('ai-config-form');
+                const aiFormData = new FormData(aiForm);
+                this.formData.ai_config = Object.fromEntries(aiFormData);
+                break;
+        }
+    }
+    
+    validateCurrentStep() {
+        switch (this.currentStep) {
+            case 1:
+                const form = document.getElementById('basic-info-form');
+                const emailInput = document.getElementById('client-email');
+                
+                // Check basic form validity
+                if (!form.checkValidity()) {
+                    return false;
+                }
+                
+                // Check if email has validation error
+                if (emailInput.classList.contains('is-invalid')) {
+                    return false;
+                }
+                
+                return true;
+            case 2:
+                return this.formData.template !== null;
+            case 3:
+                return this.formData.subscription !== null;
+            case 4:
+                return true; // AI config is optional
+            case 5:
+                return true;
+            default:
+                return false;
+        }
+    }
+    
+    updateStepDisplay() {
+        // Hide all steps
+        document.querySelectorAll('.wizard-step').forEach(step => {
+            step.classList.remove('active');
+        });
+        
+        // Show current step
+        document.getElementById(`step-${this.currentStep}`).classList.add('active');
+        
+        // Update navigation buttons
+        const prevBtn = document.getElementById('prev-step');
+        const nextBtn = document.getElementById('next-step');
+        const createBtn = document.getElementById('create-account');
+        
+        prevBtn.style.display = this.currentStep > 1 ? 'block' : 'none';
+        nextBtn.style.display = this.currentStep < this.totalSteps ? 'block' : 'none';
+        createBtn.style.display = this.currentStep === this.totalSteps ? 'block' : 'none';
+    }
+    
+    updateProgress() {
+        const progress = (this.currentStep / this.totalSteps) * 100;
+        document.querySelector('.progress-bar').style.width = `${progress}%`;
+        
+        // Update step indicators
+        document.querySelectorAll('.progress-step').forEach((step, index) => {
+            step.classList.toggle('active', index + 1 === this.currentStep);
+            step.classList.toggle('completed', index + 1 < this.currentStep);
+        });
+    }
+    
+    populateReview() {
+        // Basic info
+        document.getElementById('review-name').textContent = this.formData.basic_info.name || '-';
+        document.getElementById('review-email').textContent = this.formData.basic_info.email || '-';
+        document.getElementById('review-business-type').textContent = this.capitalizeFirst(this.formData.basic_info.business_type) || '-';
+        
+        // Template
+        if (this.formData.template) {
+            document.getElementById('review-template').innerHTML = `
+                <div class="d-flex align-items-center">
+                    <img src="${this.formData.template.preview_image || '/assets/template-preview.jpg'}" 
+                         style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px;" class="me-3">
+                    <div>
+                        <div class="fw-semibold">${this.formData.template.name}</div>
+                        <small class="text-muted">${this.formData.template.style || 'Modern'} Style</small>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Subscription
+        if (this.formData.subscription) {
+            document.getElementById('review-subscription').innerHTML = `
+                <div class="subscription-review">
+                    <div class="fw-semibold">${this.formData.subscription.name}</div>
+                    <div class="text-muted">$${this.formData.subscription.price}/${this.formData.subscription.billing_period}</div>
+                    <small class="text-success">7-day free trial included</small>
+                </div>
+            `;
+        }
+        
+        // AI Config
+        const aiFeatures = [];
+        if (this.formData.ai_config.auto_moderation) aiFeatures.push('Auto Moderation');
+        if (this.formData.ai_config.ai_chat) aiFeatures.push('AI Chat Assistant');
+        if (this.formData.ai_config.content_generation) aiFeatures.push('Content Generation');
+        if (this.formData.ai_config.smart_scheduling) aiFeatures.push('Smart Scheduling');
+        
+        document.getElementById('review-ai-config').innerHTML = `
+            <div class="ai-config-review">
+                <div><strong>Level:</strong> ${this.capitalizeFirst(this.formData.ai_config.moderation_level || 'moderate')}</div>
+                <div><strong>Personality:</strong> ${this.capitalizeFirst(this.formData.ai_config.ai_personality || 'friendly')}</div>
+                <div><strong>Features:</strong> ${aiFeatures.join(', ') || 'Basic features'}</div>
+            </div>
+        `;
+    }
+    
+    async createAccount() {
+        const createBtn = document.getElementById('create-account');
+        const statusDiv = document.getElementById('creation-status');
+        
+        createBtn.disabled = true;
+        statusDiv.style.display = 'block';
+        
+        try {
+            const response = await fetch('/api/clients', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ...this.formData.basic_info,
+                    template_id: this.formData.template?.id,
+                    subscription_tier_id: this.formData.subscription?.id,
+                    ai_config: this.formData.ai_config,
+                    status: 'active',
+                    trial_days: 7
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Success! Show completion message
+                statusDiv.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <h5 class="text-success">Account Created Successfully!</h5>
+                        <p class="text-muted">Client has been set up and is ready to go.</p>
+                        <div class="mt-3">
+                            <a href="/admin/musenest-business-manager.html?section=clients-list" class="btn btn-primary me-2">
+                                <i class="fas fa-users me-2"></i>View All Clients
+                            </a>
+                            <button class="btn btn-success" onclick="this.startNewOnboarding()">
+                                <i class="fas fa-plus me-2"></i>Add Another Client
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Refresh client list if it exists
+                if (window.clientManager) {
+                    setTimeout(() => window.clientManager.loadClientData(), 2000);
+                }
+            } else {
+                throw new Error(result.error || 'Failed to create account');
+            }
+        } catch (error) {
+            console.error('Account creation failed:', error);
+            
+            let errorMessage = error.message;
+            let showRetry = true;
+            let showEditEmail = false;
+            
+            // Handle specific error types
+            if (error.message.includes('Email address already exists')) {
+                errorMessage = `The email address "${this.formData.basic_info.email}" is already registered in our system.`;
+                showEditEmail = true;
+                showRetry = false;
+            }
+            
+            statusDiv.innerHTML = `
+                <div class="text-center py-4">
+                    <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                    <h5 class="text-danger">Account Creation Failed</h5>
+                    <p class="text-muted">${errorMessage}</p>
+                    <div class="mt-3">
+                        ${showEditEmail ? `
+                            <button class="btn btn-outline-primary me-2" onclick="this.goToStep(1)">
+                                <i class="fas fa-edit me-2"></i>Change Email
+                            </button>
+                        ` : ''}
+                        ${showRetry ? `
+                            <button class="btn btn-primary" onclick="this.retryCreation()">
+                                <i class="fas fa-redo me-2"></i>Try Again
+                            </button>
+                        ` : ''}
+                        <button class="btn btn-secondary" onclick="this.startNewOnboarding()">
+                            <i class="fas fa-plus me-2"></i>Start Over
+                        </button>
+                    </div>
+                </div>
+            `;
+            createBtn.disabled = false;
+        }
+    }
+    
+    async validateEmail() {
+        const emailInput = document.getElementById('client-email');
+        const feedback = document.getElementById('email-validation-feedback');
+        const email = emailInput.value.trim();
+        
+        if (!email) {
+            feedback.innerHTML = '';
+            emailInput.classList.remove('is-invalid', 'is-valid');
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/clients/validate-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email })
+            });
+            
+            const result = await response.json();
+            
+            if (!result.success || result.exists) {
+                emailInput.classList.add('is-invalid');
+                emailInput.classList.remove('is-valid');
+                feedback.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>This email address is already registered</span>';
+            } else {
+                emailInput.classList.add('is-valid');
+                emailInput.classList.remove('is-invalid');
+                feedback.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Email available</span>';
+            }
+        } catch (error) {
+            console.error('Email validation error:', error);
+            feedback.innerHTML = '<span class="text-muted">Unable to validate email</span>';
+        }
+    }
+    
+    clearEmailValidation() {
+        const emailInput = document.getElementById('client-email');
+        const feedback = document.getElementById('email-validation-feedback');
+        
+        emailInput.classList.remove('is-invalid', 'is-valid');
+        feedback.innerHTML = '';
+    }
+    
+    startNewOnboarding() {
+        // Reset wizard
+        this.currentStep = 1;
+        this.formData = {
+            basic_info: {},
+            template: null,
+            subscription: null,
+            ai_config: {}
+        };
+        
+        // Reset forms
+        document.getElementById('basic-info-form').reset();
+        document.getElementById('ai-config-form').reset();
+        
+        // Clear selections
+        document.querySelectorAll('.template-card, .subscription-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        
+        this.updateStepDisplay();
+        this.updateProgress();
+        
+        document.getElementById('creation-status').style.display = 'none';
+        document.getElementById('create-account').disabled = false;
+    }
+    
+    retryCreation() {
+        document.getElementById('creation-status').style.display = 'none';
+        document.getElementById('create-account').disabled = false;
+    }
+    
+    capitalizeFirst(str) {
+        return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+    }
+}
+
+// Initialize onboarding wizard
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.querySelector('.onboarding-wizard')) {
+        window.clientOnboarding = new ClientOnboarding();
+    }
+});
+</script>
+
+<style>
+.onboarding-wizard {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Progress Indicator */
+.wizard-progress {
+    margin-bottom: 2rem;
+}
+
+.progress-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    flex: 1;
+}
+
+.progress-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    right: -50%;
+    height: 2px;
+    background-color: #e5e7eb;
+    z-index: 0;
+}
+
+.progress-step.completed:not(:last-child)::after {
+    background-color: #3b82f6;
+}
+
+.step-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.progress-step.active .step-icon {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.progress-step.completed .step-icon {
+    background-color: #10b981;
+    color: white;
+}
+
+.step-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6b7280;
+    text-align: center;
+}
+
+.progress-step.active .step-label {
+    color: #3b82f6;
+}
+
+.progress-step.completed .step-label {
+    color: #10b981;
+}
+
+/* Wizard Steps */
+.wizard-step {
+    display: none;
+}
+
+.wizard-step.active {
+    display: block;
+}
+
+/* Template Selection */
+.template-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.template-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.template-card.selected {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.template-card.selected .select-template {
+    background-color: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+/* Subscription Cards */
+.subscription-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.subscription-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.subscription-card.selected {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.subscription-card.selected .select-tier {
+    background-color: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+/* Summary Sections */
+.summary-section {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+}
+
+.summary-section h6 {
+    color: #374151;
+    margin-bottom: 0.75rem;
+}
+
+.summary-content p {
+    margin-bottom: 0.5rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .progress-container {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .progress-step {
+        flex: 0 0 calc(50% - 0.5rem);
+    }
+    
+    .progress-step:not(:last-child)::after {
+        display: none;
+    }
+    
+    .step-label {
+        font-size: 0.75rem;
+    }
+}
+</style>

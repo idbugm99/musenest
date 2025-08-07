@@ -1,0 +1,642 @@
+<!-- Image Moderation & Blur Tool Content -->
+<div id="image-moderation-section" class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h2 class="mb-1 fw-bold text-primary">
+                                <i class="fas fa-eye me-3"></i>Image Moderation & Blur Tool
+                            </h2>
+                            <p class="mb-0 text-muted">Review flagged images from the moderation queue and apply blur effects to sensitive areas</p>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-primary" onclick="imageModeration.refreshQueue()">
+                                <i class="fas fa-refresh me-2"></i>Refresh Queue
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Queue Selection & Controls -->
+        <div class="col-md-4">
+            <!-- Queue List -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-list me-2"></i>Moderation Queue
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="queueList">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="mt-2">Loading queue...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Current Image Info -->
+            <div id="mediaInfo" class="card shadow-sm border-0 mb-4" style="display: none;">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-info-circle me-2"></i>Image Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="mediaInfoContent">
+                        <!-- Image details will be populated here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Blur Controls -->
+            <div id="blurControls" class="card shadow-sm border-0 mb-4" style="display: none;">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold">
+                            <i class="fas fa-sliders-h me-2"></i>Blur Controls
+                        </h5>
+                        <div id="previewEyeToggle" onclick="imageModeration.toggleSharpPreview()" class="btn btn-sm btn-outline-primary" title="Toggle blur preview">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Blur Strength:</label>
+                        <input type="range" class="form-range" id="blurStrength" min="1" max="20" value="6" 
+                               onchange="imageModeration.updateBlurSettings()" oninput="imageModeration.updateBlurSettings()">
+                        <small class="text-muted">Strength: <span id="blurStrengthValue">6</span></small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Blur Shape:</label>
+                        <select class="form-select" id="blurShape" onchange="imageModeration.updateBlurSettings()">
+                            <option value="square">Rectangle</option>
+                            <option value="rounded">Rounded Rectangle</option>
+                            <option value="oval">Oval</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <button class="btn btn-info btn-sm w-100" onclick="imageModeration.addManualBlurArea()">
+                            <i class="fas fa-plus me-2"></i>Add Manual Blur Area
+                        </button>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-warning" onclick="imageModeration.toggleAllBlurs()">
+                            <i class="fas fa-sync-alt me-2"></i>Toggle All Blurs
+                        </button>
+                        <button class="btn btn-success" onclick="imageModeration.approveWithBlur()">
+                            <i class="fas fa-check me-2"></i>Approve with Blur
+                        </button>
+                        <button class="btn btn-primary" onclick="imageModeration.approveWithoutBlur()">
+                            <i class="fas fa-check-circle me-2"></i>Approve Clean
+                        </button>
+                        <button class="btn btn-danger" onclick="imageModeration.rejectImage()">
+                            <i class="fas fa-times me-2"></i>Reject Image
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Violations List -->
+            <div id="violationsList" class="card shadow-sm border-0" style="display: none;">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Detected Violations
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="violationsContent">
+                        <!-- Violations will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Image Preview -->
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-image me-2"></i>Image Review
+                    </h5>
+                    <small class="text-muted">Click on highlighted areas to toggle blur on/off</small>
+                </div>
+                <div class="card-body text-center">
+                    <div id="imageContainer">
+                        <div class="text-center text-muted py-5">
+                            <i class="fas fa-image fs-1 mb-3"></i>
+                            <h4>Select an image from the queue to begin review</h4>
+                            <p class="text-muted">Images flagged by the AI system will appear in the queue on the left</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="analysisResults" class="card shadow-sm border-0 mt-3" style="display: none;">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0 fw-bold">
+                        <i class="fas fa-chart-bar me-2"></i>AI Analysis Results
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="analysisContent">
+                        <!-- Analysis results will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Image moderation specific styles */
+.image-container {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+}
+
+.blur-overlay {
+    position: absolute;
+    border: 3px solid rgba(220, 53, 69, 0.8);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+    backdrop-filter: blur(1px);
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.blur-overlay:hover {
+    border-color: rgba(220, 53, 69, 1);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+}
+
+/* Violation type specific colors */
+.blur-overlay[data-part*="GENITALIA"] {
+    border-color: rgba(142, 68, 173, 0.8);
+    box-shadow: 0 2px 8px rgba(142, 68, 173, 0.3);
+}
+
+.blur-overlay[data-part*="BREAST"] {
+    border-color: rgba(231, 76, 60, 0.8);
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+}
+
+.blur-overlay[data-part*="BUTTOCKS"] {
+    border-color: rgba(255, 107, 53, 0.8);
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+}
+
+.blur-overlay[data-part*="FACE"] {
+    border-color: rgba(52, 152, 219, 0.8);
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+/* Shape styling */
+.blur-overlay.shape-oval {
+    border-radius: 50%;
+}
+
+.blur-overlay.shape-rounded {
+    border-radius: 15px;
+}
+
+.blur-overlay.shape-square {
+    border-radius: 8px;
+}
+
+.confidence-label {
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.image-preview {
+    max-width: 100%;
+    max-height: 600px;
+    object-fit: contain;
+}
+
+.queue-item {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.queue-item:hover {
+    background-color: #f8f9fa;
+}
+
+.queue-item.selected {
+    background-color: #e3f2fd;
+    border-left: 4px solid #2196f3;
+}
+
+.blur-overlay.disabled {
+    display: none !important;
+}
+</style>
+
+<script>
+class ImageModerationManager {
+    constructor() {
+        this.currentImage = null;
+        this.analysisData = null;
+        this.currentImagePath = null;
+        this.blurStates = {};
+        this.mediaId = null;
+        this.queueData = null;
+        this.moderationQueue = [];
+        this.selectedQueueItem = null;
+        
+        this.init();
+    }
+    
+    async init() {
+        console.log('=€ Initializing Image Moderation...');
+        await this.loadModerationQueue();
+        console.log(' Image Moderation initialized successfully');
+    }
+    
+    async loadModerationQueue() {
+        try {
+            console.log('=á Loading moderation queue...');
+            const response = await fetch('/api/enhanced-content-moderation/admin/queue');
+            const result = await response.json();
+            
+            if (result.success && result.queue) {
+                this.moderationQueue = result.queue;
+                this.renderQueueList();
+                console.log(' Loaded', this.moderationQueue.length, 'items from queue');
+            } else {
+                console.error('Failed to load queue:', result.error);
+                this.showQueueError('Failed to load moderation queue');
+            }
+        } catch (error) {
+            console.error('Error loading queue:', error);
+            this.showQueueError('Error loading moderation queue: ' + error.message);
+        }
+    }
+    
+    renderQueueList() {
+        const container = document.getElementById('queueList');
+        
+        if (this.moderationQueue.length === 0) {
+            container.innerHTML = `
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-inbox fs-1 mb-3"></i>
+                    <h5>No items in queue</h5>
+                    <p class="mb-0">All images have been reviewed</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const queueHtml = this.moderationQueue.map(item => `
+            <div class="queue-item border rounded p-3 mb-2" onclick="imageModeration.selectQueueItem(${item.id})">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong>${item.model_name}</strong>
+                        <br><small class="text-muted">${item.usage_intent}</small>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-${this.getPriorityColor(item.priority)}">${item.priority.toUpperCase()}</span>
+                        <br><small class="text-muted">${item.nudity_score.toFixed(1)}%</small>
+                    </div>
+                </div>
+                ${item.detected_parts ? `
+                    <div class="mt-2">
+                        <small class="text-muted">Detected: ${Object.keys(item.detected_parts).join(', ')}</small>
+                    </div>
+                ` : ''}
+            </div>
+        `).join('');
+        
+        container.innerHTML = queueHtml;
+    }
+    
+    getPriorityColor(priority) {
+        const colors = { urgent: 'danger', high: 'warning', medium: 'info', low: 'secondary' };
+        return colors[priority] || 'secondary';
+    }
+    
+    showQueueError(message) {
+        document.getElementById('queueList').innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>${message}
+            </div>
+        `;
+    }
+    
+    async selectQueueItem(itemId) {
+        const item = this.moderationQueue.find(i => i.id === itemId);
+        if (!item) return;
+        
+        // Update selected item styling
+        document.querySelectorAll('.queue-item').forEach(el => el.classList.remove('selected'));
+        event.target.closest('.queue-item').classList.add('selected');
+        
+        this.selectedQueueItem = item;
+        this.mediaId = itemId;
+        
+        console.log('=Ë Selected queue item:', item);
+        
+        // Show media info
+        this.showMediaInfo(item);
+        
+        // Load image for review
+        await this.loadImageForReview(item);
+    }
+    
+    showMediaInfo(item) {
+        const content = `
+            <div class="row">
+                <div class="col-6"><strong>Model:</strong></div>
+                <div class="col-6">${item.model_name}</div>
+                
+                <div class="col-6"><strong>Nudity Score:</strong></div>
+                <div class="col-6">
+                    <span class="badge bg-${this.getNudityScoreColor(item.nudity_score)}">${item.nudity_score.toFixed(1)}%</span>
+                </div>
+                
+                <div class="col-6"><strong>Usage Intent:</strong></div>
+                <div class="col-6">${item.usage_intent}</div>
+                
+                <div class="col-6"><strong>Priority:</strong></div>
+                <div class="col-6">
+                    <span class="badge bg-${this.getPriorityColor(item.priority)}">${item.priority.toUpperCase()}</span>
+                </div>
+                
+                <div class="col-6"><strong>Queue Type:</strong></div>
+                <div class="col-6">${item.queue_type}</div>
+            </div>
+        `;
+        
+        document.getElementById('mediaInfoContent').innerHTML = content;
+        document.getElementById('mediaInfo').style.display = 'block';
+    }
+    
+    getNudityScoreColor(score) {
+        if (score >= 80) return 'danger';
+        if (score >= 60) return 'warning';
+        if (score >= 40) return 'info';
+        return 'success';
+    }
+    
+    async loadImageForReview(item) {
+        try {
+            // For now, show a placeholder since we need to implement the actual image loading
+            const imageContainer = document.getElementById('imageContainer');
+            imageContainer.innerHTML = `
+                <div class="image-container">
+                    <div class="alert alert-info">
+                        <h5>Image Loading</h5>
+                        <p>Image path: ${item.image_path || item.original_path || 'Path not available'}</p>
+                        <p>This would load the actual image from the blurred folder queue for review.</p>
+                        <small class="text-muted">Integration with backend image serving needed</small>
+                    </div>
+                </div>
+            `;
+            
+            // Show controls
+            document.getElementById('blurControls').style.display = 'block';
+            document.getElementById('analysisResults').style.display = 'block';
+            
+            // Show violations if any
+            if (item.detected_parts && Object.keys(item.detected_parts).length > 0) {
+                this.showViolations(item.detected_parts);
+            }
+            
+            // Show analysis results
+            this.showAnalysisResults(item);
+            
+        } catch (error) {
+            console.error('Error loading image:', error);
+            document.getElementById('imageContainer').innerHTML = `
+                <div class="alert alert-danger">
+                    Error loading image: ${error.message}
+                </div>
+            `;
+        }
+    }
+    
+    showViolations(detectedParts) {
+        const violationsList = Object.entries(detectedParts).map(([part, confidence]) => `
+            <div class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                <div>
+                    <strong>${part.replace(/_/g, ' ')}</strong>
+                    <br><small class="text-muted">AI Detected</small>
+                </div>
+                <div class="text-end">
+                    <span class="badge bg-${confidence > 70 ? 'danger' : confidence > 50 ? 'warning' : 'info'}">
+                        ${confidence.toFixed(1)}%
+                    </span>
+                </div>
+            </div>
+        `).join('');
+        
+        document.getElementById('violationsContent').innerHTML = violationsList;
+        document.getElementById('violationsList').style.display = 'block';
+    }
+    
+    showAnalysisResults(item) {
+        const analysisHtml = `
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    <div class="badge bg-primary fs-6">${item.nudity_score.toFixed(1)}%</div>
+                    <br><small>Nudity Score</small>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="badge bg-info fs-6">${item.queue_type}</div>
+                    <br><small>Queue Type</small>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="badge bg-secondary fs-6">${Object.keys(item.detected_parts || {}).length}</div>
+                    <br><small>Violations Found</small>
+                </div>
+            </div>
+            
+            <div class="mt-3">
+                <strong>Detected Parts:</strong><br>
+                <code>${JSON.stringify(item.detected_parts || {}, null, 2)}</code>
+            </div>
+        `;
+        
+        document.getElementById('analysisContent').innerHTML = analysisHtml;
+    }
+    
+    // Blur control methods (placeholders for now)
+    updateBlurSettings() {
+        const strength = document.getElementById('blurStrength').value;
+        document.getElementById('blurStrengthValue').textContent = strength;
+        console.log('<› Updated blur settings:', { strength });
+    }
+    
+    toggleSharpPreview() {
+        console.log('=A Toggle blur preview');
+        // Implementation needed
+    }
+    
+    addManualBlurArea() {
+        console.log('• Add manual blur area');
+        // Implementation needed
+    }
+    
+    toggleAllBlurs() {
+        console.log('= Toggle all blurs');
+        // Implementation needed
+    }
+    
+    async approveWithBlur() {
+        if (!this.selectedQueueItem) return;
+        
+        console.log(' Approving with blur:', this.selectedQueueItem.id);
+        
+        try {
+            const response = await fetch('/api/enhanced-content-moderation/admin/approve-with-blur', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    content_moderation_id: this.selectedQueueItem.id,
+                    blur_settings: {
+                        strength: document.getElementById('blurStrength').value,
+                        opacity: 0.8,
+                        shape: document.getElementById('blurShape').value
+                    },
+                    admin_notes: 'Approved with blur via admin interface',
+                    reviewed_by: 1
+                })
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                alert(' Image approved with blur successfully!');
+                await this.refreshQueue();
+            } else {
+                alert('L Error approving image: ' + result.error);
+            }
+        } catch (error) {
+            alert('L Error: ' + error.message);
+        }
+    }
+    
+    async approveWithoutBlur() {
+        if (!this.selectedQueueItem) return;
+        
+        console.log(' Approving without blur:', this.selectedQueueItem.id);
+        
+        try {
+            const response = await fetch('/api/enhanced-content-moderation/admin/approve', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    content_moderation_id: this.selectedQueueItem.id,
+                    admin_notes: 'Approved clean via admin interface',
+                    reviewed_by: 1,
+                    final_location: 'public'
+                })
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                alert(' Image approved successfully!');
+                await this.refreshQueue();
+            } else {
+                alert('L Error approving image: ' + result.error);
+            }
+        } catch (error) {
+            alert('L Error: ' + error.message);
+        }
+    }
+    
+    async rejectImage() {
+        if (!this.selectedQueueItem) return;
+        
+        const reason = prompt('Please provide a reason for rejection:');
+        if (!reason) return;
+        
+        console.log('L Rejecting image:', this.selectedQueueItem.id);
+        
+        try {
+            const response = await fetch('/api/enhanced-content-moderation/admin/reject', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    content_moderation_id: this.selectedQueueItem.id,
+                    admin_notes: reason,
+                    reviewed_by: 1
+                })
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                alert('L Image rejected successfully!');
+                await this.refreshQueue();
+            } else {
+                alert('L Error rejecting image: ' + result.error);
+            }
+        } catch (error) {
+            alert('L Error: ' + error.message);
+        }
+    }
+    
+    async refreshQueue() {
+        console.log('= Refreshing moderation queue...');
+        await this.loadModerationQueue();
+        
+        // Clear current selection
+        this.selectedQueueItem = null;
+        document.getElementById('mediaInfo').style.display = 'none';
+        document.getElementById('blurControls').style.display = 'none';
+        document.getElementById('violationsList').style.display = 'none';
+        document.getElementById('analysisResults').style.display = 'none';
+        
+        // Reset image container
+        document.getElementById('imageContainer').innerHTML = `
+            <div class="text-center text-muted py-5">
+                <i class="fas fa-image fs-1 mb-3"></i>
+                <h4>Select an image from the queue to begin review</h4>
+                <p class="text-muted">Images flagged by the AI system will appear in the queue on the left</p>
+            </div>
+        `;
+    }
+}
+
+// Initialize image moderation manager
+let imageModeration;
+
+function initializeImageModeration() {
+    if (document.getElementById('image-moderation-section')) {
+        if (!imageModeration) {
+            console.log('=€ Initializing Image Moderation Manager...');
+            imageModeration = new ImageModerationManager();
+        }
+    }
+}
+
+// Try to initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeImageModeration);
+} else {
+    setTimeout(initializeImageModeration, 100);
+}
+</script>

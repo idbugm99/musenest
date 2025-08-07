@@ -1,0 +1,222 @@
+<!-- Contact Hero Section -->
+<section class="bg-gradient-to-r from-glamour-primary to-glamour-secondary text-white py-20" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 glamour-heading">
+                Contact {{siteName}}
+            </h1>
+            <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto font-light">
+                {{content.contactIntro}}
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Information & Form -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            <!-- Contact Information -->
+            <div data-aos="fade-right">
+                <h2 class="text-3xl font-bold mb-8 glamour-heading text-glamour-primary">
+                    Let's Connect
+                </h2>
+                
+                <div class="space-y-8">
+                    {{#if contactEmail}}
+                    <div class="flex items-center space-x-6">
+                        <div class="w-16 h-16 bg-gradient-to-br from-glamour-primary to-glamour-secondary rounded-full flex items-center justify-center shadow-lg">
+                            <i class="fas fa-envelope text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 text-lg">Email</h3>
+                            <a href="mailto:{{contactEmail}}" class="text-glamour-primary hover:text-glamour-secondary transition-colors font-medium">
+                                {{contactEmail}}
+                            </a>
+                        </div>
+                    </div>
+                    {{/if}}
+                    
+                    {{#if contactPhone}}
+                    <div class="flex items-center space-x-6">
+                        <div class="w-16 h-16 bg-gradient-to-br from-glamour-primary to-glamour-secondary rounded-full flex items-center justify-center shadow-lg">
+                            <i class="fas fa-phone text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 text-lg">Phone</h3>
+                            <a href="tel:{{contactPhone}}" class="text-glamour-primary hover:text-glamour-secondary transition-colors font-medium">
+                                {{contactPhone}}
+                            </a>
+                        </div>
+                    </div>
+                    {{/if}}
+                    
+                    {{#if location}}
+                    <div class="flex items-center space-x-6">
+                        <div class="w-16 h-16 bg-gradient-to-br from-glamour-primary to-glamour-secondary rounded-full flex items-center justify-center shadow-lg">
+                            <i class="fas fa-map-marker-alt text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 text-lg">Location</h3>
+                            <p class="text-gray-600">{{location}}</p>
+                        </div>
+                    </div>
+                    {{/if}}
+                    
+                    {{#if workingHours}}
+                    <div class="flex items-center space-x-6">
+                        <div class="w-16 h-16 bg-gradient-to-br from-glamour-primary to-glamour-secondary rounded-full flex items-center justify-center shadow-lg">
+                            <i class="fas fa-clock text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 text-lg">Availability</h3>
+                            <p class="text-gray-600">{{workingHours}}</p>
+                        </div>
+                    </div>
+                    {{/if}}
+                </div>
+                
+                <!-- Social Links -->
+                {{#if socialLinks}}
+                <div class="mt-12">
+                    <h3 class="text-xl font-semibold mb-6 glamour-heading">Follow Me</h3>
+                    <div class="flex space-x-4">
+                        {{#each socialLinks}}
+                        <a href="{{this.url}}" class="w-12 h-12 bg-gradient-to-br from-glamour-primary to-glamour-secondary rounded-full flex items-center justify-center text-white hover:shadow-lg transition-all duration-300 transform hover:scale-110">
+                            <i class="fab fa-{{this.icon}}"></i>
+                        </a>
+                        {{/each}}
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+            
+            <!-- Contact Form -->
+            <div data-aos="fade-left">
+                <div class="glamour-card p-10 shadow-2xl">
+                    <h2 class="text-2xl font-bold mb-8 glamour-heading text-glamour-primary">
+                        Send a Message
+                    </h2>
+                    
+                    <form id="contactForm" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="firstName" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    First Name *
+                                </label>
+                                <input type="text" id="firstName" name="firstName" required
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-glamour-primary focus:border-transparent transition-all">
+                            </div>
+                            <div>
+                                <label for="lastName" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Last Name *
+                                </label>
+                                <input type="text" id="lastName" name="lastName" required
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-glamour-primary focus:border-transparent transition-all">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Email Address *
+                            </label>
+                            <input type="email" id="email" name="email" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-glamour-primary focus:border-transparent transition-all">
+                        </div>
+                        
+                        <div>
+                            <label for="phone" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Phone Number
+                            </label>
+                            <input type="tel" id="phone" name="phone"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-glamour-primary focus:border-transparent transition-all">
+                        </div>
+                        
+                        <div>
+                            <label for="subject" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Subject *
+                            </label>
+                            <select id="subject" name="subject" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-glamour-primary focus:border-transparent transition-all">
+                                <option value="">Select a subject</option>
+                                <option value="general">General Inquiry</option>
+                                <option value="booking">Booking Request</option>
+                                <option value="rates">Services & Rates</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="message" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Message *
+                            </label>
+                            <textarea id="message" name="message" rows="6" required
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-glamour-primary focus:border-transparent transition-all"></textarea>
+                        </div>
+                        
+                        <div>
+                            <button type="submit" class="glamour-btn w-full">
+                                <i class="fas fa-paper-plane mr-2"></i>
+                                Send Message
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Response Time / Expectations -->
+<section class="py-20 bg-gradient-to-r from-pink-50 to-purple-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-4 glamour-heading text-glamour-primary">
+                What to Expect
+            </h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center glamour-card p-8" data-aos="fade-up" data-aos-delay="0">
+                <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-glamour-primary to-glamour-secondary rounded-full flex items-center justify-center shadow-lg">
+                    <i class="fas fa-reply text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3 glamour-heading">Swift Response</h3>
+                <p class="text-gray-600">I respond to all inquiries within 12 hours with personalized attention</p>
+            </div>
+            
+            <div class="text-center glamour-card p-8" data-aos="fade-up" data-aos-delay="100">
+                <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-glamour-primary to-glamour-secondary rounded-full flex items-center justify-center shadow-lg">
+                    <i class="fas fa-shield-alt text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3 glamour-heading">Complete Discretion</h3>
+                <p class="text-gray-600">Absolute confidentiality and sophisticated privacy in all interactions</p>
+            </div>
+            
+            <div class="text-center glamour-card p-8" data-aos="fade-up" data-aos-delay="200">
+                <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-glamour-primary to-glamour-secondary rounded-full flex items-center justify-center shadow-lg">
+                    <i class="fas fa-gem text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3 glamour-heading">Luxury Experience</h3>
+                <p class="text-gray-600">Every interaction is crafted with sophistication and attention to detail</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Get form data
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
+    
+    // Here you would typically send the data to your backend
+    console.log('Contact form submitted:', data);
+    
+    // Show success message (replace with actual implementation)
+    alert('Thank you for your message! I will get back to you soon.');
+    this.reset();
+});
+</script>

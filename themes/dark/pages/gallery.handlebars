@@ -1,0 +1,267 @@
+<!-- Gallery Hero Section -->
+<section class="dark-hero min-vh-50 d-flex align-items-center text-white position-relative pt-5" data-aos="fade-in">
+    <div class="container position-relative" style="z-index: 10;">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <div class="dark-badge mb-4">Gallery</div>
+                <h1 class="display-2 fw-bold mb-4 dark-heading">
+                    Portfolio
+                </h1>
+                <p class="fs-4 text-dark-muted mx-auto" style="max-width: 600px;">
+                    {{content.galleryIntro}}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Categories -->
+{{#if galleryCategories}}
+<section class="py-4 bg-dark-surface">
+    <div class="container">
+        <div class="text-center">
+            <div class="d-inline-flex bg-dark-card rounded-4 p-1 border border-dark-border">
+                <button class="gallery-filter active dark-btn small px-4 py-2" data-category="all">
+                    All
+                </button>
+                {{#each galleryCategories}}
+                <button class="gallery-filter px-4 py-2 rounded-3 small fw-semibold text-dark-muted border-0 bg-transparent hover:bg-dark-ghost hover:text-dark-primary" data-category="{{this.slug}}">
+                    {{this.name}}
+                </button>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Gallery Grid -->
+<section class="py-5" style="background: var(--dark-bg);">
+    <div class="container">
+        {{#if galleryImages}}
+        
+        <!-- Gallery Grid -->
+        <div class="dark-grid dark-grid-4" id="darkGalleryGrid">
+            {{#each galleryImages}}
+            <div class="gallery-item position-relative overflow-hidden rounded-3 dark-card" 
+                 data-category="{{this.category}}" 
+                 data-aos="zoom-in" 
+                 data-aos-delay="{{@index}}0">
+                <img src="{{this.thumbnail}}" 
+                     alt="{{this.caption}}" 
+                     class="w-100" style="height: 280px; object-fit: cover; transition: transform 0.3s ease;"
+                     onmouseover="this.style.transform='scale(1.05)'"
+                     onmouseout="this.style.transform='scale(1)'">
+                
+                <!-- Dark Overlay -->
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" 
+                     style="background: linear-gradient(135deg, var(--dark-primary)90, var(--dark-accent)90); opacity: 0; transition: opacity 0.3s ease;"
+                     onmouseover="this.style.opacity='0.95'"
+                     onmouseout="this.style.opacity='0'">
+                    <div class="text-center text-white">
+                        <button class="dark-btn bg-white text-dark-primary mb-2" 
+                                onclick="openDarkLightbox('{{this.fullSize}}', '{{this.caption}}')">
+                            <i class="fas fa-expand me-2"></i>
+                            View
+                        </button>
+                        {{#if this.caption}}
+                        <p class="small fw-semibold">{{this.caption}}</p>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        
+        <!-- Load More Button -->
+        {{#if content.hasMoreImages}}
+        <div class="text-center mt-5" data-aos="fade-up">
+            <button id="darkLoadMoreBtn" class="dark-btn-outline fs-5 px-4 py-3">
+                <i class="fas fa-plus me-2"></i>
+                Load More
+            </button>
+        </div>
+        {{/if}}
+        
+        {{else}}
+        <!-- Empty Gallery State -->
+        <div class="text-center py-5">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-4" 
+                 style="width: 160px; height: 160px; background: var(--dark-card); border: 2px solid var(--dark-primary);">
+                <i class="fas fa-camera fs-1 text-dark-primary"></i>
+            </div>
+            <h3 class="display-6 fw-bold mb-4 dark-heading">Portfolio Coming Soon</h3>
+            <p class="text-dark-muted mb-4 mx-auto" style="max-width: 500px;">
+                Professional content and portfolio pieces will be showcased here.
+            </p>
+            <a href="/{{modelSlug}}/contact" class="dark-btn">
+                <i class="fas fa-envelope me-2"></i>
+                Get in Touch
+            </a>
+        </div>
+        {{/if}}
+    </div>
+</section>
+
+<!-- Gallery Stats -->
+{{#if galleryStats}}
+<section class="py-5" style="background: linear-gradient(135deg, var(--dark-primary)15, var(--dark-accent)15); border-top: 1px solid var(--dark-border); border-bottom: 1px solid var(--dark-border);">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-6 fw-bold mb-4 dark-heading text-dark-primary">
+                Portfolio Stats
+            </h2>
+        </div>
+        
+        <div class="row g-4">
+            {{#if galleryStats.totalPhotos}}
+            <div class="col-6 col-md-3 text-center" data-aos="fade-up" data-aos-delay="0">
+                <div class="display-4 fw-bold mb-2 dark-mono text-dark-primary">{{galleryStats.totalPhotos}}</div>
+                <div class="small text-dark-muted text-uppercase fw-bold">Images</div>
+            </div>
+            {{/if}}
+            
+            {{#if galleryStats.categories}}
+            <div class="col-6 col-md-3 text-center" data-aos="fade-up" data-aos-delay="100">
+                <div class="display-4 fw-bold mb-2 dark-mono text-dark-primary">{{galleryStats.categories}}</div>
+                <div class="small text-dark-muted text-uppercase fw-bold">Categories</div>
+            </div>
+            {{/if}}
+            
+            {{#if galleryStats.lastUpdated}}
+            <div class="col-6 col-md-3 text-center" data-aos="fade-up" data-aos-delay="200">
+                <div class="display-4 fw-bold mb-2 dark-mono text-dark-primary">{{galleryStats.lastUpdated}}</div>
+                <div class="small text-dark-muted text-uppercase fw-bold">Updates</div>
+            </div>
+            {{/if}}
+            
+            {{#if galleryStats.featured}}
+            <div class="col-6 col-md-3 text-center" data-aos="fade-up" data-aos-delay="300">
+                <div class="display-4 fw-bold mb-2 dark-mono text-dark-primary">{{galleryStats.featured}}</div>
+                <div class="small text-dark-muted text-uppercase fw-bold">Featured</div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Call to Action -->
+<section class="py-5 bg-dark-surface">
+    <div class="container text-center" data-aos="fade-up">
+        <h2 class="display-5 fw-bold dark-heading text-dark-primary mb-4">
+            Like What You See?
+        </h2>
+        <p class="fs-5 text-dark-muted mb-5 mx-auto" style="max-width: 600px;">
+            Ready to work together? Let's discuss your project and create something amazing.
+        </p>
+        <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+            <a href="/{{modelSlug}}/contact" class="dark-btn fs-5 px-4 py-3">
+                <i class="fas fa-envelope me-2"></i>
+                Contact Me
+            </a>
+            <a href="/{{modelSlug}}/rates" class="dark-btn-outline fs-5 px-4 py-3">
+                <i class="fas fa-list me-2"></i>
+                View Services
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Dark Lightbox Modal -->
+<div id="darkLightboxModal" class="position-fixed top-0 start-0 w-100 h-100 d-none align-items-center justify-content-center" style="background: rgba(0, 0, 0, 0.95); z-index: 9999;">
+    <div class="position-relative p-4" style="max-width: 90vw; max-height: 90vh;">
+        <button onclick="closeDarkLightbox()" class="position-absolute top-0 end-0 text-white fs-3 border-0 bg-transparent p-3" style="z-index: 10;">
+            <i class="fas fa-times"></i>
+        </button>
+        <img id="darkLightboxImage" src="" alt="" class="rounded-3" style="max-width: 100%; max-height: 90vh; object-fit: contain;">
+        <div id="darkLightboxCaption" class="text-white text-center mt-3 dark-heading d-none"></div>
+    </div>
+</div>
+
+<script>
+// Gallery filtering
+document.addEventListener('DOMContentLoaded', function() {
+    const filters = document.querySelectorAll('.gallery-filter');
+    const items = document.querySelectorAll('.gallery-item');
+    
+    filters.forEach(filter => {
+        filter.addEventListener('click', function() {
+            const filterValue = this.dataset.category;
+            
+            // Update active filter
+            filters.forEach(f => {
+                f.classList.remove('active', 'dark-btn');
+                f.classList.add('text-dark-muted', 'bg-transparent');
+            });
+            this.classList.add('active', 'dark-btn');
+            this.classList.remove('text-dark-muted', 'bg-transparent');
+            
+            // Filter items
+            items.forEach(item => {
+                if (filterValue === 'all' || item.dataset.category === filterValue) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Load more functionality
+    const loadMoreBtn = document.getElementById('darkLoadMoreBtn');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+            // This would typically load more images via AJAX
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
+            
+            // Simulate loading delay
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-plus me-2"></i>Load More';
+                // Add new images to gallery here
+            }, 1000);
+        });
+    }
+});
+
+// Dark Lightbox functionality
+function openDarkLightbox(imageSrc, caption) {
+    const modal = document.getElementById('darkLightboxModal');
+    const image = document.getElementById('darkLightboxImage');
+    const captionDiv = document.getElementById('darkLightboxCaption');
+    
+    image.src = imageSrc;
+    
+    if (caption) {
+        captionDiv.textContent = caption;
+        captionDiv.classList.remove('d-none');
+    } else {
+        captionDiv.classList.add('d-none');
+    }
+    
+    modal.classList.remove('d-none');
+    modal.classList.add('d-flex');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDarkLightbox() {
+    const modal = document.getElementById('darkLightboxModal');
+    modal.classList.add('d-none');
+    modal.classList.remove('d-flex');
+    document.body.style.overflow = 'auto';
+}
+
+// Close lightbox on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeDarkLightbox();
+    }
+});
+
+// Close lightbox on background click
+document.getElementById('darkLightboxModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDarkLightbox();
+    }
+});
+</script>

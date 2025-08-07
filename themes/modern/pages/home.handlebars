@@ -1,0 +1,235 @@
+<!-- Hero Section -->
+<section class="modern-hero min-h-screen flex items-center justify-center text-white relative pt-16" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <div class="modern-slide">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 modern-heading">
+                {{content.heroTitle}}
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 opacity-90 font-light max-w-3xl mx-auto">
+                {{content.heroSubtitle}}
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="/{{modelSlug}}/contact" class="modern-btn text-base px-8 py-4">
+                    <i class="fas fa-arrow-right mr-2"></i>
+                    Get Started
+                </a>
+                <a href="/{{modelSlug}}/about" class="modern-btn-outline text-base px-8 py-4 text-white border-white hover:bg-white hover:text-gray-900">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modern geometric shapes -->
+    <div class="absolute inset-0 overflow-hidden opacity-10">
+        <div class="absolute top-1/4 right-1/4 w-32 h-32 bg-white transform rotate-45"></div>
+        <div class="absolute bottom-1/4 left-1/4 w-24 h-24 bg-white rounded-full"></div>
+        <div class="absolute top-1/2 left-1/2 w-16 h-16 bg-white transform -translate-x-1/2 -translate-y-1/2 rotate-12"></div>
+    </div>
+</section>
+
+<!-- About Preview Section -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="modern-grid modern-grid-2 items-center">
+            <div data-aos="fade-right">
+                <div class="modern-badge mb-4">About</div>
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 modern-heading text-modern-primary">
+                    Meet {{siteName}}
+                </h2>
+                <div class="text-lg text-modern-muted leading-relaxed space-y-4 mb-8">
+                    {{{content.aboutPreview}}}
+                </div>
+                <div class="flex flex-wrap gap-4 mb-8">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-modern-primary rounded-full"></div>
+                        <span class="text-sm font-medium text-modern-muted modern-mono">Professional</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-modern-accent rounded-full"></div>
+                        <span class="text-sm font-medium text-modern-muted modern-mono">Reliable</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-modern-secondary rounded-full"></div>
+                        <span class="text-sm font-medium text-modern-muted modern-mono">Modern</span>
+                    </div>
+                </div>
+                <a href="/{{modelSlug}}/about" class="modern-btn">
+                    <i class="fas fa-user mr-2"></i>
+                    About Me
+                </a>
+            </div>
+            <div data-aos="fade-left">
+                {{#if content.aboutImage}}
+                <div class="relative">
+                    <img src="{{content.aboutImage}}" alt="{{siteName}}" 
+                         class="w-full rounded-2xl shadow-xl">
+                    <div class="absolute inset-0 bg-modern-primary opacity-10 rounded-2xl"></div>
+                </div>
+                {{else}}
+                <div class="modern-card p-12 text-center">
+                    <div class="w-32 h-32 mx-auto mb-6 bg-modern-primary rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-user text-4xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4 modern-heading">Professional Profile</h3>
+                    <p class="text-modern-muted">Professional content coming soon</p>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Preview Section -->
+<section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <div class="modern-badge mb-4">Services</div>
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 modern-heading text-modern-primary">
+                What I Offer
+            </h2>
+            <p class="text-xl text-modern-muted max-w-3xl mx-auto">
+                {{content.servicesPreview}}
+            </p>
+        </div>
+        
+        {{#if services}}
+        <div class="modern-grid modern-grid-3">
+            {{#each services}}
+            <div class="modern-card p-8 text-center group" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                <div class="w-16 h-16 mx-auto mb-6 bg-modern-primary rounded-2xl flex items-center justify-center group-hover:bg-modern-secondary transition-colors">
+                    <i class="{{this.icon}} text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4 modern-heading">{{this.name}}</h3>
+                <p class="text-modern-muted mb-6 leading-relaxed">{{this.description}}</p>
+                {{#if this.price}}
+                <p class="text-2xl font-bold text-modern-primary modern-mono">{{formatCurrency this.price}}</p>
+                {{/if}}
+            </div>
+            {{/each}}
+        </div>
+        {{else}}
+        <div class="modern-card p-12 text-center max-w-2xl mx-auto">
+            <div class="w-24 h-24 mx-auto mb-6 bg-modern-primary rounded-2xl flex items-center justify-center">
+                <i class="fas fa-cogs text-3xl text-white"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-4 modern-heading">Professional Services</h3>
+            <p class="text-modern-muted mb-6">Modern, efficient services tailored to your needs</p>
+            <a href="/{{modelSlug}}/rates" class="modern-btn">
+                <i class="fas fa-list mr-2"></i>
+                View Services
+            </a>
+        </div>
+        {{/if}}
+        
+        <div class="text-center mt-12" data-aos="fade-up">
+            <a href="/{{modelSlug}}/rates" class="modern-btn-outline">
+                <i class="fas fa-arrow-right mr-2"></i>
+                All Services & Rates
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Preview Section -->
+{{#if galleryImages}}
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <div class="modern-badge mb-4">Gallery</div>
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 modern-heading text-modern-primary">
+                Recent Work
+            </h2>
+            <p class="text-xl text-modern-muted">
+                A showcase of professional content and projects
+            </p>
+        </div>
+        
+        <div class="modern-grid modern-grid-4">
+            {{#each galleryImages}}
+            {{#if (lt @index 8)}}
+            <div class="relative group overflow-hidden rounded-2xl modern-card" data-aos="zoom-in" data-aos-delay="{{@index}}0">
+                <img src="{{this.thumbnail}}" alt="Gallery Image" 
+                     class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105">
+                <div class="absolute inset-0 bg-modern-primary opacity-0 group-hover:opacity-80 transition-opacity duration-300 flex items-center justify-center">
+                    <div class="text-center text-white">
+                        <i class="fas fa-expand text-2xl mb-2"></i>
+                        {{#if this.caption}}
+                        <p class="text-sm font-medium">{{this.caption}}</p>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+            {{/each}}
+        </div>
+        
+        <div class="text-center mt-12" data-aos="fade-up">
+            <a href="/{{modelSlug}}/gallery" class="modern-btn">
+                <i class="fas fa-images mr-2"></i>
+                View Gallery
+            </a>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Stats Section -->
+<section class="py-20 bg-modern-primary text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-4 modern-heading">
+                By the Numbers
+            </h2>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div class="text-center" data-aos="fade-up" data-aos-delay="0">
+                <div class="text-4xl font-bold mb-2 modern-mono">100%</div>
+                <div class="text-sm opacity-90 uppercase tracking-wide">Satisfaction</div>
+            </div>
+            
+            <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+                <div class="text-4xl font-bold mb-2 modern-mono">24/7</div>
+                <div class="text-sm opacity-90 uppercase tracking-wide">Support</div>
+            </div>
+            
+            <div class="text-center" data-aos="fade-up" data-aos-delay="200">
+                <div class="text-4xl font-bold mb-2 modern-mono">5★</div>
+                <div class="text-sm opacity-90 uppercase tracking-wide">Rating</div>
+            </div>
+            
+            <div class="text-center" data-aos="fade-up" data-aos-delay="300">
+                <div class="text-4xl font-bold mb-2 modern-mono">Pro</div>
+                <div class="text-sm opacity-90 uppercase tracking-wide">Service</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 modern-heading text-modern-primary">
+                {{content.ctaTitle}}
+            </h2>
+            <p class="text-xl text-modern-muted mb-8">
+                {{content.ctaSubtitle}}
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="/{{modelSlug}}/contact" class="modern-btn text-lg px-8 py-4">
+                    <i class="fas fa-envelope mr-2"></i>
+                    Contact Me
+                </a>
+                {{#if bookingUrl}}
+                <a href="{{bookingUrl}}" class="modern-btn-outline text-lg px-8 py-4">
+                    <i class="fas fa-calendar mr-2"></i>
+                    Schedule
+                </a>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</section>

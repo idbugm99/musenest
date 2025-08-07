@@ -1,0 +1,237 @@
+<!-- Rates Hero Section -->
+<section class="modern-hero min-h-96 flex items-center justify-center text-white pt-16" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <div class="modern-badge mb-4">Services</div>
+        <h1 class="text-5xl md:text-6xl font-bold mb-6 modern-heading">
+            Services & Rates
+        </h1>
+        <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto font-light">
+            {{content.ratesIntro}}
+        </p>
+    </div>
+</section>
+
+<!-- Services Grid -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{#if services}}
+        <div class="modern-grid modern-grid-3">
+            {{#each services}}
+            <div class="modern-card p-8 text-center group" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                <div class="w-16 h-16 mx-auto mb-6 bg-modern-primary rounded-2xl flex items-center justify-center group-hover:bg-modern-secondary transition-colors">
+                    <i class="{{this.icon}} text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4 modern-heading">{{this.name}}</h3>
+                <p class="text-modern-muted mb-6 leading-relaxed">{{this.description}}</p>
+                {{#if this.duration}}
+                <div class="text-sm text-modern-muted mb-3 modern-mono">
+                    <i class="fas fa-clock mr-1"></i> {{this.duration}}
+                </div>
+                {{/if}}
+                {{#if this.price}}
+                <div class="text-3xl font-bold text-modern-primary mb-4 modern-mono">
+                    {{formatCurrency this.price}}
+                </div>
+                {{/if}}
+                {{#if this.features}}
+                <ul class="text-left text-sm text-modern-muted space-y-1 mb-6 bg-gray-50 p-4 rounded-lg">
+                    {{#each this.features}}
+                    <li class="flex items-center">
+                        <div class="w-1 h-1 bg-modern-primary rounded-full mr-3"></div>
+                        <span>{{this}}</span>
+                    </li>
+                    {{/each}}
+                </ul>
+                {{/if}}
+                <a href="/{{../modelSlug}}/contact?service={{this.slug}}" class="modern-btn w-full">
+                    <i class="fas fa-arrow-right mr-2"></i>
+                    Book Service
+                </a>
+            </div>
+            {{/each}}
+        </div>
+        {{else}}
+        <div class="text-center py-16">
+            <div class="w-24 h-24 mx-auto mb-6 bg-modern-primary rounded-2xl flex items-center justify-center">
+                <i class="fas fa-cogs text-3xl text-white"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-4 modern-heading">Professional Services</h3>
+            <p class="text-modern-muted mb-6">Contact me for detailed service information and rates.</p>
+            <a href="/{{modelSlug}}/contact" class="modern-btn">
+                <i class="fas fa-envelope mr-2"></i>
+                Get in Touch
+            </a>
+        </div>
+        {{/if}}
+    </div>
+</section>
+
+<!-- Policies Section -->
+<section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <div class="modern-badge mb-4">Policies</div>
+            <h2 class="text-3xl font-bold mb-4 modern-heading text-modern-primary">
+                Service Information
+            </h2>
+        </div>
+        
+        <div class="modern-grid modern-grid-3">
+            <div class="modern-card p-8" data-aos="fade-up" data-aos-delay="0">
+                <div class="w-14 h-14 mb-6 bg-modern-primary rounded-2xl flex items-center justify-center">
+                    <i class="fas fa-calendar-check text-white text-lg"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-3 modern-heading">Booking</h3>
+                <p class="text-modern-muted text-sm leading-relaxed">
+                    {{content.advanceBooking}}
+                </p>
+            </div>
+            
+            <div class="modern-card p-8" data-aos="fade-up" data-aos-delay="100">
+                <div class="w-14 h-14 mb-6 bg-modern-primary rounded-2xl flex items-center justify-center">
+                    <i class="fas fa-credit-card text-white text-lg"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-3 modern-heading">Payment</h3>
+                <p class="text-modern-muted text-sm leading-relaxed">
+                    {{content.paymentPolicy}}
+                </p>
+            </div>
+            
+            <div class="modern-card p-8" data-aos="fade-up" data-aos-delay="200">
+                <div class="w-14 h-14 mb-6 bg-modern-primary rounded-2xl flex items-center justify-center">
+                    <i class="fas fa-times-circle text-white text-lg"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-3 modern-heading">Cancellation</h3>
+                <p class="text-modern-muted text-sm leading-relaxed">
+                    {{content.cancellationPolicy}}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Package Deals -->
+{{#if packages}}
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <div class="modern-badge mb-4">Packages</div>
+            <h2 class="text-3xl font-bold mb-4 modern-heading text-modern-primary">
+                Service Packages
+            </h2>
+            <p class="text-xl text-modern-muted">
+                Comprehensive packages for better value
+            </p>
+        </div>
+        
+        <div class="modern-grid modern-grid-2">
+            {{#each packages}}
+            <div class="modern-card p-10 relative" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                {{#if this.popular}}
+                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <span class="modern-badge">Most Popular</span>
+                </div>
+                {{/if}}
+                
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold mb-4 modern-heading">{{this.name}}</h3>
+                    <div class="text-4xl font-bold text-modern-primary mb-2 modern-mono">
+                        {{formatCurrency this.price}}
+                    </div>
+                    {{#if this.originalPrice}}
+                    <div class="text-modern-muted line-through mb-4">
+                        Was {{formatCurrency this.originalPrice}}
+                    </div>
+                    {{/if}}
+                    <p class="text-modern-muted mb-8">{{this.description}}</p>
+                    
+                    <ul class="text-left space-y-2 mb-8">
+                        {{#each this.includes}}
+                        <li class="flex items-center">
+                            <div class="w-2 h-2 bg-modern-primary rounded-full mr-3"></div>
+                            <span class="text-modern-muted">{{this}}</span>
+                        </li>
+                        {{/each}}
+                    </ul>
+                    
+                    <a href="/{{../modelSlug}}/contact?package={{this.slug}}" class="modern-btn w-full">
+                        <i class="fas fa-arrow-right mr-2"></i>
+                        Book Package
+                    </a>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Process Section -->
+<section class="py-20 bg-modern-primary text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-4 modern-heading">
+                How It Works
+            </h2>
+            <p class="text-xl opacity-90">
+                Simple, straightforward process
+            </p>
+        </div>
+        
+        <div class="modern-grid modern-grid-4">
+            <div class="text-center" data-aos="fade-up" data-aos-delay="0">
+                <div class="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center">
+                    <span class="text-2xl font-bold modern-mono">1</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2 modern-heading">Contact</h3>
+                <p class="opacity-90 text-sm">Reach out via email or phone</p>
+            </div>
+            
+            <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+                <div class="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center">
+                    <span class="text-2xl font-bold modern-mono">2</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2 modern-heading">Discuss</h3>
+                <p class="opacity-90 text-sm">We discuss your needs and preferences</p>
+            </div>
+            
+            <div class="text-center" data-aos="fade-up" data-aos-delay="200">
+                <div class="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center">
+                    <span class="text-2xl font-bold modern-mono">3</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2 modern-heading">Schedule</h3>
+                <p class="opacity-90 text-sm">Book your preferred time and date</p>
+            </div>
+            
+            <div class="text-center" data-aos="fade-up" data-aos-delay="300">
+                <div class="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center">
+                    <span class="text-2xl font-bold modern-mono">4</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2 modern-heading">Deliver</h3>
+                <p class="opacity-90 text-sm">Professional service delivered</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <h2 class="text-4xl font-bold mb-6 modern-heading text-modern-primary">
+            Ready to Get Started?
+        </h2>
+        <p class="text-xl text-modern-muted mb-8 max-w-2xl mx-auto">
+            Contact me today to discuss your needs and schedule your service.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="/{{modelSlug}}/contact" class="modern-btn text-lg px-8 py-4">
+                <i class="fas fa-envelope mr-2"></i>
+                Contact Me
+            </a>
+            <a href="/{{modelSlug}}/about" class="modern-btn-outline text-lg px-8 py-4">
+                <i class="fas fa-user mr-2"></i>
+                Learn More
+            </a>
+        </div>
+    </div>
+</section>

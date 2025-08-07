@@ -1,0 +1,165 @@
+<!-- About Hero Section -->
+<section class="py-16 bg-gradient-to-r from-glamour-primary to-glamour-accent text-white" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6 glamour-heading">
+                About {{siteName}}
+            </h1>
+            <p class="text-xl md:text-2xl text-pink-100 max-w-3xl mx-auto">
+                {{content.aboutIntro}}
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Main About Content -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            <!-- About Text -->
+            <div data-aos="fade-right">
+                <div class="prose prose-lg max-w-none">
+                    <div class="text-gray-700 leading-relaxed space-y-6">
+                        {{{content.mainContent}}}
+                    </div>
+                </div>
+                
+                {{#if content.personalInfo}}
+                <div class="mt-12">
+                    <h3 class="text-2xl font-bold mb-6 glamour-heading glamour-text-gradient">
+                        Personal Details
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {{#each content.personalInfo}}
+                        <div class="flex items-center space-x-3">
+                            <i class="{{this.icon}} text-glamour-primary"></i>
+                            <span class="text-gray-700">
+                                <strong>{{this.label}}:</strong> {{this.value}}
+                            </span>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+            
+            <!-- About Images -->
+            <div data-aos="fade-left">
+                {{#if content.aboutImages}}
+                <div class="space-y-6">
+                    {{#each content.aboutImages}}
+                    <div class="relative">
+                        <img src="{{this.url}}" alt="{{this.caption}}" 
+                             class="w-full rounded-2xl shadow-2xl glamour-hover-lift">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl"></div>
+                        {{#if this.caption}}
+                        <div class="absolute bottom-4 left-4 text-white">
+                            <p class="text-sm font-medium">{{this.caption}}</p>
+                        </div>
+                        {{/if}}
+                    </div>
+                    {{/each}}
+                </div>
+                {{else}}
+                <div class="glamour-card p-12 text-center">
+                    <div class="w-32 h-32 mx-auto mb-6 bg-glamour-primary rounded-full flex items-center justify-center">
+                        <i class="fas fa-camera text-4xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4 glamour-heading">Photo Gallery</h3>
+                    <p class="text-gray-600 mb-6">Professional photos coming soon</p>
+                    <a href="/{{modelSlug}}/gallery" class="glamour-btn">
+                        View Current Gallery
+                    </a>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Values/Interests Section -->
+{{#if content.values}}
+<section class="py-16 bg-gradient-to-br from-pink-50 to-purple-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12" data-aos="fade-up">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 glamour-heading glamour-text-gradient">
+                What I Value
+            </h2>
+            <p class="text-xl text-gray-600">
+                The principles that guide my approach
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {{#each content.values}}
+            <div class="glamour-card p-8 text-center glamour-hover-lift" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                <div class="w-16 h-16 mx-auto mb-6 bg-glamour-primary rounded-full flex items-center justify-center">
+                    <i class="{{this.icon}} text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4 glamour-heading">{{this.title}}</h3>
+                <p class="text-gray-600">{{this.description}}</p>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Experience Section -->
+{{#if content.experience}}
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12" data-aos="fade-up">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 glamour-heading glamour-text-gradient">
+                Experience & Background
+            </h2>
+            <p class="text-xl text-gray-600">
+                My journey and expertise
+            </p>
+        </div>
+        
+        <div class="max-w-4xl mx-auto">
+            <div class="space-y-8">
+                {{#each content.experience}}
+                <div class="glamour-card p-8 glamour-hover-lift" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 bg-glamour-primary rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="{{this.icon}} text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold mb-2 glamour-heading">{{this.title}}</h3>
+                            {{#if this.period}}
+                            <p class="text-glamour-primary font-medium mb-3">{{this.period}}</p>
+                            {{/if}}
+                            <p class="text-gray-700">{{this.description}}</p>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Call to Action -->
+<section class="py-16 bg-gradient-to-r from-glamour-secondary to-glamour-primary text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <h2 class="text-3xl md:text-4xl font-bold mb-6 glamour-heading">
+            Let's Connect
+        </h2>
+        <p class="text-xl mb-8 text-pink-100 max-w-2xl mx-auto">
+            Ready to experience something extraordinary? I'd love to hear from you.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="/{{modelSlug}}/contact" class="glamour-btn bg-white text-glamour-primary hover:bg-pink-50">
+                <i class="fas fa-envelope mr-2"></i>
+                Get in Touch
+            </a>
+            <a href="/{{modelSlug}}/rates" class="glamour-btn bg-transparent border-2 border-white hover:bg-white hover:text-glamour-primary">
+                <i class="fas fa-list mr-2"></i>
+                View Services
+            </a>
+        </div>
+    </div>
+</section>

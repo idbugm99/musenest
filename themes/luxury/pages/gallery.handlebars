@@ -1,0 +1,256 @@
+<!-- Gallery Hero Section -->
+<section class="luxury-hero min-h-96 flex items-center justify-center text-white pt-20" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <h1 class="text-5xl md:text-7xl font-bold mb-8 luxury-heading">
+            Luxury Gallery
+        </h1>
+        <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto font-light">
+            {{content.galleryIntro}}
+        </p>
+    </div>
+</section>
+
+<!-- Gallery Categories -->
+{{#if galleryCategories}}
+<section class="py-12 bg-gradient-to-r from-gray-50 to-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <div class="inline-flex bg-white rounded-2xl p-2 shadow-xl">
+                <button class="gallery-filter active px-8 py-3 rounded-xl text-sm font-bold transition-all luxury-btn" data-category="all">
+                    All Collections
+                </button>
+                {{#each galleryCategories}}
+                <button class="gallery-filter px-8 py-3 rounded-xl text-sm font-bold transition-all hover:bg-gray-100" data-category="{{this.slug}}">
+                    {{this.name}}
+                </button>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Gallery Grid -->
+<section class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{#if galleryImages}}
+        
+        <!-- Gallery Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8" id="galleryGrid">
+            {{#each galleryImages}}
+            <div class="gallery-item relative group overflow-hidden rounded-2xl shadow-xl luxury-card" 
+                 data-category="{{this.category}}" 
+                 data-aos="zoom-in" 
+                 data-aos-delay="{{@index}}0">
+                <img src="{{this.thumbnail}}" 
+                     alt="{{this.caption}}" 
+                     class="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-110">
+                
+                <!-- Luxury Overlay -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div class="absolute bottom-4 left-4 right-4">
+                        {{#if this.caption}}
+                        <p class="text-white font-medium mb-2">{{this.caption}}</p>
+                        {{/if}}
+                        <button class="luxury-btn text-sm py-2 px-4" 
+                                onclick="openLuxuryLightbox('{{this.fullSize}}', '{{this.caption}}')">
+                            <i class="fas fa-expand mr-2"></i>
+                            View
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        
+        <!-- Load More Button -->
+        {{#if content.hasMoreImages}}
+        <div class="text-center mt-16" data-aos="fade-up">
+            <button id="loadMoreBtn" class="luxury-btn-outline text-lg px-8 py-4">
+                <i class="fas fa-plus mr-2"></i>
+                Load More Luxury Content
+            </button>
+        </div>
+        {{/if}}
+        
+        {{else}}
+        <!-- Empty Gallery State -->
+        <div class="text-center py-24">
+            <div class="w-40 h-40 mx-auto mb-8 bg-gradient-to-br from-luxury-primary to-luxury-accent rounded-full flex items-center justify-center shadow-2xl luxury-float">
+                <i class="fas fa-camera text-5xl text-white"></i>
+            </div>
+            <h3 class="text-3xl font-bold mb-6 luxury-heading">Luxury Gallery Coming Soon</h3>
+            <p class="text-gray-600 mb-10 text-lg max-w-2xl mx-auto">
+                Exclusive luxury photography and content will be available here soon. Every image is carefully curated to showcase the finest details.
+            </p>
+            <a href="/{{modelSlug}}/contact" class="luxury-btn">
+                <i class="fas fa-envelope mr-2"></i>
+                Get in Touch
+            </a>
+        </div>
+        {{/if}}
+    </div>
+</section>
+
+<!-- Gallery Stats -->
+{{#if galleryStats}}
+<section class="py-24 bg-gradient-to-r from-luxury-primary to-luxury-secondary text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="text-4xl font-bold mb-6 luxury-heading">
+                Gallery Statistics
+            </h2>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {{#if galleryStats.totalPhotos}}
+            <div class="text-center" data-aos="fade-up" data-aos-delay="0">
+                <div class="text-5xl font-bold mb-2 luxury-heading">{{galleryStats.totalPhotos}}</div>
+                <div class="text-lg opacity-90">Luxury Photos</div>
+            </div>
+            {{/if}}
+            
+            {{#if galleryStats.categories}}
+            <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+                <div class="text-5xl font-bold mb-2 luxury-heading">{{galleryStats.categories}}</div>
+                <div class="text-lg opacity-90">Collections</div>
+            </div>
+            {{/if}}
+            
+            {{#if galleryStats.lastUpdated}}
+            <div class="text-center" data-aos="fade-up" data-aos-delay="200">
+                <div class="text-5xl font-bold mb-2 luxury-heading">{{galleryStats.lastUpdated}}</div>
+                <div class="text-lg opacity-90">Updates</div>
+            </div>
+            {{/if}}
+            
+            {{#if galleryStats.featured}}
+            <div class="text-center" data-aos="fade-up" data-aos-delay="300">
+                <div class="text-5xl font-bold mb-2 luxury-heading">{{galleryStats.featured}}</div>
+                <div class="text-lg opacity-90">Featured</div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Call to Action -->
+<section class="py-24 bg-gradient-to-r from-black to-gray-900 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <div class="luxury-float">
+            <h2 class="text-4xl md:text-5xl font-bold mb-8 luxury-heading">
+                Inspired by Luxury?
+            </h2>
+            <p class="text-xl mb-12 opacity-90 max-w-2xl mx-auto font-light">
+                Ready to experience this level of sophistication firsthand? Let's create something extraordinary together.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-6">
+                <a href="/{{modelSlug}}/contact" class="luxury-btn text-lg px-8 py-4">
+                    <i class="fas fa-envelope mr-3"></i>
+                    Contact Me
+                </a>
+                <a href="/{{modelSlug}}/rates" class="luxury-btn-outline text-lg px-8 py-4 text-white border-white hover:bg-white hover:text-gray-900">
+                    <i class="fas fa-gem mr-3"></i>
+                    View Services
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Luxury Lightbox Modal -->
+<div id="luxuryLightboxModal" class="fixed inset-0 bg-black bg-opacity-95 z-50 hidden flex items-center justify-center">
+    <div class="relative max-w-6xl mx-auto p-8">
+        <button onclick="closeLuxuryLightbox()" class="absolute top-4 right-4 text-white text-3xl hover:text-yellow-400 transition-colors z-10 luxury-btn-outline border-white">
+            <i class="fas fa-times"></i>
+        </button>
+        <img id="luxuryLightboxImage" src="" alt="" class="max-w-full max-h-screen object-contain rounded-2xl shadow-2xl">
+        <div id="luxuryLightboxCaption" class="text-white text-center mt-6 text-xl luxury-heading hidden"></div>
+    </div>
+</div>
+
+<script>
+// Gallery filtering
+document.addEventListener('DOMContentLoaded', function() {
+    const filters = document.querySelectorAll('.gallery-filter');
+    const items = document.querySelectorAll('.gallery-item');
+    
+    filters.forEach(filter => {
+        filter.addEventListener('click', function() {
+            const filterValue = this.dataset.category;
+            
+            // Update active filter
+            filters.forEach(f => {
+                f.classList.remove('active', 'luxury-btn');
+                f.classList.add('hover:bg-gray-100');
+            });
+            this.classList.add('active', 'luxury-btn');
+            this.classList.remove('hover:bg-gray-100');
+            
+            // Filter items
+            items.forEach(item => {
+                if (filterValue === 'all' || item.dataset.category === filterValue) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Load more functionality
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+            // This would typically load more images via AJAX
+            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading Luxury Content...';
+            
+            // Simulate loading delay
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-plus mr-2"></i>Load More Luxury Content';
+                // Add new images to gallery here
+            }, 1500);
+        });
+    }
+});
+
+// Luxury Lightbox functionality
+function openLuxuryLightbox(imageSrc, caption) {
+    const modal = document.getElementById('luxuryLightboxModal');
+    const image = document.getElementById('luxuryLightboxImage');
+    const captionDiv = document.getElementById('luxuryLightboxCaption');
+    
+    image.src = imageSrc;
+    
+    if (caption) {
+        captionDiv.textContent = caption;
+        captionDiv.classList.remove('hidden');
+    } else {
+        captionDiv.classList.add('hidden');
+    }
+    
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLuxuryLightbox() {
+    const modal = document.getElementById('luxuryLightboxModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Close lightbox on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeLuxuryLightbox();
+    }
+});
+
+// Close lightbox on background click
+document.getElementById('luxuryLightboxModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeLuxuryLightbox();
+    }
+});
+</script>

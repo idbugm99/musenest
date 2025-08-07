@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - {{siteName}}</title>
+    <meta name="description" content="{{description}}">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --dark-bg: #0a0a0a;
+            --dark-surface: #111111;
+            --dark-card: #1a1a1a;
+            --dark-border: #2d2d2d;
+            --dark-primary: #00ff88;
+            --dark-secondary: #00cc6a;
+            --dark-accent: #ff0088;
+            --dark-text: #ffffff;
+            --dark-muted: #999999;
+            --dark-ghost: #333333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Dark Typography */
+        .dark-heading {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+        
+        .dark-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* Dark Components */
+        .dark-hero {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--dark-surface) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dark-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, var(--dark-primary)10 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, var(--dark-accent)10 0%, transparent 50%);
+            opacity: 0.1;
+        }
+        
+        .dark-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .dark-card:hover {
+            border-color: var(--dark-primary);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 255, 136, 0.1);
+        }
+        
+        .dark-btn {
+            background: linear-gradient(135deg, var(--dark-primary), var(--dark-secondary));
+            color: var(--dark-bg);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .dark-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+            color: var(--dark-bg);
+        }
+        
+        .dark-btn-outline {
+            background: transparent;
+            color: var(--dark-primary);
+            border: 2px solid var(--dark-primary);
+            padding: 10px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .dark-btn-outline:hover {
+            background: var(--dark-primary);
+            color: var(--dark-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2);
+        }
+        
+        .dark-badge {
+            background: linear-gradient(135deg, var(--dark-primary)20, var(--dark-accent)20);
+            color: var(--dark-primary);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid var(--dark-primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* Dark Grid System */
+        .dark-grid {
+            display: grid;
+            gap: 24px;
+        }
+        
+        .dark-grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+        
+        .dark-grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+        
+        .dark-grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+        
+        /* Dark Forms */
+        .form-control {
+            background: var(--dark-surface) !important;
+            border: 1px solid var(--dark-border) !important;
+            color: var(--dark-text) !important;
+            border-radius: 12px !important;
+        }
+        
+        .form-control:focus {
+            background: var(--dark-surface) !important;
+            border-color: var(--dark-primary) !important;
+            box-shadow: 0 0 0 0.2rem rgba(0, 255, 136, 0.25) !important;
+            color: var(--dark-text) !important;
+        }
+        
+        .form-control::placeholder {
+            color: var(--dark-muted) !important;
+        }
+        
+        /* Dark Utilities */
+        .text-dark-muted {
+            color: var(--dark-muted) !important;
+        }
+        
+        .text-dark-primary {
+            color: var(--dark-primary) !important;
+        }
+        
+        .text-dark-accent {
+            color: var(--dark-accent) !important;
+        }
+        
+        .bg-dark-surface {
+            background-color: var(--dark-surface) !important;
+        }
+        
+        .bg-dark-card {
+            background-color: var(--dark-card) !important;
+        }
+        
+        .border-dark-border {
+            border-color: var(--dark-border) !important;
+        }
+        
+        /* Dark Navigation */
+        .navbar-dark .navbar-nav .nav-link {
+            color: var(--dark-text) !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-dark .navbar-nav .nav-link:hover {
+            color: var(--dark-primary) !important;
+        }
+        
+        .navbar-dark .navbar-toggler {
+            border-color: var(--dark-border) !important;
+        }
+        
+        /* Dark Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--dark-surface);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--dark-ghost);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-primary);
+        }
+        
+        /* Dark Selection */
+        ::selection {
+            background: var(--dark-primary);
+            color: var(--dark-bg);
+        }
+        
+        /* Dark Animations */
+        @keyframes darkGlow {
+            0% { box-shadow: 0 0 5px var(--dark-primary); }
+            50% { box-shadow: 0 0 20px var(--dark-primary), 0 0 30px var(--dark-primary); }
+            100% { box-shadow: 0 0 5px var(--dark-primary); }
+        }
+        
+        .dark-glow {
+            animation: darkGlow 2s infinite;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dark-grid-2, .dark-grid-3, .dark-grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    {{> navigation}}
+    
+    <!-- Main Content -->
+    <main>
+        {{{body}}}
+    </main>
+    
+    <!-- Footer -->
+    {{> footer}}
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AOS Animation -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-out',
+            once: true,
+            offset: 100
+        });
+        
+        // Dark theme enhancements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add subtle parallax effect to hero sections
+            const heroSections = document.querySelectorAll('.dark-hero');
+            
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                
+                heroSections.forEach(function(hero) {
+                    const rate = scrolled * -0.5;
+                    hero.style.transform = 'translate3d(0, ' + rate + 'px, 0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

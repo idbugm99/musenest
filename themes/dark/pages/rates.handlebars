@@ -1,0 +1,250 @@
+<!-- Rates Hero Section -->
+<section class="dark-hero min-vh-50 d-flex align-items-center text-white position-relative pt-5" data-aos="fade-in">
+    <div class="container position-relative" style="z-index: 10;">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <div class="dark-badge mb-4">Services</div>
+                <h1 class="display-2 fw-bold mb-4 dark-heading">
+                    Services & Rates
+                </h1>
+                <p class="fs-4 text-dark-muted mx-auto" style="max-width: 600px;">
+                    {{content.ratesIntro}}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Grid -->
+<section class="py-5 bg-dark-surface">
+    <div class="container">
+        {{#if services}}
+        <div class="dark-grid dark-grid-3">
+            {{#each services}}
+            <div class="dark-card p-5 text-center position-relative" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-4" 
+                     style="width: 80px; height: 80px; background: var(--dark-card); border: 2px solid var(--dark-primary);">
+                    <i class="{{this.icon}} fs-2 text-dark-primary"></i>
+                </div>
+                <h3 class="fs-4 fw-bold mb-3 dark-heading">{{this.name}}</h3>
+                <p class="text-dark-muted mb-4 lh-lg">{{this.description}}</p>
+                {{#if this.duration}}
+                <div class="text-dark-muted mb-3 dark-mono small">
+                    <i class="fas fa-clock me-1"></i> {{this.duration}}
+                </div>
+                {{/if}}
+                {{#if this.price}}
+                <div class="display-6 fw-bold text-dark-primary mb-4 dark-mono">
+                    {{formatCurrency this.price}}
+                </div>
+                {{/if}}
+                {{#if this.features}}
+                <ul class="list-unstyled text-start text-dark-muted small mb-4 bg-dark-card p-3 rounded-3">
+                    {{#each this.features}}
+                    <li class="d-flex align-items-center mb-2">
+                        <div style="width: 6px; height: 6px;" class="bg-dark-primary rounded-circle me-3"></div>
+                        <span>{{this}}</span>
+                    </li>
+                    {{/each}}
+                </ul>
+                {{/if}}
+                <a href="/{{../modelSlug}}/contact?service={{this.slug}}" class="dark-btn w-100">
+                    <i class="fas fa-arrow-right me-2"></i>
+                    Book Service
+                </a>
+            </div>
+            {{/each}}
+        </div>
+        {{else}}
+        <div class="text-center py-5">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-4" 
+                 style="width: 120px; height: 120px; background: var(--dark-card); border: 2px solid var(--dark-primary);">
+                <i class="fas fa-cogs fs-1 text-dark-primary"></i>
+            </div>
+            <h3 class="display-6 fw-bold mb-4 dark-heading">Professional Services</h3>
+            <p class="text-dark-muted mb-4">Contact me for detailed service information and rates.</p>
+            <a href="/{{modelSlug}}/contact" class="dark-btn">
+                <i class="fas fa-envelope me-2"></i>
+                Get in Touch
+            </a>
+        </div>
+        {{/if}}
+    </div>
+</section>
+
+<!-- Policies Section -->
+<section class="py-5" style="background: var(--dark-bg);">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <div class="dark-badge mb-3">Policies</div>
+            <h2 class="display-6 fw-bold mb-4 dark-heading text-dark-primary">
+                Service Information
+            </h2>
+        </div>
+        
+        <div class="dark-grid dark-grid-3">
+            <div class="dark-card p-5" data-aos="fade-up" data-aos-delay="0">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-4" 
+                     style="width: 70px; height: 70px; background: var(--dark-card); border: 2px solid var(--dark-primary);">
+                    <i class="fas fa-calendar-check text-dark-primary fs-4"></i>
+                </div>
+                <h3 class="fs-5 fw-bold mb-3 dark-heading">Booking</h3>
+                <p class="text-dark-muted small lh-lg">
+                    {{content.advanceBooking}}
+                </p>
+            </div>
+            
+            <div class="dark-card p-5" data-aos="fade-up" data-aos-delay="100">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-4" 
+                     style="width: 70px; height: 70px; background: var(--dark-card); border: 2px solid var(--dark-primary);">
+                    <i class="fas fa-credit-card text-dark-primary fs-4"></i>
+                </div>
+                <h3 class="fs-5 fw-bold mb-3 dark-heading">Payment</h3>
+                <p class="text-dark-muted small lh-lg">
+                    {{content.paymentPolicy}}
+                </p>
+            </div>
+            
+            <div class="dark-card p-5" data-aos="fade-up" data-aos-delay="200">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-4" 
+                     style="width: 70px; height: 70px; background: var(--dark-card); border: 2px solid var(--dark-primary);">
+                    <i class="fas fa-times-circle text-dark-primary fs-4"></i>
+                </div>
+                <h3 class="fs-5 fw-bold mb-3 dark-heading">Cancellation</h3>
+                <p class="text-dark-muted small lh-lg">
+                    {{content.cancellationPolicy}}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Package Deals -->
+{{#if packages}}
+<section class="py-5 bg-dark-surface">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <div class="dark-badge mb-3">Packages</div>
+            <h2 class="display-6 fw-bold mb-4 dark-heading text-dark-primary">
+                Service Packages
+            </h2>
+            <p class="fs-5 text-dark-muted">
+                Comprehensive packages for better value
+            </p>
+        </div>
+        
+        <div class="dark-grid dark-grid-2">
+            {{#each packages}}
+            <div class="dark-card p-5 position-relative" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                {{#if this.popular}}
+                <div class="position-absolute top-0 start-50 translate-middle">
+                    <span class="dark-badge">Most Popular</span>
+                </div>
+                {{/if}}
+                
+                <div class="text-center">
+                    <h3 class="display-6 fw-bold mb-4 dark-heading">{{this.name}}</h3>
+                    <div class="display-4 fw-bold text-dark-primary mb-2 dark-mono">
+                        {{formatCurrency this.price}}
+                    </div>
+                    {{#if this.originalPrice}}
+                    <div class="text-dark-muted text-decoration-line-through mb-4">
+                        Was {{formatCurrency this.originalPrice}}
+                    </div>
+                    {{/if}}
+                    <p class="text-dark-muted mb-5">{{this.description}}</p>
+                    
+                    <ul class="list-unstyled text-start mb-5">
+                        {{#each this.includes}}
+                        <li class="d-flex align-items-center mb-3">
+                            <div style="width: 8px; height: 8px;" class="bg-dark-primary rounded-circle me-3"></div>
+                            <span class="text-dark-muted">{{this}}</span>
+                        </li>
+                        {{/each}}
+                    </ul>
+                    
+                    <a href="/{{../modelSlug}}/contact?package={{this.slug}}" class="dark-btn w-100 fs-5 py-3">
+                        <i class="fas fa-arrow-right me-2"></i>
+                        Book Package
+                    </a>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Process Section -->
+<section class="py-5" style="background: linear-gradient(135deg, var(--dark-primary)15, var(--dark-accent)15); border-top: 1px solid var(--dark-border); border-bottom: 1px solid var(--dark-border);">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-6 fw-bold mb-4 dark-heading text-dark-primary">
+                How It Works
+            </h2>
+            <p class="fs-5 text-dark-muted">
+                Simple, straightforward process
+            </p>
+        </div>
+        
+        <div class="dark-grid dark-grid-4">
+            <div class="text-center" data-aos="fade-up" data-aos-delay="0">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-4" 
+                     style="width: 80px; height: 80px; background: rgba(0, 255, 136, 0.1); border: 2px solid var(--dark-primary);">
+                    <span class="display-6 fw-bold dark-mono text-dark-primary">1</span>
+                </div>
+                <h3 class="fs-5 fw-bold mb-2 dark-heading">Contact</h3>
+                <p class="text-dark-muted small">Reach out via email or phone</p>
+            </div>
+            
+            <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-4" 
+                     style="width: 80px; height: 80px; background: rgba(0, 255, 136, 0.1); border: 2px solid var(--dark-primary);">
+                    <span class="display-6 fw-bold dark-mono text-dark-primary">2</span>
+                </div>
+                <h3 class="fs-5 fw-bold mb-2 dark-heading">Discuss</h3>
+                <p class="text-dark-muted small">We discuss your needs and preferences</p>
+            </div>
+            
+            <div class="text-center" data-aos="fade-up" data-aos-delay="200">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-4" 
+                     style="width: 80px; height: 80px; background: rgba(0, 255, 136, 0.1); border: 2px solid var(--dark-primary);">
+                    <span class="display-6 fw-bold dark-mono text-dark-primary">3</span>
+                </div>
+                <h3 class="fs-5 fw-bold mb-2 dark-heading">Schedule</h3>
+                <p class="text-dark-muted small">Book your preferred time and date</p>
+            </div>
+            
+            <div class="text-center" data-aos="fade-up" data-aos-delay="300">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-4" 
+                     style="width: 80px; height: 80px; background: rgba(0, 255, 136, 0.1); border: 2px solid var(--dark-primary);">
+                    <span class="display-6 fw-bold dark-mono text-dark-primary">4</span>
+                </div>
+                <h3 class="fs-5 fw-bold mb-2 dark-heading">Deliver</h3>
+                <p class="text-dark-muted small">Professional service delivered</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5" style="background: var(--dark-bg);">
+    <div class="container text-center" data-aos="fade-up">
+        <h2 class="display-5 fw-bold dark-heading text-dark-primary mb-4">
+            Ready to Get Started?
+        </h2>
+        <p class="fs-5 text-dark-muted mb-5 mx-auto" style="max-width: 600px;">
+            Contact me today to discuss your needs and schedule your service.
+        </p>
+        <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+            <a href="/{{modelSlug}}/contact" class="dark-btn fs-5 px-4 py-3">
+                <i class="fas fa-envelope me-2"></i>
+                Contact Me
+            </a>
+            <a href="/{{modelSlug}}/about" class="dark-btn-outline fs-5 px-4 py-3">
+                <i class="fas fa-user me-2"></i>
+                Learn More
+            </a>
+        </div>
+    </div>
+</section>

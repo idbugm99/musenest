@@ -1,0 +1,87 @@
+<footer class="bg-gradient-to-r from-gray-900 to-black text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- Brand Section -->
+            <div class="md:col-span-2">
+                <h3 class="luxury-heading text-3xl mb-4 bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
+                    {{siteName}}
+                </h3>
+                <p class="text-gray-300 mb-6 text-lg leading-relaxed">
+                    {{#if tagline}}
+                    {{tagline}}
+                    {{else}}
+                    Experience the pinnacle of luxury and sophistication with personalized, exclusive services.
+                    {{/if}}
+                </p>
+                {{#if socialLinks}}
+                <div class="flex space-x-4">
+                    {{#each socialLinks}}
+                    <a href="{{this.url}}" 
+                       class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-black hover:shadow-xl transition-all duration-300 transform hover:scale-110">
+                        <i class="fab fa-{{this.icon}}"></i>
+                    </a>
+                    {{/each}}
+                </div>
+                {{/if}}
+            </div>
+            
+            <!-- Quick Links -->
+            <div>
+                <h4 class="luxury-heading text-xl mb-6 text-yellow-400">Quick Links</h4>
+                <ul class="space-y-3">
+                    {{#each navigation}}
+                    <li>
+                        <a href="{{this.url}}" 
+                           class="text-gray-300 hover:text-yellow-400 transition-colors duration-300 flex items-center">
+                            <i class="fas fa-angle-right mr-2"></i>
+                            {{this.name}}
+                        </a>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+            
+            <!-- Contact Info -->
+            <div>
+                <h4 class="luxury-heading text-xl mb-6 text-yellow-400">Contact</h4>
+                <ul class="space-y-4">
+                    {{#if contactEmail}}
+                    <li class="flex items-start">
+                        <i class="fas fa-envelope text-yellow-400 mt-1 mr-3"></i>
+                        <a href="mailto:{{contactEmail}}" 
+                           class="text-gray-300 hover:text-yellow-400 transition-colors duration-300">
+                            {{contactEmail}}
+                        </a>
+                    </li>
+                    {{/if}}
+                    {{#if contactPhone}}
+                    <li class="flex items-start">
+                        <i class="fas fa-phone text-yellow-400 mt-1 mr-3"></i>
+                        <a href="tel:{{contactPhone}}" 
+                           class="text-gray-300 hover:text-yellow-400 transition-colors duration-300">
+                            {{contactPhone}}
+                        </a>
+                    </li>
+                    {{/if}}
+                    {{#if location}}
+                    <li class="flex items-start">
+                        <i class="fas fa-map-marker-alt text-yellow-400 mt-1 mr-3"></i>
+                        <span class="text-gray-300">{{location}}</span>
+                    </li>
+                    {{/if}}
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Bottom Bar -->
+        <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <p class="text-gray-400 text-sm">
+                © {{currentYear}} {{siteName}}. All rights reserved. | Privacy & Discretion Guaranteed
+            </p>
+            <div class="flex items-center space-x-4 mt-4 md:mt-0">
+                <span class="text-gray-400 text-sm">Powered by</span>
+                <span class="luxury-heading text-yellow-400 font-bold">MuseNest</span>
+            </div>
+        </div>
+    </div>
+</footer>

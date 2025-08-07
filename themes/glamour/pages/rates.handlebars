@@ -1,0 +1,184 @@
+<!-- Rates Hero Section -->
+<section class="bg-gradient-to-r from-glamour-primary to-glamour-secondary text-white py-20" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 glamour-heading">
+                Services & Rates
+            </h1>
+            <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto font-light">
+                {{content.ratesIntro}}
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Services Grid -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{#if services}}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {{#each services}}
+            <div class="glamour-card p-8 text-center shadow-2xl transform hover:scale-105 transition-all duration-300" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-glamour-primary to-glamour-secondary rounded-full flex items-center justify-center shadow-lg">
+                    <i class="{{this.icon}} text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4 glamour-heading">{{this.name}}</h3>
+                <p class="text-gray-600 mb-6">{{this.description}}</p>
+                {{#if this.duration}}
+                <div class="text-sm text-gray-500 mb-2">
+                    <i class="fas fa-clock mr-1"></i> {{this.duration}}
+                </div>
+                {{/if}}
+                {{#if this.price}}
+                <div class="text-3xl font-bold text-glamour-primary mb-4">
+                    {{formatCurrency this.price}}
+                </div>
+                {{/if}}
+                {{#if this.features}}
+                <ul class="text-left text-sm text-gray-600 space-y-1 mb-6">
+                    {{#each this.features}}
+                    <li><i class="fas fa-gem text-glamour-primary mr-2"></i>{{this}}</li>
+                    {{/each}}
+                </ul>
+                {{/if}}
+                <a href="/{{../modelSlug}}/contact?service={{this.slug}}" class="glamour-btn w-full">
+                    Book Experience
+                </a>
+            </div>
+            {{/each}}
+        </div>
+        {{else}}
+        <div class="text-center py-16">
+            <div class="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-glamour-primary to-glamour-secondary rounded-full flex items-center justify-center shadow-lg">
+                <i class="fas fa-gem text-4xl text-white"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-4 glamour-heading">Exclusive Services</h3>
+            <p class="text-gray-600 mb-6">Contact me for detailed information about my premium services and rates.</p>
+            <a href="/{{modelSlug}}/contact" class="glamour-btn">
+                Get in Touch
+            </a>
+        </div>
+        {{/if}}
+    </div>
+</section>
+
+<!-- Policies Section -->
+<section class="py-20 bg-gradient-to-r from-pink-50 to-purple-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-4 glamour-heading text-glamour-primary">
+                Booking Information
+            </h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="glamour-card p-8 shadow-lg" data-aos="fade-up" data-aos-delay="0">
+                <div class="w-16 h-16 mb-6 bg-gradient-to-br from-glamour-primary to-glamour-secondary rounded-full flex items-center justify-center shadow-lg">
+                    <i class="fas fa-calendar-check text-white text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-3 glamour-heading">Advance Booking</h3>
+                <p class="text-gray-600 text-sm">
+                    {{content.advanceBooking}}
+                </p>
+            </div>
+            
+            <div class="glamour-card p-8 shadow-lg" data-aos="fade-up" data-aos-delay="100">
+                <div class="w-16 h-16 mb-6 bg-gradient-to-br from-glamour-primary to-glamour-secondary rounded-full flex items-center justify-center shadow-lg">
+                    <i class="fas fa-credit-card text-white text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-3 glamour-heading">Payment</h3>
+                <p class="text-gray-600 text-sm">
+                    {{content.paymentPolicy}}
+                </p>
+            </div>
+            
+            <div class="glamour-card p-8 shadow-lg" data-aos="fade-up" data-aos-delay="200">
+                <div class="w-16 h-16 mb-6 bg-gradient-to-br from-glamour-primary to-glamour-secondary rounded-full flex items-center justify-center shadow-lg">
+                    <i class="fas fa-shield-alt text-white text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-3 glamour-heading">Cancellation</h3>
+                <p class="text-gray-600 text-sm">
+                    {{content.cancellationPolicy}}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Package Deals -->
+{{#if packages}}
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-4 glamour-heading text-glamour-primary">
+                Exclusive Packages
+            </h2>
+            <p class="text-xl text-gray-600">
+                Curated experiences for the ultimate in luxury
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {{#each packages}}
+            <div class="glamour-card p-10 relative shadow-2xl transform hover:scale-105 transition-all duration-300" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                {{#if this.popular}}
+                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <span class="bg-gradient-to-r from-glamour-accent to-yellow-400 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
+                        Most Popular
+                    </span>
+                </div>
+                {{/if}}
+                
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold mb-4 glamour-heading">{{this.name}}</h3>
+                    <div class="text-4xl font-bold text-glamour-primary mb-2">
+                        {{formatCurrency this.price}}
+                    </div>
+                    {{#if this.originalPrice}}
+                    <div class="text-gray-500 line-through mb-4">
+                        Was {{formatCurrency this.originalPrice}}
+                    </div>
+                    {{/if}}
+                    <p class="text-gray-600 mb-8">{{this.description}}</p>
+                    
+                    <ul class="text-left space-y-3 mb-8">
+                        {{#each this.includes}}
+                        <li class="flex items-center">
+                            <i class="fas fa-gem text-glamour-primary mr-3"></i>
+                            <span>{{this}}</span>
+                        </li>
+                        {{/each}}
+                    </ul>
+                    
+                    <a href="/{{../modelSlug}}/contact?package={{this.slug}}" class="glamour-btn w-full">
+                        Book Package
+                    </a>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Call to Action -->
+<section class="py-20 bg-gradient-to-r from-glamour-primary to-glamour-secondary text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <h2 class="text-3xl font-bold mb-6 glamour-heading">
+            Ready for Luxury?
+        </h2>
+        <p class="text-xl mb-8 opacity-90 max-w-2xl mx-auto font-light">
+            Experience sophistication and elegance. Let's create something extraordinary together.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="/{{modelSlug}}/contact" class="glamour-btn bg-white text-glamour-primary hover:bg-gray-100">
+                <i class="fas fa-envelope mr-2"></i>
+                Contact Me
+            </a>
+            <a href="/{{modelSlug}}/about" class="glamour-btn-outline border-white text-white hover:bg-white hover:text-glamour-primary">
+                <i class="fas fa-user mr-2"></i>
+                Learn More
+            </a>
+        </div>
+    </div>
+</section>

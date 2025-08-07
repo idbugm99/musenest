@@ -1,0 +1,57 @@
+<!-- KPI Dashboard Card Component -->
+<!-- Usage: Include and customize with data-* attributes -->
+<!-- Dependencies: Bootstrap 5, Font Awesome -->
+
+<div class="bg-white rounded-lg shadow p-6 kpi-card" data-metric="{{metric}}" data-auto-refresh="{{auto_refresh}}">
+    <div class="flex items-center">
+        <div class="p-2 bg-{{color}}-100 rounded-lg">
+            <i class="fas fa-{{icon}} text-{{color}}-600"></i>
+        </div>
+        <div class="ml-4">
+            <p class="text-sm font-medium text-gray-600" data-label="{{label}}">{{label}}</p>
+            <p class="text-2xl font-semibold text-gray-900" data-value="{{value}}">{{value}}</p>
+            <p class="text-xs text-gray-500 mt-1" data-trend="{{trend}}">{{trend}}</p>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-refresh functionality for KPI cards
+function refreshKPICard(element, endpoint) {
+    if (!endpoint) return;
+    
+    fetch(endpoint)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const valueElement = element.querySelector('[data-value]');
+                const trendElement = element.querySelector('[data-trend]');
+                
+                if (valueElement) valueElement.textContent = data.value;
+                if (trendElement && data.trend) trendElement.textContent = data.trend;
+            }
+        })
+        .catch(error => console.error('KPI refresh failed:', error));
+}
+
+// Auto-refresh setup
+document.querySelectorAll('.kpi-card[data-auto-refresh]').forEach(card => {
+    const interval = parseInt(card.dataset.autoRefresh) || 30000;
+    const endpoint = card.dataset.endpoint;
+    
+    if (endpoint) {
+        setInterval(() => refreshKPICard(card, endpoint), interval);
+    }
+});
+</script>
+
+<style>
+.kpi-card {
+    transition: all 0.3s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+</style>

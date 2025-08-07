@@ -1,0 +1,30 @@
+<!-- Dark Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--dark-border);">
+    <div class="container">
+        <a class="navbar-brand dark-heading text-dark-primary" href="/test-dark">
+            <i class="fas fa-terminal me-2"></i>
+            {{siteName}}
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#darkNavigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="darkNavigation">
+            <ul class="navbar-nav ms-auto">
+                {{#each navigation}}
+                <li class="nav-item">
+                    <a class="nav-link {{#if this.active}}active{{/if}}" href="{{this.url}}">
+                        {{#if (eq this.name "Home")}}<i class="fas fa-home me-1"></i>{{/if}}
+                        {{#if (eq this.name "About")}}<i class="fas fa-user me-1"></i>{{/if}}
+                        {{#if (eq this.name "Gallery")}}<i class="fas fa-images me-1"></i>{{/if}}
+                        {{#if (eq this.name "Services")}}<i class="fas fa-list me-1"></i>{{/if}}
+                        {{#if (eq this.name "Contact")}}<i class="fas fa-envelope me-1"></i>{{/if}}
+                        {{this.name}}
+                    </a>
+                </li>
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+</nav>

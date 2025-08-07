@@ -1,0 +1,184 @@
+<!-- Rates Hero Section -->
+<section class="bg-basic-primary text-white py-16" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6 basic-heading">
+                Services & Rates
+            </h1>
+            <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto">
+                {{content.ratesIntro}}
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Services Grid -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{#if services}}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {{#each services}}
+            <div class="basic-card p-8 text-center" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                <div class="w-16 h-16 mx-auto mb-6 bg-basic-primary rounded-lg flex items-center justify-center">
+                    <i class="{{this.icon}} text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4 basic-heading">{{this.name}}</h3>
+                <p class="text-gray-600 mb-6">{{this.description}}</p>
+                {{#if this.duration}}
+                <div class="text-sm text-gray-500 mb-2">
+                    <i class="fas fa-clock mr-1"></i> {{this.duration}}
+                </div>
+                {{/if}}
+                {{#if this.price}}
+                <div class="text-3xl font-bold text-basic-primary mb-4">
+                    {{formatCurrency this.price}}
+                </div>
+                {{/if}}
+                {{#if this.features}}
+                <ul class="text-left text-sm text-gray-600 space-y-1 mb-6">
+                    {{#each this.features}}
+                    <li><i class="fas fa-check text-basic-primary mr-2"></i>{{this}}</li>
+                    {{/each}}
+                </ul>
+                {{/if}}
+                <a href="/{{../modelSlug}}/contact?service={{this.slug}}" class="basic-btn w-full">
+                    Book Now
+                </a>
+            </div>
+            {{/each}}
+        </div>
+        {{else}}
+        <div class="text-center py-12">
+            <div class="w-24 h-24 mx-auto mb-6 bg-basic-primary rounded-lg flex items-center justify-center">
+                <i class="fas fa-heart text-3xl text-white"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-4 basic-heading">Professional Services</h3>
+            <p class="text-gray-600 mb-6">Please contact me for detailed information about services and rates.</p>
+            <a href="/{{modelSlug}}/contact" class="basic-btn">
+                Get in Touch
+            </a>
+        </div>
+        {{/if}}
+    </div>
+</section>
+
+<!-- Policies Section -->
+<section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-4 basic-heading text-basic-primary">
+                Booking Information
+            </h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="basic-card p-6" data-aos="fade-up" data-aos-delay="0">
+                <div class="w-12 h-12 mb-4 bg-basic-primary rounded-lg flex items-center justify-center">
+                    <i class="fas fa-calendar-check text-white"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-3 basic-heading">Advance Booking</h3>
+                <p class="text-gray-600 text-sm">
+                    {{content.advanceBooking}}
+                </p>
+            </div>
+            
+            <div class="basic-card p-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="w-12 h-12 mb-4 bg-basic-primary rounded-lg flex items-center justify-center">
+                    <i class="fas fa-credit-card text-white"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-3 basic-heading">Payment</h3>
+                <p class="text-gray-600 text-sm">
+                    {{content.paymentPolicy}}
+                </p>
+            </div>
+            
+            <div class="basic-card p-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="w-12 h-12 mb-4 bg-basic-primary rounded-lg flex items-center justify-center">
+                    <i class="fas fa-times-circle text-white"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-3 basic-heading">Cancellation</h3>
+                <p class="text-gray-600 text-sm">
+                    {{content.cancellationPolicy}}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Package Deals -->
+{{#if packages}}
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-4 basic-heading text-basic-primary">
+                Package Deals
+            </h2>
+            <p class="text-xl text-gray-600">
+                Save more with our exclusive packages
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {{#each packages}}
+            <div class="basic-card p-8 relative" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                {{#if this.popular}}
+                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <span class="bg-basic-accent text-white px-4 py-2 rounded-full text-sm font-bold">
+                        Most Popular
+                    </span>
+                </div>
+                {{/if}}
+                
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold mb-4 basic-heading">{{this.name}}</h3>
+                    <div class="text-4xl font-bold text-basic-primary mb-2">
+                        {{formatCurrency this.price}}
+                    </div>
+                    {{#if this.originalPrice}}
+                    <div class="text-gray-500 line-through mb-4">
+                        Was {{formatCurrency this.originalPrice}}
+                    </div>
+                    {{/if}}
+                    <p class="text-gray-600 mb-6">{{this.description}}</p>
+                    
+                    <ul class="text-left space-y-2 mb-8">
+                        {{#each this.includes}}
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-basic-primary mr-3"></i>
+                            <span>{{this}}</span>
+                        </li>
+                        {{/each}}
+                    </ul>
+                    
+                    <a href="/{{../modelSlug}}/contact?package={{this.slug}}" class="basic-btn w-full">
+                        Book Package
+                    </a>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Call to Action -->
+<section class="py-16 bg-basic-primary text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <h2 class="text-3xl font-bold mb-6 basic-heading">
+            Ready to Book?
+        </h2>
+        <p class="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
+            Have questions about services or ready to make a booking? Get in touch today.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="/{{modelSlug}}/contact" class="basic-btn bg-white text-basic-primary hover:bg-gray-100">
+                <i class="fas fa-envelope mr-2"></i>
+                Contact Me
+            </a>
+            <a href="/{{modelSlug}}/about" class="basic-btn-outline border-white text-white hover:bg-white hover:text-basic-primary">
+                <i class="fas fa-user mr-2"></i>
+                Learn More
+            </a>
+        </div>
+    </div>
+</section>

@@ -4,808 +4,175 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MuseNest Admin Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        .admin-sidebar {
-            transition: all 0.3s ease-in-out;
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
-        .admin-sidebar.collapsed {
-            transform: translateX(-100%);
+        .admin-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            height: 100%;
         }
-        
-        .content-area {
-            transition: all 0.3s ease-in-out;
+        .admin-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 1);
         }
-        
-        .drag-over {
-            border: 2px dashed #3B82F6;
-            background-color: #EBF8FF;
+        .admin-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 2rem;
         }
-        
-        .sortable-ghost {
-            opacity: 0.4;
+        .logo h1 {
+            color: white;
+            font-size: 3rem;
+            font-weight: 300;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
-        
-        .notification {
-            animation: slideIn 0.3s ease-out;
+        .stats-row {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            color: white;
         }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        .modal {
-            animation: modalAppear 0.2s ease-out;
-        }
-        
-        @keyframes modalAppear {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        
-        .theme-preview {
-            transition: all 0.2s ease;
-        }
-        
-        .theme-preview:hover {
-            transform: scale(1.05);
-        }
-        
-        .theme-preview.selected {
-            ring: 3px solid #3B82F6;
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
         }
     </style>
 </head>
-<body class="bg-gray-50">
-    <!-- Navigation Bar -->
-    <nav class="bg-white shadow-sm border-b border-gray-200 fixed w-full top-0 z-50">
-        <div class="px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <button id="sidebarToggle" class="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md p-2">
-                        <i class="fas fa-bars text-lg"></i>
-                    </button>
-                    <h1 class="ml-4 text-xl font-bold text-gray-900">MuseNest Admin</h1>
+<body>
+    <div class="container py-5">
+        <!-- Logo -->
+        <div class="text-center mb-5">
+            <h1><i class="fas fa-shield-alt me-3"></i>MuseNest Admin</h1>
+            <p class="text-white-50">White-Label AI Moderation Management Platform</p>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="stats-row">
+            <div class="row text-center">
+                <div class="col-md-3">
+                    <div class="stat-number" id="totalServers">-</div>
+                    <div>AI Servers</div>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                            <span class="text-white text-sm font-semibold" id="userInitials">--</span>
-                        </div>
-                        <span class="text-sm text-gray-700" id="userName">Loading...</span>
-                    </div>
-                    <button id="logoutBtn" class="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-md p-2">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
+                <div class="col-md-3">
+                    <div class="stat-number" id="totalSites">-</div>
+                    <div>Active Sites</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-number" id="totalIndustries">-</div>
+                    <div>Industry Templates</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-number" id="onlineServers">-</div>
+                    <div>Online Servers</div>
                 </div>
             </div>
         </div>
-    </nav>
 
-    <!-- Sidebar -->
-    <div id="sidebar" class="admin-sidebar fixed left-0 top-16 h-full w-64 bg-white shadow-lg border-r border-gray-200 z-40">
-        <div class="p-4">
-            <nav class="space-y-2">
-                <a href="#" data-tab="dashboard" class="nav-item flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 active">
-                    <i class="fas fa-tachometer-alt w-5"></i>
-                    <span class="ml-3">Dashboard</span>
-                </a>
-                <a href="#" data-tab="gallery" class="nav-item flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
-                    <i class="fas fa-images w-5"></i>
-                    <span class="ml-3">Gallery</span>
-                </a>
-                <a href="#" data-tab="faq" class="nav-item flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
-                    <i class="fas fa-question-circle w-5"></i>
-                    <span class="ml-3">FAQ</span>
-                </a>
-                <a href="#" data-tab="testimonials" class="nav-item flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
-                    <i class="fas fa-star w-5"></i>
-                    <span class="ml-3">Testimonials</span>
-                </a>
-                <a href="#" data-tab="pages" class="nav-item flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
-                    <i class="fas fa-file-alt w-5"></i>
-                    <span class="ml-3">Page Content</span>
-                </a>
-                <a href="#" data-tab="settings" class="nav-item flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
-                    <i class="fas fa-cog w-5"></i>
-                    <span class="ml-3">Settings</span>
-                </a>
-                <a href="#" data-tab="themes" class="nav-item flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
-                    <i class="fas fa-palette w-5"></i>
-                    <span class="ml-3">Themes</span>
-                </a>
+        <!-- Admin Modules -->
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card admin-card">
+                    <div class="card-body text-center p-4">
+                        <div class="admin-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <h4>AI Server Management</h4>
+                        <p class="text-muted">
+                            Manage multiple AI moderation servers across different IPs and ports. 
+                            Monitor health, performance, and deploy configurations.
+                        </p>
+                        <a href="ai-server-management.html" class="btn btn-primary btn-lg">
+                            <i class="fas fa-server me-2"></i>Manage Servers
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card admin-card">
+                    <div class="card-body text-center p-4">
+                        <div class="admin-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h4>Site Configuration</h4>
+                        <p class="text-muted">
+                            Configure white-label sites with industry-specific moderation rules. 
+                            Deploy custom NudeNet, BLIP, and moderation configurations.
+                        </p>
+                        <a href="site-configuration-enhanced.html" class="btn btn-success btn-lg">
+                            <i class="fas fa-cogs me-2"></i>Configure Sites
+                        </a>
+                        <div class="mt-2">
+                            <a href="site-configuration.html" class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-code me-1"></i>Advanced JSON Editor
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <p class="text-white-50">
+                <i class="fas fa-shield-alt me-1"></i>
+                MuseNest AI Moderation Platform - Secure, Scalable, White-Label Ready
+            </p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardStats();
+        });
+
+        async function loadDashboardStats() {
+            try {
+                const [serversResponse, sitesResponse, templatesResponse] = await Promise.all([
+                    fetch('/api/ai-server-management/servers'),
+                    fetch('/api/site-configuration/sites'),
+                    fetch('/api/ai-server-management/industry-templates')
+                ]);
                 
-                <a href="#" data-tab="calendar" class="nav-item flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
-                    <i class="fas fa-calendar-alt w-5"></i>
-                    <span class="ml-3">Calendar</span>
-                </a>
-                <div class="border-t border-gray-200 pt-4 mt-4">
-                    <a href="system-management.html" class="flex items-center px-4 py-2 text-red-600 rounded-lg hover:bg-red-50">
-                        <i class="fas fa-users-cog w-5"></i>
-                        <span class="ml-3">System Management</span>
-                    </a>
-                    <a href="business-management.html" class="flex items-center px-4 py-2 text-purple-600 rounded-lg hover:bg-purple-50">
-                        <i class="fas fa-building w-5"></i>
-                        <span class="ml-3">Business Management</span>
-                    </a>
-                    <a href="#" id="viewSiteBtn" class="flex items-center px-4 py-2 text-blue-600 rounded-lg hover:bg-blue-50" target="_blank">
-                        <i class="fas fa-external-link-alt w-5"></i>
-                        <span class="ml-3">View Site</span>
-                    </a>
-                </div>
-            </nav>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div id="mainContent" class="content-area ml-64 pt-16 min-h-screen">
-        <!-- Dashboard Tab -->
-        <div id="dashboard-tab" class="tab-content p-6">
-            <div class="mb-6">
-                <h2 class="text-2xl font-bold text-gray-900">Dashboard</h2>
-                <p class="text-gray-600">Overview of your MuseNest portfolio</p>
-            </div>
-
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
-                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-images text-blue-500 text-2xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm text-gray-600">Gallery Images</p>
-                            <p class="text-2xl font-bold text-gray-900" id="galleryCount">0</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-question-circle text-green-500 text-2xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm text-gray-600">FAQ Items</p>
-                            <p class="text-2xl font-bold text-gray-900" id="faqCount">0</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-star text-yellow-500 text-2xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm text-gray-600">Testimonials</p>
-                            <p class="text-2xl font-bold text-gray-900" id="testimonialsCount">0</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-file-alt text-orange-500 text-2xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm text-gray-600">Page Sections</p>
-                            <p class="text-2xl font-bold text-gray-900" id="pageSectionsCount">0</p>
-                        </div>
-                    </div>
-                </div>
+                const serversResult = await serversResponse.json();
+                const sitesResult = await sitesResponse.json();
+                const templatesResult = await templatesResponse.json();
                 
-                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-calendar-alt text-blue-500 text-2xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm text-gray-600">Calendar Events</p>
-                            <p class="text-2xl font-bold text-gray-900" id="calendarEventsCount">0</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-palette text-purple-500 text-2xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm text-gray-600">Current Theme</p>
-                            <p class="text-lg font-bold text-gray-900 capitalize" id="currentTheme">basic</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <button data-tab="gallery" class="quick-action-btn flex items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
-                        <i class="fas fa-upload text-blue-500 text-xl mr-3"></i>
-                        <div class="text-left">
-                            <p class="font-semibold text-gray-900">Upload Images</p>
-                            <p class="text-sm text-gray-600">Add photos to gallery</p>
-                        </div>
-                    </button>
-
-                    <button data-tab="faq" class="quick-action-btn flex items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors">
-                        <i class="fas fa-plus text-green-500 text-xl mr-3"></i>
-                        <div class="text-left">
-                            <p class="font-semibold text-gray-900">Add FAQ</p>
-                            <p class="text-sm text-gray-600">Create new FAQ item</p>
-                        </div>
-                    </button>
-
-                    <button data-tab="pages" class="quick-action-btn flex items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors">
-                        <i class="fas fa-edit text-orange-500 text-xl mr-3"></i>
-                        <div class="text-left">
-                            <p class="font-semibold text-gray-900">Edit Pages</p>
-                            <p class="text-sm text-gray-600">Manage page content</p>
-                        </div>
-                    </button>
-
-                    <button data-tab="themes" class="quick-action-btn flex items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors">
-                        <i class="fas fa-palette text-purple-500 text-xl mr-3"></i>
-                        <div class="text-left">
-                            <p class="font-semibold text-gray-900">Change Theme</p>
-                            <p class="text-sm text-gray-600">Switch site appearance</p>
-                        </div>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Gallery Tab -->
-        <div id="gallery-tab" class="tab-content p-6 hidden">
-            <div class="mb-6 flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900">Gallery Management</h2>
-                    <p class="text-gray-600">Upload and organize your portfolio images</p>
-                </div>
-                <button id="uploadImageBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
-                    <i class="fas fa-upload mr-2"></i>
-                    Upload Images
-                </button>
-            </div>
-
-            <!-- Gallery Sections -->
-            <div class="mb-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Gallery Sections</h3>
-                    <button id="createSectionBtn" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                        <i class="fas fa-plus mr-1"></i>
-                        Add Section
-                    </button>
-                </div>
-                <div id="gallerySections" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <!-- Sections will be loaded here -->
-                </div>
-            </div>
-
-            <!-- Image Grid -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">All Images</h3>
-                    <div class="flex space-x-2">
-                        <select id="sectionFilter" class="border border-gray-300 rounded-md px-3 py-1 text-sm">
-                            <option value="">All Sections</option>
-                        </select>
-                        <div class="flex border border-gray-300 rounded-md">
-                            <button id="gridViewBtn" class="px-3 py-1 text-sm bg-blue-50 text-blue-600 border-r border-gray-300">
-                                <i class="fas fa-th"></i>
-                            </button>
-                            <button id="listViewBtn" class="px-3 py-1 text-sm text-gray-500 hover:bg-gray-50">
-                                <i class="fas fa-list"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div id="imageGrid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    <!-- Images will be loaded here -->
-                </div>
-            </div>
-        </div>
-
-        <!-- FAQ Tab -->
-        <div id="faq-tab" class="tab-content p-6 hidden">
-            <div class="mb-6 flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900">FAQ Management</h2>
-                    <p class="text-gray-600">Manage frequently asked questions</p>
-                </div>
-                <button id="createFAQBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
-                    <i class="fas fa-plus mr-2"></i>
-                    Add FAQ
-                </button>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                <div class="p-6 border-b border-gray-200">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-gray-900">FAQ Items</h3>
-                        <div class="flex space-x-2">
-                            <button id="faqBulkEdit" class="text-gray-500 hover:text-gray-700 text-sm">
-                                <i class="fas fa-edit mr-1"></i>
-                                Bulk Edit
-                            </button>
-                            <select id="faqStatusFilter" class="border border-gray-300 rounded-md px-3 py-1 text-sm">
-                                <option value="">All Status</option>
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div id="faqList" class="divide-y divide-gray-200">
-                    <!-- FAQ items will be loaded here -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Testimonials Tab -->
-        <div id="testimonials-tab" class="tab-content p-6 hidden">
-            <div class="mb-6 flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900">Testimonials</h2>
-                    <p class="text-gray-600">Manage client testimonials and reviews</p>
-                </div>
-                <button id="createTestimonialBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
-                    <i class="fas fa-plus mr-2"></i>
-                    Add Testimonial
-                </button>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                <div class="p-6 border-b border-gray-200">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-gray-900">Client Reviews</h3>
-                        <div class="flex space-x-2">
-                            <select id="testimonialStatusFilter" class="border border-gray-300 rounded-md px-3 py-1 text-sm">
-                                <option value="">All Status</option>
-                                <option value="published">Published</option>
-                                <option value="unpublished">Unpublished</option>
-                                <option value="approved">Approved</option>
-                                <option value="unapproved">Unapproved</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div id="testimonialsList" class="divide-y divide-gray-200">
-                    <!-- Testimonials will be loaded here -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Page Content Tab -->
-        <div id="pages-tab" class="tab-content p-6 hidden">
-            <div class="mb-6 flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900">Page Content Management</h2>
-                    <p class="text-gray-600">Manage your site's page content and sections</p>
-                </div>
-                <button id="createPageBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
-                    <i class="fas fa-plus mr-2"></i>
-                    Add Page Section
-                </button>
-            </div>
-
-            <!-- Page Type Filter -->
-            <div class="mb-6">
-                <div class="flex items-center space-x-4">
-                    <label class="text-sm font-medium text-gray-700">Filter by Page Type:</label>
-                    <select id="pageTypeFilter" class="border border-gray-300 rounded-md px-3 py-2 text-sm">
-                        <option value="">All Pages</option>
-                        <option value="home">Home</option>
-                        <option value="about">About</option>
-                        <option value="contact">Contact</option>
-                        <option value="etiquette">Etiquette</option>
-                    </select>
-                    <div class="flex items-center space-x-2 ml-4">
-                        <input type="checkbox" id="showInactivePages" class="rounded border-gray-300">
-                        <label for="showInactivePages" class="text-sm text-gray-600">Show hidden sections</label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pages Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Page Types Column -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-900">Page Types</h3>
-                        <span class="text-sm text-gray-500" id="pageTypesCount">0 types</span>
-                    </div>
-                    <div id="pageTypesList" class="space-y-3">
-                        <!-- Page types will be loaded here -->
-                    </div>
-                </div>
-
-                <!-- Page Sections Column -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-900">Page Sections</h3>
-                        <span class="text-sm text-gray-500" id="pageSectionsDisplayCount">0 sections</span>
-                    </div>
-                    <div id="pageSectionsList" class="space-y-3 max-h-96 overflow-y-auto">
-                        <!-- Page sections will be loaded here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Selected Page Content Editor -->
-            <div id="pageContentEditor" class="mt-6 bg-white rounded-lg shadow-sm border border-gray-200 p-6 hidden">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900" id="editorTitle">Edit Page Section</h3>
-                        <p class="text-sm text-gray-600" id="editorSubtitle">No section selected</p>
-                    </div>
-                    <div class="flex space-x-2">
-                        <button id="savePageContent" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">
-                            <i class="fas fa-save mr-1"></i>
-                            Save Changes
-                        </button>
-                        <button id="cancelPageEdit" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm">
-                            <i class="fas fa-times mr-1"></i>
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Content Editor Form -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Basic Information -->
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Section Title</label>
-                            <input type="text" id="sectionTitle" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" placeholder="Enter section title">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Section Key</label>
-                            <input type="text" id="sectionKey" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" placeholder="section_key" readonly>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Sort Order</label>
-                            <input type="number" id="sectionSortOrder" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" min="0" max="100">
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="sectionVisible" class="rounded border-gray-300 mr-2">
-                            <label for="sectionVisible" class="text-sm text-gray-700">Section is visible</label>
-                        </div>
-                    </div>
-
-                    <!-- JSON Content Editor -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Content (JSON)</label>
-                        <div class="relative">
-                            <textarea id="sectionContent" class="w-full h-64 border border-gray-300 rounded-md px-3 py-2 text-sm font-mono" placeholder='{"key": "value"}'></textarea>
-                            <div class="absolute top-2 right-2">
-                                <button id="formatJson" class="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded">
-                                    Format JSON
-                                </button>
-                            </div>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">Content must be valid JSON format</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Settings Tab -->
-        <div id="settings-tab" class="tab-content p-6 hidden">
-            <div class="mb-6">
-                <h2 class="text-2xl font-bold text-gray-900">Site Settings</h2>
-                <p class="text-gray-600">Configure your portfolio settings</p>
-            </div>
-
-            <!-- Settings Categories -->
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <!-- Category Navigation -->
-                <div class="lg:col-span-1">
-                    <nav class="space-y-1">
-                        <a href="#" data-category="general" class="settings-category-btn bg-blue-50 text-blue-700 group flex items-center px-3 py-2 text-sm font-medium rounded-md">
-                            <i class="fas fa-cog mr-3"></i>
-                            General
-                        </a>
-                        <a href="#" data-category="contact" class="settings-category-btn text-gray-600 hover:text-gray-900 group flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-50">
-                            <i class="fas fa-envelope mr-3"></i>
-                            Contact Info
-                        </a>
-                        <a href="#" data-category="appearance" class="settings-category-btn text-gray-600 hover:text-gray-900 group flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-50">
-                            <i class="fas fa-paint-brush mr-3"></i>
-                            Appearance
-                        </a>
-                        <a href="#" data-category="seo" class="settings-category-btn text-gray-600 hover:text-gray-900 group flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-50">
-                            <i class="fas fa-search mr-3"></i>
-                            SEO
-                        </a>
-                    </nav>
-                </div>
-
-                <!-- Settings Content -->
-                <div class="lg:col-span-3">
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                        <div id="settingsContent">
-                            <!-- Settings forms will be loaded here -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Themes Tab -->
-        <div id="themes-tab" class="tab-content p-6 hidden">
-            <div class="mb-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-900">Theme & Design</h2>
-                        <p class="text-gray-600">Choose templates and customize colors for your portfolio</p>
-                    </div>
-                    <button id="customizeColorsBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center">
-                        <i class="fas fa-palette mr-2"></i>
-                        Customize Colors
-                    </button>
-                </div>
-            </div>
-
-            <!-- Theme Templates -->
-            <div class="mb-8">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Choose a Template</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="templatesGrid">
-                    <!-- Template cards will be loaded here -->
-                </div>
-            </div>
-
-            <!-- Color Schemes -->
-            <div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Existing Color Schemes</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="themesGrid">
-                    <!-- Theme cards will be loaded here -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Color Customization Modal -->
-        <div id="colorCustomModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-            <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-96 overflow-y-auto">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-semibold text-gray-900">Customize Colors</h3>
-                    <button data-close-modal class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Color Controls -->
-                    <div>
-                        <h4 class="text-lg font-medium text-gray-900 mb-4">Color Settings</h4>
-                        <div id="colorControls" class="space-y-4">
-                            <!-- Color input controls will be generated here -->
-                        </div>
-                        
-                        <div class="flex space-x-3 mt-6">
-                            <button id="resetColorsBtn" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
-                                Reset to Defaults
-                            </button>
-                            <button id="saveColorsBtn" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
-                                Save Changes
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Live Preview -->
-                    <div>
-                        <h4 class="text-lg font-medium text-gray-900 mb-4">Preview</h4>
-                        <div id="colorPreview" class="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                            <div class="space-y-3">
-                                <div class="h-8 rounded" style="background-color: var(--preview-primary, #3B82F6)">
-                                    <div class="h-full flex items-center px-3 text-white text-sm font-medium">
-                                        Primary Color
-                                    </div>
-                                </div>
-                                <div class="h-6 rounded" style="background-color: var(--preview-secondary, #6B7280)">
-                                    <div class="h-full flex items-center px-3 text-white text-xs">
-                                        Secondary Color
-                                    </div>
-                                </div>
-                                <div class="h-4 rounded" style="background-color: var(--preview-accent, #10B981)">
-                                    <div class="h-full flex items-center px-3 text-white text-xs">
-                                        Accent Color
-                                    </div>
-                                </div>
-                                <div class="p-3 rounded border" style="background-color: var(--preview-background, #FFFFFF); color: var(--preview-text, #1F2937)">
-                                    <p class="text-sm">Sample text content with background and text colors</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Calendar Tab -->
-        <div id="calendar-tab" class="tab-content p-6 hidden">
-            <div class="mb-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-900">Calendar Management</h2>
-                        <p class="text-gray-600">Manage your availability and schedule</p>
-                    </div>
-                    <button id="addEventBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
-                        <i class="fas fa-plus mr-2"></i>
-                        Add Event
-                    </button>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Calendar View -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <button id="prevMonth" class="text-gray-600 hover:text-gray-900">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <h3 id="monthYear" class="text-lg font-semibold text-gray-900">July 2025</h3>
-                        <button id="nextMonth" class="text-gray-600 hover:text-gray-900">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                    <div id="calendarGrid">
-                        <!-- Calendar grid will be generated here -->
-                    </div>
-                </div>
-
-                <!-- Events List -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Events</h3>
-                    <div id="eventsList" class="space-y-3 max-h-96 overflow-y-auto">
-                        <!-- Events will be loaded here -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Event Modal -->
-        <div id="eventModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-            <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 id="modalTitle" class="text-lg font-semibold text-gray-900">Add New Event</h3>
-                    <button data-close-modal class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-
-                <form id="eventForm" class="space-y-4">
-                    <div>
-                        <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-                        <input type="text" id="title" name="title" required
-                               class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-
-                    <div>
-                        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea id="description" name="description" rows="2"
-                                  class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date</label>
-                            <input type="date" id="start_date" name="start_date" required
-                                   class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                        <div>
-                            <label for="end_date" class="block text-sm font-medium text-gray-700">End Date</label>
-                            <input type="date" id="end_date" name="end_date" required
-                                   class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label for="start_time" class="block text-sm font-medium text-gray-700">Start Time</label>
-                            <input type="time" id="start_time" name="start_time"
-                                   class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                        <div>
-                            <label for="end_time" class="block text-sm font-medium text-gray-700">End Time</label>
-                            <input type="time" id="end_time" name="end_time"
-                                   class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="flex items-center">
-                            <input type="checkbox" id="all_day" name="all_day" class="mr-2">
-                            <span class="text-sm text-gray-700">All Day</span>
-                        </label>
-                    </div>
-
-                    <div>
-                        <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
-                        <input type="text" id="location" name="location"
-                               class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                            <select id="status" name="status"
-                                    class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                <option value="available">Available</option>
-                                <option value="vacation">Vacation</option>
-                                <option value="unavailable">Unavailable</option>
-                                <option value="busy">Busy</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="color" class="block text-sm font-medium text-gray-700">Color</label>
-                            <input type="color" id="color" name="color" value="#3B82F6"
-                                   class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 h-10 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
-                        <textarea id="notes" name="notes" rows="2"
-                                  class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                    </div>
-
-                    <div class="flex justify-end space-x-3 pt-4">
-                        <button type="button" data-close-modal
-                                class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
-                            Cancel
-                        </button>
-                        <button type="submit"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                            Save Event
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Notification Container -->
-    <div id="notifications" class="fixed top-20 right-4 z-50 space-y-2">
-        <!-- Notifications will appear here -->
-    </div>
-
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
-            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-            <span class="text-gray-700">Loading...</span>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="js/admin.js"></script>
-    <script src="js/gallery.js"></script>
-    <script src="js/faq.js"></script>
-    <script src="js/testimonials.js"></script>
-    <script src="js/pages.js"></script>
-    <script src="js/settings.js"></script>
-    <script src="js/themes.js"></script>
-    <script src="js/calendar.js"></script>
+                if (serversResult.success && sitesResult.success && templatesResult.success) {
+                    const servers = serversResult.servers;
+                    const sites = sitesResult.sites;
+                    const templates = templatesResult.templates;
+                    
+                    document.getElementById('totalServers').textContent = servers.length;
+                    document.getElementById('totalSites').textContent = sites.length;
+                    document.getElementById('totalIndustries').textContent = templates.length;
+                    document.getElementById('onlineServers').textContent = servers.filter(s => s.status === 'active').length;
+                }
+                
+            } catch (error) {
+                console.error('Error loading dashboard stats:', error);
+            }
+        }
+    </script>
 </body>
 </html>

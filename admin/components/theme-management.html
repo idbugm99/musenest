@@ -1,0 +1,784 @@
+<!-- Theme Management Component -->
+<div id="theme-management-section" class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header Section -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h2 class="mb-1 fw-bold text-primary">
+                                <i class="fas fa-palette me-3"></i>Theme Management
+                            </h2>
+                            <p class="mb-0 text-muted">Assign and manage themes for model portfolios</p>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-primary" onclick="showThemePreview()">
+                                <i class="fas fa-eye me-2"></i>Preview All Themes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme Statistics -->
+            <div class="row mb-4">
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="kpi-card">
+                        <div class="kpi-icon bg-primary">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-title">Available Themes</div>
+                            <div class="kpi-value" id="totalThemes">5</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="kpi-card">
+                        <div class="kpi-icon bg-success">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-title">Assigned Models</div>
+                            <div class="kpi-value" id="assignedModels">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="kpi-card">
+                        <div class="kpi-icon bg-warning">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-title">Most Popular</div>
+                            <div class="kpi-value" id="popularTheme">Glamour</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="kpi-card">
+                        <div class="kpi-icon bg-info">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-title">Last Updated</div>
+                            <div class="kpi-value" id="lastUpdated">Today</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme Gallery -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-th-large me-2"></i>Theme Gallery
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="themeGallery">
+                        <!-- Themes will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model Assignment Section -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-users-cog me-2"></i>Model Theme Assignments
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Search and Filter -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="modelSearchInput" 
+                                       placeholder="Search models..." onkeyup="filterModels()">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="themeFilter" onchange="filterByTheme()">
+                                <option value="">All Themes</option>
+                                <option value="basic">Basic</option>
+                                <option value="glamour">Glamour</option>
+                                <option value="luxury">Luxury</option>
+                                <option value="modern">Modern</option>
+                                <option value="dark">Dark</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="statusFilter" onchange="filterByStatus()">
+                                <option value="">All Status</option>
+                                <option value="assigned">Assigned</option>
+                                <option value="unassigned">Unassigned</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Models Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Current Theme</th>
+                                    <th>Status</th>
+                                    <th>Last Updated</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modelsTableBody">
+                                <!-- Models will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <nav aria-label="Models pagination">
+                        <ul class="pagination justify-content-center mb-0" id="modelsPagination">
+                            <!-- Pagination will be generated here -->
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Theme Preview Modal -->
+<div class="modal fade" id="themePreviewModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-eye me-2"></i>Theme Preview
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="row g-0">
+                    <div class="col-md-3 bg-light p-3">
+                        <h6 class="fw-bold mb-3">Available Themes</h6>
+                        <div class="list-group list-group-flush" id="themePreviewList">
+                            <!-- Theme list will be generated -->
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="ratio ratio-16x9">
+                            <iframe id="themePreviewFrame" src="" class="border-0"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="assignPreviewTheme()">
+                    <i class="fas fa-check me-2"></i>Assign This Theme
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Theme Assignment Modal -->
+<div class="modal fade" id="themeAssignmentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-palette me-2"></i>Assign Theme
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="themeAssignmentForm">
+                    <input type="hidden" id="assignmentModelId">
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Model</label>
+                        <div class="form-control-plaintext" id="assignmentModelName"></div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="assignmentTheme" class="form-label fw-bold">Select Theme</label>
+                        <select class="form-select" id="assignmentTheme" required>
+                            <option value="">Choose a theme...</option>
+                            <option value="basic">Basic - Professional & Clean</option>
+                            <option value="glamour">Glamour - Pink & Stylish</option>
+                            <option value="luxury">Luxury - Gold & Elegant</option>
+                            <option value="modern">Modern - Contemporary & Sleek</option>
+                            <option value="dark">Dark - Cyberpunk & Edgy</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Theme Preview</label>
+                        <div class="border rounded p-3 bg-light" id="themePreviewCard">
+                            <p class="text-muted mb-0">Select a theme to see preview</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="enableCustomColors">
+                            <label class="form-check-label" for="enableCustomColors">
+                                Enable custom color scheme
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="customColorSection" class="d-none">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="primaryColor" class="form-label">Primary Color</label>
+                                <input type="color" class="form-control form-control-color" id="primaryColor">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="accentColor" class="form-label">Accent Color</label>
+                                <input type="color" class="form-control form-control-color" id="accentColor">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveThemeAssignment()">
+                    <i class="fas fa-save me-2"></i>Assign Theme
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Theme Management Specific Styles */
+.theme-card {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.theme-card:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.theme-card.selected {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.theme-preview {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.theme-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(0,0,0,0.1), rgba(0,0,0,0.3));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.theme-card:hover .theme-overlay {
+    opacity: 1;
+}
+
+.theme-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+}
+
+.model-status-badge {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
+.status-assigned {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-unassigned {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.theme-color-preview {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+}
+</style>
+
+<script>
+class ThemeManagement {
+    constructor() {
+        this.themes = [
+            {
+                id: 1,
+                slug: 'basic',
+                name: 'Basic',
+                description: 'Professional & Clean',
+                primaryColor: '#1F2937',
+                accentColor: '#10B981',
+                previewUrl: '/test-basic',
+                thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMUYyOTM3Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5CYXNpYzwvdGV4dD48L3N2Zz4='
+            },
+            {
+                id: 2,
+                slug: 'glamour',
+                name: 'Glamour',
+                description: 'Pink & Stylish',
+                primaryColor: '#EC4899',
+                accentColor: '#F97316',
+                previewUrl: '/test-glamour',
+                thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNFQzQ4OTkiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNGOTczMTYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2cpIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5HbGFtb3VyPC90ZXh0Pjwvc3ZnPg=='
+            },
+            {
+                id: 3,
+                slug: 'luxury',
+                name: 'Luxury',
+                description: 'Gold & Elegant',
+                primaryColor: '#D97706',
+                accentColor: '#92400E',
+                previewUrl: '/test-luxury',
+                thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImwiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNEOTc3MDYiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM5MjQwMEUiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2wpIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5MdXh1cnk8L3RleHQ+PC9zdmc+'
+            },
+            {
+                id: 4,
+                slug: 'modern',
+                name: 'Modern',
+                description: 'Contemporary & Sleek',
+                primaryColor: '#2563EB',
+                accentColor: '#06B6D4',
+                previewUrl: '/test-modern',
+                thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9Im0iIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMyNTYzRUIiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwNkI2RDQiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI20pIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5Nb2Rlcm48L3RleHQ+PC9zdmc+'
+            },
+            {
+                id: 5,
+                slug: 'dark',
+                name: 'Dark',
+                description: 'Cyberpunk & Edgy',
+                primaryColor: '#00ff88',
+                accentColor: '#ff0088',
+                previewUrl: '/test-dark',
+                thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMGEwYTBhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzAwZmY4OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkRhcms8L3RleHQ+PC9zdmc+'
+            }
+        ];
+        
+        this.models = [];
+        this.selectedTheme = null;
+        this.selectedModel = null;
+        
+        this.init();
+    }
+    
+    async init() {
+        console.log('🚀 Initializing Theme Management...');
+        await this.loadModels();
+        console.log('📊 Models loaded:', this.models);
+        this.renderThemeGallery();
+        this.renderModelsTable();
+        this.setupEventListeners();
+        console.log('✅ Theme Management initialized successfully');
+    }
+    
+    async loadModels() {
+        try {
+            console.log('🔍 Fetching models from API...');
+            const response = await fetch('/api/theme-management/models');
+            if (response.ok) {
+                this.models = await response.json();
+                console.log('✅ Models loaded from API:', this.models);
+                
+                // Update the assigned models count
+                document.getElementById('assignedModels').textContent = 
+                    this.models.filter(m => m.theme_set_id).length;
+            } else {
+                console.log('❌ API response not OK, using sample data');
+                this.models = [
+                    { id: 1, name: 'Escort Example', slug: 'escortexample', theme_set_id: null, status: 'active' },
+                    { id: 2, name: 'Cam Girl Demo', slug: 'camgirl-demo', theme_set_id: 'glamour', status: 'active' },
+                    { id: 3, name: 'Luxury Model', slug: 'luxury-model', theme_set_id: 'luxury', status: 'active' }
+                ];
+            }
+        } catch (error) {
+            console.error('❌ Error loading models:', error);
+            console.log('Using sample model data for demo');
+            this.models = [
+                { id: 1, name: 'Escort Example', slug: 'escortexample', theme_set_id: null, status: 'active' },
+                { id: 2, name: 'Cam Girl Demo', slug: 'camgirl-demo', theme_set_id: 'glamour', status: 'active' },
+                { id: 3, name: 'Luxury Model', slug: 'luxury-model', theme_set_id: 'luxury', status: 'active' }
+            ];
+        }
+    }
+    
+    renderThemeGallery() {
+        const gallery = document.getElementById('themeGallery');
+        gallery.innerHTML = this.themes.map(theme => `
+            <div class="col-md-4 col-lg-3 mb-4">
+                <div class="theme-card" onclick="themeManager.selectTheme('${theme.slug}')">
+                    <div class="theme-preview" style="background-image: url('${theme.thumbnail}')">
+                        <div class="theme-overlay">
+                            <button class="btn btn-light btn-sm">
+                                <i class="fas fa-eye me-1"></i>Preview
+                            </button>
+                        </div>
+                        <span class="badge bg-primary theme-badge">${theme.name}</span>
+                    </div>
+                    <div class="card-body p-3">
+                        <h6 class="card-title mb-1">${theme.name}</h6>
+                        <p class="card-text text-muted small mb-2">${theme.description}</p>
+                        <div class="d-flex align-items-center">
+                            <div class="theme-color-preview" style="background-color: ${theme.primaryColor}"></div>
+                            <div class="theme-color-preview" style="background-color: ${theme.accentColor}"></div>
+                            <small class="text-muted ms-auto">
+                                ${this.models.filter(m => m.theme_set_id === theme.id).length} assigned
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    renderModelsTable() {
+        console.log('🔍 Rendering models table with', this.models.length, 'models');
+        const tbody = document.getElementById('modelsTableBody');
+        
+        if (!tbody) {
+            console.error('❌ modelsTableBody element not found!');
+            return;
+        }
+        
+        tbody.innerHTML = this.models.map(model => {
+            const theme = model.theme_set_id ? this.themes.find(t => t.id === model.theme_set_id) : null;
+            const statusClass = theme ? 'status-assigned' : 'status-unassigned';
+            const statusText = theme ? 'Assigned' : 'Unassigned';
+            
+            return `
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center me-3">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
+                            <div>
+                                <div class="fw-semibold">${model.name}</div>
+                                <small class="text-muted">@${model.slug}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        ${theme ? `
+                            <div class="d-flex align-items-center">
+                                <div class="theme-color-preview" style="background-color: ${theme.primaryColor}"></div>
+                                <span>${theme.name}</span>
+                            </div>
+                        ` : '<span class="text-muted">No theme assigned</span>'}
+                    </td>
+                    <td>
+                        <span class="model-status-badge ${statusClass}">${statusText}</span>
+                    </td>
+                    <td>
+                        <small class="text-muted">${new Date().toLocaleDateString()}</small>
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary" onclick="themeManager.assignTheme(${model.id})">
+                                <i class="fas fa-palette"></i>
+                            </button>
+                            ${theme ? `
+                                <button class="btn btn-outline-info" onclick="themeManager.previewModelTheme(${model.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+    
+    selectTheme(themeId) {
+        this.selectedTheme = themeId;
+        document.querySelectorAll('.theme-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        event.currentTarget.classList.add('selected');
+    }
+    
+    assignTheme(modelId) {
+        this.selectedModel = this.models.find(m => m.id === modelId);
+        document.getElementById('assignmentModelId').value = modelId;
+        document.getElementById('assignmentModelName').textContent = this.selectedModel.name;
+        
+        // Set current theme if exists
+        if (this.selectedModel.theme_set_id) {
+            document.getElementById('assignmentTheme').value = this.selectedModel.theme_set_id;
+            this.updateThemePreviewCard(this.selectedModel.theme_set_id);
+        }
+        
+        new bootstrap.Modal(document.getElementById('themeAssignmentModal')).show();
+    }
+    
+    updateThemePreviewCard(themeId) {
+        const theme = this.themes.find(t => t.id === themeId);
+        const previewCard = document.getElementById('themePreviewCard');
+        
+        if (theme) {
+            previewCard.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <div class="theme-color-preview" style="background-color: ${theme.primaryColor}"></div>
+                    <div class="theme-color-preview" style="background-color: ${theme.accentColor}"></div>
+                    <div class="ms-2">
+                        <div class="fw-semibold">${theme.name}</div>
+                        <small class="text-muted">${theme.description}</small>
+                    </div>
+                </div>
+            `;
+        } else {
+            previewCard.innerHTML = '<p class="text-muted mb-0">Select a theme to see preview</p>';
+        }
+    }
+    
+    async saveThemeAssignment() {
+        const modelId = document.getElementById('assignmentModelId').value;
+        const themeId = document.getElementById('assignmentTheme').value;
+        
+        if (!themeId) {
+            alert('Please select a theme');
+            return;
+        }
+        
+        try {
+            console.log('💾 Saving theme assignment:', { modelId, themeId });
+            
+            // Send PUT request to save theme assignment
+            const response = await fetch(`/api/theme-management/models/${modelId}/theme`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    theme_id: themeId, // This should be the theme slug for the API
+                    primary_color: document.getElementById('primaryColor')?.value,
+                    accent_color: document.getElementById('accentColor')?.value
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const result = await response.json();
+            console.log('✅ Theme assignment saved:', result);
+            
+            // Update model in local data with numeric theme_set_id
+            const model = this.models.find(m => m.id == modelId);
+            if (model) {
+                // Map theme names to IDs (matching server-side mapping)
+                const themeMap = {
+                    'basic': 1,
+                    'glamour': 2,
+                    'luxury': 3,
+                    'modern': 4,
+                    'dark': 5
+                };
+                model.theme_set_id = themeMap[themeId];
+                model.theme_name = themeId;
+            }
+            
+            // Re-render tables
+            this.renderThemeGallery();
+            this.renderModelsTable();
+            
+            // Update assigned models count
+            document.getElementById('assignedModels').textContent = 
+                this.models.filter(m => m.theme_set_id).length;
+            
+            // Close modal
+            bootstrap.Modal.getInstance(document.getElementById('themeAssignmentModal')).hide();
+            
+            // Show success message
+            this.showNotification('Theme assigned successfully and saved to database!', 'success');
+            
+        } catch (error) {
+            console.error('❌ Error assigning theme:', error);
+            this.showNotification(`Error assigning theme: ${error.message}`, 'error');
+        }
+    }
+    
+    showThemePreview() {
+        // Setup theme preview list
+        const previewList = document.getElementById('themePreviewList');
+        previewList.innerHTML = this.themes.map(theme => `
+            <a href="#" class="list-group-item list-group-item-action" 
+               onclick="themeManager.loadThemePreview('${theme.previewUrl}', '${theme.name}')">
+                <div class="d-flex align-items-center">
+                    <div class="theme-color-preview" style="background-color: ${theme.primaryColor}"></div>
+                    <div>
+                        <div class="fw-semibold">${theme.name}</div>
+                        <small class="text-muted">${theme.description}</small>
+                    </div>
+                </div>
+            </a>
+        `).join('');
+        
+        // Load first theme by default
+        this.loadThemePreview(this.themes[0].previewUrl, this.themes[0].name);
+        
+        new bootstrap.Modal(document.getElementById('themePreviewModal')).show();
+    }
+    
+    loadThemePreview(url, themeName) {
+        document.getElementById('themePreviewFrame').src = url;
+        document.querySelector('#themePreviewModal .modal-title').innerHTML = 
+            `<i class="fas fa-eye me-2"></i>${themeName} Theme Preview`;
+    }
+    
+    previewModelTheme(modelId) {
+        const model = this.models.find(m => m.id === modelId);
+        if (!model || !model.theme_set_id) {
+            this.showNotification('No theme assigned to this model', 'warning');
+            return;
+        }
+        
+        const theme = this.themes.find(t => t.id === model.theme_set_id);
+        if (!theme) {
+            this.showNotification('Theme not found', 'error');
+            return;
+        }
+        
+        // Construct preview URL for the model's assigned theme
+        const previewUrl = `${theme.previewUrl}?model=${model.slug}`;
+        
+        // Load the preview
+        document.getElementById('themePreviewFrame').src = previewUrl;
+        document.querySelector('#themePreviewModal .modal-title').innerHTML = 
+            `<i class="fas fa-eye me-2"></i>${model.name} - ${theme.name} Theme Preview`;
+        
+        new bootstrap.Modal(document.getElementById('themePreviewModal')).show();
+    }
+    
+    setupEventListeners() {
+        // Theme selection change
+        document.getElementById('assignmentTheme').addEventListener('change', (e) => {
+            this.updateThemePreviewCard(e.target.value);
+        });
+        
+        // Custom colors toggle
+        document.getElementById('enableCustomColors').addEventListener('change', (e) => {
+            const section = document.getElementById('customColorSection');
+            if (e.target.checked) {
+                section.classList.remove('d-none');
+            } else {
+                section.classList.add('d-none');
+            }
+        });
+    }
+    
+    showNotification(message, type = 'info') {
+        // Simple notification - can be enhanced with a proper notification system
+        const alertClass = type === 'success' ? 'alert-success' : 
+                          type === 'error' ? 'alert-danger' : 'alert-info';
+        
+        const notification = document.createElement('div');
+        notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 5000);
+    }
+}
+
+// Global functions for onclick handlers
+function showThemePreview() {
+    themeManager.showThemePreview();
+}
+
+function assignPreviewTheme() {
+    // Implementation for assigning theme from preview modal
+    console.log('Assign theme from preview');
+}
+
+function filterModels() {
+    // Implementation for model search
+    console.log('Filter models');
+}
+
+function filterByTheme() {
+    // Implementation for theme filter
+    console.log('Filter by theme');
+}
+
+function filterByStatus() {
+    // Implementation for status filter
+    console.log('Filter by status');
+}
+
+function saveThemeAssignment() {
+    themeManager.saveThemeAssignment();
+}
+
+// Initialize when component loads
+let themeManager;
+
+// Function to initialize theme management
+function initializeThemeManagement() {
+    if (document.getElementById('theme-management-section') || document.getElementById('themeGallery')) {
+        if (!themeManager) {
+            console.log('🎨 Initializing Theme Management...');
+            themeManager = new ThemeManagement();
+        }
+    }
+}
+
+// Try to initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', initializeThemeManagement);
+
+// Also try to initialize immediately (in case DOM is already loaded)
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeThemeManagement);
+} else {
+    // DOM is already loaded
+    setTimeout(initializeThemeManagement, 100);
+}
+</script>

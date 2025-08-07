@@ -2276,38 +2276,59 @@ class SystemAdminDashboard {
     }
 
     async rejectMedia(mediaId) {
-        const reason = prompt('Reason for rejection (required):');
+        console.log('rejectMedia called with mediaId:', mediaId);
         
-        if (!reason || !reason.trim()) {
-            alert('Rejection reason is required');
-            return;
-        }
+        const reason = prompt('Reason for rejection (optional - leave blank for quick reject):');
+        
+        // Allow empty reason - use default if none provided
+        const finalReason = (reason && reason.trim()) ? reason.trim() : 'Quick reject - no specific reason provided';
+        
+        console.log('Rejection reason provided:', reason);
+        console.log('Final reason being sent:', finalReason);
+        console.log('Auth token exists:', !!this.authToken);
+        console.log('Current user:', this.currentUser);
         
         try {
+            const requestBody = {
+                admin_notes: finalReason,
+                reviewed_by: this.currentUser?.id || 1
+            };
+            
+            console.log('Making reject request with body:', requestBody);
+            
             const response = await fetch(`/api/media-review-queue/reject/${mediaId}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    admin_notes: reason,
-                    reviewed_by: this.currentUser.id || 1
-                })
+                body: JSON.stringify(requestBody)
             });
 
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Response error text:', errorText);
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
+            }
+
             const data = await response.json();
+            console.log('Response data:', data);
             
             if (data.success) {
                 this.showNotification('Media rejected successfully', 'success');
                 this.loadTabContent('media-queue');
             } else {
-                throw new Error(data.error);
+                throw new Error(data.error || 'Unknown error');
             }
 
         } catch (error) {
             console.error('Error rejecting media:', error);
+            console.error('Error stack:', error.stack);
             this.showNotification(`Error: ${error.message}`, 'error');
+            alert(`Rejection failed: ${error.message}`);
         }
     }
 

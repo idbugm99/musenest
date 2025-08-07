@@ -1,0 +1,167 @@
+<!-- About Hero Section -->
+<section class="modern-hero min-h-96 flex items-center justify-center text-white pt-16" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <div class="modern-badge mb-4">About</div>
+        <h1 class="text-5xl md:text-6xl font-bold mb-6 modern-heading">
+            About {{siteName}}
+        </h1>
+        <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto font-light">
+            {{content.aboutIntro}}
+        </p>
+    </div>
+</section>
+
+<!-- Main About Content -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="modern-grid modern-grid-2 items-start">
+            <!-- About Text -->
+            <div data-aos="fade-right">
+                <div class="prose prose-lg max-w-none">
+                    <div class="text-lg text-modern-muted leading-relaxed space-y-6">
+                        {{{content.mainContent}}}
+                    </div>
+                </div>
+                
+                {{#if content.personalInfo}}
+                <div class="mt-12">
+                    <h3 class="text-2xl font-bold mb-6 modern-heading text-modern-primary">
+                        Details
+                    </h3>
+                    <div class="modern-grid modern-grid-2">
+                        {{#each content.personalInfo}}
+                        <div class="modern-card p-4 flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-modern-primary rounded-xl flex items-center justify-center">
+                                <i class="{{this.icon}} text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-modern-text modern-mono text-sm">{{this.label}}</h4>
+                                <p class="text-modern-muted">{{this.value}}</p>
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+            
+            <!-- About Images -->
+            <div data-aos="fade-left">
+                {{#if content.aboutImages}}
+                <div class="space-y-6">
+                    {{#each content.aboutImages}}
+                    <div class="modern-card overflow-hidden">
+                        <img src="{{this.url}}" alt="{{this.caption}}" 
+                             class="w-full rounded-2xl">
+                        {{#if this.caption}}
+                        <div class="p-4">
+                            <p class="text-modern-muted text-sm">{{this.caption}}</p>
+                        </div>
+                        {{/if}}
+                    </div>
+                    {{/each}}
+                </div>
+                {{else}}
+                <div class="modern-card p-12 text-center">
+                    <div class="w-32 h-32 mx-auto mb-6 bg-modern-primary rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-camera text-4xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4 modern-heading">Portfolio</h3>
+                    <p class="text-modern-muted mb-6">Professional content coming soon</p>
+                    <a href="/{{modelSlug}}/gallery" class="modern-btn">
+                        <i class="fas fa-images mr-2"></i>
+                        View Gallery
+                    </a>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Values Section -->
+{{#if content.values}}
+<section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <div class="modern-badge mb-4">Values</div>
+            <h2 class="text-4xl font-bold mb-6 modern-heading text-modern-primary">
+                What I Stand For
+            </h2>
+            <p class="text-xl text-modern-muted">
+                The principles that guide my work
+            </p>
+        </div>
+        
+        <div class="modern-grid modern-grid-3">
+            {{#each content.values}}
+            <div class="modern-card p-8 text-center" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                <div class="w-16 h-16 mx-auto mb-6 bg-modern-primary rounded-2xl flex items-center justify-center">
+                    <i class="{{this.icon}} text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4 modern-heading">{{this.title}}</h3>
+                <p class="text-modern-muted leading-relaxed">{{this.description}}</p>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Experience Section -->
+{{#if content.experience}}
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <div class="modern-badge mb-4">Experience</div>
+            <h2 class="text-4xl font-bold mb-6 modern-heading text-modern-primary">
+                My Journey
+            </h2>
+            <p class="text-xl text-modern-muted">
+                Professional background and expertise
+            </p>
+        </div>
+        
+        <div class="max-w-4xl mx-auto">
+            <div class="space-y-6">
+                {{#each content.experience}}
+                <div class="modern-card p-8 flex items-start space-x-6" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                    <div class="w-14 h-14 bg-modern-primary rounded-2xl flex items-center justify-center flex-shrink-0">
+                        <i class="{{this.icon}} text-white text-lg"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold mb-2 modern-heading">{{this.title}}</h3>
+                        {{#if this.period}}
+                        <p class="text-modern-primary font-semibold mb-3 modern-mono text-sm">{{this.period}}</p>
+                        {{/if}}
+                        <p class="text-modern-muted leading-relaxed">{{this.description}}</p>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Call to Action -->
+<section class="py-20 bg-modern-primary text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <h2 class="text-4xl font-bold mb-6 modern-heading">
+            Let's Work Together
+        </h2>
+        <p class="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
+            Ready to get started? I'd love to discuss how I can help you achieve your goals.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="/{{modelSlug}}/contact" class="modern-btn bg-white text-modern-primary hover:bg-gray-100">
+                <i class="fas fa-envelope mr-2"></i>
+                Get in Touch
+            </a>
+            <a href="/{{modelSlug}}/rates" class="modern-btn-outline border-white text-white hover:bg-white hover:text-modern-primary">
+                <i class="fas fa-list mr-2"></i>
+                View Services
+            </a>
+        </div>
+    </div>
+</section>

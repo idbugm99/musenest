@@ -40,7 +40,7 @@ router.get('/queue', async (req, res) => {
                 id, model_name, review_status, nudity_score, priority, queue_type, 
                 usage_intent, flagged_at, original_path, detected_parts, context_type,
                 appeal_reason, appeal_message, appeal_requested, final_risk_score,
-                risk_level, combined_assessment, pose_category, explicit_pose_score
+                risk_level, combined_assessment, pose_classification, explicit_pose_score
             FROM media_review_queue 
             WHERE review_status = ?
             ORDER BY flagged_at DESC

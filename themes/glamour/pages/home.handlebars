@@ -1,0 +1,168 @@
+<!-- Hero Section -->
+<section class="py-16 bg-gradient-to-r from-glamour-primary to-glamour-accent text-white" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 glamour-heading">
+                {{content.heroTitle}}
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 text-pink-100">
+                {{content.heroSubtitle}}
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="/{{modelSlug}}/contact" class="glamour-btn glamour-hover-lift">
+                    Get in Touch
+                </a>
+                <a href="/{{modelSlug}}/gallery" class="glamour-btn bg-white text-glamour-primary hover:bg-pink-50">
+                    View Gallery
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Preview Section -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div data-aos="fade-right">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6 glamour-heading glamour-text-gradient">
+                    About {{siteName}}
+                </h2>
+                <div class="text-lg text-gray-700 leading-relaxed space-y-4">
+                    {{{content.aboutPreview}}}
+                </div>
+                <div class="mt-8">
+                    <a href="/{{modelSlug}}/about" class="glamour-btn">
+                        Learn More About Me
+                    </a>
+                </div>
+            </div>
+            <div data-aos="fade-left">
+                {{#if content.aboutImage}}
+                <div class="relative">
+                    <img src="{{content.aboutImage}}" alt="{{siteName}}" 
+                         class="w-full rounded-2xl shadow-2xl glamour-hover-lift">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl"></div>
+                </div>
+                {{else}}
+                <div class="glamour-card p-12 text-center">
+                    <div class="w-32 h-32 mx-auto mb-6 bg-glamour-primary rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-4xl text-white"></i>
+                    </div>
+                    <p class="text-gray-600">Professional photo coming soon</p>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Preview Section -->
+<section class="py-16 bg-gradient-to-br from-pink-50 to-purple-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12" data-aos="fade-up">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 glamour-heading glamour-text-gradient">
+                Services & Experiences
+            </h2>
+            <p class="text-xl text-gray-600">
+                {{content.servicesPreview}}
+            </p>
+        </div>
+        
+        {{#if services}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {{#each services}}
+            <div class="glamour-card p-8 text-center glamour-hover-lift" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                <div class="w-16 h-16 mx-auto mb-6 bg-glamour-primary rounded-full flex items-center justify-center">
+                    <i class="{{this.icon}} text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4 glamour-heading">{{this.name}}</h3>
+                <p class="text-gray-600 mb-6">{{this.description}}</p>
+                {{#if this.price}}
+                <p class="text-2xl font-bold text-glamour-primary">{{formatCurrency this.price}}</p>
+                {{/if}}
+            </div>
+            {{/each}}
+        </div>
+        {{else}}
+        <div class="glamour-card p-12 text-center">
+            <div class="w-24 h-24 mx-auto mb-6 bg-glamour-primary rounded-full flex items-center justify-center">
+                <i class="fas fa-heart text-3xl text-white"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-4 glamour-heading">Premium Services</h3>
+            <p class="text-gray-600 mb-6">Exclusive experiences tailored just for you</p>
+            <a href="/{{modelSlug}}/rates" class="glamour-btn">
+                View All Services
+            </a>
+        </div>
+        {{/if}}
+        
+        <div class="text-center mt-12" data-aos="fade-up">
+            <a href="/{{modelSlug}}/rates" class="glamour-btn">
+                View All Services & Rates
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Preview Section -->
+{{#if galleryImages}}
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12" data-aos="fade-up">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 glamour-heading glamour-text-gradient">
+                Gallery Highlights
+            </h2>
+            <p class="text-xl text-gray-600">
+                A glimpse into my world
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {{#each galleryImages}}
+            {{#if (lt @index 8)}}
+            <div class="relative group overflow-hidden rounded-lg glamour-hover-lift" data-aos="zoom-in" data-aos-delay="{{@index}}00">
+                <img src="{{this.thumbnail}}" alt="Gallery Image" 
+                     class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div class="absolute bottom-4 left-4 text-white">
+                        <i class="fas fa-expand text-lg"></i>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+            {{/each}}
+        </div>
+        
+        <div class="text-center mt-12" data-aos="fade-up">
+            <a href="/{{modelSlug}}/gallery" class="glamour-btn">
+                View Full Gallery
+            </a>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Call to Action Section -->
+<section class="py-16 bg-gradient-to-r from-glamour-secondary to-glamour-primary text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <h2 class="text-3xl md:text-4xl font-bold mb-6 glamour-heading">
+            {{content.ctaTitle}}
+        </h2>
+        <p class="text-xl mb-8 text-pink-100">
+            {{content.ctaSubtitle}}
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="/{{modelSlug}}/contact" class="glamour-btn bg-white text-glamour-primary hover:bg-pink-50">
+                <i class="fas fa-envelope mr-2"></i>
+                Contact Me
+            </a>
+            {{#if bookingUrl}}
+            <a href="{{bookingUrl}}" class="glamour-btn bg-transparent border-2 border-white hover:bg-white hover:text-glamour-primary">
+                <i class="fas fa-calendar mr-2"></i>
+                Book Now
+            </a>
+            {{/if}}
+        </div>
+    </div>
+</section>

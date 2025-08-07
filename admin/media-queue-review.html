@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Queue Review - MuseNest</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/5.16.0/load-image.all.min.js"></script>
+    <style>
+        .child-policy-warning {
+            background: linear-gradient(135deg, #dc3545, #b02a37);
+            color: white;
+            border: 3px solid #721c24;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 16px rgba(220, 53, 69, 0.3);
+            animation: pulse-warning 2s infinite;
+        }
+        
+        @keyframes pulse-warning {
+            0%, 100% { transform: scale(1); box-shadow: 0 8px 16px rgba(220, 53, 69, 0.3); }
+            50% { transform: scale(1.02); box-shadow: 0 12px 24px rgba(220, 53, 69, 0.5); }
+        }
+        
+        .violation-badge {
+            font-size: 14px;
+            margin: 2px;
+            padding: 8px 12px;
+        }
+        
+        .violation-high { background: #dc3545 !important; }
+        .violation-medium { background: #fd7e14 !important; }
+        .violation-low { background: #6c757d !important; }
+        
+        .violation-item {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background: #fff;
+        }
+        
+        .violation-item.blurred {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+        
+        .violation-item.approved {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+        
+        .image-container {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+        }
+        
+        .blur-overlay {
+            position: absolute;
+            border: 3px solid rgba(220, 53, 69, 0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+        }
+        
+        .blur-overlay:hover {
+            border-color: rgba(220, 53, 69, 1);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        }
+        
+        .blur-overlay.shape-oval { border-radius: 50%; }
+        .blur-overlay.shape-rounded { border-radius: 15px; }
+        .blur-overlay.shape-square { border-radius: 8px; }
+        
+        .confidence-label {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            z-index: 100;
+            pointer-events: none;
+        }
+        
+        .image-preview {
+            max-width: 100%;
+            max-height: 600px;
+            object-fit: contain;
+        }
+        
+        .blur-overlay.disabled {
+            display: none !important;
+        }
+        
+        .resize-handle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(220, 53, 69, 0.8);
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 110;
+        }
+        
+        .resize-handle.nw { top: -6px; left: -6px; cursor: nw-resize; }
+        .resize-handle.ne { top: -6px; right: -6px; cursor: ne-resize; }
+        .resize-handle.sw { bottom: -6px; left: -6px; cursor: sw-resize; }
+        .resize-handle.se { bottom: -6px; right: -6px; cursor: se-resize; }
+        .resize-handle.n { top: -6px; left: 50%; margin-left: -6px; cursor: n-resize; }
+        .resize-handle.s { bottom: -6px; left: 50%; margin-left: -6px; cursor: s-resize; }
+        .resize-handle.w { top: 50%; left: -6px; margin-top: -6px; cursor: w-resize; }
+        .resize-handle.e { top: 50%; right: -6px; margin-top: -6px; cursor: e-resize; }
+        
+        .blur-overlay:hover .resize-handle {
+            opacity: 1;
+        }
+        
+        .blur-overlay.dragging {
+            cursor: move;
+            z-index: 100;
+        }
+        
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h2 class="mb-1 fw-bold text-primary">
+                                    <i class="fas fa-shield-alt me-3"></i>Media Queue Review
+                                </h2>
+                                <p class="mb-0 text-muted">Review and moderate flagged content from AI analysis</p>
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-secondary" onclick="window.close()">
+                                    <i class="fas fa-times me-2"></i>Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Content -->
+        <div class="row">
+            <!-- Image and Controls -->
+            <div class="col-lg-8">
+                <!-- Child Policy Warning (Hidden by default) -->
+                <div id="childPolicyWarning" class="child-policy-warning" style="display: none;">
+                    <i class="fas fa-exclamation-triangle me-3"></i>
+                    CHILD POLICY VIOLATION - HARD NO
+                    <br><small style="font-size: 16px;">This image appears to contain minors and violates our child protection policy</small>
+                </div>
+                
+                <!-- Image Review -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0 fw-bold">
+                            <i class="fas fa-image me-2"></i>Image Review
+                        </h5>
+                        <small class="text-muted">Click on highlighted areas to toggle blur on/off</small>
+                    </div>
+                    <div class="card-body text-center">
+                        <div id="imageContainer">
+                            <div class="loading-spinner">
+                                <div class="spinner-border text-primary" role="status"></div>
+                                <span class="ms-2">Loading image...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI Analysis Results -->
+                <div id="analysisResults" class="card shadow-sm border-0">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 fw-bold">
+                            <i class="fas fa-chart-bar me-2"></i>AI Analysis Results
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="analysisContent">
+                            <!-- Analysis results will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar Controls -->
+            <div class="col-lg-4">
+                <!-- Media Info -->
+                <div id="mediaInfo" class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0 fw-bold">
+                            <i class="fas fa-info-circle me-2"></i>Media Details
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="mediaInfoContent">
+                            <!-- Media info will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Detected Violations -->
+                <div id="violationsList" class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0 fw-bold">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Detected Violations
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="violationsContent">
+                            <!-- Violations will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Blur Controls -->
+                <div id="blurControls" class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold">
+                                <i class="fas fa-sliders-h me-2"></i>Blur Controls
+                            </h5>
+                            <div id="previewEyeToggle" onclick="toggleSharpPreview()" class="btn btn-sm btn-outline-primary" title="Toggle blur preview">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Blur Strength:</label>
+                            <input type="range" class="form-range" id="blurStrength" min="1" max="20" value="6" 
+                                   onchange="updateBlurSettings()" oninput="updateBlurSettings()">
+                            <small class="text-muted">Strength: <span id="blurStrengthValue">6</span></small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Blur Shape:</label>
+                            <select class="form-select" id="blurShape" onchange="updateBlurSettings()">
+                                <option value="square">Rectangle</option>
+                                <option value="rounded">Rounded Rectangle</option>
+                                <option value="oval">Oval</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <button class="btn btn-info btn-sm w-100" onclick="addManualBlurArea()">
+                                <i class="fas fa-plus me-2"></i>Add Manual Blur Area
+                            </button>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-warning" onclick="toggleAllBlurs()">
+                                <i class="fas fa-sync-alt me-2"></i>Toggle All Blurs
+                            </button>
+                            <hr>
+                            <button class="btn btn-success" onclick="approveWithBlur()">
+                                <i class="fas fa-check me-2"></i>Approve with Blur
+                            </button>
+                            <button class="btn btn-primary" onclick="approveWithoutBlur()">
+                                <i class="fas fa-check-circle me-2"></i>Approve Clean
+                            </button>
+                            <button class="btn btn-danger" onclick="rejectImage()">
+                                <i class="fas fa-times me-2"></i>Reject Image
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Global variables
+        let currentMediaItem = null;
+        let blurStates = {};
+        let analysisData = null;
+        let currentImage = null;
+        
+        // Drag/resize state
+        let dragState = {
+            isDragging: false,
+            isResizing: false,
+            overlay: null,
+            startX: 0,
+            startY: 0,
+            startLeft: 0,
+            startTop: 0,
+            startWidth: 0,
+            startHeight: 0,
+            resizeDirection: null
+        };
+        
+        // Initialize page with media ID from URL parameters
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mediaId = urlParams.get('mediaId');
+            
+            if (mediaId) {
+                console.log('Loading media item:', mediaId);
+                loadMediaItem(mediaId);
+            } else {
+                console.error('No mediaId provided in URL');
+                document.getElementById('imageContainer').innerHTML = 
+                    '<div class="alert alert-danger">No media ID provided</div>';
+            }
+        });
+        
+        // Load specific media item from queue
+        async function loadMediaItem(mediaId) {
+            try {
+                const response = await fetch(`/api/enhanced-content-moderation/admin/queue-item/${mediaId}`);
+                const result = await response.json();
+                
+                if (result.success && result.item) {
+                    currentMediaItem = result.item;
+                    displayMediaItem(currentMediaItem);
+                } else {
+                    throw new Error(result.error || 'Failed to load media item');
+                }
+            } catch (error) {
+                console.error('Error loading media item:', error);
+                document.getElementById('imageContainer').innerHTML = 
+                    `<div class="alert alert-danger">Error loading media item: ${error.message}</div>`;
+            }
+        }
+        
+        // Display the loaded media item
+        function displayMediaItem(item) {
+            console.log('Displaying media item:', item);
+            
+            // Check for child policy violations
+            checkChildPolicyViolations(item);
+            
+            // Display media info
+            displayMediaInfo(item);
+            
+            // Display violations
+            displayViolations(item.detected_parts || {});
+            
+            // Display analysis results
+            displayAnalysisResults(item);
+            
+            // Load and display the image
+            loadImageForReview(item);
+        }
+        
+        // Check for child policy violations using boolean flag from AI team
+        function checkChildPolicyViolations(item) {
+            const hasChildViolation = item.child_detected === true || item.child_detected === 1;
+            
+            // Show/hide child policy warning based on AI boolean flag
+            const warningElement = document.getElementById('childPolicyWarning');
+            if (hasChildViolation) {
+                warningElement.style.display = 'block';
+                warningElement.innerHTML = `
+                    <i class="fas fa-exclamation-triangle me-3"></i>
+                    CHILD POLICY VIOLATION - HARD NO
+                    <br><small style="font-size: 16px;">AI system detected child-related content (child_detected: true)</small>
+                    ${item.description_text ? `<br><small style="font-size: 14px;">Description: "${item.description_text.replace(/"/g, '&quot;')}"</small>` : ''}
+                `;
+            } else {
+                warningElement.style.display = 'none';
+            }
+        }
+        
+        // Display media information
+        function displayMediaInfo(item) {
+            const content = `
+                <div class="row g-2">
+                    <div class="col-6"><strong>Model:</strong></div>
+                    <div class="col-6">${item.model_name}</div>
+                    
+                    <div class="col-6"><strong>Usage Intent:</strong></div>
+                    <div class="col-6">${item.usage_intent}</div>
+                    
+                    <div class="col-6"><strong>Nudity Score:</strong></div>
+                    <div class="col-6">
+                        <span class="badge bg-${getNudityScoreColor(item.nudity_score)}">${parseFloat(item.nudity_score).toFixed(1)}%</span>
+                    </div>
+                    
+                    <div class="col-6"><strong>Priority:</strong></div>
+                    <div class="col-6">
+                        <span class="badge bg-${getPriorityColor(item.priority)}">${item.priority?.toUpperCase() || 'HIGH'}</span>
+                    </div>
+                    
+                    <div class="col-6"><strong>Queue Type:</strong></div>
+                    <div class="col-6">${item.queue_type || 'manual_review'}</div>
+                    
+                    <div class="col-6"><strong>Flagged:</strong></div>
+                    <div class="col-6">${new Date(item.created_at).toLocaleString()}</div>
+                </div>
+                
+                ${item.description_text ? `
+                    <hr>
+                    <div class="row g-2">
+                        <div class="col-12"><strong>BLIP Description:</strong></div>
+                        <div class="col-12">
+                            <div class="bg-light p-2 rounded">
+                                <em>"${item.description_text}"</em>
+                            </div>
+                        </div>
+                        
+                        ${item.description_risk ? `
+                            <div class="col-6"><strong>Description Risk:</strong></div>
+                            <div class="col-6">
+                                <span class="badge bg-${item.description_risk > 70 ? 'danger' : item.description_risk > 30 ? 'warning' : 'success'}">
+                                    ${parseFloat(item.description_risk).toFixed(1)}%
+                                </span>
+                            </div>
+                        ` : ''}
+                    </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('mediaInfoContent').innerHTML = content;
+        }
+        
+        // Display detected violations
+        function displayViolations(detectedParts) {
+            if (!detectedParts || Object.keys(detectedParts).length === 0) {
+                document.getElementById('violationsContent').innerHTML = 
+                    '<p class="text-muted">No specific violations detected</p>';
+                return;
+            }
+            
+            const violationsList = Object.entries(detectedParts).map(([part, confidence]) => {
+                const level = confidence > 70 ? 'high' : confidence > 50 ? 'medium' : 'low';
+                const isBlurred = blurStates[part] !== undefined ? blurStates[part] : true;
+                const buttonText = isBlurred ? '🟦 Blurred' : '✅ Approved';
+                const cardClass = isBlurred ? 'blurred' : 'approved';
+                
+                return `
+                    <div id="violation-${part}" class="violation-item ${cardClass} mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>${part.replace(/_/g, ' ')}</strong>
+                                <br><small class="text-muted">AI Detected • ${parseFloat(confidence).toFixed(1)}%</small>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary" onclick="toggleViolationCard('${part}')">
+                                    <span id="btn-${part}">${buttonText}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('violationsContent').innerHTML = violationsList;
+        }
+        
+        // Display analysis results
+        function displayAnalysisResults(item) {
+            const analysisHtml = `
+                <div class="row text-center mb-3">
+                    <div class="col-md-4">
+                        <div class="badge bg-primary fs-6">${parseFloat(item.nudity_score).toFixed(1)}%</div>
+                        <br><small>Nudity Score</small>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="badge bg-info fs-6">${item.queue_type || 'manual_review'}</div>
+                        <br><small>Queue Type</small>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="badge bg-secondary fs-6">${Object.keys(item.detected_parts || {}).length}</div>
+                        <br><small>Violations Found</small>
+                    </div>
+                </div>
+                
+                <div>
+                    <strong>Detected Parts Data:</strong><br>
+                    <small><code>${JSON.stringify(item.detected_parts || {}, null, 2)}</code></small>
+                </div>
+            `;
+            
+            document.getElementById('analysisContent').innerHTML = analysisHtml;
+        }
+        
+        // Load and display the image with violation overlays using the exact working approach
+        function loadImageForReview(item) {
+            const imageContainer = document.getElementById('imageContainer');
+            const imagePath = item.image_path || item.original_path;
+            
+            if (!imagePath) {
+                imageContainer.innerHTML = '<div class="alert alert-warning">No image path available</div>';
+                return;
+            }
+            
+            console.log('📸 Loading image in EXIF-stripped mode to match NudeNet coordinate space...');
+            
+            // Convert image path to file-like object for loadImage
+            fetch(imagePath)
+                .then(response => response.blob())
+                .then(blob => {
+                    // Load image with EXIF orientation disabled to match backend processing  
+                    loadImage(blob, function (canvas) {
+                        if (canvas.type === "error") {
+                            console.error("Failed to load image in EXIF-stripped mode:", canvas);
+                            onImageError();
+                            return;
+                        }
+                        
+                        console.log('✅ Using EXIF-stripped coordinate space (matching NudeNet and backend blur processing)');
+                        
+                        // Use the raw EXIF-stripped canvas directly - no landscape conversion
+                        let finalCanvas = canvas;
+                        
+                        console.log('🖼️ Moderation canvas (EXIF-stripped):', finalCanvas.width, 'x', finalCanvas.height);
+                        
+                        imageContainer.innerHTML = `<div class="image-container"></div>`;
+                        const container = imageContainer.querySelector('.image-container');
+                        
+                        finalCanvas.className = 'image-preview';
+                        finalCanvas.style.maxWidth = '100%';
+                        finalCanvas.style.height = 'auto';
+                        finalCanvas.style.display = 'block';
+                        
+                        container.appendChild(finalCanvas);
+                        
+                        currentImage = {
+                            naturalWidth: finalCanvas.width,
+                            naturalHeight: finalCanvas.height,
+                            canvas: finalCanvas
+                        };
+                        
+                        // Process image with overlays
+                        onImageLoaded(finalCanvas);
+                        
+                    }, {
+                        orientation: 1,
+                        canvas: true
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading image:', error);
+                    onImageError();
+                });
+        }
+        
+        // Handle successful image load
+        function onImageLoaded(canvas) {
+            console.log('Canvas loaded successfully');
+            // Create blur overlays from detected parts using working logic
+            if (currentMediaItem && currentMediaItem.part_locations) {
+                processImageWithAnalysis(canvas, currentMediaItem);
+            }
+        }
+        
+        function processImageWithAnalysis(canvas, item) {
+            // Store the canvas as current image for consistent access
+            currentImage = {
+                naturalWidth: canvas.width,
+                naturalHeight: canvas.height,
+                canvas: canvas
+            };
+            
+            // Create image container with overlays using the exact working logic
+            let overlaysHtml = '';
+            
+            if (item.part_locations) {
+                Object.entries(item.part_locations).forEach(([part, location]) => {
+                    const overlayId = `overlay-${part}`;
+                    blurStates[part] = true; // Default to blurred
+                    
+                    console.log(`=== CANVAS COORDINATES DEBUG for ${part} ===`);
+                    console.log('Raw location object:', location);
+                    console.log(`x: ${location.x}, y: ${location.y}, width: ${location.width}, height: ${location.height}`);
+                    console.log(`Canvas dimensions: ${canvas.width} x ${canvas.height}`);
+                    
+                    // Handle coordinates exactly as working code
+                    let x = location.x;
+                    let y = location.y;
+                    let width = Math.abs(location.width);
+                    let height = Math.abs(location.height);
+                    
+                    // Handle negative dimensions by adjusting position
+                    if (location.width < 0) {
+                        x = x - width;
+                    }
+                    if (location.height < 0) {
+                        y = y - height;
+                    }
+                    
+                    // Apply Y-axis AND X-axis flip - NudeNet uses bottom-right origin, we need top-left
+                    console.log(`🔄 Applying Y-axis and X-axis flip for ${part}`);
+                    console.log(`  Before flip: x=${x}, y=${y}, canvas: ${canvas.width} x ${canvas.height}`);
+                    y = canvas.height - y - height;
+                    x = canvas.width - x - width;  // RESTORED: X-axis flip is needed
+                    console.log(`  After both flips: x=${x}, y=${y}`);
+                    
+                    console.log(`=== USING CANVAS COORDINATES ===`);
+                    console.log(`Canvas coordinates: x=${x}, y=${y}, w=${width}, h=${height}`);
+                    console.log(`Canvas natural size: ${canvas.width} x ${canvas.height}`);
+                    
+                    // Get confidence score for this part
+                    const confidence = item.detected_parts[part] || location.confidence || 0;
+                    
+                    overlaysHtml += `
+                        <div id="${overlayId}" 
+                             class="blur-overlay shape-square" 
+                             data-original-x="${x}"
+                             data-original-y="${y}"
+                             data-original-width="${width}"
+                             data-original-height="${height}"
+                             data-part="${part}"
+                             style="
+                                 left: 0px; 
+                                 top: 0px; 
+                                 width: 100px; 
+                                 height: 100px;
+                                 --blur-strength: 10px;
+                                 z-index: 10;
+                             ">
+                            <div class="confidence-label">${confidence.toFixed(1)}%</div>
+                            
+                            <!-- Resize Handles -->
+                            <div class="resize-handle nw" data-direction="nw"></div>
+                            <div class="resize-handle ne" data-direction="ne"></div>
+                            <div class="resize-handle sw" data-direction="sw"></div>
+                            <div class="resize-handle se" data-direction="se"></div>
+                            <div class="resize-handle n" data-direction="n"></div>
+                            <div class="resize-handle s" data-direction="s"></div>
+                            <div class="resize-handle w" data-direction="w"></div>
+                            <div class="resize-handle e" data-direction="e"></div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Add overlays to container
+            const container = document.querySelector('.image-container');
+            container.insertAdjacentHTML('beforeend', overlaysHtml);
+            
+            // Initialize drag/resize functionality and blur previews exactly like working code
+            setTimeout(() => {
+                console.log('Initializing blur overlays...');
+                document.querySelectorAll('.blur-overlay').forEach((overlay, index) => {
+                    console.log(`Initializing overlay ${index}:`, overlay);
+                    const part = overlay.dataset.part;
+                    
+                    // Initialize drag and resize functionality
+                    initializeDragResize(overlay);
+                    
+                    // Scale overlays to match canvas display
+                    scaleOverlays();
+                    
+                    // Apply initial blur
+                    updateCanvasBlurPreview(overlay, 6);
+                });
+            }, 100);
+        }
+        
+        // Create blur overlays from part locations data
+        function createBlurOverlays(partLocations, detectedParts) {
+            if (!partLocations || typeof partLocations !== 'object') {
+                console.log('No part locations available for blur overlays');
+                return;
+            }
+            
+            const imageContainer = document.querySelector('.image-container');
+            const img = imageContainer.querySelector('.image-preview'); // Canvas element, not img
+            if (!img) return;
+            
+            // Clear existing overlays
+            imageContainer.querySelectorAll('.blur-overlay').forEach(overlay => overlay.remove());
+            
+            Object.entries(partLocations).forEach(([part, location]) => {
+                if (location && typeof location === 'object' && location.x !== undefined) {
+                    createBlurOverlay(part, location, img, detectedParts[part] || 0);
+                }
+            });
+        }
+        
+        // Create individual blur overlay
+        function createBlurOverlay(partName, location, img, confidence) {
+            const imageContainer = document.querySelector('.image-container');
+            
+            // Convert coordinates (handle negative width/height from AI)
+            const x = Math.max(0, location.x + Math.min(0, location.width));
+            const y = Math.max(0, location.y + Math.min(0, location.height)); 
+            const width = Math.abs(location.width);
+            const height = Math.abs(location.height);
+            
+            // Get image display dimensions for scaling
+            const imgRect = img.getBoundingClientRect();
+            const containerRect = imageContainer.getBoundingClientRect();
+            
+            const scaleX = imgRect.width / img.naturalWidth;
+            const scaleY = imgRect.height / img.naturalHeight;
+            
+            // Scale coordinates to display size
+            const displayX = x * scaleX;
+            const displayY = y * scaleY;
+            const displayWidth = width * scaleX;
+            const displayHeight = height * scaleY;
+            
+            // Create overlay element
+            const overlay = document.createElement('div');
+            overlay.id = `overlay-${partName}`;
+            overlay.className = 'blur-overlay shape-square';
+            overlay.dataset.part = partName;
+            overlay.style.cssText = `
+                left: ${displayX}px;
+                top: ${displayY}px;
+                width: ${displayWidth}px;
+                height: ${displayHeight}px;
+                position: absolute;
+                border: 3px solid rgba(220, 53, 69, 0.8);
+                background: rgba(220, 53, 69, 0.15);
+                cursor: pointer;
+                z-index: 10;
+            `;
+            
+            // Add confidence label
+            const label = document.createElement('div');
+            label.className = 'confidence-label';
+            label.textContent = `${confidence.toFixed(1)}%`;
+            overlay.appendChild(label);
+            
+            // Add resize handles
+            const handles = ['nw', 'ne', 'sw', 'se', 'n', 's', 'w', 'e'];
+            handles.forEach(direction => {
+                const handle = document.createElement('div');
+                handle.className = `resize-handle ${direction}`;
+                handle.dataset.direction = direction;
+                overlay.appendChild(handle);
+            });
+            
+            imageContainer.appendChild(overlay);
+            
+            // Initialize drag and resize functionality
+            initializeDragResize(overlay);
+            
+            // Initialize blur state as active
+            blurStates[partName] = true;
+            
+            console.log(`Created blur overlay for ${partName} at (${displayX}, ${displayY})`);
+        }
+        
+        // Toggle blur overlay on/off
+        function toggleBlurOverlay(partName) {
+            const overlay = document.getElementById(`overlay-${partName}`);
+            if (!overlay) return;
+            
+            blurStates[partName] = !blurStates[partName];
+            
+            if (blurStates[partName]) {
+                // Enable blur
+                const strength = parseInt(document.getElementById('blurStrength').value);
+                updateCanvasBlurPreview(overlay, strength);
+                overlay.style.borderColor = 'rgba(220, 53, 69, 0.8)';
+                overlay.style.background = 'rgba(220, 53, 69, 0.15)';
+                console.log(`Enabled blur for ${partName}`);
+            } else {
+                // Disable blur
+                overlay.style.backdropFilter = 'none';
+                overlay.style.borderColor = 'rgba(76, 175, 80, 0.8)';
+                overlay.style.background = 'rgba(76, 175, 80, 0.15)';
+                overlay.style.backgroundColor = 'rgba(76, 175, 80, 0.15)';
+                console.log(`Disabled blur for ${partName}`);
+            }
+            
+            // Update violation card visual state (but don't change overlay visuals)
+            updateViolationCardState(partName);
+        }
+        
+        // Toggle violation card (called when clicking on violation cards)
+        function toggleViolationCard(partName) {
+            console.log(`Toggling violation card for: ${partName}`);
+            toggleBlurOverlay(partName);
+        }
+        
+        // Update violation card visual state
+        function updateViolationCardState(partName) {
+            const violation = document.getElementById(`violation-${partName}`);
+            const button = document.getElementById(`btn-${partName}`);
+            
+            if (!violation || !button) return;
+            
+            const isBlurred = blurStates[partName];
+            
+            if (isBlurred) {
+                violation.classList.remove('approved');
+                violation.classList.add('blurred');
+                button.innerHTML = '🟦 Blurred';
+            } else {
+                violation.classList.remove('blurred');
+                violation.classList.add('approved');
+                button.innerHTML = '✅ Approved';
+            }
+            
+            console.log(`Updated violation card ${partName}: ${isBlurred ? 'Blurred' : 'Approved'}`);
+        }
+        
+        // Handle image load error
+        function onImageError(img) {
+            console.error('Failed to load image:', img.src);
+            img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNTAgMTAwSDI1MFYyMDBIMTUwVjEwMFoiIGZpbGw9IiNEMUQ1REIiLz4KPHRLEHU+CjwvdGV4dD4KPC9zdmc+';
+        }
+        
+        // Blur control functions
+        function updateBlurSettings() {
+            const strength = document.getElementById('blurStrength').value;
+            const shape = document.getElementById('blurShape').value;
+            document.getElementById('blurStrengthValue').textContent = strength;
+            
+            // Update all blur overlays
+            document.querySelectorAll('.blur-overlay').forEach(overlay => {
+                const partName = overlay.dataset.part;
+                
+                // Update blur strength for active overlays using the proper preview function
+                if (blurStates[partName]) {
+                    updateCanvasBlurPreview(overlay, parseInt(strength));
+                }
+                
+                // Update shape class for all overlays
+                overlay.classList.remove('shape-square', 'shape-rounded', 'shape-oval');
+                overlay.classList.add(`shape-${shape}`);
+            });
+            
+            console.log('Updated blur settings:', { strength, shape });
+        }
+        
+        function updateCanvasBlurPreview(overlay, blurStrength) {
+            if (!overlay) {
+                return;
+            }
+            
+            // Remove any existing canvas
+            const existingCanvas = overlay.querySelector('.blur-preview-canvas');
+            if (existingCanvas) {
+                existingCanvas.remove();
+            }
+            
+            // Apply CSS backdrop-filter blur for preview
+            if (blurStrength > 0) {
+                // CSS backdrop-filter is much weaker than Sharp.js Gaussian blur
+                // Use a multiplier to make the preview more representative of final result
+                const cssBlurIntensity = Math.min(100, blurStrength * 2.5); // Cap at 100px for performance
+                const opacity = Math.min(0.2, blurStrength / 100); // Much lighter overlay to match Sharp.js
+                
+                overlay.style.backdropFilter = `blur(${cssBlurIntensity}px)`;
+                overlay.style.backgroundColor = `rgba(255, 255, 255, ${opacity})`;
+                
+                console.log(`Applied ${cssBlurIntensity}px backdrop-filter (from ${blurStrength}px backend) to ${overlay.dataset.part}`);
+            } else {
+                overlay.style.backdropFilter = 'none';
+                overlay.style.backgroundColor = 'rgba(200, 200, 200, 0.2)';
+            }
+        }
+        
+        function toggleSharpPreview() {
+            const eyeIcon = document.querySelector('#previewEyeToggle i');
+            const allOverlays = document.querySelectorAll('.blur-overlay');
+            
+            // Toggle preview mode
+            window.blurPreviewMode = !window.blurPreviewMode;
+            
+            if (window.blurPreviewMode) {
+                // Show sharp preview (hide blur)
+                allOverlays.forEach(overlay => {
+                    overlay.style.visibility = 'hidden';
+                });
+                eyeIcon.className = 'fas fa-eye-slash';
+            } else {
+                // Show blur preview
+                allOverlays.forEach(overlay => {
+                    overlay.style.visibility = 'visible';
+                });
+                eyeIcon.className = 'fas fa-eye';
+            }
+        }
+        
+        function addManualBlurArea() {
+            const imageContainer = document.querySelector('.image-container');
+            const img = imageContainer.querySelector('.image-preview'); // Canvas element, not img
+            if (!img) {
+                alert('Please wait for image to load');
+                return;
+            }
+            
+            // Create a simple manual blur area in the center
+            const manualCounter = Date.now();
+            const partName = `manual_${manualCounter}`;
+            
+            // Create a default 100x100 blur area in center
+            const imgRect = img.getBoundingClientRect();
+            const centerX = imgRect.width / 2 - 50;
+            const centerY = imgRect.height / 2 - 50;
+            
+            const overlay = document.createElement('div');
+            overlay.id = `overlay-${partName}`;
+            overlay.className = 'blur-overlay shape-square';
+            overlay.dataset.part = partName;
+            overlay.style.cssText = `
+                left: ${centerX}px;
+                top: ${centerY}px;
+                width: 100px;
+                height: 100px;
+                position: absolute;
+                border: 3px solid rgba(255, 193, 7, 0.8);
+                background: rgba(255, 193, 7, 0.15);
+                cursor: pointer;
+                z-index: 10;
+            `;
+            
+            // Add label
+            const label = document.createElement('div');
+            label.className = 'confidence-label';
+            label.textContent = 'MANUAL';
+            label.style.background = 'rgba(255, 193, 7, 0.8)';
+            overlay.appendChild(label);
+            
+            // Add resize handles
+            const handles = ['nw', 'ne', 'sw', 'se', 'n', 's', 'w', 'e'];
+            handles.forEach(direction => {
+                const handle = document.createElement('div');
+                handle.className = `resize-handle ${direction}`;
+                handle.dataset.direction = direction;
+                overlay.appendChild(handle);
+            });
+            
+            imageContainer.appendChild(overlay);
+            blurStates[partName] = true;
+            
+            // Initialize drag and resize functionality
+            initializeDragResize(overlay);
+            
+            console.log(`Added manual blur area: ${partName}`);
+        }
+        
+        function toggleAllBlurs() {
+            const hasAnyActive = Object.values(blurStates).some(state => state);
+            
+            // If any are active, turn all off; otherwise turn all on
+            Object.keys(blurStates).forEach(partName => {
+                blurStates[partName] = !hasAnyActive;
+                toggleBlurOverlay(partName);
+            });
+            
+            console.log(`Toggled all blurs ${hasAnyActive ? 'OFF' : 'ON'}`);
+        }
+        
+        function getImageDisplayInfo() {
+            const imageElement = document.querySelector('.image-preview');
+            if (!imageElement || !currentImage) return null;
+            
+            console.log(`DEBUG: Image natural dimensions: ${currentImage.naturalWidth}x${currentImage.naturalHeight}`);
+            console.log(`DEBUG: Container dimensions: ${imageElement.clientWidth}x${imageElement.clientHeight}`);
+            
+            // Calculate the actual image display size (accounting for object-fit: contain)
+            const naturalAspectRatio = currentImage.naturalWidth / currentImage.naturalHeight;
+            const containerAspectRatio = imageElement.clientWidth / imageElement.clientHeight;
+            
+            let actualDisplayWidth, actualDisplayHeight, offsetX, offsetY;
+            
+            if (naturalAspectRatio > containerAspectRatio) {
+                // Image is wider than container, so it's constrained by width
+                actualDisplayWidth = imageElement.clientWidth;
+                actualDisplayHeight = imageElement.clientWidth / naturalAspectRatio;
+                offsetX = 0;
+                offsetY = (imageElement.clientHeight - actualDisplayHeight) / 2;
+            } else {
+                // Image is taller than container, so it's constrained by height
+                actualDisplayWidth = imageElement.clientHeight * naturalAspectRatio;
+                actualDisplayHeight = imageElement.clientHeight;
+                offsetX = (imageElement.clientWidth - actualDisplayWidth) / 2;
+                offsetY = 0;
+            }
+            
+            const scaleX = actualDisplayWidth / currentImage.naturalWidth;
+            const scaleY = actualDisplayHeight / currentImage.naturalHeight;
+            
+            return { actualDisplayWidth, actualDisplayHeight, offsetX, offsetY, scaleX, scaleY };
+        }
+        
+        function scaleOverlays() {
+            const displayInfo = getImageDisplayInfo();
+            if (!displayInfo) return;
+            
+            const { actualDisplayWidth, actualDisplayHeight, offsetX, offsetY, scaleX, scaleY } = displayInfo;
+            
+            console.log(`Image scaling - Natural: ${currentImage.naturalWidth}x${currentImage.naturalHeight}`);
+            console.log(`Container: ${document.querySelector('.image-preview').clientWidth}x${document.querySelector('.image-preview').clientHeight}`);
+            console.log(`Actual display: ${actualDisplayWidth}x${actualDisplayHeight}`);
+            console.log(`Offset: ${offsetX}, ${offsetY}`);
+            console.log(`Scale factors: X=${scaleX.toFixed(3)}, Y=${scaleY.toFixed(3)}`);
+            
+            // Update all blur overlays with scaled coordinates
+            document.querySelectorAll('.blur-overlay').forEach(overlay => {
+                const originalX = parseInt(overlay.dataset.originalX);
+                const originalY = parseInt(overlay.dataset.originalY);
+                const originalWidth = parseInt(overlay.dataset.originalWidth);
+                const originalHeight = parseInt(overlay.dataset.originalHeight);
+                
+                // Apply scaling and offset
+                const scaledX = Math.round(originalX * scaleX + offsetX);
+                const scaledY = Math.round(originalY * scaleY + offsetY);
+                const scaledWidth = Math.round(originalWidth * scaleX);
+                const scaledHeight = Math.round(originalHeight * scaleY);
+                
+                console.log(`=== SCALING DEBUG for ${overlay.dataset.part} ===`);
+                console.log(`  Original (stored): ${originalX},${originalY} ${originalWidth}x${originalHeight}`);
+                console.log(`  Scaled result: ${scaledX},${scaledY} ${scaledWidth}x${scaledHeight}`);
+                
+                // Update overlay position and size
+                overlay.style.left = `${scaledX}px`;
+                overlay.style.top = `${scaledY}px`;
+                overlay.style.width = `${scaledWidth}px`;
+                overlay.style.height = `${scaledHeight}px`;
+                
+                // Update blur preview with current blur strength
+                const currentBlur = document.getElementById('blurStrength')?.value || 6;
+                updateCanvasBlurPreview(overlay, parseInt(currentBlur));
+            });
+        }
+        
+        // Drag and resize functionality
+        function initializeDragResize(overlay) {
+            console.log('Initializing drag/resize for:', overlay.dataset.part);
+            
+            // Make overlay draggable (on the overlay itself, not handles)
+            overlay.addEventListener('mousedown', (e) => {
+                // Only start drag if not clicking on a resize handle
+                if (!e.target.classList.contains('resize-handle')) {
+                    startDrag(e, overlay);
+                }
+            });
+            
+            // Add resize handle listeners
+            const handles = overlay.querySelectorAll('.resize-handle');
+            handles.forEach(handle => {
+                handle.addEventListener('mousedown', (e) => {
+                    e.stopPropagation(); // Prevent triggering drag
+                    startResize(e, overlay, handle.dataset.direction);
+                });
+            });
+        }
+        
+        function startDrag(e, overlay) {
+            console.log('Starting drag for:', overlay.dataset.part);
+            dragState.isDragging = true;
+            dragState.overlay = overlay;
+            dragState.startX = e.clientX;
+            dragState.startY = e.clientY;
+            dragState.startLeft = parseInt(overlay.style.left);
+            dragState.startTop = parseInt(overlay.style.top);
+            
+            overlay.classList.add('dragging');
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+            e.preventDefault();
+        }
+        
+        function startResize(e, overlay, direction) {
+            console.log('Starting resize for:', overlay.dataset.part, 'direction:', direction);
+            dragState.isResizing = true;
+            dragState.overlay = overlay;
+            dragState.resizeDirection = direction;
+            dragState.startX = e.clientX;
+            dragState.startY = e.clientY;
+            dragState.startLeft = parseInt(overlay.style.left);
+            dragState.startTop = parseInt(overlay.style.top);
+            dragState.startWidth = parseInt(overlay.style.width);
+            dragState.startHeight = parseInt(overlay.style.height);
+            
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+            e.preventDefault();
+        }
+        
+        function handleMouseMove(e) {
+            if (!dragState.isDragging && !dragState.isResizing) return;
+            
+            e.preventDefault();
+            
+            const deltaX = e.clientX - dragState.startX;
+            const deltaY = e.clientY - dragState.startY;
+            
+            const imageContainer = document.querySelector('.image-container');
+            const img = imageContainer.querySelector('.image-preview'); // Canvas element, not img
+            
+            if (!img) {
+                console.error('❌ Image element not found for resize/drag');
+                return;
+            }
+            
+            if (dragState.isDragging) {
+                // Update position with smooth movement
+                const newLeft = Math.max(0, Math.min(img.offsetWidth - parseInt(dragState.overlay.style.width), dragState.startLeft + deltaX));
+                const newTop = Math.max(0, Math.min(img.offsetHeight - parseInt(dragState.overlay.style.height), dragState.startTop + deltaY));
+                
+                dragState.overlay.style.left = newLeft + 'px';
+                dragState.overlay.style.top = newTop + 'px';
+                
+            } else if (dragState.isResizing) {
+                console.log('🔧 Resizing:', dragState.resizeDirection, 'deltaX:', deltaX, 'deltaY:', deltaY);
+                
+                const direction = dragState.resizeDirection;
+                let newLeft = dragState.startLeft;
+                let newTop = dragState.startTop;
+                let newWidth = dragState.startWidth;
+                let newHeight = dragState.startHeight;
+                
+                // Handle different resize directions
+                if (direction.includes('n')) {
+                    newTop = dragState.startTop + deltaY;
+                    newHeight = dragState.startHeight - deltaY;
+                }
+                if (direction.includes('s')) {
+                    newHeight = dragState.startHeight + deltaY;
+                }
+                if (direction.includes('w')) {
+                    newLeft = dragState.startLeft + deltaX;
+                    newWidth = dragState.startWidth - deltaX;
+                }
+                if (direction.includes('e')) {
+                    newWidth = dragState.startWidth + deltaX;
+                }
+                
+                // Apply minimum size constraints
+                const minSize = 20;
+                if (newWidth < minSize) {
+                    if (direction.includes('w')) {
+                        newLeft = newLeft + (newWidth - minSize);
+                    }
+                    newWidth = minSize;
+                }
+                if (newHeight < minSize) {
+                    if (direction.includes('n')) {
+                        newTop = newTop + (newHeight - minSize);
+                    }
+                    newHeight = minSize;
+                }
+                
+                // Apply boundary constraints
+                const maxRight = img.offsetWidth;
+                const maxBottom = img.offsetHeight;
+                
+                newLeft = Math.max(0, Math.min(maxRight - newWidth, newLeft));
+                newTop = Math.max(0, Math.min(maxBottom - newHeight, newTop));
+                newWidth = Math.min(maxRight - newLeft, newWidth);
+                newHeight = Math.min(maxBottom - newTop, newHeight);
+                
+                // Apply changes
+                dragState.overlay.style.left = newLeft + 'px';
+                dragState.overlay.style.top = newTop + 'px';
+                dragState.overlay.style.width = newWidth + 'px';
+                dragState.overlay.style.height = newHeight + 'px';
+            }
+        }
+        
+        function handleMouseUp(e) {
+            const wasDragging = dragState.isDragging;
+            const wasResizing = dragState.isResizing;
+            const overlay = dragState.overlay;
+            
+            if (wasDragging) {
+                const deltaX = e.clientX - dragState.startX;
+                const deltaY = e.clientY - dragState.startY;
+                const dragDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                
+                if (dragDistance < 5) {
+                    // This was a click, not a drag - toggle blur
+                    toggleBlurOverlay(overlay.dataset.part);
+                } else {
+                    // This was a real drag - update original coordinates (working code logic)
+                    const displayInfo = getImageDisplayInfo();
+                    if (displayInfo) {
+                        const { offsetX, offsetY, scaleX, scaleY } = displayInfo;
+                        const dragOffsetX = offsetX;
+                        const dragOffsetY = offsetY;
+                        
+                        // Apply boundary constraints
+                        const imageElement = document.querySelector('.image-preview');
+                        const maxRight = imageElement.clientWidth;
+                        const maxBottom = imageElement.clientHeight;
+                        const minLeft = 0;
+                        const minTop = 0;
+                        
+                        const newLeft = Math.max(minLeft, Math.min(maxRight - parseInt(overlay.style.width), dragState.startLeft + deltaX));
+                        const newTop = Math.max(minTop, Math.min(maxBottom - parseInt(overlay.style.height), dragState.startTop + deltaY));
+                        
+                        // Update display position
+                        overlay.style.left = `${newLeft}px`;
+                        overlay.style.top = `${newTop}px`;
+                        
+                        // Convert back to original coordinates for saving (critical!)
+                        overlay.dataset.originalX = Math.round((newLeft - dragOffsetX) / scaleX);
+                        overlay.dataset.originalY = Math.round((newTop - dragOffsetY) / scaleY);
+                    }
+                    
+                    // Update the canvas blur preview with new position
+                    const currentBlur = document.getElementById('blurStrength')?.value || 6;
+                    updateCanvasBlurPreview(overlay, parseInt(currentBlur));
+                }
+                
+                // Clear transform
+                overlay.style.transform = '';
+                console.log('Finished dragging');
+                overlay.classList.remove('dragging');
+            }
+            
+            if (wasResizing) {
+                // Update original coordinates after resizing (working code logic)
+                const displayInfo = getImageDisplayInfo();
+                if (displayInfo) {
+                    const { offsetX, offsetY, scaleX, scaleY } = displayInfo;
+                    
+                    overlay.dataset.originalX = Math.round((parseInt(overlay.style.left) - offsetX) / scaleX);
+                    overlay.dataset.originalY = Math.round((parseInt(overlay.style.top) - offsetY) / scaleY);
+                    overlay.dataset.originalWidth = Math.round(parseInt(overlay.style.width) / scaleX);
+                    overlay.dataset.originalHeight = Math.round(parseInt(overlay.style.height) / scaleY);
+                }
+                
+                // Update the canvas blur preview with new size/position
+                const currentBlur = document.getElementById('blurStrength')?.value || 6;
+                updateCanvasBlurPreview(overlay, parseInt(currentBlur));
+                
+                console.log('Finished resizing');
+            }
+            
+            // Reset drag state
+            dragState.isDragging = false;
+            dragState.isResizing = false;
+            dragState.overlay = null;
+            dragState.resizeDirection = null;
+            
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        }
+        
+        // Action functions
+        async function approveWithBlur() {
+            if (!currentMediaItem) return;
+            
+            // Convert 1-10 user scale to backend pixel values (adjusted for optimal blur)
+            const userStrength = parseInt(document.getElementById('blurStrength').value);
+            const backendStrength = Math.round(userStrength * 6 + 1);
+            
+            const blurredParts = Object.entries(blurStates)
+                .filter(([part, isBlurred]) => isBlurred)
+                .map(([part]) => part);
+            
+            if (blurredParts.length === 0) {
+                if (!confirm('No blur effects applied. Continue with approval?')) {
+                    return;
+                }
+            }
+            
+            // Collect current overlay positions and transform for backend processing (exact working logic)
+            const overlayPositions = {};
+            document.querySelectorAll('.blur-overlay').forEach(overlay => {
+                const part = overlay.dataset.part;
+                if (blurStates[part]) { // Only include active blur areas
+                    const displayCoords = {
+                        x: parseFloat(overlay.dataset.originalX),
+                        y: parseFloat(overlay.dataset.originalY),
+                        width: parseFloat(overlay.dataset.originalWidth),
+                        height: parseFloat(overlay.dataset.originalHeight)
+                    };
+                    
+                    console.log(`DEBUG: Display coordinates for ${part}:`, displayCoords);
+                    console.log(`DEBUG: Image natural dimensions: ${currentImage.naturalWidth}x${currentImage.naturalHeight}`);
+                    
+                    // Backend coordinates match natural image pixel space
+                    const backendCoords = {
+                        x: displayCoords.x,
+                        y: displayCoords.y, 
+                        width: displayCoords.width,
+                        height: displayCoords.height
+                    };
+                    
+                    console.log(`DEBUG: Backend coordinates for ${part}:`, backendCoords);
+                    overlayPositions[part] = backendCoords;
+                }
+            });
+            
+            const blurSettings = {
+                strength: backendStrength, // Send backend pixel values, not user scale
+                shape: document.getElementById('blurShape').value,
+                blurredParts: blurredParts,
+                overlayPositions: overlayPositions
+            };
+            
+            const adminNotes = prompt('Add approval notes (optional):') || '';
+            
+            console.log('Saving moderated image with blur settings:', blurSettings);
+            
+            try {
+                console.log('🚀 Sending blur approval request...');
+                console.log('Content Moderation ID:', currentMediaItem.id);
+                console.log('Blur Settings:', blurSettings);
+                
+                const requestBody = {
+                    content_moderation_id: currentMediaItem.id,
+                    blur_settings: blurSettings,
+                    admin_notes: adminNotes,
+                    reviewed_by: 1
+                };
+                console.log('Request body:', JSON.stringify(requestBody, null, 2));
+                
+                const response = await fetch('/api/enhanced-content-moderation/admin/approve-with-blur', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                console.log('Response status:', response.status);
+                const result = await response.json();
+                console.log('Response body:', result);
+                
+                if (result.success) {
+                    // Notify parent window (Media Queue) that approval is complete
+                    if (window.opener) {
+                        window.opener.postMessage({
+                            type: 'BLUR_APPROVAL_COMPLETE',
+                            mediaId: currentMediaItem.id,
+                            blurSettings: blurSettings
+                        }, window.location.origin);
+                    }
+                    
+                    alert(`✅ Image approved with blur successfully!\n\nBlurred parts: ${blurSettings.blurredParts.join(', ') || 'None'}\nBlur strength: ${blurSettings.strength}\nShape: ${blurSettings.shape}\nThe blurred version has been saved.`);
+                    window.close();
+                } else {
+                    console.error('❌ API returned error:', result.error);
+                    alert('❌ Error approving image: ' + result.error);
+                }
+            } catch (error) {
+                console.error('❌ Error saving moderated image:', error);
+                alert('❌ Error: ' + error.message);
+            }
+        }
+        
+        async function approveWithoutBlur() {
+            if (!currentMediaItem) return;
+            
+            console.log('Approving without blur:', currentMediaItem.id);
+            
+            try {
+                const response = await fetch('/api/enhanced-content-moderation/admin/approve', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content_moderation_id: currentMediaItem.id,
+                        admin_notes: 'Approved clean via queue review interface',
+                        reviewed_by: 1,
+                        final_location: 'public'
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    // Notify parent window (Media Queue) that approval is complete
+                    if (window.opener) {
+                        window.opener.postMessage({
+                            type: 'BLUR_APPROVAL_COMPLETE',
+                            mediaId: currentMediaItem.id,
+                            action: 'approved_clean'
+                        }, window.location.origin);
+                    }
+                    
+                    alert('✅ Image approved successfully!');
+                    window.close();
+                } else {
+                    alert('❌ Error approving image: ' + result.error);
+                }
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        }
+        
+        async function rejectImage() {
+            if (!currentMediaItem) return;
+            
+            const reason = prompt('Please provide a reason for rejection:');
+            if (!reason) return;
+            
+            console.log('Rejecting image:', currentMediaItem.id);
+            
+            try {
+                const response = await fetch('/api/enhanced-content-moderation/admin/reject', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content_moderation_id: currentMediaItem.id,
+                        admin_notes: reason,
+                        reviewed_by: 1
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    // Notify parent window (Media Queue) that rejection is complete
+                    if (window.opener) {
+                        window.opener.postMessage({
+                            type: 'BLUR_APPROVAL_COMPLETE',
+                            mediaId: currentMediaItem.id,
+                            action: 'rejected'
+                        }, window.location.origin);
+                    }
+                    
+                    alert('❌ Image rejected successfully!');
+                    window.close();
+                } else {
+                    alert('❌ Error rejecting image: ' + result.error);
+                }
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        }
+        
+        // Helper functions
+        function getNudityScoreColor(score) {
+            if (score >= 80) return 'danger';
+            if (score >= 60) return 'warning';
+            if (score >= 40) return 'info';
+            return 'success';
+        }
+        
+        function getPriorityColor(priority) {
+            const colors = { urgent: 'danger', high: 'warning', medium: 'info', low: 'secondary' };
+            return colors[priority] || 'warning';
+        }
+    </script>
+</body>
+</html>

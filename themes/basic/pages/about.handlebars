@@ -1,0 +1,164 @@
+<!-- About Hero Section -->
+<section class="bg-basic-primary text-white py-16" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6 basic-heading">
+                About {{siteName}}
+            </h1>
+            <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto">
+                {{content.aboutIntro}}
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Main About Content -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            <!-- About Text -->
+            <div data-aos="fade-right">
+                <div class="prose prose-lg max-w-none">
+                    <div class="text-gray-700 leading-relaxed space-y-6">
+                        {{{content.mainContent}}}
+                    </div>
+                </div>
+                
+                {{#if content.personalInfo}}
+                <div class="mt-12">
+                    <h3 class="text-2xl font-bold mb-6 basic-heading text-basic-primary">
+                        Personal Details
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {{#each content.personalInfo}}
+                        <div class="flex items-center space-x-3">
+                            <i class="{{this.icon}} text-basic-primary"></i>
+                            <span class="text-gray-700">
+                                <strong>{{this.label}}:</strong> {{this.value}}
+                            </span>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+            
+            <!-- About Images -->
+            <div data-aos="fade-left">
+                {{#if content.aboutImages}}
+                <div class="space-y-6">
+                    {{#each content.aboutImages}}
+                    <div class="relative">
+                        <img src="{{this.url}}" alt="{{this.caption}}" 
+                             class="w-full rounded-lg shadow-lg">
+                        {{#if this.caption}}
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-600">{{this.caption}}</p>
+                        </div>
+                        {{/if}}
+                    </div>
+                    {{/each}}
+                </div>
+                {{else}}
+                <div class="basic-card p-12 text-center">
+                    <div class="w-32 h-32 mx-auto mb-6 bg-basic-primary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-camera text-4xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4 basic-heading">Photo Gallery</h3>
+                    <p class="text-gray-600 mb-6">Professional photos coming soon</p>
+                    <a href="/{{modelSlug}}/gallery" class="basic-btn">
+                        View Current Gallery
+                    </a>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Values/Interests Section -->
+{{#if content.values}}
+<section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12" data-aos="fade-up">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 basic-heading text-basic-primary">
+                What I Value
+            </h2>
+            <p class="text-xl text-gray-600">
+                The principles that guide my approach
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {{#each content.values}}
+            <div class="basic-card p-8 text-center" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                <div class="w-16 h-16 mx-auto mb-6 bg-basic-primary rounded-lg flex items-center justify-center">
+                    <i class="{{this.icon}} text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4 basic-heading">{{this.title}}</h3>
+                <p class="text-gray-600">{{this.description}}</p>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Experience Section -->
+{{#if content.experience}}
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12" data-aos="fade-up">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 basic-heading text-basic-primary">
+                Experience & Background
+            </h2>
+            <p class="text-xl text-gray-600">
+                My professional journey
+            </p>
+        </div>
+        
+        <div class="max-w-4xl mx-auto">
+            <div class="space-y-8">
+                {{#each content.experience}}
+                <div class="basic-card p-8" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 bg-basic-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="{{this.icon}} text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold mb-2 basic-heading">{{this.title}}</h3>
+                            {{#if this.period}}
+                            <p class="text-basic-primary font-medium mb-3">{{this.period}}</p>
+                            {{/if}}
+                            <p class="text-gray-700">{{this.description}}</p>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Call to Action -->
+<section class="py-16 bg-basic-primary text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <h2 class="text-3xl md:text-4xl font-bold mb-6 basic-heading">
+            Let's Connect
+        </h2>
+        <p class="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
+            Ready to learn more? I'd love to hear from you and discuss how we can work together.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="/{{modelSlug}}/contact" class="basic-btn bg-white text-basic-primary hover:bg-gray-100">
+                <i class="fas fa-envelope mr-2"></i>
+                Get in Touch
+            </a>
+            <a href="/{{modelSlug}}/rates" class="basic-btn-outline border-white text-white hover:bg-white hover:text-basic-primary">
+                <i class="fas fa-list mr-2"></i>
+                View Services
+            </a>
+        </div>
+    </div>
+</section>

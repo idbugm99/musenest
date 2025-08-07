@@ -122,7 +122,7 @@ router.post('/upload', upload.single('image'), async (req, res) => {
                     
                     // Include pose analysis data from MediaPipe
                     pose_analysis: result.pose_analysis || null,
-                    pose_category: result.pose_category || 'unknown',
+                    pose_classification: result.pose_classification || 'unknown',
                     explicit_pose_score: result.explicit_pose_score || 0,
                     final_risk_score: result.final_risk_score || result.nudity_score,
                     risk_level: result.risk_level || 'unknown',
@@ -208,6 +208,7 @@ router.get('/admin/queue', async (req, res) => {
     try {
         const { queue_type, priority, model_id } = req.query;
         
+        // Query real moderation data - simplified to just get flagged items
         let query = `
             SELECT 
                 cm.id,
@@ -224,37 +225,32 @@ router.get('/admin/queue', async (req, res) => {
                 cm.flagged,
                 cm.appeal_requested,
                 cm.created_at,
-                mq.priority,
-                mq.queue_type,
-                ma.id as appeal_id,
-                ma.appeal_reason,
-                ma.appeal_message,
-                ma.status as appeal_status
-            FROM moderation_queue mq
-            JOIN content_moderation cm ON mq.content_moderation_id = cm.id
+                cm.image_description,
+                cm.description_text,
+                cm.description_tags,
+                cm.description_risk,
+                cm.child_detected,
+                CASE 
+                    WHEN cm.child_detected = 1 THEN 'critical'
+                    ELSE 'high'
+                END as priority,
+                CASE 
+                    WHEN cm.child_detected = 1 THEN 'child_content_review'
+                    ELSE 'manual_review'
+                END as queue_type
+            FROM content_moderation cm
             JOIN models m ON cm.model_id = m.id
-            LEFT JOIN moderation_appeals ma ON mq.appeal_id = ma.id
-            WHERE 1=1
+            WHERE cm.flagged = 1 AND cm.moderation_status = 'flagged'
         `;
         
         const params = [];
-        
-        if (queue_type) {
-            query += ' AND mq.queue_type = ?';
-            params.push(queue_type);
-        }
-        
-        if (priority) {
-            query += ' AND mq.priority = ?';
-            params.push(priority);
-        }
         
         if (model_id) {
             query += ' AND cm.model_id = ?';
             params.push(model_id);
         }
         
-        query += ' ORDER BY FIELD(mq.priority, "urgent", "high", "medium", "low"), cm.created_at ASC';
+        query += ' ORDER BY cm.created_at DESC LIMIT 50';
         
         const [results] = await db.execute(query, params);
         
@@ -262,6 +258,39 @@ router.get('/admin/queue', async (req, res) => {
         const processedResults = results.map(row => {
             let detectedParts = {};
             let partLocations = {};
+            
+            // Convert nudity_score to number
+            row.nudity_score = parseFloat(row.nudity_score) || 0;
+            
+            // Fix image paths - ensure they are web-relative, not absolute file paths
+            if (row.image_path) {
+                // Remove absolute path prefix if it exists
+                if (row.image_path.includes('/Users/programmer/Projects/musenest/public')) {
+                    row.image_path = row.image_path.replace('/Users/programmer/Projects/musenest/public', '');
+                }
+                
+                // If path doesn't start with /, add it
+                if (!row.image_path.startsWith('/')) {
+                    row.image_path = '/' + row.image_path;
+                }
+                
+                // If path doesn't include /originals/, try to construct proper path
+                if (!row.image_path.includes('/originals/')) {
+                    const filename = row.image_path.split('/').pop(); // Get just the filename
+                    const modelSlug = row.model_slug || 'escortexample';
+                    row.image_path = `/uploads/${modelSlug}/originals/${filename}`;
+                }
+            }
+            
+            // Same fix for original_path
+            if (row.original_path) {
+                if (row.original_path.includes('/Users/programmer/Projects/musenest/public')) {
+                    row.original_path = row.original_path.replace('/Users/programmer/Projects/musenest/public', '');
+                }
+                if (!row.original_path.startsWith('/')) {
+                    row.original_path = '/' + row.original_path;
+                }
+            }
             
             try {
                 detectedParts = typeof row.detected_parts === 'string' ? 
@@ -294,6 +323,114 @@ router.get('/admin/queue', async (req, res) => {
         
     } catch (error) {
         console.error('Queue fetch error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+/**
+ * GET /api/enhanced-content-moderation/admin/queue-item/:id
+ * Get a specific queue item for detailed review
+ */
+router.get('/admin/queue-item/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Query specific queue item
+        const query = `
+            SELECT 
+                cm.id,
+                cm.model_id,
+                m.name as model_name,
+                m.slug as model_slug,
+                cm.image_path,
+                cm.original_path,
+                cm.usage_intent,
+                cm.nudity_score,
+                cm.detected_parts,
+                cm.part_locations,
+                cm.moderation_status,
+                cm.flagged,
+                cm.appeal_requested,
+                cm.created_at,
+                cm.image_description,
+                cm.description_text,
+                cm.description_tags,
+                cm.description_risk,
+                cm.child_detected,
+                CASE 
+                    WHEN cm.child_detected = 1 THEN 'critical'
+                    ELSE 'high'
+                END as priority,
+                CASE 
+                    WHEN cm.child_detected = 1 THEN 'child_content_review'
+                    ELSE 'manual_review'
+                END as queue_type
+            FROM content_moderation cm
+            JOIN models m ON cm.model_id = m.id
+            WHERE cm.id = ? AND cm.flagged = 1 AND cm.moderation_status = 'flagged'
+        `;
+        
+        const [results] = await db.execute(query, [id]);
+        
+        if (results.length === 0) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Queue item not found or not flagged' 
+            });
+        }
+        
+        const item = results[0];
+        
+        // Apply same processing as queue list
+        item.nudity_score = parseFloat(item.nudity_score) || 0;
+        
+        // Fix image paths
+        if (item.image_path) {
+            if (item.image_path.includes('/Users/programmer/Projects/musenest/public')) {
+                item.image_path = item.image_path.replace('/Users/programmer/Projects/musenest/public', '');
+            }
+            if (!item.image_path.startsWith('/')) {
+                item.image_path = '/' + item.image_path;
+            }
+            if (!item.image_path.includes('/originals/')) {
+                const filename = item.image_path.split('/').pop();
+                const modelSlug = item.model_slug || 'escortexample';
+                item.image_path = `/uploads/${modelSlug}/originals/${filename}`;
+            }
+        }
+        
+        if (item.original_path) {
+            if (item.original_path.includes('/Users/programmer/Projects/musenest/public')) {
+                item.original_path = item.original_path.replace('/Users/programmer/Projects/musenest/public', '');
+            }
+            if (!item.original_path.startsWith('/')) {
+                item.original_path = '/' + item.original_path;
+            }
+        }
+        
+        // Parse JSON fields
+        try {
+            item.detected_parts = typeof item.detected_parts === 'string' ? 
+                JSON.parse(item.detected_parts) : (item.detected_parts || {});
+        } catch (e) {
+            item.detected_parts = {};
+        }
+        
+        try {
+            item.part_locations = typeof item.part_locations === 'string' ? 
+                JSON.parse(item.part_locations) : (item.part_locations || {});
+        } catch (e) {
+            item.part_locations = {};
+        }
+        
+        console.log('Queue item loaded:', item);
+        
+        res.json({
+            success: true,
+            item: item
+        });
+    } catch (error) {
+        console.error('❌ Error loading queue item:', error);
         res.status(500).json({ error: error.message });
     }
 });

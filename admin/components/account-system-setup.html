@@ -1,0 +1,626 @@
+<!-- Account Number System Setup Component -->
+<!-- Configure BIN-style account numbering system with client types, regions, and sales channels -->
+<!-- Dependencies: Bootstrap 5, Font Awesome -->
+
+<div class="account-system-setup-container">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-1">Account Number System Setup</h4>
+            <p class="text-muted mb-0">Configure BIN-style account numbering with client types, regions, and sales channels</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" onclick="previewAccountNumber()">
+                <i class="fas fa-eye me-2"></i>Preview Format
+            </button>
+            <button class="btn btn-success" onclick="saveSystemConfiguration()">
+                <i class="fas fa-save me-2"></i>Save Configuration
+            </button>
+        </div>
+    </div>
+
+    <!-- System Overview Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Account Number Format</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="account-format-display">
+                            <span class="format-segment" data-segment="type">TT</span>
+                            <span class="format-segment" data-segment="region">CC</span>
+                            <span class="format-segment" data-segment="channel">SS</span>
+                            <span class="format-segment" data-segment="sequence">RRRRRR</span>
+                        </div>
+                    </div>
+                    <div class="row text-sm">
+                        <div class="col-3 text-center">
+                            <div class="text-muted">Client Type</div>
+                            <div class="fw-bold" id="preview-type">01</div>
+                        </div>
+                        <div class="col-3 text-center">
+                            <div class="text-muted">Region</div>
+                            <div class="fw-bold" id="preview-region">01</div>
+                        </div>
+                        <div class="col-3 text-center">
+                            <div class="text-muted">Sales Channel</div>
+                            <div class="fw-bold" id="preview-channel">30</div>
+                        </div>
+                        <div class="col-3 text-center">
+                            <div class="text-muted">Sequential ID</div>
+                            <div class="fw-bold" id="preview-sequence">100001</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="preview-result p-3 bg-light rounded">
+                        <div class="text-muted mb-1">Generated Account Number:</div>
+                        <div class="h4 font-monospace text-primary mb-2" id="preview-result">010130100001</div>
+                        <div class="small text-muted" id="preview-description">MuseNest • US • Manual</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configuration Tabs -->
+    <ul class="nav nav-tabs mb-4" id="configTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="client-types-tab" data-bs-toggle="tab" data-bs-target="#client-types" type="button">
+                <i class="fas fa-users me-2"></i>Client Types
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="regions-tab" data-bs-toggle="tab" data-bs-target="#regions" type="button">
+                <i class="fas fa-globe me-2"></i>Regions
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="sales-channels-tab" data-bs-toggle="tab" data-bs-target="#sales-channels" type="button">
+                <i class="fas fa-handshake me-2"></i>Sales Channels
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="system-settings-tab" data-bs-toggle="tab" data-bs-target="#system-settings" type="button">
+                <i class="fas fa-cog me-2"></i>System Settings
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Contents -->
+    <div class="tab-content" id="configTabContent">
+        <!-- Client Types Tab -->
+        <div class="tab-pane fade show active" id="client-types" role="tabpanel">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Client Type Codes</h6>
+                    <button class="btn btn-sm btn-primary" onclick="addClientType()">
+                        <i class="fas fa-plus me-2"></i>Add Type
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="client-types-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Type</th>
+                                    <th>Display Name</th>
+                                    <th>Description</th>
+                                    <th>Icon</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="client-types-body">
+                                <!-- Client types populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Regions Tab -->
+        <div class="tab-pane fade" id="regions" role="tabpanel">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Geographic Regions</h6>
+                    <button class="btn btn-sm btn-primary" onclick="addRegion()">
+                        <i class="fas fa-plus me-2"></i>Add Region
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="regions-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Region Name</th>
+                                    <th>Country Code</th>
+                                    <th>Currency</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="regions-body">
+                                <!-- Regions populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Channels Tab -->
+        <div class="tab-pane fade" id="sales-channels" role="tabpanel">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Sales Channel Codes</h6>
+                    <button class="btn btn-sm btn-primary" onclick="addSalesChannel()">
+                        <i class="fas fa-plus me-2"></i>Add Channel
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="sales-channels-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Channel Name</th>
+                                    <th>Description</th>
+                                    <th>Commission Rate</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sales-channels-body">
+                                <!-- Sales channels populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Settings Tab -->
+        <div class="tab-pane fade" id="system-settings" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">Account Number Generation Settings</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Current Sequential Counter</label>
+                                <input type="number" class="form-control" id="sequential-counter" min="100000" max="999999">
+                                <div class="form-text">Next account will use this number + 1</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Default Client Type</label>
+                                <select class="form-select" id="default-client-type">
+                                    <option value="muse_owned">MuseNest</option>
+                                    <option value="white_label">White Label</option>
+                                    <option value="sub_client">Sub-client</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Default Region</label>
+                                <select class="form-select" id="default-region">
+                                    <option value="1">United States</option>
+                                    <option value="44">United Kingdom</option>
+                                    <option value="99">International</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Default Sales Channel</label>
+                                <select class="form-select" id="default-sales-channel">
+                                    <option value="10">Website</option>
+                                    <option value="20">Referral</option>
+                                    <option value="30">Manual</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <h6>Account Number Validation</h6>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="validate-format" checked>
+                                <label class="form-check-label" for="validate-format">
+                                    Validate account number format on creation
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="prevent-duplicates" checked>
+                                <label class="form-check-label" for="prevent-duplicates">
+                                    Prevent duplicate account numbers
+                                </label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="auto-increment" checked>
+                                <label class="form-check-label" for="auto-increment">
+                                    Auto-increment sequential counter
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal fade" id="configItemModal" tabindex="-1" aria-labelledby="configItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="configItemModalLabel">Add Configuration Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="config-item-form">
+                    <div id="config-form-fields">
+                        <!-- Dynamic form fields populated by JavaScript -->
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveConfigItem()">Save Item</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Account System Setup Class
+class AccountSystemSetup {
+    constructor() {
+        this.clientTypes = [];
+        this.regions = [];
+        this.salesChannels = [];
+        this.currentEditItem = null;
+        this.currentEditType = null;
+        
+        this.init();
+    }
+    
+    init() {
+        this.loadConfiguration();
+        this.setupEventListeners();
+        this.updatePreview();
+    }
+    
+    setupEventListeners() {
+        // Tab change events to update preview
+        document.querySelectorAll('#configTabs button').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', () => {
+                this.updatePreview();
+            });
+        });
+        
+        // Form changes for live preview
+        document.querySelectorAll('#default-client-type, #default-region, #default-sales-channel').forEach(select => {
+            select.addEventListener('change', () => {
+                this.updatePreview();
+            });
+        });
+    }
+    
+    async loadConfiguration() {
+        try {
+            // Load client types
+            this.clientTypes = [
+                { id: 1, code: 1, type: 'muse_owned', display_name: 'MuseNest', description: 'Direct MuseNest clients', icon: '💼', status: 'active' },
+                { id: 2, code: 2, type: 'white_label', display_name: 'White Label', description: 'White label agency clients', icon: '🏷️', status: 'active' },
+                { id: 3, code: 3, type: 'sub_client', display_name: 'Sub-client', description: 'Sub-clients under parent accounts', icon: '👥', status: 'active' },
+                { id: 9, code: 9, type: 'admin', display_name: 'System Template', description: 'System templates and demos', icon: '⚙️', status: 'active' }
+            ];
+            
+            // Load regions with international standards
+            this.regions = [
+                { id: 1, code: 1, name: 'United States', country_code: 'US', currency: 'USD', status: 'active' },
+                { id: 44, code: 44, name: 'United Kingdom', country_code: 'GB', currency: 'GBP', status: 'active' },
+                { id: 49, code: 49, name: 'Germany', country_code: 'DE', currency: 'EUR', status: 'active' },
+                { id: 33, code: 33, name: 'France', country_code: 'FR', currency: 'EUR', status: 'active' },
+                { id: 61, code: 61, name: 'Australia', country_code: 'AU', currency: 'AUD', status: 'active' },
+                { id: 81, code: 81, name: 'Japan', country_code: 'JP', currency: 'JPY', status: 'active' },
+                { id: 99, code: 99, name: 'International', country_code: 'INTL', currency: 'USD', status: 'active' }
+            ];
+            
+            // Load sales channels
+            this.salesChannels = [
+                { id: 10, code: 10, name: 'Website', description: 'Direct website registration', commission_rate: 0, status: 'active' },
+                { id: 20, code: 20, name: 'Referral', description: 'Client referral program', commission_rate: 10, status: 'active' },
+                { id: 30, code: 30, name: 'Manual', description: 'Manual admin creation', commission_rate: 0, status: 'active' },
+                { id: 40, code: 40, name: 'API', description: 'API integration signup', commission_rate: 0, status: 'active' },
+                { id: 50, code: 50, name: 'Partner', description: 'Partner channel signup', commission_rate: 5, status: 'active' },
+                { id: 99, code: 99, name: 'System', description: 'System-generated accounts', commission_rate: 0, status: 'active' }
+            ];
+            
+            this.renderAllTables();
+            
+        } catch (error) {
+            console.error('Failed to load configuration:', error);
+        }
+    }
+    
+    renderAllTables() {
+        this.renderClientTypesTable();
+        this.renderRegionsTable();
+        this.renderSalesChannelsTable();
+    }
+    
+    renderClientTypesTable() {
+        const tbody = document.getElementById('client-types-body');
+        tbody.innerHTML = '';
+        
+        this.clientTypes.forEach(type => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><span class="badge bg-primary">${String(type.code).padStart(2, '0')}</span></td>
+                <td><code>${type.type}</code></td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">${type.icon}</span>
+                        ${type.display_name}
+                    </div>
+                </td>
+                <td class="text-muted">${type.description}</td>
+                <td class="text-center">${type.icon}</td>
+                <td>
+                    <span class="badge ${type.status === 'active' ? 'bg-success' : 'bg-secondary'}">
+                        ${type.status}
+                    </span>
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="accountSetup.editItem('clientType', ${type.id})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="accountSetup.deleteItem('clientType', ${type.id})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+    
+    renderRegionsTable() {
+        const tbody = document.getElementById('regions-body');
+        tbody.innerHTML = '';
+        
+        this.regions.forEach(region => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><span class="badge bg-info">${String(region.code).padStart(2, '0')}</span></td>
+                <td>${region.name}</td>
+                <td><span class="badge bg-secondary">${region.country_code}</span></td>
+                <td><span class="badge bg-success">${region.currency}</span></td>
+                <td>
+                    <span class="badge ${region.status === 'active' ? 'bg-success' : 'bg-secondary'}">
+                        ${region.status}
+                    </span>
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="accountSetup.editItem('region', ${region.id})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="accountSetup.deleteItem('region', ${region.id})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+    
+    renderSalesChannelsTable() {
+        const tbody = document.getElementById('sales-channels-body');
+        tbody.innerHTML = '';
+        
+        this.salesChannels.forEach(channel => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><span class="badge bg-warning">${String(channel.code).padStart(2, '0')}</span></td>
+                <td>${channel.name}</td>
+                <td class="text-muted">${channel.description}</td>
+                <td>${channel.commission_rate}%</td>
+                <td>
+                    <span class="badge ${channel.status === 'active' ? 'bg-success' : 'bg-secondary'}">
+                        ${channel.status}
+                    </span>
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="accountSetup.editItem('salesChannel', ${channel.id})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="accountSetup.deleteItem('salesChannel', ${channel.id})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+    
+    updatePreview() {
+        const clientTypeSelect = document.getElementById('default-client-type');
+        const regionSelect = document.getElementById('default-region');
+        const channelSelect = document.getElementById('default-sales-channel');
+        
+        if (!clientTypeSelect || !regionSelect || !channelSelect) return;
+        
+        const clientType = this.clientTypes.find(ct => ct.type === clientTypeSelect.value);
+        const region = this.regions.find(r => r.id == regionSelect.value);
+        const channel = this.salesChannels.find(sc => sc.id == channelSelect.value);
+        
+        if (clientType && region && channel) {
+            const typeCode = String(clientType.code).padStart(2, '0');
+            const regionCode = String(region.code).padStart(2, '0');
+            const channelCode = String(channel.code).padStart(2, '0');
+            const sequenceCode = '100001';
+            
+            // Update preview display
+            document.getElementById('preview-type').textContent = typeCode;
+            document.getElementById('preview-region').textContent = regionCode;
+            document.getElementById('preview-channel').textContent = channelCode;
+            document.getElementById('preview-sequence').textContent = sequenceCode;
+            
+            const accountNumber = typeCode + regionCode + channelCode + sequenceCode;
+            document.getElementById('preview-result').textContent = accountNumber;
+            document.getElementById('preview-description').textContent = 
+                `${clientType.display_name} • ${region.name} • ${channel.name}`;
+        }
+    }
+    
+    editItem(type, id) {
+        console.log(`Edit ${type} with ID ${id}`);
+        // Implementation for edit modal
+    }
+    
+    deleteItem(type, id) {
+        if (confirm(`Delete this ${type}?`)) {
+            console.log(`Delete ${type} with ID ${id}`);
+            // Implementation for delete
+        }
+    }
+}
+
+// Global functions
+function addClientType() {
+    console.log('Add new client type');
+}
+
+function addRegion() {
+    console.log('Add new region');
+}
+
+function addSalesChannel() {
+    console.log('Add new sales channel');
+}
+
+function previewAccountNumber() {
+    window.accountSetup.updatePreview();
+}
+
+function saveSystemConfiguration() {
+    console.log('Save system configuration');
+    alert('Configuration saved successfully!');
+}
+
+function saveConfigItem() {
+    console.log('Save configuration item');
+}
+
+// Initialize when loaded
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.querySelector('.account-system-setup-container')) {
+        window.accountSetup = new AccountSystemSetup();
+    }
+});
+</script>
+
+<style>
+.account-format-display {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+}
+
+.format-segment {
+    padding: 8px 12px;
+    margin: 0 2px;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+}
+
+.format-segment[data-segment="type"] {
+    background-color: #e3f2fd;
+    border-color: #2196f3;
+    color: #1976d2;
+}
+
+.format-segment[data-segment="region"] {
+    background-color: #e8f5e8;
+    border-color: #4caf50;
+    color: #388e3c;
+}
+
+.format-segment[data-segment="channel"] {
+    background-color: #fff3e0;
+    border-color: #ff9800;
+    color: #f57c00;
+}
+
+.format-segment[data-segment="sequence"] {
+    background-color: #fce4ec;
+    border-color: #e91e63;
+    color: #c2185b;
+}
+
+.preview-result {
+    border: 1px solid #dee2e6;
+}
+
+.nav-tabs .nav-link {
+    color: #6c757d;
+}
+
+.nav-tabs .nav-link.active {
+    color: #495057;
+    background-color: #fff;
+    border-color: #dee2e6 #dee2e6 #fff;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: #e9ecef #e9ecef #dee2e6;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.badge {
+    font-size: 0.75rem;
+}
+
+.form-check-label {
+    font-size: 0.9rem;
+}
+
+.card-header h6 {
+    font-size: 1rem;
+    font-weight: 600;
+}
+</style>

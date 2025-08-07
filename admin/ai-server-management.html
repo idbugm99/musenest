@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Server Management - MuseNest Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .server-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #dee2e6;
+        }
+        .server-card.online {
+            border-left-color: #28a745;
+        }
+        .server-card.offline {
+            border-left-color: #dc3545;
+        }
+        .server-card.maintenance {
+            border-left-color: #ffc107;
+        }
+        .server-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+        .metric-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: none;
+            border-radius: 12px;
+        }
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+        .loading-spinner {
+            display: none;
+        }
+        .loading .loading-spinner {
+            display: inline-block;
+        }
+        .loading .btn-text {
+            display: none;
+        }
+        .logs-container {
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        .log-entry {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+        .log-success { background-color: #d1eddd; color: #155724; }
+        .log-error { background-color: #f8d7da; color: #721c24; }
+        .log-warning { background-color: #fff3cd; color: #856404; }
+        .log-info { background-color: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h3 mb-0">
+                            <i class="fas fa-server text-primary me-2"></i>
+                            AI Server Management
+                        </h1>
+                        <p class="text-muted mb-0">Multi-server AI moderation infrastructure management</p>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-outline-primary me-2" onclick="refreshAllServers()">
+                            <i class="fas fa-sync-alt me-1"></i> Refresh All
+                        </button>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addServerModal">
+                            <i class="fas fa-plus me-1"></i> Add Server
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics Overview -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-server fa-2x text-primary mb-2"></i>
+                        <h4 class="mb-0" id="totalServersCount">-</h4>
+                        <small class="text-muted">Total Servers</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                        <h4 class="mb-0" id="onlineServersCount">-</h4>
+                        <small class="text-muted">Online</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-globe fa-2x text-info mb-2"></i>
+                        <h4 class="mb-0" id="totalSitesCount">-</h4>
+                        <small class="text-muted">Active Sites</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                        <h4 class="mb-0" id="avgResponseTime">-</h4>
+                        <small class="text-muted">Avg Response (ms)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Servers List -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-list me-2"></i>
+                            Server Instances
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="serversContainer" class="row">
+                            <!-- Servers will be loaded here -->
+                        </div>
+                        <div id="noServersMessage" class="text-center py-5" style="display: none;">
+                            <i class="fas fa-server fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No AI servers configured</h5>
+                            <p class="text-muted">Add your first AI moderation server to get started</p>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addServerModal">
+                                <i class="fas fa-plus me-1"></i> Add Server
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Logs -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-history me-2"></i>
+                            Recent Activity
+                        </h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="clearLogs()">
+                            <i class="fas fa-trash me-1"></i> Clear
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="activityLogs" class="logs-container">
+                            <div class="log-entry log-info">
+                                <i class="fas fa-info-circle me-1"></i>
+                                <span class="timestamp">[Loading...]</span> System initializing...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Server Modal -->
+    <div class="modal fade" id="addServerModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Add AI Moderation Server
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="addServerForm">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="serverName" class="form-label">Server Name *</label>
+                                    <input type="text" class="form-control" id="serverName" name="name" required>
+                                    <div class="form-text">Friendly name for this server</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="serverDescription" class="form-label">Description</label>
+                                    <input type="text" class="form-control" id="serverDescription" name="description">
+                                    <div class="form-text">Optional server description</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="serverIP" class="form-label">IP Address *</label>
+                                    <input type="text" class="form-control" id="serverIP" name="ip_address" required>
+                                    <div class="form-text">Server IP address (IPv4 or IPv6)</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="serverPort" class="form-label">Port</label>
+                                    <input type="number" class="form-control" id="serverPort" name="port" value="5000">
+                                    <div class="form-text">Default: 5000</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="serverProtocol" class="form-label">Protocol</label>
+                                    <select class="form-select" id="serverProtocol" name="protocol">
+                                        <option value="http">HTTP</option>
+                                        <option value="https">HTTPS</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="maxRequests" class="form-label">Max Requests</label>
+                                    <input type="number" class="form-control" id="maxRequests" name="max_concurrent_requests" value="10">
+                                    <div class="form-text">Concurrent requests limit</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="serverApiKey" class="form-label">API Key</label>
+                                    <input type="password" class="form-control" id="serverApiKey" name="api_key">
+                                    <div class="form-text">Optional authentication key</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Connection Test:</strong> The system will automatically test connectivity when adding the server.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success">
+                            <span class="loading-spinner spinner-border spinner-border-sm me-2"></span>
+                            <span class="btn-text">
+                                <i class="fas fa-plus me-1"></i> Add Server
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Server Details Modal -->
+    <div class="modal fade" id="serverDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-server me-2"></i>
+                        <span id="serverDetailsTitle">Server Details</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="serverDetailsContent">
+                        <!-- Server details will be loaded here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let servers = [];
+        let activityLogs = [];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadServers();
+            logActivity('info', 'AI Server Management interface loaded');
+        });
+
+        // Add Server Form Handler
+        document.getElementById('addServerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.classList.add('loading');
+            
+            try {
+                const formData = new FormData(this);
+                const serverData = Object.fromEntries(formData.entries());
+                
+                logActivity('info', `Adding new server: ${serverData.name} (${serverData.ip_address}:${serverData.port})`);
+                
+                const response = await fetch('/api/ai-server-management/servers', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(serverData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    logActivity('success', `Server "${serverData.name}" added successfully`);
+                    bootstrap.Modal.getInstance(document.getElementById('addServerModal')).hide();
+                    this.reset();
+                    loadServers();
+                } else {
+                    throw new Error(result.error || 'Failed to add server');
+                }
+                
+            } catch (error) {
+                console.error('Error adding server:', error);
+                logActivity('error', `Failed to add server: ${error.message}`);
+                alert('Error adding server: ' + error.message);
+            } finally {
+                submitBtn.classList.remove('loading');
+            }
+        });
+
+        // Load all servers
+        async function loadServers() {
+            try {
+                logActivity('info', 'Loading server list...');
+                
+                const response = await fetch('/api/ai-server-management/servers');
+                const result = await response.json();
+                
+                if (result.success) {
+                    servers = result.servers;
+                    renderServers();
+                    updateMetrics();
+                    logActivity('success', `Loaded ${servers.length} servers`);
+                } else {
+                    throw new Error(result.error || 'Failed to load servers');
+                }
+                
+            } catch (error) {
+                console.error('Error loading servers:', error);
+                logActivity('error', `Failed to load servers: ${error.message}`);
+            }
+        }
+
+        // Render servers list
+        function renderServers() {
+            const container = document.getElementById('serversContainer');
+            const noServersMsg = document.getElementById('noServersMessage');
+            
+            if (servers.length === 0) {
+                container.style.display = 'none';
+                noServersMsg.style.display = 'block';
+                return;
+            }
+            
+            container.style.display = 'block';
+            noServersMsg.style.display = 'none';
+            
+            container.innerHTML = servers.map(server => `
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card server-card ${server.status || 'offline'}" data-server-id="${server.id}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="card-title mb-0">${server.name}</h6>
+                                <span class="badge status-badge ${getStatusClass(server.status)}">${server.status || 'Unknown'}</span>
+                            </div>
+                            
+                            <p class="card-text text-muted small mb-2">${server.description || 'No description'}</p>
+                            
+                            <div class="small mb-2">
+                                <div><i class="fas fa-network-wired me-1"></i> ${server.ip_address}:${server.port}</div>
+                                <div><i class="fas fa-shield-alt me-1"></i> ${server.protocol.toUpperCase()}</div>
+                                <div><i class="fas fa-globe me-1"></i> ${server.assigned_sites || 0} sites</div>
+                                ${server.avg_response_time ? `<div><i class="fas fa-clock me-1"></i> ${server.avg_response_time}ms</div>` : ''}
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    ${server.last_health_check ? 'Last check: ' + formatTime(server.last_health_check) : 'Never checked'}
+                                </small>
+                                
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-sm btn-outline-primary btn-icon" 
+                                            onclick="healthCheck(${server.id})" 
+                                            title="Health Check">
+                                        <i class="fas fa-heartbeat"></i>
+                                    </button>
+                                    
+                                    <button class="btn btn-sm btn-outline-info btn-icon" 
+                                            onclick="showServerDetails(${server.id})" 
+                                            title="Details">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                    
+                                    <button class="btn btn-sm btn-outline-warning btn-icon" 
+                                            onclick="restartServer(${server.id})" 
+                                            title="Restart Server">
+                                        <i class="fas fa-redo"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update metrics
+        function updateMetrics() {
+            const totalServers = servers.length;
+            const onlineServers = servers.filter(s => s.status === 'active').length;
+            const totalSites = servers.reduce((sum, s) => sum + (s.assigned_sites || 0), 0);
+            const avgResponseTime = servers
+                .filter(s => s.avg_response_time)
+                .reduce((sum, s, _, arr) => sum + s.avg_response_time / arr.length, 0);
+            
+            document.getElementById('totalServersCount').textContent = totalServers;
+            document.getElementById('onlineServersCount').textContent = onlineServers;
+            document.getElementById('totalSitesCount').textContent = totalSites;
+            document.getElementById('avgResponseTime').textContent = avgResponseTime ? Math.round(avgResponseTime) : '-';
+        }
+
+        // Health check for specific server
+        async function healthCheck(serverId) {
+            try {
+                const server = servers.find(s => s.id === serverId);
+                logActivity('info', `Performing health check on ${server.name}...`);
+                
+                const response = await fetch(`/api/ai-server-management/servers/${serverId}/health-check`, {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    logActivity('success', `Health check completed for ${server.name}: ${result.health_status} (${result.response_time_ms}ms)`);
+                    loadServers(); // Refresh server list
+                } else {
+                    throw new Error(result.error || 'Health check failed');
+                }
+                
+            } catch (error) {
+                console.error('Error performing health check:', error);
+                const server = servers.find(s => s.id === serverId);
+                logActivity('error', `Health check failed for ${server.name}: ${error.message}`);
+            }
+        }
+
+        // Restart server
+        async function restartServer(serverId) {
+            const server = servers.find(s => s.id === serverId);
+            
+            if (!confirm(`Are you sure you want to restart "${server.name}"?\\n\\nThis will temporarily interrupt service for all sites using this server.`)) {
+                return;
+            }
+            
+            try {
+                logActivity('warning', `Initiating restart for ${server.name}...`);
+                
+                const response = await fetch(`/api/ai-server-management/servers/${serverId}/restart`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ force: false })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    logActivity('success', `Server restart initiated for ${server.name}`);
+                    alert(`Server restart initiated successfully for "${server.name}".\\n\\nThe server will be back online shortly.`);
+                    loadServers(); // Refresh server list
+                } else {
+                    throw new Error(result.error || 'Server restart failed');
+                }
+                
+            } catch (error) {
+                console.error('Error restarting server:', error);
+                logActivity('error', `Failed to restart ${server.name}: ${error.message}`);
+                alert('Error restarting server: ' + error.message);
+            }
+        }
+
+        // Show server details
+        function showServerDetails(serverId) {
+            const server = servers.find(s => s.id === serverId);
+            
+            document.getElementById('serverDetailsTitle').textContent = server.name;
+            document.getElementById('serverDetailsContent').innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Server Information</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Name:</strong></td><td>${server.name}</td></tr>
+                            <tr><td><strong>Description:</strong></td><td>${server.description || 'None'}</td></tr>
+                            <tr><td><strong>Endpoint:</strong></td><td>${server.protocol}://${server.ip_address}:${server.port}</td></tr>
+                            <tr><td><strong>Status:</strong></td><td><span class="badge ${getStatusClass(server.status)}">${server.status}</span></td></tr>
+                            <tr><td><strong>Max Requests:</strong></td><td>${server.max_concurrent_requests}</td></tr>
+                            <tr><td><strong>Created:</strong></td><td>${formatTime(server.created_at)}</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Performance Metrics</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Assigned Sites:</strong></td><td>${server.assigned_sites || 0}</td></tr>
+                            <tr><td><strong>Avg Response Time:</strong></td><td>${server.avg_response_time || 'N/A'}ms</td></tr>
+                            <tr><td><strong>Last Health Check:</strong></td><td>${server.last_health_check ? formatTime(server.last_health_check) : 'Never'}</td></tr>
+                            <tr><td><strong>Current Health:</strong></td><td><span class="badge ${getStatusClass(server.current_health_status)}">${server.current_health_status || 'Unknown'}</span></td></tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6>Server Capabilities</h6>
+                        <div class="d-flex gap-2">
+                            <span class="badge ${server.supports_nudenet ? 'bg-success' : 'bg-secondary'}">
+                                <i class="fas fa-eye me-1"></i>NudeNet ${server.supports_nudenet ? 'Enabled' : 'Disabled'}
+                            </span>
+                            <span class="badge ${server.supports_blip ? 'bg-success' : 'bg-secondary'}">
+                                <i class="fas fa-image me-1"></i>BLIP ${server.supports_blip ? 'Enabled' : 'Disabled'}
+                            </span>
+                            <span class="badge ${server.supports_face_analysis ? 'bg-success' : 'bg-secondary'}">
+                                <i class="fas fa-user me-1"></i>Face Analysis ${server.supports_face_analysis ? 'Enabled' : 'Disabled'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            new bootstrap.Modal(document.getElementById('serverDetailsModal')).show();
+        }
+
+        // Refresh all servers
+        function refreshAllServers() {
+            logActivity('info', 'Refreshing all servers...');
+            loadServers();
+        }
+
+        // Activity logging
+        function logActivity(type, message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = {
+                type: type,
+                message: message,
+                timestamp: timestamp
+            };
+            
+            activityLogs.unshift(logEntry);
+            
+            // Keep only last 50 logs
+            if (activityLogs.length > 50) {
+                activityLogs = activityLogs.slice(0, 50);
+            }
+            
+            renderActivityLogs();
+        }
+
+        // Render activity logs
+        function renderActivityLogs() {
+            const container = document.getElementById('activityLogs');
+            
+            container.innerHTML = activityLogs.map(log => `
+                <div class="log-entry log-${log.type}">
+                    <i class="fas fa-${getLogIcon(log.type)} me-1"></i>
+                    <span class="timestamp">[${log.timestamp}]</span> ${log.message}
+                </div>
+            `).join('');
+            
+            // Auto-scroll to top
+            container.scrollTop = 0;
+        }
+
+        // Clear activity logs
+        function clearLogs() {
+            activityLogs = [];
+            renderActivityLogs();
+            logActivity('info', 'Activity logs cleared');
+        }
+
+        // Utility functions
+        function getStatusClass(status) {
+            switch (status) {
+                case 'active': return 'bg-success';
+                case 'inactive': return 'bg-secondary';
+                case 'maintenance': return 'bg-warning';
+                case 'error': return 'bg-danger';
+                default: return 'bg-secondary';
+            }
+        }
+
+        function getLogIcon(type) {
+            switch (type) {
+                case 'success': return 'check-circle';
+                case 'error': return 'exclamation-triangle';
+                case 'warning': return 'exclamation-triangle';
+                case 'info': return 'info-circle';
+                default: return 'info-circle';
+            }
+        }
+
+        function formatTime(dateString) {
+            if (!dateString) return 'Never';
+            return new Date(dateString).toLocaleString();
+        }
+    </script>
+</body>
+</html>

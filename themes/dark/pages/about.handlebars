@@ -1,0 +1,181 @@
+<!-- About Hero Section -->
+<section class="dark-hero min-vh-50 d-flex align-items-center text-white position-relative pt-5" data-aos="fade-in">
+    <div class="container position-relative" style="z-index: 10;">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <div class="dark-badge mb-4">About</div>
+                <h1 class="display-2 fw-bold mb-4 dark-heading">
+                    About {{siteName}}
+                </h1>
+                <p class="fs-4 text-dark-muted mx-auto" style="max-width: 600px;">
+                    {{content.aboutIntro}}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main About Content -->
+<section class="py-5 bg-dark-surface">
+    <div class="container">
+        <div class="dark-grid dark-grid-2 align-items-start">
+            <!-- About Text -->
+            <div data-aos="fade-right">
+                <div class="mb-5">
+                    <div class="fs-5 text-dark-muted lh-lg">
+                        {{{content.mainContent}}}
+                    </div>
+                </div>
+                
+                {{#if content.personalInfo}}
+                <div class="mt-5">
+                    <h3 class="display-6 fw-bold mb-4 dark-heading text-dark-primary">
+                        Details
+                    </h3>
+                    <div class="dark-grid dark-grid-2">
+                        {{#each content.personalInfo}}
+                        <div class="dark-card p-4 d-flex align-items-center">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-3 me-3" 
+                                 style="width: 50px; height: 50px; background: var(--dark-card); border: 2px solid var(--dark-primary);">
+                                <i class="{{this.icon}} text-dark-primary"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-dark-text dark-mono small mb-1">{{this.label}}</h5>
+                                <p class="text-dark-muted mb-0">{{this.value}}</p>
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+            
+            <!-- About Images -->
+            <div data-aos="fade-left">
+                {{#if content.aboutImages}}
+                <div class="row g-4">
+                    {{#each content.aboutImages}}
+                    <div class="col-12">
+                        <div class="dark-card overflow-hidden">
+                            <img src="{{this.url}}" alt="{{this.caption}}" 
+                                 class="w-100 rounded-3">
+                            {{#if this.caption}}
+                            <div class="p-3">
+                                <p class="text-dark-muted small mb-0">{{this.caption}}</p>
+                            </div>
+                            {{/if}}
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+                {{else}}
+                <div class="dark-card p-5 text-center">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-4" 
+                         style="width: 120px; height: 120px; background: var(--dark-card); border: 2px solid var(--dark-primary);">
+                        <i class="fas fa-camera fs-1 text-dark-primary"></i>
+                    </div>
+                    <h3 class="fs-4 fw-bold mb-3 dark-heading">Portfolio</h3>
+                    <p class="text-dark-muted mb-4">Professional content coming soon</p>
+                    <a href="/{{modelSlug}}/gallery" class="dark-btn">
+                        <i class="fas fa-images me-2"></i>
+                        View Gallery
+                    </a>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Values Section -->
+{{#if content.values}}
+<section class="py-5" style="background: var(--dark-bg);">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <div class="dark-badge mb-3">Values</div>
+            <h2 class="display-5 fw-bold mb-4 dark-heading text-dark-primary">
+                What I Stand For
+            </h2>
+            <p class="fs-5 text-dark-muted">
+                The principles that guide my work
+            </p>
+        </div>
+        
+        <div class="dark-grid dark-grid-3">
+            {{#each content.values}}
+            <div class="dark-card p-4 text-center" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-4" 
+                     style="width: 80px; height: 80px; background: var(--dark-card); border: 2px solid var(--dark-primary);">
+                    <i class="{{this.icon}} fs-2 text-dark-primary"></i>
+                </div>
+                <h3 class="fs-4 fw-bold mb-3 dark-heading">{{this.title}}</h3>
+                <p class="text-dark-muted lh-lg">{{this.description}}</p>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Experience Section -->
+{{#if content.experience}}
+<section class="py-5 bg-dark-surface">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <div class="dark-badge mb-3">Experience</div>
+            <h2 class="display-5 fw-bold mb-4 dark-heading text-dark-primary">
+                My Journey
+            </h2>
+            <p class="fs-5 text-dark-muted">
+                Professional background and expertise
+            </p>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="row g-4">
+                    {{#each content.experience}}
+                    <div class="col-12">
+                        <div class="dark-card p-4 d-flex align-items-start" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-3 me-4 flex-shrink-0" 
+                                 style="width: 70px; height: 70px; background: var(--dark-card); border: 2px solid var(--dark-primary);">
+                                <i class="{{this.icon}} text-dark-primary fs-4"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h3 class="fs-4 fw-bold mb-2 dark-heading">{{this.title}}</h3>
+                                {{#if this.period}}
+                                <p class="text-dark-primary fw-semibold mb-3 dark-mono small">{{this.period}}</p>
+                                {{/if}}
+                                <p class="text-dark-muted lh-lg mb-0">{{this.description}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Call to Action -->
+<section class="py-5" style="background: linear-gradient(135deg, var(--dark-primary)15, var(--dark-accent)15); border-top: 1px solid var(--dark-border);">
+    <div class="container text-center" data-aos="fade-up">
+        <h2 class="display-5 fw-bold dark-heading text-dark-primary mb-4">
+            Let's Work Together
+        </h2>
+        <p class="fs-5 text-dark-muted mb-5 mx-auto" style="max-width: 600px;">
+            Ready to get started? I'd love to discuss how I can help you achieve your goals.
+        </p>
+        <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+            <a href="/{{modelSlug}}/contact" class="dark-btn fs-5 px-4 py-3">
+                <i class="fas fa-envelope me-2"></i>
+                Get in Touch
+            </a>
+            <a href="/{{modelSlug}}/rates" class="dark-btn-outline fs-5 px-4 py-3">
+                <i class="fas fa-list me-2"></i>
+                View Services
+            </a>
+        </div>
+    </div>
+</section>

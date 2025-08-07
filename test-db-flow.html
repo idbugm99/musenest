@@ -56,6 +56,75 @@
         <div id="blipRequest"></div>
     </div>
 
+    <!-- Load the Content Moderation API Service inline to avoid path issues -->
+    <script>
+        /**
+         * Content Moderation API Service - Inline version
+         * Reusable frontend service for all content moderation operations
+         */
+        class ContentModerationAPI {
+            
+            static async submitForModeration(file, options = {}) {
+                try {
+                    const {
+                        modelId,
+                        modelSlug,
+                        usageIntent = 'public_site',
+                        contextType = 'public_gallery',
+                        title,
+                        description
+                    } = options;
+
+                    if (!file) {
+                        throw new Error('Image file is required');
+                    }
+                    if (!modelId || !modelSlug) {
+                        throw new Error('modelId and modelSlug are required');
+                    }
+
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    formData.append('model_id', modelId.toString());
+                    formData.append('model_slug', modelSlug);
+                    formData.append('usage_intent', usageIntent);
+                    formData.append('context_type', contextType);
+                    
+                    if (title) formData.append('title', title);
+                    if (description) formData.append('description', description);
+
+                    const response = await fetch('/api/enhanced-content-moderation/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(result.error || 'Upload failed');
+                    }
+
+                    return {
+                        success: true,
+                        contentModerationId: result.data.content_moderation_id,
+                        status: result.data.status,
+                        nudityScore: result.data.nudity_score,
+                        riskScore: result.data.final_risk_score,
+                        riskLevel: result.data.risk_level,
+                        humanReviewRequired: result.data.human_review_required,
+                        data: result.data
+                    };
+
+                } catch (error) {
+                    console.error('ContentModerationAPI.submitForModeration error:', error);
+                    return {
+                        success: false,
+                        error: error.message
+                    };
+                }
+            }
+        }
+    </script>
+    
     <script>
         let testResults = {};
 
@@ -98,34 +167,43 @@
 
         async function step1_upload(file) {
             const statusDiv = document.getElementById('uploadStatus');
-            statusDiv.innerHTML = '<div class="info">Uploading and processing...</div>';
+            statusDiv.innerHTML = '<div class="info">Uploading and processing via API service...</div>';
 
             try {
-                const formData = new FormData();
-                formData.append('image', file);
-                formData.append('model_id', '1');
-                formData.append('model_slug', 'escortexample');
-                formData.append('usage_intent', 'public_site');
-                formData.append('context_type', 'public_gallery');
-
-                const response = await fetch('/api/enhanced-content-moderation/upload', {
-                    method: 'POST',
-                    body: formData
+                // 🎯 Using the new ContentModerationAPI service instead of direct fetch
+                const result = await ContentModerationAPI.submitForModeration(file, {
+                    modelId: 1,
+                    modelSlug: 'escortexample',
+                    usageIntent: 'public_site',
+                    contextType: 'public_gallery'
                 });
 
-                const result = await response.json();
-                testResults.uploadResponse = result;
+                // Transform to match old format for existing code
+                if (result.success) {
+                    const transformedResult = {
+                        success: true,
+                        data: {
+                            content_moderation_id: result.contentModerationId,
+                            nudity_score: result.nudityScore,
+                            final_risk_score: result.riskScore,
+                            risk_level: result.riskLevel,
+                            ...result.data
+                        }
+                    };
+                    
+                    testResults.uploadResponse = transformedResult;
+                    testResults.contentModerationId = result.contentModerationId;
 
-                if (response.ok && result.success) {
                     statusDiv.innerHTML = `
-                        <div class="success">✅ Upload successful!</div>
-                        <div class="info">Content Moderation ID: ${result.data.content_moderation_id}</div>
-                        <div class="info">Nudity Score: ${result.data.nudity_score}</div>
-                        <div class="info">Risk Score: ${result.data.final_risk_score}</div>
-                        <div class="info">Risk Level: ${result.data.risk_level}</div>
+                        <div class="success">✅ Upload successful via API service!</div>
+                        <div class="info">Content Moderation ID: ${result.contentModerationId}</div>
+                        <div class="info">Nudity Score: ${result.nudityScore}</div>
+                        <div class="info">Risk Score: ${result.riskScore}</div>
+                        <div class="info">Risk Level: ${result.riskLevel}</div>
+                        <div class="success">🔄 Using ContentModerationAPI.submitForModeration()</div>
                     `;
-                    testResults.contentModerationId = result.data.content_moderation_id;
-                    await step2_showAIResponse(result);
+                    
+                    await step2_showAIResponse(transformedResult);
                 } else {
                     statusDiv.innerHTML = `<div class="error">❌ Upload failed: ${result.error}</div>`;
                 }

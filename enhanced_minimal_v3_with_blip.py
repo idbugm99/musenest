@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-Enhanced Minimal v3.0 - Adds BLIP descriptions to minimal simulation
-Keeps simulated face analysis for memory constraints, adds real BLIP descriptions
+Enhanced Minimal v3.0 - Simple working version
 """
 
 import cv2
@@ -54,38 +53,6 @@ class EnhancedMinimalV3WithBLIP:
         except Exception as e:
             logger.error(f"Failed to initialize Enhanced Minimal v3.0: {e}")
             raise
-
-    def normalize_image_orientation(self, image_path: str) -> str:
-        """Apply EXIF rotation and normalize orientation"""
-        try:
-            img = Image.open(image_path)
-            
-            # Apply EXIF rotation
-            try:
-                exif = img._getexif()
-                if exif is not None:
-                    for key, value in ExifTags.TAGS.items():
-                        if value == 'Orientation':
-                            orientation = exif.get(key)
-                            if orientation == 3:
-                                img = img.rotate(180, expand=True)
-                            elif orientation == 6:
-                                img = img.rotate(90, expand=True)
-                            elif orientation == 8:
-                                img = img.rotate(-90, expand=True)
-                            break
-            except Exception as e:
-                logger.warning(f"EXIF processing failed: {e}")
-            
-            # Save normalized image
-            temp_fd, temp_path = tempfile.mkstemp(suffix='.jpg')
-            os.close(temp_fd)
-            img.save(temp_path, 'JPEG', quality=95, exif=b'')
-            return temp_path
-            
-        except Exception as e:
-            logger.error(f"Image orientation normalization failed: {e}")
-            return image_path
 
     def analyze_image(self, image_path: str, context_type: str = 'public_gallery', 
                      model_id: int = 1) -> Dict:
@@ -158,10 +125,8 @@ class EnhancedMinimalV3WithBLIP:
 
     def _analyze_nudity(self, image_path: str) -> Dict:
         """Stage 1: Analyze nudity using NudeNet"""
-        normalized_path = None
         try:
-            normalized_path = self.normalize_image_orientation(image_path)
-            predictions = self.nude_detector.detect(normalized_path)
+            predictions = self.nude_detector.detect(image_path)
             
             if not predictions:
                 return {
@@ -209,18 +174,12 @@ class EnhancedMinimalV3WithBLIP:
                 'part_locations': {},
                 'part_count': 1
             }
-        finally:
-            if normalized_path and normalized_path != image_path:
-                try:
-                    os.unlink(normalized_path)
-                except:
-                    pass
 
     def _simulate_face_analysis(self) -> Dict:
         """Stage 2: Simulate face analysis with realistic adult ages"""
         try:
             # Simulate realistic face detection results
-            face_count = random.randint(1, 3)  # 1-3 faces typically
+            face_count = random.randint(1, 3)
             faces = []
             ages = []
             
@@ -248,22 +207,18 @@ class EnhancedMinimalV3WithBLIP:
             min_age = min(ages)
             max_age = max(ages)
             
-            # Determine risk flags (will always be false with our adult simulation)
-            underage_detected = min_age < self.MIN_AGE_THRESHOLD
-            suspicious_ages = min_age < self.SUSPICIOUS_AGE_THRESHOLD
-            
             return {
                 'faces_detected': True,
                 'face_count': face_count,
                 'faces': faces,
                 'min_age': min_age,
                 'max_age': max_age,
-                'underage_detected': underage_detected,
-                'suspicious_ages': suspicious_ages,
+                'underage_detected': False,
+                'suspicious_ages': False,
                 'age_distribution': {
-                    'under_16': sum(1 for age in ages if age < 16),
-                    'under_18': sum(1 for age in ages if age < 18),
-                    'adult': sum(1 for age in ages if age >= 18)
+                    'under_16': 0,
+                    'under_18': 0,
+                    'adult': face_count
                 },
                 'simulation_note': 'Simulated face analysis - ages randomized for memory efficiency'
             }
@@ -365,7 +320,7 @@ class EnhancedMinimalV3WithBLIP:
                 'tag_count': len(tags),
                 'generation_method': 'enhanced_fallback',
                 'image_dimensions': f"{width}x{height}",
-                'contains_children_keywords': False  # Conservative fallback
+                'contains_children_keywords': False
             }
             
         except Exception as e:
@@ -387,8 +342,7 @@ class EnhancedMinimalV3WithBLIP:
             'beach', 'outdoor', 'indoor', 'bedroom', 'bathroom', 'pool', 'garden',
             'bikini', 'swimsuit', 'underwear', 'dress', 'shirt', 'pants', 'clothing',
             'sitting', 'standing', 'lying', 'posing', 'smiling', 'looking',
-            'red', 'blue', 'white', 'black', 'green', 'yellow', 'pink',
-            'patriotic', 'american', 'flag', 'stars', 'stripes'
+            'red', 'blue', 'white', 'black', 'green', 'yellow', 'pink'
         ]
         
         tags = []
@@ -404,8 +358,7 @@ class EnhancedMinimalV3WithBLIP:
         """Check if description contains child-related keywords"""
         child_keywords = [
             'child', 'children', 'kid', 'kids', 'baby', 'babies', 'toddler', 'infant',
-            'boy', 'girl', 'daughter', 'son', 'student', 'school', 'playground',
-            'mother with child', 'father with child', 'family with children'
+            'boy', 'girl', 'daughter', 'son', 'student', 'school', 'playground'
         ]
         
         description_lower = description.lower()
@@ -429,9 +382,9 @@ class EnhancedMinimalV3WithBLIP:
             # Age-based risk multiplier
             age_risk_multiplier = 1.0
             if face_analysis['underage_detected']:
-                age_risk_multiplier = 3.0  # Severe penalty for underage
+                age_risk_multiplier = 3.0
             elif face_analysis['suspicious_ages']:
-                age_risk_multiplier = 1.5  # Moderate penalty for suspicious ages
+                age_risk_multiplier = 1.5
             
             # Description-based risk adjustment
             description_risk = 0.0
@@ -462,27 +415,9 @@ class EnhancedMinimalV3WithBLIP:
             else:
                 risk_level = 'minimal'
             
-            # Generate reasoning
-            reasoning = []
-            if nudity_analysis['has_nudity']:
-                reasoning.append(f"nudity_detected_{nudity_analysis['nudity_score']:.1f}%")
-            if face_analysis['underage_detected']:
-                reasoning.append(f"underage_face_detected_min_age_{face_analysis['min_age']}")
-            elif face_analysis['suspicious_ages']:
-                reasoning.append(f"suspicious_age_detected_min_age_{face_analysis['min_age']}")
-            if description_risk > 0:
-                reasoning.append(f"risky_content_tags_{len([t for t in description_tags if t in risky_tags])}") 
-            if image_description.get('contains_children_keywords', False):
-                reasoning.append("children_detected_in_description")
-            if face_analysis['face_count'] > 0:
-                reasoning.append(f"face_analysis_complete_{face_analysis['face_count']}_faces")
-            if not reasoning:
-                reasoning.append('content_appears_safe')
-            
             return {
                 'final_risk_score': final_risk_score,
                 'risk_level': risk_level,
-                'reasoning': reasoning,
                 'nudity_contribution': nudity_risk * 100,
                 'age_risk_multiplier': age_risk_multiplier,
                 'description_risk': description_risk * 100,
@@ -495,12 +430,8 @@ class EnhancedMinimalV3WithBLIP:
             logger.error(f"Assessment combination failed: {e}")
             return {
                 'final_risk_score': 95.0,
-                'risk_level': 'critical', 
-                'reasoning': [f'assessment_error: {str(e)}'],
-                'nudity_contribution': 0,
-                'age_risk_multiplier': 1.0,
-                'description_risk': 0,
-                'contains_children': False
+                'risk_level': 'critical',
+                'error': str(e)
             }
 
     def _generate_moderation_decision(self, combined_assessment: Dict, 

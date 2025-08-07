@@ -8,34 +8,23 @@ const router = express.Router();
 // Helper function to get model by slug
 async function getModelBySlug(slug) {
     const models = await db.query(`
-        SELECT m.*, ss.site_name, ss.model_name, ss.tagline, ss.city,
+        SELECT m.*, m.theme_set_id, ss.site_name, ss.model_name, ss.tagline, ss.city,
                ss.contact_email, ss.contact_phone, ss.header_image,
                ss.watermark_text, ss.watermark_image
         FROM models m
         LEFT JOIN site_settings ss ON m.id = ss.model_id
-        WHERE m.slug = ? AND m.status IN ('active', 'trial')
+        WHERE m.slug = ? AND m.status IN ('active', 'trial', 'inactive')
     `, [slug]);
 
     return models.length > 0 ? models[0] : null;
 }
 
 // Helper function to get model's active theme set
-async function getModelThemeSet(modelId) {
-    const themeSets = await db.query(`
-        SELECT ts.name, ts.display_name, ts.description, ts.category,
-               ts.default_color_scheme, ts.features,
-               mts.custom_color_scheme
-        FROM theme_sets ts
-        JOIN model_theme_sets mts ON ts.id = mts.theme_set_id
-        WHERE mts.model_id = ? AND mts.is_active = true AND ts.is_active = true
-        ORDER BY mts.applied_at DESC
-        LIMIT 1
-    `, [modelId]);
-
-    if (themeSets.length === 0) {
+async function getModelThemeSet(modelId, themeSetId) {
+    if (!themeSetId) {
         // Fallback to basic theme set
         const basicTheme = await db.query(`
-            SELECT name, display_name, description, category, default_color_scheme, features
+            SELECT id, name, display_name, description, category, default_color_scheme, features
             FROM theme_sets 
             WHERE name = 'basic' AND is_active = true
             LIMIT 1
@@ -43,7 +32,39 @@ async function getModelThemeSet(modelId) {
         return basicTheme.length > 0 ? basicTheme[0] : null;
     }
 
-    return themeSets[0];
+    const themeSets = await db.query(`
+        SELECT id, name, display_name, description, category, default_color_scheme, features
+        FROM theme_sets ts
+        WHERE ts.id = ? AND ts.is_active = true
+    `, [themeSetId]);
+
+    return themeSets.length > 0 ? themeSets[0] : null;
+}
+
+// Helper function to get model content for a specific page type
+async function getModelContent(modelId, pageType) {
+    const content = await db.query(`
+        SELECT ct.content_key, ct.content_value, ct.content_type
+        FROM content_templates ct
+        JOIN page_types pt ON ct.page_type_id = pt.id
+        WHERE ct.model_id = ? AND pt.name = ?
+    `, [modelId, pageType]);
+
+    // Convert to key-value object
+    const contentObj = {};
+    content.forEach(row => {
+        if (row.content_type === 'json') {
+            try {
+                contentObj[row.content_key] = JSON.parse(row.content_value);
+            } catch (e) {
+                contentObj[row.content_key] = row.content_value;
+            }
+        } else {
+            contentObj[row.content_key] = row.content_value;
+        }
+    });
+
+    return contentObj;
 }
 
 // Helper function to get model's enabled pages

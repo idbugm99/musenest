@@ -1,0 +1,97 @@
+<div class="sidebar">
+    <!-- Sidebar Header -->
+    <div class="sidebar-header">
+        <a href="/admin" class="sidebar-brand">
+            <i class="fas fa-crown"></i>
+            MuseNest
+        </a>
+    </div>
+    
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar-nav">
+        <!-- Overview Section -->
+        <div class="nav-section">
+            <div class="nav-section-title">Overview</div>
+            <a href="/admin" class="nav-link {{#if (eq currentPage 'dashboard')}}active{{/if}}">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </a>
+        </div>
+        
+        <!-- Client Management Section -->
+        <div class="nav-section">
+            <div class="nav-section-title">Client Management</div>
+            <button class="nav-link {{#if (eq currentPage 'clients')}}active{{/if}}" 
+                    onclick="loadSection('clients-list')" data-section="clients-list">
+                <i class="fas fa-users-cog"></i>
+                Manage Clients
+                {{#if clientCount}}
+                <span class="badge bg-primary">{{clientCount}}</span>
+                {{/if}}
+            </button>
+            <button class="nav-link" onclick="loadSection('onboard-client')" data-section="onboard-client">
+                <i class="fas fa-user-plus"></i>
+                Onboard New Client
+            </button>
+        </div>
+        
+        <!-- Business Models Section -->
+        <div class="nav-section">
+            <div class="nav-section-title">Business Models</div>
+            <button class="nav-link {{#if (eq currentPage 'theme-management')}}active{{/if}}" 
+                    onclick="loadSection('theme-management')" data-section="theme-management">
+                <i class="fas fa-palette"></i>
+                Theme Management
+            </button>
+            <button class="nav-link {{#if (eq currentPage 'content-management')}}active{{/if}}" 
+                    onclick="loadSection('content-management')" data-section="content-management">
+                <i class="fas fa-edit"></i>
+                Content Management
+            </button>
+            <button class="nav-link" onclick="loadSection('escort-sites')" data-section="escort-sites">
+                <i class="fas fa-heart"></i>
+                Escort Sites
+            </button>
+            <button class="nav-link" onclick="loadSection('camgirl-sites')" data-section="camgirl-sites">
+                <i class="fas fa-video"></i>
+                Camgirl Sites
+                <span class="badge bg-secondary">Soon</span>
+            </button>
+            <button class="nav-link" onclick="loadSection('other-models')" data-section="other-models">
+                <i class="fas fa-star"></i>
+                Other Models
+                <span class="badge bg-secondary">Soon</span>
+            </button>
+        </div>
+        
+        <!-- Media Moderation Section -->
+        <div class="nav-section">
+            <div class="nav-section-title">Media Moderation</div>
+            <button class="nav-link {{#if (eq currentPage 'media-queue')}}active{{/if}}" 
+                    onclick="loadSection('media-queue')" data-section="media-queue">
+                <i class="fas fa-images"></i>
+                Media Queue
+            </button>
+            <button class="nav-link {{#if (eq currentPage 'blurred-approved')}}active{{/if}}" 
+                    onclick="loadSection('blurred-approved')" data-section="blurred-approved">
+                <i class="fas fa-eye-slash"></i>
+                Blurred/Approved
+            </button>
+            <button class="nav-link {{#if (eq currentPage 'rejected-removed')}}active{{/if}}" 
+                    onclick="loadSection('rejected-removed')" data-section="rejected-removed">
+                <i class="fas fa-trash-alt"></i>
+                Rejected/Removed
+            </button>
+        </div>
+        
+        <!-- Technical Operations Section -->
+        <div class="nav-section">
+            <div class="nav-section-title">Technical Operations</div>
+            <button class="nav-link" onclick="loadSection('other-models-tech')" data-section="other-models-tech">
+                <i class="fas fa-cogs"></i>
+                Other Models
+                <span class="badge bg-secondary">Soon</span>
+            </button>
+        </div>
+    </nav>
+</div>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{#if pageTitle}}{{pageTitle}} - {{siteName}}{{else}}{{siteName}}{{/if}}</title>
+    <meta name="description" content="{{metaDescription}}">
+    <meta name="og:title" content="{{#if pageTitle}}{{pageTitle}} - {{siteName}}{{else}}{{siteName}}{{/if}}">
+    <meta name="og:description" content="{{metaDescription}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{ogImage}}">
+    
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Glamour Theme Styles -->
+    <style>
+        /* Glamour Theme Colors */
+        :root {
+            --glamour-primary: {{theme.colors.primary}};
+            --glamour-secondary: {{theme.colors.secondary}};
+            --glamour-accent: {{theme.colors.accent}};
+            --glamour-text: {{theme.colors.text}};
+            --glamour-background: {{theme.colors.background}};
+        }
+        
+        .text-glamour-primary { color: var(--glamour-primary); }
+        .bg-glamour-primary { background-color: var(--glamour-primary); }
+        .border-glamour-primary { border-color: var(--glamour-primary); }
+        
+        .text-glamour-secondary { color: var(--glamour-secondary); }
+        .bg-glamour-secondary { background-color: var(--glamour-secondary); }
+        .border-glamour-secondary { border-color: var(--glamour-secondary); }
+        
+        .text-glamour-accent { color: var(--glamour-accent); }
+        .bg-glamour-accent { background-color: var(--glamour-accent); }
+        .border-glamour-accent { border-color: var(--glamour-accent); }
+        
+        .glamour-gradient {
+            background: linear-gradient(135deg, var(--glamour-primary) 0%, var(--glamour-secondary) 100%);
+        }
+        
+        .glamour-text-gradient {
+            background: linear-gradient(135deg, var(--glamour-primary) 0%, var(--glamour-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Glamour Theme Typography */
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background-color: var(--glamour-background);
+            color: var(--glamour-text);
+        }
+        
+        .glamour-heading {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+        
+        /* Glamour Animations */
+        .glamour-hover-lift:hover {
+            transform: translateY(-4px);
+            transition: transform 0.3s ease;
+        }
+        
+        .glamour-fade-in {
+            opacity: 0;
+            animation: glamourFadeIn 0.6s ease-out forwards;
+        }
+        
+        @keyframes glamourFadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+        
+        /* Glamour Button Styles */
+        .glamour-btn {
+            background: linear-gradient(135deg, var(--glamour-primary) 0%, var(--glamour-secondary) 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+        }
+        
+        .glamour-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+        
+        /* Glamour Cards */
+        .glamour-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(236, 72, 153, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+    
+    <!-- Additional page-specific styles -->
+    {{#if additionalCSS}}
+    <style>
+        {{{additionalCSS}}}
+    </style>
+    {{/if}}
+</head>
+<body class="bg-glamour-background font-serif">
+    <!-- Navigation -->
+    {{> navigation}}
+    
+    <!-- Main Content -->
+    <main>
+        {{{body}}}
+    </main>
+    
+    <!-- Footer -->
+    {{> footer}}
+    
+    <!-- Scripts -->
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-out-cubic',
+            once: true,
+            offset: 50
+        });
+    </script>
+    
+    <!-- Additional page-specific scripts -->
+    {{#if additionalJS}}
+    <script>
+        {{{additionalJS}}}
+    </script>
+    {{/if}}
+</body>
+</html>

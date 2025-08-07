@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Configuration Management - MuseNest Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .site-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #dee2e6;
+        }
+        .site-card.deployed {
+            border-left-color: #28a745;
+        }
+        .site-card.pending {
+            border-left-color: #ffc107;
+        }
+        .site-card.failed {
+            border-left-color: #dc3545;
+        }
+        .site-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .industry-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+        .config-preview {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .deployment-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-deploy {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-deploy.deploying {
+            pointer-events: none;
+        }
+        .btn-deploy.deploying::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: deploy-shimmer 1.5s infinite;
+        }
+        @keyframes deploy-shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        .json-editor {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            min-height: 200px;
+        }
+        .nav-pills .nav-link {
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+        }
+        .nav-pills .nav-link.active {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+        }
+        .industry-selector {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .server-health {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+        .server-health.online { background-color: #28a745; }
+        .server-health.offline { background-color: #dc3545; }
+        .server-health.maintenance { background-color: #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h3 mb-0">
+                            <i class="fas fa-cogs text-primary me-2"></i>
+                            Site Configuration Management
+                        </h1>
+                        <p class="text-muted mb-0">White-label AI moderation configuration for multiple sites</p>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-outline-info me-2" onclick="pullRemoteConfigs()">
+                            <i class="fas fa-download me-1"></i> Pull Remote Configs
+                        </button>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addSiteModal">
+                            <i class="fas fa-plus me-1"></i> Add Site
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <ul class="nav nav-pills justify-content-center">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="filterSites('all')">
+                            <i class="fas fa-globe me-1"></i> All Sites
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="filterSites('deployed')">
+                            <i class="fas fa-check-circle me-1"></i> Deployed
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="filterSites('pending')">
+                            <i class="fas fa-clock me-1"></i> Pending
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="filterSites('failed')">
+                            <i class="fas fa-exclamation-triangle me-1"></i> Failed
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Sites List -->
+        <div class="row">
+            <div class="col-12">
+                <div id="sitesContainer" class="row">
+                    <!-- Sites will be loaded here -->
+                </div>
+                <div id="noSitesMessage" class="text-center py-5" style="display: none;">
+                    <i class="fas fa-cogs fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No site configurations found</h5>
+                    <p class="text-muted">Add your first site configuration to get started</p>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSiteModal">
+                        <i class="fas fa-plus me-1"></i> Add Site
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Site Modal -->
+    <div class="modal fade" id="addSiteModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Add Site Configuration
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="addSiteForm">
+                    <div class="modal-body">
+                        <!-- Basic Information -->
+                        <div class="industry-selector">
+                            <h6 class="mb-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Basic Information
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="siteName" class="form-label">Site Name *</label>
+                                        <input type="text" class="form-control" id="siteName" name="site_name" required>
+                                        <div class="form-text">Display name for this site</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="siteIdentifier" class="form-label">Site Identifier *</label>
+                                        <input type="text" class="form-control" id="siteIdentifier" name="site_identifier" required>
+                                        <div class="form-text">Unique identifier (alphanumeric, hyphens, underscores)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="siteDomain" class="form-label">Domain</label>
+                                        <input type="text" class="form-control" id="siteDomain" name="site_domain" placeholder="example.com">
+                                        <div class="form-text">Primary domain for this site</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="contactEmail" class="form-label">Contact Email</label>
+                                        <input type="email" class="form-control" id="contactEmail" name="contact_email">
+                                        <div class="form-text">Admin contact for this site</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Server and Industry Selection -->
+                        <div class="industry-selector">
+                            <h6 class="mb-3">
+                                <i class="fas fa-server me-2"></i>
+                                Server & Industry Assignment
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="serverId" class="form-label">AI Server *</label>
+                                        <select class="form-select" id="serverId" name="server_id" required>
+                                            <option value="">Select AI Server...</option>
+                                            <!-- Will be populated dynamically -->
+                                        </select>
+                                        <div class="form-text">AI moderation server for this site</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="industryTemplate" class="form-label">Industry Template *</label>
+                                        <select class="form-select" id="industryTemplate" name="industry_template_id" required>
+                                            <option value="">Select Industry...</option>
+                                            <!-- Will be populated dynamically -->
+                                        </select>
+                                        <div class="form-text">Base moderation rules for this industry</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Webhook Configuration -->
+                        <div class="industry-selector">
+                            <h6 class="mb-3">
+                                <i class="fas fa-webhook me-2"></i>
+                                Webhook Configuration
+                            </h6>
+                            <div class="mb-3">
+                                <label for="webhookUrl" class="form-label">Webhook URL</label>
+                                <input type="url" class="form-control" id="webhookUrl" name="webhook_url" placeholder="https://your-site.com/webhook/moderation">
+                                <div class="form-text">URL to receive moderation results (optional)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success">
+                            <span class="loading-spinner spinner-border spinner-border-sm me-2" style="display: none;"></span>
+                            <span class="btn-text">
+                                <i class="fas fa-plus me-1"></i> Create Site
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Site Configuration Modal -->
+    <div class="modal fade" id="configModal" tabindex="-1">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-cogs me-2"></i>
+                        <span id="configModalTitle">Configure Site</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Configuration Tabs -->
+                        <div class="col-md-3">
+                            <div class="nav flex-column nav-pills" id="configTabs" role="tablist">
+                                <button class="nav-link active" id="basic-tab" data-bs-toggle="pill" data-bs-target="#basic-config" type="button">
+                                    <i class="fas fa-info-circle me-2"></i>Basic Info
+                                </button>
+                                <button class="nav-link" id="nudenet-tab" data-bs-toggle="pill" data-bs-target="#nudenet-config" type="button">
+                                    <i class="fas fa-eye me-2"></i>NudeNet Config
+                                </button>
+                                <button class="nav-link" id="blip-tab" data-bs-toggle="pill" data-bs-target="#blip-config" type="button">
+                                    <i class="fas fa-image me-2"></i>BLIP Config
+                                </button>
+                                <button class="nav-link" id="rules-tab" data-bs-toggle="pill" data-bs-target="#rules-config" type="button">
+                                    <i class="fas fa-gavel me-2"></i>Moderation Rules
+                                </button>
+                                <button class="nav-link" id="intents-tab" data-bs-toggle="pill" data-bs-target="#intents-config" type="button">
+                                    <i class="fas fa-tags me-2"></i>Usage Intents
+                                </button>
+                                <button class="nav-link" id="deployment-tab" data-bs-toggle="pill" data-bs-target="#deployment-info" type="button">
+                                    <i class="fas fa-rocket me-2"></i>Deployment
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Configuration Content -->
+                        <div class="col-md-9">
+                            <div class="tab-content" id="configTabContent">
+                                <!-- Basic Info Tab -->
+                                <div class="tab-pane fade show active" id="basic-config" role="tabpanel">
+                                    <div id="basicConfigContent">
+                                        <!-- Will be populated dynamically -->
+                                    </div>
+                                </div>
+
+                                <!-- NudeNet Config Tab -->
+                                <div class="tab-pane fade" id="nudenet-config" role="tabpanel">
+                                    <h6>NudeNet Detection Configuration</h6>
+                                    <p class="text-muted">Configure body part detection thresholds and sensitivity</p>
+                                    <textarea id="nudenetConfigEditor" class="form-control json-editor" placeholder="NudeNet configuration will load here..."></textarea>
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="resetToTemplate('nudenet')">
+                                            <i class="fas fa-undo me-1"></i> Reset to Template
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="validateJSON('nudenet')">
+                                            <i class="fas fa-check me-1"></i> Validate JSON
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- BLIP Config Tab -->
+                                <div class="tab-pane fade" id="blip-config" role="tabpanel">
+                                    <h6>BLIP Image Analysis Configuration</h6>
+                                    <p class="text-muted">Configure image description and content analysis settings</p>
+                                    <textarea id="blipConfigEditor" class="form-control json-editor" placeholder="BLIP configuration will load here..."></textarea>
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="resetToTemplate('blip')">
+                                            <i class="fas fa-undo me-1"></i> Reset to Template
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="validateJSON('blip')">
+                                            <i class="fas fa-check me-1"></i> Validate JSON
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Moderation Rules Tab -->
+                                <div class="tab-pane fade" id="rules-config" role="tabpanel">
+                                    <h6>Moderation Rules Configuration</h6>
+                                    <p class="text-muted">Configure approval/rejection thresholds and automatic rules</p>
+                                    <textarea id="rulesConfigEditor" class="form-control json-editor" placeholder="Moderation rules will load here..."></textarea>
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="resetToTemplate('rules')">
+                                            <i class="fas fa-undo me-1"></i> Reset to Template
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="validateJSON('rules')">
+                                            <i class="fas fa-check me-1"></i> Validate JSON
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Usage Intents Tab -->
+                                <div class="tab-pane fade" id="intents-config" role="tabpanel">
+                                    <h6>Usage Intents Configuration</h6>
+                                    <p class="text-muted">Configure different moderation standards for different usage contexts</p>
+                                    <textarea id="intentsConfigEditor" class="form-control json-editor" placeholder="Usage intents configuration will load here..."></textarea>
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="resetToTemplate('intents')">
+                                            <i class="fas fa-undo me-1"></i> Reset to Template
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="validateJSON('intents')">
+                                            <i class="fas fa-check me-1"></i> Validate JSON
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Deployment Tab -->
+                                <div class="tab-pane fade" id="deployment-info" role="tabpanel">
+                                    <div id="deploymentContent">
+                                        <!-- Will be populated dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-warning me-2" onclick="saveConfiguration()">
+                        <i class="fas fa-save me-1"></i> Save Configuration
+                    </button>
+                    <button type="button" class="btn btn-success btn-deploy" onclick="deployConfiguration()">
+                        <i class="fas fa-rocket me-1"></i> Deploy & Restart Server
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentSiteId = null;
+        let currentSiteData = null;
+        let sites = [];
+        let servers = [];
+        let industryTemplates = [];
+        let currentFilter = 'all';
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSites();
+            loadServers();
+            loadIndustryTemplates();
+        });
+
+        // Add Site Form Handler
+        document.getElementById('addSiteForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const spinner = submitBtn.querySelector('.loading-spinner');
+            spinner.style.display = 'inline-block';
+            
+            try {
+                const formData = new FormData(this);
+                const siteData = Object.fromEntries(formData.entries());
+                
+                const response = await fetch('/api/site-configuration/sites', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(siteData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('addSiteModal')).hide();
+                    this.reset();
+                    loadSites();
+                    alert('Site configuration created successfully!');
+                } else {
+                    throw new Error(result.error || 'Failed to create site');
+                }
+                
+            } catch (error) {
+                console.error('Error creating site:', error);
+                alert('Error creating site: ' + error.message);
+            } finally {
+                spinner.style.display = 'none';
+            }
+        });
+
+        // Load all sites
+        async function loadSites() {
+            try {
+                const response = await fetch('/api/site-configuration/sites');
+                const result = await response.json();
+                
+                if (result.success) {
+                    sites = result.sites;
+                    renderSites();
+                } else {
+                    throw new Error(result.error || 'Failed to load sites');
+                }
+                
+            } catch (error) {
+                console.error('Error loading sites:', error);
+            }
+        }
+
+        // Load servers for dropdown
+        async function loadServers() {
+            try {
+                const response = await fetch('/api/ai-server-management/servers');
+                const result = await response.json();
+                
+                if (result.success) {
+                    servers = result.servers;
+                    populateServerDropdown();
+                }
+            } catch (error) {
+                console.error('Error loading servers:', error);
+            }
+        }
+
+        // Load industry templates for dropdown
+        async function loadIndustryTemplates() {
+            try {
+                const response = await fetch('/api/ai-server-management/industry-templates');
+                const result = await response.json();
+                
+                if (result.success) {
+                    industryTemplates = result.templates;
+                    populateIndustryDropdown();
+                }
+            } catch (error) {
+                console.error('Error loading industry templates:', error);
+            }
+        }
+
+        // Populate server dropdown
+        function populateServerDropdown() {
+            const select = document.getElementById('serverId');
+            select.innerHTML = '<option value="">Select AI Server...</option>';
+            
+            servers.forEach(server => {
+                const option = document.createElement('option');
+                option.value = server.id;
+                option.textContent = `${server.name} (${server.ip_address}:${server.port})`;
+                if (server.status !== 'active') {
+                    option.textContent += ' - OFFLINE';
+                    option.disabled = true;
+                }
+                select.appendChild(option);
+            });
+        }
+
+        // Populate industry dropdown
+        function populateIndustryDropdown() {
+            const select = document.getElementById('industryTemplate');
+            select.innerHTML = '<option value="">Select Industry...</option>';
+            
+            industryTemplates.forEach(template => {
+                const option = document.createElement('option');
+                option.value = template.id;
+                option.textContent = template.display_name;
+                select.appendChild(option);
+            });
+        }
+
+        // Filter sites
+        function filterSites(filter) {
+            currentFilter = filter;
+            
+            // Update active tab
+            document.querySelectorAll('.nav-pills .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            renderSites();
+        }
+
+        // Render sites
+        function renderSites() {
+            const container = document.getElementById('sitesContainer');
+            const noSitesMsg = document.getElementById('noSitesMessage');
+            
+            let filteredSites = sites;
+            if (currentFilter !== 'all') {
+                filteredSites = sites.filter(site => site.deployment_status === currentFilter);
+            }
+            
+            if (filteredSites.length === 0) {
+                container.style.display = 'none';
+                noSitesMsg.style.display = 'block';
+                return;
+            }
+            
+            container.style.display = 'block';
+            noSitesMsg.style.display = 'none';
+            
+            container.innerHTML = filteredSites.map(site => `
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card site-card ${site.deployment_status || 'pending'}" data-site-id="${site.id}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="card-title mb-0">${site.site_name}</h6>
+                                <span class="badge industry-badge ${getIndustryClass(site.industry_type)}">${site.industry_name}</span>
+                            </div>
+                            
+                            <p class="card-text text-muted small mb-2">
+                                <i class="fas fa-globe me-1"></i> ${site.site_domain || site.site_identifier}
+                            </p>
+                            
+                            <div class="small mb-2">
+                                <div>
+                                    <span class="server-health ${getServerStatus(site.server_status)}"></span>
+                                    ${site.server_name} (${site.ip_address}:${site.port})
+                                </div>
+                                <div class="deployment-status mt-1">
+                                    <i class="fas fa-${getDeploymentIcon(site.deployment_status)} me-1"></i>
+                                    <span class="badge ${getDeploymentClass(site.deployment_status)}">${site.deployment_status || 'pending'}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    ${site.last_deployed_at ? 'Deployed: ' + formatTime(site.last_deployed_at) : 'Never deployed'}
+                                </small>
+                                
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-sm btn-outline-primary" 
+                                            onclick="configureSite(${site.id})" 
+                                            title="Configure">
+                                        <i class="fas fa-cogs"></i>
+                                    </button>
+                                    
+                                    <button class="btn btn-sm btn-outline-success btn-deploy" 
+                                            onclick="quickDeploy(${site.id})" 
+                                            title="Deploy">
+                                        <i class="fas fa-rocket"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Configure site
+        async function configureSite(siteId) {
+            try {
+                currentSiteId = siteId;
+                
+                // Load site details
+                const response = await fetch(`/api/site-configuration/sites/${siteId}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentSiteData = result.site;
+                    populateConfigurationModal();
+                    new bootstrap.Modal(document.getElementById('configModal')).show();
+                } else {
+                    throw new Error(result.error || 'Failed to load site configuration');
+                }
+                
+            } catch (error) {
+                console.error('Error loading site configuration:', error);
+                alert('Error loading site configuration: ' + error.message);
+            }
+        }
+
+        // Populate configuration modal
+        function populateConfigurationModal() {
+            document.getElementById('configModalTitle').textContent = `Configure ${currentSiteData.site_name}`;
+            
+            // Basic info tab
+            document.getElementById('basicConfigContent').innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Site Information</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Name:</strong></td><td>${currentSiteData.site_name}</td></tr>
+                            <tr><td><strong>Identifier:</strong></td><td>${currentSiteData.site_identifier}</td></tr>
+                            <tr><td><strong>Domain:</strong></td><td>${currentSiteData.site_domain || 'Not set'}</td></tr>
+                            <tr><td><strong>Industry:</strong></td><td>${currentSiteData.industry_name}</td></tr>
+                            <tr><td><strong>Server:</strong></td><td>${currentSiteData.server_name}</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Configuration Status</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Version:</strong></td><td>${currentSiteData.config_version}</td></tr>
+                            <tr><td><strong>Status:</strong></td><td><span class="badge ${getDeploymentClass(currentSiteData.deployment_status)}">${currentSiteData.deployment_status}</span></td></tr>
+                            <tr><td><strong>Last Deployed:</strong></td><td>${currentSiteData.last_deployed_at ? formatTime(currentSiteData.last_deployed_at) : 'Never'}</td></tr>
+                            <tr><td><strong>Contact:</strong></td><td>${currentSiteData.contact_email || 'Not set'}</td></tr>
+                        </table>
+                    </div>
+                </div>
+            `;
+            
+            // Populate configuration editors
+            populateConfigEditor('nudenet', currentSiteData.custom_nudenet_config, currentSiteData.template_nudenet_config);
+            populateConfigEditor('blip', currentSiteData.custom_blip_config, currentSiteData.template_blip_config);
+            populateConfigEditor('rules', currentSiteData.custom_moderation_rules, currentSiteData.template_moderation_rules);
+            populateConfigEditor('intents', currentSiteData.custom_usage_intents, currentSiteData.template_usage_intents);
+            
+            // Deployment info
+            loadDeploymentInfo();
+        }
+
+        // Populate configuration editor
+        function populateConfigEditor(type, customConfig, templateConfig) {
+            const editor = document.getElementById(`${type}ConfigEditor`);
+            
+            let config;
+            if (customConfig) {
+                // Custom config might be a string or object
+                config = typeof customConfig === 'string' ? JSON.parse(customConfig) : customConfig;
+            } else {
+                // Template config might be a string or object
+                config = typeof templateConfig === 'string' ? JSON.parse(templateConfig) : templateConfig;
+            }
+            
+            editor.value = JSON.stringify(config, null, 2);
+        }
+
+        // Load deployment information
+        async function loadDeploymentInfo() {
+            try {
+                const response = await fetch(`/api/site-configuration/sites/${currentSiteId}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const deploymentHistory = result.deployment_history || [];
+                    
+                    document.getElementById('deploymentContent').innerHTML = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Current Status</h6>
+                                <div class="alert ${getDeploymentAlertClass(currentSiteData.deployment_status)}">
+                                    <i class="fas fa-${getDeploymentIcon(currentSiteData.deployment_status)} me-2"></i>
+                                    <strong>Status:</strong> ${currentSiteData.deployment_status || 'pending'}
+                                    ${currentSiteData.deployment_error ? '<br><small>' + currentSiteData.deployment_error + '</small>' : ''}
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-success btn-deploy" onclick="deployConfiguration('full')">
+                                        <i class="fas fa-rocket me-1"></i> Deploy Full Configuration
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="deployConfiguration('nudenet_only')">
+                                        <i class="fas fa-eye me-1"></i> Deploy NudeNet Only
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="deployConfiguration('blip_only')">
+                                        <i class="fas fa-image me-1"></i> Deploy BLIP Only
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Deployment History</h6>
+                                <div class="list-group" style="max-height: 300px; overflow-y: auto;">
+                                    ${deploymentHistory.map(deployment => `
+                                        <div class="list-group-item">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="badge ${getDeploymentClass(deployment.deployment_status)}">${deployment.deployment_status}</span>
+                                                <small>${formatTime(deployment.started_at)}</small>
+                                            </div>
+                                            <small class="text-muted">${deployment.deployment_type} deployment</small>
+                                            ${deployment.error_message ? `<br><small class="text-danger">${deployment.error_message}</small>` : ''}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading deployment info:', error);
+            }
+        }
+
+        // Save configuration
+        async function saveConfiguration() {
+            try {
+                const configData = {
+                    custom_nudenet_config: JSON.parse(document.getElementById('nudenetConfigEditor').value),
+                    custom_blip_config: JSON.parse(document.getElementById('blipConfigEditor').value),
+                    custom_moderation_rules: JSON.parse(document.getElementById('rulesConfigEditor').value),
+                    custom_usage_intents: JSON.parse(document.getElementById('intentsConfigEditor').value)
+                };
+                
+                const response = await fetch(`/api/site-configuration/sites/${currentSiteId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(configData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Configuration saved successfully!');
+                    loadSites(); // Refresh sites list
+                } else {
+                    throw new Error(result.error || 'Failed to save configuration');
+                }
+                
+            } catch (error) {
+                console.error('Error saving configuration:', error);
+                alert('Error saving configuration: ' + error.message);
+            }
+        }
+
+        // Deploy configuration
+        async function deployConfiguration(deploymentType = 'full') {
+            if (!confirm(`Deploy ${deploymentType} configuration to the AI server?\\n\\nThis will restart the server and may temporarily interrupt service.`)) {
+                return;
+            }
+            
+            try {
+                // First save configuration
+                await saveConfiguration();
+                
+                // Then deploy
+                const deployBtn = document.querySelector('.btn-deploy');
+                deployBtn.classList.add('deploying');
+                
+                const response = await fetch(`/api/site-configuration/sites/${currentSiteId}/deploy`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        deployment_type: deploymentType,
+                        restart_server: true
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`Configuration deployed successfully!\\n\\nDeployment ID: ${result.deployment_id}`);
+                    loadDeploymentInfo(); // Refresh deployment info
+                    loadSites(); // Refresh sites list
+                } else {
+                    throw new Error(result.error || 'Deployment failed');
+                }
+                
+            } catch (error) {
+                console.error('Error deploying configuration:', error);
+                alert('Error deploying configuration: ' + error.message);
+            } finally {
+                document.querySelector('.btn-deploy').classList.remove('deploying');
+            }
+        }
+
+        // Quick deploy from site card
+        async function quickDeploy(siteId) {
+            if (!confirm('Deploy current configuration to the AI server?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/site-configuration/sites/${siteId}/deploy`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        deployment_type: 'full',
+                        restart_server: true
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Configuration deployed successfully!');
+                    loadSites();
+                } else {
+                    throw new Error(result.error || 'Deployment failed');
+                }
+                
+            } catch (error) {
+                console.error('Error deploying:', error);
+                alert('Error deploying: ' + error.message);
+            }
+        }
+
+        // Reset configuration to template
+        function resetToTemplate(type) {
+            if (!confirm(`Reset ${type} configuration to industry template defaults?`)) {
+                return;
+            }
+            
+            const templateConfig = currentSiteData[`template_${type}_config`];
+            const editor = document.getElementById(`${type}ConfigEditor`);
+            
+            // Handle both string and object formats
+            const config = typeof templateConfig === 'string' ? JSON.parse(templateConfig) : templateConfig;
+            editor.value = JSON.stringify(config, null, 2);
+        }
+
+        // Validate JSON
+        function validateJSON(type) {
+            try {
+                const editor = document.getElementById(`${type}ConfigEditor`);
+                JSON.parse(editor.value);
+                alert('JSON is valid!');
+            } catch (error) {
+                alert('Invalid JSON: ' + error.message);
+            }
+        }
+
+        // Pull remote configurations
+        async function pullRemoteConfigs() {
+            if (!confirm('Pull current configurations from all remote AI servers?\\n\\nThis will show you what configurations are currently active.')) {
+                return;
+            }
+            
+            try {
+                const activeServers = servers.filter(s => s.status === 'active');
+                
+                for (const server of activeServers) {
+                    try {
+                        const response = await fetch(`/api/site-configuration/remote-config/${server.id}`);
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            console.log(`Remote config for ${server.name}:`, result.remote_config);
+                        }
+                    } catch (error) {
+                        console.error(`Failed to pull config from ${server.name}:`, error);
+                    }
+                }
+                
+                alert('Remote configuration pull completed. Check console for details.');
+                
+            } catch (error) {
+                console.error('Error pulling remote configs:', error);
+                alert('Error pulling remote configs: ' + error.message);
+            }
+        }
+
+        // Utility functions
+        function getIndustryClass(industryType) {
+            switch (industryType) {
+                case 'adult_entertainment': return 'bg-primary';
+                case 'swingers_lifestyle': return 'bg-info';
+                case 'escort_services': return 'bg-warning';
+                case 'conservative': return 'bg-success';
+                default: return 'bg-secondary';
+            }
+        }
+
+        function getServerStatus(status) {
+            switch (status) {
+                case 'active': return 'online';
+                case 'maintenance': return 'maintenance';
+                default: return 'offline';
+            }
+        }
+
+        function getDeploymentIcon(status) {
+            switch (status) {
+                case 'deployed': return 'check-circle';
+                case 'pending': return 'clock';
+                case 'failed': return 'exclamation-triangle';
+                default: return 'question-circle';
+            }
+        }
+
+        function getDeploymentClass(status) {
+            switch (status) {
+                case 'deployed': return 'bg-success';
+                case 'pending': return 'bg-warning';
+                case 'failed': return 'bg-danger';
+                default: return 'bg-secondary';
+            }
+        }
+
+        function getDeploymentAlertClass(status) {
+            switch (status) {
+                case 'deployed': return 'alert-success';
+                case 'pending': return 'alert-warning';
+                case 'failed': return 'alert-danger';
+                default: return 'alert-secondary';
+            }
+        }
+
+        function formatTime(dateString) {
+            if (!dateString) return 'Never';
+            return new Date(dateString).toLocaleString();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Tier Management - MuseNest Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-lg border-b-2 border-blue-500">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-6">
+                    <div class="flex items-center">
+                        <i class="fas fa-crown text-3xl text-blue-600 mr-3"></i>
+                        <h1 class="text-3xl font-bold text-gray-900">Subscription Tier Management</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-gray-500">Business Model Control Center</span>
+                        <a href="site-configuration-enhanced.html" class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg text-sm font-medium">
+                            <i class="fas fa-arrow-left mr-2"></i>Back to AI Config
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Revenue Analytics Dashboard -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-green-100 rounded-lg">
+                            <i class="fas fa-dollar-sign text-green-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Monthly Revenue</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="monthly-revenue">$0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-blue-100 rounded-lg">
+                            <i class="fas fa-users text-blue-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Active Subscribers</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="active-subscribers">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-purple-100 rounded-lg">
+                            <i class="fas fa-chart-line text-purple-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Conversion Rate</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="conversion-rate">0%</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-yellow-100 rounded-lg">
+                            <i class="fas fa-rocket text-yellow-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">AI Requests/Month</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="ai-requests">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subscription Tiers Management -->
+            <div class="bg-white rounded-lg shadow mb-8">
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                    <h2 class="text-xl font-semibold text-gray-900">
+                        <i class="fas fa-layer-group mr-2"></i>Subscription Tiers
+                    </h2>
+                    <button onclick="window.createNewTier()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                        <i class="fas fa-plus mr-2"></i>Create New Tier
+                    </button>
+                </div>
+                <div class="p-6">
+                    <div id="subscription-tiers-container" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Tiers will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usage Analytics -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            <i class="fas fa-chart-pie mr-2"></i>Revenue by Tier
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <canvas id="revenue-chart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            <i class="fas fa-chart-bar mr-2"></i>AI Usage Trends
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <canvas id="usage-chart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-confirmation-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>Confirm Deletion
+                    </h3>
+                </div>
+                <div class="p-6">
+                    <p class="text-gray-700 mb-4" id="delete-confirmation-message">
+                        Are you sure you want to delete this subscription tier?
+                    </p>
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-yellow-500 mt-0.5 mr-2"></i>
+                            <div class="text-sm text-yellow-800">
+                                <p class="font-medium mb-1">Important:</p>
+                                <p>This action cannot be undone. The tier will be permanently deactivated and removed from new subscriptions.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="delete-error-message" class="hidden bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                        <div class="flex items-start">
+                            <i class="fas fa-exclamation-circle text-red-500 mt-0.5 mr-2"></i>
+                            <div class="text-sm text-red-800" id="delete-error-text">
+                                <!-- Error message will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+                    <button type="button" onclick="window.closeDeleteModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="button" onclick="window.deleteTier()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700" id="confirm-delete-btn">
+                        <i class="fas fa-trash mr-2"></i>Delete Tier
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Tier Modal -->
+    <div id="edit-tier-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-screen overflow-y-auto">
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-900" id="modal-title">Edit Subscription Tier</h3>
+                    <button onclick="window.closeEditModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="tier-form" class="p-6">
+                    <!-- Hidden field to track original tier name for updates -->
+                    <input type="hidden" id="original-tier-name" value="">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Basic Information -->
+                        <div class="space-y-4">
+                            <h4 class="text-md font-semibold text-gray-900 mb-3">Basic Information</h4>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tier Name</label>
+                                <input type="text" id="tier-name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
+                                <input type="text" id="display-name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Monthly Price ($)</label>
+                                <input type="number" id="monthly-price" step="0.01" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <textarea id="description" rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- AI Limits -->
+                        <div class="space-y-4">
+                            <h4 class="text-md font-semibold text-gray-900 mb-3">AI Configuration Limits</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Max Sites</label>
+                                    <input type="number" id="max-sites" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                                    <p class="text-xs text-gray-500 mt-1">Use -1 for unlimited</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Monthly Requests</label>
+                                    <input type="number" id="max-monthly-requests" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                                    <p class="text-xs text-gray-500 mt-1">Use -1 for unlimited</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Max BLIP Configs</label>
+                                    <input type="number" id="max-blip-configs" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Max NudeNet Configs</label>
+                                    <input type="number" id="max-nudenet-configs" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Rollback History</label>
+                                    <input type="number" id="rollback-history" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Features -->
+                    <div class="mt-6">
+                        <h4 class="text-md font-semibold text-gray-900 mb-3">Features & Capabilities</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <label class="flex items-center">
+                                <input type="checkbox" id="api-access" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">API Access</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="advanced-ai" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Advanced AI</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="custom-branding" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Custom Branding</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="priority-support" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Priority Support</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="white-label" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">White Label</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="drift-detection" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Drift Detection</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="real-time-monitoring" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Real-time Monitoring</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="resilient-deployment" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Resilient Deployment</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="custom-keywords" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Custom Keywords</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex justify-end space-x-3">
+                        <button type="button" onclick="window.closeEditModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Use window properties to avoid redeclaration errors
+        window.subscriptionTiers = window.subscriptionTiers || [];
+        window.revenueChart = window.revenueChart || null;
+        window.usageChart = window.usageChart || null;
+        window.isEditMode = window.isEditMode || false;
+        window.editingTierName = window.editingTierName || null;
+        
+        // Use these for backward compatibility
+        let subscriptionTiers = window.subscriptionTiers;
+        let revenueChart = window.revenueChart;
+        let usageChart = window.usageChart;
+        let isEditMode = window.isEditMode;
+        let editingTierName = window.editingTierName;
+
+        // Initialize subscription management
+        window.initializeSubscriptionManagement = function() {
+            console.log('Initializing subscription management...');
+            
+            // Load data in proper order
+            window.loadSubscriptionTiers();
+            
+            // Initialize charts first, then load analytics
+            window.initializeCharts();
+            
+            // Load analytics after a brief delay to ensure charts are initialized
+            setTimeout(function() {
+                window.loadAnalytics();
+            }, 500);
+        }
+        
+        // Load dashboard data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            window.initializeSubscriptionManagement();
+        });
+
+        // Also initialize immediately for dynamic loading (Business Manager)
+        // Use setTimeout to ensure DOM elements are ready
+        setTimeout(function() {
+            if (document.getElementById('subscription-tiers-container')) {
+                window.initializeSubscriptionManagement();
+            }
+        }, 100);
+
+        window.loadSubscriptionTiers = async function() {
+            try {
+                const response = await fetch('/api/site-configuration/subscription/tiers');
+                const result = await response.json();
+                
+                if (result.success) {
+                    window.subscriptionTiers = result.tiers;
+                    subscriptionTiers = window.subscriptionTiers;
+                    window.renderSubscriptionTiers();
+                } else {
+                    console.error('Failed to load subscription tiers:', result.error);
+                }
+            } catch (error) {
+                console.error('Error loading subscription tiers:', error);
+            }
+        }
+
+        window.renderSubscriptionTiers = function() {
+            const container = document.getElementById('subscription-tiers-container');
+            container.innerHTML = '';
+
+            subscriptionTiers.forEach(tier => {
+                const tierElement = window.createTierCard(tier);
+                container.appendChild(tierElement);
+            });
+        }
+
+        window.createTierCard = function(tier) {
+            const div = document.createElement('div');
+            div.className = 'border rounded-lg p-6 hover:shadow-lg transition-shadow';
+            
+            // Determine tier color scheme
+            const colorScheme = window.getTierColorScheme(tier.tier_name);
+            div.className += ` ${colorScheme.border} ${colorScheme.bg}`;
+
+            div.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">${tier.display_name}</h3>
+                        <p class="text-sm text-gray-600">${tier.description}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-2xl font-bold ${colorScheme.text}">$${tier.monthly_price}</p>
+                        <p class="text-sm text-gray-600">/month</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-2 mb-4">
+                    <div class="flex justify-between text-sm">
+                        <span>Max Sites:</span>
+                        <span class="font-medium">${tier.max_sites === -1 ? 'Unlimited' : tier.max_sites}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span>Monthly Requests:</span>
+                        <span class="font-medium">${tier.max_monthly_requests === -1 ? 'Unlimited' : tier.max_monthly_requests.toLocaleString()}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span>BLIP Configs:</span>
+                        <span class="font-medium">${tier.ai_limits.max_blip_configs === -1 ? 'Unlimited' : tier.ai_limits.max_blip_configs}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span>Priority Support:</span>
+                        <span class="font-medium">${tier.priority_support ? 'Yes' : 'No'}</span>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button onclick="window.editTier('${tier.tier_name}')" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">
+                        <i class="fas fa-edit mr-1"></i> Edit
+                    </button>
+                    <button onclick="window.duplicateTier('${tier.tier_name}')" class="flex-1 bg-gray-600 text-white px-4 py-2 rounded text-sm hover:bg-gray-700">
+                        <i class="fas fa-copy mr-1"></i> Duplicate
+                    </button>
+                    <button onclick="window.confirmDeleteTier('${tier.tier_name}', '${tier.display_name}')" class="flex-1 bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700">
+                        <i class="fas fa-trash mr-1"></i> Delete
+                    </button>
+                </div>
+            `;
+
+            return div;
+        }
+
+        window.getTierColorScheme = function(tierName) {
+            switch (tierName) {
+                case 'basic':
+                    return {
+                        border: 'border-green-200',
+                        bg: 'bg-green-50',
+                        text: 'text-green-600'
+                    };
+                case 'premium':
+                    return {
+                        border: 'border-blue-200',
+                        bg: 'bg-blue-50',
+                        text: 'text-blue-600'
+                    };
+                case 'enterprise':
+                    return {
+                        border: 'border-purple-200',
+                        bg: 'bg-purple-50',
+                        text: 'text-purple-600'
+                    };
+                default:
+                    return {
+                        border: 'border-gray-200',
+                        bg: 'bg-gray-50',
+                        text: 'text-gray-600'
+                    };
+            }
+        }
+
+        window.loadAnalytics = async function() {
+            try {
+                const response = await fetch('/api/site-configuration/subscription/analytics');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const analytics = result.analytics;
+                    document.getElementById('monthly-revenue').textContent = '$' + analytics.monthly_revenue.toFixed(2);
+                    document.getElementById('active-subscribers').textContent = analytics.active_subscribers.toString();
+                    document.getElementById('conversion-rate').textContent = analytics.conversion_rate + '%';
+                    document.getElementById('ai-requests').textContent = analytics.total_ai_requests.toLocaleString();
+                    
+                    // Update charts with real data
+                    window.updateChartsWithRealData(analytics);
+                } else {
+                    console.error('Failed to load analytics:', result.error);
+                    // Fall back to mock data
+                    document.getElementById('monthly-revenue').textContent = '$0.00';
+                    document.getElementById('active-subscribers').textContent = '0';
+                    document.getElementById('conversion-rate').textContent = '0%';
+                    document.getElementById('ai-requests').textContent = '0';
+                }
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+            }
+        }
+
+        window.updateChartsWithRealData = function(analytics) {
+            // Only update charts if they exist
+            if (!window.revenueChart || !window.usageChart) {
+                console.warn('Charts not initialized yet, skipping data update');
+                return;
+            }
+            
+            // Update revenue chart with real tier data
+            const tierNames = analytics.revenue_by_tier.map(tier => tier.display_name);
+            const tierRevenues = analytics.revenue_by_tier.map(tier => parseFloat(tier.tier_revenue));
+            
+            window.revenueChart.data.labels = tierNames;
+            window.revenueChart.data.datasets[0].data = tierRevenues;
+            window.revenueChart.update();
+
+            // Update usage chart with real usage data
+            if (analytics.usage_breakdown && analytics.usage_breakdown.length > 0) {
+                const usageTypes = analytics.usage_breakdown.map(usage => usage.usage_type.replace('_', ' '));
+                const usageCounts = analytics.usage_breakdown.map(usage => parseInt(usage.total_count));
+                
+                window.usageChart.data.labels = usageTypes;
+                window.usageChart.data.datasets[0].data = usageCounts;
+                window.usageChart.data.datasets[0].label = 'Requests Count';
+                window.usageChart.options.scales.y.title = { display: true, text: 'Number of Requests' };
+                window.usageChart.update();
+            }
+        }
+
+        window.initializeCharts = function() {
+            // Check if Chart.js is available
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js library not found. Loading from CDN...');
+                // Load Chart.js dynamically with specific version
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js';
+                script.onload = function() {
+                    console.log('Chart.js loaded successfully');
+                    window.initializeCharts(); // Retry initialization
+                };
+                script.onerror = function() {
+                    console.error('Failed to load Chart.js from CDN');
+                };
+                document.head.appendChild(script);
+                return;
+            }
+            
+            // Skip if charts already exist
+            if (window.revenueChart && window.usageChart) {
+                console.log('Charts already initialized');
+                return;
+            }
+            
+            try {
+                // Revenue Chart
+                const revenueCtx = document.getElementById('revenue-chart');
+                if (revenueCtx) {
+                    window.revenueChart = new Chart(revenueCtx.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Basic', 'Premium', 'Enterprise'],
+                            datasets: [{
+                                data: [35, 45, 20],
+                                backgroundColor: ['#10B981', '#3B82F6', '#8B5CF6'],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }
+                    });
+                    revenueChart = window.revenueChart;
+                }
+
+                // Usage Chart
+                const usageCtx = document.getElementById('usage-chart');
+                if (usageCtx) {
+                    window.usageChart = new Chart(usageCtx.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                            datasets: [{
+                                label: 'AI Requests (K)',
+                                data: [85, 92, 108, 125, 134, 142],
+                                borderColor: '#3B82F6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                    usageChart = window.usageChart;
+                }
+                
+                console.log('Charts initialized successfully');
+            } catch (error) {
+                console.error('Error initializing charts:', error);
+            }
+        }
+
+        window.editTier = function(tierName) {
+            const tier = subscriptionTiers.find(t => t.tier_name === tierName);
+            if (!tier) return;
+
+            // Set edit mode
+            window.isEditMode = true;  
+            window.editingTierName = tierName;
+            isEditMode = true;
+            editingTierName = tierName;
+
+            // Populate form
+            document.getElementById('original-tier-name').value = tierName; // Store original for updates
+            document.getElementById('tier-name').value = tier.tier_name;
+            document.getElementById('display-name').value = tier.display_name;
+            document.getElementById('monthly-price').value = tier.monthly_price;
+            document.getElementById('description').value = tier.description;
+            document.getElementById('max-sites').value = tier.max_sites;
+            document.getElementById('max-monthly-requests').value = tier.max_monthly_requests;
+            document.getElementById('max-blip-configs').value = tier.ai_limits.max_blip_configs;
+            document.getElementById('max-nudenet-configs').value = tier.ai_limits.max_nudenet_configs;
+            document.getElementById('rollback-history').value = tier.ai_limits.rollback_history;
+
+            // Set checkboxes
+            document.getElementById('api-access').checked = tier.features.api_access || false;
+            document.getElementById('advanced-ai').checked = tier.features.advanced_ai || false;
+            document.getElementById('custom-branding').checked = tier.features.custom_branding || false;
+            document.getElementById('priority-support').checked = tier.features.priority_support || false;
+            document.getElementById('white-label').checked = tier.features.white_label || false;
+            document.getElementById('drift-detection').checked = tier.ai_limits.drift_detection || false;
+            document.getElementById('real-time-monitoring').checked = tier.ai_limits.real_time_monitoring || false;
+            document.getElementById('resilient-deployment').checked = tier.ai_limits.resilient_deployment || false;
+            document.getElementById('custom-keywords').checked = tier.ai_limits.custom_keywords || false;
+
+            document.getElementById('modal-title').textContent = `Edit ${tier.display_name}`;
+            document.getElementById('edit-tier-modal').classList.remove('hidden');
+        }
+
+        window.createNewTier = function() {
+            window.isEditMode = false;
+            window.editingTierName = null;
+            isEditMode = false;
+            editingTierName = null;
+            document.getElementById('tier-form').reset();
+            document.getElementById('original-tier-name').value = ''; // Clear hidden field
+            document.getElementById('modal-title').textContent = 'Create New Subscription Tier';
+            document.getElementById('edit-tier-modal').classList.remove('hidden');
+        }
+
+        window.duplicateTier = function(tierName) {
+            const tier = subscriptionTiers.find(t => t.tier_name === tierName);
+            if (!tier) return;
+
+            // Copy tier data but clear the name for user to set
+            window.editTier(tierName);
+            document.getElementById('tier-name').value = '';
+            document.getElementById('display-name').value = tier.display_name + ' Copy';
+            document.getElementById('modal-title').textContent = 'Duplicate Subscription Tier';
+        }
+
+        window.closeEditModal = function() {
+            document.getElementById('edit-tier-modal').classList.add('hidden');
+            // Reset edit mode
+            isEditMode = false;
+            editingTierName = null;
+        }
+
+        // Delete tier functionality
+        window.confirmDeleteTier = function(tierName, displayName) {
+            window.tierToDelete = tierName;
+            document.getElementById('delete-confirmation-message').textContent = 
+                `Are you sure you want to delete "${displayName}"?`;
+            
+            // Hide any previous error messages
+            document.getElementById('delete-error-message').classList.add('hidden');
+            
+            // Show the modal
+            document.getElementById('delete-confirmation-modal').classList.remove('hidden');
+        }
+
+        window.closeDeleteModal = function() {
+            document.getElementById('delete-confirmation-modal').classList.add('hidden');
+            window.tierToDelete = null;
+            // Hide error message
+            document.getElementById('delete-error-message').classList.add('hidden');
+        }
+
+        window.deleteTier = async function() {
+            if (!window.tierToDelete) return;
+
+            const deleteBtn = document.getElementById('confirm-delete-btn');
+            const originalText = deleteBtn.innerHTML;
+            
+            try {
+                // Show loading state
+                deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Deleting...';
+                deleteBtn.disabled = true;
+
+                const response = await fetch(`/api/site-configuration/subscription/tiers/${encodeURIComponent(window.tierToDelete)}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Subscription tier deleted successfully!');
+                    window.closeDeleteModal();
+                    window.loadSubscriptionTiers(); // Reload the tiers
+                } else {
+                    // Show error in modal instead of closing it
+                    document.getElementById('delete-error-text').textContent = result.error;
+                    document.getElementById('delete-error-message').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error deleting tier:', error);
+                document.getElementById('delete-error-text').textContent = 'An unexpected error occurred while deleting the tier.';
+                document.getElementById('delete-error-message').classList.remove('hidden');
+            } finally {
+                // Restore button state
+                deleteBtn.innerHTML = originalText;
+                deleteBtn.disabled = false;
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('tier-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const tierData = {
+                tier_name: document.getElementById('tier-name').value,
+                display_name: document.getElementById('display-name').value,
+                monthly_price: parseFloat(document.getElementById('monthly-price').value),
+                description: document.getElementById('description').value,
+                max_sites: parseInt(document.getElementById('max-sites').value),
+                max_monthly_requests: parseInt(document.getElementById('max-monthly-requests').value),
+                features: {
+                    api_access: document.getElementById('api-access').checked,
+                    advanced_ai: document.getElementById('advanced-ai').checked,
+                    custom_branding: document.getElementById('custom-branding').checked,
+                    priority_support: document.getElementById('priority-support').checked,
+                    white_label: document.getElementById('white-label').checked,
+                    basic_analytics: true,
+                    email_support: true,
+                    basic_moderation: true,
+                    standard_templates: true
+                },
+                ai_limits: {
+                    max_blip_configs: parseInt(document.getElementById('max-blip-configs').value),
+                    max_nudenet_configs: parseInt(document.getElementById('max-nudenet-configs').value),
+                    rollback_history: parseInt(document.getElementById('rollback-history').value),
+                    drift_detection: document.getElementById('drift-detection').checked,
+                    real_time_monitoring: document.getElementById('real-time-monitoring').checked,
+                    resilient_deployment: document.getElementById('resilient-deployment').checked,
+                    custom_keywords: document.getElementById('custom-keywords').checked,
+                    advanced_thresholds: document.getElementById('advanced-ai').checked
+                },
+                priority_support: document.getElementById('priority-support').checked ? 1 : 0,
+                whitelabel_available: document.getElementById('white-label').checked ? 1 : 0,
+                is_active: 1
+            };
+
+            // Add original tier name for updates
+            if (isEditMode) {
+                tierData.original_tier_name = document.getElementById('original-tier-name').value;
+                console.log('Edit mode - Original tier name:', tierData.original_tier_name);
+            }
+
+            console.log('Submitting tier data:', tierData);
+
+            try {
+                // Always use POST method - the backend handles create vs update based on original_tier_name
+                const response = await fetch('/api/site-configuration/subscription/tiers', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(tierData)
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(isEditMode ? 'Subscription tier updated successfully!' : 'Subscription tier created successfully!');
+                    window.closeEditModal();
+                    window.loadSubscriptionTiers(); // Reload the tiers
+                } else {
+                    alert('Error saving tier: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error saving tier:', error);
+                alert('Error saving tier: ' + error.message);
+            }
+        });
+
+        // Close modals when clicking outside
+        document.getElementById('edit-tier-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                window.closeEditModal();
+            }
+        });
+
+        document.getElementById('delete-confirmation-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                window.closeDeleteModal();
+            }
+        });
+    </script>
+</body>
+</html>

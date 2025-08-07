@@ -1,0 +1,255 @@
+<!-- Gallery Hero Section -->
+<section class="modern-hero min-h-96 flex items-center justify-center text-white pt-16" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <div class="modern-badge mb-4">Gallery</div>
+        <h1 class="text-5xl md:text-6xl font-bold mb-6 modern-heading">
+            Portfolio
+        </h1>
+        <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto font-light">
+            {{content.galleryIntro}}
+        </p>
+    </div>
+</section>
+
+<!-- Gallery Categories -->
+{{#if galleryCategories}}
+<section class="py-12 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <div class="inline-flex bg-white rounded-xl p-1 shadow-sm border border-modern-border">
+                <button class="gallery-filter active modern-btn text-sm px-6 py-2" data-category="all">
+                    All
+                </button>
+                {{#each galleryCategories}}
+                <button class="gallery-filter px-6 py-2 rounded-lg text-sm font-medium transition-all hover:bg-gray-100" data-category="{{this.slug}}">
+                    {{this.name}}
+                </button>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Gallery Grid -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{#if galleryImages}}
+        
+        <!-- Gallery Grid -->
+        <div class="modern-grid modern-grid-4" id="modernGalleryGrid">
+            {{#each galleryImages}}
+            <div class="gallery-item relative group overflow-hidden rounded-2xl modern-card" 
+                 data-category="{{this.category}}" 
+                 data-aos="zoom-in" 
+                 data-aos-delay="{{@index}}0">
+                <img src="{{this.thumbnail}}" 
+                     alt="{{this.caption}}" 
+                     class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105">
+                
+                <!-- Modern Overlay -->
+                <div class="absolute inset-0 bg-modern-primary opacity-0 group-hover:opacity-90 transition-opacity duration-300 flex items-center justify-center">
+                    <div class="text-center text-white">
+                        <button class="modern-btn bg-white text-modern-primary mb-2" 
+                                onclick="openModernLightbox('{{this.fullSize}}', '{{this.caption}}')">
+                            <i class="fas fa-expand mr-2"></i>
+                            View
+                        </button>
+                        {{#if this.caption}}
+                        <p class="text-sm font-medium">{{this.caption}}</p>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        
+        <!-- Load More Button -->
+        {{#if content.hasMoreImages}}
+        <div class="text-center mt-12" data-aos="fade-up">
+            <button id="modernLoadMoreBtn" class="modern-btn-outline">
+                <i class="fas fa-plus mr-2"></i>
+                Load More
+            </button>
+        </div>
+        {{/if}}
+        
+        {{else}}
+        <!-- Empty Gallery State -->
+        <div class="text-center py-20">
+            <div class="w-32 h-32 mx-auto mb-6 bg-modern-primary rounded-2xl flex items-center justify-center">
+                <i class="fas fa-camera text-4xl text-white"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-4 modern-heading">Portfolio Coming Soon</h3>
+            <p class="text-modern-muted mb-6 max-w-md mx-auto">
+                Professional content and portfolio pieces will be showcased here.
+            </p>
+            <a href="/{{modelSlug}}/contact" class="modern-btn">
+                <i class="fas fa-envelope mr-2"></i>
+                Get in Touch
+            </a>
+        </div>
+        {{/if}}
+    </div>
+</section>
+
+<!-- Gallery Stats -->
+{{#if galleryStats}}
+<section class="py-20 bg-modern-primary text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-4 modern-heading">
+                Portfolio Stats
+            </h2>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {{#if galleryStats.totalPhotos}}
+            <div class="text-center" data-aos="fade-up" data-aos-delay="0">
+                <div class="text-4xl font-bold mb-2 modern-mono">{{galleryStats.totalPhotos}}</div>
+                <div class="text-sm opacity-90 uppercase tracking-wide">Images</div>
+            </div>
+            {{/if}}
+            
+            {{#if galleryStats.categories}}
+            <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+                <div class="text-4xl font-bold mb-2 modern-mono">{{galleryStats.categories}}</div>
+                <div class="text-sm opacity-90 uppercase tracking-wide">Categories</div>
+            </div>
+            {{/if}}
+            
+            {{#if galleryStats.lastUpdated}}
+            <div class="text-center" data-aos="fade-up" data-aos-delay="200">
+                <div class="text-4xl font-bold mb-2 modern-mono">{{galleryStats.lastUpdated}}</div>
+                <div class="text-sm opacity-90 uppercase tracking-wide">Updates</div>
+            </div>
+            {{/if}}
+            
+            {{#if galleryStats.featured}}
+            <div class="text-center" data-aos="fade-up" data-aos-delay="300">
+                <div class="text-4xl font-bold mb-2 modern-mono">{{galleryStats.featured}}</div>
+                <div class="text-sm opacity-90 uppercase tracking-wide">Featured</div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Call to Action -->
+<section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <h2 class="text-4xl font-bold mb-6 modern-heading text-modern-primary">
+            Like What You See?
+        </h2>
+        <p class="text-xl text-modern-muted mb-8 max-w-2xl mx-auto">
+            Ready to work together? Let's discuss your project and create something amazing.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="/{{modelSlug}}/contact" class="modern-btn text-lg px-8 py-4">
+                <i class="fas fa-envelope mr-2"></i>
+                Contact Me
+            </a>
+            <a href="/{{modelSlug}}/rates" class="modern-btn-outline text-lg px-8 py-4">
+                <i class="fas fa-list mr-2"></i>
+                View Services
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Modern Lightbox Modal -->
+<div id="modernLightboxModal" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center">
+    <div class="relative max-w-4xl mx-auto p-8">
+        <button onclick="closeModernLightbox()" class="absolute top-4 right-4 text-white text-2xl hover:text-modern-primary transition-colors z-10 modern-btn">
+            <i class="fas fa-times"></i>
+        </button>
+        <img id="modernLightboxImage" src="" alt="" class="max-w-full max-h-screen object-contain rounded-2xl">
+        <div id="modernLightboxCaption" class="text-white text-center mt-4 modern-heading hidden"></div>
+    </div>
+</div>
+
+<script>
+// Gallery filtering
+document.addEventListener('DOMContentLoaded', function() {
+    const filters = document.querySelectorAll('.gallery-filter');
+    const items = document.querySelectorAll('.gallery-item');
+    
+    filters.forEach(filter => {
+        filter.addEventListener('click', function() {
+            const filterValue = this.dataset.category;
+            
+            // Update active filter
+            filters.forEach(f => {
+                f.classList.remove('active', 'modern-btn');
+                f.classList.add('hover:bg-gray-100');
+            });
+            this.classList.add('active', 'modern-btn');
+            this.classList.remove('hover:bg-gray-100');
+            
+            // Filter items
+            items.forEach(item => {
+                if (filterValue === 'all' || item.dataset.category === filterValue) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Load more functionality
+    const loadMoreBtn = document.getElementById('modernLoadMoreBtn');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+            // This would typically load more images via AJAX
+            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
+            
+            // Simulate loading delay
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-plus mr-2"></i>Load More';
+                // Add new images to gallery here
+            }, 1000);
+        });
+    }
+});
+
+// Modern Lightbox functionality
+function openModernLightbox(imageSrc, caption) {
+    const modal = document.getElementById('modernLightboxModal');
+    const image = document.getElementById('modernLightboxImage');
+    const captionDiv = document.getElementById('modernLightboxCaption');
+    
+    image.src = imageSrc;
+    
+    if (caption) {
+        captionDiv.textContent = caption;
+        captionDiv.classList.remove('hidden');
+    } else {
+        captionDiv.classList.add('hidden');
+    }
+    
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModernLightbox() {
+    const modal = document.getElementById('modernLightboxModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Close lightbox on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModernLightbox();
+    }
+});
+
+// Close lightbox on background click
+document.getElementById('modernLightboxModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModernLightbox();
+    }
+});
+</script>
