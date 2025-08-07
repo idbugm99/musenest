@@ -2112,26 +2112,41 @@ app.get('/demo-real-analysis.html', (req, res) => {
 
 // Admin content review tool
 app.get('/admin-content-review.html', (req, res) => {
+    if (process.env.NODE_ENV !== 'production') {
+        return res.redirect('/sysadmin');
+    }
     res.sendFile(path.join(__dirname, 'admin-content-review.html'));
 });
 
 // Admin content review tool (with /admin prefix)
 app.get('/admin/admin-content-review.html', (req, res) => {
+    if (process.env.NODE_ENV !== 'production') {
+        return res.redirect('/sysadmin');
+    }
     res.sendFile(path.join(__dirname, 'admin-content-review.html'));
 });
 
 // AI Server Management admin page
 app.get('/admin/ai-server-management.html', (req, res) => {
+    if (process.env.NODE_ENV !== 'production') {
+        return res.redirect('/sysadmin');
+    }
     res.sendFile(path.join(__dirname, 'admin', 'ai-server-management.html'));
 });
 
 // Site Configuration Management admin page
 app.get('/admin/site-configuration.html', (req, res) => {
+    if (process.env.NODE_ENV !== 'production') {
+        return res.redirect('/sysadmin');
+    }
     res.sendFile(path.join(__dirname, 'admin', 'site-configuration.html'));
 });
 
 // Enhanced Site Configuration Management admin page
 app.get('/admin/site-configuration-enhanced.html', (req, res) => {
+    if (process.env.NODE_ENV !== 'production') {
+        return res.redirect('/sysadmin');
+    }
     res.sendFile(path.join(__dirname, 'admin', 'site-configuration-enhanced.html'));
 });
 
