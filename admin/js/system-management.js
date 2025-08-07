@@ -38,7 +38,7 @@ class SystemManagement {
                 return;
             }
 
-            const response = await fetch('/api/auth/me', {
+            const response = await sysFetch('/api/auth/me', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -239,7 +239,7 @@ class SystemManagement {
                 sort_order: this.currentSort.order
             });
 
-            const response = await fetch(`/api/system-management/clients?${params}`);
+            const response = await sysFetch(`/api/system-management/clients?${params}`);
             const data = await response.json();
 
             if (data.success) {
@@ -422,7 +422,7 @@ class SystemManagement {
 
     async loadClientData(clientId) {
         try {
-            const response = await fetch(`/api/system-management/clients/${clientId}`);
+            const response = await sysFetch(`/api/system-management/clients/${clientId}`);
             const data = await response.json();
 
             if (data.success) {
@@ -504,7 +504,7 @@ class SystemManagement {
                 formData.theme_set_id = 1; // Default theme set
             }
 
-            const response = await fetch(url, {
+            const response = await sysFetch(url, {
                 method: method,
                 headers: {
                     'Content-Type': 'application/json'
@@ -568,7 +568,7 @@ class SystemManagement {
         if (!this.currentClientId) return;
 
         try {
-            const response = await fetch(`/api/system-management/clients/${this.currentClientId}/reset-password`, {
+            const response = await sysFetch(`/api/system-management/clients/${this.currentClientId}/reset-password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -783,7 +783,7 @@ class SystemManagement {
             this.showNotification('Testing impersonation system...', 'info');
             
             // Test 1: Check system stats
-            const statsResponse = await fetch('/api/impersonation/stats');
+            const statsResponse = await sysFetch('/api/impersonation/stats');
             const statsData = await statsResponse.json();
             
             if (!statsData.success) {
@@ -800,7 +800,7 @@ class SystemManagement {
             
             const testClient = clientsData.data.clients[0];
             
-            const startResponse = await fetch('/api/impersonation/start', {
+            const startResponse = await sysFetch('/api/impersonation/start', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -830,7 +830,7 @@ class SystemManagement {
             }
             
             // Test 4: End impersonation
-            const endResponse = await fetch('/api/impersonation/end', {
+            const endResponse = await sysFetch('/api/impersonation/end', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -878,7 +878,7 @@ class SystemManagement {
         }
 
         try {
-            const response = await fetch('/api/system-management/clients/bulk', {
+            const response = await sysFetch('/api/system-management/clients/bulk', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -961,7 +961,7 @@ class SystemManagement {
                 const token = localStorage.getItem('musenest_token');
                 if (token) {
                     try {
-                        await fetch('/api/auth/logout', {
+                        await sysFetch('/api/auth/logout', {
                             method: 'POST',
                             headers: {
                                 'Authorization': `Bearer ${token}`,

@@ -35,7 +35,7 @@ class SystemAdminDashboard {
                 return;
             }
 
-            const response = await fetch('/api/auth/me', {
+            const response = await sysFetch('/api/auth/me', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
@@ -428,7 +428,7 @@ class SystemAdminDashboard {
 
     async loadClientsData() {
         try {
-            const response = await fetch('/api/system-management/clients?limit=100', {
+            const response = await sysFetch('/api/system-management/clients?limit=100', {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -457,7 +457,7 @@ class SystemAdminDashboard {
 
     async loadBusinessTypes() {
         try {
-            const response = await fetch('/api/system-management/business-types', {
+            const response = await sysFetch('/api/system-management/business-types', {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -888,7 +888,7 @@ class SystemAdminDashboard {
 
     async loadSystemStats() {
         try {
-            const response = await fetch('/api/system-management/stats', {
+            const response = await sysFetch('/api/system-management/stats', {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -908,7 +908,7 @@ class SystemAdminDashboard {
 
     async loadThemeSets() {
         try {
-            const response = await fetch('/api/system-management/theme-sets', {
+            const response = await sysFetch('/api/system-management/theme-sets', {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -928,7 +928,7 @@ class SystemAdminDashboard {
 
     async loadPageSets() {
         try {
-            const response = await fetch('/api/system-management/page-sets', {
+            const response = await sysFetch('/api/system-management/page-sets', {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -1157,7 +1157,7 @@ class SystemAdminDashboard {
 
     async loadClientForEdit(clientId) {
         try {
-            const response = await fetch(`/api/system-management/clients/${clientId}`, {
+            const response = await sysFetch(`/api/system-management/clients/${clientId}`, {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -1208,7 +1208,7 @@ class SystemAdminDashboard {
         console.log('Sending update data:', updateData);
 
         try {
-            const response = await fetch(`/api/system-management/clients/${clientId}`, {
+            const response = await sysFetch(`/api/system-management/clients/${clientId}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
@@ -1248,7 +1248,7 @@ class SystemAdminDashboard {
 
     async performDeleteClient(clientId) {
         try {
-            const response = await fetch(`/api/system-management/clients/${clientId}`, {
+            const response = await sysFetch(`/api/system-management/clients/${clientId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
@@ -1296,7 +1296,7 @@ class SystemAdminDashboard {
             // Call server logout endpoint
             if (this.authToken) {
                 try {
-                    await fetch('/api/auth/logout', {
+                    await sysFetch('/api/auth/logout', {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${this.authToken}`,
@@ -1373,13 +1373,13 @@ class SystemAdminDashboard {
     async loadContentModerationContent() {
         try {
             // Get moderation queue
-            const queueResponse = await fetch('/api/content-moderation/queue', {
+            const queueResponse = await sysFetch('/api/content-moderation/queue', {
                 headers: { 'Authorization': `Bearer ${this.authToken}` }
             });
             const queueData = await queueResponse.json();
 
             // Get AI service status
-            const statusResponse = await fetch('/api/content-moderation/test', {
+            const statusResponse = await sysFetch('/api/content-moderation/test', {
                 headers: { 'Authorization': `Bearer ${this.authToken}` }
             });
             const statusData = await statusResponse.json();
@@ -1620,7 +1620,7 @@ class SystemAdminDashboard {
         try {
             const notes = prompt(`Add review notes for ${status} decision (optional):`);
             
-            const response = await fetch(`/api/content-moderation/review/${contentId}`, {
+            const response = await sysFetch(`/api/content-moderation/review/${contentId}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
@@ -1656,7 +1656,7 @@ class SystemAdminDashboard {
     // Media Queue Content
     async loadMediaQueueContent() {
         try {
-            const response = await fetch('/api/media-review-queue/queue?status=pending', {
+            const response = await sysFetch('/api/media-review-queue/queue?status=pending', {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -1793,7 +1793,7 @@ class SystemAdminDashboard {
     // Blurred/Approved Content
     async loadBlurredApprovedContent() {
         try {
-            const response = await fetch('/api/media-review-queue/queue?status=approved_blurred', {
+            const response = await sysFetch('/api/media-review-queue/queue?status=approved_blurred', {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -1848,7 +1848,7 @@ class SystemAdminDashboard {
     // Rejected/Removed Content
     async loadRejectedRemovedContent() {
         try {
-            const response = await fetch('/api/media-review-queue/queue?status=rejected', {
+            const response = await sysFetch('/api/media-review-queue/queue?status=rejected', {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -1906,7 +1906,7 @@ class SystemAdminDashboard {
     // Helper method to load media queue statistics
     async loadMediaQueueStats() {
         try {
-            const response = await fetch('/api/media-review-queue/stats', {
+            const response = await sysFetch('/api/media-review-queue/stats', {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -2047,7 +2047,7 @@ class SystemAdminDashboard {
         if (modelSearch) params.append('model_search', modelSearch);
 
         try {
-            const response = await fetch(`/api/media-review-queue/queue?${params}`, {
+            const response = await sysFetch(`/api/media-review-queue/queue?${params}`, {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -2078,7 +2078,7 @@ class SystemAdminDashboard {
         const notes = prompt('Add approval notes (optional):');
         
         try {
-            const response = await fetch(`/api/media-review-queue/approve/${mediaId}`, {
+            const response = await sysFetch(`/api/media-review-queue/approve/${mediaId}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
@@ -2107,7 +2107,7 @@ class SystemAdminDashboard {
 
     async approveMediaWithBlur(mediaId) {
         try {
-            const response = await fetch(`/api/media-review-queue/item/${mediaId}`, {
+            const response = await sysFetch(`/api/media-review-queue/item/${mediaId}`, {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -2293,7 +2293,7 @@ class SystemAdminDashboard {
         }
         
         try {
-            const response = await fetch(`/api/media-review-queue/reject/${mediaId}`, {
+            const response = await sysFetch(`/api/media-review-queue/reject/${mediaId}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
@@ -2322,7 +2322,7 @@ class SystemAdminDashboard {
 
     async viewMediaDetails(mediaId) {
         try {
-            const response = await fetch(`/api/media-review-queue/item/${mediaId}`, {
+            const response = await sysFetch(`/api/media-review-queue/item/${mediaId}`, {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -3138,7 +3138,7 @@ class SystemAdminDashboard {
                 headers['Authorization'] = `Bearer ${this.authToken}`;
             }
             
-            const response = await fetch(`/api/media-review-queue/approve-blur/${mediaId}`, {
+            const response = await sysFetch(`/api/media-review-queue/approve-blur/${mediaId}`, {
                 method: 'POST',
                 headers: headers,
                 body: JSON.stringify(requestBody)
@@ -3183,7 +3183,7 @@ class SystemAdminDashboard {
         }
         
         try {
-            const response = await fetch(`/api/media-review-queue/reject/${mediaId}`, {
+            const response = await sysFetch(`/api/media-review-queue/reject/${mediaId}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,

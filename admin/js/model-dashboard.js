@@ -138,7 +138,7 @@ class ModelDashboard {
             }
 
             // Fetch models from API
-            const response = await fetch(`/api/model-dashboard/models?${params}`, {
+            const response = await sysFetch(`/api/model-dashboard/models?${params}`, {
                 headers: {
                     'Content-Type': 'application/json'
                 }

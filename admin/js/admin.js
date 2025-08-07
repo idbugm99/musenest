@@ -35,7 +35,7 @@ class AdminDashboard {
             
             // Generate temporary token for impersonated user
             try {
-                const tokenResponse = await fetch('/api/impersonation/generate-token', {
+                const tokenResponse = await sysFetch('/api/impersonation/generate-token', {
                     method: 'POST',
                     credentials: 'include'
                 });
@@ -77,7 +77,7 @@ class AdminDashboard {
 
     async checkImpersonationStatus() {
         try {
-            const response = await fetch('/api/impersonation/status', {
+            const response = await sysFetch('/api/impersonation/status', {
                 method: 'GET',
                 credentials: 'include' // Include cookies
             });
@@ -433,7 +433,7 @@ class AdminDashboard {
 
         try {
             console.log('ApiRequest - Making fetch request to:', url);
-            const response = await fetch(url, config);
+            const response = await sysFetch(url, config);
             console.log('ApiRequest - Response status:', response.status);
             console.log('ApiRequest - Response headers:', Object.fromEntries(response.headers.entries()));
             const data = await response.json();
@@ -458,7 +458,7 @@ class AdminDashboard {
             const token = localStorage.getItem('musenest_token');
             if (token) {
                 try {
-                    await fetch('/api/auth/logout', {
+                    await sysFetch('/api/auth/logout', {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`,

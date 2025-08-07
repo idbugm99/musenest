@@ -70,7 +70,7 @@ class BusinessManagement {
 
     async loadBusinessTypes() {
         try {
-            const response = await fetch('/api/admin-business/business-types');
+            const response = await sysFetch('/api/admin-business/business-types');
             const data = await response.json();
             
             if (data.success) {
@@ -84,7 +84,7 @@ class BusinessManagement {
 
     async loadPageSets() {
         try {
-            const response = await fetch('/api/admin-business/page-sets');
+            const response = await sysFetch('/api/admin-business/page-sets');
             const data = await response.json();
             
             if (data.success) {
@@ -98,7 +98,7 @@ class BusinessManagement {
 
     async loadAvailablePages() {
         try {
-            const response = await fetch('/api/onboarding/business-types');
+            const response = await sysFetch('/api/onboarding/business-types');
             const data = await response.json();
             
             if (data.success) {
@@ -420,7 +420,7 @@ class BusinessManagement {
         const isEdit = id && id !== '';
         
         try {
-            const response = await fetch(`/api/admin-business/business-types${isEdit ? '/' + id : ''}`, {
+            const response = await sysFetch(`/api/admin-business/business-types${isEdit ? '/' + id : ''}`, {
                 method: isEdit ? 'PUT' : 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -474,7 +474,7 @@ class BusinessManagement {
         const isEdit = id && id !== '';
         
         try {
-            const response = await fetch(`/api/admin-business/page-sets${isEdit ? '/' + id : ''}`, {
+            const response = await sysFetch(`/api/admin-business/page-sets${isEdit ? '/' + id : ''}`, {
                 method: isEdit ? 'PUT' : 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -512,7 +512,7 @@ class BusinessManagement {
         }
 
         try {
-            const response = await fetch(`/api/admin-business/business-types/${id}`, {
+            const response = await sysFetch(`/api/admin-business/business-types/${id}`, {
                 method: 'DELETE'
             });
 
@@ -545,7 +545,7 @@ class BusinessManagement {
         }
 
         try {
-            const response = await fetch(`/api/admin-business/page-sets/${id}`, {
+            const response = await sysFetch(`/api/admin-business/page-sets/${id}`, {
                 method: 'DELETE'
             });
 
