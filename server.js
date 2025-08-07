@@ -2301,7 +2301,7 @@ app.use('/api/enhanced-content-moderation', require('./routes/api/enhanced-conte
 app.use('/api/media-review-queue', require('./routes/api/media-review-queue'));
 app.use('/api/admin-models', require('./routes/api/admin-models'));
 app.use('/api/test', require('./routes/api/test'));
-app.use('/api/blip', require('./routes/api/blip-webhook'));
+app.use('/api/blip-webhook', require('./routes/api/blip-webhook'));
 app.use('/api/ai-server-management', require('./routes/api/ai-server-management'));
 app.use('/api/site-configuration', require('./routes/api/site-configuration'));
 app.use('/api/clients', require('./routes/api/clients'));
