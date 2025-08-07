@@ -51,8 +51,13 @@ CREATE TABLE IF NOT EXISTS media_review_queue (
 ALTER TABLE media_review_queue
     ADD COLUMN IF NOT EXISTS queue_type ENUM('auto_flagged','manual_review','appeal','admin_override') DEFAULT 'auto_flagged',
     ADD COLUMN IF NOT EXISTS thumbnail_path TEXT,
-    ADD COLUMN IF NOT EXISTS policy_violations JSON,
-    ADD INDEX IF NOT EXISTS idx_mrq_status (review_status),
-    ADD INDEX IF NOT EXISTS idx_mrq_created_at (created_at);
+    ADD COLUMN IF NOT EXISTS policy_violations JSON;
+
+-- Ensure indexes exist (portable across MySQL versions)
+DROP INDEX IF EXISTS idx_mrq_status ON media_review_queue;
+CREATE INDEX idx_mrq_status ON media_review_queue (review_status);
+
+DROP INDEX IF EXISTS idx_mrq_created_at ON media_review_queue;
+CREATE INDEX idx_mrq_created_at ON media_review_queue (created_at);
 
 

@@ -7,7 +7,10 @@ ALTER TABLE content_templates
     MODIFY COLUMN page_type_id INT NOT NULL,
     MODIFY COLUMN content_key VARCHAR(100) NOT NULL,
     MODIFY COLUMN content_type ENUM('text','html','json','image','video') NOT NULL DEFAULT 'text',
-    MODIFY COLUMN is_required BOOLEAN NOT NULL DEFAULT FALSE,
-    ADD INDEX IF NOT EXISTS idx_ct_model_page (model_id, page_type_id);
+    MODIFY COLUMN is_required BOOLEAN NOT NULL DEFAULT FALSE;
+
+-- Ensure composite index exists (portable across MySQL versions)
+DROP INDEX IF EXISTS idx_ct_model_page ON content_templates;
+CREATE INDEX idx_ct_model_page ON content_templates (model_id, page_type_id);
 
 
