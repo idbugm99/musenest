@@ -61,12 +61,97 @@ SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_
 SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN policy_violations JSON', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
+-- Add other columns referenced by application if missing
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='original_path');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN original_path TEXT', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='detected_parts');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN detected_parts JSON', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='part_locations');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN part_locations JSON', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='pose_classification');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN pose_classification VARCHAR(100)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='explicit_pose_score');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN explicit_pose_score DECIMAL(5,2) DEFAULT 0', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='combined_assessment');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN combined_assessment JSON', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='final_risk_score');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN final_risk_score DECIMAL(5,2) NULL', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='risk_level');
+SET @sql := IF(@col_exists = 0, "ALTER TABLE media_review_queue ADD COLUMN risk_level ENUM('low','medium','high','critical') NULL", 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='blur_settings');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN blur_settings JSON', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='blurred_path');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN blurred_path TEXT', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='blur_applied');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN blur_applied BOOLEAN DEFAULT FALSE', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='final_location');
+SET @sql := IF(@col_exists = 0, "ALTER TABLE media_review_queue ADD COLUMN final_location VARCHAR(100) DEFAULT 'originals'", 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='file_moved');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN file_moved BOOLEAN DEFAULT FALSE', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='moved_at');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN moved_at TIMESTAMP NULL', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Appeal-related fields
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='appeal_id');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN appeal_id INT NULL', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='appeal_reason');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN appeal_reason VARCHAR(255)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='appeal_message');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN appeal_message TEXT', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='appeal_requested');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN appeal_requested BOOLEAN DEFAULT FALSE', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='appeal_reviewed_at');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN appeal_reviewed_at TIMESTAMP NULL', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
 -- Ensure indexes exist (portable across MySQL versions)
 -- Drop/create indexes in a compatible way
 -- Create idx_mrq_status only if column exists and index missing
 SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='media_review_queue' AND COLUMN_NAME='review_status');
 SET @idx_exists := (SELECT COUNT(1) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'media_review_queue' AND INDEX_NAME = 'idx_mrq_status');
 SET @sql := IF(@col_exists > 0 AND @idx_exists = 0, 'CREATE INDEX idx_mrq_status ON media_review_queue (review_status)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Composite index to support WHERE review_status AND ORDER BY flagged_at
+SET @col1 := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='media_review_queue' AND COLUMN_NAME='review_status');
+SET @col2 := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='media_review_queue' AND COLUMN_NAME='flagged_at');
+SET @idx_exists := (SELECT COUNT(1) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'media_review_queue' AND INDEX_NAME = 'idx_mrq_status_flagged');
+SET @sql := IF(@col1 > 0 AND @col2 > 0 AND @idx_exists = 0, 'CREATE INDEX idx_mrq_status_flagged ON media_review_queue (review_status, flagged_at)', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 -- Create idx_mrq_created_at only if column exists and index missing
