@@ -39,10 +39,17 @@ async function testAIServer() {
 
         // Soft assertions (do not fail the run, just report)
         softCheck('success flag present', 'success' in analysisResult, analysisResult.success);
-        softCheck('BLIP caption present', !!(analysisResult.blip_caption || analysisResult.caption || analysisResult.description), (analysisResult.blip_caption || analysisResult.caption || analysisResult.description));
-        softCheck('NSFW detection present', !!(analysisResult.nsfw || analysisResult.nudity || analysisResult.detections), (analysisResult.nsfw || analysisResult.nudity || analysisResult.detections));
-        softCheck('child/age analysis present', !!(analysisResult.child || analysisResult.child_analysis || analysisResult.age_estimation), (analysisResult.child || analysisResult.child_analysis || analysisResult.age_estimation));
-        softCheck('risk/score present', !!(analysisResult.risk || analysisResult.score || analysisResult.overall_risk), (analysisResult.risk || analysisResult.score || analysisResult.overall_risk));
+        // v4 schema alignment
+        const blipCaption = analysisResult.image_description && (analysisResult.image_description.description || analysisResult.image_description.caption);
+        const nsfwPresent = !!(analysisResult.nudity_detection && (analysisResult.nudity_detection.has_nudity !== undefined || analysisResult.nudity_detection.nudity_score !== undefined));
+        const childPresent = !!(analysisResult.child_analysis);
+        const risk = (analysisResult.combined_assessment && (analysisResult.combined_assessment.final_risk || analysisResult.combined_assessment.risk_level)) ||
+                     (analysisResult.moderation_decision && (analysisResult.moderation_decision.decision || analysisResult.moderation_decision.reason));
+
+        softCheck('BLIP caption present', !!blipCaption, blipCaption);
+        softCheck('NSFW detection present', nsfwPresent, analysisResult.nudity_detection);
+        softCheck('child/age analysis present', childPresent, analysisResult.child_analysis);
+        softCheck('risk/score present', !!risk, risk);
     } catch (error) {
         console.error('❌ Analysis test failed:', error.message);
     }
