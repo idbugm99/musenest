@@ -1,14 +1,13 @@
--- Migration 030: Content Template Constraints (Planned - Placeholder)
+-- Migration 030: Content Template Constraints
 -- Intent: add NOT NULLs + defaults for robustness to content_templates and related tables.
--- This placeholder reserves the number and documents scope. No-op for now.
 
--- Example (to be finalized):
--- ALTER TABLE content_templates
---   MODIFY COLUMN model_id INT NOT NULL,
---   MODIFY COLUMN page_type_id INT NOT NULL,
---   MODIFY COLUMN content JSON NOT NULL,
---   ADD INDEX IF NOT EXISTS idx_ct_model_page (model_id, page_type_id);
-
-SET @migration_030_ct_constraints_placeholder = 'reserved';
+-- Tighten content_templates columns (compatible with existing structure)
+ALTER TABLE content_templates
+    MODIFY COLUMN model_id INT NOT NULL,
+    MODIFY COLUMN page_type_id INT NOT NULL,
+    MODIFY COLUMN content_key VARCHAR(100) NOT NULL,
+    MODIFY COLUMN content_type ENUM('text','html','json','image','video') NOT NULL DEFAULT 'text',
+    MODIFY COLUMN is_required BOOLEAN NOT NULL DEFAULT FALSE,
+    ADD INDEX IF NOT EXISTS idx_ct_model_page (model_id, page_type_id);
 
 
