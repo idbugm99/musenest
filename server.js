@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const { engine } = require('express-handlebars');
 const axios = require('axios');
+const { registerComponent } = require('./utils/componentRegistry');
 require('dotenv').config();
 
 const { testConnection } = require('./config/database');
@@ -136,6 +137,10 @@ app.engine('handlebars', engine({
 }));
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'themes'));
+
+// Register major admin surfaces for duplicate detection in development
+registerComponent('route:/sysadmin', 'server.js');
+registerComponent('route:/admin', 'server.js');
 
 // Ensure sysadmin pages are rendered with null-safe defaults and a dev banner
 function renderSysadmin(res, viewPath, context = {}) {

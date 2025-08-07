@@ -43,11 +43,10 @@ npm run dev
 - Proxy (dev): `http://localhost:3000/_ai/health` (added by server)
 
 ## 6) Test end-to-end
-- Use `test-upload.html` or admin queue pages to submit an image.
-- Run JS test probes:
+- Use `tests/ui/test-upload.html` or admin queue pages to submit an image.
+- Run JS smoke tests:
 ```bash
-node test-raw-ai-response.js
-node test-face-only.js
+npm run ai:smoke
 ```
 
 ## Notes
