@@ -76,6 +76,9 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Standard response envelope
+app.use(require('./middleware/responseEnvelope'));
+
 // Impersonation middleware (must be after session handling)
 const { impersonationMiddleware } = require('./middleware/impersonation');
 app.use(impersonationMiddleware);

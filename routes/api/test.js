@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const logger = require('../../utils/logger');
 const db = require('../../config/database');
 
 // Database check endpoint - shows what was inserted
@@ -8,10 +9,7 @@ router.post('/database-check', async (req, res) => {
         const { content_moderation_id } = req.body;
         
         if (!content_moderation_id) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'content_moderation_id is required' 
-            });
+            return res.fail(400, 'content_moderation_id is required');
         }
 
         const sql_query = `
@@ -29,17 +27,12 @@ router.post('/database-check', async (req, res) => {
             WHERE id = ?
         `;
 
-        console.log('🔍 Database check SQL:', sql_query.trim());
-        console.log('🔍 Parameters:', [content_moderation_id]);
+        logger.debug('database-check query', { sql: sql_query.trim(), params: [content_moderation_id] });
 
         const result = await db.query(sql_query, [content_moderation_id]);
 
         if (result.length === 0) {
-            return res.json({
-                success: false,
-                error: 'No record found with that ID',
-                sql_query: sql_query.trim()
-            });
+            return res.fail(404, 'No record found with that ID', sql_query.trim());
         }
 
         const record = result[0];
@@ -55,19 +48,11 @@ router.post('/database-check', async (req, res) => {
             console.log('⚠️ JSON parsing warning:', parseError.message);
         }
 
-        res.json({
-            success: true,
-            sql_query: sql_query.trim(),
-            data: record,
-            message: 'Database record found and verified'
-        });
+        res.success({ sql_query: sql_query.trim(), record }, { message: 'Database record found and verified' });
 
     } catch (error) {
-        console.error('❌ Database check error:', error);
-        res.status(500).json({
-            success: false,
-            error: error.message
-        });
+        logger.error('database-check error', { error: error.message });
+        res.fail(500, 'Database check error', error.message);
     }
 });
 
@@ -77,10 +62,7 @@ router.post('/database-retrieve', async (req, res) => {
         const { content_moderation_id } = req.body;
         
         if (!content_moderation_id) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'content_moderation_id is required' 
-            });
+            return res.fail(400, 'content_moderation_id is required');
         }
 
         const sql_query = `
@@ -96,17 +78,12 @@ router.post('/database-retrieve', async (req, res) => {
             WHERE cm.id = ?
         `;
 
-        console.log('🔍 Database retrieve SQL:', sql_query.trim());
-        console.log('🔍 Parameters:', [content_moderation_id]);
+        logger.debug('database-retrieve query', { sql: sql_query.trim(), params: [content_moderation_id] });
 
         const result = await db.query(sql_query, [content_moderation_id]);
 
         if (result.length === 0) {
-            return res.json({
-                success: false,
-                error: 'No record found with that ID',
-                sql_query: sql_query.trim()
-            });
+            return res.fail(404, 'No record found with that ID', sql_query.trim());
         }
 
         const record = result[0];
@@ -121,19 +98,11 @@ router.post('/database-retrieve', async (req, res) => {
             console.log('⚠️ JSON parsing warning:', parseError.message);
         }
 
-        res.json({
-            success: true,
-            sql_query: sql_query.trim(),
-            data: record,
-            message: 'Database retrieval successful - this is what admin interface would see'
-        });
+        res.success({ sql_query: sql_query.trim(), record }, { message: 'Database retrieval successful' });
 
     } catch (error) {
-        console.error('❌ Database retrieve error:', error);
-        res.status(500).json({
-            success: false,
-            error: error.message
-        });
+        logger.error('database-retrieve error', { error: error.message });
+        res.fail(500, 'Database retrieve error', error.message);
     }
 });
 
@@ -143,10 +112,7 @@ router.post('/queue-check', async (req, res) => {
         const { content_moderation_id } = req.body;
         
         if (!content_moderation_id) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'content_moderation_id is required' 
-            });
+            return res.fail(400, 'content_moderation_id is required');
         }
 
         const sql_query = `
@@ -161,17 +127,12 @@ router.post('/queue-check', async (req, res) => {
             LIMIT 1
         `;
 
-        console.log('🔍 Queue check SQL:', sql_query.trim());
-        console.log('🔍 Parameters:', [content_moderation_id]);
+        logger.debug('queue-check query', { sql: sql_query.trim(), params: [content_moderation_id] });
 
         const result = await db.query(sql_query, [content_moderation_id]);
 
         if (result.length === 0) {
-            return res.json({
-                success: false,
-                error: 'No queue record found - trigger may not have fired',
-                sql_query: sql_query.trim()
-            });
+            return res.fail(404, 'No queue record found - trigger may not have fired', sql_query.trim());
         }
 
         const record = result[0];
@@ -185,19 +146,11 @@ router.post('/queue-check', async (req, res) => {
             console.log('⚠️ JSON parsing warning:', parseError.message);
         }
 
-        res.json({
-            success: true,
-            sql_query: sql_query.trim(),
-            data: record,
-            message: 'Queue record found - trigger worked correctly'
-        });
+        res.success({ sql_query: sql_query.trim(), record }, { message: 'Queue record found' });
 
     } catch (error) {
-        console.error('❌ Queue check error:', error);
-        res.status(500).json({
-            success: false,
-            error: error.message
-        });
+        logger.error('queue-check error', { error: error.message });
+        res.fail(500, 'Queue check error', error.message);
     }
 });
 
