@@ -146,19 +146,27 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <span class="text-muted small">Database</span>
-                    <span class="badge bg-success">Online</span>
+                    <span id="statusDb" class="badge bg-secondary">Checking...</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="text-muted small">Theme System</span>
-                    <span class="badge bg-success">Active</span>
+                    <span class="text-muted small">MySQL Version</span>
+                    <span id="statusMysql" class="badge bg-light text-muted">-</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="text-muted small">Content Management</span>
-                    <span class="badge bg-success">Ready</span>
+                    <span class="text-muted small">Models</span>
+                    <span id="countModels" class="badge bg-light text-muted">-</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small">Content Templates</span>
+                    <span id="countContent" class="badge bg-light text-muted">-</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small">Theme Sets</span>
+                    <span id="countThemes" class="badge bg-light text-muted">-</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted small">Model Sites</span>
-                    <span class="badge bg-success">Live</span>
+                    <span class="text-muted small">Media Review Queue</span>
+                    <span id="countQueue" class="badge bg-light text-muted">-</span>
                 </div>
             </div>
         </div>
@@ -1020,4 +1028,26 @@ setTimeout(() => {
     console.log('🔍 Backup URL section check...');
     checkURLSection();
 }, 1000);
+
+// Fetch system health and update status badges
+(function fetchSystemHealth(){
+    fetch('/health').then(r => r.json()).then(h => {
+        const ok = h.database === 'Connected';
+        const db = document.getElementById('statusDb');
+        if (db) {
+            db.className = 'badge ' + (ok ? 'bg-success' : 'bg-danger');
+            db.textContent = ok ? 'Online' : 'Offline';
+        }
+        const map = h.tableCounts || {};
+        const setText = (id, val) => { const el = document.getElementById(id); if (el) { el.className = 'badge bg-secondary'; el.textContent = String(val ?? '-'); }};
+        setText('statusMysql', h.mysqlVersion || '-');
+        setText('countModels', map.models);
+        setText('countContent', map.content_templates);
+        setText('countThemes', map.theme_sets);
+        setText('countQueue', map.media_review_queue);
+    }).catch(() => {
+        const db = document.getElementById('statusDb');
+        if (db) { db.className = 'badge bg-danger'; db.textContent = 'Offline'; }
+    });
+})();
 </script>
