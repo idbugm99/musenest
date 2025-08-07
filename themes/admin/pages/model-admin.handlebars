@@ -20,7 +20,7 @@
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="fw-bold fs-4">{{stats.pageViews}}</div>
+                        <div class="fw-bold fs-4">{{#if stats.pageViews}}{{stats.pageViews}}{{else}}0{{/if}}</div>
                         <div class="text-muted small">Page Views</div>
                     </div>
                 </div>
@@ -38,7 +38,7 @@
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="fw-bold fs-4">{{model.theme_name}}</div>
+                        <div class="fw-bold fs-4">{{#if model.theme_name}}{{model.theme_name}}{{else}}—{{/if}}</div>
                         <div class="text-muted small">Current Theme</div>
                     </div>
                 </div>
@@ -56,7 +56,7 @@
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="fw-bold fs-4">{{stats.contentPages}}</div>
+                        <div class="fw-bold fs-4">{{#if stats.contentPages}}{{stats.contentPages}}{{else}}0{{/if}}</div>
                         <div class="text-muted small">Content Pages</div>
                     </div>
                 </div>
@@ -74,7 +74,7 @@
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="fw-bold fs-4">{{stats.lastUpdated}}</div>
+                        <div class="fw-bold fs-4">{{#if stats.lastUpdated}}{{stats.lastUpdated}}{{else}}—{{/if}}</div>
                         <div class="text-muted small">Last Updated</div>
                     </div>
                 </div>
@@ -137,9 +137,9 @@
                     </div>
                 </div>
                 <div class="text-center">
-                    <h6 class="fw-bold">{{model.name}}</h6>
-                    <p class="text-muted small mb-2">@{{model.slug}}</p>
-                    <p class="text-muted small mb-3">{{model.email}}</p>
+                    <h6 class="fw-bold">{{#if model.name}}{{model.name}}{{else}}Model Name{{/if}}</h6>
+                    <p class="text-muted small mb-2">@{{#if model.slug}}{{model.slug}}{{else}}slug{{/if}}</p>
+                    <p class="text-muted small mb-3">{{#if model.email}}{{model.email}}{{else}}email@example.com{{/if}}</p>
                     <button class="btn btn-outline-primary btn-sm" onclick="editProfile()">
                         <i class="fas fa-edit me-1"></i>Edit Profile
                     </button>
@@ -161,7 +161,7 @@
                 </div>
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <span class="text-muted small">Theme</span>
-                    <span class="badge bg-info">{{model.theme_name}}</span>
+                    <span class="badge bg-info">{{#if model.theme_name}}{{model.theme_name}}{{else}}Not Set{{/if}}</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="text-muted small">SSL Certificate</span>
