@@ -965,6 +965,8 @@ class SystemAdminDashboard {
                 const data = await response.json();
                 this.themeSetsPage = data.pagination?.page || tsPage;
                 this.themeSetsLimit = data.pagination?.limit || tsLimit;
+                this.themeSetsPages = data.pagination?.pages || 1;
+                this.themeSetsTotal = data.pagination?.total || (data.data?.length || 0);
                 return data.data || [];
             }
         } catch (error) {
@@ -989,6 +991,8 @@ class SystemAdminDashboard {
                 const data = await response.json();
                 this.pageSetsPage = data.pagination?.page || psPage;
                 this.pageSetsLimit = data.pagination?.limit || psLimit;
+                this.pageSetsPages = data.pagination?.pages || 1;
+                this.pageSetsTotal = data.pagination?.total || (data.data?.length || 0);
                 return data.data || [];
             }
         } catch (error) {
@@ -1690,6 +1694,42 @@ class SystemAdminDashboard {
         localStorage.setItem('cm_page_size', String(n));
         this.cmPage = 1;
         this.loadTabContent('content-moderation');
+    }
+
+    // Template builder pagination controls
+    tsPrevPage() {
+        if ((this.themeSetsPage || 1) > 1) {
+            this.themeSetsPage -= 1;
+            this.switchTab('template-builder');
+        }
+    }
+    tsNextPage() {
+        this.themeSetsPage = (this.themeSetsPage || 1) + 1;
+        this.switchTab('template-builder');
+    }
+    tsChangePageSize(val) {
+        const n = parseInt(val) || 50;
+        this.themeSetsLimit = n;
+        localStorage.setItem('ts_page_size', String(n));
+        this.themeSetsPage = 1;
+        this.switchTab('template-builder');
+    }
+    psPrevPage() {
+        if ((this.pageSetsPage || 1) > 1) {
+            this.pageSetsPage -= 1;
+            this.switchTab('template-builder');
+        }
+    }
+    psNextPage() {
+        this.pageSetsPage = (this.pageSetsPage || 1) + 1;
+        this.switchTab('template-builder');
+    }
+    psChangePageSize(val) {
+        const n = parseInt(val) || 50;
+        this.pageSetsLimit = n;
+        localStorage.setItem('ps_page_size', String(n));
+        this.pageSetsPage = 1;
+        this.switchTab('template-builder');
     }
 
     getContextBadgeColor(contextType) {
@@ -3365,7 +3405,7 @@ SystemAdminDashboard.prototype.loadTemplateBuilderContent = async function() {
                                 <h3 class="text-lg font-medium text-gray-900">Theme Sets Management</h3>
                                 <p class="text-sm text-gray-600">Manage visual themes, color schemes, and styling options</p>
                             </div>
-                            <div class="flex space-x-3">
+                            <div class="flex space-x-3 items-center">
                                 <select id="themeFilterCategory" class="border border-gray-300 rounded-md px-3 py-2 text-sm">
                                     <option value="">All Categories</option>
                                     <option value="professional">Professional</option>
@@ -3378,6 +3418,12 @@ SystemAdminDashboard.prototype.loadTemplateBuilderContent = async function() {
                                     <option value="free">Free</option>
                                     <option value="premium">Premium</option>
                                     <option value="enterprise">Enterprise</option>
+                                </select>
+                                <div class="text-xs text-gray-600">Page ${this.themeSetsPage || 1} / ${this.themeSetsPages || 1} · ${this.themeSetsTotal || 0} total</div>
+                                <button class="px-2 py-1 border rounded text-sm" onclick="window.systemAdminDashboard.tsPrevPage()" ${(this.themeSetsPage||1)<=1?'disabled':''}>Prev</button>
+                                <button class="px-2 py-1 border rounded text-sm" onclick="window.systemAdminDashboard.tsNextPage()" ${(this.themeSetsPage||1)>=(this.themeSetsPages||1)?'disabled':''}>Next</button>
+                                <select class="border border-gray-300 rounded px-2 py-1 text-sm" onchange="window.systemAdminDashboard.tsChangePageSize(this.value)">
+                                    ${[20,50,100,200].map(n => `<option value=\"${n}\" ${this.themeSetsLimit===n?'selected':''}>${n}/page</option>`).join('')}
                                 </select>
                             </div>
                         </div>
@@ -3424,7 +3470,7 @@ SystemAdminDashboard.prototype.loadTemplateBuilderContent = async function() {
                                 <h3 class="text-lg font-medium text-gray-900">Page Sets Management</h3>
                                 <p class="text-sm text-gray-600">Manage page templates and content structures</p>
                             </div>
-                            <div class="flex space-x-3">
+                            <div class="flex space-x-3 items-center">
                                 <select id="pageSetFilterBusiness" class="border border-gray-300 rounded-md px-3 py-2 text-sm">
                                     <option value="">All Business Types</option>
                                     ${businessTypesData.map(bt => `<option value="${bt.id}">${bt.display_name}</option>`).join('')}
@@ -3435,6 +3481,12 @@ SystemAdminDashboard.prototype.loadTemplateBuilderContent = async function() {
                                     <option value="professional">Professional</option>
                                     <option value="premium">Premium</option>
                                     <option value="enterprise">Enterprise</option>
+                                </select>
+                                <div class="text-xs text-gray-600">Page ${this.pageSetsPage || 1} / ${this.pageSetsPages || 1} · ${this.pageSetsTotal || 0} total</div>
+                                <button class="px-2 py-1 border rounded text-sm" onclick="window.systemAdminDashboard.psPrevPage()" ${(this.pageSetsPage||1)<=1?'disabled':''}>Prev</button>
+                                <button class="px-2 py-1 border rounded text-sm" onclick="window.systemAdminDashboard.psNextPage()" ${(this.pageSetsPage||1)>=(this.pageSetsPages||1)?'disabled':''}>Next</button>
+                                <select class="border border-gray-300 rounded px-2 py-1 text-sm" onchange="window.systemAdminDashboard.psChangePageSize(this.value)">
+                                    ${[20,50,100,200].map(n => `<option value=\"${n}\" ${this.pageSetsLimit===n?'selected':''}>${n}/page</option>`).join('')}
                                 </select>
                             </div>
                         </div>
