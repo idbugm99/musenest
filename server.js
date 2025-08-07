@@ -2293,20 +2293,21 @@ app.use('/api/calendar', require('./routes/calendar'));
 app.use('/api/theme-custom', require('./routes/theme-customization'));
 app.use('/api/theme-sets', require('./routes/theme-sets'));
 app.use('/api/onboarding', require('./routes/api/onboarding'));
-app.use('/api/admin-business', require('./routes/api/admin-business'));
-app.use('/api/system-management', require('./routes/api/system-management'));
+// Legacy admin API mounts (aliases) — keep minimal to avoid duplication
+app.use('/api/admin-business', require('./routes/api/sysadmin'));
+app.use('/api/system-management', require('./routes/api/sysadmin'));
 app.use('/api/impersonation', require('./routes/api/impersonation'));
 app.use('/api/content-moderation', require('./routes/api/content-moderation'));
 app.use('/api/enhanced-content-moderation', require('./routes/api/enhanced-content-moderation'));
-app.use('/api/media-review-queue', require('./routes/api/media-review-queue'));
-app.use('/api/admin-models', require('./routes/api/admin-models'));
+app.use('/api/media-review-queue', require('./routes/api/sysadmin'));
+app.use('/api/admin-models', require('./routes/api/sysadmin'));
 app.use('/api/test', require('./routes/api/test'));
 app.use('/api/blip-webhook', require('./routes/api/blip-webhook'));
-app.use('/api/ai-server-management', require('./routes/api/ai-server-management'));
-app.use('/api/site-configuration', require('./routes/api/site-configuration'));
+app.use('/api/ai-server-management', require('./routes/api/sysadmin'));
+app.use('/api/site-configuration', require('./routes/api/sysadmin'));
 app.use('/api/clients', require('./routes/api/clients'));
 // Model Dashboard APIs (Phase 2 - Backend Infrastructure)
-app.use('/api/model-dashboard', require('./routes/api/model-dashboard'));
+app.use('/api/model-dashboard', require('./routes/api/sysadmin'));
 app.use('/api/media-preview', require('./routes/api/media-preview'));
 
 // Consolidated sysadmin API namespace (keeps legacy mounts above for back-compat)
