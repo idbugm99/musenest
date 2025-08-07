@@ -30,9 +30,10 @@ Status: In Progress (docs added)
 ### Phase C — DB Drift Control
 - Create `migrations/INDEX.md`
 - Add `scripts/verify-db.js` to check schema health
+- Add `scripts/verify-migrations.js` to detect duplicate/variant migrations
 - Add `npm run verify-db` and `npm run check`
 
-Status: In Progress (verify-db.js and scripts added)
+Status: In Progress (verify-db.js, verify-migrations.js and scripts added)
 
 ### Phase D — Route/Component Hygiene
 - Add `scripts/route-audit.js` (list and flag overlaps)

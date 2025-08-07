@@ -16,8 +16,12 @@ async function main() {
 
   console.log('Verifying database connectivity...');
   try {
+    const [versionRows] = await db.execute('SELECT VERSION() as v');
     await db.execute('SELECT 1');
     console.log('✓ Connected');
+    if (versionRows && versionRows[0] && versionRows[0].v) {
+      console.log('MySQL version:', versionRows[0].v);
+    }
   } catch (e) {
     console.error('✗ Cannot connect:', e.message);
     process.exit(1);
