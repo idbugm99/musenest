@@ -32,8 +32,9 @@ Status: In Progress (docs added)
 - Add `scripts/verify-db.js` to check schema health
 - Add `scripts/verify-migrations.js` to detect duplicate/variant migrations
 - Add `npm run verify-db` and `npm run check`
+ - Add consolidation notice migration `019_consolidation_notice.sql`
 
-Status: In Progress (verify-db.js, verify-migrations.js and scripts added)
+Status: In Progress (verify-db.js, verify-migrations.js, consolidation notice added)
 
 ### Phase D — Route/Component Hygiene
 - Add `scripts/route-audit.js` (list and flag overlaps)
