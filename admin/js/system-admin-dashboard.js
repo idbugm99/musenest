@@ -952,7 +952,9 @@ class SystemAdminDashboard {
 
     async loadThemeSets() {
         try {
-            const response = await sysFetch('/api/system-management/theme-sets', {
+            const tsPage = this.themeSetsPage || 1;
+            const tsLimit = this.themeSetsLimit || parseInt(localStorage.getItem('ts_page_size') || '50');
+            const response = await sysFetch(`/api/system-management/theme-sets?page=${tsPage}&limit=${tsLimit}`, {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -961,6 +963,8 @@ class SystemAdminDashboard {
             
             if (response.ok) {
                 const data = await response.json();
+                this.themeSetsPage = data.pagination?.page || tsPage;
+                this.themeSetsLimit = data.pagination?.limit || tsLimit;
                 return data.data || [];
             }
         } catch (error) {
@@ -972,7 +976,9 @@ class SystemAdminDashboard {
 
     async loadPageSets() {
         try {
-            const response = await sysFetch('/api/system-management/page-sets', {
+            const psPage = this.pageSetsPage || 1;
+            const psLimit = this.pageSetsLimit || parseInt(localStorage.getItem('ps_page_size') || '50');
+            const response = await sysFetch(`/api/system-management/page-sets?page=${psPage}&limit=${psLimit}`, {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -981,6 +987,8 @@ class SystemAdminDashboard {
             
             if (response.ok) {
                 const data = await response.json();
+                this.pageSetsPage = data.pagination?.page || psPage;
+                this.pageSetsLimit = data.pagination?.limit || psLimit;
                 return data.data || [];
             }
         } catch (error) {

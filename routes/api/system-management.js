@@ -797,6 +797,9 @@ router.get('/business-types', async (req, res) => {
 // Get all theme sets for template builder
 router.get('/theme-sets', async (req, res) => {
     try {
+        const { page = 1, limit = 50 } = req.query;
+        const perPage = Math.max(1, Math.min(200, parseInt(limit)));
+        const offset = (Math.max(1, parseInt(page)) - 1) * perPage;
         const [themeSets] = await db.execute(`
             SELECT 
                 ts.*,
@@ -805,6 +808,7 @@ router.get('/theme-sets', async (req, res) => {
             LEFT JOIN business_types bt ON ts.business_type_id = bt.id
             WHERE ts.is_active = 1
             ORDER BY ts.category, ts.display_name
+            LIMIT ${perPage} OFFSET ${offset}
         `);
 
         // Parse JSON fields
@@ -821,10 +825,8 @@ router.get('/theme-sets', async (req, res) => {
                 : theme.industry_features
         }));
 
-        res.json({
-            success: true,
-            data: processedThemeSets
-        });
+        const [[{ total }]] = await db.query(`SELECT COUNT(*) as total FROM theme_sets WHERE is_active = 1`);
+        res.json({ success: true, data: processedThemeSets, pagination: { page: parseInt(page), limit: perPage, total, pages: Math.ceil(total / perPage) } });
 
     } catch (error) {
         console.error('Error fetching theme sets:', error);
@@ -838,6 +840,9 @@ router.get('/theme-sets', async (req, res) => {
 // Get all page sets for template builder
 router.get('/page-sets', async (req, res) => {
     try {
+        const { page = 1, limit = 50 } = req.query;
+        const perPage = Math.max(1, Math.min(200, parseInt(limit)));
+        const offset = (Math.max(1, parseInt(page)) - 1) * perPage;
         const [pageSets] = await db.execute(`
             SELECT 
                 bps.*,
@@ -846,6 +851,7 @@ router.get('/page-sets', async (req, res) => {
             LEFT JOIN business_types bt ON bps.business_type_id = bt.id
             WHERE bps.is_active = 1
             ORDER BY bt.display_name, bps.tier, bps.display_name
+            LIMIT ${perPage} OFFSET ${offset}
         `);
 
         // Parse JSON fields
@@ -862,10 +868,8 @@ router.get('/page-sets', async (req, res) => {
                 : pageSet.integrations
         }));
 
-        res.json({
-            success: true,
-            data: processedPageSets
-        });
+        const [[{ total }]] = await db.query(`SELECT COUNT(*) as total FROM business_page_sets WHERE is_active = 1`);
+        res.json({ success: true, data: processedPageSets, pagination: { page: parseInt(page), limit: perPage, total, pages: Math.ceil(total / perPage) } });
 
     } catch (error) {
         console.error('Error fetching page sets:', error);
