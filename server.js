@@ -2282,9 +2282,11 @@ app.get('/_debug/routes', (req, res) => {
 // API Routes
 app.use('/api/auth', require('./src/routes/auth'));
 app.use('/api/models', require('./src/routes/models'));
-app.use('/api/admin', require('./src/routes/admin'));
+// Deprecated legacy admin API surface — removed (use /api/sysadmin)
+// app.use('/api/admin', require('./src/routes/admin'));
 
 // Content Management APIs
+// Public/content APIs remain mounted as-is
 app.use('/api/gallery', require('./routes/gallery'));
 app.use('/api/faq', require('./routes/faq'));
 app.use('/api/settings', require('./routes/settings'));

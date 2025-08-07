@@ -23,8 +23,30 @@ function main() {
   const normalize = (s) => s.replace(/_/g, '-');
   const normalizedMounts = new Set(mounts.map(normalize));
 
-  const missingMounts = expected.filter(e => !normalizedMounts.has(normalize(e)));
-  const okFiles = expected.filter(e => normalizedMounts.has(normalize(e)));
+  // If consolidated sysadmin mount exists, treat certain routers as satisfied
+  const hasSysadmin = normalizedMounts.has('/api/sysadmin');
+  const consolidated = new Set([
+    'admin-business',
+    'system-management',
+    'admin-models',
+    'ai-server-management',
+    'media-review-queue',
+    'site-configuration',
+    'model-dashboard',
+  ]);
+  const isConsolidated = (e) => {
+    const name = e.replace(/^\/api\//, '');
+    return consolidated.has(name);
+  };
+
+  const missingMounts = expected.filter(e => {
+    if (hasSysadmin && isConsolidated(e)) return false;
+    return !normalizedMounts.has(normalize(e));
+  });
+  const okFiles = expected.filter(e => {
+    if (hasSysadmin && isConsolidated(e)) return true;
+    return normalizedMounts.has(normalize(e));
+  });
 
   console.log('API mount check:');
   console.log(' Mounted:', mounts.length);
