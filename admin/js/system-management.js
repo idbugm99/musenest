@@ -190,7 +190,7 @@ class SystemManagement {
 
     async loadStats() {
         try {
-            const response = await fetch('/api/system-management/stats');
+            const response = await sysFetch('/api/system-management/stats');
             const data = await response.json();
 
             if (data.success) {
@@ -206,7 +206,7 @@ class SystemManagement {
 
     async loadBusinessTypes() {
         try {
-            const response = await fetch('/api/system-management/business-types');
+            const response = await sysFetch('/api/system-management/business-types');
             const data = await response.json();
 
             if (data.success) {
@@ -538,7 +538,7 @@ class SystemManagement {
         }
 
         try {
-            const response = await fetch('/api/system-management/clients/bulk', {
+            const response = await sysFetch('/api/system-management/clients/bulk', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -791,7 +791,7 @@ class SystemManagement {
             }
             
             // Test 2: Start impersonation for first available client
-            const clientsResponse = await fetch('/api/system-management/clients?page=1&limit=1');
+            const clientsResponse = await sysFetch('/api/system-management/clients?page=1&limit=1');
             const clientsData = await clientsResponse.json();
             
             if (!clientsData.success || clientsData.data.clients.length === 0) {
@@ -822,7 +822,7 @@ class SystemManagement {
             }
             
             // Test 3: Check audit log
-            const auditResponse = await fetch('/api/impersonation/audit?page=1&limit=1');
+            const auditResponse = await sysFetch('/api/impersonation/audit?page=1&limit=1');
             const auditData = await auditResponse.json();
             
             if (!auditData.success) {
