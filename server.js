@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const { engine } = require('express-handlebars');
+const axios = require('axios');
 require('dotenv').config();
 
 const { testConnection } = require('./config/database');
@@ -75,6 +76,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 // Admin static files (for components and assets)
 app.use('/admin/components', express.static(path.join(__dirname, 'admin/components')));
 app.use('/admin/assets', express.static(path.join(__dirname, 'admin/assets')));
+app.use('/admin/js', express.static(path.join(__dirname, 'admin/js')));
 
 // Serve the media queue review page
 app.get('/admin/media-queue-review.html', (req, res) => {
@@ -184,7 +186,11 @@ app.get('/sysadmin', async (req, res) => {
             stats: stats,
             recentActivity: recentActivity,
             clientCount: stats.totalClients,
-            initialSection: requestedSection
+            initialSection: requestedSection,
+            devBanner: {
+                env: process.env.NODE_ENV || 'development',
+                db: 'OK'
+            }
         });
     } catch (error) {
         console.error('❌ Error loading sysadmin dashboard:', error);
@@ -2121,6 +2127,56 @@ app.get('/health', async (req, res) => {
     });
 });
 
+// Dev-only: AI health proxy
+app.get('/_ai/health', async (req, res) => {
+    if (process.env.NODE_ENV === 'production') {
+        return res.status(404).end();
+    }
+    const baseUrl = process.env.AI_SERVER_URL || 'http://localhost:5005';
+    try {
+        const response = await axios.get(`${baseUrl.replace(/\/$/, '')}/health`, { timeout: 4000 });
+        res.json({ status: 'OK', target: baseUrl, upstream: response.data });
+    } catch (err) {
+        res.status(503).json({ status: 'UNAVAILABLE', target: baseUrl, error: err.message });
+    }
+});
+
+// Dev-only: runtime route listing (best-effort)
+app.get('/_debug/routes', (req, res) => {
+    if (process.env.NODE_ENV === 'production') {
+        return res.status(404).end();
+    }
+    const collect = [];
+    const stack = app._router && app._router.stack ? app._router.stack : [];
+
+    function pushRoute(route, base = '') {
+        const methods = Object.keys(route.methods || {}).filter(m => route.methods[m]).map(m => m.toUpperCase());
+        const path = base + route.path;
+        if (methods.length) {
+            methods.forEach(method => collect.push({ method, path }));
+        } else {
+            collect.push({ method: 'USE', path });
+        }
+    }
+
+    for (const layer of stack) {
+        if (layer.route) {
+            pushRoute(layer.route, '');
+        } else if (layer.name === 'router' && layer.handle && layer.handle.stack) {
+            // Attempt to detect base (may be regex) — we keep it empty for clarity
+            const sub = layer.handle.stack;
+            for (const s of sub) {
+                if (s.route) {
+                    pushRoute(s.route, '');
+                }
+            }
+        }
+    }
+
+    collect.sort((a, b) => a.path.localeCompare(b.path) || a.method.localeCompare(b.method));
+    res.json({ count: collect.length, routes: collect });
+});
+
 // API Routes
 app.use('/api/auth', require('./src/routes/auth'));
 app.use('/api/models', require('./src/routes/models'));
@@ -2147,6 +2203,9 @@ app.use('/api/blip', require('./routes/api/blip-webhook'));
 app.use('/api/ai-server-management', require('./routes/api/ai-server-management'));
 app.use('/api/site-configuration', require('./routes/api/site-configuration'));
 app.use('/api/clients', require('./routes/api/clients'));
+// Model Dashboard APIs (Phase 2 - Backend Infrastructure)
+app.use('/api/model-dashboard', require('./routes/api/model-dashboard'));
+app.use('/api/media-preview', require('./routes/api/media-preview'));
 
 // Theme Management API
 app.get('/api/theme-management/models', async (req, res) => {
