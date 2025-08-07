@@ -287,7 +287,9 @@ router.get('/', async (req, res) => {
             sort = 'created_at'
         } = req.query;
 
-        const offset = (page - 1) * limit;
+        const currentPage = Math.max(1, parseInt(page));
+        const perPage = Math.max(1, Math.min(100, parseInt(limit)));
+        const offset = (currentPage - 1) * perPage;
         let whereClause = 'WHERE 1=1';
         let params = [];
 
@@ -330,18 +332,19 @@ router.get('/', async (req, res) => {
             JOIN models m ON mu.model_id = m.id
             WHERE u.role = 'model'
             ORDER BY u.created_at DESC
-            LIMIT 20
-        `);
+            LIMIT ? OFFSET ?
+        `, [perPage, offset]);
 
+        res.set('Cache-Control', 'private, max-age=15');
         res.json({
             success: true,
             data: clients,
             clients: clients, // For backward compatibility
             pagination: {
-                page: parseInt(page),
-                limit: parseInt(limit),
+                page: currentPage,
+                limit: perPage,
                 total: total,
-                pages: Math.ceil(total / limit)
+                pages: Math.ceil(total / perPage)
             }
         });
 
