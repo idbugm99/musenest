@@ -88,6 +88,19 @@ app.use('/admin/components', express.static(path.join(__dirname, 'admin/componen
 app.use('/admin/assets', express.static(path.join(__dirname, 'admin/assets')));
 app.use('/admin/js', express.static(path.join(__dirname, 'admin/js')));
 
+// Normalize API paths: collapse multiple slashes and strip trailing slashes (except root)
+app.use('/api', (req, _res, next) => {
+    const original = req.url;
+    let normalized = original.replace(/\/+/g, '/');
+    if (normalized.length > 1 && normalized.endsWith('/')) {
+        normalized = normalized.slice(0, -1);
+    }
+    if (normalized !== original) {
+        req.url = normalized;
+    }
+    next();
+});
+
 // Dev-only legacy admin redirect middleware (catch most /admin/*.html)
 app.use('/admin', (req, res, next) => {
     if (process.env.NODE_ENV === 'production') return next();
@@ -100,6 +113,13 @@ app.use('/admin', (req, res, next) => {
         return res.redirect(target);
     }
     next();
+});
+
+// Dev-only: explicit 404 handler for unknown legacy admin pages (non-allowlisted)
+app.use('/admin', (req, res, next) => {
+    if (process.env.NODE_ENV === 'production') return next();
+    if (!req.path.endsWith('.html')) return next();
+    return res.status(404).send(`Legacy admin page not available in development. Go to <a href="/sysadmin">/sysadmin</a>.`);
 });
 
 // Serve the media queue review page
