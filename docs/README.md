@@ -17,4 +17,4 @@
 ## Health/Debug Endpoints
 - `/health` — DB connectivity & timestamp
 - `/_ai/health` — AI service health (if configured)
-- `/_debug/routes` — (planned) Dynamic route listing 
+- `/_debug/routes` — Dynamic route listing

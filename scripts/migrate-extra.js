@@ -37,13 +37,19 @@ async function runExtraMigrations() {
     for (const file of migrationFiles) {
       console.log(`📄 Running migration: ${file}`);
       const filePath = path.join(migrationsDir, file);
-      const sql = await fs.readFile(filePath, 'utf8');
+      const raw = await fs.readFile(filePath, 'utf8');
 
-      // Basic splitter: handle simple statements; ignore pure comment lines
-      const statements = sql
+      // Remove block comments and inline line comments, then split by semicolon
+      let sanitized = raw.replace(/\/\*[\s\S]*?\*\//g, '');
+      sanitized = sanitized
+        .split('\n')
+        .map((line) => line.replace(/--.*$/, '')) // strip anything after --
+        .join('\n');
+
+      const statements = sanitized
         .split(';')
         .map((s) => s.trim())
-        .filter((s) => s.length > 0 && !s.startsWith('--'));
+        .filter((s) => s.length > 0);
 
       for (const statement of statements) {
         try {
