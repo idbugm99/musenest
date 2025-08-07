@@ -63,18 +63,16 @@ PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 -- Ensure indexes exist (portable across MySQL versions)
 -- Drop/create indexes in a compatible way
-SET @idx_exists := (
-  SELECT COUNT(1) FROM INFORMATION_SCHEMA.STATISTICS 
-  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'media_review_queue' AND INDEX_NAME = 'idx_mrq_status'
-);
-SET @sql := IF(@idx_exists > 0, 'SELECT 1', 'CREATE INDEX idx_mrq_status ON media_review_queue (review_status)');
+-- Create idx_mrq_status only if column exists and index missing
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='media_review_queue' AND COLUMN_NAME='review_status');
+SET @idx_exists := (SELECT COUNT(1) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'media_review_queue' AND INDEX_NAME = 'idx_mrq_status');
+SET @sql := IF(@col_exists > 0 AND @idx_exists = 0, 'CREATE INDEX idx_mrq_status ON media_review_queue (review_status)', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
-SET @idx_exists := (
-  SELECT COUNT(1) FROM INFORMATION_SCHEMA.STATISTICS 
-  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'media_review_queue' AND INDEX_NAME = 'idx_mrq_created_at'
-);
-SET @sql := IF(@idx_exists > 0, 'SELECT 1', 'CREATE INDEX idx_mrq_created_at ON media_review_queue (created_at)');
+-- Create idx_mrq_created_at only if column exists and index missing
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='media_review_queue' AND COLUMN_NAME='created_at');
+SET @idx_exists := (SELECT COUNT(1) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'media_review_queue' AND INDEX_NAME = 'idx_mrq_created_at');
+SET @sql := IF(@col_exists > 0 AND @idx_exists = 0, 'CREATE INDEX idx_mrq_created_at ON media_review_queue (created_at)', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 
