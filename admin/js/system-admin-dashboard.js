@@ -17,6 +17,18 @@ class SystemAdminDashboard {
         this.init();
     }
 
+    // Media queue pagination controls
+    mqPrevPage() {
+        if ((this.mediaQueuePage || 1) > 1) {
+            this.mediaQueuePage -= 1;
+            this.loadTabContent('media-queue');
+        }
+    }
+    mqNextPage() {
+        this.mediaQueuePage = (this.mediaQueuePage || 1) + 1;
+        this.loadTabContent('media-queue');
+    }
+
     async init() {
         console.log('Initializing System Admin Dashboard...');
         
@@ -1694,7 +1706,9 @@ class SystemAdminDashboard {
     // Media Queue Content
     async loadMediaQueueContent() {
         try {
-            const response = await sysFetch('/api/media-review-queue/queue?status=pending&page=1&limit=20', {
+            const page = this.mediaQueuePage || 1;
+            const limit = this.mediaQueueLimit || 20;
+            const response = await sysFetch(`/api/media-review-queue/queue?status=pending&page=${page}&limit=${limit}`, {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -1708,6 +1722,8 @@ class SystemAdminDashboard {
             }
 
             const stats = await this.loadMediaQueueStats();
+            this.mediaQueuePage = data.pagination?.page || page;
+            this.mediaQueueLimit = data.pagination?.limit || limit;
             
             return `
                 <div class="space-y-6">
@@ -1807,7 +1823,14 @@ class SystemAdminDashboard {
                     </div>
 
                     <!-- Media Queue Items -->
-                    <div id="mediaQueueItems" class="space-y-4">
+                    <div class="flex items-center justify-between text-sm text-gray-600">
+                        <div>Page <span id="mqPage">${this.mediaQueuePage}</span> of <span id="mqPages">${data.pagination?.pages || 1}</span> · Total <span id="mqTotal">${data.pagination?.total || 0}</span></div>
+                        <div class="space-x-2">
+                            <button class="px-2 py-1 border rounded" onclick="window.systemAdminDashboard.mqPrevPage()" ${this.mediaQueuePage <= 1 ? 'disabled' : ''}>Prev</button>
+                            <button class="px-2 py-1 border rounded" onclick="window.systemAdminDashboard.mqNextPage()" ${this.mediaQueuePage >= (data.pagination?.pages || 1) ? 'disabled' : ''}>Next</button>
+                        </div>
+                    </div>
+                    <div id="mediaQueueItems" class="space-y-4 mt-3">
                         ${this.renderMediaQueueItems(data.queue)}
                     </div>
                 </div>
@@ -1879,7 +1902,9 @@ class SystemAdminDashboard {
     // Rejected/Removed Content
     async loadRejectedRemovedContent() {
         try {
-            const response = await sysFetch('/api/media-review-queue/queue?status=rejected&page=1&limit=20', {
+            const page = this.rejectedPage || 1;
+            const limit = this.rejectedLimit || 20;
+            const response = await sysFetch(`/api/media-review-queue/queue?status=rejected&page=${page}&limit=${limit}`, {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -1892,10 +1917,15 @@ class SystemAdminDashboard {
                 throw new Error(data.error);
             }
 
+            this.rejectedPage = data.pagination?.page || page;
+            this.rejectedLimit = data.pagination?.limit || limit;
             return `
                 <div class="space-y-6">
                     <div class="bg-white rounded-lg shadow border border-gray-200 p-4">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Rejected & Removed Media (${data.queue.length})</h3>
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-lg font-medium text-gray-900">Rejected & Removed Media (${data.pagination?.total || data.queue.length})</h3>
+                            <div class="text-sm text-gray-600">Page ${this.rejectedPage} of ${data.pagination?.pages || 1}</div>
+                        </div>
                         
                         ${data.queue.length === 0 ? 
                             '<div class="text-center py-8 text-gray-500">No rejected media found</div>' :

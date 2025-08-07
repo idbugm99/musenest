@@ -139,6 +139,7 @@ router.get('/clients', async (req, res) => {
             LIMIT ${limitNum} OFFSET ${offsetNum}
         `);
 
+        res.set('Cache-Control', 'private, max-age=30');
         res.json({
             success: true,
             data: {

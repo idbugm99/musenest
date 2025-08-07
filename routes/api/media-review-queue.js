@@ -103,6 +103,7 @@ router.get('/queue', async (req, res) => {
             };
         }));
 
+        res.set('Cache-Control', 'private, max-age=15');
         res.json({
             success: true,
             queue: processedItems,
