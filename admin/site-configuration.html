@@ -463,12 +463,16 @@
         // Load all sites
         async function loadSites() {
             try {
-                const response = await fetch('/api/site-configuration/sites');
+                const page = window.scPage || parseInt(localStorage.getItem('sc_page') || '1');
+                const limit = window.scLimit || parseInt(localStorage.getItem('sc_page_size') || '20');
+                const response = await sysFetch(`/api/site-configuration/sites?page=${page}&limit=${limit}`);
                 const result = await response.json();
                 
                 if (result.success) {
                     sites = result.sites;
-                    renderSites();
+                    window.scPage = result.pagination?.page || page;
+                    window.scLimit = result.pagination?.limit || limit;
+                    renderSites(result.pagination);
                 } else {
                     throw new Error(result.error || 'Failed to load sites');
                 }
@@ -552,7 +556,7 @@
         }
 
         // Render sites
-        function renderSites() {
+        function renderSites(pagination) {
             const container = document.getElementById('sitesContainer');
             const noSitesMsg = document.getElementById('noSitesMessage');
             
@@ -617,7 +621,19 @@
                     </div>
                 </div>
             `).join('');
+
+            document.getElementById('paginationInfo').innerHTML = `Page ${pagination?.page || 1} of ${pagination?.pages || 1} · Total ${pagination?.total || filteredSites.length}`;
+            document.getElementById('paginationControls').innerHTML = `
+              <button class="btn btn-sm btn-outline-secondary" onclick="scPrevPage()" ${(pagination?.page||1)<=1?'disabled':''}>Prev</button>
+              <button class="btn btn-sm btn-outline-secondary" onclick="scNextPage()" ${(pagination?.page||1)>=(pagination?.pages||1)?'disabled':''}>Next</button>
+              <select class="form-select form-select-sm" onchange="scChangePageSize(this.value)" style="width:auto; display:inline-block;">
+                ${[10,20,50,100].map(n => `<option value="${n}" ${(window.scLimit||20)==n?'selected':''}>${n}/page</option>`).join('')}
+              </select>`;
         }
+
+        function scPrevPage() { if ((window.scPage||1)>1){ window.scPage--; localStorage.setItem('sc_page', String(window.scPage)); loadSites(); } }
+        function scNextPage() { window.scPage=(window.scPage||1)+1; localStorage.setItem('sc_page', String(window.scPage)); loadSites(); }
+        function scChangePageSize(val){ const n=parseInt(val)||20; window.scLimit=n; localStorage.setItem('sc_page_size', String(n)); window.scPage=1; localStorage.setItem('sc_page','1'); loadSites(); }
 
         // Configure site
         async function configureSite(siteId) {
