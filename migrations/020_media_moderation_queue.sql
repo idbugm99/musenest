@@ -48,10 +48,18 @@ CREATE TABLE IF NOT EXISTS media_review_queue (
 );
 
 -- Add missing columns/indexes for existing installs
-ALTER TABLE media_review_queue
-    ADD COLUMN IF NOT EXISTS queue_type ENUM('auto_flagged','manual_review','appeal','admin_override') DEFAULT 'auto_flagged',
-    ADD COLUMN IF NOT EXISTS thumbnail_path TEXT,
-    ADD COLUMN IF NOT EXISTS policy_violations JSON;
+-- Add columns only if missing (compat across MySQL versions)
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='queue_type');
+SET @sql := IF(@col_exists = 0, "ALTER TABLE media_review_queue ADD COLUMN queue_type ENUM('auto_flagged','manual_review','appeal','admin_override') DEFAULT 'auto_flagged'", 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='thumbnail_path');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN thumbnail_path TEXT', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='policy_violations');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN policy_violations JSON', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 -- Ensure indexes exist (portable across MySQL versions)
 DROP INDEX IF EXISTS idx_mrq_status ON media_review_queue;
