@@ -92,7 +92,7 @@ router.post('/:modelSlug/sections/:id/upload', upload.single('image'), async (re
     if (!model) return res.fail(404, 'Model not found');
     if (!req.file) return res.fail(400, 'No image uploaded');
 
-    const originalsPath = req.file.path; // filesystem
+    const originalsPath = req.file.path; // filesystem temp in originals
     const filename = path.basename(originalsPath);
     const thumbsDir = path.join(process.cwd(), 'public', 'uploads', modelSlug, 'thumbs');
     await fs.mkdir(thumbsDir, { recursive: true });
@@ -105,6 +105,22 @@ router.post('/:modelSlug/sections/:id/upload', upload.single('image'), async (re
     const publicFilePath = path.join(publicGalleryDir, filename);
     // Copy original into public gallery area (or use a move if desired)
     await fs.copyFile(originalsPath, publicFilePath);
+
+    // Kick off moderation pipeline (analysis + blur + queue) without blocking UI
+    try {
+      const ContentModerationService = require('../../src/services/ContentModerationService');
+      const moderation = new ContentModerationService(db);
+      moderation.processUploadedImage({
+        filePath: publicFilePath,
+        originalName: filename,
+        modelId: model.id,
+        modelSlug,
+        usageIntent: 'public_site',
+        contextType: 'public_gallery'
+      }).catch(err => logger.warn('model-gallery.moderation async error', { error: err.message }));
+    } catch (e) {
+      logger.warn('model-gallery.moderation service unavailable', { error: e.message });
+    }
 
     // Insert DB record referencing filename (relative usage)
     const [{ nextOrder }] = await db.query(
