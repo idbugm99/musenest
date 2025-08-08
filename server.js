@@ -2493,54 +2493,18 @@ app.get('/api/content/statistics', async (req, res) => {
 
 app.get('/api/theme-management/themes', async (req, res) => {
     try {
-        // Return our available themes
+        const buildPreview = (path) => ({ url: path, embed: `${path}?embed=1` });
         const themes = [
-            {
-                id: 'basic',
-                name: 'Basic',
-                description: 'Professional & Clean',
-                primary_color: '#1F2937',
-                accent_color: '#10B981',
-                preview_url: '/test-basic'
-            },
-            {
-                id: 'glamour',
-                name: 'Glamour',
-                description: 'Pink & Stylish',
-                primary_color: '#EC4899',
-                accent_color: '#F97316',
-                preview_url: '/test-glamour'
-            },
-            {
-                id: 'luxury',
-                name: 'Luxury',
-                description: 'Gold & Elegant',
-                primary_color: '#D97706',
-                accent_color: '#92400E',
-                preview_url: '/test-luxury'
-            },
-            {
-                id: 'modern',
-                name: 'Modern',
-                description: 'Contemporary & Sleek',
-                primary_color: '#2563EB',
-                accent_color: '#06B6D4',
-                preview_url: '/test-modern'
-            },
-            {
-                id: 'dark',
-                name: 'Dark',
-                description: 'Cyberpunk & Edgy',
-                primary_color: '#00ff88',
-                accent_color: '#ff0088',
-                preview_url: '/test-dark'
-            }
+            { id: 'basic', name: 'Basic', description: 'Professional & Clean', primary_color: '#1F2937', accent_color: '#10B981', preview: buildPreview('/test-basic') },
+            { id: 'glamour', name: 'Glamour', description: 'Pink & Stylish', primary_color: '#EC4899', accent_color: '#F97316', preview: buildPreview('/test-glamour') },
+            { id: 'luxury', name: 'Luxury', description: 'Gold & Elegant', primary_color: '#D97706', accent_color: '#92400E', preview: buildPreview('/test-luxury') },
+            { id: 'modern', name: 'Modern', description: 'Contemporary & Sleek', primary_color: '#2563EB', accent_color: '#06B6D4', preview: buildPreview('/test-modern') },
+            { id: 'dark', name: 'Dark', description: 'Cyberpunk & Edgy', primary_color: '#00ff88', accent_color: '#ff0088', preview: buildPreview('/test-dark') },
         ];
-        
-        res.json(themes);
+        res.json({ success: true, data: { themes } });
     } catch (error) {
         console.error('Error fetching themes:', error);
-        res.status(500).json({ error: 'Failed to fetch themes' });
+        res.status(500).json({ success: false, error: 'Failed to fetch themes' });
     }
 });
 
