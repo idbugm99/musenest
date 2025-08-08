@@ -691,9 +691,10 @@ class ModelDashboard {
         // Media grid
         const mediaHTML = mediaItems.map(item => `
             <div class="card shadow-sm" title="${this.escapeForAttr(item.description_text || 'No description')}" data-description="${this.escapeForAttr(item.description_text || '')}">
-                <div class="position-relative bg-light" style="height: 200px; overflow: hidden;">
+                <div class="position-relative bg-light media-thumb" style="height: 200px; overflow: hidden; cursor: zoom-in;" data-fullsrc="${this.escapeForAttr(item.image_path || item.original_path || '')}">
                     <img src="${item.thumbnail_url}" alt="Media thumbnail" class="w-100 h-100" style="object-fit: cover;">
                     <div class="position-absolute bottom-0 start-0 w-100 px-2 py-1 bg-dark bg-opacity-50 text-white small d-none hover-desc">${this.escapeHtml(item.description_text || 'No description')}</div>
+                    <div class="position-absolute top-0 end-0 m-2 badge bg-secondary">ADMIN</div>
                 </div>
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
@@ -756,6 +757,30 @@ class ModelDashboard {
                 modal.remove();
             }, 200);
         }
+    }
+
+    // After content render, attach click-to-expand with ADMIN overlay
+    static attachImageExpandHandlers() {
+        document.querySelectorAll('.media-thumb').forEach(el => {
+            el.addEventListener('click', () => {
+                const fullSrc = el.getAttribute('data-fullsrc');
+                if (!fullSrc) return;
+                const overlay = document.createElement('div');
+                overlay.className = 'position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center';
+                overlay.style.cssText = 'z-index:1070;background:rgba(0,0,0,0.7)';
+                const src = fullSrc.startsWith('/public') || fullSrc.startsWith('/uploads') ? fullSrc : `/public${fullSrc}`;
+                overlay.innerHTML = `
+                    <div class="position-relative" style="max-width:90vw;max-height:85vh;">
+                        <img src="${src}" style="max-width:100%;max-height:85vh;display:block;">
+                        <div class="position-absolute top-50 start-50 translate-middle text-white fw-bold" style="font-size:3rem; letter-spacing:4px; text-shadow:0 2px 8px rgba(0,0,0,0.6); pointer-events:none;">ADMIN</div>
+                        <button type="button" class="btn btn-light position-absolute top-0 end-0 m-2">Close</button>
+                    </div>`;
+                document.body.appendChild(overlay);
+                const close = () => overlay.remove();
+                overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+                overlay.querySelector('button').addEventListener('click', close);
+            });
+        });
     }
 
     showQuickActions(model, button) {
