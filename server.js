@@ -324,6 +324,29 @@ app.get('/admin/:slug/gallery', async (req, res) => {
     }
 });
 
+// Model Admin: Content page
+app.get('/admin/:slug/content', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const rows = await db.query(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
+        res.render('admin/pages/model-content', {
+            layout: 'admin/layouts/main',
+            pageTitle: 'Content Manager',
+            currentPage: 'model-content',
+            isModelAdmin: true,
+            model: rows[0],
+            legacyBanner: { message: 'This is a legacy admin surface. System admin lives at /sysadmin.' }
+        });
+    } catch (e) {
+        console.error('❌ Error loading model content page:', e);
+        res.status(500).send('Error loading model content');
+    }
+});
+
 // Routes
 app.get('/', (req, res) => {
     res.json({
@@ -2327,6 +2350,9 @@ try {
 } catch (e) {
   // ignore during scaffold if missing
 }
+try {
+  app.use('/api/model-content', require('./routes/api/model-content'));
+} catch (e) {}
 
 // Theme Management API
 app.get('/api/theme-management/models', async (req, res) => {

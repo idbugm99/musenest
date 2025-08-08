@@ -1,0 +1,112 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0"><i class="fas fa-file-alt me-2"></i>Content Manager — {{model.name}}</h3>
+  <a class="btn btn-outline-secondary" href="/admin"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
+  </div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-3">
+    <div class="card">
+      <div class="card-header bg-white"><strong>Pages</strong></div>
+      <div class="list-group list-group-flush" id="page_list">
+        <button class="list-group-item list-group-item-action active" data-id="1">Home</button>
+        <button class="list-group-item list-group-item-action" data-id="2">About</button>
+        <button class="list-group-item list-group-item-action" data-id="3">Gallery</button>
+        <button class="list-group-item list-group-item-action" data-id="4">Rates</button>
+        <button class="list-group-item list-group-item-action" data-id="5">Contact</button>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card">
+      <div class="card-header bg-white"><strong>Fields</strong></div>
+      <div class="card-body" id="fields_container">
+        <div class="text-muted">Pick a page to load fields…</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-3">
+    <div class="card">
+      <div class="card-header bg-white"><strong>Audit</strong></div>
+      <div class="card-body" id="audit_container">
+        <div class="text-muted">Audit trail will appear here…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const slug = {{json model.slug}};
+    let currentPageType = 1;
+    const pageList = document.getElementById('page_list');
+    const fields = document.getElementById('fields_container');
+    const audit = document.getElementById('audit_container');
+
+    async function loadPage(pageTypeId){
+      currentPageType = pageTypeId;
+      fields.innerHTML = '<div class="text-muted">Loading…</div>';
+      const res = await fetch(`/api/model-content/${encodeURIComponent(slug)}/pages/${pageTypeId}`);
+      const data = await res.json();
+      if(!data.success){ fields.innerHTML = `<div class="text-danger">${data.message||'Failed to load'}</div>`; return; }
+      const items = data.data.items || [];
+      if (!items.length) { fields.innerHTML = '<div class="text-muted">No fields yet for this page.</div>'; return; }
+      fields.innerHTML = items.map(it => `
+        <div class="mb-3">
+          <label class="form-label">${it.content_key}</label>
+          <textarea class="form-control field-input" data-key="${it.content_key}" rows="3">${(it.content_value||'').replace(/</g,'&lt;')}</textarea>
+          <small class="text-muted">${it.content_type||'text'}</small>
+        </div>
+      `).join('');
+      bindAutosave();
+      loadAudit();
+    }
+
+    function bindAutosave(){
+      const REASON = 'Model admin inline edit';
+      fields.querySelectorAll('.field-input').forEach(el => {
+        let t = null; let saving = false;
+        el.addEventListener('input', () => {
+          clearTimeout(t); t = setTimeout(async () => {
+            if (saving) return; saving = true;
+            const key = el.getAttribute('data-key');
+            const body = { content_value: el.value, reason: REASON, content_type: 'text' };
+            const r = await fetch(`/api/model-content/${encodeURIComponent(slug)}/pages/${currentPageType}/${encodeURIComponent(key)}`, {
+              method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+            });
+            const d = await r.json();
+            saving = false;
+            if (!d.success) { notify('danger', d.message||'Save failed'); return; }
+            notify('success', 'Saved');
+            loadAudit();
+          }, 600);
+        });
+      });
+    }
+
+    async function loadAudit(page=1){
+      const r = await fetch(`/api/model-content/${encodeURIComponent(slug)}/audit?page=${page}&limit=10`);
+      const d = await r.json();
+      if (!d.success) { audit.innerHTML = `<div class="text-danger">${d.message||'Failed to load'}</div>`; return; }
+      const rows = d.data.audit || [];
+      audit.innerHTML = rows.map(row => `
+        <div class="border rounded p-2 mb-2">
+          <div class="small"><strong>${row.content_key}</strong> — ${new Date(row.created_at).toLocaleString()}</div>
+          <div class="text-muted small">Reason: ${row.reason||'—'}</div>
+        </div>
+      `).join('') || '<div class="text-muted">No audit yet</div>';
+    }
+
+    // page list click binding
+    pageList.querySelectorAll('button[data-id]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        pageList.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadPage(parseInt(btn.getAttribute('data-id')));
+      });
+    });
+
+    // initial load
+    loadPage(currentPageType);
+  })();
+</script>
+
