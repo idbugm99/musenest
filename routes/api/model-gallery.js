@@ -136,6 +136,25 @@ router.post('/:modelSlug/sections/:id/upload', upload.single('image'), async (re
     // Copy original into public gallery area (or use a move if desired)
     await fs.copyFile(originalsPath, publicFilePath);
 
+    // Optional watermark application based on model settings
+    try {
+      const rows = await db.query('SELECT setting_value FROM model_settings WHERE model_id = ? AND setting_key = ?', [model.id, 'apply_watermark_default']);
+      const shouldWatermark = (rows[0]?.setting_value || 'false') === 'true';
+      if (shouldWatermark) {
+        const wmPathRow = await db.query('SELECT setting_value FROM model_settings WHERE model_id = ? AND setting_key = ?', [model.id, 'watermark_image']);
+        const wmPath = wmPathRow[0]?.setting_value;
+        if (wmPath) {
+          const publicRoot = path.join(process.cwd(), 'public');
+          const absWatermark = wmPath.startsWith('/uploads/') ? path.join(publicRoot, wmPath.replace(/^\//,'')) : wmPath;
+          const stampedPath = path.join(process.cwd(), 'public', 'uploads', modelSlug, 'public', 'gallery', `wm_${filename}`);
+          try {
+            await sharp(publicFilePath).composite([{ input: absWatermark, gravity: 'southeast', blend: 'overlay' }]).toFile(stampedPath);
+            await fs.rename(stampedPath, publicFilePath);
+          } catch (wmErr) { logger.warn('watermark failed', { error: wmErr.message }); }
+        }
+      }
+    } catch (wmOuter) {}
+
     // Kick off moderation pipeline (analysis + blur + queue) without blocking UI
     try {
       const ContentModerationService = require('../../src/services/ContentModerationService');
