@@ -7,13 +7,7 @@
   <div class="col-12 col-lg-3">
     <div class="card">
       <div class="card-header bg-white"><strong>Pages</strong></div>
-      <div class="list-group list-group-flush" id="page_list">
-        <button class="list-group-item list-group-item-action active" data-id="1">Home</button>
-        <button class="list-group-item list-group-item-action" data-id="2">About</button>
-        <button class="list-group-item list-group-item-action" data-id="3">Gallery</button>
-        <button class="list-group-item list-group-item-action" data-id="4">Rates</button>
-        <button class="list-group-item list-group-item-action" data-id="5">Contact</button>
-      </div>
+      <div class="list-group list-group-flush" id="page_list"><div class="list-group-item">Loading…</div></div>
     </div>
   </div>
   <div class="col-12 col-lg-6">
@@ -41,6 +35,28 @@
     const pageList = document.getElementById('page_list');
     const fields = document.getElementById('fields_container');
     const audit = document.getElementById('audit_container');
+    const PAGE_NAMES = {1:'Home',2:'About',3:'Gallery',4:'Rates',5:'Contact'};
+
+    async function loadPages(){
+      try{
+        const r = await fetch(`/api/model-content/${encodeURIComponent(slug)}/pages`);
+        const d = await r.json();
+        if (!d.success){ pageList.innerHTML = '<div class="list-group-item text-danger">Failed to load</div>'; return; }
+        const ids = d.data.pages || [1,2,3,4,5];
+        pageList.innerHTML = ids.map((id,idx)=>`<button class="list-group-item list-group-item-action ${idx===0?'active':''}" data-id="${id}">${PAGE_NAMES[id]||('Page '+id)}</button>`).join('');
+        // bind
+        pageList.querySelectorAll('button[data-id]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            pageList.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            loadPage(parseInt(btn.getAttribute('data-id')));
+          });
+        });
+        // initial load
+        const first = pageList.querySelector('button[data-id]');
+        if (first){ currentPageType = parseInt(first.getAttribute('data-id')); loadPage(currentPageType); }
+      }catch(e){ pageList.innerHTML = '<div class="list-group-item text-danger">Failed to load</div>'; }
+    }
 
     async function loadPage(pageTypeId){
       currentPageType = pageTypeId;
@@ -50,15 +66,68 @@
       if(!data.success){ fields.innerHTML = `<div class="text-danger">${data.message||'Failed to load'}</div>`; return; }
       const items = data.data.items || [];
       if (!items.length) { fields.innerHTML = '<div class="text-muted">No fields yet for this page.</div>'; return; }
-      fields.innerHTML = items.map(it => `
-        <div class="mb-3">
-          <label class="form-label">${it.content_key}</label>
-          <textarea class="form-control field-input" data-key="${it.content_key}" rows="3">${((it.content_value||'')+'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
-          <small class="text-muted">${it.content_type||'text'}</small>
-        </div>
-      `).join('');
+      fields.innerHTML = items.map(it => {
+        const val = ((it.content_value||'')+'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        if ((it.content_type||'text') === 'html'){
+          return `
+            <div class=\"mb-3\">
+              <label class=\"form-label\">${it.content_key} <span class=\"badge bg-info\">HTML</span></label>
+              <div class=\"rt-editor border rounded\" data-key=\"${it.content_key}\" style=\"min-height:140px\"></div>
+              <small class=\"text-muted\">Rich text</small>
+            </div>
+          `;
+        }
+        return `
+          <div class=\"mb-3\">
+            <label class=\"form-label\">${it.content_key}</label>
+            <textarea class=\"form-control field-input\" data-key=\"${it.content_key}\" rows=\"3\">${val}</textarea>
+            <small class=\"text-muted\">${it.content_type||'text'}</small>
+          </div>
+        `;
+      }).join('');
+      await setupRichText(items);
       bindAutosave();
       loadAudit();
+    }
+
+    async function ensureQuill(){
+      if (window.Quill) return true;
+      // load CSS
+      const link = document.createElement('link'); link.rel='stylesheet'; link.href='https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css';
+      document.head.appendChild(link);
+      await new Promise(res=>link.onload=res);
+      // load JS
+      const s = document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js';
+      document.body.appendChild(s);
+      await new Promise(res=>s.onload=res);
+      return true;
+    }
+
+    async function setupRichText(items){
+      const hasHtml = (items||[]).some(it => (it.content_type||'text') === 'html');
+      if (!hasHtml) return;
+      await ensureQuill();
+      fields.querySelectorAll('.rt-editor').forEach((el, idx) => {
+        const key = el.getAttribute('data-key');
+        const item = items.find(i => i.content_key === key) || {};
+        const initial = (item.content_value||'');
+        const q = new Quill(el, { theme: 'snow' });
+        q.root.innerHTML = initial;
+        let t = null; let saving = false;
+        q.on('text-change', () => {
+          clearTimeout(t); t = setTimeout(async () => {
+            if (saving) return; saving = true;
+            const html = q.root.innerHTML;
+            const body = { content_value: html, reason: 'Model admin inline edit', content_type: 'html' };
+            const r = await fetch(`/api/model-content/${encodeURIComponent(slug)}/pages/${currentPageType}/${encodeURIComponent(key)}`, {
+              method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+            });
+            const d = await r.json(); saving = false;
+            if (!d.success) { notify('danger', d.message||'Save failed'); return; }
+            notify('success', 'Saved'); loadAudit();
+          }, 800);
+        });
+      });
     }
 
     function bindAutosave(){
@@ -111,17 +180,8 @@
       });
     }
 
-    // page list click binding
-    pageList.querySelectorAll('button[data-id]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        pageList.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        loadPage(parseInt(btn.getAttribute('data-id')));
-      });
-    });
-
     // initial load
-    loadPage(currentPageType);
+    loadPages();
   })();
 </script>
 
