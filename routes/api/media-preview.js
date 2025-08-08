@@ -45,6 +45,7 @@ router.get('/:id/:type?', async (req, res) => {
                 cm.id,
                 cm.image_path,
                 cm.original_path,
+                cm.blurred_path,
                 cm.model_id,
                 cm.admin_preview_watermarked,
                 cm.watermark_generated_at,
@@ -102,9 +103,8 @@ router.get('/:id/:type?', async (req, res) => {
         }
 
         // Fallback: Basic image serving with planned watermark headers
-        // This serves the original image temporarily until watermarking is fully implemented
-        
-        const imagePath = content.original_path || content.image_path;
+        // Prefer blurred asset when available to avoid exposing originals
+        const imagePath = content.blurred_path || content.image_path || content.original_path;
         
         // Check if image file exists
         try {

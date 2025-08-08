@@ -207,11 +207,12 @@ router.get('/models/:id/media', async (req, res) => {
                 mrq.flagged_at,
                 mrq.reviewed_at,
                 cm.description_text,
+                cm.blurred_path,
                 /* Not all schemas have explicit violation fields */
                 NULL as violation_category,
                 0.0 as violation_severity,
                 
-                -- Thumbnail preview endpoint (use content_moderation_id)
+                -- Thumbnail preview endpoint (use content_moderation_id). Prefer blurred/full for modal.
                 CONCAT('/api/media-preview/', mrq.content_moderation_id, '/thumbnail') as thumbnail_url,
                 
                 -- Moderation details
