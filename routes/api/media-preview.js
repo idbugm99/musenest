@@ -104,7 +104,14 @@ router.get('/:id/:type?', async (req, res) => {
 
         // Fallback: Basic image serving with planned watermark headers
         // Prefer blurred asset when available to avoid exposing originals
-        const imagePath = content.blurred_path || content.image_path || content.original_path;
+        const publicRoot = path.join(__dirname, '../../public');
+        const toFsPath = (p) => {
+            if (!p) return null;
+            if (p.startsWith('/uploads/')) return path.join(publicRoot, p.replace(/^\//, ''));
+            return p; // already absolute on-disk path
+        };
+
+        const imagePath = toFsPath(content.blurred_path) || toFsPath(content.image_path) || toFsPath(content.original_path);
         
         // Check if image file exists
         try {
