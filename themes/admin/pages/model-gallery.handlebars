@@ -112,6 +112,7 @@
           container.innerHTML = `
             <div class="d-flex gap-2 align-items-center mb-2">
               <input class="form-control form-control-sm" id="add_filename_${id}" placeholder="/uploads/${slug}/public/gallery/filename.jpg" />
+              <button class="btn btn-sm btn-secondary" id="btn_pick_${id}" data-id="${id}"><i class=\"fas fa-folder-open\"></i> Browse</button>
               <button class="btn btn-sm btn-primary" id="btn_add_${id}" data-id="${id}"><i class=\"fas fa-plus\"></i> Add</button>
             </div>
             <div class="row row-cols-2 row-cols-md-3 g-2 images-grid" data-section-id="${id}">
@@ -132,8 +133,19 @@
           `;
 
           // bind add image
+          const pickBtn = document.getElementById(`btn_pick_${id}`);
           const addBtn = document.getElementById(`btn_add_${id}`);
           const addInput = document.getElementById(`add_filename_${id}`);
+          pickBtn.addEventListener('click', async () => {
+            const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/uploads-list?sub=public/gallery`);
+            const d = await r.json();
+            if (!d.success) { alert(d.message||'Failed to list'); return; }
+            const files = d.data.files || [];
+            if (!files.length) { alert('No files found under /uploads/'+slug+'/public/gallery'); return; }
+            const names = files.map(f => f.path);
+            const choice = prompt('Paste or pick a file path:\n' + names.slice(0, 20).join('\n'), names[0]);
+            if (choice) { addInput.value = choice; }
+          });
           addBtn.addEventListener('click', async () => {
             const filename = (addInput.value || '').trim();
             if (!filename) { alert('Enter a filename/path'); return; }
@@ -161,7 +173,13 @@
                     <div class=\"small text-truncate\" title=\"${img.filename}\"><i class=\\\"fas fa-grip-vertical me-1 text-muted\\\"></i>${img.filename}</div>
                     <button class=\"btn btn-sm btn-outline-secondary btn-toggle-image\" data-id=\"${img.id}\" data-active=\"${img.is_active ? 1 : 0}\">${img.is_active ? 'Hide' : 'Show'}</button>
                   </div>
-                  <div class=\"text-muted small mt-1\">${img.is_active ? 'Visible' : 'Hidden'}</div>
+                  <div class=\"mt-2\">
+                    <input class=\"form-control form-control-sm mb-1 input-caption\" data-id=\"${img.id}\" placeholder=\"Caption\" value=\"${(img.caption||'').replace(/\\\"/g,'&quot;')}\" />
+                    <div class=\"d-flex align-items-center justify-content-between\">
+                      <input class=\"form-control form-control-sm me-2 input-tags\" data-id=\"${img.id}\" placeholder=\"tags (comma)\" value=\"${(img.tags||'').replace(/\\\"/g,'&quot;')}\" />
+                      <span class=\"text-muted small\">${img.is_active ? 'Visible' : 'Hidden'}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             `).join('');
@@ -184,6 +202,20 @@
                 const dd = await rr.json();
                 if (!dd.success) { return; }
                 renderImagesGrid(container, sectionId, dd.data.images || []);
+              });
+            });
+            // inline save caption/tags on blur
+            scope.querySelectorAll('.input-caption, .input-tags').forEach(input => {
+              input.addEventListener('blur', async () => {
+                const imgId = input.getAttribute('data-id');
+                const wrapper = input.closest('.draggable-card');
+                const caption = wrapper.querySelector('.input-caption').value;
+                const tags = wrapper.querySelector('.input-tags').value;
+                const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/${imgId}`, {
+                  method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ caption, tags })
+                });
+                const d = await r.json();
+                if (!d.success) { console.warn('Failed to save caption/tags'); }
               });
             });
           }

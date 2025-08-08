@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../config/database');
 const logger = require('../../utils/logger');
+const fs = require('fs').promises;
+const path = require('path');
 
 // Resolve model id from slug helper
 async function getModelBySlug(slug) {
@@ -155,6 +157,24 @@ router.patch('/:modelSlug/images/reorder', async (req, res) => {
   } catch (error) {
     logger.error('model-gallery.reorder-images error', { error: error.message });
     return res.fail(500, 'Failed to reorder images', error.message);
+  }
+});
+
+// GET /api/model-gallery/:modelSlug/uploads-list?path=public (list available files under /public/uploads/:slug/<path>)
+router.get('/:modelSlug/uploads-list', async (req, res) => {
+  try {
+    const { modelSlug } = req.params;
+    const { sub = 'public' } = req.query; // default to public
+    const safeSub = String(sub || 'public').replace(/\.\.+/g, '').replace(/^\//, '');
+    const root = path.join(process.cwd(), 'public', 'uploads', modelSlug, safeSub);
+    const entries = await fs.readdir(root, { withFileTypes: true });
+    const files = entries
+      .filter(e => e.isFile())
+      .map(e => ({ name: e.name, path: `/uploads/${modelSlug}/${safeSub}/${e.name}` }));
+    return res.success({ files });
+  } catch (error) {
+    logger.error('model-gallery.list-uploads error', { error: error.message });
+    return res.fail(500, 'Failed to list uploads', error.message);
   }
 });
 
