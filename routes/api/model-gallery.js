@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../config/database');
 const logger = require('../../utils/logger');
+const multer = require('multer');
+const sharp = require('sharp');
 const fs = require('fs').promises;
 const path = require('path');
 
@@ -10,6 +12,26 @@ async function getModelBySlug(slug) {
   const rows = await db.query('SELECT id, slug, name FROM models WHERE slug = ? LIMIT 1', [slug]);
   return rows && rows[0] ? rows[0] : null;
 }
+
+// Multer storage to /public/uploads/:slug/originals
+const storage = multer.diskStorage({
+  destination: async (req, file, cb) => {
+    try {
+      const { modelSlug } = req.params;
+      const dest = path.join(process.cwd(), 'public', 'uploads', modelSlug, 'originals');
+      await fs.mkdir(dest, { recursive: true });
+      cb(null, dest);
+    } catch (e) {
+      cb(e);
+    }
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname || '').toLowerCase();
+    const base = path.basename(file.originalname || 'upload', ext).replace(/[^a-z0-9_-]+/gi, '_');
+    cb(null, `${base}_${Date.now()}${ext}`);
+  }
+});
+const upload = multer({ storage, limits: { fileSize: 15 * 1024 * 1024 } });
 
 // GET /api/model-gallery/:modelSlug/sections
 router.get('/:modelSlug/sections', async (req, res) => {
@@ -59,6 +81,46 @@ router.get('/:modelSlug/sections/:id/images', async (req, res) => {
   } catch (error) {
     logger.error('model-gallery.list-images error', { error: error.message });
     return res.fail(500, 'Failed to load images', error.message);
+  }
+});
+
+// POST /api/model-gallery/:modelSlug/sections/:id/upload (multipart form-data field: image)
+router.post('/:modelSlug/sections/:id/upload', upload.single('image'), async (req, res) => {
+  try {
+    const { modelSlug, id } = req.params;
+    const model = await getModelBySlug(modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+    if (!req.file) return res.fail(400, 'No image uploaded');
+
+    const originalsPath = req.file.path; // filesystem
+    const filename = path.basename(originalsPath);
+    const thumbsDir = path.join(process.cwd(), 'public', 'uploads', modelSlug, 'thumbs');
+    await fs.mkdir(thumbsDir, { recursive: true });
+    const thumbPath = path.join(thumbsDir, filename);
+    await sharp(originalsPath).resize(480, 480, { fit: 'cover' }).jpeg({ quality: 80 }).toFile(thumbPath);
+
+    // Derive public URL for gallery (store copies into public/gallery?)
+    const publicGalleryDir = path.join(process.cwd(), 'public', 'uploads', modelSlug, 'public', 'gallery');
+    await fs.mkdir(publicGalleryDir, { recursive: true });
+    const publicFilePath = path.join(publicGalleryDir, filename);
+    // Copy original into public gallery area (or use a move if desired)
+    await fs.copyFile(originalsPath, publicFilePath);
+
+    // Insert DB record referencing filename (relative usage)
+    const [{ nextOrder }] = await db.query(
+      'SELECT COALESCE(MAX(order_index), -1) + 1 AS nextOrder FROM gallery_images WHERE model_id = ? AND section_id = ?',
+      [model.id, parseInt(id)]
+    );
+    const result = await db.query(
+      'INSERT INTO gallery_images (section_id, model_id, filename, caption, tags, is_active, order_index) VALUES (?, ?, ?, ?, ?, 1, ?)',
+      [parseInt(id), model.id, filename, '', '', nextOrder || 0]
+    );
+    const imageId = result.insertId;
+    const rows = await db.query('SELECT * FROM gallery_images WHERE id = ?', [imageId]);
+    return res.success({ image: rows[0], thumb_url: `/uploads/${modelSlug}/thumbs/${filename}`, public_url: `/uploads/${modelSlug}/public/gallery/${filename}` }, 201);
+  } catch (error) {
+    logger.error('model-gallery.upload-image error', { error: error.message });
+    return res.fail(500, 'Failed to upload image', error.message);
   }
 });
 

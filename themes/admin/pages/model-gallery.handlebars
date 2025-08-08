@@ -117,6 +117,10 @@
             <div class="d-flex gap-2 align-items-center mb-2">
               <input class="form-control form-control-sm" id="add_filename_${id}" placeholder="/uploads/${slug}/public/gallery/filename.jpg" />
               <button class="btn btn-sm btn-secondary" id="btn_pick_${id}" data-id="${id}"><i class=\"fas fa-folder-open\"></i> Browse</button>
+              <label class="btn btn-sm btn-outline-primary mb-0">
+                <i class=\"fas fa-upload\"></i> Upload
+                <input type="file" id="file_upload_${id}" accept="image/*" style="display:none" />
+              </label>
               <button class="btn btn-sm btn-primary" id="btn_add_${id}" data-id="${id}"><i class=\"fas fa-plus\"></i> Add</button>
             </div>
             <div class="row row-cols-2 row-cols-md-3 g-2 images-grid" data-section-id="${id}">
@@ -140,8 +144,23 @@
           const pickBtn = document.getElementById(`btn_pick_${id}`);
           const addBtn = document.getElementById(`btn_add_${id}`);
           const addInput = document.getElementById(`add_filename_${id}`);
+          const fileInput = document.getElementById(`file_upload_${id}`);
           pickBtn.addEventListener('click', async () => {
             openFilePicker(addInput);
+          });
+          fileInput.addEventListener('change', async () => {
+            const file = fileInput.files && fileInput.files[0];
+            if (!file) return;
+            const form = new FormData();
+            form.append('image', file);
+            const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/upload`, { method: 'POST', body: form });
+            const d = await r.json();
+            if (!d.success) { alert(d.message || 'Upload failed'); return; }
+            // reload
+            const rr = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`);
+            const dd = await rr.json();
+            if (!dd.success) { return; }
+            renderImagesGrid(container, id, dd.data.images || []);
           });
           addBtn.addEventListener('click', async () => {
             const filename = (addInput.value || '').trim();
