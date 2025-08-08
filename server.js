@@ -405,6 +405,27 @@ app.get('/:slug/admin/images', async (req, res) => {
     }
 });
 
+// Model Admin: Calendar page
+app.get('/:slug/admin/calendar', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const rows = await db.query(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
+        res.render('admin/pages/model-calendar', {
+            layout: 'admin/layouts/main',
+            pageTitle: 'Calendar Management',
+            currentPage: 'model-calendar',
+            isModelAdmin: true,
+            model: rows[0]
+        });
+    } catch (err) {
+        res.status(500).send('Failed to render calendar');
+    }
+});
+
 // Routes
 app.get('/', (req, res) => {
     res.json({
