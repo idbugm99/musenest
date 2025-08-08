@@ -54,16 +54,75 @@
       const sections = data.data.sections || [];
       if(!sections.length){ listEl.innerHTML = '<div class="text-muted">No sections yet.</div>'; return; }
       listEl.innerHTML = sections.map(s => `
-        <div class="border rounded p-2 mb-2 d-flex align-items-center justify-content-between">
-          <div>
-            <div class="fw-bold">${s.title}</div>
-            <div class="text-muted small">${s.layout_type} · ${s.is_visible ? 'Visible' : 'Hidden'}</div>
+        <div class="border rounded p-2 mb-2">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <div class="fw-bold">${s.title}</div>
+              <div class="text-muted small">${s.layout_type} · ${s.is_visible ? 'Visible' : 'Hidden'}</div>
+            </div>
+            <div>
+              <button class="btn btn-sm btn-outline-secondary me-2 btn-rename" data-id="${s.id}">Rename</button>
+              <button class="btn btn-sm btn-outline-warning me-2 btn-toggle" data-id="${s.id}" data-visible="${s.is_visible ? 1 : 0}">${s.is_visible ? 'Hide' : 'Show'}</button>
+              <button class="btn btn-sm btn-outline-primary btn-manage" data-id="${s.id}">Manage Images</button>
+            </div>
           </div>
-          <div>
-            <button class="btn btn-sm btn-outline-primary" data-id="${s.id}">Manage Images</button>
-          </div>
+          <div class="mt-2 section-images" id="section_${s.id}_images"></div>
         </div>
       `).join('');
+
+      // Bind actions
+      listEl.querySelectorAll('.btn-rename').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          const currentTitle = btn.closest('.border').querySelector('.fw-bold').textContent.trim();
+          const next = prompt('New title', currentTitle);
+          if (!next || next === currentTitle) return;
+          const res = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}`, {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: next })
+          });
+          const data = await res.json();
+          if (!data.success) { alert(data.message||'Failed to rename'); return; }
+          await load();
+        });
+      });
+
+      listEl.querySelectorAll('.btn-toggle').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          const visible = btn.getAttribute('data-visible') === '1';
+          const res = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/visibility`, {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_visible: !visible })
+          });
+          const data = await res.json();
+          if (!data.success) { alert(data.message||'Failed to toggle'); return; }
+          await load();
+        });
+      });
+
+      listEl.querySelectorAll('.btn-manage').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          const container = document.getElementById(`section_${id}_images`);
+          container.innerHTML = '<div class="text-muted">Loading images…</div>';
+          const res = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`);
+          const data = await res.json();
+          if (!data.success) { container.innerHTML = `<div class="text-danger">${data.message||'Failed to load images'}</div>`; return; }
+          const images = data.data.images || [];
+          if (!images.length) { container.innerHTML = '<div class="text-muted">No images in this section.</div>'; return; }
+          container.innerHTML = `
+            <div class="row row-cols-2 row-cols-md-3 g-2">
+              ${images.map(img => `
+                <div class="col">
+                  <div class="border rounded p-2">
+                    <div class="small text-truncate" title="${img.filename}">${img.filename}</div>
+                    <div class="text-muted small">${img.is_active ? 'Visible' : 'Hidden'}</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        });
+      });
     }
     searchEl.addEventListener('input', () => load(1));
     createBtn.addEventListener('click', async () => {

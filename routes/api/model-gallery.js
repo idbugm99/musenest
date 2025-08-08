@@ -42,6 +42,24 @@ router.get('/:modelSlug/sections', async (req, res) => {
   }
 });
 
+// GET /api/model-gallery/:modelSlug/sections/:id/images
+router.get('/:modelSlug/sections/:id/images', async (req, res) => {
+  try {
+    const { modelSlug, id } = req.params;
+    const model = await getModelBySlug(modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+    const images = await db.query(
+      'SELECT id, section_id, model_id, filename, caption, tags, is_active, order_index, created_at, updated_at FROM gallery_images WHERE model_id = ? AND section_id = ? ORDER BY order_index ASC, id ASC',
+      [model.id, parseInt(id)]
+    );
+    res.set('Cache-Control', 'private, max-age=10');
+    return res.success({ images });
+  } catch (error) {
+    logger.error('model-gallery.list-images error', { error: error.message });
+    return res.fail(500, 'Failed to load images', error.message);
+  }
+});
+
 module.exports = router;
 // POST /api/model-gallery/:modelSlug/sections  (create section)
 router.post('/:modelSlug/sections', async (req, res) => {
