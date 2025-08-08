@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h3 class="mb-0"><i class="fas fa-file-alt me-2"></i>Content Manager — {{model.name}}</h3>
-  <a class="btn btn-outline-secondary" href="/admin"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
+  <a class="btn btn-outline-secondary" href="/{{model.slug}}/admin"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
   </div>
 
 <div class="row g-3">
@@ -30,18 +30,38 @@
 
 <script>
   (function(){
-    const slug = {{json model.slug}};
+    let slug = {{{json model.slug}}};
+    if (!slug || slug === 'null' || slug === 'undefined') {
+      const parts = window.location.pathname.split('/').filter(Boolean);
+      // expect /:slug/admin/content → slug is parts[0]
+      if (parts.length >= 1) slug = parts[0];
+    }
     let currentPageType = 1;
     const pageList = document.getElementById('page_list');
     const fields = document.getElementById('fields_container');
     const audit = document.getElementById('audit_container');
     const PAGE_NAMES = {1:'Home',2:'About',3:'Gallery',4:'Rates',5:'Contact'};
 
+    function esc(v){
+      const s = ((v ?? '') + '');
+      return s
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/`/g,'&#96;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
+    }
+
     async function loadPages(){
       try{
         const r = await fetch(`/api/model-content/${encodeURIComponent(slug)}/pages`);
         const d = await r.json();
-        if (!d.success){ pageList.innerHTML = '<div class="list-group-item text-danger">Failed to load</div>'; return; }
+        if (!d || d.success !== true){
+          pageList.innerHTML = `<div class=\"list-group-item text-danger\">Failed to load pages</div>`;
+          console.error('Content pages load failed', d);
+          return;
+        }
         const ids = d.data.pages || [1,2,3,4,5];
         pageList.innerHTML = ids.map((id,idx)=>`<button class="list-group-item list-group-item-action ${idx===0?'active':''}" data-id="${id}">${PAGE_NAMES[id]||('Page '+id)}</button>`).join('');
         // bind
@@ -67,23 +87,30 @@
       const items = data.data.items || [];
       if (!items.length) { fields.innerHTML = '<div class="text-muted">No fields yet for this page.</div>'; return; }
       fields.innerHTML = items.map(it => {
-        const val = ((it.content_value||'')+'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        const label = it.label || it.content_key;
+        const val = esc(it.content_value);
+        const label = esc(it.label || it.content_key);
         const inputType = (it.input_type || it.content_type || 'text');
+        const requiredStar = it.is_required ? ' <span class=\\"text-danger\\">*</span>' : '';
         if (inputType === 'html'){
           return `
             <div class=\"mb-3\">
-              <label class=\"form-label\">${label} <span class=\"badge bg-info\">HTML</span></label>
+              <label class=\"form-label\">${label}${requiredStar} <span class=\"badge bg-info\">HTML</span></label>
               <div class=\"rt-editor border rounded\" data-key=\"${it.content_key}\" style=\"min-height:140px\"></div>
-              <small class=\"text-muted\">${it.help_text||'Rich text'}</small>
+              <div class=\"d-flex align-items-center justify-content-between mt-1\">
+                <small class=\"text-muted\">${esc(it.help_text||'Rich text')}</small>
+                <small class=\"text-muted save-status\" data-key=\"${it.content_key}\"></small>
+              </div>
             </div>
           `;
         }
         return `
           <div class=\"mb-3\">
-            <label class=\"form-label\">${label}</label>
+            <label class=\"form-label\">${label}${requiredStar}</label>
             <textarea class=\"form-control field-input\" data-key=\"${it.content_key}\" rows=\"3\">${val}</textarea>
-            <small class=\"text-muted\">${it.help_text||inputType}</small>
+            <div class=\"d-flex align-items-center justify-content-between mt-1\">
+              <small class=\"text-muted\">${esc(it.help_text||inputType)}</small>
+              <small class=\"text-muted save-status\" data-key=\"${it.content_key}\"></small>
+            </div>
           </div>
         `;
       }).join('');
@@ -105,6 +132,11 @@
       return true;
     }
 
+    function setStatus(key, text, cls='text-muted'){
+      const el = fields.querySelector(`.save-status[data-key="${key}"]`);
+      if (el) { el.className = `save-status ${cls}`; el.textContent = text; }
+    }
+
     async function setupRichText(items){
       const hasHtml = (items||[]).some(it => (it.content_type||'text') === 'html');
       if (!hasHtml) return;
@@ -120,13 +152,14 @@
           clearTimeout(t); t = setTimeout(async () => {
             if (saving) return; saving = true;
             const html = q.root.innerHTML;
+            setStatus(key, 'Saving…');
             const body = { content_value: html, reason: 'Model admin inline edit', content_type: 'html' };
             const r = await fetch(`/api/model-content/${encodeURIComponent(slug)}/pages/${currentPageType}/${encodeURIComponent(key)}`, {
               method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
             });
             const d = await r.json(); saving = false;
-            if (!d.success) { notify('danger', d.message||'Save failed'); return; }
-            notify('success', 'Saved'); loadAudit();
+            if (!d.success) { notify('danger', d.message||'Save failed'); setStatus(key, 'Error', 'text-danger'); return; }
+            setStatus(key, 'Saved', 'text-success'); loadAudit();
           }, 800);
         });
       });
@@ -140,14 +173,15 @@
           clearTimeout(t); t = setTimeout(async () => {
             if (saving) return; saving = true;
             const key = el.getAttribute('data-key');
+            setStatus(key, 'Saving…');
             const body = { content_value: el.value, reason: REASON, content_type: 'text' };
             const r = await fetch(`/api/model-content/${encodeURIComponent(slug)}/pages/${currentPageType}/${encodeURIComponent(key)}`, {
               method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
             });
             const d = await r.json();
             saving = false;
-            if (!d.success) { notify('danger', d.message||'Save failed'); return; }
-            notify('success', 'Saved');
+            if (!d.success) { notify('danger', d.message||'Save failed'); setStatus(key, 'Error', 'text-danger'); return; }
+            setStatus(key, 'Saved', 'text-success');
             loadAudit();
           }, 600);
         });
