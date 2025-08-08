@@ -115,12 +115,43 @@
                 <div class="col">
                   <div class="border rounded p-2">
                     <div class="small text-truncate" title="${img.filename}">${img.filename}</div>
-                    <div class="text-muted small">${img.is_active ? 'Visible' : 'Hidden'}</div>
+                    <div class="d-flex align-items-center justify-content-between mt-1">
+                      <span class="text-muted small">${img.is_active ? 'Visible' : 'Hidden'}</span>
+                      <button class="btn btn-sm btn-outline-secondary btn-toggle-image" data-id="${img.id}" data-active="${img.is_active ? 1 : 0}">${img.is_active ? 'Hide' : 'Show'}</button>
+                    </div>
                   </div>
                 </div>
               `).join('')}
             </div>
           `;
+
+          // bind image toggle
+          container.querySelectorAll('.btn-toggle-image').forEach(t => {
+            t.addEventListener('click', async () => {
+              const imgId = t.getAttribute('data-id');
+              const active = t.getAttribute('data-active') === '1';
+              const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/${imgId}/visibility`, {
+                method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_active: !active })
+              });
+              const d = await r.json();
+              if (!d.success) { alert(d.message||'Failed to update'); return; }
+              // refresh images
+              const rr = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`);
+              const dd = await rr.json();
+              if (!dd.success) { return; }
+              const imgs = dd.data.images || [];
+              container.innerHTML = `
+                <div class=\"row row-cols-2 row-cols-md-3 g-2\">${imgs.map(img => `
+                  <div class=\"col\"><div class=\"border rounded p-2\">
+                    <div class=\"small text-truncate\" title=\"${img.filename}\">${img.filename}</div>
+                    <div class=\"d-flex align-items-center justify-content-between mt-1\">
+                      <span class=\"text-muted small\">${img.is_active ? 'Visible' : 'Hidden'}</span>
+                      <button class=\"btn btn-sm btn-outline-secondary btn-toggle-image\" data-id=\"${img.id}\" data-active=\"${img.is_active ? 1 : 0}\">${img.is_active ? 'Hide' : 'Show'}</button>
+                    </div>
+                  </div></div>
+                `).join('')}</div>`;
+            });
+          });
         });
       });
     }

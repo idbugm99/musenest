@@ -60,6 +60,104 @@ router.get('/:modelSlug/sections/:id/images', async (req, res) => {
   }
 });
 
+// POST /api/model-gallery/:modelSlug/sections/:id/images (add image by filename)
+router.post('/:modelSlug/sections/:id/images', async (req, res) => {
+  try {
+    const { modelSlug, id } = req.params;
+    const { filename, caption = null, tags = null } = req.body || {};
+    if (!filename || !filename.trim()) return res.fail(400, 'filename is required');
+    const model = await getModelBySlug(modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+    // Next order index in this section
+    const [{ nextOrder }] = await db.query(
+      'SELECT COALESCE(MAX(order_index), -1) + 1 AS nextOrder FROM gallery_images WHERE model_id = ? AND section_id = ?',
+      [model.id, parseInt(id)]
+    );
+    const result = await db.query(
+      'INSERT INTO gallery_images (section_id, model_id, filename, caption, tags, is_active, order_index) VALUES (?, ?, ?, ?, ?, 1, ?)',
+      [parseInt(id), model.id, filename.trim(), caption, tags, nextOrder || 0]
+    );
+    const imageId = result.insertId;
+    const rows = await db.query('SELECT * FROM gallery_images WHERE id = ?', [imageId]);
+    return res.success({ image: rows[0] }, 201);
+  } catch (error) {
+    logger.error('model-gallery.add-image error', { error: error.message });
+    return res.fail(500, 'Failed to add image', error.message);
+  }
+});
+
+// PUT /api/model-gallery/:modelSlug/images/:imageId (update image metadata)
+router.put('/:modelSlug/images/:imageId', async (req, res) => {
+  try {
+    const { modelSlug, imageId } = req.params;
+    const updates = req.body || {};
+    const model = await getModelBySlug(modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+    const fields = [];
+    const params = [];
+    const editable = { caption: 'caption', tags: 'tags', is_active: 'is_active' };
+    for (const key of Object.keys(editable)) {
+      if (updates[key] !== undefined) {
+        fields.push(`${editable[key]} = ?`);
+        params.push(updates[key]);
+      }
+    }
+    if (!fields.length) return res.fail(400, 'No valid fields to update');
+    params.push(model.id, parseInt(imageId));
+    const result = await db.query(`UPDATE gallery_images SET ${fields.join(', ')} WHERE model_id = ? AND id = ?`, params);
+    if (result.affectedRows === 0) return res.fail(404, 'Image not found');
+    const rows = await db.query('SELECT * FROM gallery_images WHERE id = ?', [parseInt(imageId)]);
+    return res.success({ image: rows[0] });
+  } catch (error) {
+    logger.error('model-gallery.update-image error', { error: error.message });
+    return res.fail(500, 'Failed to update image', error.message);
+  }
+});
+
+// PATCH /api/model-gallery/:modelSlug/images/:imageId/visibility (toggle is_active)
+router.patch('/:modelSlug/images/:imageId/visibility', async (req, res) => {
+  try {
+    const { modelSlug, imageId } = req.params;
+    const { is_active } = req.body || {};
+    const model = await getModelBySlug(modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+    const desired = is_active ? 1 : 0;
+    const result = await db.query('UPDATE gallery_images SET is_active = ? WHERE model_id = ? AND id = ?', [desired, model.id, parseInt(imageId)]);
+    if (result.affectedRows === 0) return res.fail(404, 'Image not found');
+    const rows = await db.query('SELECT * FROM gallery_images WHERE id = ?', [parseInt(imageId)]);
+    return res.success({ image: rows[0] });
+  } catch (error) {
+    logger.error('model-gallery.visibility-image error', { error: error.message });
+    return res.fail(500, 'Failed to update image visibility', error.message);
+  }
+});
+
+// PATCH /api/model-gallery/:modelSlug/images/reorder { section_id, items:[{id, order_index}] }
+router.patch('/:modelSlug/images/reorder', async (req, res) => {
+  try {
+    const { modelSlug } = req.params;
+    const { section_id, items } = req.body || {};
+    if (!Array.isArray(items) || !section_id) return res.fail(400, 'section_id and items are required');
+    const model = await getModelBySlug(modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+    // Update order one by one (simple and safe)
+    for (const it of items) {
+      if (!it || typeof it.id === 'undefined' || typeof it.order_index === 'undefined') continue;
+      await db.query('UPDATE gallery_images SET order_index = ? WHERE id = ? AND model_id = ? AND section_id = ?', [
+        parseInt(it.order_index), parseInt(it.id), model.id, parseInt(section_id)
+      ]);
+    }
+    const images = await db.query(
+      'SELECT id, section_id, model_id, filename, caption, tags, is_active, order_index FROM gallery_images WHERE model_id = ? AND section_id = ? ORDER BY order_index ASC, id ASC',
+      [model.id, parseInt(section_id)]
+    );
+    return res.success({ images });
+  } catch (error) {
+    logger.error('model-gallery.reorder-images error', { error: error.message });
+    return res.fail(500, 'Failed to reorder images', error.message);
+  }
+});
+
 module.exports = router;
 // POST /api/model-gallery/:modelSlug/sections  (create section)
 router.post('/:modelSlug/sections', async (req, res) => {
