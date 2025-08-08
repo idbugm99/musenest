@@ -328,6 +328,7 @@
                 const dd = await rr.json();
                 if (!dd.success) { return; }
                 renderImagesGrid(container, sectionId, dd.data.images || []);
+                notify('success', !active ? 'Image shown' : 'Image hidden');
               });
             });
             // inline save caption/tags on blur
@@ -341,7 +342,8 @@
                   method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ caption, tags })
                 });
                 const d = await r.json();
-                if (!d.success) { console.warn('Failed to save caption/tags'); }
+                if (!d.success) { console.warn('Failed to save caption/tags'); notify('danger', d.message||'Save failed'); }
+                else { notify('success', 'Saved'); }
               });
             });
           }
