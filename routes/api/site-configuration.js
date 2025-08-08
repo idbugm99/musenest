@@ -95,7 +95,7 @@ router.get('/sites', async (req, res) => {
             countParams.push(status);
         }
 
-        const selectQuery = `
+        const selectQueryBase = `
             SELECT 
                 sc.*,
                 s.name as server_name,
@@ -108,14 +108,14 @@ router.get('/sites', async (req, res) => {
                 cd.completed_at as last_deployment_completed
             ${baseFrom}
             ORDER BY sc.created_at DESC
-            LIMIT ? OFFSET ?
         `;
         const countQuery = `SELECT COUNT(*) as total ${baseFrom}`;
 
         const countRows = await db.query(countQuery, countParams);
         const total = (countRows && countRows[0] && countRows[0].total) ? countRows[0].total : 0;
 
-        const [sites] = await db.execute(selectQuery, [...params, perPage, offset]);
+        const selectSql = `${selectQueryBase} LIMIT ${perPage} OFFSET ${offset}`;
+        const sites = await db.query(selectSql, params);
 
         res.set('Cache-Control', 'private, max-age=15');
         res.success({
