@@ -129,9 +129,9 @@ router.post('/upload', upload.single('image'), async (req, res) => {
                         const query = `
                             INSERT INTO content_moderation (
                                 image_path, model_id, context_type, nudity_score, detected_parts,
-                                pose_classification, explicit_pose_score, generated_caption,
+                                pose_classification, explicit_pose_score,
                                 policy_violations, moderation_status, human_review_required, confidence_score
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         `;
                         
                         const values = [
@@ -142,7 +142,6 @@ router.post('/upload', upload.single('image'), async (req, res) => {
                             JSON.stringify(result.detected_parts),
                             result.pose_classification,
                             result.explicit_pose_score,
-                            result.generated_caption,
                             JSON.stringify(result.policy_violations),
                             result.moderation_status,
                             result.human_review_required,
@@ -197,9 +196,9 @@ router.post('/upload', upload.single('image'), async (req, res) => {
                     const query = `
                         INSERT INTO content_moderation (
                             image_path, model_id, context_type, nudity_score, detected_parts,
-                            pose_classification, explicit_pose_score, generated_caption,
+                            pose_classification, explicit_pose_score,
                             policy_violations, moderation_status, human_review_required, confidence_score
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     `;
                     
                     const values = [
@@ -210,7 +209,6 @@ router.post('/upload', upload.single('image'), async (req, res) => {
                         JSON.stringify(result.detected_parts),
                         result.pose_classification,
                         result.explicit_pose_score,
-                        result.generated_caption,
                         JSON.stringify(result.policy_violations),
                         result.moderation_status,
                         result.human_review_required,
@@ -434,8 +432,6 @@ router.get('/queue', async (req, res) => {
                 cm.context_type,
                 cm.moderation_status,
                 cm.nudity_score,
-                cm.generated_caption,
-                cm.confidence_score,
                 m.name as model_name
             FROM moderation_queue mq
             JOIN content_moderation cm ON mq.content_moderation_id = cm.id
@@ -474,7 +470,7 @@ router.get('/queue', async (req, res) => {
         const [countRows] = await db.query(baseCount, countParams);
         const total = countRows[0]?.total || 0;
         const [results] = await db.query(pagedQuery, [...params, perPage, offset]);
-
+        res.set('Cache-Control', 'private, max-age=15');
         res.success({ queue: results, pagination: { page: currentPage, limit: perPage, total, pages: Math.ceil(total / perPage) } });
 
     } catch (error) {

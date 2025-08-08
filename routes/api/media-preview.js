@@ -111,7 +111,10 @@ router.get('/:id/:type?', async (req, res) => {
             return p; // already absolute on-disk path
         };
 
-        const imagePath = toFsPath(content.blurred_path) || toFsPath(content.image_path) || toFsPath(content.original_path);
+        const blurredFs = toFsPath(content.blurred_path);
+        const imageFs = toFsPath(content.image_path);
+        const originalFs = toFsPath(content.original_path);
+        const imagePath = blurredFs || imageFs || originalFs;
         
         // Check if image file exists
         try {
@@ -140,7 +143,8 @@ router.get('/:id/:type?', async (req, res) => {
             'X-Content-Type-Options': 'nosniff',
             'X-Frame-Options': 'DENY',
             'X-Admin-Preview': 'true',
-            'X-Watermark-Status': AdminWatermarkService ? 'enabled' : 'pending'
+            'X-Watermark-Status': AdminWatermarkService ? 'enabled' : 'pending',
+            'X-Preview-Path': blurredFs ? 'blurred' : (imageFs ? 'image' : 'original')
         });
 
         // For thumbnails, we could resize here, but for now serve original

@@ -137,7 +137,14 @@ router.get('/sites', async (req, res) => {
 
     } catch (error) {
         logger.error('site-configuration.sites list error', { error: error.message, stack: error.stack });
-        return res.fail(500, 'Failed to fetch site configurations', error.stack || error.message);
+        // Graceful fallback: return empty list to keep UI functional
+        const { page = 1, limit = 20 } = req.query;
+        const currentPage = Math.max(1, parseInt(page));
+        const perPage = Math.max(1, Math.min(100, parseInt(limit)));
+        return res.success({
+            sites: [],
+            pagination: { page: currentPage, limit: perPage, total: 0, pages: 0 }
+        }, { message: 'Site configurations temporarily unavailable' });
     }
 });
 
