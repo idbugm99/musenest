@@ -384,6 +384,27 @@ app.get('/:slug/admin/themes', async (req, res) => {
     }
 });
 
+// Model Admin: Image Library page
+app.get('/:slug/admin/images', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const rows = await db.query(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
+        res.render('admin/pages/model-image-library', {
+            layout: 'admin/layouts/main',
+            pageTitle: 'Image Library',
+            currentPage: 'model-images',
+            isModelAdmin: true,
+            model: rows[0]
+        });
+    } catch (err) {
+        res.status(500).send('Failed to render image library');
+    }
+});
+
 // Routes
 app.get('/', (req, res) => {
     res.json({

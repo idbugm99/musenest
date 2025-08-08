@@ -1,0 +1,113 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0"><i class="fas fa-photo-video me-2"></i>Image Library — {{model.name}}</h3>
+  <a class="btn btn-outline-secondary" href="/{{model.slug}}/admin"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
+</div>
+
+<div class="card mb-3">
+  <div class="card-header bg-white"><strong>Upload New Images</strong></div>
+  <div class="card-body">
+    <div class="row g-2 align-items-end">
+      <div class="col-md-4">
+        <input type="file" class="form-control" id="lib_files" multiple accept="image/*">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label mb-1">Default Gallery Section (optional)</label>
+        <select class="form-select" id="lib_section"></select>
+      </div>
+      <div class="col-md-2">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="lib_watermark" checked>
+          <label class="form-check-label" for="lib_watermark">Apply watermark</label>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-primary w-100" id="lib_upload"><i class="fas fa-upload me-2"></i>Upload</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header bg-white d-flex align-items-center justify-content-between">
+    <strong>Browse Images</strong>
+    <div class="d-flex align-items-center gap-2">
+      <select class="form-select form-select-sm" id="lib_filter_section" style="width:auto"></select>
+      <select class="form-select form-select-sm" id="lib_sort" style="width:auto">
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+      </select>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="row row-cols-2 row-cols-md-4 g-2" id="lib_grid"><div class="col"><div class="text-muted">Loading…</div></div></div>
+    <div class="d-flex align-items-center justify-content-between mt-2">
+      <div class="small text-muted" id="lib_count"></div>
+      <div>
+        <button class="btn btn-sm btn-outline-secondary" id="lib_prev">Prev</button>
+        <span class="small" id="lib_page"></span>
+        <button class="btn btn-sm btn-outline-secondary" id="lib_next">Next</button>
+      </div>
+    </div>
+  </div>
+  </div>
+
+<script>
+(function(){
+  let slug = {{{json model.slug}}}; if (!slug){ const m=location.pathname.match(/^\/([^\/]+)\/admin/); if(m) slug=m[1]; }
+  const grid = document.getElementById('lib_grid');
+  const count = document.getElementById('lib_count');
+  const pageLbl = document.getElementById('lib_page');
+  const prevBtn = document.getElementById('lib_prev');
+  const nextBtn = document.getElementById('lib_next');
+  const secSelect = document.getElementById('lib_section');
+  const filterSelect = document.getElementById('lib_filter_section');
+  let currentSection = null; let currentPage = 1; let pageSize = 24;
+
+  async function loadSections(){
+    const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections?page=1&limit=1000`);
+    const d = await r.json();
+    if (!d.success){ notify('danger','Failed to load sections'); return; }
+    const sections = d.data.sections || [];
+    secSelect.innerHTML = '<option value="">No section (add later)</option>' + sections.map(s=>`<option value="${s.id}">${s.title}</option>`).join('');
+    filterSelect.innerHTML = sections.map(s=>`<option value="${s.id}">${s.title}</option>`).join('');
+    if (sections.length){ currentSection = sections[0].id; filterSelect.value = currentSection; loadImages(); }
+    filterSelect.addEventListener('change', ()=>{ currentSection = parseInt(filterSelect.value); currentPage=1; loadImages(); });
+  }
+
+  async function loadImages(){
+    if (!currentSection){ grid.innerHTML = '<div class="col"><div class="text-muted">No sections. Create one in Gallery.</div></div>'; return; }
+    const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${currentSection}/images?page=${currentPage}&limit=${pageSize}`);
+    const d = await r.json();
+    if (!d.success){ grid.innerHTML = '<div class="col"><div class="text-danger">Failed to load</div></div>'; return; }
+    const imgs = d.data.images || [];
+    const pg = d.data.pagination || { page:1, pages:1, total: imgs.length };
+    count.textContent = `${pg.total} images`;
+    pageLbl.textContent = `Page ${pg.page} / ${pg.pages}`;
+    prevBtn.disabled = pg.page<=1; nextBtn.disabled = pg.page>=pg.pages;
+    grid.innerHTML = imgs.map(im=>`
+      <div class=\"col\">
+        <div class=\"border rounded p-2\">
+          <img src=\"${(im.moderation_status==='approved_blurred' && im.blurred_path ? (im.blurred_path.startsWith('/')? im.blurred_path : '/uploads/${slug}/public/blurred/' + im.filename) : '/uploads/${slug}/public/gallery/' + im.filename)}\" style=\"width:100%;height:140px;object-fit:cover;border-radius:4px\" />
+          <div class=\"small text-truncate mt-1\" title=\"${im.filename}\">${im.filename}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  prevBtn.addEventListener('click', ()=>{ if (currentPage>1){ currentPage--; loadImages(); } });
+  nextBtn.addEventListener('click', ()=>{ currentPage++; loadImages(); });
+
+  // Upload
+  document.getElementById('lib_upload').addEventListener('click', async ()=>{
+    const files = document.getElementById('lib_files').files;
+    if (!files || !files.length){ notify('warning','Choose files'); return; }
+    if (!currentSection && secSelect.value){ currentSection = parseInt(secSelect.value); filterSelect.value = currentSection; }
+    if (!currentSection){ notify('warning','Pick a section first'); return; }
+    let ok = 0; for (const f of files){ const fd = new FormData(); fd.append('image', f); const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${currentSection}/upload`, { method:'POST', body: fd }); const d = await r.json(); if (d.success) ok++; }
+    notify('success', `Uploaded ${ok}/${files.length}`); loadImages();
+  });
+
+  loadSections();
+})();
+</script>
+
+
