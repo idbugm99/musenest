@@ -150,8 +150,10 @@ class ModelDashboard {
                 throw new Error(data.error || 'Failed to load models');
             }
 
-            this.models = data.models;
-            this.pagination = data.pagination;
+            // Adapt to standardized envelope shape if present
+            const payload = data.data || data;
+            this.models = payload.models || [];
+            this.pagination = payload.pagination || {};
 
             // Update UI
             this.renderModels();
