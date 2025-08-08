@@ -1,0 +1,95 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0"><i class="fas fa-comment-dots me-2"></i>Testimonials — {{model.name}}</h3>
+  <a class="btn btn-outline-secondary" href="/{{model.slug}}/admin"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
+</div>
+
+<div class="card mb-3">
+  <div class="card-header bg-white"><strong>Add New Testimonial</strong></div>
+  <div class="card-body">
+    <div class="row g-2">
+      <div class="col-md-5"><input class="form-control" id="t_client" placeholder="Client Name"></div>
+      <div class="col-md-3">
+        <select class="form-select" id="t_rating">
+          <option value="5">5 Stars</option>
+          <option value="4">4 Stars</option>
+          <option value="3">3 Stars</option>
+          <option value="2">2 Stars</option>
+          <option value="1">1 Star</option>
+        </select>
+      </div>
+      <div class="col-md-12"><textarea class="form-control" id="t_text" rows="3" placeholder="Enter testimonial text..."></textarea></div>
+      <div class="col-md-12">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="t_featured">
+          <label class="form-check-label" for="t_featured">Featured on homepage</label>
+        </div>
+      </div>
+      <div class="col-md-3"><button class="btn btn-primary w-100" id="t_add">Add Testimonial</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header bg-white"><strong>Existing Testimonials</strong></div>
+  <div class="card-body" id="t_list"><div class="text-muted">Loading…</div></div>
+</div>
+
+<script>
+(function(){
+  let slug = {{{json model.slug}}}; if (!slug){ const m=location.pathname.match(/^\/([^\/]+)\/admin/); if(m) slug=m[1]; }
+  const list = document.getElementById('t_list');
+  async function load(){
+    const r = await fetch(`/api/model-testimonials/${encodeURIComponent(slug)}`);
+    const d = await r.json();
+    if (!d.success){ list.innerHTML = '<div class="text-danger">Failed to load</div>'; return; }
+    const items = d.data.testimonials || [];
+    if (!items.length){ list.innerHTML = '<div class="text-muted">No testimonials yet.</div>'; return; }
+    list.innerHTML = items.map(it => `
+      <div class=\"border rounded p-2 mb-2\">
+        <div class=\"d-flex align-items-center justify-content-between\">
+          <div><strong>${it.client_name}</strong> — ${'★'.repeat(it.rating)}</div>
+          <div class=\"d-flex align-items-center gap-2\">
+            <span class=\"badge ${it.is_featured ? 'bg-danger' : 'bg-secondary'}\">${it.is_featured ? 'Featured' : 'Normal'}</span>
+            <button class=\"btn btn-sm btn-outline-secondary btn-edit\" data-id=\"${it.id}\">Edit</button>
+            <button class=\"btn btn-sm btn-outline-danger btn-del\" data-id=\"${it.id}\">Delete</button>
+          </div>
+        </div>
+        <div class=\"text-muted mt-1\">${(it.testimonial_text||'').replace(/</g,'&lt;')}</div>
+      </div>`).join('');
+    list.querySelectorAll('.btn-del').forEach(b=>b.addEventListener('click', async ()=>{
+      if (!confirm('Delete this testimonial?')) return;
+      const id = b.getAttribute('data-id');
+      const r = await fetch(`/api/model-testimonials/${encodeURIComponent(slug)}/${id}`, { method:'DELETE' });
+      const d = await r.json(); if (!d.success){ notify('danger', d.message||'Delete failed'); return; }
+      notify('success', 'Deleted'); load();
+    }));
+    list.querySelectorAll('.btn-edit').forEach(b=>b.addEventListener('click', async ()=>{
+      const id = b.getAttribute('data-id');
+      const name = prompt('Client Name');
+      const text = prompt('Text');
+      const r = await fetch(`/api/model-testimonials/${encodeURIComponent(slug)}/${id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ client_name:name, testimonial_text:text }) });
+      const d = await r.json(); if (!d.success){ notify('danger', d.message||'Update failed'); return; }
+      notify('success', 'Updated'); load();
+    }));
+  }
+
+  document.getElementById('t_add').addEventListener('click', async () => {
+    const body = {
+      client_name: document.getElementById('t_client').value.trim(),
+      rating: parseInt(document.getElementById('t_rating').value),
+      testimonial_text: document.getElementById('t_text').value.trim(),
+      is_featured: document.getElementById('t_featured').checked
+    };
+    if (!body.client_name || !body.testimonial_text) { notify('warning', 'Please fill in name and text'); return; }
+    const r = await fetch(`/api/model-testimonials/${encodeURIComponent(slug)}`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const d = await r.json(); if (!d.success){ notify('danger', d.message||'Create failed'); return; }
+    notify('success', 'Added');
+    document.getElementById('t_client').value=''; document.getElementById('t_text').value=''; document.getElementById('t_featured').checked=false; document.getElementById('t_rating').value='5';
+    load();
+  });
+
+  load();
+})();
+</script>
+
+

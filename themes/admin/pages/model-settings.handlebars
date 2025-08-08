@@ -1,0 +1,129 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0"><i class="fas fa-cog me-2"></i>Site Settings — {{model.name}}</h3>
+  <a class="btn btn-outline-secondary" href="/{{model.slug}}/admin"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
+</div>
+
+<div class="card mb-3">
+  <div class="card-header bg-white"><strong>Basic Site Settings</strong></div>
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Site Name</label>
+        <input class="form-control" id="site_name">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Model Name</label>
+        <input class="form-control" id="model_name">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Contact Email</label>
+        <input class="form-control" id="contact_email" placeholder="name@example.com">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Contact Phone</label>
+        <input class="form-control" id="contact_phone" placeholder="(123) 456-7890">
+      </div>
+      <div class="col-12">
+        <label class="form-label">Tagline</label>
+        <input class="form-control" id="tagline">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-header bg-white"><strong>Branding & Watermark</strong></div>
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Header/Logo Image (path)</label>
+        <div class="input-group">
+          <input class="form-control" id="logo_image">
+          <button class="btn btn-outline-secondary" id="pick_logo">Browse</button>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Watermark Image (path)</label>
+        <div class="input-group">
+          <input class="form-control" id="watermark_image">
+          <button class="btn btn-outline-secondary" id="pick_watermark">Browse</button>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Watermark Size (% of width)</label>
+        <input type="range" class="form-range" id="wm_size" min="5" max="100" step="1">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Watermark Opacity</label>
+        <input type="range" class="form-range" id="wm_opacity" min="10" max="100" step="1">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Position</label>
+        <select class="form-select" id="wm_position">
+          <option>Bottom Right</option>
+          <option>Bottom Left</option>
+          <option>Top Right</option>
+          <option>Top Left</option>
+          <option>Center</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  let slug = {{{json model.slug}}};
+  if (!slug) { const m = location.pathname.match(/^\/([^\/]+)\/admin/); if (m) slug = m[1]; }
+  const inputs = {
+    site_name: document.getElementById('site_name'),
+    model_name: document.getElementById('model_name'),
+    contact_email: document.getElementById('contact_email'),
+    contact_phone: document.getElementById('contact_phone'),
+    tagline: document.getElementById('tagline'),
+    logo_image: document.getElementById('logo_image'),
+    watermark_image: document.getElementById('watermark_image'),
+    wm_size: document.getElementById('wm_size'),
+    wm_opacity: document.getElementById('wm_opacity'),
+    wm_position: document.getElementById('wm_position')
+  };
+
+  async function load(){
+    const r = await fetch(`/api/model-settings/${encodeURIComponent(slug)}`);
+    const d = await r.json();
+    if (!d.success) { notify('danger', d.message||'Failed to load settings'); return; }
+    const s = d.data.settings || {};
+    for (const k of Object.keys(inputs)){
+      if (inputs[k].type === 'range') inputs[k].value = s[k] ?? inputs[k].value || 50;
+      else inputs[k].value = s[k] ?? '';
+    }
+  }
+
+  let t = null;
+  function autosave(){
+    clearTimeout(t); t = setTimeout(async () => {
+      const body = {};
+      for (const k of Object.keys(inputs)) body[k] = inputs[k].value;
+      const r = await fetch(`/api/model-settings/${encodeURIComponent(slug)}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const d = await r.json();
+      if (!d.success) { notify('danger', d.message||'Save failed'); } else { notify('success', 'Saved'); }
+    }, 500);
+  }
+  Object.values(inputs).forEach(el => el.addEventListener('input', autosave));
+
+  // basic file picker using uploads-list
+  async function pick(into){
+    const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/uploads-list?sub=public/gallery`);
+    const d = await r.json();
+    if (!d.success) { notify('danger', 'Failed to list files'); return; }
+    const name = prompt('Enter filename from gallery:\n' + (d.data.files||[]).map(f=>f.name).slice(0,50).join(', '));
+    if (name) { into.value = `/uploads/${slug}/public/gallery/${name}`; autosave(); }
+  }
+  document.getElementById('pick_logo').addEventListener('click', () => pick(inputs.logo_image));
+  document.getElementById('pick_watermark').addEventListener('click', () => pick(inputs.watermark_image));
+
+  load();
+})();
+</script>
+
+

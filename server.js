@@ -321,6 +321,48 @@ app.get('/:slug/admin/content', async (req, res) => {
     }
 });
 
+// Model Admin: Settings page
+app.get('/:slug/admin/settings', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const rows = await db.query(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
+        res.render('admin/pages/model-settings', {
+            layout: 'admin/layouts/main',
+            pageTitle: 'Site Settings',
+            currentPage: 'model-settings',
+            isModelAdmin: true,
+            model: rows[0]
+        });
+    } catch (err) {
+        res.status(500).send('Failed to render settings');
+    }
+});
+
+// Model Admin: Testimonials page
+app.get('/:slug/admin/testimonials', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const rows = await db.query(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
+        res.render('admin/pages/model-testimonials', {
+            layout: 'admin/layouts/main',
+            pageTitle: 'Testimonials',
+            currentPage: 'model-testimonials',
+            isModelAdmin: true,
+            model: rows[0]
+        });
+    } catch (err) {
+        res.status(500).send('Failed to render testimonials');
+    }
+});
+
 // Routes
 app.get('/', (req, res) => {
     res.json({
@@ -2327,6 +2369,10 @@ try {
 try {
   app.use('/api/model-content', require('./routes/api/model-content'));
 } catch (e) {}
+try { app.use('/api/model-settings', require('./routes/api/model-settings')); } catch (e) {}
+try { app.use('/api/model-testimonials', require('./routes/api/model-testimonials')); } catch (e) {}
+try { app.use('/api/model-themes', require('./routes/api/model-themes')); } catch (e) {}
+try { app.use('/api/model-calendar', require('./routes/api/model-calendar')); } catch (e) {}
 
 // Theme Management API
 app.get('/api/theme-management/models', async (req, res) => {

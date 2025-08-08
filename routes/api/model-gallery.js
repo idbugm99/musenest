@@ -317,6 +317,15 @@ router.get('/:modelSlug/uploads-list', async (req, res) => {
     const { sub = 'public' } = req.query; // default to public
     const safeSub = String(sub || 'public').replace(/\.\.+/g, '').replace(/^\//, '');
     const root = path.join(process.cwd(), 'public', 'uploads', modelSlug, safeSub);
+    // Ensure directory exists, otherwise return empty
+    try {
+      await fs.access(root);
+    } catch (e) {
+      if (e && e.code === 'ENOENT') {
+        return res.success({ files: [] });
+      }
+      throw e;
+    }
     const entries = await fs.readdir(root, { withFileTypes: true });
     const files = entries
       .filter(e => e.isFile())
