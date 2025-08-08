@@ -284,6 +284,7 @@ app.get('/admin', async (req, res) => {
             pageTitle: `${model.name} Dashboard`,
             pageSubtitle: 'Manage your content and view your site',
             currentPage: 'model-admin',
+            isModelAdmin: true,
             model: model,
             stats: stats,
             devBanner: {
@@ -312,7 +313,8 @@ app.get('/admin/:slug/gallery', async (req, res) => {
         res.render('admin/pages/model-gallery', {
             layout: 'admin/layouts/main',
             pageTitle: 'Gallery Manager',
-            currentPage: 'model-admin',
+            currentPage: 'model-gallery',
+            isModelAdmin: true,
             model: rows[0],
             legacyBanner: { message: 'This is a legacy admin surface. System admin lives at /sysadmin.' }
         });
