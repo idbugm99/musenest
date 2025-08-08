@@ -14,10 +14,11 @@
 | /sysadmin | server.js + Handlebars | Canonical | System admin dashboard |
 | /admin/musenest-business-manager.html | admin/ | Redirect → /sysadmin | Legacy |
 | /admin/media-queue-review.html | admin/ | Read-only | Use sysadmin equivalents where available |
-| /admin/* | admin/ | Read-only | Banner to point to /sysadmin; Dev redirects to /sysadmin (middleware) |
+| /admin/* | admin/ | Read-only | Banner to point to /sysadmin |
 
 ## Actions
-- Do not modify legacy static HTML; use /sysadmin routes/templates. In development, legacy routes redirect to `/sysadmin`.
+- Do not modify legacy static HTML; use /sysadmin routes/templates.
+- Pagination controls and standardized envelopes are used across sysadmin list views.
 - Add redirects in server.js where 1:1 mapping exists.
 
 ## Future `/admin` Portal
