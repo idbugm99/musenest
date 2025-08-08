@@ -41,6 +41,8 @@
     const fields = document.getElementById('fields_container');
     const audit = document.getElementById('audit_container');
     const PAGE_NAMES = {1:'Home',2:'About',3:'Gallery',4:'Rates',5:'Contact'};
+    let unsavedEdits = 0;
+    const quillEditors = new Map(); // key -> quill instance
 
     function esc(v){
       const s = ((v ?? '') + '');
@@ -67,6 +69,7 @@
         // bind
         pageList.querySelectorAll('button[data-id]').forEach(btn => {
           btn.addEventListener('click', () => {
+            if (unsavedEdits > 0 && !confirm('You have unsaved edits. Leave without saving?')) return;
             pageList.querySelectorAll('button').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             loadPage(parseInt(btn.getAttribute('data-id')));
@@ -119,6 +122,20 @@
       loadAudit();
     }
 
+    async function saveField(key, value, type){
+      setStatus(key, 'Saving…');
+      const body = { content_value: value, reason: 'Model admin inline edit', content_type: type };
+      const r = await fetch(`/api/model-content/${encodeURIComponent(slug)}/pages/${currentPageType}/${encodeURIComponent(key)}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+      });
+      const d = await r.json();
+      if (!d.success) { setStatus(key, 'Error', 'text-danger'); notify('danger', d.message||'Save failed'); return false; }
+      setStatus(key, 'Saved', 'text-success');
+      if (unsavedEdits > 0) unsavedEdits--;
+      loadAudit();
+      return true;
+    }
+
     async function ensureQuill(){
       if (window.Quill) return true;
       // load CSS
@@ -147,19 +164,15 @@
         const initial = (item.content_value||'');
         const q = new Quill(el, { theme: 'snow' });
         q.root.innerHTML = initial;
+        quillEditors.set(key, q);
         let t = null; let saving = false;
         q.on('text-change', () => {
           clearTimeout(t); t = setTimeout(async () => {
             if (saving) return; saving = true;
             const html = q.root.innerHTML;
-            setStatus(key, 'Saving…');
-            const body = { content_value: html, reason: 'Model admin inline edit', content_type: 'html' };
-            const r = await fetch(`/api/model-content/${encodeURIComponent(slug)}/pages/${currentPageType}/${encodeURIComponent(key)}`, {
-              method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
-            });
-            const d = await r.json(); saving = false;
-            if (!d.success) { notify('danger', d.message||'Save failed'); setStatus(key, 'Error', 'text-danger'); return; }
-            setStatus(key, 'Saved', 'text-success'); loadAudit();
+            unsavedEdits++;
+            const ok = await saveField(key, html, 'html');
+            saving = false;
           }, 800);
         });
       });
@@ -173,16 +186,9 @@
           clearTimeout(t); t = setTimeout(async () => {
             if (saving) return; saving = true;
             const key = el.getAttribute('data-key');
-            setStatus(key, 'Saving…');
-            const body = { content_value: el.value, reason: REASON, content_type: 'text' };
-            const r = await fetch(`/api/model-content/${encodeURIComponent(slug)}/pages/${currentPageType}/${encodeURIComponent(key)}`, {
-              method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
-            });
-            const d = await r.json();
+            unsavedEdits++;
+            await saveField(key, el.value, 'text');
             saving = false;
-            if (!d.success) { notify('danger', d.message||'Save failed'); setStatus(key, 'Error', 'text-danger'); return; }
-            setStatus(key, 'Saved', 'text-success');
-            loadAudit();
           }, 600);
         });
       });
@@ -218,6 +224,37 @@
 
     // initial load
     loadPages();
+
+    // Guard on unload if unsaved edits
+    window.addEventListener('beforeunload', (e) => {
+      if (unsavedEdits > 0) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
+
+    // Keyboard shortcuts: Cmd/Ctrl+S to save focused field
+    document.addEventListener('keydown', async (e) => {
+      const isSave = (e.key === 's' || e.key === 'S') && (e.metaKey || e.ctrlKey);
+      if (!isSave) return;
+      e.preventDefault();
+      const active = document.activeElement;
+      if (active && active.classList && active.classList.contains('field-input')) {
+        const key = active.getAttribute('data-key');
+        unsavedEdits++;
+        await saveField(key, active.value, 'text');
+      } else {
+        // try focused quill editor
+        for (const [key, q] of quillEditors.entries()) {
+          const root = q && q.root;
+          if (root && root.contains(document.getSelection()?.anchorNode)) {
+            unsavedEdits++;
+            await saveField(key, q.root.innerHTML, 'html');
+            break;
+          }
+        }
+      }
+    });
   })();
 </script>
 
