@@ -41,6 +41,10 @@
 <script>
   (function(){
     const slug = {{json model.slug}};
+    // File picker modal state
+    let filePickerModalInstance = null;
+    let filePickerLastFiles = [];
+    let filePickerTargetInput = null;
     const listEl = document.getElementById('sections_list');
     const searchEl = document.getElementById('search_sections');
     const createBtn = document.getElementById('btn_create_section');
@@ -137,14 +141,7 @@
           const addBtn = document.getElementById(`btn_add_${id}`);
           const addInput = document.getElementById(`add_filename_${id}`);
           pickBtn.addEventListener('click', async () => {
-            const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/uploads-list?sub=public/gallery`);
-            const d = await r.json();
-            if (!d.success) { alert(d.message||'Failed to list'); return; }
-            const files = d.data.files || [];
-            if (!files.length) { alert('No files found under /uploads/'+slug+'/public/gallery'); return; }
-            const names = files.map(f => f.path);
-            const choice = prompt('Paste or pick a file path:\n' + names.slice(0, 20).join('\n'), names[0]);
-            if (choice) { addInput.value = choice; }
+            openFilePicker(addInput);
           });
           addBtn.addEventListener('click', async () => {
             const filename = (addInput.value || '').trim();
@@ -313,6 +310,94 @@
       await load(1);
     });
     load();
+
+    // ---------- File Picker Modal ----------
+    function ensureFilePickerModal() {
+      let modalEl = document.getElementById('filePickerModal');
+      if (modalEl) return modalEl;
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = `
+      <div class="modal fade" id="filePickerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title"><i class="fas fa-folder-open me-2"></i>Select a File</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="d-flex align-items-center mb-2">
+                <input id="filePickerSearch" class="form-control" placeholder="Search files..." />
+              </div>
+              <div id="filePickerList" class="row row-cols-1 row-cols-md-2 g-2">
+                <div class="col"><div class="text-muted">Loading…</div></div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+      document.body.appendChild(wrapper.firstElementChild);
+      return document.getElementById('filePickerModal');
+    }
+
+    function renderFileList(files) {
+      const list = document.getElementById('filePickerList');
+      if (!files.length) {
+        list.innerHTML = '<div class="col"><div class="text-muted">No files found.</div></div>';
+        return;
+      }
+      list.innerHTML = files.map(f => `
+        <div class="col">
+          <div class="border rounded p-2 d-flex align-items-center justify-content-between">
+            <div class="text-truncate" title="${f.path}">${f.path}</div>
+            <button class="btn btn-sm btn-primary" data-path="${f.path}">Select</button>
+          </div>
+        </div>
+      `).join('');
+      // bind selects
+      list.querySelectorAll('button[data-path]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (filePickerTargetInput) {
+            filePickerTargetInput.value = btn.getAttribute('data-path');
+          }
+          if (filePickerModalInstance) filePickerModalInstance.hide();
+        });
+      });
+    }
+
+    async function loadFilePickerFiles() {
+      const list = document.getElementById('filePickerList');
+      list.innerHTML = '<div class="col"><div class="text-muted">Loading…</div></div>';
+      try {
+        const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/uploads-list?sub=public/gallery`);
+        const d = await r.json();
+        if (!d.success) { list.innerHTML = `<div class='col'><div class='text-danger'>${d.message||'Failed to load'}</div></div>`; return; }
+        filePickerLastFiles = d.data.files || [];
+        renderFileList(filePickerLastFiles);
+      } catch (e) {
+        list.innerHTML = '<div class="col"><div class="text-danger">Failed to load</div></div>';
+      }
+    }
+
+    function openFilePicker(targetInput) {
+      const modalEl = ensureFilePickerModal();
+      // initialize bootstrap modal once
+      if (!filePickerModalInstance) {
+        // eslint-disable-next-line no-undef
+        filePickerModalInstance = new bootstrap.Modal(modalEl);
+        const searchEl = modalEl.querySelector('#filePickerSearch');
+        searchEl.addEventListener('input', () => {
+          const q = searchEl.value.toLowerCase();
+          const filtered = filePickerLastFiles.filter(f => f.path.toLowerCase().includes(q));
+          renderFileList(filtered);
+        });
+      }
+      filePickerTargetInput = targetInput;
+      loadFilePickerFiles();
+      filePickerModalInstance.show();
+    }
   })();
 </script>
 
