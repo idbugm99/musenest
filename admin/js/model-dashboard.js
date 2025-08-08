@@ -598,7 +598,7 @@ class ModelDashboard {
                     <div class="col-6 col-md-4 col-lg-3">
                         <div class="card shadow-sm">
                             <div class="bg-light" style="height: 160px; overflow: hidden;">
-                                <img src="${item.thumbnail_url}" class="w-100 h-100" style="object-fit: cover;" alt="thumb">
+                                <img src="${item.thumbnail_url}" class="w-100 h-100" style="object-fit: cover;" alt="thumb" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMTIwIDgwIj48cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjZWRlZGVkIi8+PHRleHQgeD0iNjAiIHk9IjQyIiBmb250LXNpemU9IjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjY2Ij50aHVtYjwvdGV4dD48L3N2Zz4=';">
                             </div>
                             <div class="card-body p-2 d-flex justify-content-between align-items-center">
                                 <span class="badge ${getStatusBadgeClass(item.review_status)} text-capitalize">${item.review_status.replace('_',' ')}</span>
