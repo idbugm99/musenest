@@ -207,7 +207,9 @@ class ModelDashboard {
 
         // Model profile image
         const profileImg = card.querySelector('.model-profile-image');
-        profileImg.src = model.profile_image_url;
+        // Gracefully handle missing profile images
+        profileImg.src = model.profile_image_url || '/assets/default-avatar.png';
+        profileImg.onerror = function() { this.onerror = null; this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHNpcmNsZSBjeD0iMzIiIGN5PSIyMiIgcj0iMTIiIGZpbGw9IiNFNUU5RUIiLz48cmVjdCB4PSIxNiIgeT0iMzgiIHdpZHRoPSIyOCIgaGVpZ2h0PSIxNiIgZmlsbD0iI0VFRiIvPjwvc3ZnPg=='; };
         profileImg.alt = `${model.name} profile`;
 
         // Model name and info
@@ -561,7 +563,9 @@ class ModelDashboard {
         const modal = template.content.cloneNode(true);
         
         // Set model info
-        modal.querySelector('.modal-model-profile').src = model.profile_image_url;
+        const modalProfile = modal.querySelector('.modal-model-profile');
+        modalProfile.src = model.profile_image_url || '/assets/default-avatar.png';
+        modalProfile.onerror = function() { this.onerror = null; this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHNpcmNsZSBjeD0iMzIiIGN5PSIyMiIgcj0iMTIiIGZpbGw9IiNFNUU5RUIiLz48cmVjdCB4PSIxNiIgeT0iMzgiIHdpZHRoPSIyOCIgaGVpZ2h0PSIxNiIgZmlsbD0iI0VFRiIvPjwvc3ZnPg=='; };
         modal.querySelector('.modal-model-name').textContent = model.display_name || model.name;
         modal.querySelector('.modal-model-status').textContent = `${model.status} • ${mediaItems.length} media items`;
 
