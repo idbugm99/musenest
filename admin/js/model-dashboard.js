@@ -642,14 +642,16 @@ class ModelDashboard {
         
         // Set model info
         const modalProfile = modal.querySelector('.modal-model-profile');
-        modalProfile.src = model.profile_image_url || '/assets/default-avatar.png';
-        modalProfile.onerror = function() { this.onerror = null; this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHNpcmNsZSBjeD0iMzIiIGN5PSIyMiIgcj0iMTIiIGZpbGw9IiNFNUU5RUIiLz48cmVjdCB4PSIxNiIgeT0iMzgiIHdpZHRoPSIyOCIgaGVpZ2h0PSIxNiIgZmlsbD0iI0VFRiIvPjwvc3ZnPg=='; };
+        modalProfile.src = model.profile_image_url || '/assets/default-avatar.svg';
+        modalProfile.onerror = function() { this.onerror = null; this.src = '/assets/default-avatar.svg'; };
         modal.querySelector('.modal-model-name').textContent = model.display_name || model.name;
         modal.querySelector('.modal-model-status').textContent = `${model.status} • ${mediaItems.length} media items`;
 
-        // Create media grid
-        const content = modal.querySelector('.modal-content');
-        content.innerHTML = this.createMediaGridHTML(mediaItems, categoryBreakdown);
+        // Create media grid (insert into body, not the container)
+        const bodyEl = modal.querySelector('.modal-body');
+        if (bodyEl) {
+            bodyEl.innerHTML = this.createMediaGridHTML(mediaItems, categoryBreakdown);
+        }
 
         // Append to body
         document.body.appendChild(modal);
