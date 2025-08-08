@@ -392,9 +392,22 @@ async function loadThemeManagement() {
             const html = await response.text();
             document.getElementById('dynamicContent').innerHTML = html;
             console.log('🎨 Theme management component loaded successfully');
-            
-            // Ensure the main layout stays intact
-            protectMainLayout();
+
+            // Execute embedded scripts so the component initializes
+            const scripts = document.getElementById('dynamicContent').querySelectorAll('script');
+            scripts.forEach((script, i) => {
+                const s = document.createElement('script');
+                if (script.src) s.src = script.src; else s.textContent = script.textContent;
+                document.head.appendChild(s);
+                console.log(`✅ Theme management script ${i + 1} executed`);
+            });
+
+            // Initialize component if global initializer is present
+            setTimeout(() => {
+                if (typeof window.initializeThemeManagement === 'function') {
+                    window.initializeThemeManagement();
+                }
+            }, 0);
         } else {
             throw new Error('Failed to load theme management');
         }

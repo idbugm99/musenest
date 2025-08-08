@@ -414,7 +414,7 @@ class ThemeManagement {
     async loadModels() {
         try {
             console.log('🔍 Fetching models from API...');
-            const response = await fetch('/api/theme-management/models');
+            const response = await sysFetch('/api/theme-management/models');
             if (response.ok) {
                 this.models = await response.json();
                 console.log('✅ Models loaded from API:', this.models);
@@ -583,7 +583,7 @@ class ThemeManagement {
             console.log('💾 Saving theme assignment:', { modelId, themeId });
             
             // Send PUT request to save theme assignment
-            const response = await fetch(`/api/theme-management/models/${modelId}/theme`, {
+            const response = await sysFetch(`/api/theme-management/models/${modelId}/theme`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
