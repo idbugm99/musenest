@@ -110,6 +110,19 @@
 - Use Bootstrap to match current admin styling.
 - Use tooltips and helper text similar to RoseMastos.
 
+## Current Implementation Status (2025-08-08)
+- Model Content Admin (`/:slug/admin/content`): Implemented
+  - Metadata-driven fields with Quill for HTML
+  - Autosave with per-field status; audit trail + rollback
+  - Unsaved edit guard; Cmd/Ctrl+S save; Esc clears statuses
+  - Audit panel pagination and counts
+- Model Gallery Admin (`/:slug/admin/gallery`): Implemented
+  - Sections CRUD, visibility toggle, reorder, search
+  - Images: blurred-preferred thumbnails, inline caption/tags, visibility toggle
+  - Upload via multer → thumbnail generation → moderation pipeline trigger
+  - Drag-and-drop reorder; bulk show/hide/delete/move; pagination
+  - Toast notifications; keyboard shortcuts (A select all, Delete, R refresh, Esc clear)
+
 ## Observability
 - Log admin actions with `logger.info` including `admin_user_id`, `model_id`, `section_id`/`image_id`.
 - Add `X-Request-Id` passthrough in UI logs for traceability.
