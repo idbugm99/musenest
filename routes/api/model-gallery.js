@@ -356,6 +356,77 @@ router.get('/:modelSlug/uploads-list', async (req, res) => {
   }
 });
 
+// PATCH /api/model-gallery/:modelSlug/images/watermark { ids: [] }
+router.patch('/:modelSlug/images/watermark', async (req, res) => {
+  try {
+    const { modelSlug } = req.params;
+    const { ids } = req.body || {};
+    if (!Array.isArray(ids) || ids.length === 0) return res.fail(400, 'ids[] required');
+    const model = await getModelBySlug(modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+
+    // Load watermark settings
+    const settingsRows = await db.query(
+      'SELECT setting_key, setting_value FROM model_settings WHERE model_id = ? AND setting_key IN ("watermark_image","wm_size","wm_opacity","wm_position")',
+      [model.id]
+    );
+    const settings = Object.create(null);
+    for (const r of settingsRows) settings[r.setting_key] = r.setting_value;
+    if (!settings.watermark_image) return res.fail(400, 'watermark_image not set in settings');
+    const publicRoot = path.join(process.cwd(), 'public');
+    const wmAbs = settings.watermark_image.startsWith('/uploads/')
+      ? path.join(publicRoot, settings.watermark_image.replace(/^\//, ''))
+      : settings.watermark_image;
+
+    // Fetch target images
+    const idInts = ids.map(v => parseInt(v)).filter(v => Number.isInteger(v));
+    if (!idInts.length) return res.fail(400, 'No valid ids');
+    const placeholders = idInts.map(() => '?').join(',');
+    const rows = await db.query(
+      `SELECT id, filename FROM gallery_images WHERE model_id = ? AND id IN (${placeholders})`,
+      [model.id, ...idInts]
+    );
+    if (!rows.length) return res.success({ processed: 0, ids: [] });
+
+    // Prepare settings
+    const sizePct = Math.max(5, Math.min(100, parseInt(settings.wm_size || '31')));
+    const opacity = Math.max(0.05, Math.min(1.0, parseFloat(((settings.wm_opacity || '60')))/100));
+    const positionMap = {
+      'Bottom Right': 'southeast',
+      'Bottom Left': 'southwest',
+      'Top Right': 'northeast',
+      'Top Left': 'northwest',
+      'Center': 'center'
+    };
+    const gravity = positionMap[settings.wm_position || 'Bottom Right'] || 'southeast';
+
+    let processed = 0;
+    const processedIds = [];
+
+    for (const img of rows) {
+      try {
+        const src = path.join(publicRoot, 'uploads', modelSlug, 'public', 'gallery', img.filename);
+        // ensure file exists
+        try { await fs.access(src); } catch { continue; }
+        const meta = await sharp(src).metadata();
+        const targetWidth = Math.max(20, Math.round((meta.width || 1000) * (sizePct / 100)));
+        const overlayBuf = await sharp(wmAbs).resize({ width: targetWidth }).toBuffer();
+        const tmp = src + '.wm_tmp';
+        await sharp(src).composite([{ input: overlayBuf, gravity, blend: 'over', opacity }]).toFile(tmp);
+        await fs.rename(tmp, src);
+        processed++; processedIds.push(img.id);
+      } catch (e) {
+        logger.warn('watermark.apply error', { error: e.message, id: img.id });
+      }
+    }
+
+    return res.success({ processed, ids: processedIds });
+  } catch (error) {
+    logger.error('model-gallery.watermark-batch error', { error: error.message });
+    return res.fail(500, 'Failed to apply watermark', error.message);
+  }
+});
+
 module.exports = router;
 // POST /api/model-gallery/:modelSlug/sections  (create section)
 router.post('/:modelSlug/sections', async (req, res) => {

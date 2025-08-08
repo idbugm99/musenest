@@ -31,6 +31,7 @@
   <div class="card-header bg-white d-flex align-items-center justify-content-between">
     <strong>Browse Images</strong>
     <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-sm btn-outline-secondary" id="lib_apply_wm"><i class="fas fa-shield-alt me-1"></i>Apply Watermarks</button>
       <select class="form-select form-select-sm" id="lib_filter_section" style="width:auto"></select>
       <select class="form-select form-select-sm" id="lib_sort" style="width:auto">
         <option value="newest">Newest First</option>
@@ -88,7 +89,10 @@
       <div class=\"col\">
         <div class=\"border rounded p-2\">
           <img src=\"${(im.moderation_status==='approved_blurred' && im.blurred_path ? (im.blurred_path.startsWith('/')? im.blurred_path : '/uploads/${slug}/public/blurred/' + im.filename) : '/uploads/${slug}/public/gallery/' + im.filename)}\" style=\"width:100%;height:140px;object-fit:cover;border-radius:4px\" />
-          <div class=\"small text-truncate mt-1\" title=\"${im.filename}\">${im.filename}</div>
+          <div class=\"d-flex align-items-center justify-content-between mt-1\">
+            <div class=\"small text-truncate\" title=\"${im.filename}\">${im.filename}</div>
+            <input type=\"checkbox\" class=\"form-check-input lib_sel\" value=\"${im.id}\">
+          </div>
         </div>
       </div>`).join('');
   }
@@ -104,6 +108,15 @@
     if (!currentSection){ notify('warning','Pick a section first'); return; }
     let ok = 0; for (const f of files){ const fd = new FormData(); fd.append('image', f); const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${currentSection}/upload`, { method:'POST', body: fd }); const d = await r.json(); if (d.success) ok++; }
     notify('success', `Uploaded ${ok}/${files.length}`); loadImages();
+  });
+
+  // Apply watermarks (batch)
+  document.getElementById('lib_apply_wm').addEventListener('click', async ()=>{
+    const ids = Array.from(document.querySelectorAll('.lib_sel:checked')).map(cb => parseInt(cb.value));
+    if (!ids.length){ notify('warning','Select images to watermark'); return; }
+    const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/watermark`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ids }) });
+    const d = await r.json(); if (!d.success){ notify('danger', d.message||'Apply failed'); return; }
+    notify('success', `Watermarks applied: ${d.data.processed}`); loadImages();
   });
 
   loadSections();
