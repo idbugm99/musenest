@@ -206,8 +206,9 @@ router.get('/models/:id/media', async (req, res) => {
                 mrq.priority,
                 mrq.flagged_at,
                 mrq.reviewed_at,
-                mrq.violation_category,
-                mrq.violation_severity,
+                /* Not all schemas have explicit violation fields */
+                NULL as violation_category,
+                0.0 as violation_severity,
                 
                 -- Get thumbnail path (simplified for now)
                 CONCAT('/api/media-preview/', mrq.id, '/thumbnail') as thumbnail_url,
@@ -255,7 +256,7 @@ router.get('/models/:id/media', async (req, res) => {
                 ? JSON.parse(item.detected_parts || '{}') 
                 : item.detected_parts || {},
             nudity_score: parseFloat(item.nudity_score) || 0,
-            violation_severity: parseFloat(item.violation_severity) || 0.0,
+            violation_severity: parseFloat(item.violation_severity || 0) || 0.0,
             final_risk_score: parseFloat(item.final_risk_score) || null
         }));
 
