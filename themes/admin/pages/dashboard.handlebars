@@ -305,11 +305,37 @@ async function loadClientManagement() {
             const html = await response.text();
             document.getElementById('dynamicContent').innerHTML = html;
             console.log('✅ Client management component loaded successfully');
-            
-            // Initialize the component if it has an init function
-            if (typeof window.initializeClientManagement === 'function') {
-                window.initializeClientManagement();
-            }
+
+            // Execute any <script> tags within the loaded component (they don't run via innerHTML)
+            const scriptTags = document.getElementById('dynamicContent').querySelectorAll('script');
+            console.log('🔧 Found', scriptTags.length, 'client management script tags to execute');
+            scriptTags.forEach((script, index) => {
+                console.log(`🔧 Executing client management script ${index + 1}...`);
+                const newScript = document.createElement('script');
+                if (script.src) {
+                    newScript.src = script.src;
+                } else {
+                    newScript.textContent = script.textContent;
+                }
+                document.head.appendChild(newScript);
+                console.log(`✅ Client management script ${index + 1} executed`);
+            });
+
+            // Initialize the component after scripts are executed
+            setTimeout(() => {
+                if (window.ClientManagement) {
+                    console.log('🚀 Initializing ClientManagement class');
+                    window.clientManager = new ClientManagement();
+                } else if (typeof window.initializeClientManagement === 'function') {
+                    console.log('🚀 Calling initializeClientManagement()');
+                    window.initializeClientManagement();
+                } else if (window.clientManager && typeof window.clientManager.loadClientData === 'function') {
+                    console.log('🔁 Refreshing existing clientManager instance');
+                    window.clientManager.loadClientData();
+                } else {
+                    console.warn('⚠️ No client management initializer found');
+                }
+            }, 0);
         } else {
             throw new Error('Failed to load component');
         }
