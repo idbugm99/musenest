@@ -110,20 +110,130 @@
           const images = data.data.images || [];
           if (!images.length) { container.innerHTML = '<div class="text-muted">No images in this section.</div>'; return; }
           container.innerHTML = `
-            <div class="row row-cols-2 row-cols-md-3 g-2">
-              ${images.map(img => `
+            <div class="d-flex gap-2 align-items-center mb-2">
+              <input class="form-control form-control-sm" id="add_filename_${id}" placeholder="/uploads/${slug}/public/gallery/filename.jpg" />
+              <button class="btn btn-sm btn-primary" id="btn_add_${id}" data-id="${id}"><i class=\"fas fa-plus\"></i> Add</button>
+            </div>
+            <div class="row row-cols-2 row-cols-md-3 g-2 images-grid" data-section-id="${id}">
+              ${images.map((img, idx) => `
                 <div class="col">
-                  <div class="border rounded p-2">
-                    <div class="small text-truncate" title="${img.filename}">${img.filename}</div>
-                    <div class="d-flex align-items-center justify-content-between mt-1">
-                      <span class="text-muted small">${img.is_active ? 'Visible' : 'Hidden'}</span>
+                  <div class="border rounded p-2 draggable-card" draggable="true" data-id="${img.id}" data-index="${idx}">
+                    <div class="d-flex align-items-center justify-content-between">
+                      <div class="small text-truncate" title="${img.filename}">
+                        <i class=\"fas fa-grip-vertical me-1 text-muted\"></i>${img.filename}
+                      </div>
                       <button class="btn btn-sm btn-outline-secondary btn-toggle-image" data-id="${img.id}" data-active="${img.is_active ? 1 : 0}">${img.is_active ? 'Hide' : 'Show'}</button>
                     </div>
+                    <div class="text-muted small mt-1">${img.is_active ? 'Visible' : 'Hidden'}</div>
                   </div>
                 </div>
               `).join('')}
             </div>
           `;
+
+          // bind add image
+          const addBtn = document.getElementById(`btn_add_${id}`);
+          const addInput = document.getElementById(`add_filename_${id}`);
+          addBtn.addEventListener('click', async () => {
+            const filename = (addInput.value || '').trim();
+            if (!filename) { alert('Enter a filename/path'); return; }
+            const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`, {
+              method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename })
+            });
+            const d = await r.json();
+            if (!d.success) { alert(d.message || 'Failed to add image'); return; }
+            addInput.value = '';
+            // reload images
+            const rr = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`);
+            const dd = await rr.json();
+            if (!dd.success) { return; }
+            const imgs = dd.data.images || [];
+            renderImagesGrid(container, id, imgs);
+          });
+
+          // helper to render grid with bindings (for refresh)
+          function renderImagesGrid(container, sectionId, imgs) {
+            const grid = container.querySelector('.images-grid');
+            grid.innerHTML = imgs.map((img, idx) => `
+              <div class=\"col\">
+                <div class=\"border rounded p-2 draggable-card\" draggable=\"true\" data-id=\"${img.id}\" data-index=\"${idx}\">
+                  <div class=\"d-flex align-items-center justify-content-between\"> 
+                    <div class=\"small text-truncate\" title=\"${img.filename}\"><i class=\\\"fas fa-grip-vertical me-1 text-muted\\\"></i>${img.filename}</div>
+                    <button class=\"btn btn-sm btn-outline-secondary btn-toggle-image\" data-id=\"${img.id}\" data-active=\"${img.is_active ? 1 : 0}\">${img.is_active ? 'Hide' : 'Show'}</button>
+                  </div>
+                  <div class=\"text-muted small mt-1\">${img.is_active ? 'Visible' : 'Hidden'}</div>
+                </div>
+              </div>
+            `).join('');
+            bindImageToggles(grid, sectionId);
+            bindDragAndDrop(grid, sectionId);
+          }
+
+          function bindImageToggles(scope, sectionId) {
+            scope.querySelectorAll('.btn-toggle-image').forEach(t => {
+              t.addEventListener('click', async () => {
+                const imgId = t.getAttribute('data-id');
+                const active = t.getAttribute('data-active') === '1';
+                const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/${imgId}/visibility`, {
+                  method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_active: !active })
+                });
+                const d = await r.json();
+                if (!d.success) { alert(d.message||'Failed to update'); return; }
+                // refresh current grid
+                const rr = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${sectionId}/images`);
+                const dd = await rr.json();
+                if (!dd.success) { return; }
+                renderImagesGrid(container, sectionId, dd.data.images || []);
+              });
+            });
+          }
+
+          function bindDragAndDrop(grid, sectionId) {
+            let draggingEl = null;
+            grid.querySelectorAll('.draggable-card').forEach(card => {
+              card.addEventListener('dragstart', (e) => {
+                draggingEl = card;
+                e.dataTransfer.effectAllowed = 'move';
+                card.classList.add('opacity-50');
+              });
+              card.addEventListener('dragend', () => {
+                if (draggingEl) draggingEl.classList.remove('opacity-50');
+                draggingEl = null;
+              });
+              card.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const target = e.currentTarget;
+                if (!draggingEl || draggingEl === target) return;
+                const bounding = target.getBoundingClientRect();
+                const offset = e.clientY - bounding.top;
+                const parentCol = target.closest('.col');
+                const draggingCol = draggingEl.closest('.col');
+                if (offset < bounding.height / 2) {
+                  parentCol.parentNode.insertBefore(draggingCol, parentCol);
+                } else {
+                  parentCol.parentNode.insertBefore(draggingCol, parentCol.nextSibling);
+                }
+              });
+            });
+
+            grid.addEventListener('drop', async (e) => {
+              e.preventDefault();
+              // Build new order
+              const items = Array.from(grid.querySelectorAll('.draggable-card')).map((el, idx) => ({ id: parseInt(el.getAttribute('data-id')), order_index: idx }));
+              const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/reorder`, {
+                method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ section_id: sectionId, items })
+              });
+              const d = await r.json();
+              if (!d.success) { alert(d.message||'Failed to reorder'); return; }
+              // Re-render grid from server authoritative order
+              renderImagesGrid(container, sectionId, d.data.images || []);
+            });
+          }
+
+          // initial bindings
+          const grid = container.querySelector('.images-grid');
+          bindImageToggles(grid, id);
+          bindDragAndDrop(grid, id);
 
           // bind image toggle
           container.querySelectorAll('.btn-toggle-image').forEach(t => {
