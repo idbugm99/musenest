@@ -1,7 +1,5 @@
 // Standard response envelope
-module.exports = function responseEnvelope(req, res, next) {
-  const start = Date.now();
-
+module.exports = function responseEnvelope(_req, res, next) {
   res.success = (data = {}, extra = {}) => {
     const body = { success: true, ...extra, data };
     res.json(body);
@@ -12,12 +10,6 @@ module.exports = function responseEnvelope(req, res, next) {
     if (details) payload.details = details;
     res.status(statusCode).json(payload);
   };
-
-  res.on('finish', () => {
-    // Attach timing header for visibility
-    res.setHeader('X-Response-Time', `${Date.now() - start}ms`);
-  });
-
   next();
 };
 

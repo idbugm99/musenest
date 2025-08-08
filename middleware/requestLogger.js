@@ -37,7 +37,7 @@ module.exports = function requestLogger(req, res, next) {
     logger.info('request.start', meta);
   }
 
-  res.on('finish', () => {
+  const onFinish = () => {
     if (skip) return;
     const durationMs = Date.now() - start;
     const meta = {
@@ -48,8 +48,11 @@ module.exports = function requestLogger(req, res, next) {
       durationMs,
       contentLength: res.getHeader('Content-Length') || 0,
     };
+    res.setHeader('X-Response-Time', `${durationMs}ms`);
     logger.info('request.end', meta);
-  });
+  };
+  res.on('finish', onFinish);
+  res.on('close', onFinish);
 
   next();
 };
