@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../../config/database');
+const logger = require('../../utils/logger');
 
 // GET /api/admin-business/business-types - Get all business types for admin
 router.get('/business-types', async (req, res) => {
@@ -31,16 +32,11 @@ router.get('/business-types', async (req, res) => {
             ORDER BY bt.category, bt.display_name
         `);
         
-        res.json({
-            success: true,
-            data: businessTypes
-        });
+        res.set('Cache-Control', 'private, max-age=30');
+        res.success(businessTypes);
     } catch (error) {
-        console.error('Error fetching business types for admin:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch business types'
-        });
+        logger.error('admin-business.business-types list error', { error: error.message });
+        res.fail(500, 'Failed to fetch business types', error.message);
     }
 });
 
@@ -60,12 +56,7 @@ router.post('/business-types', async (req, res) => {
         } = req.body;
 
         // Validate required fields
-        if (!name || !display_name || !category) {
-            return res.status(400).json({
-                success: false,
-                error: 'Name, display name, and category are required'
-            });
-        }
+        if (!name || !display_name || !category) return res.fail(400, 'Name, display name, and category are required');
 
         // Check if name already exists
         const [existing] = await db.execute(
@@ -73,12 +64,7 @@ router.post('/business-types', async (req, res) => {
             [name]
         );
 
-        if (existing.length > 0) {
-            return res.status(400).json({
-                success: false,
-                error: 'Business type name already exists'
-            });
-        }
+        if (existing.length > 0) return res.fail(400, 'Business type name already exists');
 
         const [result] = await db.execute(`
             INSERT INTO business_types (
@@ -107,20 +93,11 @@ router.post('/business-types', async (req, res) => {
             pricing_model || 'subscription'
         ]);
 
-        res.json({
-            success: true,
-            data: {
-                id: result.insertId,
-                message: 'Business type created successfully'
-            }
-        });
+        res.success({ id: result.insertId }, { message: 'Business type created successfully' });
 
     } catch (error) {
-        console.error('Error creating business type:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to create business type'
-        });
+        logger.error('admin-business.business-types create error', { error: error.message });
+        res.fail(500, 'Failed to create business type', error.message);
     }
 });
 
@@ -147,12 +124,7 @@ router.put('/business-types/:id', async (req, res) => {
             [id]
         );
 
-        if (existing.length === 0) {
-            return res.status(404).json({
-                success: false,
-                error: 'Business type not found'
-            });
-        }
+        if (existing.length === 0) return res.fail(404, 'Business type not found');
 
         await db.execute(`
             UPDATE business_types SET 
@@ -182,19 +154,11 @@ router.put('/business-types/:id', async (req, res) => {
             id
         ]);
 
-        res.json({
-            success: true,
-            data: {
-                message: 'Business type updated successfully'
-            }
-        });
+        res.success({}, { message: 'Business type updated successfully' });
 
     } catch (error) {
-        console.error('Error updating business type:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to update business type'
-        });
+        logger.error('admin-business.business-types update error', { error: error.message });
+        res.fail(500, 'Failed to update business type', error.message);
     }
 });
 
@@ -209,12 +173,7 @@ router.delete('/business-types/:id', async (req, res) => {
             [id]
         );
 
-        if (models[0].count > 0) {
-            return res.status(400).json({
-                success: false,
-                error: 'Cannot delete business type with associated models'
-            });
-        }
+        if (models[0].count > 0) return res.fail(400, 'Cannot delete business type with associated models');
 
         // Delete business type (will cascade to page sets and themes)
         const [result] = await db.execute(
@@ -222,26 +181,13 @@ router.delete('/business-types/:id', async (req, res) => {
             [id]
         );
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({
-                success: false,
-                error: 'Business type not found'
-            });
-        }
+        if (result.affectedRows === 0) return res.fail(404, 'Business type not found');
 
-        res.json({
-            success: true,
-            data: {
-                message: 'Business type deleted successfully'
-            }
-        });
+        res.success({}, { message: 'Business type deleted successfully' });
 
     } catch (error) {
-        console.error('Error deleting business type:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to delete business type'
-        });
+        logger.error('admin-business.business-types delete error', { error: error.message });
+        res.fail(500, 'Failed to delete business type', error.message);
     }
 });
 
@@ -274,16 +220,11 @@ router.get('/page-sets', async (req, res) => {
             ORDER BY bt.display_name, bps.sort_order, bps.display_name
         `);
         
-        res.json({
-            success: true,
-            data: pageSets
-        });
+        res.set('Cache-Control', 'private, max-age=30');
+        res.success(pageSets);
     } catch (error) {
-        console.error('Error fetching page sets for admin:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch page sets'
-        });
+        logger.error('admin-business.page-sets list error', { error: error.message });
+        res.fail(500, 'Failed to fetch page sets', error.message);
     }
 });
 
@@ -305,12 +246,7 @@ router.post('/page-sets', async (req, res) => {
         } = req.body;
 
         // Validate required fields
-        if (!business_type_id || !name || !display_name || !included_pages) {
-            return res.status(400).json({
-                success: false,
-                error: 'Business type ID, name, display name, and included pages are required'
-            });
-        }
+        if (!business_type_id || !name || !display_name || !included_pages) return res.fail(400, 'Business type ID, name, display name, and included pages are required');
 
         // Check if name already exists for this business type
         const [existing] = await db.execute(
@@ -318,12 +254,7 @@ router.post('/page-sets', async (req, res) => {
             [business_type_id, name]
         );
 
-        if (existing.length > 0) {
-            return res.status(400).json({
-                success: false,
-                error: 'Page set name already exists for this business type'
-            });
-        }
+        if (existing.length > 0) return res.fail(400, 'Page set name already exists for this business type');
 
         const [result] = await db.execute(`
             INSERT INTO business_page_sets (
@@ -356,20 +287,11 @@ router.post('/page-sets', async (req, res) => {
             is_default || false
         ]);
 
-        res.json({
-            success: true,
-            data: {
-                id: result.insertId,
-                message: 'Page set created successfully'
-            }
-        });
+        res.success({ id: result.insertId }, { message: 'Page set created successfully' });
 
     } catch (error) {
-        console.error('Error creating page set:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to create page set'
-        });
+        logger.error('admin-business.page-sets create error', { error: error.message });
+        res.fail(500, 'Failed to create page set', error.message);
     }
 });
 
@@ -397,12 +319,7 @@ router.put('/page-sets/:id', async (req, res) => {
             [id]
         );
 
-        if (existing.length === 0) {
-            return res.status(404).json({
-                success: false,
-                error: 'Page set not found'
-            });
-        }
+        if (existing.length === 0) return res.fail(404, 'Page set not found');
 
         await db.execute(`
             UPDATE business_page_sets SET 
@@ -434,19 +351,11 @@ router.put('/page-sets/:id', async (req, res) => {
             id
         ]);
 
-        res.json({
-            success: true,
-            data: {
-                message: 'Page set updated successfully'
-            }
-        });
+        res.success({}, { message: 'Page set updated successfully' });
 
     } catch (error) {
-        console.error('Error updating page set:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to update page set'
-        });
+        logger.error('admin-business.page-sets update error', { error: error.message });
+        res.fail(500, 'Failed to update page set', error.message);
     }
 });
 
@@ -461,38 +370,20 @@ router.delete('/page-sets/:id', async (req, res) => {
             [id]
         );
 
-        if (models[0].count > 0) {
-            return res.status(400).json({
-                success: false,
-                error: 'Cannot delete page set with associated models'
-            });
-        }
+        if (models[0].count > 0) return res.fail(400, 'Cannot delete page set with associated models');
 
         const [result] = await db.execute(
             'DELETE FROM business_page_sets WHERE id = ?',
             [id]
         );
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({
-                success: false,
-                error: 'Page set not found'
-            });
-        }
+        if (result.affectedRows === 0) return res.fail(404, 'Page set not found');
 
-        res.json({
-            success: true,
-            data: {
-                message: 'Page set deleted successfully'
-            }
-        });
+        res.success({}, { message: 'Page set deleted successfully' });
 
     } catch (error) {
-        console.error('Error deleting page set:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to delete page set'
-        });
+        logger.error('admin-business.page-sets delete error', { error: error.message });
+        res.fail(500, 'Failed to delete page set', error.message);
     }
 });
 

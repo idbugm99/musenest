@@ -7,6 +7,7 @@ const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
 const db = require('../../config/database');
+const logger = require('../../utils/logger');
 
 // ============================================================================
 // SERVER MANAGEMENT ENDPOINTS
@@ -34,15 +35,12 @@ router.get('/servers', async (req, res) => {
 
         const [servers] = await db.execute(query);
         
-        res.json({
-            success: true,
-            servers: servers,
-            total: servers.length
-        });
+        res.set('Cache-Control', 'private, max-age=15');
+        res.success({ servers, total: servers.length });
 
     } catch (error) {
-        console.error('Error fetching servers:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('ai-server-management.servers list error', { error: error.message });
+        res.fail(500, 'Failed to fetch servers', error.message);
     }
 });
 

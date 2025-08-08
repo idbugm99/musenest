@@ -4,6 +4,7 @@
 
 const express = require('express');
 const db = require('../../config/database');
+const logger = require('../../utils/logger');
 const router = express.Router();
 
 /**
@@ -19,16 +20,11 @@ router.get('/', async (req, res) => {
             ORDER BY name
         `);
         
-        res.json({
-            success: true,
-            models: models
-        });
+        res.set('Cache-Control', 'private, max-age=30');
+        res.success({ models });
     } catch (error) {
-        console.error('Error fetching models:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch models'
-        });
+        logger.error('admin-models.list error', { error: error.message });
+        res.fail(500, 'Failed to fetch models', error.message);
     }
 });
 

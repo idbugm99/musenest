@@ -7,6 +7,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../../config/database');
+const logger = require('../../utils/logger');
 
 /**
  * Get paginated model cards with statistics
@@ -135,8 +136,8 @@ router.get('/models', async (req, res) => {
         const hasNext = page < totalPages;
         const hasPrev = page > 1;
 
-        res.json({
-            success: true,
+        res.set('Cache-Control', 'private, max-age=15');
+        res.success({
             models: models,
             pagination: {
                 current_page: parseInt(page),
@@ -146,20 +147,12 @@ router.get('/models', async (req, res) => {
                 has_next: hasNext,
                 has_prev: hasPrev
             },
-            filters_applied: {
-                search: search || null,
-                sort: sort,
-                filter: filter
-            }
+            filters_applied: { search: search || null, sort, filter }
         });
 
     } catch (error) {
-        console.error('Model dashboard API error:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to load model dashboard',
-            details: error.message
-        });
+        logger.error('model-dashboard.list error', { error: error.message });
+        res.fail(500, 'Failed to load model dashboard', error.message);
     }
 });
 
@@ -176,12 +169,7 @@ router.get('/models/:id/media', async (req, res) => {
             limit = 50
         } = req.query;
 
-        if (!modelId) {
-            return res.status(400).json({
-                success: false,
-                error: 'Invalid model ID'
-            });
-        }
+        if (!modelId) return res.fail(400, 'Invalid model ID');
 
         const limitValue = Math.max(1, Math.min(200, parseInt(limit)));
         const offsetValue = Math.max(0, (parseInt(page) - 1) * limitValue);
@@ -201,12 +189,7 @@ router.get('/models/:id/media', async (req, res) => {
             FROM models WHERE id = ?
         `, [modelId]);
 
-        if (modelInfo.length === 0) {
-            return res.status(404).json({
-                success: false,
-                error: 'Model not found'
-            });
-        }
+        if (modelInfo.length === 0) return res.fail(404, 'Model not found');
 
         // Get media items
         const mediaQuery = `
@@ -276,8 +259,8 @@ router.get('/models/:id/media', async (req, res) => {
             final_risk_score: parseFloat(item.final_risk_score) || null
         }));
 
-        res.json({
-            success: true,
+        res.set('Cache-Control', 'private, max-age=15');
+        res.success({
             model: modelInfo[0],
             media_items: processedItems,
             category_breakdown: categoryStats,
@@ -291,12 +274,8 @@ router.get('/models/:id/media', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Model media API error:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to load model media',
-            details: error.message
-        });
+        logger.error('model-dashboard.media error', { error: error.message });
+        res.fail(500, 'Failed to load model media', error.message);
     }
 });
 
@@ -366,8 +345,8 @@ router.get('/violations/analytics', async (req, res) => {
             WHERE violation_date >= DATE_SUB(CURRENT_DATE, INTERVAL ? DAY)
         `, [daysValue]);
 
-        res.json({
-            success: true,
+        res.set('Cache-Control', 'private, max-age=30');
+        res.success({
             analytics: {
                 period_days: daysValue,
                 overall_stats: overallStats[0],
@@ -378,12 +357,8 @@ router.get('/violations/analytics', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Violation analytics API error:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to load violation analytics',
-            details: error.message
-        });
+        logger.error('model-dashboard.analytics error', { error: error.message });
+        res.fail(500, 'Failed to load violation analytics', error.message);
     }
 });
 
@@ -458,20 +433,11 @@ router.post('/refresh-stats/:id?', async (req, res) => {
         const refreshedModels = modelId ? 1 : await db.execute('SELECT COUNT(*) as count FROM models');
         const modelCount = modelId ? 1 : refreshedModels[0][0].count;
 
-        res.json({
-            success: true,
-            message: `Statistics refreshed for ${modelCount} model(s)`,
-            refreshed_model_id: modelId,
-            refreshed_at: new Date().toISOString()
-        });
+        res.success({ refreshed_model_id: modelId, refreshed_at: new Date().toISOString() }, { message: `Statistics refreshed for ${modelCount} model(s)` });
 
     } catch (error) {
-        console.error('Stats refresh API error:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to refresh statistics',
-            details: error.message
-        });
+        logger.error('model-dashboard.refresh-stats error', { error: error.message });
+        res.fail(500, 'Failed to refresh statistics', error.message);
     }
 });
 
