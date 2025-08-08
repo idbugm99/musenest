@@ -206,6 +206,7 @@ router.get('/models/:id/media', async (req, res) => {
                 mrq.priority,
                 mrq.flagged_at,
                 mrq.reviewed_at,
+                cm.description_text,
                 /* Not all schemas have explicit violation fields */
                 NULL as violation_category,
                 0.0 as violation_severity,

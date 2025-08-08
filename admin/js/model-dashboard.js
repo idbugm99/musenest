@@ -690,9 +690,10 @@ class ModelDashboard {
 
         // Media grid
         const mediaHTML = mediaItems.map(item => `
-            <div class="card shadow-sm">
-                <div class="bg-light" style="height: 200px; overflow: hidden;">
+            <div class="card shadow-sm" title="${this.escapeForAttr(item.description_text || 'No description')}" data-description="${this.escapeForAttr(item.description_text || '')}">
+                <div class="position-relative bg-light" style="height: 200px; overflow: hidden;">
                     <img src="${item.thumbnail_url}" alt="Media thumbnail" class="w-100 h-100" style="object-fit: cover;">
+                    <div class="position-absolute bottom-0 start-0 w-100 px-2 py-1 bg-dark bg-opacity-50 text-white small d-none hover-desc">${this.escapeHtml(item.description_text || 'No description')}</div>
                 </div>
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
@@ -720,7 +721,7 @@ class ModelDashboard {
                 <!-- Media Grid -->
                 <div>
                     <h4 class="h5 fw-medium text-dark mb-3">Recent Media (${mediaItems.length})</h4>
-                    <div class="row g-3">
+                    <div class="row g-3 media-grid">
                         <div class="col-12">
                             <div class="row g-3">
                                 ${mediaHTML.split('</div>').map(item => item ? `<div class="col-md-6 col-lg-4 col-xl-3">${item}</div>` : '').join('')}
@@ -730,6 +731,20 @@ class ModelDashboard {
                 </div>
             </div>
         `;
+    }
+
+    // Basic HTML escapers for safe injection
+    escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    escapeForAttr(str) {
+        return this.escapeHtml(str).replace(/\n/g, ' ');
     }
 
     closeModal() {
