@@ -145,7 +145,7 @@
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
                       <div class="d-flex align-items-center text-truncate" title="${img.filename}" style="min-width:0">
-                        <img src="${(img.moderation_status === 'approved_blurred' && img.blurred_path ? (img.blurred_path.startsWith('/') ? img.blurred_path : '/uploads/${slug}/public/blurred/' + img.filename) : (img.filename && img.filename.startsWith('/') ? img.filename : '/uploads/${slug}/public/gallery/' + img.filename))}" alt="thumb" class="me-2" style="width:48px;height:48px;object-fit:cover;border-radius:4px" onerror="this.style.visibility='hidden'" />
+                      <img loading="lazy" src="${(img.moderation_status === 'approved_blurred' && img.blurred_path ? (img.blurred_path.startsWith('/') ? img.blurred_path : '/uploads/${slug}/public/blurred/' + img.filename) : (img.filename && img.filename.startsWith('/') ? img.filename : '/uploads/${slug}/public/gallery/' + img.filename))}" alt="thumb" class="me-2" style="width:48px;height:48px;object-fit:cover;border-radius:4px" onerror="this.style.visibility='hidden'" />
                         <span class="small text-truncate"><i class=\"fas fa-grip-vertical me-1 text-muted\"></i>${img.filename}</span>
                       </div>
                       <div class="d-flex align-items-center">
@@ -181,7 +181,7 @@
             form.append('image', file);
             const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/upload`, { method: 'POST', body: form });
             const d = await r.json();
-            if (!d.success) { alert(d.message || 'Upload failed'); return; }
+            if (!d.success) { notify('danger', d.message || 'Upload failed'); return; }
             // reload
             const rr = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`);
             const dd = await rr.json();
@@ -195,7 +195,8 @@
               method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename })
             });
             const d = await r.json();
-            if (!d.success) { alert(d.message || 'Failed to add image'); return; }
+            if (!d.success) { notify('danger', d.message || 'Failed to add image'); return; }
+            notify('success', 'Image added');
             addInput.value = '';
             // reload images
             const rr = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`);
@@ -386,7 +387,8 @@
               method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'move', target_section_id: parseInt(target), ids })
             });
             const d = await r.json();
-            if (!d.success) { alert(d.message||'Failed to move'); return; }
+            if (!d.success) { notify('danger', d.message||'Failed to move'); return; }
+            notify('success', 'Images moved');
             await reloadPage();
           });
 
@@ -423,9 +425,9 @@
             if (!dd.success) return;
             renderImagesGrid(container, id, dd.data.images || []);
           }
-          document.getElementById(`bulk_show_${id}`).addEventListener('click', () => runBulk('show'));
-          document.getElementById(`bulk_hide_${id}`).addEventListener('click', () => runBulk('hide'));
-          document.getElementById(`bulk_delete_${id}`).addEventListener('click', () => runBulk('delete'));
+          document.getElementById(`bulk_show_${id}`).addEventListener('click', async () => { await runBulk('show'); notify('success', 'Images shown'); });
+          document.getElementById(`bulk_hide_${id}`).addEventListener('click', async () => { await runBulk('hide'); notify('success', 'Images hidden'); });
+          document.getElementById(`bulk_delete_${id}`).addEventListener('click', async () => { await runBulk('delete'); notify('success', 'Images deleted'); });
 
           bindImageToggles(grid, id);
           bindDragAndDrop(grid, id);
