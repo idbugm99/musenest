@@ -1795,7 +1795,7 @@ class SystemAdminDashboard {
     // Blurred/Approved Content
     async loadBlurredApprovedContent() {
         try {
-            const response = await sysFetch('/api/media-review-queue/queue?status=approved_blurred&page=1&limit=20', {
+            const response = await sysFetch('/api/sysadmin/media-review/queue?status=approved_blurred&page=1&limit=20', {
                 headers: {
                     'Authorization': `Bearer ${this.authToken}`,
                     'Content-Type': 'application/json'
@@ -1811,15 +1811,15 @@ class SystemAdminDashboard {
             return `
                 <div class="space-y-6">
                     <div class="bg-white rounded-lg shadow border border-gray-200 p-4">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Blurred & Approved Media (${data.queue.length})</h3>
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Blurred & Approved Media (${(data.data && data.data.queue ? data.data.queue.length : 0)})</h3>
                         
-                        ${data.queue.length === 0 ? 
+                        ${(data.data && data.data.queue ? data.data.queue.length : 0) === 0 ? 
                             '<div class="text-center py-8 text-gray-500">No blurred/approved media found</div>' :
                             `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                ${data.queue.map(item => `
+                                ${(data.data.queue).map(item => `
                                     <div class="border border-gray-200 rounded-lg p-4">
                                         <div class="aspect-w-16 aspect-h-9 mb-3">
-                                            <img src="${item.thumbnail_path}" alt="Blurred content" class="w-full h-32 object-cover rounded">
+                                            <img src="${item.thumbnail_path || (item.original_path ? item.original_path.replace(/^\\/Users\\/[^/]+\\/Projects\\/musenest\\/public/, '') : '')}" alt="Blurred content" class="w-full h-32 object-cover rounded" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIvdmlld0JveD0iMCAwIDEyMCAxMjAiPjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiBmaWxsPSIjRjNGNEY2Ii8+PC9zdmc+'">
                                         </div>
                                         <div class="space-y-2">
                                             <h4 class="font-medium text-sm">${item.model_name}</h4>
