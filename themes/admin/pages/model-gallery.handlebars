@@ -64,14 +64,31 @@
     const createBtn = document.getElementById('btn_create_section');
     const titleEl = document.getElementById('sec_title');
     const layoutEl = document.getElementById('sec_layout');
+    let sectionsPage = 1;
+    let sectionsPageSize = 20;
     async function load(page=1){
+      sectionsPage = page;
       const q = searchEl.value ? `&search=${encodeURIComponent(searchEl.value)}` : '';
-      const res = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections?page=${page}&limit=20${q}`);
+      const res = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections?page=${sectionsPage}&limit=${sectionsPageSize}${q}`);
       const data = await res.json();
       if(!data.success){ listEl.innerHTML = `<div class="text-danger">${data.message||'Failed to load'}</div>`; return; }
       const sections = data.data.sections || [];
-      if(!sections.length){ listEl.innerHTML = '<div class="text-muted">No sections yet.</div>'; return; }
-      listEl.innerHTML = sections.map(s => `
+      const pg = data.data.pagination || { page: sectionsPage, pages: 1, total: sections.length };
+      const header = `
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <div class="small text-muted">Total ${pg.total}</div>
+          <div class="d-flex align-items-center gap-2">
+            <select id="sec_page_size" class="form-select form-select-sm" style="width:auto">
+              <option value="10"${sectionsPageSize===10?' selected':''}>10</option>
+              <option value="20"${sectionsPageSize===20?' selected':''}>20</option>
+              <option value="50"${sectionsPageSize===50?' selected':''}>50</option>
+            </select>
+            <button class="btn btn-sm btn-outline-secondary" id="sec_prev">Prev</button>
+            <span class="small" id="sec_page_info"></span>
+            <button class="btn btn-sm btn-outline-secondary" id="sec_next">Next</button>
+          </div>
+        </div>`;
+      const body = sections.length ? sections.map(s => `
         <div class="border rounded p-2 mb-2">
           <div class="d-flex align-items-center justify-content-between">
             <div>
@@ -87,7 +104,18 @@
           </div>
           <div class="mt-2 section-images" id="section_${s.id}_images"></div>
         </div>
-      `).join('');
+      `).join('') : '<div class="text-muted">No sections yet.</div>';
+      listEl.innerHTML = header + `<div id="sec_list">${body}</div>`;
+
+      // bind section pagination controls
+      const pageInfo = document.getElementById('sec_page_info');
+      const prevBtn = document.getElementById('sec_prev');
+      const nextBtn = document.getElementById('sec_next');
+      const sizeSel = document.getElementById('sec_page_size');
+      if (pageInfo) pageInfo.textContent = `Page ${pg.page} of ${pg.pages}`;
+      if (prevBtn) { prevBtn.disabled = pg.page <= 1; prevBtn.addEventListener('click', () => { if (pg.page>1) load(pg.page-1); }); }
+      if (nextBtn) { nextBtn.disabled = pg.page >= pg.pages; nextBtn.addEventListener('click', () => { if (pg.page<pg.pages) load(pg.page+1); }); }
+      if (sizeSel) { sizeSel.addEventListener('change', () => { sectionsPageSize = parseInt(sizeSel.value); load(1); }); }
 
       // Bind actions
       listEl.querySelectorAll('.btn-rename').forEach(btn => {
@@ -536,15 +564,16 @@
     createBtn.addEventListener('click', async () => {
       const title = titleEl.value.trim();
       const layout_type = layoutEl.value;
-      if(!title){ alert('Please provide a title'); return; }
+      if(!title){ notify('warning', 'Please provide a title'); return; }
       const res = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, layout_type })
       });
       const data = await res.json();
-      if(!data.success){ alert(data.message||'Failed to create'); return; }
+      if(!data.success){ notify('danger', data.message||'Failed to create'); return; }
       titleEl.value='';
+      notify('success', 'Section created');
       await load(1);
     });
     load();
