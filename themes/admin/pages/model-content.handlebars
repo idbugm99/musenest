@@ -53,7 +53,7 @@
       fields.innerHTML = items.map(it => `
         <div class="mb-3">
           <label class="form-label">${it.content_key}</label>
-          <textarea class="form-control field-input" data-key="${it.content_key}" rows="3">${(it.content_value||'').replace(/</g,'&lt;')}</textarea>
+          <textarea class="form-control field-input" data-key="${it.content_key}" rows="3">${((it.content_value||'')+'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
           <small class="text-muted">${it.content_type||'text'}</small>
         </div>
       `).join('');

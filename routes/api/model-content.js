@@ -8,6 +8,25 @@ async function getModelBySlug(slug) {
   return rows && rows[0] ? rows[0] : null;
 }
 
+// List distinct pages for a model
+router.get('/:modelSlug/pages', async (req, res) => {
+  try {
+    const { modelSlug } = req.params;
+    const model = await getModelBySlug(modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+    const rows = await db.query(
+      'SELECT DISTINCT page_type_id FROM content_templates WHERE model_id = ? ORDER BY page_type_id ASC',
+      [model.id]
+    );
+    const defaults = [1,2,3,4,5];
+    const ids = rows.length ? rows.map(r => r.page_type_id) : defaults;
+    return res.success({ pages: ids });
+  } catch (error) {
+    logger.error('model-content.list-pages error', { error: error.message });
+    return res.fail(500, 'Failed to load pages', error.message);
+  }
+});
+
 // List content keys for a page type
 router.get('/:modelSlug/pages/:pageTypeId', async (req, res) => {
   try {
