@@ -167,7 +167,10 @@
               <div class=\"col\">
                 <div class=\"border rounded p-2 draggable-card\" draggable=\"true\" data-id=\"${img.id}\" data-index=\"${idx}\">
                   <div class=\"d-flex align-items-center justify-content-between\"> 
-                    <div class=\"small text-truncate\" title=\"${img.filename}\"><i class=\\\"fas fa-grip-vertical me-1 text-muted\\\"></i>${img.filename}</div>
+                    <div class=\"d-flex align-items-center text-truncate\" title=\"${img.filename}\" style=\"min-width:0\">
+                      <img src=\"${(img.filename && img.filename.startsWith('/')) ? img.filename : '/uploads/${slug}/public/gallery/' + img.filename}\" alt=\"thumb\" class=\"me-2\" style=\"width:48px;height:48px;object-fit:cover;border-radius:4px\" onerror=\"this.style.visibility='hidden'\" />
+                      <span class=\"small text-truncate\"><i class=\\\"fas fa-grip-vertical me-1 text-muted\\\"></i>${img.filename}</span>
+                    </div>
                     <button class=\"btn btn-sm btn-outline-secondary btn-toggle-image\" data-id=\"${img.id}\" data-active=\"${img.is_active ? 1 : 0}\">${img.is_active ? 'Hide' : 'Show'}</button>
                   </div>
                   <div class=\"mt-2\">
