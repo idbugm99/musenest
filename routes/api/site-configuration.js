@@ -112,8 +112,8 @@ router.get('/sites', async (req, res) => {
         `;
         const countQuery = `SELECT COUNT(*) as total ${baseFrom}`;
 
-        const [[countRow]] = await db.query(countQuery, countParams);
-        const total = countRow?.total || 0;
+        const countRows = await db.query(countQuery, countParams);
+        const total = (countRows && countRows[0] && countRows[0].total) ? countRows[0].total : 0;
 
         const [sites] = await db.execute(selectQuery, [...params, perPage, offset]);
 
