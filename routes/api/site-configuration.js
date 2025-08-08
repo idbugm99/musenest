@@ -115,7 +115,14 @@ router.get('/sites', async (req, res) => {
         const total = (countRows && countRows[0] && countRows[0].total) ? countRows[0].total : 0;
 
         const selectSql = `${selectQueryBase} LIMIT ${perPage} OFFSET ${offset}`;
-        const siteRows = await db.query(selectSql, params);
+        let siteRows;
+        try {
+            siteRows = await db.query(selectSql, params);
+        } catch (e) {
+            logger.warn('site-configuration.sites join query failed, using fallback', { error: e.message });
+            const fallbackSql = `SELECT * FROM site_configurations WHERE is_active = 1 ORDER BY created_at DESC LIMIT ${perPage} OFFSET ${offset}`;
+            siteRows = await db.query(fallbackSql, []);
+        }
 
         res.set('Cache-Control', 'private, max-age=15');
         res.success({
