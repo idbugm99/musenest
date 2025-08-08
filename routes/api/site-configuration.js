@@ -115,11 +115,11 @@ router.get('/sites', async (req, res) => {
         const total = (countRows && countRows[0] && countRows[0].total) ? countRows[0].total : 0;
 
         const selectSql = `${selectQueryBase} LIMIT ${perPage} OFFSET ${offset}`;
-        const sites = await db.query(selectSql, params);
+        const siteRows = await db.query(selectSql, params);
 
         res.set('Cache-Control', 'private, max-age=15');
         res.success({
-            sites,
+            sites: siteRows,
             pagination: {
                 page: currentPage,
                 limit: perPage,
@@ -129,8 +129,8 @@ router.get('/sites', async (req, res) => {
         });
 
     } catch (error) {
-        logger.error('site-configuration.sites list error', { error: error.message });
-        res.fail(500, 'Failed to fetch site configurations', error.message);
+        logger.error('site-configuration.sites list error', { error: error.message, stack: error.stack });
+        return res.fail(500, 'Failed to fetch site configurations', error.stack || error.message);
     }
 });
 
