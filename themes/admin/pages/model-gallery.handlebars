@@ -190,7 +190,10 @@
                       <img src=\"${(img.filename && img.filename.startsWith('/')) ? img.filename : '/uploads/${slug}/public/gallery/' + img.filename}\" alt=\"thumb\" class=\"me-2\" style=\"width:48px;height:48px;object-fit:cover;border-radius:4px\" onerror=\"this.style.visibility='hidden'\" />
                       <span class=\"small text-truncate\"><i class=\\\"fas fa-grip-vertical me-1 text-muted\\\"></i>${img.filename}</span>
                     </div>
-                    <button class=\"btn btn-sm btn-outline-secondary btn-toggle-image\" data-id=\"${img.id}\" data-active=\"${img.is_active ? 1 : 0}\">${img.is_active ? 'Hide' : 'Show'}</button>
+                    <div class=\"d-flex align-items-center\">
+                      <span class=\"badge ${statusBadgeClass(img.moderation_status)} me-2\">${img.moderation_status || 'pending'}</span>
+                      <button class=\"btn btn-sm btn-outline-secondary btn-toggle-image\" data-id=\"${img.id}\" data-active=\"${img.is_active ? 1 : 0}\">${img.is_active ? 'Hide' : 'Show'}</button>
+                    </div>
                   </div>
                   <div class=\"mt-2\">
                     <input class=\"form-control form-control-sm mb-1 input-caption\" data-id=\"${img.id}\" placeholder=\"Caption\" value=\"${(img.caption||'').replace(/\\\"/g,'&quot;')}\" />
@@ -202,6 +205,17 @@
                 </div>
               </div>
             `).join('');
+            // helper for badge class
+            function statusBadgeClass(status){
+              if (!status) return 'bg-secondary';
+              switch(status){
+                case 'approved': return 'bg-success';
+                case 'approved_blurred': return 'bg-info';
+                case 'flagged': return 'bg-warning text-dark';
+                case 'rejected': return 'bg-danger';
+                default: return 'bg-secondary';
+              }
+            }
             bindImageToggles(grid, sectionId);
             bindDragAndDrop(grid, sectionId);
           }

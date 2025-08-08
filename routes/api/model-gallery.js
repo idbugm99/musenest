@@ -73,7 +73,27 @@ router.get('/:modelSlug/sections/:id/images', async (req, res) => {
     const model = await getModelBySlug(modelSlug);
     if (!model) return res.fail(404, 'Model not found');
     const images = await db.query(
-      'SELECT id, section_id, model_id, filename, caption, tags, is_active, order_index, created_at, updated_at FROM gallery_images WHERE model_id = ? AND section_id = ? ORDER BY order_index ASC, id ASC',
+      `SELECT 
+         gi.id, gi.section_id, gi.model_id, gi.filename, gi.caption, gi.tags, gi.is_active, gi.order_index, gi.created_at, gi.updated_at,
+         (
+           SELECT cm.moderation_status 
+           FROM content_moderation cm 
+           WHERE cm.model_id = gi.model_id 
+             AND (cm.image_path LIKE CONCAT('%/', gi.filename) OR cm.final_location LIKE CONCAT('%/', gi.filename))
+           ORDER BY cm.created_at DESC 
+           LIMIT 1
+         ) AS moderation_status,
+         (
+           SELECT cm.blurred_path
+           FROM content_moderation cm 
+           WHERE cm.model_id = gi.model_id 
+             AND (cm.image_path LIKE CONCAT('%/', gi.filename) OR cm.final_location LIKE CONCAT('%/', gi.filename))
+           ORDER BY cm.created_at DESC 
+           LIMIT 1
+         ) AS blurred_path
+       FROM gallery_images gi 
+       WHERE gi.model_id = ? AND gi.section_id = ? 
+       ORDER BY gi.order_index ASC, gi.id ASC`,
       [model.id, parseInt(id)]
     );
     res.set('Cache-Control', 'private, max-age=10');
