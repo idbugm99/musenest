@@ -323,7 +323,7 @@
                 method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ section_id: sectionId, items })
               });
               const d = await r.json();
-              if (!d.success) { alert(d.message||'Failed to reorder'); return; }
+              if (!d.success) { notify('danger', d.message||'Failed to reorder'); return; }
               // Re-render grid from server authoritative order
               renderImagesGrid(container, sectionId, d.data.images || []);
             });
@@ -382,7 +382,7 @@
             const sel = document.getElementById(`move_target_${id}`);
             const target = sel.value;
             const ids = Array.from(container.querySelectorAll('.select-image:checked')).map(cb => parseInt(cb.value));
-            if (!ids.length || !target) { alert('Select images and a target section'); return; }
+            if (!ids.length || !target) { notify('warning', 'Select images and a target section'); return; }
             const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/bulk`, {
               method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'move', target_section_id: parseInt(target), ids })
             });
@@ -414,12 +414,12 @@
           });
           async function runBulk(action){
             const ids = Array.from(container.querySelectorAll('.select-image:checked')).map(cb => parseInt(cb.value));
-            if (!ids.length) { alert('No images selected'); return; }
+            if (!ids.length) { notify('warning', 'No images selected'); return; }
             const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/bulk`, {
               method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, ids })
             });
             const d = await r.json();
-            if (!d.success) { alert(d.message||'Failed to apply'); return; }
+            if (!d.success) { notify('danger', d.message||'Failed to apply'); return; }
             const rr = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`);
             const dd = await rr.json();
             if (!dd.success) return;
@@ -428,6 +428,34 @@
           document.getElementById(`bulk_show_${id}`).addEventListener('click', async () => { await runBulk('show'); notify('success', 'Images shown'); });
           document.getElementById(`bulk_hide_${id}`).addEventListener('click', async () => { await runBulk('hide'); notify('success', 'Images hidden'); });
           document.getElementById(`bulk_delete_${id}`).addEventListener('click', async () => { await runBulk('delete'); notify('success', 'Images deleted'); });
+
+          // Keyboard shortcuts within this section: A select all, Delete bulk delete, R refresh
+          function isTypingInField() {
+            const el = document.activeElement;
+            if (!el) return false;
+            const tag = (el.tagName || '').toLowerCase();
+            return tag === 'input' || tag === 'textarea' || el.isContentEditable;
+          }
+          const keyHandlerId = `mg_keydown_${id}`;
+          if (window[keyHandlerId]) {
+            document.removeEventListener('keydown', window[keyHandlerId]);
+          }
+          window[keyHandlerId] = function(e) {
+            if (isTypingInField()) return;
+            if (e.key === 'a' || e.key === 'A') {
+              e.preventDefault();
+              const selectAll = document.getElementById(`select_all_${id}`);
+              if (selectAll && !selectAll.checked) { selectAll.checked = true; selectAll.dispatchEvent(new Event('change')); notify('info', 'Selected all'); }
+            } else if (e.key === 'Delete' || e.key === 'Backspace') {
+              e.preventDefault();
+              const any = container.querySelector('.select-image:checked');
+              if (any) { document.getElementById(`bulk_delete_${id}`)?.click(); }
+            } else if (e.key === 'r' || e.key === 'R') {
+              e.preventDefault();
+              document.getElementById(`btn_refresh_${id}`)?.click();
+            }
+          };
+          document.addEventListener('keydown', window[keyHandlerId]);
 
           bindImageToggles(grid, id);
           bindDragAndDrop(grid, id);
