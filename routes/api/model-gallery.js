@@ -399,6 +399,67 @@ router.put('/:modelSlug/sections/:id', async (req, res) => {
   }
 });
 
+// DELETE /api/model-gallery/:modelSlug/sections/:id
+router.delete('/:modelSlug/sections/:id', async (req, res) => {
+  try {
+    const { modelSlug, id } = req.params;
+    const model = await getModelBySlug(modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+    const result = await db.query('DELETE FROM gallery_sections WHERE model_id = ? AND id = ?', [model.id, parseInt(id)]);
+    if (result.affectedRows === 0) return res.fail(404, 'Section not found');
+    return res.success({ deleted: true });
+  } catch (error) {
+    logger.error('model-gallery.delete-section error', { error: error.message });
+    return res.fail(500, 'Failed to delete section', error.message);
+  }
+});
+
+// PATCH /api/model-gallery/:modelSlug/sections/reorder  { items:[{id, sort_order}] }
+router.patch('/:modelSlug/sections/reorder', async (req, res) => {
+  try {
+    const { modelSlug } = req.params;
+    const { items } = req.body || {};
+    const model = await getModelBySlug(modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+    if (!Array.isArray(items) || !items.length) return res.fail(400, 'items[] required');
+    for (const it of items) {
+      if (typeof it?.id === 'undefined' || typeof it?.sort_order === 'undefined') continue;
+      await db.query('UPDATE gallery_sections SET sort_order = ? WHERE id = ? AND model_id = ?', [
+        parseInt(it.sort_order), parseInt(it.id), model.id
+      ]);
+    }
+    const rows = await db.query('SELECT * FROM gallery_sections WHERE model_id = ? ORDER BY sort_order ASC, created_at DESC', [model.id]);
+    return res.success({ sections: rows });
+  } catch (error) {
+    logger.error('model-gallery.sections-reorder error', { error: error.message });
+    return res.fail(500, 'Failed to reorder sections', error.message);
+  }
+});
+
+// PATCH /api/model-gallery/:modelSlug/sections/bulk { action: 'show'|'hide'|'delete', ids: [] }
+router.patch('/:modelSlug/sections/bulk', async (req, res) => {
+  try {
+    const { modelSlug } = req.params;
+    const { action, ids } = req.body || {};
+    const model = await getModelBySlug(modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+    if (!Array.isArray(ids) || ids.length === 0) return res.fail(400, 'ids[] required');
+    const idInts = ids.map((v) => parseInt(v)).filter((v) => Number.isInteger(v));
+    const placeholders = idInts.map(() => '?').join(',');
+    if (action === 'show' || action === 'hide') {
+      const desired = action === 'show' ? 1 : 0;
+      await db.query(`UPDATE gallery_sections SET is_visible = ? WHERE model_id = ? AND id IN (${placeholders})`, [desired, model.id, ...idInts]);
+    } else if (action === 'delete') {
+      await db.query(`DELETE FROM gallery_sections WHERE model_id = ? AND id IN (${placeholders})`, [model.id, ...idInts]);
+    } else {
+      return res.fail(400, 'Invalid action');
+    }
+    return res.success({ updated: idInts.length, action });
+  } catch (error) {
+    logger.error('model-gallery.sections-bulk error', { error: error.message });
+    return res.fail(500, 'Failed to apply bulk action', error.message);
+  }
+});
 // PATCH /api/model-gallery/:modelSlug/sections/:id/visibility (toggle visibility)
 router.patch('/:modelSlug/sections/:id/visibility', async (req, res) => {
   try {
