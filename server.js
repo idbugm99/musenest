@@ -363,6 +363,27 @@ app.get('/:slug/admin/testimonials', async (req, res) => {
     }
 });
 
+// Model Admin: Themes page
+app.get('/:slug/admin/themes', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const rows = await db.query(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
+        res.render('admin/pages/model-themes', {
+            layout: 'admin/layouts/main',
+            pageTitle: 'Color Themes',
+            currentPage: 'model-themes',
+            isModelAdmin: true,
+            model: rows[0]
+        });
+    } catch (err) {
+        res.status(500).send('Failed to render themes');
+    }
+});
+
 // Routes
 app.get('/', (req, res) => {
     res.json({

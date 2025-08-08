@@ -1,0 +1,80 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0"><i class="fas fa-palette me-2"></i>Color Themes — {{model.name}}</h3>
+  <a class="btn btn-outline-secondary" href="/{{model.slug}}/admin"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
+</div>
+
+<div class="card mb-3">
+  <div class="card-header bg-white"><strong>Add New Theme</strong></div>
+  <div class="card-body">
+    <div class="row g-2">
+      <div class="col-md-4"><input class="form-control" id="th_name" placeholder="Theme Name (e.g., Autumn Warmth)"></div>
+      <div class="col-md-2"><input class="form-control" id="th_primary" value="#E11D48" placeholder="#RRGGBB"></div>
+      <div class="col-md-2"><input class="form-control" id="th_secondary" value="#F97316" placeholder="#RRGGBB"></div>
+      <div class="col-md-2"><input class="form-control" id="th_accent" value="#F59E0B" placeholder="#RRGGBB"></div>
+      <div class="col-md-2"><button class="btn btn-primary w-100" id="th_add">Add Theme</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header bg-white"><strong>Existing Themes</strong></div>
+  <div class="card-body" id="th_list"><div class="text-muted">Loading…</div></div>
+</div>
+
+<script>
+(function(){
+  let slug = {{{json model.slug}}}; if (!slug){ const m=location.pathname.match(/^\/([^\/]+)\/admin/); if(m) slug=m[1]; }
+  const list = document.getElementById('th_list');
+  async function load(){
+    const r = await fetch(`/api/model-themes/${encodeURIComponent(slug)}`);
+    const d = await r.json();
+    if (!d.success) { list.innerHTML = '<div class="text-danger">Failed to load</div>'; return; }
+    const items = d.data.themes || [];
+    if (!items.length) { list.innerHTML = '<div class="text-muted">No themes yet.</div>'; return; }
+    list.innerHTML = items.map(it => `
+      <div class=\"border rounded p-2 mb-2\">
+        <div class=\"d-flex align-items-center justify-content-between\">
+          <div>
+            <strong>${it.theme_name}</strong>
+            <span class=\"badge ${it.is_active? 'bg-success':'bg-secondary'} ms-2\">${it.is_active? 'Active':'Inactive'}</span>
+          </div>
+          <div class=\"d-flex align-items-center gap-2\">
+            <div class=\"d-flex align-items-center gap-1\">
+              <span class=\"rounded-circle d-inline-block\" style=\"width:16px;height:16px;background:${it.primary_color}\"></span>
+              <span class=\"rounded-circle d-inline-block\" style=\"width:16px;height:16px;background:${it.secondary_color}\"></span>
+              <span class=\"rounded-circle d-inline-block\" style=\"width:16px;height:16px;background:${it.accent_color}\"></span>
+            </div>
+            <button class=\"btn btn-sm btn-outline-secondary btn-activate\" data-id=\"${it.id}\" data-active=\"${it.is_active?1:0}\">${it.is_active? 'Deactivate':'Activate'}</button>
+            <button class=\"btn btn-sm btn-outline-danger btn-del\" data-id=\"${it.id}\">Delete</button>
+          </div>
+        </div>
+      </div>`).join('');
+    list.querySelectorAll('.btn-del').forEach(b=>b.addEventListener('click', async ()=>{
+      if (!confirm('Delete this theme?')) return;
+      const id = b.getAttribute('data-id');
+      const r = await fetch(`/api/model-themes/${encodeURIComponent(slug)}/${id}`, { method:'DELETE' });
+      const d = await r.json(); if (!d.success){ notify('danger', d.message||'Delete failed'); return; }
+      notify('success', 'Deleted'); load();
+    }));
+    list.querySelectorAll('.btn-activate').forEach(b=>b.addEventListener('click', async ()=>{
+      const id = b.getAttribute('data-id');
+      const active = b.getAttribute('data-active')==='1';
+      const r = await fetch(`/api/model-themes/${encodeURIComponent(slug)}/${id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ is_active: !active }) });
+      const d = await r.json(); if (!d.success){ notify('danger', d.message||'Update failed'); return; }
+      notify('success', !active? 'Activated':'Deactivated'); load();
+    }));
+  }
+
+  document.getElementById('th_add').addEventListener('click', async ()=>{
+    const body = { theme_name: document.getElementById('th_name').value.trim(), primary_color: document.getElementById('th_primary').value.trim(), secondary_color: document.getElementById('th_secondary').value.trim(), accent_color: document.getElementById('th_accent').value.trim() };
+    if (!body.theme_name) { notify('warning','Enter a name'); return; }
+    const r = await fetch(`/api/model-themes/${encodeURIComponent(slug)}`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const d = await r.json(); if (!d.success){ notify('danger', d.message||'Create failed'); return; }
+    notify('success','Theme added'); document.getElementById('th_name').value=''; load();
+  });
+
+  load();
+})();
+</script>
+
+
