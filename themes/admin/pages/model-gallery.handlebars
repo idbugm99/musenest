@@ -190,7 +190,7 @@
           });
           addBtn.addEventListener('click', async () => {
             const filename = (addInput.value || '').trim();
-            if (!filename) { alert('Enter a filename/path'); return; }
+            if (!filename) { notify('warning', 'Enter a filename/path'); return; }
             const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`, {
               method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename })
             });
