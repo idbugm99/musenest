@@ -43,6 +43,9 @@
     const slug = {{json model.slug}};
     const listEl = document.getElementById('sections_list');
     const searchEl = document.getElementById('search_sections');
+    const createBtn = document.getElementById('btn_create_section');
+    const titleEl = document.getElementById('sec_title');
+    const layoutEl = document.getElementById('sec_layout');
     async function load(page=1){
       const q = searchEl.value ? `&search=${encodeURIComponent(searchEl.value)}` : '';
       const res = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections?page=${page}&limit=20${q}`);
@@ -63,6 +66,20 @@
       `).join('');
     }
     searchEl.addEventListener('input', () => load(1));
+    createBtn.addEventListener('click', async () => {
+      const title = titleEl.value.trim();
+      const layout_type = layoutEl.value;
+      if(!title){ alert('Please provide a title'); return; }
+      const res = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, layout_type })
+      });
+      const data = await res.json();
+      if(!data.success){ alert(data.message||'Failed to create'); return; }
+      titleEl.value='';
+      await load(1);
+    });
     load();
   })();
 </script>
