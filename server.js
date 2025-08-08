@@ -244,56 +244,30 @@ app.get('/sysadmin', async (req, res) => {
 });
 
 // Model Admin Dashboard Route - Individual model management
-app.get('/admin', async (req, res) => {
+app.get('/admin', async (req, res) => res.redirect('/modelexample/admin'));
+
+// Canonical model admin dashboard
+app.get('/:slug/admin', async (req, res) => {
     try {
-        // For now, we'll use a default model - later this will be based on authentication
-        // Get model data (using Model Example as default)
-        const [modelResult] = await db.execute(`
-            SELECT m.id, m.name, m.slug, m.email, m.status, m.theme_set_id,
-                   ts.name as theme_name, ts.display_name as theme_display_name
-            FROM models m
-            LEFT JOIN theme_sets ts ON m.theme_set_id = ts.id
-            WHERE m.slug = 'modelexample'
-            LIMIT 1
-        `);
-
-        if (!modelResult.length) {
-            return res.send(`
-                <h1>Model Admin Dashboard</h1>
-                <p>No model found. This will be authentication-based in the future.</p>
-                <p>For system administration, visit <a href="/sysadmin">/sysadmin</a></p>
-            `);
-        }
-
-        const model = modelResult[0];
-        
-        // Get content pages count for this model
-        const [contentResult] = await db.execute(
-            'SELECT COUNT(DISTINCT page_type_id) as pages FROM content_templates WHERE model_id = ?',
-            [model.id]
+        const { slug } = req.params;
+        const rows = await db.query(
+            `SELECT m.id, m.name, m.slug, m.email, m.status, m.theme_set_id,
+                    ts.name as theme_name, ts.display_name as theme_display_name
+             FROM models m
+             LEFT JOIN theme_sets ts ON m.theme_set_id = ts.id
+             WHERE m.slug = ?
+             LIMIT 1`,
+            [slug]
         );
-
-        const stats = {
-            pageViews: '1,234', // Mock data for now
-            contentPages: contentResult[0]?.pages || 0,
-            lastUpdated: 'Today'
-        };
-
+        if (!rows.length) return res.status(404).send('Model not found');
+        const model = rows[0];
+        const contentRows = await db.query('SELECT COUNT(DISTINCT page_type_id) as pages FROM content_templates WHERE model_id = ?', [model.id]);
+        const stats = { pageViews: '1,234', contentPages: contentRows[0]?.pages || 0, lastUpdated: 'Today' };
         res.render('admin/pages/model-admin', {
-            layout: 'admin/layouts/main',
-            pageTitle: `${model.name} Dashboard`,
-            pageSubtitle: 'Manage your content and view your site',
-            currentPage: 'model-admin',
-            isModelAdmin: true,
-            model: model,
-            stats: stats,
-            devBanner: {
-                env: process.env.NODE_ENV || 'development',
-                db: 'OK'
-            },
-            legacyBanner: {
-                message: 'This is a legacy admin surface. System admin lives at /sysadmin.'
-            }
+            layout: 'admin/layouts/main', pageTitle: `${model.name} Dashboard`, pageSubtitle: 'Manage your content and view your site',
+            currentPage: 'model-admin', isModelAdmin: true, model, stats,
+            devBanner: { env: process.env.NODE_ENV || 'development', db: 'OK' },
+            legacyBanner: { message: 'This is a legacy admin surface. System admin lives at /sysadmin.' }
         });
     } catch (error) {
         console.error('❌ Error loading model admin:', error);
@@ -302,7 +276,7 @@ app.get('/admin', async (req, res) => {
 });
 
 // Model Admin: Gallery page
-app.get('/admin/:slug/gallery', async (req, res) => {
+app.get('/:slug/admin/gallery', async (req, res) => {
     try {
         const { slug } = req.params;
         const rows = await db.query(
@@ -325,7 +299,7 @@ app.get('/admin/:slug/gallery', async (req, res) => {
 });
 
 // Model Admin: Content page
-app.get('/admin/:slug/content', async (req, res) => {
+app.get('/:slug/admin/content', async (req, res) => {
     try {
         const { slug } = req.params;
         const rows = await db.query(
