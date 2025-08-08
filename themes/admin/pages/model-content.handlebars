@@ -194,12 +194,15 @@
       });
     }
 
+    let auditPage = 1;
     async function loadAudit(page=1){
+      auditPage = page;
       const r = await fetch(`/api/model-content/${encodeURIComponent(slug)}/audit?page=${page}&limit=10`);
       const d = await r.json();
-      if (!d.success) { audit.innerHTML = `<div class="text-danger">${d.message||'Failed to load'}</div>`; return; }
+      if (!d.success) { audit.innerHTML = `<div class=\"text-danger\">${d.message||'Failed to load'}</div>`; return; }
       const rows = d.data.audit || [];
-      audit.innerHTML = rows.map(row => `
+      const pg = d.data.pagination || { page: 1, pages: 1, total: rows.length };
+      const listHtml = rows.map(row => `
         <div class=\"border rounded p-2 mb-2\">
           <div class=\"small d-flex align-items-center justify-content-between\">
             <span><strong>${row.content_key}</strong> — ${new Date(row.created_at).toLocaleString()}</span>
@@ -208,6 +211,16 @@
           <div class=\"text-muted small\">Reason: ${row.reason||'—'}</div>
         </div>
       `).join('') || '<div class=\"text-muted\">No audit yet</div>';
+      const pagerHtml = `
+        <div class=\"d-flex align-items-center justify-content-between mt-2\">
+          <div class=\"small text-muted\">${pg.total} changes</div>
+          <div class=\"d-flex align-items-center gap-2\">
+            <button class=\"btn btn-sm btn-outline-secondary\" id=\"audit_prev\" ${pg.page<=1?'disabled':''}>Prev</button>
+            <span class=\"small\">Page ${pg.page} / ${pg.pages}</span>
+            <button class=\"btn btn-sm btn-outline-secondary\" id=\"audit_next\" ${pg.page>=pg.pages?'disabled':''}>Next</button>
+          </div>
+        </div>`;
+      audit.innerHTML = listHtml + pagerHtml;
       audit.querySelectorAll('.btn-rollback').forEach(btn => {
         btn.addEventListener('click', async () => {
           const id = btn.getAttribute('data-id');
@@ -220,6 +233,10 @@
           loadPage(currentPageType);
         });
       });
+      const prevBtn = audit.querySelector('#audit_prev');
+      const nextBtn = audit.querySelector('#audit_next');
+      if (prevBtn) prevBtn.addEventListener('click', () => { if (pg.page>1) loadAudit(pg.page-1); });
+      if (nextBtn) nextBtn.addEventListener('click', () => { if (pg.page<pg.pages) loadAudit(pg.page+1); });
     }
 
     // initial load
@@ -233,7 +250,7 @@
       }
     });
 
-    // Keyboard shortcuts: Cmd/Ctrl+S to save focused field
+    // Keyboard shortcuts: Cmd/Ctrl+S to save focused field; Esc to clear statuses
     document.addEventListener('keydown', async (e) => {
       const isSave = (e.key === 's' || e.key === 'S') && (e.metaKey || e.ctrlKey);
       if (!isSave) return;
@@ -253,6 +270,12 @@
             break;
           }
         }
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        fields.querySelectorAll('.save-status').forEach(el => el.textContent = '');
       }
     });
   })();
