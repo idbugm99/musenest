@@ -89,11 +89,26 @@
       if (!d.success) { audit.innerHTML = `<div class="text-danger">${d.message||'Failed to load'}</div>`; return; }
       const rows = d.data.audit || [];
       audit.innerHTML = rows.map(row => `
-        <div class="border rounded p-2 mb-2">
-          <div class="small"><strong>${row.content_key}</strong> — ${new Date(row.created_at).toLocaleString()}</div>
-          <div class="text-muted small">Reason: ${row.reason||'—'}</div>
+        <div class=\"border rounded p-2 mb-2\">
+          <div class=\"small d-flex align-items-center justify-content-between\">
+            <span><strong>${row.content_key}</strong> — ${new Date(row.created_at).toLocaleString()}</span>
+            <button class=\"btn btn-sm btn-outline-secondary btn-rollback\" data-id=\"${row.id}\">Rollback</button>
+          </div>
+          <div class=\"text-muted small\">Reason: ${row.reason||'—'}</div>
         </div>
-      `).join('') || '<div class="text-muted">No audit yet</div>';
+      `).join('') || '<div class=\"text-muted\">No audit yet</div>';
+      audit.querySelectorAll('.btn-rollback').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          const r = await fetch(`/api/model-content/${encodeURIComponent(slug)}/rollback`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ log_id: parseInt(id), reason: 'admin-action' })
+          });
+          const resp = await r.json();
+          if (!resp.success) { notify('danger', resp.message||'Rollback failed'); return; }
+          notify('success', 'Rolled back');
+          loadPage(currentPageType);
+        });
+      });
     }
 
     // page list click binding

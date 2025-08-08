@@ -105,5 +105,41 @@ router.get('/:modelSlug/audit', async (req, res) => {
   }
 });
 
+// Rollback a change by log id
+router.post('/:modelSlug/rollback', async (req, res) => {
+  try {
+    const { modelSlug } = req.params;
+    const { log_id, reason = 'rollback' } = req.body || {};
+    if (!log_id) return res.fail(400, 'log_id is required');
+    const model = await getModelBySlug(modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+    const rows = await db.query('SELECT * FROM content_change_log WHERE id = ? AND model_id = ? LIMIT 1', [parseInt(log_id), model.id]);
+    if (!rows.length) return res.fail(404, 'Change not found');
+    const entry = rows[0];
+    // Upsert previous_value back into content_templates
+    const existing = await db.query(
+      'SELECT id FROM content_templates WHERE model_id = ? AND page_type_id = ? AND content_key = ? LIMIT 1',
+      [model.id, entry.page_type_id, entry.content_key]
+    );
+    if (existing.length) {
+      await db.query('UPDATE content_templates SET content_value = ?, updated_at = NOW() WHERE id = ?', [entry.previous_value, existing[0].id]);
+    } else {
+      await db.query(
+        'INSERT INTO content_templates (model_id, page_type_id, content_key, content_value, content_type, updated_at) VALUES (?, ?, ?, ?, ?, NOW())',
+        [model.id, entry.page_type_id, entry.content_key, entry.previous_value, 'text']
+      );
+    }
+    // Log the rollback action (new log row)
+    await db.query(
+      'INSERT INTO content_change_log (model_id, page_type_id, content_key, previous_value, new_value, reason, admin_user_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [model.id, entry.page_type_id, entry.content_key, entry.new_value, entry.previous_value, `rollback:${reason}`, null]
+    );
+    return res.success({ rolled_back: true });
+  } catch (error) {
+    logger.error('model-content.rollback error', { error: error.message });
+    return res.fail(500, 'Failed to rollback change', error.message);
+  }
+});
+
 module.exports = router;
 
