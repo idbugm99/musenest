@@ -34,7 +34,17 @@ router.get('/:modelSlug/pages/:pageTypeId', async (req, res) => {
     const model = await getModelBySlug(modelSlug);
     if (!model) return res.fail(404, 'Model not found');
     const rows = await db.query(
-      'SELECT content_key, content_value, content_type FROM content_templates WHERE model_id = ? AND page_type_id = ? ORDER BY content_key ASC',
+      `SELECT ct.content_key, ct.content_value, ct.content_type,
+              COALESCE(cfd.label, ct.content_key) AS label,
+              COALESCE(cfd.input_type, ct.content_type) AS input_type,
+              cfd.help_text, cfd.is_required
+       FROM content_templates ct
+       LEFT JOIN content_field_definitions cfd
+         ON (cfd.model_id IS NULL OR cfd.model_id = ct.model_id)
+        AND cfd.page_type_id = ct.page_type_id
+        AND cfd.content_key = ct.content_key
+       WHERE ct.model_id = ? AND ct.page_type_id = ?
+       ORDER BY ct.content_key ASC`,
       [model.id, parseInt(pageTypeId)]
     );
     res.set('Cache-Control', 'private, max-age=10');

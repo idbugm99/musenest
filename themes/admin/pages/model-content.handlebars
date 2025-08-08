@@ -68,20 +68,22 @@
       if (!items.length) { fields.innerHTML = '<div class="text-muted">No fields yet for this page.</div>'; return; }
       fields.innerHTML = items.map(it => {
         const val = ((it.content_value||'')+'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        if ((it.content_type||'text') === 'html'){
+        const label = it.label || it.content_key;
+        const inputType = (it.input_type || it.content_type || 'text');
+        if (inputType === 'html'){
           return `
             <div class=\"mb-3\">
-              <label class=\"form-label\">${it.content_key} <span class=\"badge bg-info\">HTML</span></label>
+              <label class=\"form-label\">${label} <span class=\"badge bg-info\">HTML</span></label>
               <div class=\"rt-editor border rounded\" data-key=\"${it.content_key}\" style=\"min-height:140px\"></div>
-              <small class=\"text-muted\">Rich text</small>
+              <small class=\"text-muted\">${it.help_text||'Rich text'}</small>
             </div>
           `;
         }
         return `
           <div class=\"mb-3\">
-            <label class=\"form-label\">${it.content_key}</label>
+            <label class=\"form-label\">${label}</label>
             <textarea class=\"form-control field-input\" data-key=\"${it.content_key}\" rows=\"3\">${val}</textarea>
-            <small class=\"text-muted\">${it.content_type||'text'}</small>
+            <small class=\"text-muted\">${it.help_text||inputType}</small>
           </div>
         `;
       }).join('');
