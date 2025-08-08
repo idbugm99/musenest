@@ -210,8 +210,8 @@ router.get('/models/:id/media', async (req, res) => {
                 NULL as violation_category,
                 0.0 as violation_severity,
                 
-                -- Get thumbnail path (simplified for now)
-                CONCAT('/api/media-preview/', mrq.id, '/thumbnail') as thumbnail_url,
+                -- Thumbnail preview endpoint (use content_moderation_id)
+                CONCAT('/api/media-preview/', mrq.content_moderation_id, '/thumbnail') as thumbnail_url,
                 
                 -- Moderation details
                 cm.final_location,
