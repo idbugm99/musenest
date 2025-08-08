@@ -629,6 +629,8 @@
 </div>
 
 <script>
+// Guard to prevent duplicate class definition when component is reloaded
+if (!window.ClientManagement) {
 // Client Management Class
 class ClientManagement {
     constructor() {
@@ -1267,6 +1269,7 @@ class ClientManagement {
         }
     }
 }
+window.ClientManagement = ClientManagement;
 
 // Global functions
 function exportClients() {
@@ -1365,6 +1368,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.clientManager = new ClientManagement();
     }
 });
+} // end guard
 </script>
 
 <style>

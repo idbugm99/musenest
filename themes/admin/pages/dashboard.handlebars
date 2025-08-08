@@ -311,11 +311,17 @@ async function loadClientManagement() {
             console.log('🔧 Found', scriptTags.length, 'client management script tags to execute');
             scriptTags.forEach((script, index) => {
                 console.log(`🔧 Executing client management script ${index + 1}...`);
+                // Heuristic: avoid redefining ClientManagement if it already exists
+                const text = script.textContent || '';
+                if (window.ClientManagement && /class\s+ClientManagement\b/.test(text)) {
+                    console.log(`⏭️  Skipping script ${index + 1} to avoid duplicate ClientManagement definition`);
+                    return;
+                }
                 const newScript = document.createElement('script');
                 if (script.src) {
                     newScript.src = script.src;
                 } else {
-                    newScript.textContent = script.textContent;
+                    newScript.textContent = text;
                 }
                 document.head.appendChild(newScript);
                 console.log(`✅ Client management script ${index + 1} executed`);
