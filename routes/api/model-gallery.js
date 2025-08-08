@@ -258,6 +258,41 @@ router.patch('/:modelSlug/images/reorder', async (req, res) => {
   }
 });
 
+// PATCH /api/model-gallery/:modelSlug/images/bulk  { action: 'show'|'hide'|'delete', ids: [] }
+router.patch('/:modelSlug/images/bulk', async (req, res) => {
+  try {
+    const { modelSlug } = req.params;
+    const { action, ids } = req.body || {};
+    if (!Array.isArray(ids) || ids.length === 0) return res.fail(400, 'ids[] required');
+    const model = await getModelBySlug(modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+
+    const idInts = ids.map((v) => parseInt(v)).filter((v) => Number.isInteger(v));
+    if (idInts.length === 0) return res.fail(400, 'No valid ids');
+    const placeholders = idInts.map(() => '?').join(',');
+
+    if (action === 'show' || action === 'hide') {
+      const desired = action === 'show' ? 1 : 0;
+      await db.query(
+        `UPDATE gallery_images SET is_active = ? WHERE model_id = ? AND id IN (${placeholders})`,
+        [desired, model.id, ...idInts]
+      );
+    } else if (action === 'delete') {
+      await db.query(
+        `DELETE FROM gallery_images WHERE model_id = ? AND id IN (${placeholders})`,
+        [model.id, ...idInts]
+      );
+    } else {
+      return res.fail(400, 'Invalid action');
+    }
+
+    return res.success({ updated: idInts.length, action });
+  } catch (error) {
+    logger.error('model-gallery.images-bulk error', { error: error.message });
+    return res.fail(500, 'Failed to apply bulk action', error.message);
+  }
+});
+
 // GET /api/model-gallery/:modelSlug/uploads-list?path=public (list available files under /public/uploads/:slug/<path>)
 router.get('/:modelSlug/uploads-list', async (req, res) => {
   try {
