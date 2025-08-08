@@ -6,6 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../../config/database');
+const logger = require('../../utils/logger');
 
 // Import HTTP modules
 const https = require('https');
@@ -117,8 +118,7 @@ router.get('/sites', async (req, res) => {
         const [sites] = await db.execute(selectQuery, [...params, perPage, offset]);
 
         res.set('Cache-Control', 'private, max-age=15');
-        res.json({
-            success: true,
+        res.success({
             sites,
             pagination: {
                 page: currentPage,
@@ -129,8 +129,8 @@ router.get('/sites', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error fetching site configurations:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('site-configuration.sites list error', { error: error.message });
+        res.fail(500, 'Failed to fetch site configurations', error.message);
     }
 });
 
@@ -162,9 +162,7 @@ router.get('/sites/:id', async (req, res) => {
             WHERE sc.id = ?
         `, [id]);
 
-        if (sites.length === 0) {
-            return res.status(404).json({ error: 'Site configuration not found' });
-        }
+        if (sites.length === 0) return res.fail(404, 'Site configuration not found');
 
         const site = sites[0];
         
@@ -176,15 +174,11 @@ router.get('/sites/:id', async (req, res) => {
             LIMIT 10
         `, [id]);
 
-        res.json({
-            success: true,
-            site: site,
-            deployment_history: deployments
-        });
+        res.success({ site: site, deployment_history: deployments });
 
     } catch (error) {
-        console.error('Error fetching site configuration:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('site-configuration.site detail error', { error: error.message });
+        res.fail(500, 'Failed to fetch site configuration', error.message);
     }
 });
 
@@ -208,22 +202,14 @@ router.post('/sites', async (req, res) => {
             contact_email
         } = req.body;
 
-        if (!site_name || !site_identifier || !server_id || !industry_template_id) {
-            return res.status(400).json({
-                error: 'site_name, site_identifier, server_id, and industry_template_id are required'
-            });
-        }
+        if (!site_name || !site_identifier || !server_id || !industry_template_id) return res.fail(400, 'site_name, site_identifier, server_id, and industry_template_id are required');
 
         // Verify server and template exist
         const [servers] = await db.execute('SELECT id FROM ai_moderation_servers WHERE id = ?', [server_id]);
         const [templates] = await db.execute('SELECT id FROM industry_templates WHERE id = ?', [industry_template_id]);
         
-        if (servers.length === 0) {
-            return res.status(400).json({ error: 'Invalid server_id' });
-        }
-        if (templates.length === 0) {
-            return res.status(400).json({ error: 'Invalid industry_template_id' });
-        }
+        if (servers.length === 0) return res.fail(400, 'Invalid server_id');
+        if (templates.length === 0) return res.fail(400, 'Invalid industry_template_id');
 
         const insertQuery = `
             INSERT INTO site_configurations 
@@ -242,15 +228,11 @@ router.post('/sites', async (req, res) => {
             webhook_url, contact_email, 1
         ]);
 
-        res.json({
-            success: true,
-            site_id: result.insertId,
-            message: 'Site configuration created successfully'
-        });
+        res.success({ site_id: result.insertId }, { message: 'Site configuration created successfully' });
 
     } catch (error) {
-        console.error('Error creating site configuration:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('site-configuration.sites create error', { error: error.message });
+        res.fail(500, 'Failed to create site configuration', error.message);
     }
 });
 
@@ -304,15 +286,11 @@ router.put('/sites/:id', async (req, res) => {
 
         await db.execute(updateQuery, params);
 
-        res.json({
-            success: true,
-            message: 'Site configuration updated successfully',
-            deployment_required: hasConfigChanges
-        });
+        res.success({ deployment_required: hasConfigChanges }, { message: 'Site configuration updated successfully' });
 
     } catch (error) {
-        console.error('Error updating site configuration:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('site-configuration.sites update error', { error: error.message });
+        res.fail(500, 'Failed to update site configuration', error.message);
     }
 });
 
@@ -359,15 +337,11 @@ router.put('/sites/:id/config', async (req, res) => {
 
         await db.execute(updateQuery, params);
 
-        res.json({
-            success: true,
-            message: 'Configuration updated successfully',
-            deployment_required: true
-        });
+        res.success({ deployment_required: true }, { message: 'Configuration updated successfully' });
 
     } catch (error) {
-        console.error('Error updating site configuration:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('site-configuration.sites config update error', { error: error.message });
+        res.fail(500, 'Failed to update configuration', error.message);
     }
 });
 
@@ -385,14 +359,11 @@ router.delete('/sites/:id', async (req, res) => {
             [id]
         );
 
-        res.json({
-            success: true,
-            message: 'Site configuration deleted successfully'
-        });
+        res.success({}, { message: 'Site configuration deleted successfully' });
 
     } catch (error) {
-        console.error('Error deleting site configuration:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('site-configuration.sites delete error', { error: error.message });
+        res.fail(500, 'Failed to delete site configuration', error.message);
     }
 });
 
