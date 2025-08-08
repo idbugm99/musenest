@@ -245,7 +245,7 @@
                 <div class=\"border rounded p-2 draggable-card\" draggable=\"true\" data-id=\"${img.id}\" data-index=\"${idx}\">
                   <div class=\"d-flex align-items-center justify-content-between\"> 
                     <div class=\"d-flex align-items-center text-truncate\" title=\"${img.filename}\" style=\"min-width:0\">
-                      <img src=\"${(img.filename && img.filename.startsWith('/')) ? img.filename : '/uploads/${slug}/public/gallery/' + img.filename}\" alt=\"thumb\" class=\"me-2\" style=\"width:48px;height:48px;object-fit:cover;border-radius:4px\" onerror=\"this.style.visibility='hidden'\" />
+                      <img src=\"${(img.moderation_status === 'approved_blurred' && img.blurred_path ? (img.blurred_path.startsWith('/') ? img.blurred_path : '/uploads/${slug}/public/blurred/' + img.filename) : (img.filename && img.filename.startsWith('/') ? img.filename : '/uploads/${slug}/public/gallery/' + img.filename))}\" alt=\"thumb\" class=\"me-2\" style=\"width:48px;height:48px;object-fit:cover;border-radius:4px\" onerror=\"this.style.visibility='hidden'\" />
                       <span class=\"small text-truncate\"><i class=\\\"fas fa-grip-vertical me-1 text-muted\\\"></i>${img.filename}</span>
                     </div>
                     <div class=\"d-flex align-items-center\">
@@ -357,6 +357,7 @@
               if (!d.success) { notify('danger', d.message||'Failed to reorder'); return; }
               // Re-render grid from server authoritative order
               renderImagesGrid(container, sectionId, d.data.images || []);
+              notify('success', 'Order saved');
             });
           }
 
@@ -446,6 +447,7 @@
           async function runBulk(action){
             const ids = Array.from(container.querySelectorAll('.select-image:checked')).map(cb => parseInt(cb.value));
             if (!ids.length) { notify('warning', 'No images selected'); return; }
+            if (action === 'delete' && !confirm(`Delete ${ids.length} image(s)? This cannot be undone.`)) return;
             const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/bulk`, {
               method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, ids })
             });
@@ -455,6 +457,9 @@
             const dd = await rr.json();
             if (!dd.success) return;
             renderImagesGrid(container, id, dd.data.images || []);
+            if (action === 'show') notify('success', 'Images shown');
+            else if (action === 'hide') notify('success', 'Images hidden');
+            else if (action === 'delete') notify('success', 'Images deleted');
           }
           document.getElementById(`bulk_show_${id}`).addEventListener('click', async () => { await runBulk('show'); notify('success', 'Images shown'); });
           document.getElementById(`bulk_hide_${id}`).addEventListener('click', async () => { await runBulk('hide'); notify('success', 'Images hidden'); });
@@ -484,6 +489,12 @@
             } else if (e.key === 'r' || e.key === 'R') {
               e.preventDefault();
               document.getElementById(`btn_refresh_${id}`)?.click();
+            } else if (e.key === 'Escape') {
+              // Clear selections
+              container.querySelectorAll('.select-image:checked').forEach(cb => cb.checked = false);
+              const selectAll = document.getElementById(`select_all_${id}`);
+              if (selectAll) selectAll.checked = false;
+              notify('info', 'Selection cleared');
             }
           };
           document.addEventListener('keydown', window[keyHandlerId]);
