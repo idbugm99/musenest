@@ -568,7 +568,7 @@ class ModelDashboard {
                     </select>
                 </div>
                 <div id="mediaStats" class="text-muted small mb-2"></div>
-                <div id="mediaGrid" class="row g-3"></div>
+                <div id="mediaGrid" class="row g-3 media-grid"></div>
             `;
 
             const categorySel = bodyEl.querySelector('#mediaCategorySelect');
@@ -594,19 +594,26 @@ class ModelDashboard {
                     gridEl.innerHTML = '<div class="col-12 text-center text-muted py-4">No media found</div>';
                     return;
                 }
-                gridEl.innerHTML = items.map(item => `
+                gridEl.innerHTML = items.map(item => {
+                    const fullSrc = `/api/media-preview/${item.content_moderation_id}/full`;
+                    const desc = (item.description_text || 'No description');
+                    return `
                     <div class="col-6 col-md-4 col-lg-3">
-                        <div class="card shadow-sm">
-                            <div class="bg-light" style="height: 160px; overflow: hidden;">
+                        <div class="card shadow-sm" title="${desc.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}">
+                            <div class="position-relative bg-light media-thumb" data-fullsrc="${fullSrc}" style="height: 160px; overflow: hidden; cursor: zoom-in;">
                                 <img src="${item.thumbnail_url}" class="w-100 h-100" style="object-fit: cover;" alt="thumb" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMTIwIDgwIj48cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjZWRlZGVkIi8+PHRleHQgeD0iNjAiIHk9IjQyIiBmb250LXNpemU9IjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjY2Ij50aHVtYjwvdGV4dD48L3N2Zz4=';">
+                                <div class="position-absolute bottom-0 start-0 w-100 px-2 py-1 bg-dark bg-opacity-50 text-white small d-none hover-desc">${desc.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+                                <div class="position-absolute top-0 end-0 m-2 badge bg-secondary">ADMIN</div>
                             </div>
                             <div class="card-body p-2 d-flex justify-content-between align-items-center">
                                 <span class="badge ${getStatusBadgeClass(item.review_status)} text-capitalize">${item.review_status.replace('_',' ')}</span>
                                 <span class="badge bg-secondary">${(item.usage_intent || 'unknown').replace('_',' ')}</span>
                             </div>
                         </div>
-                    </div>
-                `).join('');
+                    </div>`;
+                }).join('');
+                // Attach zoom handlers
+                ModelDashboard.attachImageExpandHandlers();
             }
 
             const getStatusBadgeClass = (status) => {
