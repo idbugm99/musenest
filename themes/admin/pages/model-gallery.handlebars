@@ -1,0 +1,69 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0"><i class="fas fa-images me-2"></i>Gallery Manager — {{model.name}}</h3>
+  <a class="btn btn-outline-secondary" href="/admin"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-4">
+    <div class="card">
+      <div class="card-header bg-white"><strong>Create Section</strong></div>
+      <div class="card-body">
+        <div class="mb-2">
+          <label class="form-label">Title</label>
+          <input id="sec_title" class="form-control" placeholder="e.g., Portfolio" />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Layout</label>
+          <select id="sec_layout" class="form-select">
+            <option value="grid">Grid</option>
+            <option value="masonry">Masonry</option>
+            <option value="carousel">Carousel</option>
+            <option value="lightbox_grid">Lightbox Grid</option>
+          </select>
+        </div>
+        <button id="btn_create_section" class="btn btn-primary w-100">Create Section</button>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-8">
+    <div class="card">
+      <div class="card-header bg-white d-flex align-items-center justify-content-between">
+        <strong>Sections</strong>
+        <input id="search_sections" class="form-control form-control-sm" placeholder="Search" style="max-width:200px" />
+      </div>
+      <div class="card-body" id="sections_list">
+        <div class="text-muted">Loading…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const slug = {{json model.slug}};
+    const listEl = document.getElementById('sections_list');
+    const searchEl = document.getElementById('search_sections');
+    async function load(page=1){
+      const q = searchEl.value ? `&search=${encodeURIComponent(searchEl.value)}` : '';
+      const res = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections?page=${page}&limit=20${q}`);
+      const data = await res.json();
+      if(!data.success){ listEl.innerHTML = `<div class="text-danger">${data.message||'Failed to load'}</div>`; return; }
+      const sections = data.data.sections || [];
+      if(!sections.length){ listEl.innerHTML = '<div class="text-muted">No sections yet.</div>'; return; }
+      listEl.innerHTML = sections.map(s => `
+        <div class="border rounded p-2 mb-2 d-flex align-items-center justify-content-between">
+          <div>
+            <div class="fw-bold">${s.title}</div>
+            <div class="text-muted small">${s.layout_type} · ${s.is_visible ? 'Visible' : 'Hidden'}</div>
+          </div>
+          <div>
+            <button class="btn btn-sm btn-outline-primary" data-id="${s.id}">Manage Images</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    searchEl.addEventListener('input', () => load(1));
+    load();
+  })();
+</script>
+

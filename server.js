@@ -300,6 +300,28 @@ app.get('/admin', async (req, res) => {
     }
 });
 
+// Model Admin: Gallery page
+app.get('/admin/:slug/gallery', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const [rows] = await db.execute(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows.length) return res.status(404).send('Model not found');
+        res.render('admin/pages/model-gallery', {
+            layout: 'admin/layouts/main',
+            pageTitle: 'Gallery Manager',
+            currentPage: 'model-admin',
+            model: rows[0],
+            legacyBanner: { message: 'This is a legacy admin surface. System admin lives at /sysadmin.' }
+        });
+    } catch (e) {
+        console.error('❌ Error loading model gallery page:', e);
+        res.status(500).send('Error loading model gallery');
+    }
+});
+
 // Routes
 app.get('/', (req, res) => {
     res.json({
@@ -2297,6 +2319,12 @@ app.use('/api/media-preview', require('./routes/api/media-preview'));
 
 // Consolidated sysadmin API namespace (keeps legacy mounts above for back-compat)
 app.use('/api/sysadmin', require('./routes/api/sysadmin'));
+// Model Admin API (per-model)
+try {
+  app.use('/api/model-gallery', require('./routes/api/model-gallery'));
+} catch (e) {
+  // ignore during scaffold if missing
+}
 
 // Theme Management API
 app.get('/api/theme-management/models', async (req, res) => {
