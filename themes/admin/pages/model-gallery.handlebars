@@ -81,6 +81,7 @@
             <div>
               <button class="btn btn-sm btn-outline-secondary me-2 btn-rename" data-id="${s.id}">Rename</button>
               <button class="btn btn-sm btn-outline-warning me-2 btn-toggle" data-id="${s.id}" data-visible="${s.is_visible ? 1 : 0}">${s.is_visible ? 'Hide' : 'Show'}</button>
+              <button class="btn btn-sm btn-outline-danger me-2 btn-delete" data-id="${s.id}">Delete</button>
               <button class="btn btn-sm btn-outline-primary btn-manage" data-id="${s.id}">Manage Images</button>
             </div>
           </div>
@@ -99,7 +100,8 @@
             method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: next })
           });
           const data = await res.json();
-          if (!data.success) { alert(data.message||'Failed to rename'); return; }
+          if (!data.success) { notify('danger', data.message||'Failed to rename'); return; }
+          notify('success', 'Section renamed');
           await load();
         });
       });
@@ -112,7 +114,21 @@
             method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_visible: !visible })
           });
           const data = await res.json();
-          if (!data.success) { alert(data.message||'Failed to toggle'); return; }
+          if (!data.success) { notify('danger', data.message||'Failed to toggle'); return; }
+          notify('success', `Section ${!visible ? 'shown' : 'hidden'}`);
+          await load();
+        });
+      });
+
+      // Delete section
+      listEl.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          if (!confirm('Delete this section and remove its image associations? This cannot be undone.')) return;
+          const res = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}`, { method: 'DELETE' });
+          const data = await res.json();
+          if (!data.success) { notify('danger', data.message||'Failed to delete section'); return; }
+          notify('success', 'Section deleted');
           await load();
         });
       });
@@ -196,6 +212,7 @@
             const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/upload`, { method: 'POST', body: form });
             const d = await r.json();
             if (!d.success) { notify('danger', d.message || 'Upload failed'); return; }
+            notify('success', 'Image uploaded');
             // reload
             const rr = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`);
             const dd = await rr.json();
@@ -277,7 +294,7 @@
                   method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_active: !active })
                 });
                 const d = await r.json();
-                if (!d.success) { alert(d.message||'Failed to update'); return; }
+                if (!d.success) { notify('danger', d.message||'Failed to update'); return; }
                 // refresh current grid
                 const rr = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${sectionId}/images`);
                 const dd = await rr.json();
