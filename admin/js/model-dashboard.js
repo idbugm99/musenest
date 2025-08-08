@@ -600,7 +600,7 @@ class ModelDashboard {
                     return `
                     <div class="col-6 col-md-4 col-lg-3">
                         <div class="card shadow-sm" title="${desc.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}">
-                            <div class="position-relative bg-light media-thumb" data-fullsrc="${fullSrc}" style="height: 160px; overflow: hidden; cursor: zoom-in;">
+                            <div class="position-relative bg-light media-thumb" data-fullsrc="${fullSrc}" data-id="${item.content_moderation_id}" style="height: 160px; overflow: hidden; cursor: zoom-in;">
                                 <img src="${item.thumbnail_url}" class="w-100 h-100" style="object-fit: cover;" alt="thumb" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMTIwIDgwIj48cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjZWRlZGVkIi8+PHRleHQgeD0iNjAiIHk9IjQyIiBmb250LXNpemU9IjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjY2Ij50aHVtYjwvdGV4dD48L3N2Zz4=';">
                                 <div class="position-absolute bottom-0 start-0 w-100 px-2 py-1 bg-dark bg-opacity-50 text-white small d-none hover-desc">${desc.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
                                 <div class="position-absolute top-0 end-0 m-2 badge bg-secondary">ADMIN</div>
@@ -770,12 +770,18 @@ class ModelDashboard {
     static attachImageExpandHandlers() {
         document.querySelectorAll('.media-thumb').forEach(el => {
             el.addEventListener('click', () => {
-                const fullSrc = el.getAttribute('data-fullsrc');
+                const contentId = el.getAttribute('data-id');
+                let fullSrc = el.getAttribute('data-fullsrc');
+                if (!fullSrc && contentId) {
+                    fullSrc = `/api/media-preview/${contentId}/full`;
+                }
                 if (!fullSrc) return;
                 const overlay = document.createElement('div');
                 overlay.className = 'position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center';
                 overlay.style.cssText = 'z-index:1070;background:rgba(0,0,0,0.7)';
-                const src = fullSrc.startsWith('/public') || fullSrc.startsWith('/uploads') ? fullSrc : `/public${fullSrc}`;
+                const src = (fullSrc.startsWith('http://') || fullSrc.startsWith('https://') || fullSrc.startsWith('/'))
+                    ? fullSrc
+                    : `/public${fullSrc}`;
                 overlay.innerHTML = `
                     <div class="position-relative" style="max-width:90vw;max-height:85vh;">
                         <img src="${src}" style="max-width:100%;max-height:85vh;display:block;">
