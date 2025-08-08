@@ -28,7 +28,7 @@ class OnboardingWizard {
 
     async loadBusinessTypes() {
         try {
-            const response = await fetch('/api/onboarding/business-types');
+            const response = await sysFetch('/api/onboarding/business-types');
             const data = await response.json();
             
             if (data.success) {
@@ -113,7 +113,7 @@ class OnboardingWizard {
 
     async loadPageSets(businessTypeId) {
         try {
-            const response = await fetch(`/api/onboarding/page-sets/${businessTypeId}`);
+            const response = await sysFetch(`/api/onboarding/page-sets/${businessTypeId}`);
             const data = await response.json();
             
             if (data.success) {
@@ -207,7 +207,7 @@ class OnboardingWizard {
 
     async loadThemes(businessTypeId) {
         try {
-            const response = await fetch(`/api/onboarding/themes/${businessTypeId}`);
+            const response = await sysFetch(`/api/onboarding/themes/${businessTypeId}`);
             const data = await response.json();
             
             if (data.success) {
@@ -424,7 +424,7 @@ class OnboardingWizard {
         }
 
         try {
-            const response = await fetch('/api/onboarding/complete', {
+            const response = await sysFetch('/api/onboarding/complete', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

@@ -354,7 +354,7 @@ class ClientOnboarding {
     
     async loadTemplates() {
         try {
-            const response = await fetch('/api/clients/templates');
+            const response = await sysFetch('/api/clients/templates');
             const result = await response.json();
             
             if (result.success) {
@@ -420,7 +420,7 @@ class ClientOnboarding {
     
     async loadSubscriptionTiers() {
         try {
-            const response = await fetch('/api/site-configuration/subscription/tiers');
+            const response = await sysFetch('/api/site-configuration/subscription/tiers');
             const result = await response.json();
             
             if (result.success) {
@@ -641,7 +641,7 @@ class ClientOnboarding {
         statusDiv.style.display = 'block';
         
         try {
-            const response = await fetch('/api/clients', {
+            const response = await sysFetch('/api/clients', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -735,7 +735,7 @@ class ClientOnboarding {
         }
         
         try {
-            const response = await fetch('/api/clients/validate-email', {
+            const response = await sysFetch('/api/clients/validate-email', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
