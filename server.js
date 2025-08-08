@@ -2556,6 +2556,7 @@ app.use('/', require('./src/routes/model_sites'));
 // 404 handler
 app.use('*', (req, res) => {
     res.status(404).json({
+        success: false,
         error: 'Not Found',
         message: 'The requested resource could not be found.'
     });
@@ -2563,20 +2564,16 @@ app.use('*', (req, res) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-    console.error('Error:', err);
-    
-    if (process.env.NODE_ENV === 'development') {
-        res.status(500).json({
-            error: 'Internal Server Error',
-            message: err.message,
-            stack: err.stack
-        });
-    } else {
-        res.status(500).json({
-            error: 'Internal Server Error',
-            message: 'Something went wrong!'
-        });
-    }
+    const logger = require('./utils/logger');
+    const statusCode = err.status || 500;
+    const message = statusCode === 500 ? 'Internal Server Error' : err.message || 'Error';
+    const details = process.env.NODE_ENV === 'development' ? (err.stack || err.message) : undefined;
+    logger.error('unhandled error', { requestId: req.id, statusCode, error: err.message });
+    if (res.headersSent) return next(err);
+    if (typeof res.fail === 'function') return res.fail(statusCode, message, details);
+    const payload = { success: false, error: message };
+    if (details) payload.details = details;
+    res.status(statusCode).json(payload);
 });
 
 // Start server

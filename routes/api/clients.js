@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const logger = require('../../utils/logger');
 const db = require('../../config/database');
 const bcrypt = require('bcrypt');
 const mysql = require('mysql2');
@@ -11,42 +12,30 @@ router.post('/validate-email', async (req, res) => {
     try {
         const { email } = req.body;
         
-        if (!email) {
-            return res.status(400).json({
-                success: false,
-                error: 'Email is required'
-            });
-        }
+        if (!email) return res.fail(400, 'Email is required');
         
         // Check if email exists in users table
         const escapedEmail = mysql.escape(email.toLowerCase().trim());
         const [existingUsers] = await db.pool.query(`SELECT id FROM users WHERE email = ${escapedEmail}`);
         
-        res.json({
-            success: true,
-            exists: existingUsers.length > 0,
-            email: email.toLowerCase().trim()
-        });
+        res.success({ exists: existingUsers.length > 0, email: email.toLowerCase().trim() });
         
     } catch (error) {
-        console.error('Email validation error:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to validate email'
-        });
+        logger.error('clients.validate-email error', { error: error.message });
+        res.fail(500, 'Failed to validate email', error.message);
     }
 });
 
 // POST /api/clients/test - Simple test endpoint
 router.post('/test', async (req, res) => {
     try {
-        console.log('Testing simple insert...');
+        logger.debug('clients.test insert');
         const testEmail = 'test' + Date.now() + '@example.com';
         const [result] = await db.pool.query(`INSERT INTO users (email, password_hash, role, created_at) VALUES ('${testEmail}', 'test', 'model', NOW())`);
-        res.json({ success: true, insertId: result.insertId });
+        res.success({ insertId: result.insertId });
     } catch (error) {
-        console.error('Test error:', error);
-        res.status(500).json({ success: false, error: error.message });
+        logger.error('clients.test error', { error: error.message });
+        res.fail(500, 'Test insert failed', error.message);
     }
 });
 
@@ -71,23 +60,13 @@ router.post('/', async (req, res) => {
         } = req.body;
 
         // Validate required fields
-        if (!name || !email || !business_type) {
-            return res.status(400).json({
-                success: false,
-                error: 'Name, email, and business type are required'
-            });
-        }
+        if (!name || !email || !business_type) return res.fail(400, 'Name, email, and business type are required');
 
         // Check if email already exists
         const escapedEmailCheck = mysql.escape(email);
         const [existingUsers] = await db.pool.query(`SELECT id FROM users WHERE email = ${escapedEmailCheck}`);
 
-        if (existingUsers.length > 0) {
-            return res.status(400).json({
-                success: false,
-                error: 'Email address already exists'
-            });
-        }
+        if (existingUsers.length > 0) return res.fail(400, 'Email address already exists');
 
         // Process referral code if provided
         let referralCodeData = null;
@@ -99,11 +78,7 @@ router.post('/', async (req, res) => {
             // Validate referral code format
             const validation = ReferralCodeGenerator.validateCodeFormat(trimmedCode);
             if (!validation.valid) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Invalid referral code format',
-                    details: validation.errors
-                });
+                return res.fail(400, 'Invalid referral code format', validation.errors);
             }
             
             // Look up referral code in database
@@ -115,30 +90,19 @@ router.post('/', async (req, res) => {
                 WHERE rc.code = ${escapedTrimmedCode} AND rc.is_active = true
             `);
             
-            if (referralCodes.length === 0) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Referral code not found or inactive'
-                });
-            }
+            if (referralCodes.length === 0) return res.fail(400, 'Referral code not found or inactive');
             
             referralCodeData = referralCodes[0];
             referrerUserId = referralCodeData.referrer_user_id;
             
             // Check if referral code has expired
             if (referralCodeData.expires_at && new Date(referralCodeData.expires_at) < new Date()) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Referral code has expired'
-                });
+                return res.fail(400, 'Referral code has expired');
             }
             
             // Check if referral code has reached usage limit
             if (referralCodeData.usage_limit && referralCodeData.usage_count >= referralCodeData.usage_limit) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Referral code has reached its usage limit'
-                });
+                return res.fail(400, 'Referral code has reached its usage limit');
             }
         }
 
@@ -203,12 +167,7 @@ router.post('/', async (req, res) => {
                 // It's a tier name, look up the ID
                 const escapedTierName = mysql.escape(subscription_tier_id);
                 const [tierLookup] = await db.pool.query(`SELECT id FROM subscription_tiers WHERE display_name = ${escapedTierName} OR display_name LIKE ${mysql.escape('%' + subscription_tier_id + '%')}`);
-                if (tierLookup.length === 0) {
-                    return res.status(400).json({
-                        success: false,
-                        error: `Subscription tier "${subscription_tier_id}" not found`
-                    });
-                }
+                if (tierLookup.length === 0) return res.fail(400, `Subscription tier "${subscription_tier_id}" not found`);
                 actualTierId = tierLookup[0].id;
             }
 
@@ -248,31 +207,20 @@ router.post('/', async (req, res) => {
             await db.pool.query(`INSERT INTO referral_usage_log (referral_code_id, referred_user_id, referrer_user_id, signup_ip, signup_user_agent, commission_eligible, used_at) VALUES (${referralCodeData.id}, ${userId}, ${referrerUserId}, ${escapedClientIp}, ${escapedUserAgent}, true, ${escapedNow})`);
         }
 
-        res.json({
-            success: true,
-            message: 'Client created successfully',
-            data: {
-                user_id: userId,
-                model_id: modelId,
-                account_number: accountNumber,
-                subscription_id: subscriptionId,
-                temp_password: tempPassword,
-                login_url: `/login?email=${encodeURIComponent(email)}`,
-                site_url: `/${modelSlug}`,
-                referral_info: referralCodeData ? {
-                    code_used: referralCodeData.code,
-                    referred_by: referralCodeData.referrer_email
-                } : null
-            }
-        });
+        res.success({
+            user_id: userId,
+            model_id: modelId,
+            account_number: accountNumber,
+            subscription_id: subscriptionId,
+            temp_password: tempPassword,
+            login_url: `/login?email=${encodeURIComponent(email)}`,
+            site_url: `/${modelSlug}`,
+            referral_info: referralCodeData ? { code_used: referralCodeData.code, referred_by: referralCodeData.referrer_email } : null
+        }, { message: 'Client created successfully' });
 
     } catch (error) {
-        console.error('Error creating client:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to create client account',
-            details: error.message
-        });
+        logger.error('clients.create error', { error: error.message });
+        res.fail(500, 'Failed to create client account', error.message);
     }
 });
 
@@ -336,24 +284,11 @@ router.get('/', async (req, res) => {
         `, [perPage, offset]);
 
         res.set('Cache-Control', 'private, max-age=15');
-        res.json({
-            success: true,
-            data: clients,
-            clients: clients, // For backward compatibility
-            pagination: {
-                page: currentPage,
-                limit: perPage,
-                total: total,
-                pages: Math.ceil(total / perPage)
-            }
-        });
+        res.success({ data: clients, clients, pagination: { page: currentPage, limit: perPage, total, pages: Math.ceil(total / perPage) } });
 
     } catch (error) {
-        console.error('Error fetching clients:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch clients'
-        });
+        logger.error('clients.list error', { error: error.message });
+        res.fail(500, 'Failed to fetch clients', error.message);
     }
 });
 
@@ -376,17 +311,11 @@ router.get('/templates', async (req, res) => {
             ORDER BY ts.category, ts.display_name
         `);
 
-        res.json({
-            success: true,
-            templates: templates
-        });
+        res.success({ templates });
 
     } catch (error) {
-        console.error('Error fetching templates:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch templates'
-        });
+        logger.error('clients.templates error', { error: error.message });
+        res.fail(500, 'Failed to fetch templates', error.message);
     }
 });
 
@@ -429,12 +358,7 @@ router.get('/:id', async (req, res) => {
             WHERE u.id = ?
         `, [clientId]);
 
-        if (clients.length === 0) {
-            return res.status(404).json({
-                success: false,
-                error: 'Client not found'
-            });
-        }
+        if (clients.length === 0) return res.fail(404, 'Client not found');
 
         const client = clients[0];
 
@@ -457,17 +381,11 @@ router.get('/:id', async (req, res) => {
             client.ai_config = {};
         }
 
-        res.json({
-            success: true,
-            data: client
-        });
+        res.success({ data: client });
 
     } catch (error) {
-        console.error('Error fetching client details:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch client details'
-        });
+        logger.error('clients.detail error', { error: error.message });
+        res.fail(500, 'Failed to fetch client details', error.message);
     }
 });
 
@@ -558,10 +476,7 @@ router.put('/:id', async (req, res) => {
 
             await connection.commit();
 
-            res.json({
-                success: true,
-                message: 'Client updated successfully'
-            });
+            res.success({}, { message: 'Client updated successfully' });
 
         } catch (error) {
             await connection.rollback();
@@ -572,11 +487,8 @@ router.put('/:id', async (req, res) => {
         }
 
     } catch (error) {
-        console.error('Error updating client:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to update client'
-        });
+        logger.error('clients.update error', { error: error.message });
+        res.fail(500, 'Failed to update client', error.message);
     }
 });
 
@@ -605,12 +517,7 @@ router.post('/:id/referral-codes', async (req, res) => {
             WHERE u.id = ?
         `, [clientId]);
 
-        if (clients.length === 0) {
-            return res.status(404).json({
-                success: false,
-                error: 'Client not found'
-            });
-        }
+        if (clients.length === 0) return res.fail(404, 'Client not found');
 
         const client = clients[0];
 
@@ -624,19 +531,11 @@ router.post('/:id/referral-codes', async (req, res) => {
             customCode: custom_code
         });
 
-        res.json({
-            success: true,
-            message: 'Referral code created successfully',
-            data: referralCode
-        });
+        res.success({ referralCode }, { message: 'Referral code created successfully' });
 
     } catch (error) {
-        console.error('Error creating referral code:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to create referral code',
-            details: error.message
-        });
+        logger.error('clients.referral.create error', { error: error.message });
+        res.fail(500, 'Failed to create referral code', error.message);
     }
 });
 
@@ -658,17 +557,11 @@ router.get('/:id/referral-codes', async (req, res) => {
             ORDER BY rc.created_at DESC
         `, [clientId]);
 
-        res.json({
-            success: true,
-            data: referralCodes
-        });
+        res.success({ data: referralCodes });
 
     } catch (error) {
-        console.error('Error fetching referral codes:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch referral codes'
-        });
+        logger.error('clients.referral.list error', { error: error.message });
+        res.fail(500, 'Failed to fetch referral codes', error.message);
     }
 });
 
@@ -680,11 +573,7 @@ router.get('/referral-codes/validate/:code', async (req, res) => {
         // Validate format first
         const validation = ReferralCodeGenerator.validateCodeFormat(code);
         if (!validation.valid) {
-            return res.json({
-                valid: false,
-                error: 'Invalid code format',
-                details: validation.errors
-            });
+            return res.success({ valid: false, error: 'Invalid code format', details: validation.errors });
         }
 
         // Check database
@@ -701,32 +590,21 @@ router.get('/referral-codes/validate/:code', async (req, res) => {
             WHERE rc.code = ? AND rc.is_active = true
         `, [code]);
 
-        if (referralCodes.length === 0) {
-            return res.json({
-                valid: false,
-                error: 'Referral code not found or inactive'
-            });
-        }
+        if (referralCodes.length === 0) return res.success({ valid: false, error: 'Referral code not found or inactive' });
 
         const referralCode = referralCodes[0];
 
         // Check expiry
         if (referralCode.expires_at && new Date(referralCode.expires_at) < new Date()) {
-            return res.json({
-                valid: false,
-                error: 'Referral code has expired'
-            });
+            return res.success({ valid: false, error: 'Referral code has expired' });
         }
 
         // Check usage limit
         if (referralCode.usage_limit && referralCode.usage_count >= referralCode.usage_limit) {
-            return res.json({
-                valid: false,
-                error: 'Referral code has reached its usage limit'
-            });
+            return res.success({ valid: false, error: 'Referral code has reached its usage limit' });
         }
 
-        res.json({
+        res.success({
             valid: true,
             data: {
                 code: referralCode.code,
@@ -740,11 +618,8 @@ router.get('/referral-codes/validate/:code', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error validating referral code:', error);
-        res.status(500).json({
-            valid: false,
-            error: 'Failed to validate referral code'
-        });
+        logger.error('clients.referral.validate error', { error: error.message });
+        res.fail(500, 'Failed to validate referral code', error.message);
     }
 });
 
@@ -791,8 +666,7 @@ router.get('/:id/referral-analytics', async (req, res) => {
             LIMIT 10
         `, [clientId]);
 
-        res.json({
-            success: true,
+        res.success({
             data: {
                 codes: analytics,
                 recent_referrals: recentReferrals,
@@ -809,11 +683,8 @@ router.get('/:id/referral-analytics', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error fetching referral analytics:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch referral analytics'
-        });
+        logger.error('clients.referral.analytics error', { error: error.message });
+        res.fail(500, 'Failed to fetch referral analytics', error.message);
     }
 });
 
@@ -832,12 +703,7 @@ router.post('/:id/referral-codes/suggestions', async (req, res) => {
             WHERE u.id = ?
         `, [clientId]);
 
-        if (clients.length === 0) {
-            return res.status(404).json({
-                success: false,
-                error: 'Client not found'
-            });
-        }
+        if (clients.length === 0) return res.fail(404, 'Client not found');
 
         const client = clients[0];
 
@@ -847,17 +713,11 @@ router.post('/:id/referral-codes/suggestions', async (req, res) => {
             email: client.email
         });
 
-        res.json({
-            success: true,
-            suggestions: suggestions
-        });
+        res.success({ suggestions });
 
     } catch (error) {
-        console.error('Error generating referral code suggestions:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to generate suggestions'
-        });
+        logger.error('clients.referral.suggestions error', { error: error.message });
+        res.fail(500, 'Failed to generate suggestions', error.message);
     }
 });
 
