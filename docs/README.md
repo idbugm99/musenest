@@ -8,6 +8,7 @@
 - Logging & Errors: `docs/LOGGING_AND_ERRORS.md`
 - API Standards: `docs/API_STANDARDS.md`
 - Testing: `docs/TESTING.md`
+- Content Management Design: `docs/CONTENT_MANAGEMENT.md`
 
 ## Useful Commands
 - `npm run dev` — start server with nodemon
