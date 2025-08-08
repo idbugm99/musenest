@@ -18,6 +18,9 @@ const AnalysisConfigAPI = require('./src/routes/analysisConfigApi');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Early ping route to bypass middleware stack for diagnostics
+app.get('/_ping', (_req, res) => res.status(200).send('pong'));
+
 // Validate configuration early
 try {
     validateConfig(process.env);
@@ -2605,4 +2608,8 @@ async function startServer() {
     }
 }
 
-startServer();
+if (require.main === module) {
+    startServer();
+}
+
+module.exports = app;

@@ -48,7 +48,6 @@ module.exports = function requestLogger(req, res, next) {
       durationMs,
       contentLength: res.getHeader('Content-Length') || 0,
     };
-    res.setHeader('X-Response-Time', `${durationMs}ms`);
     logger.info('request.end', meta);
   };
   res.on('finish', onFinish);
