@@ -1,5 +1,50 @@
 # Admin Surfaces
 
+## Overview
+- Sysadmin (global): `/sysadmin`
+  - System-wide functions: clients, themes, media queue, model media dashboard, health
+  - Uses standardized API envelope and `sysFetch`
+- Model Admin (per model): `/:slug/admin`
+  - Dashboard, Content, Gallery for an individual model
+  - Distinct from sysadmin; no cross-tenant controls
+
+## Routes
+- Sysadmin UI
+  - `/sysadmin` — dashboard
+  - Related APIs under `/api/sysadmin/*`
+- Model Admin UI
+  - `/:slug/admin` — dashboard
+  - `/:slug/admin/content` — content manager
+  - `/:slug/admin/gallery` — gallery manager
+  - Related APIs:
+    - `/api/model-content/:modelSlug/*`
+    - `/api/model-gallery/:modelSlug/*`
+
+## Current Features
+- Content Manager
+  - Metadata-driven fields (labels, input types, help, required)
+  - Rich text (Quill) for HTML
+  - Autosave with per-field status; audit trail and rollback
+  - Unsaved edit guard, Cmd/Ctrl+S save, Esc clear statuses
+  - Audit pagination
+- Gallery Manager
+  - Sections CRUD, visibility toggle, reorder, search
+  - Image list with blurred-preferred thumbnails
+  - Upload (multer) → thumbnails → moderation pipeline
+  - Inline caption/tags, visibility toggle
+  - Drag-and-drop reorder; bulk show/hide/delete/move; pagination
+  - Keyboard shortcuts (A, Delete, R, Esc); toast notifications
+
+## Navigation
+- `themes/admin/partials/model_sidebar.handlebars` renders model admin sidebar based on `isModelAdmin` flag.
+- `themes/admin/layouts/main.handlebars` chooses sidebar (`admin_sidebar` vs `model_sidebar`).
+
+## Notes
+- Keep `/sysadmin` and `/:slug/admin` strictly separated in UI and API.
+- Prefer blurred assets for admin previews when available.
+
+# Admin Surfaces
+
 ## Canonical Surfaces (Current)
 - **SysAdmin** (system operations): `/sysadmin` (Handlebars under `themes/admin`)
 - **Legacy Admin** (static HTML): `/admin/*` (kept read-only; redirects where possible)

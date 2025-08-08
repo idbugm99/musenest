@@ -23,10 +23,11 @@ Status: In Progress (majority moved; final sweep pending)
 
 ### Phase B — Admin Surfaces
 - Sysadmin at `/sysadmin` (Handlebars) is canonical
-- Legacy `/admin` remains read-only; add banner and redirects where possible
-- Document mapping in `docs/ADMIN_SURFACES.md`
+- New per-model admin at `/:slug/admin` with Content and Gallery managers
+- Legacy global `/admin` redirects to `/:slug/admin` (default `modelexample`)
+- Mapping documented in `docs/ADMIN_SURFACES.md`
 
-Status: Mostly Done
+Status: Done
 
 ### Phase C — DB Drift Control
 - Create `migrations/INDEX.md`
