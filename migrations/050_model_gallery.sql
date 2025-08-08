@@ -34,17 +34,8 @@ CREATE TABLE IF NOT EXISTS gallery_images (
   INDEX idx_gallery_images_model (model_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Indexes for sections (if not created by engine defaults)
--- Note: MySQL 8+ INFORMATION_SCHEMA checks for idempotency
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM INFORMATION_SCHEMA.STATISTICS 
-    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'gallery_sections' AND INDEX_NAME = 'idx_gallery_sections_model_visible_sort'
-  ) THEN
-    ALTER TABLE gallery_sections
-      ADD INDEX idx_gallery_sections_model_visible_sort (model_id, is_visible, sort_order);
-  END IF;
-END$$;
+-- Index for sections (will be ignored if it already exists by migration runner)
+ALTER TABLE gallery_sections
+  ADD INDEX idx_gallery_sections_model_visible_sort (model_id, is_visible, sort_order);
 
 

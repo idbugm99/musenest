@@ -304,11 +304,11 @@ app.get('/admin', async (req, res) => {
 app.get('/admin/:slug/gallery', async (req, res) => {
     try {
         const { slug } = req.params;
-        const [rows] = await db.execute(
+        const rows = await db.query(
             `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
             [slug]
         );
-        if (!rows.length) return res.status(404).send('Model not found');
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
         res.render('admin/pages/model-gallery', {
             layout: 'admin/layouts/main',
             pageTitle: 'Gallery Manager',

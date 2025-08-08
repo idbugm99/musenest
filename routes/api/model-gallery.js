@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../../src/config/db');
+const db = require('../../config/database');
 const logger = require('../../utils/logger');
 
 // Resolve model id from slug helper
 async function getModelBySlug(slug) {
-  const [rows] = await db.execute('SELECT id, slug, name FROM models WHERE slug = ? LIMIT 1', [slug]);
-  return rows[0] || null;
+  const rows = await db.query('SELECT id, slug, name FROM models WHERE slug = ? LIMIT 1', [slug]);
+  return rows && rows[0] ? rows[0] : null;
 }
 
 // GET /api/model-gallery/:modelSlug/sections
@@ -26,10 +26,10 @@ router.get('/:modelSlug/sections', async (req, res) => {
     if (search) { where.push('title LIKE ?'); params.push(`%${search}%`); }
     const whereSql = `WHERE ${where.join(' AND ')}`;
 
-    const [countRows] = await db.execute(`SELECT COUNT(*) as total FROM gallery_sections ${whereSql}`, params);
+    const countRows = await db.query(`SELECT COUNT(*) as total FROM gallery_sections ${whereSql}`, params);
     const total = countRows[0]?.total || 0;
 
-    const [rows] = await db.execute(
+    const rows = await db.query(
       `SELECT * FROM gallery_sections ${whereSql} ORDER BY sort_order ASC, created_at DESC LIMIT ${perPage} OFFSET ${offset}`,
       params
     );
