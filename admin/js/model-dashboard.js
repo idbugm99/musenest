@@ -526,27 +526,105 @@ class ModelDashboard {
 
     async openModelMedia(model) {
         console.log('📸 Opening media view for:', model.name);
-        
+
         try {
-            // Use simplified approach - redirect to existing media management or show basic modal
-            if (model.approved_blurred_count > 0 || model.approved_count > 0) {
-                // For now, show a simple confirmation and redirect to existing media management
-                const confirmed = confirm(`View ${model.display_name || model.name}'s media?\n\n` +
-                    `• Total Media: ${model.total_media_count || 0}\n` +
-                    `• Pending: ${model.pending_review_count || 0}\n` +
-                    `• Approved: ${model.approved_count || 0}\n` +
-                    `• Blurred: ${model.approved_blurred_count || 0}\n` +
-                    `• Rejected: ${model.rejected_count || 0}\n\n` +
-                    `Click OK to navigate to media management.`);
-                
-                if (confirmed) {
-                    // Navigate to the existing blurred/approved page with model filter
-                    window.location.href = '/sysadmin?section=blurred-approved';
-                }
-            } else {
-                alert(`${model.display_name || model.name} has no approved media to display.`);
+            // Build modal from template
+            const template = document.getElementById('modelDetailModalTemplate');
+            if (!template) {
+                console.error('Model detail modal template not found');
+                return;
+            }
+            const modalFrag = template.content.cloneNode(true);
+            document.body.appendChild(modalFrag);
+
+            const modalEl = document.querySelector('.model-detail-modal');
+            const closeBtn = modalEl.querySelector('.close-modal-btn');
+            const bodyEl = modalEl.querySelector('.modal-body');
+
+            // Set header info
+            const profileImg = modalEl.querySelector('.modal-model-profile');
+            profileImg.src = model.profile_image_url || '/assets/default-avatar.png';
+            profileImg.onerror = function() { this.onerror = null; this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHNpcmNsZSBjeD0iMzIiIGN5PSIyMiIgcj0iMTIiIGZpbGw9IiNFNUU5RUIiLz48cmVjdCB4PSIxNiIgeT0iMzgiIHdpZHRoPSIyOCIgaGVpZ2h0PSIxNiIgZmlsbD0iI0VFRiIvPjwvc3ZnPg=='; };
+            modalEl.querySelector('.modal-model-name').textContent = model.display_name || model.name;
+            modalEl.querySelector('.modal-model-status').textContent = `${model.status}`;
+
+            // Controls
+            bodyEl.innerHTML = `
+                <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+                    <label class="form-label mb-0 me-2">Category</label>
+                    <select id="mediaCategorySelect" class="form-select form-select-sm w-auto">
+                        <option value="approved_blurred" selected>Approved (Blurred)</option>
+                        <option value="approved">Approved</option>
+                        <option value="pending">Pending</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="all">All</option>
+                    </select>
+                    <label class="form-label mb-0 ms-3 me-2">Intent</label>
+                    <select id="mediaIntentSelect" class="form-select form-select-sm w-auto">
+                        <option value="any" selected>Any</option>
+                        <option value="public_site">Public</option>
+                        <option value="paysite">Private/Paysite</option>
+                        <option value="private">Private</option>
+                    </select>
+                </div>
+                <div id="mediaStats" class="text-muted small mb-2"></div>
+                <div id="mediaGrid" class="row g-3"></div>
+            `;
+
+            const categorySel = bodyEl.querySelector('#mediaCategorySelect');
+            const intentSel = bodyEl.querySelector('#mediaIntentSelect');
+            const gridEl = bodyEl.querySelector('#mediaGrid');
+            const statsEl = bodyEl.querySelector('#mediaStats');
+
+            async function loadMedia() {
+                const category = categorySel.value;
+                const intent = intentSel.value;
+                const url = `/api/model-dashboard/models/${model.id}/media?category=${encodeURIComponent(category)}&page=1&limit=100`;
+                const resp = await sysFetch(url);
+                const json = await resp.json();
+                if (!json.success) throw new Error(json.error || 'Failed to load media');
+                const items = (json.data && json.data.media_items) ? json.data.media_items : (json.media_items || []);
+                const filtered = intent === 'any' ? items : items.filter(i => (i.usage_intent || '').toLowerCase() === intent);
+                renderGrid(filtered);
+                statsEl.textContent = `${filtered.length} item(s) — category: ${category}${intent !== 'any' ? `, intent: ${intent}` : ''}`;
             }
 
+            function renderGrid(items) {
+                if (!items || items.length === 0) {
+                    gridEl.innerHTML = '<div class="col-12 text-center text-muted py-4">No media found</div>';
+                    return;
+                }
+                gridEl.innerHTML = items.map(item => `
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <div class="card shadow-sm">
+                            <div class="bg-light" style="height: 160px; overflow: hidden;">
+                                <img src="${item.thumbnail_url}" class="w-100 h-100" style="object-fit: cover;" alt="thumb">
+                            </div>
+                            <div class="card-body p-2 d-flex justify-content-between align-items-center">
+                                <span class="badge ${getStatusBadgeClass(item.review_status)} text-capitalize">${item.review_status.replace('_',' ')}</span>
+                                <span class="badge bg-secondary">${(item.usage_intent || 'unknown').replace('_',' ')}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const getStatusBadgeClass = (status) => {
+                switch (status) {
+                    case 'approved': return 'bg-success';
+                    case 'approved_blurred': return 'bg-info';
+                    case 'pending': return 'bg-warning text-dark';
+                    case 'rejected': return 'bg-danger';
+                    default: return 'bg-secondary';
+                }
+            };
+
+            categorySel.addEventListener('change', () => loadMedia().catch(console.error));
+            intentSel.addEventListener('change', () => loadMedia().catch(console.error));
+            closeBtn.addEventListener('click', () => modalEl.remove());
+            modalEl.addEventListener('click', (e) => { if (e.target.classList.contains('model-detail-modal')) modalEl.remove(); });
+
+            await loadMedia();
         } catch (error) {
             console.error('Error opening model media:', error);
             alert(`Failed to access media for ${model.name}: ${error.message}`);
