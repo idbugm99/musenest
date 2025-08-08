@@ -206,7 +206,7 @@
           });
 
           // helper to render grid with bindings (for refresh)
-          function renderImagesGrid(container, sectionId, imgs) {
+          function renderImagesGrid(container, sectionId, imgs, pagination) {
             const grid = container.querySelector('.images-grid');
             grid.innerHTML = imgs.map((img, idx) => `
               <div class=\"col\">
@@ -244,6 +244,13 @@
             }
             bindImageToggles(grid, sectionId);
             bindDragAndDrop(grid, sectionId);
+            // pagination controls
+            const pageInfo = document.getElementById(`page_info_${id}`);
+            if (pagination) {
+              pageInfo.textContent = `Page ${pagination.page} of ${pagination.pages} (${pagination.total})`;
+              document.getElementById(`prev_${id}`).disabled = pagination.page <= 1;
+              document.getElementById(`next_${id}`).disabled = pagination.page >= pagination.pages;
+            }
           }
 
           function bindImageToggles(scope, sectionId) {
@@ -323,6 +330,74 @@
 
           // initial bindings
           const grid = container.querySelector('.images-grid');
+          // pagination + move wiring
+          let currentPage = 1;
+          let pageSize = 24;
+          // add pagination UI inline
+          const pagerHtml = document.createElement('div');
+          pagerHtml.className = 'd-flex align-items-center justify-content-between mt-2';
+          pagerHtml.innerHTML = `
+            <div>
+              <label class="me-2 small">Move selected to:</label>
+              <select id="move_target_${id}" class="form-select form-select-sm d-inline-block" style="width:auto; min-width: 220px;"></select>
+              <button class="btn btn-sm btn-outline-primary ms-2" id="bulk_move_${id}">Move</button>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <select id="img_page_size_${id}" class="form-select form-select-sm" style="width:auto">
+                <option value="12">12</option>
+                <option value="24" selected>24</option>
+                <option value="48">48</option>
+              </select>
+              <button class="btn btn-sm btn-outline-secondary" id="prev_${id}">Prev</button>
+              <span class="small" id="page_info_${id}"></span>
+              <button class="btn btn-sm btn-outline-secondary" id="next_${id}">Next</button>
+            </div>`;
+          container.appendChild(pagerHtml);
+
+          // Load sections for move dropdown
+          async function loadSectionsForMove() {
+            try {
+              const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections?page=1&limit=1000`);
+              const d = await r.json();
+              const sel = document.getElementById(`move_target_${id}`);
+              if (!d.success) { sel.innerHTML = '<option value="">Failed to load</option>'; return; }
+              const sections = d.data.sections || [];
+              sel.innerHTML = sections.map(s => `<option value="${s.id}">${s.title}</option>`).join('');
+            } catch(e) {}
+          }
+          loadSectionsForMove();
+
+          const sizeSel = document.getElementById(`img_page_size_${id}`);
+          sizeSel.addEventListener('change', async () => { pageSize = parseInt(sizeSel.value); currentPage = 1; await reloadPage(); });
+          document.getElementById(`prev_${id}`).addEventListener('click', async () => { if (currentPage>1){ currentPage--; await reloadPage(); } });
+          document.getElementById(`next_${id}`).addEventListener('click', async () => { currentPage++; await reloadPage(); });
+          async function reloadPage(){
+            const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images?page=${currentPage}&limit=${pageSize}`);
+            const d = await r.json();
+            if (!d.success) return;
+            renderImagesGrid(container, id, d.data.images || [], d.data.pagination);
+          }
+          document.getElementById(`bulk_move_${id}`).addEventListener('click', async () => {
+            const sel = document.getElementById(`move_target_${id}`);
+            const target = sel.value;
+            const ids = Array.from(container.querySelectorAll('.select-image:checked')).map(cb => parseInt(cb.value));
+            if (!ids.length || !target) { alert('Select images and a target section'); return; }
+            const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/bulk`, {
+              method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'move', target_section_id: parseInt(target), ids })
+            });
+            const d = await r.json();
+            if (!d.success) { alert(d.message||'Failed to move'); return; }
+            await reloadPage();
+          });
+
+          // initial pagination state
+          (async () => {
+            const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images?page=${currentPage}&limit=${pageSize}`);
+            const d = await r.json();
+            if (d.success) {
+              renderImagesGrid(container, id, d.data.images || [], d.data.pagination);
+            }
+          })();
           const refreshBtn = document.getElementById(`btn_refresh_${id}`);
           refreshBtn.addEventListener('click', async () => {
             const rr = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`);

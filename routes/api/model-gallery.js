@@ -70,8 +70,17 @@ router.get('/:modelSlug/sections', async (req, res) => {
 router.get('/:modelSlug/sections/:id/images', async (req, res) => {
   try {
     const { modelSlug, id } = req.params;
+    const { page = 1, limit = 24 } = req.query;
+    const perPage = Math.max(1, Math.min(100, parseInt(limit)));
+    const currentPage = Math.max(1, parseInt(page));
+    const offset = (currentPage - 1) * perPage;
     const model = await getModelBySlug(modelSlug);
     if (!model) return res.fail(404, 'Model not found');
+    const countRows = await db.query(
+      'SELECT COUNT(*) as total FROM gallery_images WHERE model_id = ? AND section_id = ?',
+      [model.id, parseInt(id)]
+    );
+    const total = countRows[0]?.total || 0;
     const images = await db.query(
       `SELECT 
          gi.id, gi.section_id, gi.model_id, gi.filename, gi.caption, gi.tags, gi.is_active, gi.order_index, gi.created_at, gi.updated_at,
@@ -93,11 +102,12 @@ router.get('/:modelSlug/sections/:id/images', async (req, res) => {
          ) AS blurred_path
        FROM gallery_images gi 
        WHERE gi.model_id = ? AND gi.section_id = ? 
-       ORDER BY gi.order_index ASC, gi.id ASC`,
+       ORDER BY gi.order_index ASC, gi.id ASC
+       LIMIT ${perPage} OFFSET ${offset}`,
       [model.id, parseInt(id)]
     );
-    res.set('Cache-Control', 'private, max-age=10');
-    return res.success({ images });
+    res.set('Cache-Control', 'private, max-age=5');
+    return res.success({ images, pagination: { page: currentPage, limit: perPage, total, pages: Math.ceil(total / perPage) } });
   } catch (error) {
     logger.error('model-gallery.list-images error', { error: error.message });
     return res.fail(500, 'Failed to load images', error.message);
@@ -281,6 +291,13 @@ router.patch('/:modelSlug/images/bulk', async (req, res) => {
       await db.query(
         `DELETE FROM gallery_images WHERE model_id = ? AND id IN (${placeholders})`,
         [model.id, ...idInts]
+      );
+    } else if (action === 'move') {
+      const { target_section_id } = req.body || {};
+      if (!target_section_id) return res.fail(400, 'target_section_id is required for move');
+      await db.query(
+        `UPDATE gallery_images SET section_id = ? WHERE model_id = ? AND id IN (${placeholders})`,
+        [parseInt(target_section_id), model.id, ...idInts]
       );
     } else {
       return res.fail(400, 'Invalid action');
