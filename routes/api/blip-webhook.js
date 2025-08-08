@@ -5,6 +5,7 @@
 
 const express = require('express');
 const router = express.Router();
+const logger = require('../../utils/logger');
 
 // Database connection
 let db;
@@ -31,12 +32,7 @@ router.post('/webhook', async (req, res) => {
         } = req.body;
 
         // Validate required fields
-        if (!batch_id) {
-            return res.status(400).json({
-                success: false,
-                error: 'batch_id is required'
-            });
-        }
+        if (!batch_id) return res.fail(400, 'batch_id is required');
 
         // Find the content moderation record by batch_id
         const findQuery = `
@@ -49,12 +45,8 @@ router.post('/webhook', async (req, res) => {
         const [records] = await db.execute(findQuery, [batch_id, batch_id]);
         
         if (records.length === 0) {
-            console.warn(`⚠️ No content moderation record found for batch_id: ${batch_id}`);
-            return res.status(404).json({
-                success: false,
-                error: 'Content moderation record not found',
-                batch_id: batch_id
-            });
+            logger.warn('blip-webhook: no record for batch_id', { batch_id });
+            return res.fail(404, 'Content moderation record not found', `batch_id=${batch_id}`);
         }
 
         const record = records[0];
@@ -128,28 +120,18 @@ router.post('/webhook', async (req, res) => {
         }
 
         // Log successful processing for audit purposes
-        console.log(`✅ BLIP webhook processed: batch_id=${batch_id}, child_detected=${child_detected}, content_id=${record.id}`);
-
-        // Send success response
-        res.json({
-            success: true,
-            message: 'Child detection status updated successfully',
-            data: {
-                content_moderation_id: record.id,
-                batch_id: batch_id,
-                child_detected: child_detected,
-                previous_value: record.child_detected,
-                updated_fields: Object.keys(updates)
-            }
-        });
+        logger.info('blip-webhook processed', { batch_id, child_detected, content_id: record.id });
+        res.success({
+            content_moderation_id: record.id,
+            batch_id: batch_id,
+            child_detected: child_detected,
+            previous_value: record.child_detected,
+            updated_fields: Object.keys(updates)
+        }, { message: 'Child detection status updated successfully' });
 
     } catch (error) {
-        console.error('❌ BLIP Webhook processing error:', error);
-        res.status(500).json({
-            success: false,
-            error: error.message,
-            timestamp: new Date().toISOString()
-        });
+        logger.error('blip-webhook error', { error: error.message });
+        res.fail(500, 'BLIP Webhook processing error', error.message);
     }
 });
 
@@ -158,8 +140,8 @@ router.post('/webhook', async (req, res) => {
  * Test endpoint to verify webhook is working
  */
 router.get('/test', (req, res) => {
-    res.json({
-        success: true,
+    res.set('Cache-Control', 'no-cache');
+    res.success({
         message: 'BLIP webhook endpoint is working',
         timestamp: new Date().toISOString(),
         endpoint: '/api/blip-webhook'
@@ -170,14 +152,7 @@ router.get('/test', (req, res) => {
  * Catch-all route for unmatched requests
  */
 router.all('*', (req, res) => {
-    res.status(404).json({
-        error: 'Not Found',
-        message: `The requested resource ${req.method} ${req.originalUrl} could not be found.`,
-        available_endpoints: [
-            'POST /api/blip/webhook',
-            'GET /api/blip/test'
-        ]
-    });
+    res.fail(404, 'Not Found', `${req.method} ${req.originalUrl}`);
 });
 
 module.exports = router;

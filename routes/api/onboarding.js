@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../../config/database');
+const logger = require('../../utils/logger');
 const fs = require('fs').promises;
 const path = require('path');
 const bcrypt = require('bcrypt');
@@ -22,16 +23,11 @@ router.get('/business-types', async (req, res) => {
             ORDER BY category, display_name
         `);
         
-        res.json({
-            success: true,
-            data: businessTypes
-        });
+        res.set('Cache-Control', 'private, max-age=60');
+        res.success(businessTypes);
     } catch (error) {
-        console.error('Error fetching business types:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch business types'
-        });
+        logger.error('onboarding.business-types error', { error: error.message });
+        res.fail(500, 'Failed to fetch business types', error.message);
     }
 });
 
@@ -63,16 +59,11 @@ router.get('/page-sets/:businessTypeId', async (req, res) => {
                 END
         `, [businessTypeId]);
         
-        res.json({
-            success: true,
-            data: pageSets
-        });
+        res.set('Cache-Control', 'private, max-age=60');
+        res.success(pageSets);
     } catch (error) {
-        console.error('Error fetching page sets:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch page sets'
-        });
+        logger.error('onboarding.page-sets error', { error: error.message });
+        res.fail(500, 'Failed to fetch page sets', error.message);
     }
 });
 
@@ -119,19 +110,11 @@ router.get('/themes/:businessTypeId', async (req, res) => {
             ORDER BY ts.display_name
         `);
         
-        res.json({
-            success: true,
-            data: {
-                industry_specific: themes,
-                universal: universalThemes
-            }
-        });
+        res.set('Cache-Control', 'private, max-age=60');
+        res.success({ industry_specific: themes, universal: universalThemes });
     } catch (error) {
-        console.error('Error fetching themes:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch themes'
-        });
+        logger.error('onboarding.themes error', { error: error.message });
+        res.fail(500, 'Failed to fetch themes', error.message);
     }
 });
 
@@ -165,10 +148,7 @@ router.post('/complete', async (req, res) => {
 
         // Validate required fields
         if (!model_name || !slug || !business_type_id || !page_set_id || !theme_set_id) {
-            return res.status(400).json({
-                success: false,
-                error: 'Missing required fields'
-            });
+            return res.fail(400, 'Missing required fields');
         }
 
         // Check if slug is already taken
@@ -177,12 +157,7 @@ router.post('/complete', async (req, res) => {
             [slug]
         );
 
-        if (existingModel.length > 0) {
-            return res.status(400).json({
-                success: false,
-                error: 'Slug already exists'
-            });
-        }
+        if (existingModel.length > 0) return res.fail(400, 'Slug already exists');
 
         // Process referral code if provided
         let referrerUserId = null;
@@ -201,7 +176,7 @@ router.post('/complete', async (req, res) => {
                     referrerUserId = referralCode[0].referrer_user_id;
                 }
             } catch (referralError) {
-                console.error('Error processing referral code:', referralError);
+                logger.warn('onboarding.referral lookup failed', { error: referralError.message });
                 // Don't fail onboarding if referral processing fails
             }
         }
@@ -308,7 +283,7 @@ router.post('/complete', async (req, res) => {
                 }
 
             } catch (userError) {
-                console.error('Error creating user account:', userError);
+            logger.warn('onboarding.user create failed', { error: userError.message });
                 // Don't fail onboarding if user creation fails, just log it
                 console.log('Model created successfully but user account creation failed');
             }
@@ -333,16 +308,14 @@ router.post('/complete', async (req, res) => {
             await fs.writeFile(path.join(modelUploadPath, 'README.md'), readmeContent);
             
         } catch (dirError) {
-            console.error('Error creating model directories:', dirError);
+            logger.warn('onboarding.create dirs failed', { error: dirError.message });
             // Don't fail the onboarding if directory creation fails, just log it
         }
 
         // TODO: Initialize default content based on selected page set and business type
         // This will be implemented when we create the content management system integration
 
-        res.json({
-            success: true,
-            data: {
+        res.success({
                 model_id: modelId,
                 user_id: userId,
                 slug: slug,
@@ -354,15 +327,11 @@ router.post('/complete', async (req, res) => {
                 directories_created: true,
                 login_url: `${req.protocol}://${req.get('host')}/login`,
                 website_url: `${req.protocol}://${req.get('host')}/${slug}`
-            }
         });
 
     } catch (error) {
-        console.error('Error completing onboarding:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to complete onboarding'
-        });
+        logger.error('onboarding.complete error', { error: error.message });
+        res.fail(500, 'Failed to complete onboarding', error.message);
     }
 });
 

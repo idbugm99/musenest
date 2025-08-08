@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../../config/database');
+const logger = require('../../utils/logger');
 const { impersonationManager } = require('../../middleware/impersonation');
 
 // Start impersonation session
@@ -11,19 +12,9 @@ router.post('/start', async (req, res) => {
         // In production, this would come from your authentication system
         const adminUserId = req.user?.id || req.session?.userId || 1; // Default to user ID 1 for testing
 
-        if (!adminUserId) {
-            return res.status(401).json({
-                success: false,
-                error: 'Authentication required'
-            });
-        }
+        if (!adminUserId) return res.fail(401, 'Authentication required');
 
-        if (!model_id) {
-            return res.status(400).json({
-                success: false,
-                error: 'Model ID is required'
-            });
-        }
+        if (!model_id) return res.fail(400, 'Model ID is required');
 
         // Get session data for audit logging
         const sessionData = {
@@ -53,24 +44,17 @@ router.post('/start', async (req, res) => {
             sameSite: 'lax'
         });
 
-        res.json({
-            success: true,
-            message: 'Impersonation session started successfully',
-            data: {
-                ...result,
-                destination: destination,
-                redirect_url: destination === 'admin' 
-                    ? `/admin/index.html?model=${result.impersonated_model.slug}`
-                    : `/${result.impersonated_model.slug}`
-            }
-        });
+        res.success({
+            ...result,
+            destination: destination,
+            redirect_url: destination === 'admin' 
+                ? `/admin/index.html?model=${result.impersonated_model.slug}`
+                : `/${result.impersonated_model.slug}`
+        }, { message: 'Impersonation session started successfully' });
 
     } catch (error) {
-        console.error('Error starting impersonation:', error);
-        res.status(400).json({
-            success: false,
-            error: error.message || 'Failed to start impersonation session'
-        });
+        logger.warn('impersonation.start error', { error: error.message });
+        res.fail(400, 'Failed to start impersonation session', error.message);
     }
 });
 
@@ -81,12 +65,7 @@ router.post('/end', async (req, res) => {
                          req.session?.impersonationSessionId || 
                          req.body.session_id;
 
-        if (!sessionId) {
-            return res.status(400).json({
-                success: false,
-                error: 'No active impersonation session found'
-            });
-        }
+        if (!sessionId) return res.fail(400, 'No active impersonation session found');
 
         const result = await impersonationManager.endImpersonation(sessionId, 'manual');
 
@@ -98,18 +77,11 @@ router.post('/end', async (req, res) => {
         // Clear impersonation cookie
         res.clearCookie('impersonation_session');
 
-        res.json({
-            success: true,
-            message: 'Impersonation session ended successfully',
-            data: result
-        });
+        res.success(result, { message: 'Impersonation session ended successfully' });
 
     } catch (error) {
-        console.error('Error ending impersonation:', error);
-        res.status(400).json({
-            success: false,
-            error: error.message || 'Failed to end impersonation session'
-        });
+        logger.warn('impersonation.end error', { error: error.message });
+        res.fail(400, 'Failed to end impersonation session', error.message);
     }
 });
 
@@ -121,32 +93,17 @@ router.post('/generate-token', async (req, res) => {
                          req.session?.impersonationSessionId || 
                          req.headers['x-impersonation-session'];
 
-        if (!sessionId) {
-            return res.status(400).json({
-                success: false,
-                error: 'No active impersonation session found'
-            });
-        }
+        if (!sessionId) return res.fail(400, 'No active impersonation session found');
 
         const status = impersonationManager.getImpersonationStatus(sessionId);
 
-        if (!status) {
-            return res.status(400).json({
-                success: false,
-                error: 'Invalid impersonation session'
-            });
-        }
+        if (!status) return res.fail(400, 'Invalid impersonation session');
 
         // Get the impersonated model's user data
         const impersonationData = impersonationManager.activeImpersonations.get(sessionId);
         const modelId = impersonationData ? impersonationData.impersonated_model_id : null;
         
-        if (!modelId) {
-            return res.status(400).json({
-                success: false,
-                error: 'Invalid impersonation data'
-            });
-        }
+        if (!modelId) return res.fail(400, 'Invalid impersonation data');
 
         const [users] = await db.execute(`
             SELECT u.id, u.email, u.role, u.is_active
@@ -156,29 +113,17 @@ router.post('/generate-token', async (req, res) => {
             WHERE m.id = ? AND mu.role = 'owner' AND mu.is_active = true
         `, [modelId]);
 
-        if (users.length === 0) {
-            return res.status(400).json({
-                success: false,
-                error: 'Impersonated user not found'
-            });
-        }
+        if (users.length === 0) return res.fail(400, 'Impersonated user not found');
 
         // Generate JWT token for the impersonated user
         const { generateToken } = require('../../src/middleware/auth');
         const token = generateToken(users[0]);
 
-        res.json({
-            success: true,
-            token: token,
-            user: users[0]
-        });
+        res.success({ token, user: users[0] });
 
     } catch (error) {
-        console.error('Error generating impersonation token:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to generate impersonation token'
-        });
+        logger.error('impersonation.generate-token error', { error: error.message });
+        res.fail(500, 'Failed to generate impersonation token', error.message);
     }
 });
 
@@ -188,36 +133,17 @@ router.get('/status', async (req, res) => {
                          req.session?.impersonationSessionId || 
                          req.headers['x-impersonation-session'];
 
-        if (!sessionId) {
-            return res.json({
-                success: true,
-                data: { is_impersonating: false }
-            });
-        }
+        if (!sessionId) return res.success({ is_impersonating: false });
 
         const status = impersonationManager.getImpersonationStatus(sessionId);
 
-        if (!status) {
-            return res.json({
-                success: true,
-                data: { is_impersonating: false }
-            });
-        }
+        if (!status) return res.success({ is_impersonating: false });
 
-        res.json({
-            success: true,
-            data: {
-                is_impersonating: true,
-                ...status
-            }
-        });
+        res.success({ is_impersonating: true, ...status });
 
     } catch (error) {
-        console.error('Error getting impersonation status:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to get impersonation status'
-        });
+        logger.error('impersonation.status error', { error: error.message });
+        res.fail(500, 'Failed to get impersonation status', error.message);
     }
 });
 
@@ -370,18 +296,11 @@ router.post('/force-end/:session_id', async (req, res) => {
 
         const result = await impersonationManager.endImpersonation(session_id, reason);
 
-        res.json({
-            success: true,
-            message: 'Impersonation session force-ended successfully',
-            data: result
-        });
+        res.success(result, { message: 'Impersonation session force-ended successfully' });
 
     } catch (error) {
-        console.error('Error force-ending impersonation:', error);
-        res.status(400).json({
-            success: false,
-            error: error.message || 'Failed to force-end impersonation session'
-        });
+        logger.warn('impersonation.force-end error', { error: error.message });
+        res.fail(400, 'Failed to force-end impersonation session', error.message);
     }
 });
 
@@ -430,22 +349,16 @@ router.get('/stats', async (req, res) => {
             LIMIT 10
         `);
 
-        res.json({
-            success: true,
-            data: {
-                active_sessions: activeSessions[0].count,
-                sessions_today: todaySessions[0].count,
-                top_impersonated_models: topModels,
-                admin_activity: adminActivity
-            }
+        res.success({
+            active_sessions: activeSessions[0].count,
+            sessions_today: todaySessions[0].count,
+            top_impersonated_models: topModels,
+            admin_activity: adminActivity
         });
 
     } catch (error) {
-        console.error('Error fetching impersonation stats:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch impersonation statistics'
-        });
+        logger.error('impersonation.stats error', { error: error.message });
+        res.fail(500, 'Failed to fetch impersonation statistics', error.message);
     }
 });
 
@@ -459,30 +372,19 @@ router.get('/validate-permissions/:user_id', async (req, res) => {
             [user_id]
         );
 
-        if (!user.length) {
-            return res.status(404).json({
-                success: false,
-                error: 'User not found'
-            });
-        }
+        if (!user.length) return res.fail(404, 'User not found');
 
         const canImpersonate = user[0].can_impersonate && ['admin', 'sysadmin'].includes(user[0].role);
 
-        res.json({
-            success: true,
-            data: {
-                can_impersonate: canImpersonate,
-                user_role: user[0].role,
-                explicit_permission: user[0].can_impersonate
-            }
+        res.success({
+            can_impersonate: canImpersonate,
+            user_role: user[0].role,
+            explicit_permission: user[0].can_impersonate
         });
 
     } catch (error) {
-        console.error('Error validating permissions:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to validate permissions'
-        });
+        logger.error('impersonation.validate-permissions error', { error: error.message });
+        res.fail(500, 'Failed to validate permissions', error.message);
     }
 });
 

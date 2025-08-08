@@ -8,6 +8,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const router = express.Router();
+const logger = require('../../utils/logger');
 
 // Import the content moderation service
 const ContentModerationService = require('../../src/services/ContentModerationService');
@@ -54,9 +55,7 @@ const upload = multer({
  */
 router.post('/upload', upload.single('image'), async (req, res) => {
     try {
-        if (!req.file) {
-            return res.status(400).json({ error: 'No file uploaded' });
-        }
+        if (!req.file) return res.fail(400, 'No file uploaded');
 
         const {
             model_id,
@@ -75,12 +74,7 @@ router.post('/upload', upload.single('image'), async (req, res) => {
             file: req.file ? req.file.originalname : 'no file'
         });
 
-        if (!model_id || !model_slug) {
-            return res.status(400).json({ 
-                error: 'model_id and model_slug are required',
-                received: { model_id, model_slug }
-            });
-        }
+        if (!model_id || !model_slug) return res.fail(400, 'model_id and model_slug are required');
 
         console.log(`🚀 Processing upload for model ${model_slug} with intent: ${usage_intent}`);
         const processStartTime = Date.now();
@@ -130,21 +124,17 @@ router.post('/upload', upload.single('image'), async (req, res) => {
                 }
             };
             
-            res.json(response);
+            res.success(response.data, { message: response.message });
             console.log('✅ Response sent successfully');
         } else {
             console.log('❌ Sending error response to client...');
-            res.status(500).json({
-                success: false,
-                error: result.error,
-                message: 'Upload processing failed'
-            });
+            res.fail(500, 'Upload processing failed', result.error);
             console.log('✅ Error response sent');
         }
 
     } catch (error) {
-        console.error('Upload error:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('enhanced-cm.upload error', { error: error.message });
+        res.fail(500, 'Upload error', error.message);
     }
 });
 
@@ -157,14 +147,10 @@ router.get('/rules/:usage_intent', async (req, res) => {
         const { usage_intent } = req.params;
         const rules = await moderationService.loadModerationRules(usage_intent);
         
-        res.json({
-            success: true,
-            usage_intent,
-            rules
-        });
+        res.success({ usage_intent, rules });
     } catch (error) {
-        console.error('Error fetching rules:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('enhanced-cm.rules error', { error: error.message });
+        res.fail(500, 'Failed to fetch rules', error.message);
     }
 });
 
@@ -176,11 +162,7 @@ router.post('/appeal', async (req, res) => {
     try {
         const { content_moderation_id, model_id, reason, message } = req.body;
 
-        if (!content_moderation_id || !model_id || !reason) {
-            return res.status(400).json({
-                error: 'content_moderation_id, model_id, and reason are required'
-            });
-        }
+        if (!content_moderation_id || !model_id || !reason) return res.fail(400, 'content_moderation_id, model_id, and reason are required');
 
         const appealId = await moderationService.createAppeal(
             content_moderation_id,
@@ -188,15 +170,11 @@ router.post('/appeal', async (req, res) => {
             { reason, message }
         );
 
-        res.json({
-            success: true,
-            appeal_id: appealId,
-            message: 'Appeal submitted successfully'
-        });
+        res.success({ appeal_id: appealId }, { message: 'Appeal submitted successfully' });
 
     } catch (error) {
-        console.error('Appeal error:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('enhanced-cm.appeal error', { error: error.message });
+        res.fail(500, 'Appeal error', error.message);
     }
 });
 
@@ -315,15 +293,11 @@ router.get('/admin/queue', async (req, res) => {
             };
         });
         
-        res.json({
-            success: true,
-            queue: processedResults,
-            total: processedResults.length
-        });
+        res.success({ queue: processedResults, total: processedResults.length });
         
     } catch (error) {
-        console.error('Queue fetch error:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('enhanced-cm.queue error', { error: error.message });
+        res.fail(500, 'Queue fetch error', error.message);
     }
 });
 
@@ -372,12 +346,7 @@ router.get('/admin/queue-item/:id', async (req, res) => {
         
         const [results] = await db.execute(query, [id]);
         
-        if (results.length === 0) {
-            return res.status(404).json({ 
-                success: false, 
-                error: 'Queue item not found or not flagged' 
-            });
-        }
+        if (results.length === 0) return res.fail(404, 'Queue item not found or not flagged');
         
         const item = results[0];
         
@@ -425,13 +394,10 @@ router.get('/admin/queue-item/:id', async (req, res) => {
         
         console.log('Queue item loaded:', item);
         
-        res.json({
-            success: true,
-            item: item
-        });
+        res.success({ item });
     } catch (error) {
-        console.error('❌ Error loading queue item:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('enhanced-cm.queue-item error', { error: error.message });
+        res.fail(500, 'Queue item error', error.message);
     }
 });
 
@@ -448,11 +414,7 @@ router.post('/admin/approve-with-blur', async (req, res) => {
             reviewed_by 
         } = req.body;
 
-        if (!content_moderation_id || !reviewed_by) {
-            return res.status(400).json({
-                error: 'content_moderation_id and reviewed_by are required'
-            });
-        }
+        if (!content_moderation_id || !reviewed_by) return res.fail(400, 'content_moderation_id and reviewed_by are required');
 
         await moderationService.approveWithBlur(
             content_moderation_id,
@@ -461,14 +423,11 @@ router.post('/admin/approve-with-blur', async (req, res) => {
             reviewed_by
         );
 
-        res.json({
-            success: true,
-            message: 'Content approved with blur settings'
-        });
+        res.success({}, { message: 'Content approved with blur settings' });
 
     } catch (error) {
-        console.error('Approve with blur error:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('enhanced-cm.approve-with-blur error', { error: error.message });
+        res.fail(500, 'Approve with blur error', error.message);
     }
 });
 
@@ -480,11 +439,7 @@ router.post('/admin/approve', async (req, res) => {
     try {
         const { content_moderation_id, admin_notes, reviewed_by, final_location } = req.body;
 
-        if (!content_moderation_id || !reviewed_by) {
-            return res.status(400).json({
-                error: 'content_moderation_id and reviewed_by are required'
-            });
-        }
+        if (!content_moderation_id || !reviewed_by) return res.fail(400, 'content_moderation_id and reviewed_by are required');
 
         const updateQuery = `
             UPDATE content_moderation 
@@ -511,14 +466,11 @@ router.post('/admin/approve', async (req, res) => {
             [content_moderation_id]
         );
 
-        res.json({
-            success: true,
-            message: 'Content approved successfully'
-        });
+        res.success({}, { message: 'Content approved successfully' });
 
     } catch (error) {
-        console.error('Approve error:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('enhanced-cm.approve error', { error: error.message });
+        res.fail(500, 'Approve error', error.message);
     }
 });
 
@@ -530,11 +482,7 @@ router.post('/admin/reject', async (req, res) => {
     try {
         const { content_moderation_id, admin_notes, reviewed_by } = req.body;
 
-        if (!content_moderation_id || !reviewed_by) {
-            return res.status(400).json({
-                error: 'content_moderation_id and reviewed_by are required'
-            });
-        }
+        if (!content_moderation_id || !reviewed_by) return res.fail(400, 'content_moderation_id and reviewed_by are required');
 
         const updateQuery = `
             UPDATE content_moderation 
@@ -559,14 +507,11 @@ router.post('/admin/reject', async (req, res) => {
             [content_moderation_id]
         );
 
-        res.json({
-            success: true,
-            message: 'Content rejected'
-        });
+        res.success({}, { message: 'Content rejected' });
 
     } catch (error) {
-        console.error('Reject error:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('enhanced-cm.reject error', { error: error.message });
+        res.fail(500, 'Reject error', error.message);
     }
 });
 
@@ -602,15 +547,11 @@ router.get('/model/:model_id/status', async (req, res) => {
         
         const [results] = await db.execute(query, params);
         
-        res.json({
-            success: true,
-            model_id,
-            status_summary: results
-        });
+        res.success({ model_id, status_summary: results });
         
     } catch (error) {
-        console.error('Status fetch error:', error);
-        res.status(500).json({ error: error.message });
+        logger.error('enhanced-cm.status error', { error: error.message });
+        res.fail(500, 'Status fetch error', error.message);
     }
 });
 
