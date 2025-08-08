@@ -9,6 +9,7 @@ const path = require('path');
 const fs = require('fs').promises;
 const router = express.Router();
 const db = require('../../config/database');
+const logger = require('../../utils/logger');
 
 // Import the watermark service (will be created)
 let AdminWatermarkService = null;
@@ -31,17 +32,11 @@ router.get('/:id/:type?', async (req, res) => {
 
         // Validate parameters
         if (!contentId || isNaN(contentId)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Invalid content ID'
-            });
+            return res.fail(400, 'Invalid content ID');
         }
 
         if (!['thumbnail', 'full', 'lightbox'].includes(previewType)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Invalid preview type. Must be: thumbnail, full, or lightbox'
-            });
+            return res.fail(400, 'Invalid preview type. Must be: thumbnail, full, or lightbox');
         }
 
         // Get content info from database
@@ -60,12 +55,7 @@ router.get('/:id/:type?', async (req, res) => {
             WHERE cm.id = ?
         `, [contentId]);
 
-        if (contentInfo.length === 0) {
-            return res.status(404).json({
-                success: false,
-                error: 'Content not found'
-            });
-        }
+        if (contentInfo.length === 0) return res.fail(404, 'Content not found');
 
         const content = contentInfo[0];
 
@@ -106,7 +96,7 @@ router.get('/:id/:type?', async (req, res) => {
                 });
                 return res.send(imageBuffer);
             } else {
-                console.error('Watermark generation failed:', result.error);
+                logger.warn('media-preview watermark generation failed', { error: result.error });
                 // Fall through to basic serving
             }
         }
@@ -120,11 +110,7 @@ router.get('/:id/:type?', async (req, res) => {
         try {
             await fs.access(imagePath);
         } catch (fileError) {
-            return res.status(404).json({
-                success: false,
-                error: 'Image file not found on disk',
-                path: imagePath
-            });
+            return res.fail(404, 'Image file not found on disk', imagePath);
         }
 
         // Log preview access for audit
@@ -154,14 +140,10 @@ router.get('/:id/:type?', async (req, res) => {
         const imageBuffer = await fs.readFile(imagePath);
         res.send(imageBuffer);
 
-    } catch (error) {
-        console.error('Media preview error:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to generate preview',
-            details: error.message
-        });
-    }
+        } catch (error) {
+            logger.error('media-preview error', { error: error.message });
+            res.fail(500, 'Failed to generate preview', error.message);
+        }
 });
 
 /**
