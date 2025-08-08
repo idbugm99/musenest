@@ -703,7 +703,7 @@ class ClientManagement {
                 ...this.currentFilters
             });
             
-            const response = await fetch(`/api/system-management/clients?${params}`);
+            const response = await sysFetch(`/api/system-management/clients?${params}`);
             const result = await response.json();
             
             if (result.success) {
@@ -718,7 +718,7 @@ class ClientManagement {
     
     async loadClientMetrics() {
         try {
-            const response = await fetch('/api/system-management/stats');
+            const response = await sysFetch('/api/system-management/stats');
             const result = await response.json();
             
             if (result.success) {
@@ -733,7 +733,7 @@ class ClientManagement {
             }
             
             // Load subscription analytics for revenue metrics
-            const analyticsResponse = await fetch('/api/site-configuration/subscription/analytics');
+            const analyticsResponse = await sysFetch('/api/site-configuration/subscription/analytics');
             const analyticsResult = await analyticsResponse.json();
             
             if (analyticsResult.success) {
@@ -843,7 +843,7 @@ class ClientManagement {
     
     async viewClient(clientId) {
         try {
-            const response = await fetch(`/api/system-management/clients/${clientId}`);
+            const response = await sysFetch(`/api/system-management/clients/${clientId}`);
             const result = await response.json();
             
             if (result.success) {
@@ -990,7 +990,7 @@ class ClientManagement {
         this.showSaveIndicator(indicator, 'saving');
         
         try {
-            const response = await fetch(`${endpoint}/${resourceId}`, {
+            const response = await sysFetch(`${endpoint}/${resourceId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1234,7 +1234,7 @@ class ClientManagement {
         }
         
         try {
-            const response = await fetch(`/api/system-management/clients/${clientId}`, {
+            const response = await sysFetch(`/api/system-management/clients/${clientId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -1270,7 +1270,7 @@ class ClientManagement {
 
 // Global functions
 function exportClients() {
-    window.open('/api/system-management/clients/export/csv', '_blank');
+    window.open(SysadminApi.rewritePath('/api/system-management/clients/export/csv'), '_blank');
 }
 
 function bulkImport() {
@@ -1634,7 +1634,7 @@ class ClientManagement {
         try {
             tableBody.innerHTML = '<tr><td colspan="8" class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading clients...</td></tr>';
             
-            const response = await fetch('/api/clients?' + new URLSearchParams({
+            const response = await sysFetch('/api/clients?' + new URLSearchParams({
                 page: this.currentPage,
                 limit: this.pageSize,
                 search: this.searchQuery,
@@ -1740,7 +1740,7 @@ class ClientManagement {
         }
         
         try {
-            const response = await fetch(`/api/system-management/clients/${clientId}`, {
+            const response = await sysFetch(`/api/system-management/clients/${clientId}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' }
             });
