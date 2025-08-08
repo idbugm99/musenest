@@ -122,18 +122,29 @@
                 <input type="file" id="file_upload_${id}" accept="image/*" style="display:none" />
               </label>
               <button class="btn btn-sm btn-primary" id="btn_add_${id}" data-id="${id}"><i class=\"fas fa-plus\"></i> Add</button>
+              <button class="btn btn-sm btn-outline-secondary" id="btn_refresh_${id}" data-id="${id}"><i class=\"fas fa-rotate\"></i> Refresh</button>
             </div>
             <div class="row row-cols-2 row-cols-md-3 g-2 images-grid" data-section-id="${id}">
               ${images.map((img, idx) => `
                 <div class="col">
                   <div class="border rounded p-2 draggable-card" draggable="true" data-id="${img.id}" data-index="${idx}">
                     <div class="d-flex align-items-center justify-content-between">
-                      <div class="small text-truncate" title="${img.filename}">
-                        <i class=\"fas fa-grip-vertical me-1 text-muted\"></i>${img.filename}
+                      <div class="d-flex align-items-center text-truncate" title="${img.filename}" style="min-width:0">
+                        <img src="${(img.moderation_status === 'approved_blurred' && img.blurred_path ? (img.blurred_path.startsWith('/') ? img.blurred_path : '/uploads/${slug}/public/blurred/' + img.filename) : (img.filename && img.filename.startsWith('/') ? img.filename : '/uploads/${slug}/public/gallery/' + img.filename))}" alt="thumb" class="me-2" style="width:48px;height:48px;object-fit:cover;border-radius:4px" onerror="this.style.visibility='hidden'" />
+                        <span class="small text-truncate"><i class=\"fas fa-grip-vertical me-1 text-muted\"></i>${img.filename}</span>
                       </div>
-                      <button class="btn btn-sm btn-outline-secondary btn-toggle-image" data-id="${img.id}" data-active="${img.is_active ? 1 : 0}">${img.is_active ? 'Hide' : 'Show'}</button>
+                      <div class="d-flex align-items-center">
+                        <span class="badge ${statusBadgeClass(img.moderation_status)} me-2">${img.moderation_status || 'pending'}</span>
+                        <button class="btn btn-sm btn-outline-secondary btn-toggle-image" data-id="${img.id}" data-active="${img.is_active ? 1 : 0}">${img.is_active ? 'Hide' : 'Show'}</button>
+                      </div>
                     </div>
-                    <div class="text-muted small mt-1">${img.is_active ? 'Visible' : 'Hidden'}</div>
+                    <div class="mt-2">
+                      <input class="form-control form-control-sm mb-1 input-caption" data-id="${img.id}" placeholder="Caption" value="${(img.caption||'').replace(/\"/g,'&quot;')}" />
+                      <div class="d-flex align-items-center justify-content-between">
+                        <input class="form-control form-control-sm me-2 input-tags" data-id="${img.id}" placeholder="tags (comma)" value="${(img.tags||'').replace(/\"/g,'&quot;')}" />
+                        <span class="text-muted small">${img.is_active ? 'Visible' : 'Hidden'}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               `).join('')}
@@ -297,6 +308,13 @@
 
           // initial bindings
           const grid = container.querySelector('.images-grid');
+          const refreshBtn = document.getElementById(`btn_refresh_${id}`);
+          refreshBtn.addEventListener('click', async () => {
+            const rr = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`);
+            const dd = await rr.json();
+            if (!dd.success) return;
+            renderImagesGrid(container, id, dd.data.images || []);
+          });
           bindImageToggles(grid, id);
           bindDragAndDrop(grid, id);
 
