@@ -14,12 +14,20 @@ router.get('/:modelSlug/pages', async (req, res) => {
     const { modelSlug } = req.params;
     const model = await getModelBySlug(modelSlug);
     if (!model) return res.fail(404, 'Model not found');
-    const rows = await db.query(
+    const defRows = await db.query(
+      'SELECT DISTINCT page_type_id FROM content_field_definitions WHERE model_id IS NULL OR model_id = ? ORDER BY page_type_id ASC',
+      [model.id]
+    );
+    const tplRows = await db.query(
       'SELECT DISTINCT page_type_id FROM content_templates WHERE model_id = ? ORDER BY page_type_id ASC',
       [model.id]
     );
-    const defaults = [1,2,3,4,5];
-    const ids = rows.length ? rows.map(r => r.page_type_id) : defaults;
+    const set = new Set();
+    defRows.forEach(r => set.add(r.page_type_id));
+    tplRows.forEach(r => set.add(r.page_type_id));
+    let ids = Array.from(set);
+    if (ids.length === 0) ids = [1,2,3,5,16]; // sensible defaults
+    ids.sort((a,b)=>a-b);
     return res.success({ pages: ids });
   } catch (error) {
     logger.error('model-content.list-pages error', { error: error.message });
@@ -33,20 +41,62 @@ router.get('/:modelSlug/pages/:pageTypeId', async (req, res) => {
     const { modelSlug, pageTypeId } = req.params;
     const model = await getModelBySlug(modelSlug);
     if (!model) return res.fail(404, 'Model not found');
-    const rows = await db.query(
-      `SELECT ct.content_key, ct.content_value, ct.content_type,
-              COALESCE(cfd.label, ct.content_key) AS label,
-              COALESCE(cfd.input_type, ct.content_type) AS input_type,
-              cfd.help_text, cfd.is_required
-       FROM content_templates ct
-       LEFT JOIN content_field_definitions cfd
-         ON (cfd.model_id IS NULL OR cfd.model_id = ct.model_id)
-        AND cfd.page_type_id = ct.page_type_id
-        AND cfd.content_key = ct.content_key
-       WHERE ct.model_id = ? AND ct.page_type_id = ?
-       ORDER BY ct.content_key ASC`,
-      [model.id, parseInt(pageTypeId)]
+    const pid = parseInt(pageTypeId);
+    // Prefer definitions-first so pages render even without existing content rows
+    let rows = await db.query(
+      `SELECT 
+         cfd.content_key,
+         COALESCE(ct.content_value, '') AS content_value,
+         COALESCE(cfd.input_type, ct.content_type, 'text') AS input_type,
+         COALESCE(cfd.label, cfd.content_key) AS label,
+         cfd.help_text,
+         cfd.is_required,
+         cfd.group_label,
+         cfd.section_order,
+         cfd.field_order,
+         cfd.options_json
+       FROM content_field_definitions cfd
+       LEFT JOIN content_templates ct
+         ON ct.model_id = ? AND ct.page_type_id = cfd.page_type_id AND ct.content_key = cfd.content_key
+       WHERE (cfd.model_id IS NULL OR cfd.model_id = ?)
+         AND cfd.page_type_id = ?
+       ORDER BY cfd.section_order ASC, cfd.field_order ASC, cfd.content_key ASC`,
+      [model.id, model.id, pid]
     );
+    // If definitions exist, also include any extra saved keys that don't yet have a definition
+    if (rows.length) {
+      const defKeys = new Set(rows.map(r => r.content_key));
+      const extra = await db.query(
+        `SELECT ct.content_key,
+                ct.content_value,
+                ct.content_type AS input_type,
+                ct.content_key AS label,
+                NULL AS help_text,
+                0 AS is_required,
+                NULL AS group_label,
+                999 AS section_order,
+                999 AS field_order,
+                NULL AS options_json
+         FROM content_templates ct
+         WHERE ct.model_id = ? AND ct.page_type_id = ?`,
+        [model.id, pid]
+      );
+      for (const r of extra) {
+        if (!defKeys.has(r.content_key)) rows.push(r);
+      }
+    }
+    // Fallback: if no definitions at all, return whatever exists as before
+    if (!rows.length) {
+      rows = await db.query(
+        `SELECT ct.content_key, ct.content_value, ct.content_type AS input_type,
+                ct.content_key AS label, NULL AS help_text, 0 AS is_required,
+                NULL AS group_label, 0 AS section_order, 0 AS field_order, NULL AS options_json
+         FROM content_templates ct
+         WHERE ct.model_id = ? AND ct.page_type_id = ?
+         ORDER BY ct.content_key ASC`,
+        [model.id, pid]
+      );
+    }
     res.set('Cache-Control', 'private, max-age=10');
     return res.success({ items: rows });
   } catch (error) {

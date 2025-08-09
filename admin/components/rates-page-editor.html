@@ -1,0 +1,478 @@
+<!-- Rates Page Content Editor - Database-Aligned -->
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-2 text-gray-800">
+                        <i class="fas fa-dollar-sign text-success me-2"></i>
+                        Rates Page Content Editor
+                    </h1>
+                    <p class="text-muted mb-0">Configure your pricing and booking policies</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input auto-save-field" type="checkbox" id="page_published" data-field="page_published">
+                        <label class="form-check-label fw-bold text-warning" for="page_published" id="publish-label">
+                            <i class="fas fa-eye-slash me-1"></i>Draft
+                        </label>
+                    </div>
+                    <a href="#" onclick="window.history.back()" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Content Hub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auto-save Status -->
+    <div id="auto-save-status" class="alert alert-info d-none">
+        <i class="fas fa-spinner fa-spin me-2"></i>
+        <span id="save-status-text">Saving...</span>
+    </div>
+
+    <!-- Header + Tables Section -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-gradient-success text-white">
+            <h4 class="mb-0">
+                <i class="fas fa-tags me-2"></i>Pricing & Policies
+            </h4>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <!-- Page Header (stored in content_templates page_type 5) -->
+                <div class="col-12 col-xl-4">
+                    <div class="bg-light rounded p-3 h-100">
+                        <h5 class="text-success mb-3"><i class="fas fa-heading me-2"></i>Page Header</h5>
+                        <div class="enhanced-field mb-3">
+                            <label class="form-label fw-bold">Page Title</label>
+                            <input type="text" class="form-control ct-field" data-ct-key="page_title" placeholder="Rates & Investment">
+                            <div class="save-status mt-1" data-ct-status="page_title"></div>
+                        </div>
+                        <div class="enhanced-field mb-3">
+                            <label class="form-label fw-bold">Introduction Text</label>
+                            <textarea class="form-control ct-field" data-ct-key="rates_intro" rows="4" placeholder="Intro paragraph"></textarea>
+                            <div class="save-status mt-1" data-ct-status="rates_intro"></div>
+                        </div>
+                        <div class="alert alert-secondary small mb-0">Header fields autosave. Rates/terms are managed in the tables.</div>
+                    </div>
+                </div>
+                
+                <!-- Incall Rates Table -->
+                <div class="col-12 col-xl-8">
+                    <div class="border rounded p-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0 text-primary"><i class="fas fa-building me-2"></i>Incall Rates</h5>
+                            <div class="d-flex gap-2">
+                                <input class="form-control form-control-sm" placeholder="Service" id="incall_service">
+                                <input class="form-control form-control-sm" placeholder="Duration" id="incall_duration">
+                                <input class="form-control form-control-sm" placeholder="Price" id="incall_price">
+                                <button class="btn btn-sm btn-primary" id="add_incall">Add</button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle" id="table_incall">
+                                <thead><tr><th>Service</th><th>Duration</th><th>Price</th><th>Visible</th><th>Order</th><th></th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Outcall -->
+                    <div class="border rounded p-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0 text-primary"><i class="fas fa-car-side me-2"></i>Outcall Rates</h5>
+                            <div class="d-flex gap-2">
+                                <input class="form-control form-control-sm" placeholder="Service" id="outcall_service">
+                                <input class="form-control form-control-sm" placeholder="Duration" id="outcall_duration">
+                                <input class="form-control form-control-sm" placeholder="Price" id="outcall_price">
+                                <button class="btn btn-sm btn-primary" id="add_outcall">Add</button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle" id="table_outcall">
+                                <thead><tr><th>Service</th><th>Duration</th><th>Price</th><th>Visible</th><th>Order</th><th></th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Extended -->
+                    <div class="border rounded p-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0 text-primary"><i class="fas fa-hourglass-half me-2"></i>Extended Engagements</h5>
+                            <div class="d-flex gap-2">
+                                <input class="form-control form-control-sm" placeholder="Service" id="extended_service">
+                                <input class="form-control form-control-sm" placeholder="Duration" id="extended_duration">
+                                <input class="form-control form-control-sm" placeholder="Price" id="extended_price">
+                                <button class="btn btn-sm btn-primary" id="add_extended">Add</button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle" id="table_extended">
+                                <thead><tr><th>Service</th><th>Duration</th><th>Price</th><th>Visible</th><th>Order</th><th></th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Terms -->
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 h-100">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h5 class="mb-0 text-warning"><i class="fas fa-credit-card me-2"></i>Payment & Booking</h5>
+                                    <div class="input-group input-group-sm" style="max-width: 380px;">
+                                        <input class="form-control" placeholder="Add term" id="payment_term_text">
+                                        <button class="btn btn-warning" id="add_payment_term">Add</button>
+                                    </div>
+                                </div>
+                                <ul class="list-group list-group-flush small" id="list_payment"></ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 h-100">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h5 class="mb-0 text-secondary"><i class="fas fa-plus me-2"></i>Additional Services</h5>
+                                    <div class="input-group input-group-sm" style="max-width: 380px;">
+                                        <input class="form-control" placeholder="Add term" id="additional_term_text">
+                                        <button class="btn btn-secondary" id="add_additional_term">Add</button>
+                                    </div>
+                                </div>
+                                <ul class="list-group list-group-flush small" id="list_additional"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS -->
+<style>
+.bg-gradient-success {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.enhanced-field {
+    position: relative;
+}
+
+.save-status {
+    min-height: 1.2rem;
+    font-size: 0.75rem;
+}
+
+.save-status.saving {
+    color: #007bff;
+}
+
+.save-status.saved {
+    color: #28a745;
+}
+
+.save-status.error {
+    color: #dc3545;
+}
+
+.auto-save-field:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ratesPageEditor = {
+        currentModelSlug: null,
+        saveTimeout: null,
+        isLoading: false,
+        data: { incall: [], outcall: [], extended: [], payment: [], additional: [] },
+        
+        init() {
+            this.extractModelSlug();
+            this.loadHeader();
+            this.loadTables();
+            this.bindHeaderAutosave();
+        },
+        
+        extractModelSlug() {
+            const pathParts = window.location.pathname.split('/');
+            this.currentModelSlug = pathParts[1];
+            console.log('Editing rates page for model:', this.currentModelSlug);
+        },
+        
+        async loadHeader() {
+            this.showLoading();
+            
+            try {
+                const response = await fetch(`/api/model-content/${this.currentModelSlug}/pages/5`);
+                const data = await response.json();
+                const items = (data && (data.items || (data.data && data.data.items))) || [];
+                const content = {};
+                items.forEach(i => content[i.content_key] = i.content_value);
+                this.populateHeader(content);
+            } catch (error) {
+                console.error('Error loading rates page content:', error);
+                this.showError('Failed to load content');
+            } finally {
+                this.hideLoading();
+            }
+        },
+        async loadTables(){
+            try{
+                const r = await fetch(`/api/model-rates/${this.currentModelSlug}`);
+                const d = await r.json();
+                if (d.success){
+                    this.data = d.data;
+                    this.renderTables();
+                }
+            }catch(e){ console.error('Failed to load rates tables', e); }
+        },
+        
+        populateHeader(content) {
+            for (const [field, value] of Object.entries(content)) {
+                const element = document.querySelector(`[data-ct-key="${field}"]`) || document.getElementById(field);
+                if (element) {
+                    if (element.type === 'checkbox') {
+                        const isChecked = value === true || value === 1 || value === '1';
+                        element.checked = isChecked;
+                        
+                        if (field === 'page_published') {
+                            this.updatePublishStatus(isChecked);
+                        }
+                    } else {
+                        element.value = value || '';
+                    }
+                }
+            }
+        },
+        
+        bindHeaderAutosave() {
+            const fields = document.querySelectorAll('.ct-field');
+            fields.forEach(field => {
+                const key = field.dataset.ctKey;
+                const statusEl = document.querySelector(`[data-ct-status="${key}"]`);
+                const save = async () => {
+                    if (statusEl){ statusEl.textContent = 'Saving...'; statusEl.className = 'save-status saving'; }
+                    const value = field.value;
+                    await fetch(`/api/model-content/${this.currentModelSlug}/pages/5/${encodeURIComponent(key)}`, {
+                        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content_value: value })
+                    }).then(r=>r.json()).then(d => {
+                        if (statusEl){ statusEl.textContent = d.success ? 'Saved' : 'Error'; statusEl.className = 'save-status ' + (d.success ? 'saved':'error'); }
+                    }).catch(()=>{ if (statusEl){ statusEl.textContent = 'Error'; statusEl.className = 'save-status error'; }});
+                };
+                field.addEventListener('input', () => { clearTimeout(this.saveTimeout); this.saveTimeout = setTimeout(save, 800); });
+                field.addEventListener('change', save);
+            });
+            
+            // Bind publish toggle auto-save
+            const publishToggle = document.getElementById('page_published');
+            if (publishToggle) {
+                const savePublish = async () => {
+                    const value = publishToggle.checked ? 1 : 0;
+                    this.updatePublishStatus(publishToggle.checked);
+                    await fetch(`/api/model-content/${this.currentModelSlug}/pages/5/page_published`, {
+                        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content_value: value })
+                    });
+                };
+                publishToggle.addEventListener('change', savePublish);
+            }
+        },
+        
+        updatePublishStatus(isPublished) {
+            const label = document.getElementById('publish-label');
+            if (label) {
+                if (isPublished) {
+                    label.innerHTML = '<i class="fas fa-eye me-1"></i>Published';
+                    label.className = 'form-check-label fw-bold text-success';
+                } else {
+                    label.innerHTML = '<i class="fas fa-eye-slash me-1"></i>Draft';
+                    label.className = 'form-check-label fw-bold text-warning';
+                }
+            }
+        },
+        
+        scheduleAutoSave(field) {
+            const fieldName = field.dataset.field;
+            const statusElement = field.closest('.enhanced-field')?.querySelector('.save-status');
+            
+            if (statusElement) {
+                statusElement.textContent = 'Editing...';
+                statusElement.className = 'save-status saving';
+            }
+            
+            if (this.saveTimeout) {
+                clearTimeout(this.saveTimeout);
+            }
+            
+            this.saveTimeout = setTimeout(() => {
+                this.saveField(field);
+            }, 1500);
+        },
+        
+        async saveField(field) {
+            const fieldName = field.dataset.field;
+            const statusElement = field.closest('.enhanced-field')?.querySelector('.save-status');
+            let value;
+            
+            if (field.type === 'checkbox') {
+                value = field.checked ? 1 : 0;
+            } else {
+                value = field.value;
+            }
+            
+            if (statusElement) {
+                statusElement.textContent = 'Saving...';
+                statusElement.className = 'save-status saving';
+            }
+            
+            try {
+                const response = await fetch(`/api/model-rates/${this.currentModelSlug}/${field.dataset.action}`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(value)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    if (statusElement) {
+                        statusElement.textContent = 'Saved';
+                        statusElement.className = 'save-status saved';
+                        
+                        setTimeout(() => {
+                            statusElement.textContent = '';
+                            statusElement.className = 'save-status';
+                        }, 3000);
+                    }
+                } else {
+                    throw new Error(result.message || 'Save failed');
+                }
+                
+            } catch (error) {
+                console.error('Save error:', error);
+                
+                if (statusElement) {
+                    statusElement.textContent = 'Save failed';
+                    statusElement.className = 'save-status error';
+                }
+            }
+        },
+
+        renderTables(){
+            const fill = (tbodyId, list, type) => {
+                const tbody = document.querySelector(`#${tbodyId} tbody`);
+                tbody.innerHTML = (list||[]).map(r => `
+                  <tr data-id="${r.id}">
+                    <td><input class="form-control form-control-sm rate-input" data-field="service_name" value="${r.service_name||''}"></td>
+                    <td><input class="form-control form-control-sm rate-input" data-field="duration" value="${r.duration||''}"></td>
+                    <td><input class="form-control form-control-sm rate-input" data-field="price" value="${r.price||''}"></td>
+                    <td><input type="checkbox" class="form-check-input rate-input" data-field="is_visible" ${r.is_visible? 'checked':''}></td>
+                    <td style="width:90px"><input type="number" class="form-control form-control-sm rate-input" data-field="sort_order" value="${r.sort_order||0}"></td>
+                    <td class="text-end"><button class="btn btn-sm btn-outline-danger btn-del">Delete</button></td>
+                  </tr>`).join('');
+                // bind change
+                tbody.querySelectorAll('.rate-input').forEach(input => {
+                    input.addEventListener('change', async (e) => {
+                        const tr = input.closest('tr');
+                        const id = tr.dataset.id;
+                        const field = input.dataset.field;
+                        const val = input.type === 'checkbox' ? (input.checked ? 1 : 0) : input.value;
+                        await fetch(`/api/model-rates/${this.currentModelSlug}/rate/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ [field]: val })});
+                    });
+                });
+                tbody.querySelectorAll('.btn-del').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const tr = btn.closest('tr');
+                        const id = tr.dataset.id;
+                        await fetch(`/api/model-rates/${this.currentModelSlug}/rate/${id}`, { method: 'DELETE' });
+                        tr.remove();
+                    });
+                });
+            };
+            fill('table_incall', this.data.incall, 'incall');
+            fill('table_outcall', this.data.outcall, 'outcall');
+            fill('table_extended', this.data.extended, 'extended');
+
+            const fillTerms = (ulId, terms, category) => {
+                const ul = document.getElementById(ulId);
+                ul.innerHTML = (terms||[]).map(t => `
+                  <li class="list-group-item d-flex align-items-center justify-content-between" data-id="${t.id}">
+                    <input class="form-control form-control-sm me-2 term-input" value="${t.term_text}" style="flex:1">
+                    <input type="number" class="form-control form-control-sm me-2 term-input" data-field="sort_order" value="${t.sort_order||0}" style="width:90px">
+                    <div class="form-check form-switch me-2"><input class="form-check-input term-input" type="checkbox" data-field="is_visible" ${t.is_visible? 'checked':''}></div>
+                    <button class="btn btn-sm btn-outline-danger btn-del-term">Delete</button>
+                  </li>`).join('');
+                ul.querySelectorAll('.term-input').forEach(input => {
+                    input.addEventListener('change', async () => {
+                        const li = input.closest('li');
+                        const id = li.dataset.id;
+                        const field = input.dataset.field || 'term_text';
+                        const val = input.type === 'checkbox' ? (input.checked ? 1 : 0) : input.value;
+                        await fetch(`/api/model-rates/${this.currentModelSlug}/term/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ [field]: val })});
+                    });
+                });
+                ul.querySelectorAll('.btn-del-term').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const li = btn.closest('li');
+                        const id = li.dataset.id;
+                        await fetch(`/api/model-rates/${this.currentModelSlug}/term/${id}`, { method: 'DELETE' });
+                        li.remove();
+                    });
+                });
+            };
+            fillTerms('list_payment', this.data.payment, 'payment');
+            fillTerms('list_additional', this.data.additional, 'additional');
+
+            // Adders
+            document.getElementById('add_incall').onclick = () => this.createRate('incall');
+            document.getElementById('add_outcall').onclick = () => this.createRate('outcall');
+            document.getElementById('add_extended').onclick = () => this.createRate('extended');
+            document.getElementById('add_payment_term').onclick = () => this.createTerm('payment');
+            document.getElementById('add_additional_term').onclick = () => this.createTerm('additional');
+        },
+
+        async createRate(rate_type){
+            const s = document.getElementById(`${rate_type}_service`).value;
+            const d = document.getElementById(`${rate_type}_duration`).value;
+            const p = document.getElementById(`${rate_type}_price`).value;
+            await fetch(`/api/model-rates/${this.currentModelSlug}/rate`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ rate_type, service_name: s, duration: d, price: p })});
+            this.loadTables();
+        },
+        async createTerm(category){
+            const t = document.getElementById(`${category}_term_text`).value;
+            if (!t) return;
+            await fetch(`/api/model-rates/${this.currentModelSlug}/term`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ category, term_text: t })});
+            this.loadTables();
+        },
+        
+        showLoading() {
+            this.isLoading = true;
+            const statusEl = document.getElementById('auto-save-status');
+            const statusText = document.getElementById('save-status-text');
+            
+            statusText.textContent = 'Loading content...';
+            statusEl.classList.remove('d-none', 'alert-success', 'alert-danger');
+            statusEl.classList.add('alert-info');
+        },
+        
+        hideLoading() {
+            this.isLoading = false;
+            const statusEl = document.getElementById('auto-save-status');
+            statusEl.classList.add('d-none');
+        },
+        
+        showError(message) {
+            const statusEl = document.getElementById('auto-save-status');
+            const statusText = document.getElementById('save-status-text');
+            
+            statusText.textContent = message;
+            statusEl.classList.remove('d-none', 'alert-info', 'alert-success');
+            statusEl.classList.add('alert-danger');
+            
+            setTimeout(() => {
+                statusEl.classList.add('d-none');
+            }, 5000);
+        }
+    };
+    
+    ratesPageEditor.init();
+});
+</script>

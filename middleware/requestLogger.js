@@ -12,7 +12,10 @@ function shouldSkipLogging(pathname) {
     pathname.startsWith('/js/') ||
     pathname.startsWith('/admin/assets') ||
     pathname.startsWith('/admin/js') ||
-    pathname.startsWith('/uploads/')
+    pathname.startsWith('/uploads/') ||
+    // Reduce noise from autosave traffic to content APIs
+    pathname.startsWith('/api/model-content/') ||
+    pathname.startsWith('/api/model-content-new/')
   );
 }
 

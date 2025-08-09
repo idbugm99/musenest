@@ -53,17 +53,18 @@ if (process.env.NODE_ENV === 'production') {
 // Rate limiting (reasonable limits with static asset exclusion)
 const limiter = rateLimit({
     windowMs: (process.env.RATE_LIMIT_WINDOW || 15) * 60 * 1000, // 15 minutes
-    max: process.env.NODE_ENV === 'development' ? 200 : (process.env.RATE_LIMIT_MAX || 100),
+    max: process.env.NODE_ENV === 'development' ? 1000 : (process.env.RATE_LIMIT_MAX || 100),
     message: 'Too many requests from this IP, please try again later.',
     skip: (req) => {
-        // Skip rate limiting for static assets only
+        // Skip rate limiting for static assets and localhost in development
         return req.url.startsWith('/public/') || 
                req.url.startsWith('/uploads/') ||
                req.url.endsWith('.css') ||
                req.url.endsWith('.js') ||
                req.url.endsWith('.png') ||
                req.url.endsWith('.jpg') ||
-               req.url.endsWith('.ico');
+               req.url.endsWith('.ico') ||
+               (process.env.NODE_ENV === 'development' && req.ip === '::1');
     }
 });
 app.use(limiter);
@@ -158,7 +159,41 @@ app.engine('handlebars', engine({
         json: (context) => JSON.stringify(context),
         formatDate: (date) => new Date(date).toLocaleDateString(),
         formatCurrency: (amount) => `$${parseFloat(amount).toFixed(2)}`,
-        truncate: (str, length = 100) => str && str.length > length ? str.substring(0, length) + '...' : str
+        truncate: (str, length = 100) => str && str.length > length ? str.substring(0, length) + '...' : str,
+        
+        // Component rendering helper (Phase A: Admin Interface Fix)
+        renderComponent: function(componentName) {
+            const componentLoader = require('./utils/componentLoader');
+            return componentLoader.loadComponentSync(componentName);
+        },
+        
+        // Gallery helpers (Phase 5: Gallery Layouts)
+        // Note: These are loaded into template context by the model middleware
+        renderGalleries: function(modelSlug) {
+            // Return pre-loaded gallery data from template context
+            return this.galleries ? this.galleries.renderHtml : '<div class="galleries-empty">No galleries available</div>';
+        },
+        renderGallerySection: function(modelSlug, sectionSlug) {
+            // Return specific section from pre-loaded data
+            const section = this.galleries && this.galleries.sections ? 
+                this.galleries.sections.find(s => s.slug === sectionSlug) : null;
+            return section ? section.renderHtml : `<div class="gallery-not-found">Gallery section "${sectionSlug}" not found</div>`;
+        },
+        renderGalleryByType: function(modelSlug, layoutType) {
+            // Return first section of specified type from pre-loaded data
+            const section = this.galleries && this.galleries.sections ? 
+                this.galleries.sections.find(s => s.layout_type === layoutType) : null;
+            return section ? section.renderHtml : `<div class="gallery-not-found">No ${layoutType} gallery found</div>`;
+        },
+        hasGalleries: function(modelSlug) {
+            // Check pre-loaded gallery data
+            return this.galleries && this.galleries.sections && this.galleries.sections.length > 0;
+        },
+        getFeaturedGalleryImages: function(modelSlug, limit = 6) {
+            // Return pre-loaded featured images
+            return this.galleries && this.galleries.featuredImages ? 
+                this.galleries.featuredImages.slice(0, limit) : [];
+        }
     }
 }));
 app.set('view engine', 'handlebars');
@@ -307,17 +342,265 @@ app.get('/:slug/admin/content', async (req, res) => {
             [slug]
         );
         if (!rows || !rows.length) return res.status(404).send('Model not found');
-        res.render('admin/pages/model-content', {
-            layout: 'admin/layouts/main',
-            pageTitle: 'Content Manager',
-            currentPage: 'model-content',
+        
+        // Load content hub component
+        const contentHubPath = path.join(__dirname, 'admin/components/content-hub.html');
+        const fs = require('fs');
+        const contentHubHTML = fs.readFileSync(contentHubPath, 'utf8');
+        
+        res.render('admin/layouts/main', {
+            pageTitle: 'Content Management Hub',
+            currentPage: 'content-hub',
             isModelAdmin: true,
             model: rows[0],
-            legacyBanner: { message: 'This is a legacy admin surface. System admin lives at /sysadmin.' }
+            body: contentHubHTML
         });
     } catch (e) {
-        console.error('❌ Error loading model content page:', e);
-        res.status(500).send('Error loading model content');
+        console.error('❌ Error loading content hub:', e);
+        res.status(500).send('Error loading content hub');
+    }
+});
+
+// New Model Admin: Content Hub
+app.get('/:slug/admin/content/hub', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const rows = await db.query(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
+        
+        // Load content hub component
+        const contentHubPath = path.join(__dirname, 'admin/components/content-hub.html');
+        const fs = require('fs');
+        const contentHubHTML = fs.readFileSync(contentHubPath, 'utf8');
+        
+        res.render('admin/layouts/main', {
+            pageTitle: 'Content Management Hub',
+            currentPage: 'content-hub',
+            isModelAdmin: true,
+            model: rows[0],
+            body: contentHubHTML
+        });
+    } catch (e) {
+        console.error('❌ Error loading content hub:', e);
+        res.status(500).send('Error loading content hub');
+    }
+});
+
+// New Model Admin: Home Page Editor
+app.get('/:slug/admin/content/home', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const rows = await db.query(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
+        
+        // Load home page editor component
+        const homeEditorPath = path.join(__dirname, 'admin/components/home-page-editor.html');
+        const fs = require('fs');
+        const homeEditorHTML = fs.readFileSync(homeEditorPath, 'utf8');
+        
+        res.render('admin/layouts/main', {
+            pageTitle: 'Home Page Content Editor',
+            currentPage: 'home-page-editor',
+            isModelAdmin: true,
+            model: rows[0],
+            body: homeEditorHTML
+        });
+    } catch (e) {
+        console.error('❌ Error loading home page editor:', e);
+        res.status(500).send('Error loading home page editor');
+    }
+});
+
+// New Model Admin: About Page Editor
+app.get('/:slug/admin/content/about', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const rows = await db.query(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
+        
+        const aboutEditorPath = path.join(__dirname, 'admin/components/about-page-editor.html');
+        const fs = require('fs');
+        const aboutEditorHTML = fs.readFileSync(aboutEditorPath, 'utf8');
+        
+        res.render('admin/layouts/main', {
+            pageTitle: 'About Page Content Editor',
+            currentPage: 'about-page-editor',
+            isModelAdmin: true,
+            model: rows[0],
+            body: aboutEditorHTML
+        });
+    } catch (e) {
+        console.error('❌ Error loading about page editor:', e);
+        res.status(500).send('Error loading about page editor');
+    }
+});
+
+// Rates API (table-driven)
+app.use('/api/model-rates', require('./routes/api/model-rates'));
+app.use('/api/model-etiquette', require('./routes/api/model-etiquette'));
+
+// New Model Admin: Gallery Page Editor
+app.get('/:slug/admin/content/gallery', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const rows = await db.query(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
+        
+        const galleryEditorPath = path.join(__dirname, 'admin/components/gallery-page-editor.html');
+        const fs = require('fs');
+        const galleryEditorHTML = fs.readFileSync(galleryEditorPath, 'utf8');
+        
+        res.render('admin/layouts/main', {
+            pageTitle: 'Gallery Page Content Editor',
+            currentPage: 'gallery-page-editor',
+            isModelAdmin: true,
+            model: rows[0],
+            body: galleryEditorHTML
+        });
+    } catch (e) {
+        console.error('❌ Error loading gallery page editor:', e);
+        res.status(500).send('Error loading gallery page editor');
+    }
+});
+
+// New Model Admin: Rates Page Editor
+app.get('/:slug/admin/content/rates', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const rows = await db.query(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
+        
+        const ratesEditorPath = path.join(__dirname, 'admin/components/rates-page-editor.html');
+        const fs = require('fs');
+        const ratesEditorHTML = fs.readFileSync(ratesEditorPath, 'utf8');
+        
+        res.render('admin/layouts/main', {
+            pageTitle: 'Rates Page Content Editor',
+            currentPage: 'rates-page-editor',
+            isModelAdmin: true,
+            model: rows[0],
+            body: ratesEditorHTML
+        });
+    } catch (e) {
+        console.error('❌ Error loading rates page editor:', e);
+        res.status(500).send('Error loading rates page editor');
+    }
+});
+
+// New Model Admin: Etiquette Page Editor
+app.get('/:slug/admin/content/etiquette', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const rows = await db.query(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
+        
+        const etiquetteEditorPath = path.join(__dirname, 'admin/components/etiquette-page-editor.html');
+        const fs = require('fs');
+        const etiquetteEditorHTML = fs.readFileSync(etiquetteEditorPath, 'utf8');
+        
+        res.render('admin/layouts/main', {
+            pageTitle: 'Etiquette Page Content Editor',
+            currentPage: 'etiquette-page-editor',
+            isModelAdmin: true,
+            model: rows[0],
+            body: etiquetteEditorHTML
+        });
+    } catch (e) {
+        console.error('❌ Error loading etiquette page editor:', e);
+        res.status(500).send('Error loading etiquette page editor');
+    }
+});
+
+// New Model Admin: Contact Page Editor
+app.get('/:slug/admin/content/contact', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const rows = await db.query(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
+        
+        const contactEditorPath = path.join(__dirname, 'admin/components/contact-page-editor.html');
+        const fs = require('fs');
+        const contactEditorHTML = fs.readFileSync(contactEditorPath, 'utf8');
+        
+        res.render('admin/layouts/main', {
+            pageTitle: 'Contact Page Content Editor',
+            currentPage: 'contact-page-editor',
+            isModelAdmin: true,
+            model: rows[0],
+            body: contactEditorHTML
+        });
+    } catch (e) {
+        console.error('❌ Error loading contact page editor:', e);
+        res.status(500).send('Error loading contact page editor');
+    }
+});
+
+// Model Admin: Media Library
+app.get('/:slug/admin/media-library', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const rows = await db.query(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
+        
+        res.render('admin/pages/media-library', {
+            layout: 'admin/layouts/main',
+            pageTitle: 'Media Library',
+            currentPage: 'media-library',
+            isModelAdmin: true,
+            model: rows[0],
+            modelSlug: slug
+        });
+    } catch (e) {
+        console.error('❌ Error loading media library:', e);
+        res.status(500).send('Error loading media library');
+    }
+});
+
+// Model Admin: Gallery Sections
+app.get('/:slug/admin/gallery-sections', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const rows = await db.query(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
+        
+        res.render('admin/pages/gallery-sections', {
+            layout: 'admin/layouts/main',
+            pageTitle: 'Gallery Sections',
+            currentPage: 'gallery-sections', 
+            isModelAdmin: true,
+            model: rows[0],
+            modelSlug: slug
+        });
+    } catch (e) {
+        console.error('❌ Error loading gallery sections:', e);
+        res.status(500).send('Error loading gallery sections');
     }
 });
 
@@ -2414,6 +2697,7 @@ app.use('/api/media-review-queue', require('./routes/api/sysadmin'));
 app.use('/api/admin-models', require('./routes/api/sysadmin'));
 app.use('/api/test', require('./routes/api/test'));
 app.use('/api/blip-webhook', require('./routes/api/blip-webhook'));
+app.use('/api/moderation-webhooks', require('./routes/api/moderation-webhooks'));
 app.use('/api/ai-server-management', require('./routes/api/sysadmin'));
 app.use('/api/site-configuration', require('./routes/api/sysadmin'));
 app.use('/api/clients', require('./routes/api/clients'));
@@ -2430,7 +2714,24 @@ try {
   // ignore during scaffold if missing
 }
 try {
+  app.use('/api/model-media-library', require('./routes/api/model-media-library'));
+} catch (e) {
+  console.warn('Media Library API not available:', e.message);
+}
+try {
+  app.use('/api/model-gallery-sections', require('./routes/api/model-gallery-sections'));
+  app.use('/api/public-gallery', require('./routes/api/public-gallery'));
+} catch (e) {
+  console.warn('Gallery Sections API not available:', e.message);
+}
+try {
   app.use('/api/model-content', require('./routes/api/model-content'));
+} catch (e) {}
+try { 
+  app.use('/api', require('./routes/api/model-home-page')); 
+} catch (e) { console.warn('Home page API not available:', e.message); }
+try {
+  app.use('/api/model-content-new', require('./routes/api/model-content-new'));
 } catch (e) {}
 try { app.use('/api/model-settings', require('./routes/api/model-settings')); } catch (e) {}
 try { app.use('/api/model-testimonials', require('./routes/api/model-testimonials')); } catch (e) {}
@@ -2627,6 +2928,106 @@ app.get('/api/content/statistics', async (req, res) => {
     } catch (error) {
         console.error('Error fetching statistics:', error);
         res.status(500).json({ error: 'Failed to fetch statistics' });
+    }
+});
+
+// New Content API - Slug-based endpoints for content editors
+const PAGE_TYPE_MAP = {
+    'home': 1,
+    'about': 2,  
+    'contact': 3,
+    'gallery': 4,
+    'rates': 5,
+    'etiquette': 16
+};
+
+// Get content for a specific page type by model slug
+app.get('/api/model-content-new/:slug/:pageType', async (req, res) => {
+    try {
+        const { slug, pageType } = req.params;
+        
+        // Get model ID from slug
+        const [modelRows] = await db.execute(
+            'SELECT id FROM models WHERE slug = ? LIMIT 1',
+            [slug]
+        );
+        
+        if (!modelRows.length) {
+            return res.status(404).json({ success: false, message: 'Model not found' });
+        }
+        
+        const modelId = modelRows[0].id;
+        const pageTypeId = PAGE_TYPE_MAP[pageType];
+        
+        if (!pageTypeId) {
+            return res.status(400).json({ success: false, message: 'Invalid page type' });
+        }
+        
+        // Get content for this page type
+        const [rows] = await db.execute(`
+            SELECT content_key, content_value 
+            FROM content_templates 
+            WHERE model_id = ? AND page_type_id = ?
+        `, [modelId, pageTypeId]);
+        
+        // Convert rows to key-value object
+        const content = {};
+        rows.forEach(row => {
+            content[row.content_key] = row.content_value;
+        });
+        
+        res.json({
+            success: true,
+            data: content,
+            modelId: modelId,
+            pageTypeId: pageTypeId
+        });
+        
+    } catch (error) {
+        console.error('Error fetching model content:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch content' });
+    }
+});
+
+// Update content for a specific page type by model slug
+app.put('/api/model-content-new/:slug/:pageType', async (req, res) => {
+    try {
+        const { slug, pageType } = req.params;
+        const contentData = req.body;
+        
+        // Get model ID from slug
+        const [modelRows] = await db.execute(
+            'SELECT id FROM models WHERE slug = ? LIMIT 1',
+            [slug]
+        );
+        
+        if (!modelRows.length) {
+            return res.status(404).json({ success: false, message: 'Model not found' });
+        }
+        
+        const modelId = modelRows[0].id;
+        const pageTypeId = PAGE_TYPE_MAP[pageType];
+        
+        if (!pageTypeId) {
+            return res.status(400).json({ success: false, message: 'Invalid page type' });
+        }
+        
+        // Update or insert each content field
+        for (const [contentKey, contentValue] of Object.entries(contentData)) {
+            if (contentValue !== null && contentValue !== undefined) {
+                await db.execute(`
+                    INSERT INTO content_templates (model_id, page_type_id, content_key, content_value, content_type, updated_at)
+                    VALUES (?, ?, ?, ?, 'text', NOW())
+                    ON DUPLICATE KEY UPDATE content_value = VALUES(content_value), updated_at = NOW()
+                `, [modelId, pageTypeId, contentKey, contentValue]);
+            }
+        }
+        
+        res.json({ success: true, message: 'Content updated successfully' });
+        
+    } catch (error) {
+        console.error('Error updating model content:', error);
+        res.status(500).json({ success: false, message: 'Failed to update content' });
     }
 });
 

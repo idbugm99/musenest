@@ -1,0 +1,332 @@
+<!-- Etiquette Page Content Editor — Normalized (Sections/Items/CTA) -->
+<div class="container-fluid py-4">
+  <div class="row mb-3">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+      <div>
+        <h1 class="h3 mb-1"><i class="fas fa-scale-balanced text-primary me-2"></i>Etiquette Page Content Editor</h1>
+        <div class="text-muted small">Manage page header, sections, and items with ordering and visibility</div>
+      </div>
+      <div class="d-flex gap-2">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="page_published_main" data-field="page_published">
+          <label class="form-check-label fw-bold text-warning" for="page_published_main" id="publish-label-main">
+            <i class="fas fa-eye-slash me-1"></i>Draft
+          </label>
+        </div>
+        <a href="#" onclick="window.history.back()" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Back to Content Hub</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <!-- Page Header -->
+    <div class="col-12 col-xl-4">
+      <div class="card h-100">
+        <div class="card-header bg-white">
+          <strong><i class="fas fa-heading me-2"></i>Page Header</strong>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label">Page Title</label>
+            <input class="form-control" id="header_title" placeholder="Etiquette & Guidelines">
+            <div class="save-status small text-muted mt-1" id="status_title"></div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Page Subtitle</label>
+            <textarea class="form-control" id="header_subtitle" rows="2" placeholder="Intro text"></textarea>
+            <div class="save-status small text-muted mt-1" id="status_subtitle"></div>
+          </div>
+          <div class="alert alert-secondary small mb-0">Header autosaves as you type.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sections & Items -->
+    <div class="col-12 col-xl-8">
+      <div class="row g-3">
+        <!-- Sections list -->
+        <div class="col-12 col-lg-5">
+          <div class="card h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <strong><i class="fas fa-list me-2"></i>Sections</strong>
+              <div class="input-group input-group-sm" style="max-width: 280px;">
+                <input class="form-control" placeholder="New section title" id="new_section_title">
+                <button class="btn btn-primary" id="btn_add_section">Add</button>
+              </div>
+            </div>
+            <div class="list-group list-group-flush" id="section_list" style="min-height: 320px;"></div>
+            <div class="card-footer small text-muted">Use arrows to reorder. Toggle visibility per section.</div>
+          </div>
+        </div>
+
+        <!-- Section editor + items -->
+        <div class="col-12 col-lg-7">
+          <div class="card h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <strong id="editor_section_title"><i class="fas fa-pen me-2"></i>Section</strong>
+              <div class="d-flex align-items-center gap-2">
+                <div class="form-check form-switch mb-0">
+                  <input class="form-check-input" type="checkbox" id="section_visible">
+                  <label class="form-check-label" for="section_visible">Visible</label>
+                </div>
+                <button class="btn btn-sm btn-outline-danger" id="btn_delete_section" disabled>Delete</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <label class="form-label small">Title</label>
+                  <input class="form-control form-control-sm" id="section_title">
+                </div>
+                <div class="col-6">
+                  <label class="form-label small">Subtitle</label>
+                  <input class="form-control form-control-sm" id="section_subtitle">
+                </div>
+                <div class="col-6">
+                  <label class="form-label small">Icon</label>
+                  <input class="form-control form-control-sm" id="section_icon" placeholder="fa-...">
+                </div>
+                <div class="col-6">
+                  <label class="form-label small">Slug</label>
+                  <input class="form-control form-control-sm" id="section_slug" placeholder="booking-and-screening">
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                <strong>Items</strong>
+                <div class="d-flex gap-2 flex-grow-1" style="min-width: 320px;">
+                  <input class="form-control form-control-sm" placeholder="New item heading" id="new_item_heading">
+                  <input class="form-control form-control-sm" placeholder="New item body" id="new_item_body">
+                  <button class="btn btn-primary btn-sm" id="btn_add_item">Add</button>
+                </div>
+              </div>
+              <div class="table-responsive" style="min-height: 220px;">
+                <table class="table table-sm align-middle" id="items_table">
+                  <thead><tr><th style="width:28%">Heading</th><th>Body</th><th style="width:60px">Icon</th><th style="width:72px">Visible</th><th style="width:96px">Order</th><th style="width:1px"></th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="row g-3 mt-1">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <strong><i class="fas fa-bullhorn me-2"></i>CTA</strong>
+          <div class="input-group input-group-sm" style="max-width: 520px;">
+            <input class="form-control" placeholder="Title" id="cta_title">
+            <input class="form-control" placeholder="Button Text" id="cta_button_text">
+            <select class="form-select" id="cta_button_link" style="max-width: 160px;">
+              <option value="contact">Contact</option>
+              <option value="calendar">Calendar</option>
+              <option value="rates">Rates</option>
+              <option value="about">About</option>
+              <option value="gallery">Gallery</option>
+              <option value="custom">Custom URL</option>
+            </select>
+            <input class="form-control" placeholder="Custom URL (optional)" id="cta_custom_url">
+            <button class="btn btn-primary" id="btn_add_cta">Add</button>
+          </div>
+        </div>
+        <ul class="list-group list-group-flush" id="cta_list"></ul>
+        <div class="card-footer small text-muted">Add multiple CTAs, set visibility and order.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  let slug;
+  const parts = location.pathname.split('/').filter(Boolean); 
+  slug = parts[0] || 'modelexample';
+  let sections = [];
+  let currentSectionId = null;
+
+  const el = (sel) => document.querySelector(sel);
+  async function api(path, opts){ const r = await fetch(`/api/model-etiquette/${encodeURIComponent(slug)}${path}`, opts); return r.json(); }
+
+  // Header load/save
+  async function loadHeader(){ const d = await api('/header'); const h = d?.data?.header || {}; if (!h) { // seed a header row for autosave to work cleanly
+      await api('/header',{ method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({}) });
+    }
+    const cur = h || {}; el('#header_title').value=cur.page_title||''; el('#header_subtitle').value=cur.page_subtitle||''; 
+    // Load main publish status from unified content system
+    loadPublishStatus();
+  }
+  
+  async function loadPublishStatus() {
+    try {
+      const response = await fetch(`/api/model-content/${slug}/pages/17`);
+      const data = await response.json();
+      if (data.success && data.data && data.data.items) {
+        const publishedField = data.data.items.find(item => item.content_key === 'page_published');
+        if (publishedField) {
+          const isPublished = publishedField.content_value === true || publishedField.content_value === 1 || publishedField.content_value === '1';
+          el('#page_published_main').checked = isPublished;
+          updatePublishLabel(isPublished);
+        }
+      }
+    } catch (error) {
+      console.warn('Could not load publish status:', error);
+    }
+  }
+  
+  function updatePublishLabel(isPublished) {
+    const label = el('#publish-label-main');
+    if (label) {
+      if (isPublished) {
+        label.innerHTML = '<i class="fas fa-eye me-1"></i>Published';
+        label.className = 'form-check-label fw-bold text-success';
+      } else {
+        label.innerHTML = '<i class="fas fa-eye-slash me-1"></i>Draft';
+        label.className = 'form-check-label fw-bold text-warning';
+      }
+    }
+  }
+  function bindHeaderAutosave(){ 
+    let t=null; 
+    const save=async()=>{ 
+      const body={ page_title: el('#header_title').value, page_subtitle: el('#header_subtitle').value }; 
+      await api('/header',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); 
+    }; 
+    ['#header_title','#header_subtitle'].forEach(s=>el(s).addEventListener('input',()=>{clearTimeout(t);t=setTimeout(save,700);})); 
+    
+    // Bind main publish toggle
+    const publishToggle = el('#page_published_main');
+    console.log('Attempting to bind publish toggle:', publishToggle);
+    if (publishToggle) {
+      publishToggle.addEventListener('change', async () => {
+        console.log('Publish toggle changed, new value:', publishToggle.checked);
+        const isPublished = publishToggle.checked;
+        updatePublishLabel(isPublished);
+        
+        // Save to unified content system
+        try {
+          console.log('Saving publish status:', isPublished ? 1 : 0);
+          const response = await fetch(`/api/model-content/${slug}/pages/17/page_published`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content_value: isPublished ? 1 : 0 })
+          });
+          const result = await response.json();
+          console.log('Save result:', result);
+        } catch (error) {
+          console.error('Failed to save publish status:', error);
+        }
+      });
+      console.log('Publish toggle event listener bound successfully');
+    } else {
+      console.error('Could not find publish toggle element #page_published_main');
+    }
+  }
+
+  // Sections
+  async function loadSections(){ const d = await api('/sections'); sections = d?.data?.sections || []; renderSections(); if (sections.length && !currentSectionId) { selectSection(sections[0].id); } }
+  function renderSections(){
+    const list = el('#section_list');
+    list.innerHTML = sections.map(s => {
+      return `<div class="list-group-item d-flex align-items-center justify-content-between" data-id="${s.id}">
+        <div class="d-flex align-items-center gap-2 flex-grow-1">
+          <div class="text-muted small">#${typeof s.order_index==='number' ? s.order_index : ''}</div>
+          <div class="flex-grow-1">
+            <button class="btn btn-link p-0 text-start btn-select">${(s.title||'Untitled').replace(/</g,'&lt;')}</button>
+            <div class="small text-muted">${(s.subtitle||'').replace(/</g,'&lt;')}</div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <div class="form-check form-switch mb-0"><input class="form-check-input sec-vis" type="checkbox" ${s.is_visible? 'checked':''}></div>
+          <div class="btn-group btn-group-sm"><button class="btn btn-outline-secondary btn-up">▲</button><button class="btn btn-outline-secondary btn-down">▼</button></div>
+        </div>
+      </div>`;
+    }).join('') || '<div class="list-group-item text-muted">No sections yet</div>';
+    list.querySelectorAll('.btn-select').forEach(btn => btn.addEventListener('click', () => { const id = parseInt(btn.closest('[data-id]').dataset.id); selectSection(id); }));
+    list.querySelectorAll('.sec-vis').forEach(sw => sw.addEventListener('change', async () => { const id = parseInt(sw.closest('[data-id]').dataset.id); await api(`/sections/${id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ is_visible: sw.checked }) }); }));
+    list.querySelectorAll('.btn-up').forEach(b => b.addEventListener('click', () => moveSection(b, -1)));
+    list.querySelectorAll('.btn-down').forEach(b => b.addEventListener('click', () => moveSection(b, 1)));
+  }
+  async function moveSection(btn,delta){ const row=btn.closest('[data-id]'); const id=parseInt(row.dataset.id); const idx=sections.findIndex(s=>s.id===id); const swap=idx+delta; if(swap<0||swap>=sections.length)return; const ids=sections.map(s=>s.id); [ids[idx],ids[swap]]=[ids[swap],ids[idx]]; await api('/sections/reorder',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({ids})}); await loadSections(); selectSection(id); }
+  el('#btn_add_section').addEventListener('click',async()=>{ const t=el('#new_section_title').value.trim(); if(!t)return; await api('/sections',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:t})}); el('#new_section_title').value=''; await loadSections(); });
+
+  async function selectSection(id){ currentSectionId=id; const s=sections.find(x=>x.id===id); el('#editor_section_title').innerHTML=`<i class=\"fas fa-pen me-2\"></i>${s?.title||'Section'}`; el('#section_title').value=s?.title||''; el('#section_subtitle').value=s?.subtitle||''; el('#section_icon').value=s?.icon||''; el('#section_slug').value=s?.slug||''; el('#section_visible').checked=!!s?.is_visible; el('#btn_delete_section').disabled=false; el('#btn_add_item').disabled=false; await loadItems(id); }
+  async function saveSectionField(field,value){ if(!currentSectionId)return; await api(`/sections/${currentSectionId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({[field]:value})}); await loadSections(); }
+  ;['section_title','section_subtitle','section_icon','section_slug'].forEach(id=>{ let t=null; el('#'+id).addEventListener('input',()=>{ clearTimeout(t); t=setTimeout(()=>saveSectionField(id.replace('section_',''),el('#'+id).value),600); }); });
+  el('#section_visible').addEventListener('change',()=>saveSectionField('is_visible',el('#section_visible').checked));
+  el('#btn_delete_section').addEventListener('click',async()=>{ if(!currentSectionId)return; if(!confirm('Delete this section and its items?'))return; await api(`/sections/${currentSectionId}`,{method:'DELETE'}); currentSectionId=null; el('#btn_delete_section').disabled=true; el('#btn_add_item').disabled=true; await loadSections(); el('#items_table tbody').innerHTML=''; });
+
+  // Items
+  async function loadItems(sectionId){ const d=await api(`/sections/${sectionId}/items`); const items=d?.data?.items||[]; const tb=el('#items_table tbody'); tb.innerHTML = items.map(it=>`<tr data-id="${it.id}"><td><input class=\"form-control form-control-sm item-input\" data-field=\"heading\" value=\"${(it.heading||'').replace(/\"/g,'&quot;')}\"></td><td><textarea class=\"form-control form-control-sm item-input\" data-field=\"body\" rows=\"2\">${(it.body||'').replace(/</g,'&lt;')}</textarea></td><td><input class=\"form-control form-control-sm item-input\" data-field=\"icon\" value=\"${it.icon||''}\"></td><td class=\"text-center\"><input type=\"checkbox\" class=\"form-check-input item-input\" data-field=\"is_visible\" ${it.is_visible?'checked':''}></td><td><input type=\"number\" class=\"form-control form-control-sm item-input\" data-field=\"order_index\" value=\"${it.order_index||0}\"></td><td class=\"text-end\"><button class=\"btn btn-sm btn-outline-secondary btn-up\">▲</button> <button class=\"btn btn-sm btn-outline-secondary btn-down\">▼</button> <button class=\"btn btn-sm btn-outline-danger btn-del\">Delete</button></td></tr>`).join('') || '<tr><td colspan="6" class="text-muted">No items yet</td></tr>'; tb.querySelectorAll('.item-input').forEach(inp=>inp.addEventListener('change',async()=>{ const tr=inp.closest('tr'); const id=parseInt(tr.dataset.id); const field=inp.dataset.field; const val=inp.type==='checkbox'?(inp.checked?1:0):inp.value; await api(`/items/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({[field]:val})}); })); tb.querySelectorAll('.btn-del').forEach(btn=>btn.addEventListener('click',async()=>{ const tr=btn.closest('tr'); const id=parseInt(tr.dataset.id); await api(`/items/${id}`,{method:'DELETE'}); tr.remove(); })); tb.querySelectorAll('.btn-up').forEach(btn=>btn.addEventListener('click',()=>moveItem(btn,-1))); tb.querySelectorAll('.btn-down').forEach(btn=>btn.addEventListener('click',()=>moveItem(btn,1))); }
+  async function moveItem(btn,delta){ const tr=btn.closest('tr'); const tbody=tr.parentElement; const rows=Array.from(tbody.querySelectorAll('tr')); const idx=rows.indexOf(tr); const swap=idx+delta; if(swap<0||swap>=rows.length)return; tbody.insertBefore(rows[swap],rows[idx]); const ids=Array.from(tbody.querySelectorAll('tr')).map(r=>parseInt(r.dataset.id)); await api('/items/reorder',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({section_id:currentSectionId,ids})}); }
+  el('#btn_add_item').addEventListener('click',async()=>{
+    const h = el('#new_item_heading').value.trim();
+    const b = el('#new_item_body').value.trim();
+    if (!h) return;
+    if (!currentSectionId) {
+      if (!sections.length) {
+        const r = await api('/sections', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title: 'New Section' }) });
+        await loadSections();
+        currentSectionId = r?.data?.id || (sections[0] && sections[0].id) || null;
+        if (currentSectionId) await selectSection(currentSectionId);
+      } else {
+        currentSectionId = sections[0].id;
+        await selectSection(currentSectionId);
+      }
+    }
+    if (!currentSectionId) return;
+    await api(`/sections/${currentSectionId}/items`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ heading: h, body: b || null }) });
+    el('#new_item_heading').value='';
+    el('#new_item_body').value='';
+    await loadItems(currentSectionId);
+  });
+
+  // CTA
+  async function loadCTAs(){
+    const d = await api('/ctas');
+    const ctas = d?.data?.ctas || [];
+    const ul = el('#cta_list');
+    ul.innerHTML = ctas.map(c => {
+      const options = ['contact','calendar','rates','about','gallery','custom']
+        .map(v => `<option value="${v}" ${c.button_link===v ? 'selected' : ''}>${v}</option>`)
+        .join('');
+      return `<li class="list-group-item d-flex align-items-center gap-2" data-id="${c.id}">
+        <input class="form-control form-control-sm flex-grow-1 cta-input" data-field="title" value="${(c.title||'').replace(/\"/g,'&quot;')}">
+        <input class="form-control form-control-sm cta-input" data-field="button_text" value="${c.button_text||''}" style="max-width:160px">
+        <select class="form-select form-select-sm cta-input" data-field="button_link" style="max-width:140px">${options}</select>
+        <input class="form-control form-control-sm cta-input" data-field="custom_url" value="${c.custom_url||''}" placeholder="custom url" style="max-width:260px">
+        <div class="form-check form-switch"><input class="form-check-input cta-input" data-field="is_visible" type="checkbox" ${c.is_visible? 'checked':''}></div>
+        <input type="number" class="form-control form-control-sm cta-input" data-field="order_index" value="${c.order_index||0}" style="max-width:90px">
+        <button class="btn btn-sm btn-outline-danger btn-del-cta">Delete</button>
+      </li>`;
+    }).join('') || '<li class="list-group-item text-muted">No CTAs yet</li>';
+    ul.querySelectorAll('.cta-input').forEach(inp => inp.addEventListener('change', async () => {
+      const li = inp.closest('li');
+      const id = parseInt(li.dataset.id);
+      const field = inp.dataset.field;
+      const val = inp.type==='checkbox' ? (inp.checked?1:0) : inp.value;
+      await api(`/ctas/${id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ [field]: val }) });
+    }));
+    ul.querySelectorAll('.btn-del-cta').forEach(btn => btn.addEventListener('click', async () => {
+      const li = btn.closest('li');
+      const id = parseInt(li.dataset.id);
+      await api(`/ctas/${id}`, { method:'DELETE' });
+      li.remove();
+    }));
+  }
+  el('#btn_add_cta').addEventListener('click',async()=>{ const title=el('#cta_title').value.trim(); const bt=el('#cta_button_text').value.trim(); const bl=el('#cta_button_link').value; const url=el('#cta_custom_url').value.trim()||null; if(!title||!bt)return; await api('/ctas',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,button_text:bt,button_link:bl,custom_url:url})}); el('#cta_title').value=''; el('#cta_button_text').value=''; await loadCTAs(); });
+
+  (async function init(){ 
+    await loadHeader(); 
+    bindHeaderAutosave(); 
+    await loadSections(); 
+    await loadCTAs(); 
+    console.log('Etiquette page initialized, publish toggle element:', el('#page_published_main'));
+  })();
+})();
+</script>
+

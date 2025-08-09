@@ -86,12 +86,34 @@
     pageLbl.textContent = `Page ${pg.page} / ${pg.pages}`;
     prevBtn.disabled = pg.page<=1; nextBtn.disabled = pg.page>=pg.pages;
     grid.innerHTML = imgs.map(im=>`
-      <div class=\"col\">
-        <div class=\"border rounded p-2\">
-          <img src=\"${(im.moderation_status==='approved_blurred' && im.blurred_path ? (im.blurred_path.startsWith('/')? im.blurred_path : '/uploads/${slug}/public/blurred/' + im.filename) : '/uploads/${slug}/public/gallery/' + im.filename)}\" style=\"width:100%;height:140px;object-fit:cover;border-radius:4px\" />
-          <div class=\"d-flex align-items-center justify-content-between mt-1\">
-            <div class=\"small text-truncate\" title=\"${im.filename}\">${im.filename}</div>
-            <input type=\"checkbox\" class=\"form-check-input lib_sel\" value=\"${im.id}\">
+      <div class="col">
+        <div class="border rounded p-2 position-relative image-card" data-image-id="${im.id}" data-filename="${im.filename}">
+          <img src="${(im.moderation_status==='approved_blurred' && im.blurred_path ? (im.blurred_path.startsWith('/')? im.blurred_path : '/uploads/' + slug + '/public/blurred/' + im.filename) : '/uploads/' + slug + '/public/gallery/' + im.filename)}" style="width:100%;height:200px;object-fit:cover;object-position:center top;border-radius:4px" />
+          
+          <!-- Image overlay actions -->
+          <div class="image-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center opacity-0" style="background: rgba(0,0,0,0.7); transition: opacity 0.3s;">
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-sm btn-light" onclick="viewImageFullsize('${im.filename}')" title="View Full Size">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button type="button" class="btn btn-sm btn-primary" onclick="openImageEditor('${im.filename}')" title="Edit Image">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button type="button" class="btn btn-sm btn-warning" onclick="renameImage('${im.filename}')" title="Rename">
+                <i class="fas fa-tag"></i>
+              </button>
+              <button type="button" class="btn btn-sm btn-success" onclick="applyWatermarkSingle('${im.id}')" title="Apply Watermark">
+                <i class="fas fa-shield-alt"></i>
+              </button>
+              <button type="button" class="btn btn-sm btn-danger" onclick="deleteImage('${im.id}')" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="d-flex align-items-center justify-content-between mt-1">
+            <div class="small text-truncate" title="${im.filename}">${im.filename}</div>
+            <input type="checkbox" class="form-check-input lib_sel" value="${im.id}">
           </div>
         </div>
       </div>`).join('');
@@ -120,7 +142,491 @@
   });
 
   loadSections();
+  
+  // Add hover effects for image cards
+  document.addEventListener('mouseover', (e) => {
+    if (e.target.closest('.image-card')) {
+      const overlay = e.target.closest('.image-card').querySelector('.image-overlay');
+      if (overlay) overlay.classList.remove('opacity-0');
+    }
+  });
+  
+  document.addEventListener('mouseout', (e) => {
+    if (e.target.closest('.image-card')) {
+      const overlay = e.target.closest('.image-card').querySelector('.image-overlay');
+      if (overlay) overlay.classList.add('opacity-0');
+    }
+  });
 })();
+
+// Image editing functions
+function viewImageFullsize(filename) {
+  let slug = {{{json model.slug}}}; if (!slug){ const m=location.pathname.match(/^\/([^\/]+)\/admin/); if(m) slug=m[1]; }
+  const imageUrl = `/uploads/${slug}/public/gallery/${filename}`;
+  const modal = document.createElement('div');
+  modal.innerHTML = `
+    <div class="modal fade show d-block" style="background: rgba(0,0,0,0.8);" onclick="this.remove()">
+      <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">${filename}</h5>
+            <button type="button" class="btn-close" onclick="this.closest('.modal').remove()"></button>
+          </div>
+          <div class="modal-body text-center">
+            <img src="${imageUrl}" class="img-fluid" style="max-height: 80vh;" />
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+function openImageEditor(filename) {
+  let slug = {{{json model.slug}}}; if (!slug){ const m=location.pathname.match(/^\/([^\/]+)\/admin/); if(m) slug=m[1]; }
+  
+  // Create a simplified image editor modal
+  const modal = document.createElement('div');
+  modal.innerHTML = `
+    <div class="modal fade show d-block" id="simple-image-editor" style="background: rgba(0,0,0,0.8);">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Image Editor - ${filename}</h5>
+            <button type="button" class="btn-close" onclick="this.closest('.modal').remove()"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-8">
+                <div class="text-center position-relative d-flex align-items-center justify-content-center" style="min-height: 60vh; background: #f8f9fa;">
+                  <img id="editor-preview" src="/uploads/${slug}/public/gallery/${filename}" class="img-fluid" style="max-height: 60vh; max-width: 100%;" />
+                  <canvas id="crop-canvas" class="d-none" style="cursor: crosshair; max-height: 60vh; max-width: 100%; border: 2px solid #007bff;"></canvas>
+                </div>
+              </div>
+              <div class="col-4">
+                <h6><i class="fas fa-crop-alt me-2"></i>Crop Tool</h6>
+                <div class="mb-3">
+                  <button class="btn btn-outline-success btn-sm" id="enable-crop" onclick="enableCropMode('${filename}')">
+                    <i class="fas fa-crop-alt me-1"></i>Enable Crop
+                  </button>
+                  <button class="btn btn-success btn-sm d-none" id="apply-crop" onclick="applyCropToImage('${filename}')">
+                    <i class="fas fa-check me-1"></i>Apply Crop
+                  </button>
+                  <button class="btn btn-secondary btn-sm d-none" id="cancel-crop" onclick="cancelCropMode()">
+                    <i class="fas fa-times me-1"></i>Cancel
+                  </button>
+                </div>
+                
+                <h6><i class="fas fa-redo me-2"></i>Rotate</h6>
+                <div class="btn-group mb-3">
+                  <button class="btn btn-outline-primary btn-sm" onclick="rotateImage('${filename}', 90)">90°</button>
+                  <button class="btn btn-outline-primary btn-sm" onclick="rotateImage('${filename}', 180)">180°</button>
+                  <button class="btn btn-outline-primary btn-sm" onclick="rotateImage('${filename}', 270)">270°</button>
+                </div>
+                
+                <h6><i class="fas fa-expand-arrows-alt me-2"></i>Resize</h6>
+                <div class="row g-2 mb-3">
+                  <div class="col-6">
+                    <input type="number" class="form-control form-control-sm" id="resize-width" placeholder="Width">
+                  </div>
+                  <div class="col-6">
+                    <input type="number" class="form-control form-control-sm" id="resize-height" placeholder="Height">
+                  </div>
+                  <div class="col-12">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="maintain-aspect" checked>
+                      <label class="form-check-label" for="maintain-aspect">Maintain aspect ratio</label>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <button class="btn btn-outline-info btn-sm w-100" onclick="resizeImage('${filename}')">Apply Resize</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+function renameImage(filename) {
+  let slug = {{{json model.slug}}}; if (!slug){ const m=location.pathname.match(/^\/([^\/]+)\/admin/); if(m) slug=m[1]; }
+  const newName = prompt('Enter new filename:', filename.replace(/\.[^/.]+$/, ''));
+  if (newName && newName !== filename.replace(/\.[^/.]+$/, '')) {
+    const extension = filename.split('.').pop();
+    const fullNewName = newName + '.' + extension;
+    
+    // TODO: Implement rename API call
+    fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/rename`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ old_filename: filename, new_filename: fullNewName })
+    }).then(r => r.json()).then(d => {
+      if (d.success) {
+        notify('success', 'Image renamed successfully');
+        loadImages();
+      } else {
+        notify('danger', d.message || 'Rename failed');
+      }
+    }).catch(() => notify('danger', 'Rename request failed'));
+  }
+}
+
+function applyWatermarkSingle(imageId) {
+  let slug = {{{json model.slug}}}; if (!slug){ const m=location.pathname.match(/^\/([^\/]+)\/admin/); if(m) slug=m[1]; }
+  fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/watermark`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids: [parseInt(imageId)] })
+  }).then(r => r.json()).then(d => {
+    if (d.success) {
+      notify('success', 'Watermark applied successfully');
+      loadImages();
+    } else {
+      notify('danger', d.message || 'Watermark failed');
+    }
+  }).catch(() => notify('danger', 'Watermark request failed'));
+}
+
+function deleteImage(imageId) {
+  let slug = {{{json model.slug}}}; if (!slug){ const m=location.pathname.match(/^\/([^\/]+)\/admin/); if(m) slug=m[1]; }
+  if (confirm('Are you sure you want to delete this image? This action cannot be undone.')) {
+    fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/${imageId}`, {
+      method: 'DELETE'
+    }).then(r => r.json()).then(d => {
+      if (d.success) {
+        notify('success', 'Image deleted successfully');
+        loadImages();
+      } else {
+        notify('danger', d.message || 'Delete failed');
+      }
+    }).catch(() => notify('danger', 'Delete request failed'));
+  }
+}
+
+// Crop tool variables
+let cropData = null;
+let isDrawing = false;
+let startX, startY;
+
+function enableCropMode(filename) {
+  console.log('🎨 Enabling crop mode for:', filename);
+  
+  const canvas = document.getElementById('crop-canvas');
+  const img = document.getElementById('editor-preview');
+  const enableBtn = document.getElementById('enable-crop');
+  const applyBtn = document.getElementById('apply-crop');
+  const cancelBtn = document.getElementById('cancel-crop');
+  
+  console.log('Elements found:', { 
+    canvas: !!canvas, 
+    img: !!img, 
+    enableBtn: !!enableBtn,
+    imgLoaded: img ? img.complete : false,
+    imgDimensions: img ? `${img.naturalWidth}x${img.naturalHeight}` : 'none'
+  });
+  
+  if (!canvas || !img) {
+    console.error('Missing required elements');
+    notify('danger', 'Canvas or image element not found');
+    return;
+  }
+  
+  // Wait for image to load completely
+  if (!img.complete || img.naturalWidth === 0) {
+    console.log('Image not loaded yet, waiting...');
+    img.onload = () => {
+      console.log('Image loaded, retrying crop mode');
+      enableCropMode(filename);
+    };
+    return;
+  }
+  
+  // Reset crop data
+  cropData = null;
+  
+  // Show crop canvas and hide image
+  img.style.display = 'none';
+  canvas.style.display = 'block';
+  canvas.classList.remove('d-none');
+  
+  // Get the actual displayed size of the image
+  const imgRect = img.getBoundingClientRect();
+  const displayWidth = Math.min(img.naturalWidth, img.parentElement.clientWidth * 0.9);
+  const displayHeight = (displayWidth / img.naturalWidth) * img.naturalHeight;
+  
+  // Setup canvas to match image display size
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  canvas.style.width = displayWidth + 'px';
+  canvas.style.height = displayHeight + 'px';
+  
+  console.log('Canvas setup:', {
+    naturalSize: `${canvas.width}x${canvas.height}`,
+    displaySize: `${displayWidth}x${displayHeight}`,
+    imageNaturalSize: `${img.naturalWidth}x${img.naturalHeight}`
+  });
+  
+  // Draw image on canvas
+  const ctx = canvas.getContext('2d');
+  try {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    console.log('✅ Image drawn on canvas successfully');
+  } catch (error) {
+    console.error('❌ Failed to draw image on canvas:', error);
+    notify('danger', 'Failed to setup crop canvas');
+    return;
+  }
+  
+  // Update buttons
+  if (enableBtn) {
+    enableBtn.innerHTML = '<i class="fas fa-crop-alt me-1"></i>Crop Active';
+    enableBtn.classList.remove('btn-outline-success');
+    enableBtn.classList.add('btn-success');
+    enableBtn.disabled = true;
+  }
+  if (applyBtn) applyBtn.classList.remove('d-none');
+  if (cancelBtn) cancelBtn.classList.remove('d-none');
+  
+  // Add crop selection functionality
+  setupCropSelection(canvas, ctx, img);
+  
+  notify('success', 'Crop mode enabled - drag to select area to crop');
+}
+
+function setupCropSelection(canvas, ctx, img) {
+  console.log('🖱️ Setting up crop selection');
+  
+  // Remove existing event listeners
+  canvas.removeEventListener('mousedown', canvas._mouseDownHandler);
+  canvas.removeEventListener('mousemove', canvas._mouseMoveHandler);
+  canvas.removeEventListener('mouseup', canvas._mouseUpHandler);
+  
+  let isSelecting = false;
+  let startX, startY, currentX, currentY;
+  
+  const getMousePos = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / canvas.offsetWidth;
+    const scaleY = canvas.height / canvas.offsetHeight;
+    
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY
+    };
+  };
+  
+  const drawSelection = () => {
+    // Clear and redraw image
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    
+    if (isSelecting && startX !== undefined) {
+      const width = currentX - startX;
+      const height = currentY - startY;
+      
+      // Draw selection rectangle
+      ctx.save();
+      ctx.strokeStyle = '#007bff';
+      ctx.lineWidth = 4;
+      ctx.setLineDash([10, 5]);
+      ctx.strokeRect(startX, startY, width, height);
+      
+      // Draw corner handles
+      ctx.fillStyle = '#007bff';
+      ctx.fillRect(startX - 4, startY - 4, 8, 8);
+      ctx.fillRect(startX + width - 4, startY - 4, 8, 8);
+      ctx.fillRect(startX - 4, startY + height - 4, 8, 8);
+      ctx.fillRect(startX + width - 4, startY + height - 4, 8, 8);
+      
+      ctx.restore();
+      
+      // Update crop data
+      cropData = {
+        x: Math.min(startX, currentX),
+        y: Math.min(startY, currentY),
+        width: Math.abs(width),
+        height: Math.abs(height)
+      };
+    }
+  };
+  
+  // Mouse down handler
+  canvas._mouseDownHandler = (e) => {
+    console.log('🖱️ Mouse down on canvas');
+    const pos = getMousePos(e);
+    startX = pos.x;
+    startY = pos.y;
+    currentX = pos.x;
+    currentY = pos.y;
+    isSelecting = true;
+    
+    console.log('Start position:', { startX, startY });
+    drawSelection();
+  };
+  
+  // Mouse move handler
+  canvas._mouseMoveHandler = (e) => {
+    if (!isSelecting) return;
+    
+    const pos = getMousePos(e);
+    currentX = pos.x;
+    currentY = pos.y;
+    
+    drawSelection();
+  };
+  
+  // Mouse up handler
+  canvas._mouseUpHandler = (e) => {
+    if (!isSelecting) return;
+    
+    console.log('🖱️ Mouse up');
+    isSelecting = false;
+    
+    if (cropData && cropData.width > 20 && cropData.height > 20) {
+      const displayWidth = Math.round(cropData.width);
+      const displayHeight = Math.round(cropData.height);
+      notify('success', `Selected: ${displayWidth}×${displayHeight}px`);
+      console.log('Final crop data:', cropData);
+    } else {
+      notify('warning', 'Selection too small - please select a larger area');
+      cropData = null;
+    }
+  };
+  
+  // Add event listeners
+  canvas.addEventListener('mousedown', canvas._mouseDownHandler);
+  canvas.addEventListener('mousemove', canvas._mouseMoveHandler);
+  canvas.addEventListener('mouseup', canvas._mouseUpHandler);
+  
+  // Prevent context menu
+  canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+  
+  console.log('✅ Crop selection setup complete');
+}
+
+function applyCropToImage(filename) {
+  console.log('✂️ Applying crop to image:', filename);
+  
+  if (!cropData) {
+    notify('warning', 'Please select an area to crop');
+    return;
+  }
+  
+  console.log('Crop data to send:', cropData);
+  
+  let slug = {{{json model.slug}}}; if (!slug){ const m=location.pathname.match(/^\/([^\/]+)\/admin/); if(m) slug=m[1]; }
+  
+  const apiUrl = `/api/model-gallery/${encodeURIComponent(slug)}/images/crop`;
+  console.log('API URL:', apiUrl);
+  
+  const payload = { 
+    filename: filename,
+    crop_data: cropData
+  };
+  
+  console.log('Sending payload:', payload);
+  
+  notify('info', 'Processing crop...');
+  
+  fetch(apiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(r => {
+    console.log('Response status:', r.status);
+    return r.json();
+  }).then(d => {
+    console.log('Response data:', d);
+    if (d.success) {
+      notify('success', 'Image cropped successfully');
+      document.querySelector('#simple-image-editor').remove();
+      loadImages();
+    } else {
+      notify('danger', d.message || 'Crop failed');
+      console.error('Crop API error:', d);
+    }
+  }).catch(error => {
+    console.error('Crop request error:', error);
+    notify('danger', 'Crop request failed: ' + error.message);
+  });
+}
+
+function cancelCropMode() {
+  const canvas = document.getElementById('crop-canvas');
+  const img = document.getElementById('editor-preview');
+  const enableBtn = document.getElementById('enable-crop');
+  const applyBtn = document.getElementById('apply-crop');
+  const cancelBtn = document.getElementById('cancel-crop');
+  
+  // Show image and hide canvas
+  canvas.classList.add('d-none');
+  img.classList.remove('d-none');
+  
+  // Update buttons
+  enableBtn.classList.remove('d-none');
+  applyBtn.classList.add('d-none');
+  cancelBtn.classList.add('d-none');
+  
+  cropData = null;
+}
+
+function rotateImage(filename, degrees) {
+  let slug = {{{json model.slug}}}; if (!slug){ const m=location.pathname.match(/^\/([^\/]+)\/admin/); if(m) slug=m[1]; }
+  
+  fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/rotate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+      filename: filename,
+      degrees: degrees
+    })
+  }).then(r => r.json()).then(d => {
+    if (d.success) {
+      notify('success', `Image rotated ${degrees}°`);
+      document.querySelector('#simple-image-editor').remove();
+      loadImages();
+    } else {
+      notify('danger', d.message || 'Rotation failed');
+    }
+  }).catch(() => notify('danger', 'Rotation request failed'));
+}
+
+function resizeImage(filename) {
+  const width = document.getElementById('resize-width').value;
+  const height = document.getElementById('resize-height').value;
+  const maintainAspect = document.getElementById('maintain-aspect').checked;
+  
+  if (!width && !height) {
+    notify('warning', 'Please enter width or height');
+    return;
+  }
+  
+  let slug = {{{json model.slug}}}; if (!slug){ const m=location.pathname.match(/^\/([^\/]+)\/admin/); if(m) slug=m[1]; }
+  
+  fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/resize`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+      filename: filename,
+      width: width ? parseInt(width) : null,
+      height: height ? parseInt(height) : null,
+      maintain_aspect: maintainAspect
+    })
+  }).then(r => r.json()).then(d => {
+    if (d.success) {
+      notify('success', 'Image resized successfully');
+      document.querySelector('#simple-image-editor').remove();
+      loadImages();
+    } else {
+      notify('danger', d.message || 'Resize failed');
+    }
+  }).catch(() => notify('danger', 'Resize request failed'));
+}
 </script>
 
 

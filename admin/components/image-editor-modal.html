@@ -1,0 +1,429 @@
+<!-- Advanced Image Editor Modal Component -->
+<!-- Part of Phase 3: Frontend Components Development -->
+<!-- Adapted from RoseMastos with enhanced functionality for MuseNest -->
+
+<div class="modal fade" id="image-editor-modal" tabindex="-1" aria-labelledby="imageEditorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageEditorModalLabel">
+                    <i class="fas fa-edit me-2"></i>Advanced Image Editor
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="row g-0" style="min-height: 600px;">
+                    <!-- Image Preview Section -->
+                    <div class="col-lg-8 d-flex align-items-center justify-content-center bg-light position-relative">
+                        <div class="image-editor-preview w-100 h-100 d-flex align-items-center justify-content-center">
+                            <!-- Canvas for crop tool -->
+                            <canvas id="crop-canvas" class="d-none" style="max-width: 90%; max-height: 90%; cursor: crosshair;"></canvas>
+                            
+                            <!-- Image preview -->
+                            <img id="preview-image" src="" alt="Preview" style="max-width: 90%; max-height: 90%; object-fit: contain;" class="shadow">
+                            
+                            <!-- Loading overlay -->
+                            <div id="processing-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-none bg-dark bg-opacity-75 d-flex align-items-center justify-content-center">
+                                <div class="text-center text-white">
+                                    <div class="spinner-border mb-3" role="status">
+                                        <span class="visually-hidden">Processing...</span>
+                                    </div>
+                                    <p class="mb-0">Processing image...</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Image Info Overlay -->
+                        <div class="position-absolute top-0 start-0 m-3">
+                            <div class="bg-dark bg-opacity-75 text-white px-3 py-2 rounded" id="image-info">
+                                <small id="image-dimensions">Loading...</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Editor Tools Panel -->
+                    <div class="col-lg-4 bg-white border-start">
+                        <div class="editor-tools p-4">
+                            
+                            <!-- File Information -->
+                            <div class="tool-section mb-4">
+                                <h6 class="fw-bold text-primary"><i class="fas fa-info-circle me-2"></i>Image Information</h6>
+                                <div class="small text-muted">
+                                    <div>File: <span id="current-filename">-</span></div>
+                                    <div>Size: <span id="current-filesize">-</span></div>
+                                    <div>Dimensions: <span id="current-dimensions">-</span></div>
+                                    <div>Format: <span id="current-format">-</span></div>
+                                    <div>Status: <span id="current-status" class="badge bg-secondary">-</span></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Crop Tool -->
+                            <div class="tool-section mb-4">
+                                <h6 class="fw-bold text-success"><i class="fas fa-crop-alt me-2"></i>Crop Tool</h6>
+                                <div class="mb-3">
+                                    <div class="d-grid gap-2 d-md-block">
+                                        <button class="btn btn-outline-success btn-sm" id="crop-mode">
+                                            <i class="fas fa-crop-alt me-1"></i>Enable Crop
+                                        </button>
+                                        <button class="btn btn-success btn-sm d-none" id="apply-crop">
+                                            <i class="fas fa-check me-1"></i>Apply
+                                        </button>
+                                        <button class="btn btn-outline-secondary btn-sm d-none" id="cancel-crop">
+                                            <i class="fas fa-times me-1"></i>Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="crop-presets mb-2">
+                                    <label class="form-label small">Aspect Ratios:</label><br>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button class="btn btn-outline-secondary" data-aspect="1:1">1:1</button>
+                                        <button class="btn btn-outline-secondary" data-aspect="4:3">4:3</button>
+                                        <button class="btn btn-outline-secondary" data-aspect="16:9">16:9</button>
+                                        <button class="btn btn-outline-secondary" data-aspect="free">Free</button>
+                                    </div>
+                                </div>
+                                <div class="crop-coordinates d-none">
+                                    <label class="form-label small">Crop Area:</label>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <input type="number" class="form-control form-control-sm" id="crop-x" placeholder="X" readonly>
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="number" class="form-control form-control-sm" id="crop-y" placeholder="Y" readonly>
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="number" class="form-control form-control-sm" id="crop-width" placeholder="Width" readonly>
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="number" class="form-control form-control-sm" id="crop-height" placeholder="Height" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Rotation Tool -->
+                            <div class="tool-section mb-4">
+                                <h6 class="fw-bold text-warning"><i class="fas fa-redo-alt me-2"></i>Rotate</h6>
+                                <div class="btn-group w-100 mb-2" role="group">
+                                    <button class="btn btn-outline-warning btn-sm" data-rotation="90">
+                                        <i class="fas fa-redo me-1"></i>90°
+                                    </button>
+                                    <button class="btn btn-outline-warning btn-sm" data-rotation="180">
+                                        <i class="fas fa-sync me-1"></i>180°
+                                    </button>
+                                    <button class="btn btn-outline-warning btn-sm" data-rotation="270">
+                                        <i class="fas fa-undo me-1"></i>270°
+                                    </button>
+                                </div>
+                                <div class="row g-2">
+                                    <div class="col-8">
+                                        <input type="number" class="form-control form-control-sm" id="custom-rotation" placeholder="Custom angle" min="-360" max="360">
+                                    </div>
+                                    <div class="col-4">
+                                        <button class="btn btn-warning btn-sm w-100" id="apply-custom-rotation">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Resize Tool -->
+                            <div class="tool-section mb-4">
+                                <h6 class="fw-bold text-info"><i class="fas fa-expand-arrows-alt me-2"></i>Resize</h6>
+                                <div class="row g-2 mb-2">
+                                    <div class="col-6">
+                                        <label class="form-label small">Width (px)</label>
+                                        <input type="number" class="form-control form-control-sm" id="resize-width" min="50" max="4000">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small">Height (px)</label>
+                                        <input type="number" class="form-control form-control-sm" id="resize-height" min="50" max="4000">
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small">Resize Mode:</label>
+                                    <select class="form-select form-select-sm" id="resize-fit">
+                                        <option value="cover">Cover (crop to fit)</option>
+                                        <option value="contain">Contain (fit inside)</option>
+                                        <option value="fill">Fill (stretch)</option>
+                                        <option value="inside">Inside (shrink only)</option>
+                                        <option value="outside">Outside (enlarge to fill)</option>
+                                    </select>
+                                </div>
+                                <div class="mb-2">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="maintain-aspect" checked>
+                                        <label class="form-check-label small" for="maintain-aspect">
+                                            Lock aspect ratio
+                                        </label>
+                                    </div>
+                                </div>
+                                <button class="btn btn-info btn-sm w-100" id="apply-resize">
+                                    <i class="fas fa-expand-arrows-alt me-1"></i>Apply Resize
+                                </button>
+                            </div>
+                            
+                            <!-- Filters Tool -->
+                            <div class="tool-section mb-4">
+                                <h6 class="fw-bold text-danger"><i class="fas fa-adjust me-2"></i>Filters & Adjustments</h6>
+                                
+                                <!-- Brightness -->
+                                <div class="mb-3">
+                                    <label class="form-label small d-flex justify-content-between">
+                                        Brightness
+                                        <span id="brightness-value">1.0</span>
+                                    </label>
+                                    <input type="range" class="form-range" id="brightness-slider" min="0" max="3" step="0.1" value="1.0">
+                                </div>
+                                
+                                <!-- Contrast -->
+                                <div class="mb-3">
+                                    <label class="form-label small d-flex justify-content-between">
+                                        Contrast
+                                        <span id="contrast-value">1.0</span>
+                                    </label>
+                                    <input type="range" class="form-range" id="contrast-slider" min="0" max="3" step="0.1" value="1.0">
+                                </div>
+                                
+                                <!-- Saturation -->
+                                <div class="mb-3">
+                                    <label class="form-label small d-flex justify-content-between">
+                                        Saturation
+                                        <span id="saturation-value">1.0</span>
+                                    </label>
+                                    <input type="range" class="form-range" id="saturation-slider" min="0" max="3" step="0.1" value="1.0">
+                                </div>
+                                
+                                <!-- Blur -->
+                                <div class="mb-3">
+                                    <label class="form-label small d-flex justify-content-between">
+                                        Blur
+                                        <span id="blur-value">0</span>
+                                    </label>
+                                    <input type="range" class="form-range" id="blur-slider" min="0" max="20" step="0.5" value="0">
+                                </div>
+                                
+                                <!-- Sharpen -->
+                                <div class="mb-3">
+                                    <label class="form-label small d-flex justify-content-between">
+                                        Sharpen
+                                        <span id="sharpen-value">0</span>
+                                    </label>
+                                    <input type="range" class="form-range" id="sharpen-slider" min="0" max="10" step="0.5" value="0">
+                                </div>
+                                
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <button class="btn btn-outline-secondary btn-sm w-100" id="reset-filters">
+                                            <i class="fas fa-undo me-1"></i>Reset
+                                        </button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button class="btn btn-danger btn-sm w-100" id="apply-filters">
+                                            <i class="fas fa-magic me-1"></i>Apply
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Output Format -->
+                            <div class="tool-section mb-4">
+                                <h6 class="fw-bold text-secondary"><i class="fas fa-file-image me-2"></i>Output Settings</h6>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <label class="form-label small">Format</label>
+                                        <select class="form-select form-select-sm" id="output-format">
+                                            <option value="jpeg">JPEG</option>
+                                            <option value="png">PNG</option>
+                                            <option value="webp">WebP</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small">Quality</label>
+                                        <select class="form-select form-select-sm" id="output-quality">
+                                            <option value="">Auto</option>
+                                            <option value="95">High (95%)</option>
+                                            <option value="85">Medium (85%)</option>
+                                            <option value="75">Low (75%)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <div class="me-auto">
+                    <button type="button" class="btn btn-outline-info btn-sm" id="view-edit-history">
+                        <i class="fas fa-history me-1"></i>Edit History
+                    </button>
+                </div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="save-and-close">
+                    <i class="fas fa-save me-1"></i>Save & Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit History Modal -->
+<div class="modal fade" id="edit-history-modal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-history me-2"></i>Edit History
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="edit-history-content">
+                    <div class="text-center py-4">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading edit history...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS for Image Editor -->
+<style>
+.image-editor-preview {
+    background: 
+        linear-gradient(45deg, #f8f9fa 25%, transparent 25%),
+        linear-gradient(-45deg, #f8f9fa 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #f8f9fa 75%),
+        linear-gradient(-45deg, transparent 75%, #f8f9fa 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+.editor-tools {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.tool-section {
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 1rem;
+}
+
+.tool-section:last-child {
+    border-bottom: none;
+}
+
+.crop-selection {
+    border: 2px solid #28a745;
+    position: absolute;
+    background: rgba(40, 167, 69, 0.1);
+    cursor: move;
+}
+
+.crop-handles {
+    position: absolute;
+}
+
+.crop-handle {
+    width: 10px;
+    height: 10px;
+    background: #28a745;
+    border: 2px solid white;
+    position: absolute;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.crop-handle.nw { top: -5px; left: -5px; cursor: nw-resize; }
+.crop-handle.n { top: -5px; left: 50%; margin-left: -5px; cursor: n-resize; }
+.crop-handle.ne { top: -5px; right: -5px; cursor: ne-resize; }
+.crop-handle.w { top: 50%; left: -5px; margin-top: -5px; cursor: w-resize; }
+.crop-handle.e { top: 50%; right: -5px; margin-top: -5px; cursor: e-resize; }
+.crop-handle.sw { bottom: -5px; left: -5px; cursor: sw-resize; }
+.crop-handle.s { bottom: -5px; left: 50%; margin-left: -5px; cursor: s-resize; }
+.crop-handle.se { bottom: -5px; right: -5px; cursor: se-resize; }
+
+.form-range::-webkit-slider-thumb {
+    appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+}
+
+.form-range::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-group-sm > .btn {
+    font-size: 0.75rem;
+}
+
+#image-info {
+    font-family: 'Courier New', monospace;
+}
+
+.edit-history-item {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    transition: all 0.2s ease;
+}
+
+.edit-history-item:hover {
+    border-color: #007bff;
+    box-shadow: 0 2px 4px rgba(0,123,255,0.1);
+}
+
+.edit-history-operation {
+    font-weight: 600;
+    color: #007bff;
+    text-transform: capitalize;
+}
+
+.edit-history-date {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.edit-history-params {
+    font-size: 0.8rem;
+    background: #f8f9fa;
+    padding: 8px;
+    border-radius: 4px;
+    margin-top: 8px;
+    font-family: 'Courier New', monospace;
+}
+
+@media (max-width: 992px) {
+    .modal-xl .row {
+        flex-direction: column;
+    }
+    
+    .editor-tools {
+        max-height: none;
+        border-top: 1px solid #dee2e6;
+        border-left: none !important;
+    }
+    
+    .image-editor-preview {
+        min-height: 300px;
+    }
+}
+</style>

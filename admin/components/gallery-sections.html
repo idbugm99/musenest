@@ -1,0 +1,508 @@
+<!-- Gallery Sections Manager Component -->
+<!-- Part of Phase 3: Frontend Components Development -->
+<!-- Recreates RoseMastos gallery sections functionality for MuseNest -->
+
+<div class="gallery-sections-container">
+    <!-- Section Creation -->
+    <div class="section-creator card shadow-sm mb-4">
+        <div class="card-header bg-gradient-success text-white">
+            <h5><i class="fas fa-plus-circle me-2"></i>Create Gallery Section</h5>
+        </div>
+        <div class="card-body">
+            <form id="create-section-form">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">Section Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="new-section-name" placeholder="Portfolio Highlights" required>
+                        <div class="form-text">This will be displayed as the section title</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Layout Type <span class="text-danger">*</span></label>
+                        <select class="form-select" id="new-section-layout" required>
+                            <option value="">Select Layout Type</option>
+                            <option value="grid">Grid Layout - Responsive columns with optional lightbox</option>
+                            <option value="masonry">Masonry Layout - Pinterest-style flowing layout</option>
+                            <option value="carousel">Carousel/Slideshow - Single image display with navigation</option>
+                            <option value="lightbox_grid">Thumbnail Grid - Small thumbnails that open in lightbox</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-plus me-1"></i>Create Section
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Layout-specific options -->
+                <div class="layout-options mt-4 d-none" id="layout-options">
+                    <!-- Dynamically populated based on selected layout -->
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Existing Sections -->
+    <div class="sections-header d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0"><i class="fas fa-layer-group me-2"></i>Gallery Sections</h5>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary btn-sm" id="refresh-sections">
+                <i class="fas fa-sync me-1"></i>Refresh
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" id="reorder-sections">
+                <i class="fas fa-arrows-alt me-1"></i>Reorder
+            </button>
+        </div>
+    </div>
+    
+    <div class="sections-list" id="sections-list">
+        <!-- Loading state -->
+        <div class="text-center py-5" id="sections-loading">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading sections...</span>
+            </div>
+            <p class="mt-2 text-muted">Loading gallery sections...</p>
+        </div>
+        
+        <!-- Empty state -->
+        <div class="text-center py-5 d-none" id="sections-empty">
+            <i class="fas fa-layer-group fa-3x text-muted mb-3"></i>
+            <h6 class="text-muted">No Gallery Sections Created</h6>
+            <p class="text-muted small">Create your first gallery section using the form above.</p>
+        </div>
+        
+        <!-- Sections will be dynamically populated here -->
+    </div>
+</div>
+
+<!-- Section Edit Modal -->
+<div class="modal fade" id="edit-section-modal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-edit me-2"></i>Edit Gallery Section
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-section-form">
+                    <input type="hidden" id="edit-section-id">
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Section Name</label>
+                            <input type="text" class="form-control" id="edit-section-name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Layout Type</label>
+                            <select class="form-select" id="edit-section-layout" required>
+                                <option value="grid">Grid Layout</option>
+                                <option value="masonry">Masonry Layout</option>
+                                <option value="carousel">Carousel/Slideshow</option>
+                                <option value="lightbox_grid">Thumbnail Grid</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input type="checkbox" class="form-check-input" id="edit-section-published">
+                            <label class="form-check-label" for="edit-section-published">
+                                Published (visible on public site)
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Layout Settings -->
+                    <div id="edit-layout-settings">
+                        <!-- Dynamically populated based on layout type -->
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="save-section-changes">
+                    <i class="fas fa-save me-1"></i>Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Media Assignment Modal -->
+<div class="modal fade" id="assign-media-modal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-images me-2"></i>Assign Media to Section: <span id="assign-section-name"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Media selection interface -->
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="media-selection-header d-flex justify-content-between align-items-center mb-3">
+                            <h6>Available Media</h6>
+                            <div class="d-flex gap-2">
+                                <input type="text" class="form-control form-control-sm" id="media-search" placeholder="Search media..." style="width: 200px;">
+                                <select class="form-select form-select-sm" id="media-filter-category" style="width: 150px;">
+                                    <option value="">All Categories</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="available-media-grid" id="available-media-grid">
+                            <div class="text-center py-4">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Loading media...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <div class="assigned-media-panel">
+                            <h6 class="d-flex justify-content-between align-items-center">
+                                Assigned Media
+                                <span class="badge bg-primary" id="assigned-count">0</span>
+                            </h6>
+                            
+                            <div class="assigned-media-list" id="assigned-media-list">
+                                <!-- Assigned media items with ordering -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="me-auto">
+                    <button type="button" class="btn btn-outline-warning btn-sm" id="clear-all-media">
+                        <i class="fas fa-trash me-1"></i>Clear All
+                    </button>
+                </div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="save-media-assignments">
+                    <i class="fas fa-save me-1"></i>Save Assignments
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS for Gallery Sections -->
+<style>
+.gallery-sections-container {
+    max-width: 100%;
+}
+
+.section-item {
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.section-item:hover {
+    border-color: #007bff;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.1);
+}
+
+.section-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.section-layout-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.section-layout-type.grid { background: #e3f2fd; color: #1976d2; border-color: #bbdefb; }
+.section-layout-type.masonry { background: #f3e5f5; color: #7b1fa2; border-color: #ce93d8; }
+.section-layout-type.carousel { background: #fff3e0; color: #f57c00; border-color: #ffcc02; }
+.section-layout-type.lightbox_grid { background: #e8f5e8; color: #388e3c; border-color: #a5d6a7; }
+
+.section-stats {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.section-stat {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.875rem;
+    color: #666;
+}
+
+.section-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.section-preview {
+    margin-top: 15px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    background: #f8f9fa;
+}
+
+.section-preview-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 8px;
+    max-height: 100px;
+    overflow: hidden;
+}
+
+.section-preview-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.layout-options {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #e9ecef;
+}
+
+.layout-options h6 {
+    color: #007bff;
+    margin-bottom: 15px;
+}
+
+.option-group {
+    margin-bottom: 20px;
+}
+
+.option-group:last-child {
+    margin-bottom: 0;
+}
+
+.available-media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.available-media-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.available-media-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.available-media-item.selected {
+    border: 3px solid #28a745;
+    transform: scale(0.95);
+}
+
+.available-media-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.available-media-overlay {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.available-media-item:hover .available-media-overlay {
+    opacity: 1;
+}
+
+.available-media-item.selected .available-media-overlay {
+    background: #28a745;
+    opacity: 1;
+}
+
+.assigned-media-list {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    min-height: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.assigned-media-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    margin-bottom: 8px;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    cursor: move;
+}
+
+.assigned-media-item:last-child {
+    margin-bottom: 0;
+}
+
+.assigned-media-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+.assigned-media-info {
+    flex: 1;
+    font-size: 0.875rem;
+    color: #666;
+}
+
+.assigned-media-order {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.drag-handle {
+    color: #999;
+    cursor: grab;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.sortable-ghost {
+    opacity: 0.5;
+}
+
+.sortable-chosen {
+    background: #e9ecef;
+}
+
+.empty-assigned {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+}
+
+.section-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.875rem;
+}
+
+.status-published {
+    color: #28a745;
+}
+
+.status-draft {
+    color: #ffc107;
+}
+
+@media (max-width: 768px) {
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .section-stats {
+        justify-content: space-between;
+    }
+    
+    .section-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .available-media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+    
+    .modal-xl .row {
+        flex-direction: column;
+    }
+    
+    .assigned-media-panel {
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .section-item {
+        padding: 15px;
+    }
+    
+    .section-actions .btn {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+    
+    .available-media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+}
+</style>

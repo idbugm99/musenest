@@ -6,90 +6,118 @@
                 Photo Gallery
             </h1>
             <p class="text-xl md:text-2xl text-pink-100 max-w-3xl mx-auto">
-                {{content.galleryIntro}}
+                {{#if content.galleryIntro}}
+                    {{content.galleryIntro}}
+                {{else}}
+                    Discover my exclusive collection of professional photography
+                {{/if}}
             </p>
         </div>
     </div>
 </section>
 
-<!-- Gallery Filters -->
-{{#if galleryCategories}}
-<section class="py-8 bg-white border-b">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-wrap justify-center gap-4" data-aos="fade-up">
-            <button class="glamour-btn active" onclick="filterGallery('all')">
-                All Photos
-            </button>
-            {{#each galleryCategories}}
-            <button class="glamour-btn bg-gray-200 text-gray-700 hover:bg-glamour-primary hover:text-white" 
-                    onclick="filterGallery('{{this.slug}}')">
-                {{this.name}}
-            </button>
-            {{/each}}
-        </div>
-    </div>
-</section>
-{{/if}}
-
-<!-- Gallery Grid -->
+<!-- Phase 5: Advanced Gallery Sections -->
 <section class="py-16 bg-gradient-to-br from-pink-50 to-purple-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {{#if galleryImages}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="galleryGrid">
-            {{#each galleryImages}}
-            <div class="gallery-item {{this.category}} relative group overflow-hidden rounded-lg glamour-hover-lift cursor-pointer" 
-                 data-aos="zoom-in" data-aos-delay="{{@index}}0"
-                 onclick="openLightbox('{{this.fullsize}}', '{{this.caption}}')">
-                <img src="{{this.thumbnail}}" alt="{{this.caption}}" 
-                     class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-full p-4">
-                            <i class="fas fa-expand text-white text-xl"></i>
-                        </div>
-                    </div>
-                    {{#if this.caption}}
-                    <div class="absolute bottom-4 left-4 right-4">
-                        <p class="text-white text-sm font-medium truncate">{{this.caption}}</p>
-                    </div>
-                    {{/if}}
-                </div>
-                {{#if this.isNew}}
-                <div class="absolute top-4 right-4">
-                    <span class="bg-glamour-accent text-white px-2 py-1 rounded-full text-xs font-bold">
-                        New
-                    </span>
-                </div>
-                {{/if}}
+        {{#if (hasGalleries modelSlug)}}
+            <!-- Render all gallery sections -->
+            <div class="galleries-wrapper" data-aos="fade-up">
+                {{{renderGalleries modelSlug}}}
             </div>
-            {{/each}}
-        </div>
-        
-        <!-- Load More Button -->
-        {{#if hasMore}}
-        <div class="text-center mt-12" data-aos="fade-up">
-            <button class="glamour-btn" onclick="loadMoreImages()">
-                <i class="fas fa-plus mr-2"></i>
-                Load More Photos
-            </button>
-        </div>
-        {{/if}}
-        
         {{else}}
-        <!-- Empty State -->
-        <div class="glamour-card p-12 text-center max-w-2xl mx-auto">
-            <div class="w-24 h-24 mx-auto mb-6 bg-glamour-primary rounded-full flex items-center justify-center">
-                <i class="fas fa-camera text-3xl text-white"></i>
+            <!-- Empty State -->
+            <div class="glamour-card p-12 text-center max-w-2xl mx-auto" data-aos="zoom-in">
+                <div class="w-24 h-24 mx-auto mb-6 bg-glamour-primary rounded-full flex items-center justify-center">
+                    <i class="fas fa-camera text-3xl text-white"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4 glamour-heading">Gallery Coming Soon</h3>
+                <p class="text-gray-600 mb-6">Professional photos will be available here shortly. Check back soon!</p>
+                <a href="/{{modelSlug}}/contact" class="glamour-btn">
+                    Get in Touch
+                </a>
             </div>
-            <h3 class="text-2xl font-bold mb-4 glamour-heading">Gallery Coming Soon</h3>
-            <p class="text-gray-600 mb-6">Professional photos will be available here shortly. Check back soon!</p>
-            <a href="/{{modelSlug}}/contact" class="glamour-btn">
-                Get in Touch
-            </a>
-        </div>
         {{/if}}
     </div>
 </section>
+
+<!-- Glamour Theme Gallery Styling -->
+<style>
+.model-galleries .gallery-section {
+    margin-bottom: 4rem;
+}
+
+.model-galleries .gallery-title {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #e91e63, #9c27b0);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.model-galleries .grid-container {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.model-galleries .grid-item {
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.model-galleries .grid-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(233, 30, 99, 0.2);
+}
+
+.model-galleries .grid-image-wrapper img {
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.model-galleries .grid-image-wrapper:hover img {
+    transform: scale(1.05);
+}
+
+.model-galleries .masonry-item {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.model-galleries .masonry-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(233, 30, 99, 0.15);
+}
+
+.model-galleries .carousel-inner {
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.model-galleries .lightbox-grid-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(233, 30, 99, 0.3);
+}
+
+/* Glamour theme overrides for Bootstrap carousel */
+.model-galleries .carousel-control-prev,
+.model-galleries .carousel-control-next {
+    background: linear-gradient(135deg, rgba(233, 30, 99, 0.8), rgba(156, 39, 176, 0.8));
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.model-galleries .carousel-indicators [data-bs-target] {
+    background-color: #e91e63;
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+}
+</style>
 
 <!-- Call to Action -->
 <section class="py-16 bg-gradient-to-r from-glamour-secondary to-glamour-primary text-white">
@@ -113,84 +141,4 @@
     </div>
 </section>
 
-<!-- Lightbox Modal -->
-<div id="lightboxModal" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center p-4">
-    <div class="relative max-w-4xl max-h-full">
-        <button onclick="closeLightbox()" 
-                class="absolute top-4 right-4 text-white hover:text-pink-300 z-10">
-            <i class="fas fa-times text-2xl"></i>
-        </button>
-        <img id="lightboxImage" src="" alt="" class="max-w-full max-h-full object-contain rounded-lg">
-        <div id="lightboxCaption" class="absolute bottom-4 left-4 right-4 text-white text-center bg-black bg-opacity-50 rounded p-2"></div>
-    </div>
-</div>
-
-<script>
-// Gallery Filtering
-function filterGallery(category) {
-    const items = document.querySelectorAll('.gallery-item');
-    const buttons = document.querySelectorAll('button[onclick^="filterGallery"]');
-    
-    // Update button states
-    buttons.forEach(btn => {
-        btn.classList.remove('bg-glamour-primary', 'text-white');
-        btn.classList.add('bg-gray-200', 'text-gray-700');
-    });
-    event.target.classList.add('bg-glamour-primary', 'text-white');
-    event.target.classList.remove('bg-gray-200', 'text-gray-700');
-    
-    // Filter items
-    items.forEach(item => {
-        if (category === 'all' || item.classList.contains(category)) {
-            item.style.display = 'block';
-            item.setAttribute('data-aos', 'zoom-in');
-        } else {
-            item.style.display = 'none';
-        }
-    });
-    
-    // Refresh AOS
-    AOS.refresh();
-}
-
-// Lightbox Functions
-function openLightbox(imageSrc, caption) {
-    const modal = document.getElementById('lightboxModal');
-    const image = document.getElementById('lightboxImage');
-    const captionEl = document.getElementById('lightboxCaption');
-    
-    image.src = imageSrc;
-    image.alt = caption || '';
-    captionEl.textContent = caption || '';
-    captionEl.style.display = caption ? 'block' : 'none';
-    
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeLightbox() {
-    const modal = document.getElementById('lightboxModal');
-    modal.classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
-
-// Close lightbox on escape key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeLightbox();
-    }
-});
-
-// Close lightbox on background click
-document.getElementById('lightboxModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeLightbox();
-    }
-});
-
-// Load More Images (if pagination is implemented)
-function loadMoreImages() {
-    // This would be implemented based on your pagination system
-    console.log('Loading more images...');
-}
-</script>
+<!-- Phase 5 Gallery System includes its own lightbox and interactive features -->

@@ -56,12 +56,6 @@ router.use('/ai-servers', require('./ai-server-management'));
 router.use('/media-review', require('./media-review-queue'));
 router.use('/site-configuration', require('./site-configuration'));
 router.use('/model-dashboard', require('./model-dashboard'));
-// Placeholder mount for upcoming model gallery API
-try {
-  router.use('/gallery', require('./model-gallery'));
-} catch (e) {
-  // Safe no-op if not implemented yet
-}
 
 // Temporary shim: provide a resilient sites listing to avoid 500s from complex join route (single definition)
 router.get('/site-configuration/sites', async (req, res) => {

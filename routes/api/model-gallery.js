@@ -427,6 +427,292 @@ router.patch('/:modelSlug/images/watermark', async (req, res) => {
   }
 });
 
+// DELETE /api/model-gallery/:modelSlug/images/:imageId
+router.delete('/:modelSlug/images/:imageId', async (req, res) => {
+  try {
+    const { modelSlug, imageId } = req.params;
+    const model = await getModelBySlug(modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+
+    // Get image info before deletion
+    const [imageRows] = await db.query(
+      'SELECT filename FROM gallery_images WHERE model_id = ? AND id = ?',
+      [model.id, parseInt(imageId)]
+    );
+    
+    if (!imageRows.length) return res.fail(404, 'Image not found');
+    
+    const filename = imageRows[0].filename;
+
+    // Delete from database
+    const result = await db.query(
+      'DELETE FROM gallery_images WHERE model_id = ? AND id = ?',
+      [model.id, parseInt(imageId)]
+    );
+
+    if (result.affectedRows === 0) return res.fail(404, 'Image not found');
+
+    // Delete physical files
+    const publicRoot = path.join(process.cwd(), 'public');
+    const filesToDelete = [
+      path.join(publicRoot, 'uploads', modelSlug, 'public', 'gallery', filename),
+      path.join(publicRoot, 'uploads', modelSlug, 'thumbs', filename),
+      path.join(publicRoot, 'uploads', modelSlug, 'originals', filename)
+    ];
+
+    for (const filePath of filesToDelete) {
+      try {
+        await fs.unlink(filePath);
+      } catch (error) {
+        // File might not exist, continue
+        logger.warn('delete-image.unlink-file', { file: filePath, error: error.message });
+      }
+    }
+
+    return res.success({ message: 'Image deleted successfully', filename });
+  } catch (error) {
+    logger.error('model-gallery.delete-image error', { error: error.message });
+    return res.fail(500, 'Failed to delete image', error.message);
+  }
+});
+
+// PATCH /api/model-gallery/:modelSlug/images/rename
+router.patch('/:modelSlug/images/rename', async (req, res) => {
+  try {
+    const { modelSlug } = req.params;
+    const { old_filename, new_filename } = req.body || {};
+    
+    if (!old_filename || !new_filename) {
+      return res.fail(400, 'old_filename and new_filename are required');
+    }
+    
+    const model = await getModelBySlug(modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+
+    // Sanitize new filename
+    const sanitized = new_filename.replace(/[^\w\-_.]/g, '_');
+    
+    // Check if new filename already exists
+    const [existing] = await db.query(
+      'SELECT id FROM gallery_images WHERE model_id = ? AND filename = ?',
+      [model.id, sanitized]
+    );
+    
+    if (existing.length > 0) {
+      return res.fail(400, 'Filename already exists');
+    }
+
+    // Update database
+    const result = await db.query(
+      'UPDATE gallery_images SET filename = ? WHERE model_id = ? AND filename = ?',
+      [sanitized, model.id, old_filename]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.fail(404, 'Image not found');
+    }
+
+    // Rename physical files
+    const publicRoot = path.join(process.cwd(), 'public');
+    const fileTypes = [
+      ['public', 'gallery'],
+      ['thumbs'],
+      ['originals']
+    ];
+
+    for (const pathSegments of fileTypes) {
+      const oldPath = path.join(publicRoot, 'uploads', modelSlug, ...pathSegments, old_filename);
+      const newPath = path.join(publicRoot, 'uploads', modelSlug, ...pathSegments, sanitized);
+      
+      try {
+        await fs.access(oldPath);
+        await fs.rename(oldPath, newPath);
+      } catch (error) {
+        // File might not exist in this location, continue
+        logger.warn('rename-image.rename-file', { 
+          old: oldPath, 
+          new: newPath, 
+          error: error.message 
+        });
+      }
+    }
+
+    return res.success({ 
+      message: 'Image renamed successfully', 
+      old_filename, 
+      new_filename: sanitized 
+    });
+  } catch (error) {
+    logger.error('model-gallery.rename-image error', { error: error.message });
+    return res.fail(500, 'Failed to rename image', error.message);
+  }
+});
+
+// POST /api/model-gallery/:modelSlug/images/crop
+router.post('/:modelSlug/images/crop', async (req, res) => {
+  try {
+    const { modelSlug } = req.params;
+    const { filename, crop_data } = req.body || {};
+    
+    if (!filename || !crop_data) {
+      return res.fail(400, 'filename and crop_data are required');
+    }
+    
+    const model = await getModelBySlug(modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+
+    const publicRoot = path.join(process.cwd(), 'public');
+    const imagePath = path.join(publicRoot, 'uploads', modelSlug, 'public', 'gallery', filename);
+    
+    // Check if file exists
+    try {
+      await fs.access(imagePath);
+    } catch (error) {
+      return res.fail(404, 'Image file not found');
+    }
+
+    // Apply crop using Sharp
+    const { x, y, width, height } = crop_data;
+    const croppedBuffer = await sharp(imagePath)
+      .extract({ 
+        left: Math.round(x), 
+        top: Math.round(y), 
+        width: Math.round(width), 
+        height: Math.round(height) 
+      })
+      .toBuffer();
+
+    // Save cropped image (overwrite original)
+    await fs.writeFile(imagePath, croppedBuffer);
+
+    // Also update thumbnail
+    const thumbPath = path.join(publicRoot, 'uploads', modelSlug, 'thumbs', filename);
+    try {
+      await sharp(croppedBuffer)
+        .resize(480, 480, { fit: 'cover' })
+        .jpeg({ quality: 80 })
+        .toFile(thumbPath);
+    } catch (thumbError) {
+      logger.warn('crop-image.thumbnail-update', { error: thumbError.message });
+    }
+
+    return res.success({ message: 'Image cropped successfully', filename });
+  } catch (error) {
+    logger.error('model-gallery.crop-image error', { error: error.message });
+    return res.fail(500, 'Failed to crop image', error.message);
+  }
+});
+
+// POST /api/model-gallery/:modelSlug/images/rotate
+router.post('/:modelSlug/images/rotate', async (req, res) => {
+  try {
+    const { modelSlug } = req.params;
+    const { filename, degrees } = req.body || {};
+    
+    if (!filename || !degrees) {
+      return res.fail(400, 'filename and degrees are required');
+    }
+    
+    const model = await getModelBySlug(modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+
+    const publicRoot = path.join(process.cwd(), 'public');
+    const imagePath = path.join(publicRoot, 'uploads', modelSlug, 'public', 'gallery', filename);
+    
+    // Check if file exists
+    try {
+      await fs.access(imagePath);
+    } catch (error) {
+      return res.fail(404, 'Image file not found');
+    }
+
+    // Apply rotation using Sharp
+    const rotatedBuffer = await sharp(imagePath)
+      .rotate(degrees)
+      .toBuffer();
+
+    // Save rotated image (overwrite original)
+    await fs.writeFile(imagePath, rotatedBuffer);
+
+    // Also update thumbnail
+    const thumbPath = path.join(publicRoot, 'uploads', modelSlug, 'thumbs', filename);
+    try {
+      await sharp(rotatedBuffer)
+        .resize(480, 480, { fit: 'cover' })
+        .jpeg({ quality: 80 })
+        .toFile(thumbPath);
+    } catch (thumbError) {
+      logger.warn('rotate-image.thumbnail-update', { error: thumbError.message });
+    }
+
+    return res.success({ message: `Image rotated ${degrees}°`, filename });
+  } catch (error) {
+    logger.error('model-gallery.rotate-image error', { error: error.message });
+    return res.fail(500, 'Failed to rotate image', error.message);
+  }
+});
+
+// POST /api/model-gallery/:modelSlug/images/resize
+router.post('/:modelSlug/images/resize', async (req, res) => {
+  try {
+    const { modelSlug } = req.params;
+    const { filename, width, height, maintain_aspect } = req.body || {};
+    
+    if (!filename || (!width && !height)) {
+      return res.fail(400, 'filename and at least width or height are required');
+    }
+    
+    const model = await getModelBySlug(modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+
+    const publicRoot = path.join(process.cwd(), 'public');
+    const imagePath = path.join(publicRoot, 'uploads', modelSlug, 'public', 'gallery', filename);
+    
+    // Check if file exists
+    try {
+      await fs.access(imagePath);
+    } catch (error) {
+      return res.fail(404, 'Image file not found');
+    }
+
+    // Apply resize using Sharp
+    let resizeOptions = {};
+    if (width) resizeOptions.width = parseInt(width);
+    if (height) resizeOptions.height = parseInt(height);
+    
+    if (!maintain_aspect) {
+      resizeOptions.fit = 'fill';
+    }
+
+    const resizedBuffer = await sharp(imagePath)
+      .resize(resizeOptions)
+      .toBuffer();
+
+    // Save resized image (overwrite original)
+    await fs.writeFile(imagePath, resizedBuffer);
+
+    // Also update thumbnail
+    const thumbPath = path.join(publicRoot, 'uploads', modelSlug, 'thumbs', filename);
+    try {
+      await sharp(resizedBuffer)
+        .resize(480, 480, { fit: 'cover' })
+        .jpeg({ quality: 80 })
+        .toFile(thumbPath);
+    } catch (thumbError) {
+      logger.warn('resize-image.thumbnail-update', { error: thumbError.message });
+    }
+
+    return res.success({ 
+      message: 'Image resized successfully', 
+      filename,
+      new_dimensions: `${resizeOptions.width || 'auto'} × ${resizeOptions.height || 'auto'}`
+    });
+  } catch (error) {
+    logger.error('model-gallery.resize-image error', { error: error.message });
+    return res.fail(500, 'Failed to resize image', error.message);
+  }
+});
+
 module.exports = router;
 // POST /api/model-gallery/:modelSlug/sections  (create section)
 router.post('/:modelSlug/sections', async (req, res) => {

@@ -114,6 +114,60 @@ router.get('/:slug/:page?', async (req, res) => {
         }
         console.log(`🎨 Theme colors:`, themeColors);
 
+        // Pre-load gallery data for gallery pages (Phase 5: Gallery Layouts)
+        let galleryData = null;
+        if (page === 'gallery') {
+            try {
+                const galleryHelper = require('../../utils/galleryHelper');
+                
+                // Check if model has galleries
+                const hasGalleries = await galleryHelper.hasGalleries(model.slug);
+                
+                if (hasGalleries) {
+                    // Get gallery data
+                    const galleries = await galleryHelper.getGalleryData(model.slug);
+                    
+                    // Render galleries HTML
+                    const renderHtml = await galleryHelper.renderGalleries(model.slug);
+                    
+                    // Get featured images
+                    const featuredImages = await galleryHelper.getFeaturedGalleryImages(model.slug, 6);
+                    
+                    galleryData = {
+                        hasGalleries: true,
+                        sections: galleries ? galleries.sections : [],
+                        totalSections: galleries ? galleries.totalSections : 0,
+                        totalImages: galleries ? galleries.totalImages : 0,
+                        renderHtml: renderHtml,
+                        featuredImages: featuredImages
+                    };
+                    
+                    console.log(`🖼️ Loaded gallery data: ${galleryData.totalSections} sections, ${galleryData.totalImages} images`);
+                } else {
+                    galleryData = {
+                        hasGalleries: false,
+                        sections: [],
+                        totalSections: 0,
+                        totalImages: 0,
+                        renderHtml: '<div class="galleries-empty">No galleries available</div>',
+                        featuredImages: []
+                    };
+                    
+                    console.log(`🖼️ No galleries found for model: ${model.slug}`);
+                }
+            } catch (error) {
+                console.error('❌ Error loading gallery data:', error);
+                galleryData = {
+                    hasGalleries: false,
+                    sections: [],
+                    totalSections: 0,
+                    totalImages: 0,
+                    renderHtml: '<div class="galleries-error">Error loading galleries</div>',
+                    featuredImages: []
+                };
+            }
+        }
+
         // Prepare template data with real content
         const templateData = {
             model: {
@@ -149,7 +203,9 @@ router.get('/:slug/:page?', async (req, res) => {
             // Current page info
             currentPage: page,
             siteUrl: `/${slug}`,
-            year: new Date().getFullYear()
+            year: new Date().getFullYear(),
+            // Gallery data (pre-loaded for gallery pages)
+            galleries: galleryData
         };
         
         // Render using the assigned theme with layout and theme-specific partials
@@ -177,7 +233,29 @@ router.get('/:slug/:page?', async (req, res) => {
                 json: (context) => JSON.stringify(context),
                 formatDate: (date) => new Date(date).toLocaleDateString(),
                 formatCurrency: (amount) => `$${parseFloat(amount).toFixed(2)}`,
-                truncate: (str, length = 100) => str && str.length > length ? str.substring(0, length) + '...' : str
+                truncate: (str, length = 100) => str && str.length > length ? str.substring(0, length) + '...' : str,
+                
+                // Gallery helpers (Phase 5: Gallery Layouts)
+                renderGalleries: function(modelSlug) {
+                    return this.galleries ? this.galleries.renderHtml : '<div class="galleries-empty">No galleries available</div>';
+                },
+                renderGallerySection: function(modelSlug, sectionSlug) {
+                    const section = this.galleries && this.galleries.sections ? 
+                        this.galleries.sections.find(s => s.slug === sectionSlug) : null;
+                    return section ? section.renderHtml : `<div class="gallery-not-found">Gallery section "${sectionSlug}" not found</div>`;
+                },
+                renderGalleryByType: function(modelSlug, layoutType) {
+                    const section = this.galleries && this.galleries.sections ? 
+                        this.galleries.sections.find(s => s.layout_type === layoutType) : null;
+                    return section ? section.renderHtml : `<div class="gallery-not-found">No ${layoutType} gallery found</div>`;
+                },
+                hasGalleries: function(modelSlug) {
+                    return this.galleries && this.galleries.sections && this.galleries.sections.length > 0;
+                },
+                getFeaturedGalleryImages: function(modelSlug, limit = 6) {
+                    return this.galleries && this.galleries.featuredImages ? 
+                        this.galleries.featuredImages.slice(0, limit) : [];
+                }
             }
         });
         

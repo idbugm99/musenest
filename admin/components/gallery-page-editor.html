@@ -1,0 +1,624 @@
+<!-- Gallery Page Content Editor -->
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-2 text-gray-800">
+                        <i class="fas fa-images text-success me-2"></i>
+                        Gallery Page Content Editor
+                    </h1>
+                    <p class="text-muted mb-0">Configure gallery layouts and display settings</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input auto-save-field" type="checkbox" id="page_published" data-field="page_published">
+                        <label class="form-check-label fw-bold text-warning" for="page_published" id="publish-label">
+                            <i class="fas fa-eye-slash me-1"></i>Draft
+                        </label>
+                    </div>
+                    <a href="#" onclick="window.history.back()" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Content Hub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auto-save Status -->
+    <div id="auto-save-status" class="alert alert-info d-none">
+        <i class="fas fa-spinner fa-spin me-2"></i>
+        <span id="save-status-text">Saving...</span>
+    </div>
+
+    <!-- Tabbed Navigation -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-0 pb-0">
+                    <nav class="nav nav-tabs" id="content-tabs">
+                        <button type="button" class="nav-link active" data-section="layout">
+                            <i class="fas fa-th text-success me-2"></i>Layout Settings
+                        </button>
+                        <button type="button" class="nav-link" data-section="categories">
+                            <i class="fas fa-folder text-primary me-2"></i>Categories
+                        </button>
+                        <button type="button" class="nav-link" data-section="display">
+                            <i class="fas fa-eye text-info me-2"></i>Display Options
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Sections -->
+    <div id="content-sections">
+        
+        <!-- Layout Settings Section -->
+        <div class="section-content active" data-section="layout">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success bg-opacity-10">
+                    <h4 class="mb-0 text-success">
+                        <i class="fas fa-th me-2"></i>Gallery Layout Configuration
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="bg-light rounded p-4">
+                                <h5 class="text-success mb-3">
+                                    <i class="fas fa-cog me-2"></i>Basic Settings
+                                </h5>
+                                
+                                <div class="enhanced-field mb-3">
+                                    <label class="form-label fw-bold">Page Title</label>
+                                    <input type="text" class="form-control auto-save-field" 
+                                           id="gallery_page_title" 
+                                           data-field="gallery_page_title"
+                                           placeholder="Gallery">
+                                    <div class="save-status mt-1"></div>
+                                </div>
+                                
+                                <div class="enhanced-field mb-3">
+                                    <label class="form-label fw-bold">Page Subtitle</label>
+                                    <input type="text" class="form-control auto-save-field" 
+                                           id="gallery_page_subtitle" 
+                                           data-field="gallery_page_subtitle"
+                                           placeholder="Explore my collection">
+                                    <div class="save-status mt-1"></div>
+                                </div>
+                                
+                                <div class="enhanced-field">
+                                    <label class="form-label fw-bold">Default Grid Columns</label>
+                                    <select class="form-select auto-save-field" 
+                                            id="default_grid_columns" 
+                                            data-field="default_grid_columns">
+                                        <option value="2">2 Columns</option>
+                                        <option value="3" selected>3 Columns</option>
+                                        <option value="4">4 Columns</option>
+                                        <option value="5">5 Columns</option>
+                                    </select>
+                                    <div class="save-status mt-1"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6">
+                            <div class="bg-light rounded p-4">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-images me-2"></i>Image Settings
+                                </h5>
+                                
+                                <div class="enhanced-field mb-3">
+                                    <label class="form-label fw-bold">Image Quality</label>
+                                    <select class="form-select auto-save-field" 
+                                            id="image_quality" 
+                                            data-field="image_quality">
+                                        <option value="standard">Standard Quality</option>
+                                        <option value="high" selected>High Quality</option>
+                                        <option value="original">Original Quality</option>
+                                    </select>
+                                    <div class="save-status mt-1"></div>
+                                </div>
+                                
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input auto-save-field" type="checkbox" 
+                                           id="enable_lightbox" data-field="enable_lightbox" checked>
+                                    <label class="form-check-label fw-bold" for="enable_lightbox">
+                                        Enable Lightbox View
+                                    </label>
+                                    <div class="save-status mt-1"></div>
+                                    <small class="text-muted d-block">Allow images to be viewed in full-screen overlay</small>
+                                </div>
+                                
+                                <div class="form-check">
+                                    <input class="form-check-input auto-save-field" type="checkbox" 
+                                           id="show_image_info" data-field="show_image_info">
+                                    <label class="form-check-label fw-bold" for="show_image_info">
+                                        Show Image Information
+                                    </label>
+                                    <div class="save-status mt-1"></div>
+                                    <small class="text-muted d-block">Display captions, dates, and categories</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categories Section -->
+        <div class="section-content" data-section="categories">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary bg-opacity-10">
+                    <h4 class="mb-0 text-primary">
+                        <i class="fas fa-folder me-2"></i>Category Management
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="bg-light rounded p-4">
+                        <h5 class="text-primary mb-3">
+                            <i class="fas fa-tags me-2"></i>Category Display Settings
+                        </h5>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input auto-save-field" type="checkbox" 
+                                   id="show_category_filter" data-field="show_category_filter" checked>
+                            <label class="form-check-label fw-bold" for="show_category_filter">
+                                Show Category Filter
+                            </label>
+                            <div class="save-status mt-1"></div>
+                            <small class="text-muted d-block">Allow visitors to filter images by category</small>
+                        </div>
+                        
+                        <div class="enhanced-field mb-3">
+                            <label class="form-label fw-bold">Default Category</label>
+                            <select class="form-select auto-save-field" 
+                                    id="default_category" 
+                                    data-field="default_category">
+                                <option value="all">Show All Categories</option>
+                                <!-- Categories will be populated dynamically -->
+                            </select>
+                            <div class="save-status mt-1"></div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Manage Categories:</strong> To add, edit, or organize categories, visit the 
+                            <a href="/admin/gallery" target="_blank" class="alert-link">Gallery Management</a> page.
+                            This section only controls display settings.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Display Options Section -->
+        <div class="section-content" data-section="display">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info bg-opacity-10">
+                    <h4 class="mb-0 text-info">
+                        <i class="fas fa-eye me-2"></i>Display Options
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="bg-light rounded p-4">
+                                <h5 class="text-info mb-3">
+                                    <i class="fas fa-sort me-2"></i>Sorting Options
+                                </h5>
+                                
+                                <div class="enhanced-field mb-3">
+                                    <label class="form-label fw-bold">Default Sort Order</label>
+                                    <select class="form-select auto-save-field" 
+                                            id="default_sort_order" 
+                                            data-field="default_sort_order">
+                                        <option value="newest">Newest First</option>
+                                        <option value="oldest">Oldest First</option>
+                                        <option value="most_liked">Most Liked</option>
+                                        <option value="random">Random Order</option>
+                                    </select>
+                                    <div class="save-status mt-1"></div>
+                                </div>
+                                
+                                <div class="form-check">
+                                    <input class="form-check-input auto-save-field" type="checkbox" 
+                                           id="allow_sort_change" data-field="allow_sort_change" checked>
+                                    <label class="form-check-label fw-bold" for="allow_sort_change">
+                                        Allow Visitors to Change Sort Order
+                                    </label>
+                                    <div class="save-status mt-1"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6">
+                            <div class="bg-light rounded p-4">
+                                <h5 class="text-warning mb-3">
+                                    <i class="fas fa-list me-2"></i>Pagination
+                                </h5>
+                                
+                                <div class="enhanced-field mb-3">
+                                    <label class="form-label fw-bold">Images Per Page</label>
+                                    <select class="form-select auto-save-field" 
+                                            id="images_per_page" 
+                                            data-field="images_per_page">
+                                        <option value="12">12 Images</option>
+                                        <option value="24" selected>24 Images</option>
+                                        <option value="36">36 Images</option>
+                                        <option value="48">48 Images</option>
+                                        <option value="all">All Images (No Pagination)</option>
+                                    </select>
+                                    <div class="save-status mt-1"></div>
+                                </div>
+                                
+                                <div class="form-check">
+                                    <input class="form-check-input auto-save-field" type="checkbox" 
+                                           id="show_image_count" data-field="show_image_count" checked>
+                                    <label class="form-check-label fw-bold" for="show_image_count">
+                                        Show Total Image Count
+                                    </label>
+                                    <div class="save-status mt-1"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS -->
+<style>
+.nav-tabs .nav-link {
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link.active {
+    background: #007bff;
+    color: white;
+    border-radius: 0.5rem;
+}
+
+.nav-tabs .nav-link:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.nav-tabs .nav-link.active:hover {
+    background: #0056b3;
+    color: white;
+}
+
+.section-content {
+    display: none;
+}
+
+.section-content.active {
+    display: block;
+}
+
+.enhanced-field {
+    position: relative;
+}
+
+.save-status {
+    min-height: 1.2rem;
+    font-size: 0.75rem;
+}
+
+.save-status.saving {
+    color: #007bff;
+}
+
+.save-status.saved {
+    color: #28a745;
+}
+
+.save-status.error {
+    color: #dc3545;
+}
+
+.auto-save-field:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+@media (max-width: 768px) {
+    .nav-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .nav-tabs .nav-link {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const galleryPageEditor = {
+        currentModelSlug: null,
+        saveTimeout: null,
+        isLoading: false,
+        
+        init() {
+            this.extractModelSlug();
+            this.initTabs();
+            this.loadContent();
+            this.bindAutoSave();
+            this.loadCategories();
+        },
+        
+        extractModelSlug() {
+            const pathParts = window.location.pathname.split('/');
+            this.currentModelSlug = pathParts[1];
+            console.log('Editing gallery page for model:', this.currentModelSlug);
+        },
+        
+        initTabs() {
+            const tabButtons = document.querySelectorAll('#content-tabs .nav-link');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = button.dataset.section;
+                    this.switchToSection(section);
+                });
+            });
+        },
+        
+        switchToSection(sectionName) {
+            document.querySelectorAll('#content-tabs .nav-link').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${sectionName}"]`).classList.add('active');
+            
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelector(`.section-content[data-section="${sectionName}"]`).classList.add('active');
+        },
+        
+        async loadContent() {
+            this.showLoading();
+            
+            try {
+                // Load gallery page content from page-specific table
+                const response = await fetch(`/api/model-content-new/${this.currentModelSlug}/gallery`);
+                const data = await response.json();
+                let contentData = {};
+                
+                if (data.success && data.data) {
+                    contentData = { ...data.data };
+                }
+                
+                // Load publish status from unified content system
+                try {
+                    const publishResponse = await fetch(`/api/model-content/${this.currentModelSlug}/pages/16?t=${Date.now()}`, {
+                        cache: 'no-store',
+                        headers: { 'Cache-Control': 'no-cache' }
+                    });
+                    const publishData = await publishResponse.json();
+                    
+                    if (publishData.success && publishData.data && publishData.data.items) {
+                        const publishedField = publishData.data.items.find(item => item.content_key === 'page_published');
+                        if (publishedField) {
+                            contentData.page_published = publishedField.content_value;
+                        }
+                    }
+                } catch (publishError) {
+                    console.warn('Could not load publish status:', publishError);
+                }
+                
+                this.populateFields(contentData);
+                
+            } catch (error) {
+                console.error('Error loading gallery page content:', error);
+                this.showError('Failed to load content');
+            } finally {
+                this.hideLoading();
+            }
+        },
+        
+        async loadCategories() {
+            try {
+                const response = await fetch(`/api/model-gallery/${this.currentModelSlug}/categories`);
+                const data = await response.json();
+                
+                if (data.success && data.categories) {
+                    const select = document.getElementById('default_category');
+                    data.categories.forEach(category => {
+                        const option = document.createElement('option');
+                        option.value = category.id;
+                        option.textContent = category.name;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        },
+        
+        populateFields(content) {
+            for (const [field, value] of Object.entries(content)) {
+                const element = document.getElementById(field);
+                if (element) {
+                    if (element.type === 'checkbox') {
+                        const isChecked = value === true || value === 1 || value === '1';
+                        element.checked = isChecked;
+                        
+                        // Update publish status label
+                        if (field === 'page_published') {
+                            this.updatePublishStatus(isChecked);
+                        }
+                    } else {
+                        element.value = value || '';
+                    }
+                }
+            }
+        },
+        
+        updatePublishStatus(isPublished) {
+            const label = document.getElementById('publish-label');
+            if (label) {
+                if (isPublished) {
+                    label.innerHTML = '<i class="fas fa-eye me-1"></i>Published';
+                    label.className = 'form-check-label fw-bold text-success';
+                } else {
+                    label.innerHTML = '<i class="fas fa-eye-slash me-1"></i>Draft';
+                    label.className = 'form-check-label fw-bold text-warning';
+                }
+            }
+        },
+        
+        bindAutoSave() {
+            const autoSaveFields = document.querySelectorAll('.auto-save-field');
+            
+            autoSaveFields.forEach(field => {
+                if (field.type !== 'checkbox' && field.tagName !== 'SELECT') {
+                    field.addEventListener('input', () => this.scheduleAutoSave(field));
+                }
+                field.addEventListener('change', () => this.scheduleAutoSave(field));
+            });
+            
+            const publishToggle = document.getElementById('page_published');
+            if (publishToggle) {
+                publishToggle.addEventListener('change', () => {
+                    this.updatePublishStatus(publishToggle.checked);
+                    this.scheduleAutoSave(publishToggle);
+                });
+            }
+        },
+        
+        scheduleAutoSave(field) {
+            const fieldName = field.dataset.field;
+            
+            // For publish toggle, save immediately without delay
+            if (fieldName === 'page_published') {
+                this.saveField(field);
+                return;
+            }
+            
+            const statusElement = field.closest('.enhanced-field')?.querySelector('.save-status') || 
+                                 field.parentNode.querySelector('.save-status');
+            
+            if (statusElement) {
+                statusElement.textContent = 'Editing...';
+                statusElement.className = 'save-status saving';
+            }
+            
+            if (this.saveTimeout) {
+                clearTimeout(this.saveTimeout);
+            }
+            
+            this.saveTimeout = setTimeout(() => {
+                this.saveField(field);
+            }, 1500);
+        },
+        
+        async saveField(field) {
+            const fieldName = field.dataset.field;
+            const statusElement = field.closest('.enhanced-field')?.querySelector('.save-status') || 
+                                 field.parentNode.querySelector('.save-status');
+            let value;
+            
+            if (field.type === 'checkbox') {
+                value = field.checked ? 1 : 0;
+            } else {
+                value = field.value;
+            }
+            
+            if (statusElement) {
+                statusElement.textContent = 'Saving...';
+                statusElement.className = 'save-status saving';
+            }
+            
+            try {
+                let response, result;
+                
+                // Handle page_published field specially - save to unified content system
+                if (fieldName === 'page_published') {
+                    response = await fetch(`/api/model-content/${this.currentModelSlug}/pages/16/page_published`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ content_value: value })
+                    });
+                } else {
+                    // Save other fields to gallery-specific table
+                    response = await fetch(`/api/model-content-new/${this.currentModelSlug}/gallery`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ [fieldName]: value })
+                    });
+                }
+                
+                result = await response.json();
+                
+                if (result.success) {
+                    if (statusElement) {
+                        statusElement.textContent = 'Saved';
+                        statusElement.className = 'save-status saved';
+                        
+                        setTimeout(() => {
+                            statusElement.textContent = '';
+                            statusElement.className = 'save-status';
+                        }, 3000);
+                    }
+                } else {
+                    throw new Error(result.message || 'Save failed');
+                }
+                
+            } catch (error) {
+                console.error('Save error:', error);
+                
+                if (statusElement) {
+                    statusElement.textContent = 'Save failed';
+                    statusElement.className = 'save-status error';
+                }
+            }
+        },
+        
+        showLoading() {
+            this.isLoading = true;
+            const statusEl = document.getElementById('auto-save-status');
+            const statusText = document.getElementById('save-status-text');
+            
+            statusText.textContent = 'Loading content...';
+            statusEl.classList.remove('d-none', 'alert-success', 'alert-danger');
+            statusEl.classList.add('alert-info');
+        },
+        
+        hideLoading() {
+            this.isLoading = false;
+            const statusEl = document.getElementById('auto-save-status');
+            statusEl.classList.add('d-none');
+        },
+        
+        showError(message) {
+            const statusEl = document.getElementById('auto-save-status');
+            const statusText = document.getElementById('save-status-text');
+            
+            statusText.textContent = message;
+            statusEl.classList.remove('d-none', 'alert-info', 'alert-success');
+            statusEl.classList.add('alert-danger');
+            
+            setTimeout(() => {
+                statusEl.classList.add('d-none');
+            }, 5000);
+        }
+    };
+    
+    galleryPageEditor.init();
+});
+</script>

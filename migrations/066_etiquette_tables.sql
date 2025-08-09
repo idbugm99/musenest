@@ -1,0 +1,55 @@
+-- Normalized etiquette schema (Option A)
+CREATE TABLE IF NOT EXISTS etiquette_page_header (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  model_id INT NOT NULL UNIQUE,
+  page_title VARCHAR(200) NOT NULL,
+  page_subtitle TEXT NULL,
+  is_published TINYINT(1) NOT NULL DEFAULT 1,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS etiquette_sections (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  model_id INT NOT NULL,
+  title VARCHAR(200) NOT NULL,
+  subtitle VARCHAR(500) NULL,
+  icon VARCHAR(64) NULL,
+  slug VARCHAR(128) NULL,
+  order_index INT NOT NULL DEFAULT 0,
+  is_visible TINYINT(1) NOT NULL DEFAULT 1,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uniq_section_slug (model_id, slug),
+  INDEX idx_sections_model_order (model_id, order_index)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS etiquette_items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  section_id INT NOT NULL,
+  heading VARCHAR(200) NOT NULL,
+  body MEDIUMTEXT NULL,
+  icon VARCHAR(64) NULL,
+  order_index INT NOT NULL DEFAULT 0,
+  is_visible TINYINT(1) NOT NULL DEFAULT 1,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_items_section_order (section_id, order_index)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS etiquette_ctas (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  model_id INT NOT NULL,
+  title VARCHAR(200) NOT NULL,
+  body TEXT NULL,
+  button_text VARCHAR(100) NOT NULL,
+  button_link ENUM('contact','calendar','rates','about','gallery','custom') NOT NULL DEFAULT 'contact',
+  custom_url VARCHAR(500) NULL,
+  order_index INT NOT NULL DEFAULT 0,
+  is_visible TINYINT(1) NOT NULL DEFAULT 1,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_cta_model_order (model_id, order_index)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
