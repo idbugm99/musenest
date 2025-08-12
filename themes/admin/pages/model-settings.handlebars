@@ -23,6 +23,31 @@
         <label class="form-label">Contact Phone</label>
         <input class="form-control" id="contact_phone" placeholder="(123) 456-7890">
       </div>
+      <div class="col-md-6">
+        <label class="form-label">Default Timezone</label>
+        <select class="form-select" id="timezone">
+          <option value="America/New_York">Eastern Time (ET)</option>
+          <option value="America/Chicago">Central Time (CT)</option>
+          <option value="America/Denver">Mountain Time (MT)</option>
+          <option value="America/Phoenix">Mountain Time - Arizona (MST)</option>
+          <option value="America/Los_Angeles">Pacific Time (PT)</option>
+          <option value="America/Anchorage">Alaska Time (AKT)</option>
+          <option value="Pacific/Honolulu">Hawaii Time (HST)</option>
+          <option value="UTC">UTC (Universal Coordinated Time)</option>
+          <option value="Europe/London">London (GMT/BST)</option>
+          <option value="Europe/Paris">Paris (CET/CEST)</option>
+          <option value="Asia/Tokyo">Tokyo (JST)</option>
+          <option value="Australia/Sydney">Sydney (AEST/AEDT)</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Calendar Page</label>
+        <select class="form-select" id="calendar_enabled">
+          <option value="1">Enabled - Show calendar page to visitors</option>
+          <option value="0">Disabled - Hide calendar page from website</option>
+        </select>
+        <div class="form-text">When disabled, the calendar page will not be accessible to visitors but you can still manage appointments in the admin area.</div>
+      </div>
       <div class="col-12">
         <label class="form-label">Tagline</label>
         <input class="form-control" id="tagline">
@@ -72,6 +97,19 @@
 </div>
 
 <script>
+function notify(type, message) {
+  const alertClass = type === 'success' ? 'alert-success' : (type === 'warning' ? 'alert-warning' : 'alert-danger');
+  const alertDiv = document.createElement('div');
+  alertDiv.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+  alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+  alertDiv.innerHTML = `
+    ${message}
+    <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+  `;
+  document.body.appendChild(alertDiv);
+  setTimeout(() => alertDiv.remove(), 3000);
+}
+
 (function(){
   let slug = {{{json model.slug}}};
   if (!slug) { const m = location.pathname.match(/^\/([^\/]+)\/admin/); if (m) slug = m[1]; }
@@ -80,6 +118,8 @@
     model_name: document.getElementById('model_name'),
     contact_email: document.getElementById('contact_email'),
     contact_phone: document.getElementById('contact_phone'),
+    timezone: document.getElementById('timezone'),
+    calendar_enabled: document.getElementById('calendar_enabled'),
     tagline: document.getElementById('tagline'),
     logo_image: document.getElementById('logo_image'),
     watermark_image: document.getElementById('watermark_image'),
@@ -94,7 +134,7 @@
     if (!d.success) { notify('danger', d.message||'Failed to load settings'); return; }
     const s = d.data.settings || {};
     for (const k of Object.keys(inputs)){
-      if (inputs[k].type === 'range') inputs[k].value = s[k] ?? inputs[k].value || 50;
+      if (inputs[k].type === 'range') inputs[k].value = s[k] ?? (inputs[k].value || 50);
       else inputs[k].value = s[k] ?? '';
     }
   }
@@ -111,16 +151,115 @@
   }
   Object.values(inputs).forEach(el => el.addEventListener('input', autosave));
 
-  // basic file picker using uploads-list
+  // system file picker using uploads-list
   async function pick(into){
-    const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/uploads-list?sub=public/gallery`);
-    const d = await r.json();
-    if (!d.success) { notify('danger', 'Failed to list files'); return; }
-    const name = prompt('Enter filename from gallery:\n' + (d.data.files||[]).map(f=>f.name).slice(0,50).join(', '));
-    if (name) { into.value = `/uploads/${slug}/public/gallery/${name}`; autosave(); }
+    try {
+      console.log('Fetching system files...');
+      const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/uploads-list?sub=system&t=${Date.now()}`);
+      console.log('Response status:', r.status);
+      
+      if (!r.ok) {
+        throw new Error(`HTTP ${r.status}: ${r.statusText}`);
+      }
+      
+      const d = await r.json();
+      console.log('Response data:', d);
+      
+      if (!d.success) { 
+        notify('danger', d.message || 'Failed to list system files'); 
+        return; 
+      }
+      
+      if (!d.data.files || d.data.files.length === 0) {
+        notify('warning', 'No system files found. Upload system files (logos, watermarks, icons) from the Image Library first.');
+        return;
+      }
+      
+      // Create a dropdown selection dialog
+      const fileNames = d.data.files.map(f => f.name);
+      
+      // Create modal for file selection
+      const modal = document.createElement('div');
+      modal.className = 'modal fade';
+      modal.innerHTML = `
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Select System File</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <p>Choose a file from your system uploads:</p>
+              <select class="form-select" id="fileSelect">
+                <option value="">-- Select a file --</option>
+                ${fileNames.map(name => `<option value="${name}">${name}</option>`).join('')}
+              </select>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary" id="selectFileBtn" disabled>Select File</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Add modal to page
+      document.body.appendChild(modal);
+      
+      // Show modal
+      const bootstrapModal = new bootstrap.Modal(modal);
+      bootstrapModal.show();
+      
+      // Handle file selection
+      const fileSelect = modal.querySelector('#fileSelect');
+      const selectFileBtn = modal.querySelector('#selectFileBtn');
+      
+      fileSelect.addEventListener('change', () => {
+        selectFileBtn.disabled = !fileSelect.value;
+      });
+      
+      selectFileBtn.addEventListener('click', () => {
+        const selectedName = fileSelect.value;
+        if (selectedName) {
+          into.value = `/uploads/${slug}/system/${selectedName}`;
+          autosave();
+          notify('success', `Selected: ${selectedName}`);
+          bootstrapModal.hide();
+        }
+      });
+      
+      // Clean up modal after it's hidden
+      modal.addEventListener('hidden.bs.modal', () => {
+        document.body.removeChild(modal);
+      });
+    } catch (error) {
+      console.error('Error in pick function:', error);
+      notify('danger', `Error: ${error.message}`);
+    }
   }
-  document.getElementById('pick_logo').addEventListener('click', () => pick(inputs.logo_image));
-  document.getElementById('pick_watermark').addEventListener('click', () => pick(inputs.watermark_image));
+  // Add debugging to button click handlers
+  const logoBtn = document.getElementById('pick_logo');
+  const watermarkBtn = document.getElementById('pick_watermark');
+  
+  if (logoBtn) {
+    console.log('Logo button found, adding click listener');
+    logoBtn.addEventListener('click', () => {
+      console.log('Logo button clicked!');
+      pick(inputs.logo_image);
+    });
+  } else {
+    console.error('Logo button not found!');
+  }
+  
+  if (watermarkBtn) {
+    console.log('Watermark button found, adding click listener');
+    watermarkBtn.addEventListener('click', () => {
+      console.log('Watermark button clicked!');
+      pick(inputs.watermark_image);
+    });
+  } else {
+    console.error('Watermark button not found!');
+  }
 
   load();
 })();
