@@ -78,7 +78,7 @@
                 <div class="card-body">
                     <div class="row g-4">
                         <!-- Hero Text Configuration -->
-                        <div class="col-lg-6">
+                        <div class="col-lg-4">
                             <div class="bg-light rounded p-4">
                                 <h5 class="text-primary mb-3">
                                     <i class="fas fa-text-width me-2"></i>Hero Text
@@ -118,8 +118,59 @@
                             </div>
                         </div>
                         
+                        <!-- Hero Background Image Configuration -->
+                        <div class="col-lg-4">
+                            <div class="bg-light rounded p-4">
+                                <h5 class="text-warning mb-3">
+                                    <i class="fas fa-image me-2"></i>Hero Background Image
+                                </h5>
+                                
+                                <div class="enhanced-field mb-3">
+                                    <label class="form-label fw-bold">Background Image</label>
+                                    <select class="form-select auto-save-field" 
+                                            id="hero_background_image_id" 
+                                            data-field="hero_background_image_id">
+                                        <option value="">No custom background (use default)</option>
+                                        <!-- Gallery images will be populated here -->
+                                    </select>
+                                    <div class="save-status mt-1"></div>
+                                    <small class="text-muted">Select an image from your gallery to use as the hero background. If none selected, defaults to a luxury stock image.</small>
+                                </div>
+                                
+                                <div class="enhanced-field mb-3">
+                                    <label class="form-label fw-bold">Background Opacity</label>
+                                    <div class="bg-white border rounded p-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="text-muted me-2 small">10%</span>
+                                            <input type="range" class="form-range auto-save-field flex-grow-1 mx-2" 
+                                                   id="hero_background_opacity" 
+                                                   data-field="hero_background_opacity"
+                                                   min="0.1" 
+                                                   max="1.0" 
+                                                   step="0.1" 
+                                                   value="0.6"
+                                                   style="background: linear-gradient(to right, #dc3545 0%, #ffc107 50%, #28a745 100%);">
+                                            <span class="text-muted ms-2 small">100%</span>
+                                        </div>
+                                        <div class="text-center">
+                                            <span class="badge bg-primary fs-6" id="opacity-value">60%</span>
+                                        </div>
+                                    </div>
+                                    <div class="save-status mt-1"></div>
+                                    <small class="text-muted">Adjust how transparent or opaque the background image appears. Lower values make text more readable over busy images.</small>
+                                </div>
+                                
+                                <!-- Background Image Preview -->
+                                <div class="enhanced-field">
+                                    <div class="bg-secondary rounded p-3 text-center d-none" id="hero-background-preview">
+                                        <img id="hero-background-preview-img" class="img-fluid rounded" style="max-height: 100px;" alt="Background preview">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <!-- Hero Buttons Configuration -->
-                        <div class="col-lg-6">
+                        <div class="col-lg-4">
                             <div class="bg-light rounded p-4">
                                 <h5 class="text-success mb-3">
                                     <i class="fas fa-mouse-pointer me-2"></i>Action Buttons
@@ -134,8 +185,8 @@
                                             <div class="card-body">
                                                 <div class="enhanced-field mb-2">
                                                     <input type="text" class="form-control form-control-sm auto-save-field" 
-                                                           id="hero_button_1" 
-                                                           data-field="hero_button_1"
+                                                           id="hero_button_1_text" 
+                                                           data-field="hero_button_1_text"
                                                            placeholder="View Calendar">
                                                     <div class="save-status mt-1"></div>
                                                 </div>
@@ -163,8 +214,8 @@
                                             <div class="card-body">
                                                 <div class="enhanced-field mb-2">
                                                     <input type="text" class="form-control form-control-sm auto-save-field" 
-                                                           id="hero_button_2" 
-                                                           data-field="hero_button_2"
+                                                           id="hero_button_2_text" 
+                                                           data-field="hero_button_2_text"
                                                            placeholder="Contact Me">
                                                     <div class="save-status mt-1"></div>
                                                 </div>
@@ -685,6 +736,61 @@
         padding: 0.5rem 0.75rem;
     }
 }
+
+/* Enhanced opacity slider styling */
+#hero_background_opacity {
+    height: 8px !important;
+    border-radius: 4px;
+    background: linear-gradient(to right, 
+        rgba(220,53,69,0.3) 0%, 
+        rgba(255,193,7,0.5) 25%, 
+        rgba(255,255,0,0.7) 50%, 
+        rgba(40,167,69,0.8) 75%, 
+        rgba(13,110,253,1) 100%) !important;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+#hero_background_opacity::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #007bff;
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#hero_background_opacity::-webkit-slider-thumb:hover {
+    background: #0056b3;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+#hero_background_opacity::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #007bff;
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    cursor: pointer;
+    -moz-appearance: none;
+}
+
+#hero_background_opacity::-webkit-slider-track {
+    height: 8px;
+    border-radius: 4px;
+    background: transparent;
+}
+
+#hero_background_opacity::-moz-range-track {
+    height: 8px;
+    border-radius: 4px;
+    background: transparent;
+}
 </style>
 
 <script>
@@ -700,6 +806,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.loadContent();
             this.bindAutoSave();
             this.loadGalleryOptions();
+            this.initOpacitySlider();
         },
         
         extractModelSlug() {
@@ -741,22 +848,21 @@ document.addEventListener('DOMContentLoaded', function() {
             this.showLoading();
             
             try {
-                const apiUrl = `/api/model-content/${this.currentModelSlug}/pages/1`;
+                const apiUrl = `/api/model-content/${this.currentModelSlug}/home-page`;
                 console.log('Fetching from URL:', apiUrl);
                 const response = await fetch(apiUrl);
                 const data = await response.json();
                 console.log('API Response:', data);
-                const items = (data && (data.items || (data.data && data.data.items))) || [];
-                if (data.success && items.length) {
-                    // Convert items array to field object
-                    const contentFields = {};
-                    items.forEach(item => {
-                        contentFields[item.content_key] = item.content_value;
-                    });
-                    console.log('Content fields to populate:', contentFields);
-                    this.populateFields(contentFields);
+                
+                if (data.success && data.content) {
+                    // Store content data for later use
+                    this.contentData = data.content;
+                    // Convert content object to the format expected by the form
+                    this.populateFields(data.content);
                 } else {
-                    console.warn('No home page content found, using defaults');
+                    console.error('Failed to load content:', data);
+                    alert('Failed to load page content');
+                    return;
                 }
             } catch (error) {
                 console.error('Error loading home page content:', error);
@@ -783,6 +889,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else {
                         element.value = value || '';
                         console.log(`Set ${field} to "${value}"`);
+                        
+                        // Special handling for opacity slider to update display
+                        if (field === 'hero_background_opacity' && element.type === 'range') {
+                            const opacityValue = document.getElementById('opacity-value');
+                            if (opacityValue) {
+                                const displayValue = Math.round(parseFloat(value || 0.6) * 100);
+                                opacityValue.textContent = `${displayValue}%`;
+                                console.log(`Updated opacity display to: ${displayValue}%`);
+                            }
+                        }
                     }
                 } else {
                     console.warn(`Element not found for field: ${field}`);
@@ -872,13 +988,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             try {
-                const response = await fetch(`/api/model-content/${this.currentModelSlug}/pages/1/${fieldName}`, {
+                const response = await fetch(`/api/model-content/${this.currentModelSlug}/home-page`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        content_value: value
+                        [fieldName]: value
                     })
                 });
                 
@@ -917,22 +1033,74 @@ document.addEventListener('DOMContentLoaded', function() {
         
         async loadGalleryOptions() {
             try {
-                // Load gallery images for portrait selection
-                const imagesResponse = await fetch(`/api/model-gallery/${this.currentModelSlug}/images`);
+                // Load approved gallery images for portrait selection
+                const imagesResponse = await fetch(`/api/model-gallery/${this.currentModelSlug}/available-images?status=approved&context=public_site`);
                 const imagesData = await imagesResponse.json();
                 
-                if (imagesData.success && imagesData.images) {
+                if (imagesData.success && imagesData.data && imagesData.data.images) {
                     const portraitSelect = document.getElementById('portrait_image_id');
-                    imagesData.images.forEach(image => {
-                        const option = document.createElement('option');
-                        option.value = image.id;
-                        option.textContent = `${image.filename} (${image.category || 'Uncategorized'})`;
-                        portraitSelect.appendChild(option);
+                    const heroBackgroundSelect = document.getElementById('hero_background_image_id');
+                    
+                    // Store image data for alt text population
+                    this.imageData = {};
+                    
+                    imagesData.data.images.forEach(image => {
+                        // Add option to portrait dropdown
+                        const portraitOption = document.createElement('option');
+                        portraitOption.value = image.id;
+                        portraitOption.textContent = `${image.filename} (${image.moderation_status || 'approved'})`;
+                        portraitSelect.appendChild(portraitOption);
+                        
+                        // Add option to hero background dropdown
+                        const backgroundOption = document.createElement('option');
+                        backgroundOption.value = image.id;
+                        backgroundOption.textContent = `${image.filename}`;
+                        heroBackgroundSelect.appendChild(backgroundOption);
+                        
+                        // Store image data for later use
+                        this.imageData[image.id] = {
+                            filename: image.filename,
+                            caption: image.caption,
+                            alt_text: image.alt_text
+                        };
                     });
+                    
+                    // Add change event listener to update preview and alt text
+                    portraitSelect.addEventListener('change', () => {
+                        this.updatePortraitPreview();
+                        this.updatePortraitAltText();
+                        // Also save the selection if it's an auto-save field
+                        if (portraitSelect.classList.contains('auto-save-field')) {
+                            this.scheduleAutoSave(portraitSelect);
+                        }
+                    });
+                    
+                    // Add change event listener for hero background image
+                    heroBackgroundSelect.addEventListener('change', () => {
+                        this.updateHeroBackgroundPreview();
+                        // Also save the selection if it's an auto-save field
+                        if (heroBackgroundSelect.classList.contains('auto-save-field')) {
+                            this.scheduleAutoSave(heroBackgroundSelect);
+                        }
+                    });
+                    
+                    // Set the selected value from content data if available
+                    if (this.contentData && this.contentData.portrait_image_id) {
+                        portraitSelect.value = this.contentData.portrait_image_id;
+                        console.log('Set portrait image selection to:', this.contentData.portrait_image_id);
+                        this.updatePortraitPreview();
+                    }
+                    
+                    // Set hero background selection from content data if available
+                    if (this.contentData && this.contentData.hero_background_image_id) {
+                        heroBackgroundSelect.value = this.contentData.hero_background_image_id;
+                        console.log('Set hero background image selection to:', this.contentData.hero_background_image_id);
+                        this.updateHeroBackgroundPreview();
+                    }
                 }
                 
                 // Load gallery sections for featured gallery selection
-                const sectionsResponse = await fetch(`/api/model-gallery/${this.currentModelSlug}/sections`);
+                const sectionsResponse = await fetch(`/api/model-content/${this.currentModelSlug}/gallery-sections`);
                 const sectionsData = await sectionsResponse.json();
                 
                 if (sectionsData.success && sectionsData.sections) {
@@ -943,6 +1111,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         option.textContent = `${section.title} (${section.images?.length || 0} images)`;
                         gallerySelect.appendChild(option);
                     });
+                    
+                    // Set the selected value from content data if available
+                    if (this.contentData && this.contentData.featured_gallery_section_id) {
+                        gallerySelect.value = this.contentData.featured_gallery_section_id;
+                        console.log('Set featured gallery selection to:', this.contentData.featured_gallery_section_id);
+                    }
                 }
                 
             } catch (error) {
@@ -953,6 +1127,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updatePreviews() {
             this.updatePortraitPreview();
             this.updateGalleryPreview();
+            this.updateHeroBackgroundPreview();
         },
         
         updatePortraitPreview() {
@@ -960,10 +1135,18 @@ document.addEventListener('DOMContentLoaded', function() {
             const preview = document.getElementById('portrait-preview');
             const previewImg = document.getElementById('portrait-preview-img');
             
-            if (portraitSelect.value) {
-                // Show preview (in real implementation, you'd fetch the image URL)
+            if (portraitSelect.value && portraitSelect.selectedOptions[0]) {
+                // Get filename from the selected option text
+                const selectedText = portraitSelect.selectedOptions[0].textContent;
+                const filename = selectedText.split(' (')[0]; // Extract filename before " (approved)"
+                
+                // Show preview with actual image
                 preview.classList.remove('d-none');
-                previewImg.src = `/uploads/${this.currentModelSlug}/placeholder.jpg`; // Placeholder
+                previewImg.src = `/uploads/${this.currentModelSlug}/thumbs/${filename}`;
+                previewImg.onerror = () => {
+                    // Fallback to original if thumbnail doesn't exist
+                    previewImg.src = `/uploads/${this.currentModelSlug}/originals/${filename}`;
+                };
             } else {
                 preview.classList.add('d-none');
             }
@@ -978,6 +1161,77 @@ document.addEventListener('DOMContentLoaded', function() {
                 // In real implementation, load gallery section images
             } else {
                 preview.classList.add('d-none');
+            }
+        },
+        
+        updateHeroBackgroundPreview() {
+            const backgroundSelect = document.getElementById('hero_background_image_id');
+            const preview = document.getElementById('hero-background-preview');
+            const previewImg = document.getElementById('hero-background-preview-img');
+            
+            if (backgroundSelect.value && backgroundSelect.selectedOptions[0]) {
+                // Get filename from the selected option text
+                const selectedText = backgroundSelect.selectedOptions[0].textContent;
+                const filename = selectedText.split(' (')[0]; // Extract filename
+                
+                // Show preview with actual image
+                preview.classList.remove('d-none');
+                previewImg.src = `/uploads/${this.currentModelSlug}/thumbs/${filename}`;
+                previewImg.onerror = () => {
+                    // Fallback to original if thumbnail doesn't exist
+                    previewImg.src = `/uploads/${this.currentModelSlug}/originals/${filename}`;
+                };
+            } else {
+                preview.classList.add('d-none');
+            }
+        },
+        
+        initOpacitySlider() {
+            const opacitySlider = document.getElementById('hero_background_opacity');
+            const opacityValue = document.getElementById('opacity-value');
+            
+            if (opacitySlider && opacityValue) {
+                // Update display when slider changes
+                opacitySlider.addEventListener('input', (e) => {
+                    const value = Math.round(parseFloat(e.target.value) * 100);
+                    opacityValue.textContent = `${value}%`;
+                });
+                
+                // Initialize display
+                const currentValue = Math.round(parseFloat(opacitySlider.value) * 100);
+                opacityValue.textContent = `${currentValue}%`;
+            }
+        },
+        
+        updatePortraitAltText() {
+            const portraitSelect = document.getElementById('portrait_image_id');
+            const altTextField = document.getElementById('portrait_alt');
+            
+            if (portraitSelect.value && this.imageData && this.imageData[portraitSelect.value]) {
+                const imageData = this.imageData[portraitSelect.value];
+                // Use caption first, fallback to existing alt_text, or generate from filename
+                let altText = imageData.caption || imageData.alt_text || '';
+                
+                // If no caption/alt_text, generate from filename
+                if (!altText) {
+                    altText = imageData.filename
+                        .replace(/\.[^/.]+$/, '') // Remove extension
+                        .replace(/_/g, ' ') // Replace underscores with spaces
+                        .replace(/([A-Z])/g, ' $1') // Add space before capital letters
+                        .replace(/\s+/g, ' ') // Collapse multiple spaces
+                        .trim()
+                        .toLowerCase()
+                        .replace(/^./, char => char.toUpperCase()); // Capitalize first letter
+                }
+                
+                // Set the alt text field value
+                altTextField.value = altText;
+                console.log('Auto-populated alt text:', altText);
+                
+                // Trigger auto-save for the alt text field
+                if (altTextField.classList.contains('auto-save-field')) {
+                    this.scheduleAutoSave(altTextField);
+                }
             }
         },
         

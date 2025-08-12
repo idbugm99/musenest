@@ -38,12 +38,19 @@
         <label class="form-label">Calendar Display Color</label>
         <input type="color" class="form-control form-control-color" id="cal_color" value="#22c55e">
       </div>
-      <div class="col-md-6">
+      <div class="col-md-4">
         <label class="form-label">Internal Notes</label>
         <input class="form-control" id="cal_notes" placeholder="Internal notes for planning only">
       </div>
+      <div class="col-md-2 d-flex align-items-end">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="cal_visible" checked>
+          <label class="form-check-label" for="cal_visible">Public View</label>
+        </div>
+      </div>
       <div class="col-12">
         <button class="btn btn-primary" id="cal_add">Add Calendar Period</button>
+        <button class="btn btn-secondary ms-2" id="cal_cancel" style="display:none;">Cancel Edit</button>
       </div>
     </div>
   </div>
@@ -55,14 +62,113 @@
 </div>
 
 <script>
+function notify(type, message) {
+  // Simple notification function - you can enhance this with a proper toast system
+  const alertClass = type === 'success' ? 'alert-success' : (type === 'warning' ? 'alert-warning' : 'alert-danger');
+  const alertDiv = document.createElement('div');
+  alertDiv.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+  alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+  alertDiv.innerHTML = `
+    ${message}
+    <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+  `;
+  document.body.appendChild(alertDiv);
+  setTimeout(() => alertDiv.remove(), 5000);
+}
+
 (function(){
-  let slug = {{{json model.slug}}}; if (!slug){ const m=location.pathname.match(/^\/([^\/]+)\/admin/); if(m) slug=m[1]; }
+  let slug = '{{model.slug}}'; 
+  if (!slug){ 
+    const m = location.pathname.match(/^\/([^\/]+)\/admin/); 
+    if(m) slug = m[1]; 
+  }
   const list = document.getElementById('cal_list');
+  let editingId = null;
+  let modelTimezone = 'UTC';
+  let items = []; // Move items to higher scope so event listeners can access it
+
+  // Format date in model's timezone
+  function formatDateInTimezone(dateStr, timezone) {
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-US', { 
+        timeZone: timezone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+    } catch (e) {
+      return dateStr.split('T')[0]; // fallback to ISO date
+    }
+  }
+
+  // Format date range display
+  function formatDateRange(startDate, endDate, timezone) {
+    const start = formatDateInTimezone(startDate, timezone);
+    const end = formatDateInTimezone(endDate, timezone);
+    
+    if (start === end) {
+      return `${start} (${timezone.replace('America/', '').replace('_', ' ')})`;
+    } else {
+      return `${start} → ${end} (${timezone.replace('America/', '').replace('_', ' ')})`;
+    }
+  }
+  
+  // Function to handle the actual deletion after confirmation
+  async function proceedWithDeletion(button, id) {
+    try {
+      button.disabled = true;
+      button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      
+      const response = await fetch(`/api/model-calendar/${encodeURIComponent(slug)}/${id}`, { 
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (!data.success) { 
+        notify('danger', data.error || data.message || 'Delete failed'); 
+        return; 
+      } 
+      
+      notify('success', 'Calendar period deleted successfully'); 
+      clearForm();
+      load();
+      
+    } catch (error) {
+      console.error('Delete error:', error);
+      notify('danger', 'Network error: ' + error.message);
+    } finally {
+      button.disabled = false;
+      button.innerHTML = 'Delete';
+    }
+  }
+
+  function clearForm() {
+    document.getElementById('cal_start').value = '';
+    document.getElementById('cal_end').value = '';
+    document.getElementById('cal_all_day').checked = true;
+    document.getElementById('cal_location').value = '';
+    document.getElementById('cal_status').value = 'available';
+    document.getElementById('cal_color').value = '#22c55e';
+    document.getElementById('cal_notes').value = '';
+    document.getElementById('cal_visible').checked = true;
+    editingId = null;
+    document.getElementById('cal_add').textContent = 'Add Calendar Period';
+    document.getElementById('cal_cancel').style.display = 'none';
+  }
 
   async function load(){
     const r = await fetch(`/api/model-calendar/${encodeURIComponent(slug)}`);
     const d = await r.json();
     if (!d.success){ list.innerHTML = '<div class="text-danger">Failed to load</div>'; return; }
+    
+    // Update timezone from API response
+    modelTimezone = d.data.timezone || 'UTC';
+    
     const items = (d.data.periods || []).sort((a,b)=> new Date(a.start_date) - new Date(b.start_date));
     if (!items.length){ list.innerHTML = '<div class="text-muted">No calendar periods yet.</div>'; return; }
     list.innerHTML = items.map(it => `
@@ -71,18 +177,123 @@
           <div>
             <strong>${it.location || '—'}</strong>
             <span class=\"badge ms-2 ${it.status==='available'?'bg-success':(it.status==='unavailable'?'bg-secondary':(it.status==='travel'?'bg-info':'bg-warning text-dark'))}\">${it.status}</span>
+            ${it.is_visible ? '<span class="badge bg-primary ms-1">Public</span>' : '<span class="badge bg-secondary ms-1">Hidden</span>'}
           </div>
-          <div class=\"text-muted small\">${it.start_date} → ${it.end_date} ${it.all_day? '(all day)':''}</div>
+          <div class=\"text-muted small\">${formatDateRange(it.start_date, it.end_date, modelTimezone)} ${it.all_day? '(all day)':''}</div>
         </div>
         ${it.notes ? `<div class=\"small text-muted mt-1\">${it.notes.replace(/</g,'&lt;')}</div>`:''}
-        <div class=\"mt-2\">
+        <div class=\"mt-2 d-flex gap-2\">
+          <button class=\"btn btn-sm btn-outline-primary btn-edit\" data-id=\"${it.id}\">Edit</button>
+          <button class=\"btn btn-sm ${it.is_visible ? 'btn-outline-secondary' : 'btn-outline-primary'} btn-toggle\" data-id=\"${it.id}\" data-visible=\"${it.is_visible}\">${it.is_visible ? 'Hide' : 'Show'}</button>
           <button class=\"btn btn-sm btn-outline-danger btn-del\" data-id=\"${it.id}\">Delete</button>
         </div>
       </div>`).join('');
-    list.querySelectorAll('.btn-del').forEach(b=>b.addEventListener('click', async ()=>{
-      if (!confirm('Delete this period?')) return; const id=b.getAttribute('data-id');
-      const r = await fetch(`/api/model-calendar/${encodeURIComponent(slug)}/${id}`, { method:'DELETE' }); const d = await r.json();
-      if (!d.success){ notify('danger', d.message||'Delete failed'); return; } notify('success','Deleted'); load();
+
+    // Bind event listeners for delete buttons
+    const deleteButtons = list.querySelectorAll('.btn-del');
+    
+    if (deleteButtons.length === 0) {
+      return;
+    }
+    
+    deleteButtons.forEach((b) => {
+      b.addEventListener('click', async (event)=>{
+        event.preventDefault();
+        event.stopPropagation();
+        
+        const id = b.getAttribute('data-id');
+        
+        // Create a custom confirmation modal instead of using confirm()
+        const confirmModal = document.createElement('div');
+        confirmModal.className = 'modal fade';
+        confirmModal.innerHTML = `
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <p>Are you sure you want to delete this calendar period?</p>
+                <p class="text-muted small">This action cannot be undone.</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        // Add modal to page
+        document.body.appendChild(confirmModal);
+        
+        // Show modal
+        const bootstrapModal = new bootstrap.Modal(confirmModal);
+        bootstrapModal.show();
+        
+        // Handle confirmation
+        const confirmBtn = confirmModal.querySelector('#confirmDeleteBtn');
+        confirmBtn.addEventListener('click', () => {
+          bootstrapModal.hide();
+          document.body.removeChild(confirmModal);
+          
+          // Continue with deletion logic
+          proceedWithDeletion(b, id);
+        });
+        
+        // Handle modal close (user cancelled)
+        confirmModal.addEventListener('hidden.bs.modal', () => {
+          // Check if modal still exists before trying to remove it
+          if (confirmModal.parentNode) {
+            document.body.removeChild(confirmModal);
+          }
+        });
+        
+        return; // Stop here, deletion will continue in proceedWithDeletion function
+      });
+    });
+
+
+
+    list.querySelectorAll('.btn-edit').forEach(b=>b.addEventListener('click', async ()=>{
+      const id = b.getAttribute('data-id');
+      const item = items.find(it => it.id == id);
+      if (!item) return;
+      
+      // Populate form with existing data
+      document.getElementById('cal_start').value = item.start_date.split('T')[0];
+      document.getElementById('cal_end').value = item.end_date.split('T')[0];
+      document.getElementById('cal_all_day').checked = item.all_day;
+      document.getElementById('cal_location').value = item.location || '';
+      document.getElementById('cal_status').value = item.status;
+      document.getElementById('cal_color').value = item.color || '#22c55e';
+      document.getElementById('cal_notes').value = item.notes || '';
+      document.getElementById('cal_visible').checked = item.is_visible;
+      
+      editingId = id;
+      document.getElementById('cal_add').textContent = 'Update Calendar Period';
+      document.getElementById('cal_cancel').style.display = 'inline-block';
+      
+      // Scroll to form
+      document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+    }));
+
+    list.querySelectorAll('.btn-toggle').forEach(b=>b.addEventListener('click', async ()=>{
+      const id = b.getAttribute('data-id');
+      const isVisible = b.getAttribute('data-visible') === 'true';
+      const newVisibility = !isVisible;
+      
+      const r = await fetch(`/api/model-calendar/${encodeURIComponent(slug)}/${id}/visibility`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ is_visible: newVisibility })
+      });
+      const d = await r.json();
+      
+      if (!d.success){ notify('danger', d.message||'Toggle failed'); return; }
+      notify('success', newVisibility ? 'Made visible to public' : 'Hidden from public');
+      load();
     }));
   }
 
@@ -94,12 +305,40 @@
       location: document.getElementById('cal_location').value.trim(),
       status: document.getElementById('cal_status').value,
       color: document.getElementById('cal_color').value,
-      notes: document.getElementById('cal_notes').value.trim()
+      notes: document.getElementById('cal_notes').value.trim(),
+      is_visible: document.getElementById('cal_visible').checked
     };
     if (!body.start_date || !body.end_date){ notify('warning','Choose start/end dates'); return; }
-    const r = await fetch(`/api/model-calendar/${encodeURIComponent(slug)}`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
-    const d = await r.json(); if (!d.success){ notify('danger', d.message||'Add failed'); return; }
-    notify('success','Added'); load();
+    
+    let r, d;
+    if (editingId) {
+      // Update existing
+      r = await fetch(`/api/model-calendar/${encodeURIComponent(slug)}/${editingId}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body)
+      });
+      d = await r.json();
+      if (!d.success){ notify('danger', d.message||'Update failed'); return; }
+      notify('success','Updated');
+    } else {
+      // Create new
+      r = await fetch(`/api/model-calendar/${encodeURIComponent(slug)}`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(body)
+      });
+      d = await r.json();
+      if (!d.success){ notify('danger', d.message||'Add failed'); return; }
+      notify('success','Added');
+    }
+    
+    clearForm();
+    load();
+  });
+
+  document.getElementById('cal_cancel').addEventListener('click', ()=>{
+    clearForm();
   });
 
   load();
