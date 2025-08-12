@@ -1,0 +1,202 @@
+{{!-- Dark Theme - Calendar Page --}}
+<div class="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+    <div class="min-h-screen bg-opacity-90">
+        <div class="container mx-auto px-4 py-12">
+            {{!-- Page Header --}}
+            <div class="text-center mb-16">
+                <h1 class="text-5xl font-bold mb-8 text-white tracking-wide">
+                    Calendar
+                </h1>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                    Current availability and travel schedule. Dark mode optimized for your viewing comfort.
+                </p>
+            </div>
+
+            {{!-- Calendar Container --}}
+            <div class="max-w-7xl mx-auto">
+                {{!-- Calendar Navigation --}}
+                <div class="flex justify-between items-center mb-12">
+                    <button id="prev-month" class="px-8 py-4 rounded-xl bg-gray-800 text-white font-bold text-lg border border-gray-600 hover:bg-gray-700 transition-all duration-300 shadow-xl">
+                        ← Previous
+                    </button>
+                    <h2 id="month-title" class="text-4xl font-bold text-white tracking-wide"></h2>
+                    <button id="next-month" class="px-8 py-4 rounded-xl bg-gray-800 text-white font-bold text-lg border border-gray-600 hover:bg-gray-700 transition-all duration-300 shadow-xl">
+                        Next →
+                    </button>
+                </div>
+
+                {{!-- Calendar Grid --}}
+                <div class="bg-gray-800 rounded-2xl shadow-2xl border border-gray-600 overflow-hidden mb-12">
+                    {{!-- Calendar Header --}}
+                    <div class="grid grid-cols-7 bg-gradient-to-r from-gray-900 to-black border-b border-gray-600">
+                        <div class="p-6 text-center font-bold text-gray-200 border-r border-gray-600">Sun</div>
+                        <div class="p-6 text-center font-bold text-gray-200 border-r border-gray-600">Mon</div>
+                        <div class="p-6 text-center font-bold text-gray-200 border-r border-gray-600">Tue</div>
+                        <div class="p-6 text-center font-bold text-gray-200 border-r border-gray-600">Wed</div>
+                        <div class="p-6 text-center font-bold text-gray-200 border-r border-gray-600">Thu</div>
+                        <div class="p-6 text-center font-bold text-gray-200 border-r border-gray-600">Fri</div>
+                        <div class="p-6 text-center font-bold text-gray-200">Sat</div>
+                    </div>
+                    
+                    {{!-- Calendar Body --}}
+                    <div id="calendar-grid">
+                        <div class="text-center py-20">
+                            <div class="animate-spin rounded-full h-12 w-12 border-4 border-gray-700 border-t-white mx-auto mb-8"></div>
+                            <p class="text-xl text-gray-400">Loading calendar...</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{!-- Legend --}}
+                <div class="flex flex-wrap justify-center gap-8 mb-12">
+                    <div class="flex items-center">
+                        <div class="w-5 h-5 rounded mr-3 shadow-lg" style="background-color: #10B981;"></div>
+                        <span class="text-lg text-gray-200 font-medium">Available</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-5 h-5 rounded mr-3 shadow-lg" style="background-color: #3B82F6;"></div>
+                        <span class="text-lg text-gray-200 font-medium">Travel</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-5 h-5 rounded mr-3 shadow-lg" style="background-color: #F59E0B;"></div>
+                        <span class="text-lg text-gray-200 font-medium">Vacation</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-5 h-5 rounded mr-3 shadow-lg" style="background-color: #6B7280;"></div>
+                        <span class="text-lg text-gray-200 font-medium">Unavailable</span>
+                    </div>
+                </div>
+
+                {{!-- Contact Call-to-Action --}}
+                <div class="bg-gray-800 rounded-2xl shadow-2xl border border-gray-600 p-12 text-center">
+                    <h3 class="text-3xl font-bold mb-6 text-white">
+                        Schedule an Appointment
+                    </h3>
+                    <p class="text-gray-300 mb-8 text-xl leading-relaxed">
+                        Contact me to arrange a meeting or inquire about availability in your area.
+                    </p>
+                    <a href="/{{modelSlug}}/contact{{previewParam}}" 
+                       class="inline-block px-10 py-5 bg-white text-gray-900 font-bold text-xl rounded-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300">
+                        Get in Touch
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{{!-- Calendar JavaScript --}}
+<script>
+(function() {
+    const slug = {{{json modelSlug}}};
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth() + 1;
+    
+    const calendarGrid = document.getElementById('calendar-grid');
+    const monthTitle = document.getElementById('month-title');
+    const prevButton = document.getElementById('prev-month');
+    const nextButton = document.getElementById('next-month');
+    
+    async function loadCalendar(year = currentYear, month = currentMonth) {
+        try {
+            const response = await fetch(`/api/model-calendar/${slug}?year=${year}&month=${month}`);
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to load calendar');
+            }
+            
+            const calendar = data.data.calendar;
+            currentYear = year;
+            currentMonth = month;
+            
+            // Update month title
+            monthTitle.textContent = `${calendar.monthName} ${calendar.year}`;
+            
+            // Generate calendar grid
+            let gridHtml = '';
+            
+            calendar.weeks.forEach((week, weekIndex) => {
+                gridHtml += `<div class="grid grid-cols-7 border-t border-gray-600 relative" style="min-height: ${96 + (week.spans.length * 28)}px;">`;
+                
+                // Day cells
+                week.days.forEach((day, dayIndex) => {
+                    const isToday = day === new Date().getDate() && 
+                                  currentMonth === (new Date().getMonth() + 1) && 
+                                  currentYear === new Date().getFullYear();
+                    
+                    gridHtml += `
+                        <div class="p-3 border-r border-gray-600 ${day === 0 ? 'bg-black bg-opacity-30' : ''} relative min-h-24">
+                            ${day > 0 ? `
+                                <div class="text-sm font-bold mb-2 ${isToday ? 'text-yellow-400 bg-yellow-600 bg-opacity-20 rounded-full w-8 h-8 flex items-center justify-center border border-yellow-500' : 'text-gray-200'} relative z-10">
+                                    ${day}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+                
+                // Add availability spans positioned absolutely over the week
+                week.spans.forEach((span, spanIndex) => {
+                    gridHtml += `
+                        <div class="absolute text-xs rounded px-3 py-1 z-10 flex items-center justify-center font-bold shadow-2xl text-white"
+                             style="background-color: ${span.color}; 
+                                    left: ${span.start_pos * 14.285714}%; 
+                                    width: ${span.width * 14.285714}%;
+                                    top: ${40 + (spanIndex * 28)}px; 
+                                    height: 26px;
+                                    margin-left: 2px;
+                                    margin-right: 2px;
+                                    border: 1px solid rgba(255,255,255,0.3);
+                                    backdrop-filter: blur(2px);">
+                            <span class="truncate text-xs font-bold">
+                                ${span.location}
+                                ${span.status === 'vacation' ? ' - Vacation' : ''}
+                            </span>
+                        </div>
+                    `;
+                });
+                
+                gridHtml += '</div>';
+            });
+            
+            calendarGrid.innerHTML = gridHtml;
+            
+        } catch (error) {
+            console.error('Error loading calendar:', error);
+            calendarGrid.innerHTML = `
+                <div class="text-center py-20 text-red-400">
+                    <div class="text-6xl mb-8 opacity-50">⚠️</div>
+                    <h3 class="text-2xl font-bold mb-4">Calendar Unavailable</h3>
+                    <p class="text-lg">Please contact me directly for scheduling information.</p>
+                </div>
+            `;
+        }
+    }
+    
+    // Navigation event listeners
+    prevButton.addEventListener('click', () => {
+        if (currentMonth === 1) {
+            currentMonth = 12;
+            currentYear--;
+        } else {
+            currentMonth--;
+        }
+        loadCalendar(currentYear, currentMonth);
+    });
+    
+    nextButton.addEventListener('click', () => {
+        if (currentMonth === 12) {
+            currentMonth = 1;
+            currentYear++;
+        } else {
+            currentMonth++;
+        }
+        loadCalendar(currentYear, currentMonth);
+    });
+    
+    // Load initial calendar
+    loadCalendar();
+})();
+</script>

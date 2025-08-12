@@ -35,8 +35,15 @@
         </select>
       </div>
       <div class="col-md-3">
-        <label class="form-label">Calendar Display Color</label>
-        <input type="color" class="form-control form-control-color" id="cal_color" value="#22c55e">
+        <label class="form-label">Status Color</label>
+        <div class="form-control-plaintext">
+          <small class="text-muted">Colors are automatically set based on availability status</small>
+          <div class="mt-2">
+            <small class="text-muted">
+              <strong>Available:</strong> Green | <strong>Travel:</strong> Blue | <strong>Vacation:</strong> Orange | <strong>Unavailable:</strong> Gray
+            </small>
+          </div>
+        </div>
       </div>
       <div class="col-md-4">
         <label class="form-label">Internal Notes</label>
@@ -114,6 +121,17 @@ function notify(type, message) {
     }
   }
   
+  // Get standardized color for status (matches API)
+  function getStatusColor(status) {
+    const colors = {
+      'available': '#10B981',    // Green
+      'travel': '#3B82F6',       // Blue
+      'vacation': '#F59E0B',     // Orange/Yellow
+      'unavailable': '#6B7280'   // Gray
+    };
+    return colors[status] || '#6B7280';
+  }
+  
   // Function to handle the actual deletion after confirmation
   async function proceedWithDeletion(button, id) {
     try {
@@ -153,7 +171,6 @@ function notify(type, message) {
     document.getElementById('cal_all_day').checked = true;
     document.getElementById('cal_location').value = '';
     document.getElementById('cal_status').value = 'available';
-    document.getElementById('cal_color').value = '#22c55e';
     document.getElementById('cal_notes').value = '';
     document.getElementById('cal_visible').checked = true;
     editingId = null;
@@ -172,7 +189,7 @@ function notify(type, message) {
     const items = (d.data.periods || []).sort((a,b)=> new Date(a.start_date) - new Date(b.start_date));
     if (!items.length){ list.innerHTML = '<div class="text-muted">No calendar periods yet.</div>'; return; }
     list.innerHTML = items.map(it => `
-      <div class=\"border rounded p-2 mb-2\" style=\"border-left: 6px solid ${it.color || '#22c55e'}\">
+      <div class=\"border rounded p-2 mb-2\" style=\"border-left: 6px solid ${getStatusColor(it.status)}\">
         <div class=\"d-flex align-items-center justify-content-between\">
           <div>
             <strong>${it.location || '—'}</strong>
@@ -267,7 +284,7 @@ function notify(type, message) {
       document.getElementById('cal_all_day').checked = item.all_day;
       document.getElementById('cal_location').value = item.location || '';
       document.getElementById('cal_status').value = item.status;
-      document.getElementById('cal_color').value = item.color || '#22c55e';
+              // Color is automatically set based on status
       document.getElementById('cal_notes').value = item.notes || '';
       document.getElementById('cal_visible').checked = item.is_visible;
       
@@ -304,7 +321,7 @@ function notify(type, message) {
       all_day: document.getElementById('cal_all_day').checked,
       location: document.getElementById('cal_location').value.trim(),
       status: document.getElementById('cal_status').value,
-      color: document.getElementById('cal_color').value,
+      // Color is automatically set based on status
       notes: document.getElementById('cal_notes').value.trim(),
       is_visible: document.getElementById('cal_visible').checked
     };

@@ -1,0 +1,200 @@
+{{!-- Luxury Theme - Calendar Page with Visual Monthly Grid --}}
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div class="min-h-screen bg-opacity-50 backdrop-blur-sm">
+        <div class="container mx-auto px-4 py-12">
+            {{!-- Page Header --}}
+            <div class="text-center mb-16">
+                <h1 class="text-6xl font-thin mb-8 text-white tracking-wide">
+                    Availability Calendar
+                </h1>
+                <p class="text-xl text-slate-300 max-w-4xl mx-auto leading-relaxed">
+                    Exclusive appointments and travel schedule. Contact me directly to arrange a sophisticated encounter.
+                </p>
+            </div>
+
+            {{!-- Calendar Container --}}
+            <div class="max-w-7xl mx-auto">
+                {{!-- Calendar Navigation --}}
+                <div class="flex justify-between items-center mb-12">
+                    <button id="prev-month" class="px-8 py-4 rounded-full bg-white bg-opacity-10 text-white font-light text-lg backdrop-blur-xl border border-white border-opacity-20 hover:bg-opacity-20 transition-all duration-500 tracking-wide">
+                        ← Previous
+                    </button>
+                    <h2 id="month-title" class="text-4xl font-thin text-white tracking-wider"></h2>
+                    <button id="next-month" class="px-8 py-4 rounded-full bg-white bg-opacity-10 text-white font-light text-lg backdrop-blur-xl border border-white border-opacity-20 hover:bg-opacity-20 transition-all duration-500 tracking-wide">
+                        Next →
+                    </button>
+                </div>
+
+                {{!-- Calendar Grid --}}
+                <div class="bg-white bg-opacity-10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white border-opacity-20 overflow-hidden mb-12">
+                    {{!-- Calendar Header --}}
+                    <div class="grid grid-cols-7 bg-gradient-to-r from-slate-800 to-slate-700 border-b border-white border-opacity-10">
+                        <div class="p-6 text-center font-light text-slate-200 border-r border-white border-opacity-10 tracking-wide">Sun</div>
+                        <div class="p-6 text-center font-light text-slate-200 border-r border-white border-opacity-10 tracking-wide">Mon</div>
+                        <div class="p-6 text-center font-light text-slate-200 border-r border-white border-opacity-10 tracking-wide">Tue</div>
+                        <div class="p-6 text-center font-light text-slate-200 border-r border-white border-opacity-10 tracking-wide">Wed</div>
+                        <div class="p-6 text-center font-light text-slate-200 border-r border-white border-opacity-10 tracking-wide">Thu</div>
+                        <div class="p-6 text-center font-light text-slate-200 border-r border-white border-opacity-10 tracking-wide">Fri</div>
+                        <div class="p-6 text-center font-light text-slate-200 tracking-wide">Sat</div>
+                    </div>
+                    
+                    {{!-- Calendar Body --}}
+                    <div id="calendar-grid">
+                        <div class="text-center py-20">
+                            <div class="animate-spin rounded-full h-12 w-12 border-2 border-white border-opacity-20 border-t-white mx-auto mb-8"></div>
+                            <p class="text-xl text-slate-300">Loading schedule...</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{!-- Legend --}}
+                <div class="flex flex-wrap justify-center gap-8 mb-12">
+                    <div class="flex items-center">
+                        <div class="w-5 h-5 rounded mr-3 shadow-lg" style="background-color: #10B981;"></div>
+                        <span class="text-lg text-slate-200 font-light tracking-wide">Available</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-5 h-5 rounded mr-3 shadow-lg" style="background-color: #3B82F6;"></div>
+                        <span class="text-lg text-slate-200 font-light tracking-wide">Travel</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-5 h-5 rounded mr-3 shadow-lg" style="background-color: #F59E0B;"></div>
+                        <span class="text-lg text-slate-200 font-light tracking-wide">Vacation</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-5 h-5 rounded mr-3 shadow-lg" style="background-color: #6B7280;"></div>
+                        <span class="text-lg text-slate-200 font-light tracking-wide">Unavailable</span>
+                    </div>
+                </div>
+
+                {{!-- Contact Call-to-Action --}}
+                <div class="bg-white bg-opacity-10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white border-opacity-20 p-12 text-center">
+                    <h3 class="text-3xl font-light mb-6 text-white tracking-wide">
+                        Arrange an Exclusive Appointment
+                    </h3>
+                    <p class="text-slate-300 mb-10 text-xl leading-relaxed max-w-3xl mx-auto">
+                        For exclusive consultations and sophisticated encounters, please reach out through my preferred contact method.
+                    </p>
+                    <a href="/{{modelSlug}}/contact{{previewParam}}" 
+                       class="inline-block px-12 py-5 rounded-full bg-white text-slate-800 font-medium text-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-500 tracking-wide">
+                        Contact Me
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{!-- Calendar JavaScript --}}
+<script>
+(function() {
+    const slug = {{{json modelSlug}}};
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth() + 1;
+    
+    const calendarGrid = document.getElementById('calendar-grid');
+    const monthTitle = document.getElementById('month-title');
+    const prevButton = document.getElementById('prev-month');
+    const nextButton = document.getElementById('next-month');
+    
+    async function loadCalendar(year = currentYear, month = currentMonth) {
+        try {
+            const response = await fetch(`/api/model-calendar/${slug}?year=${year}&month=${month}`);
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to load calendar');
+            }
+            
+            const calendar = data.data.calendar;
+            currentYear = year;
+            currentMonth = month;
+            
+            // Update month title
+            monthTitle.textContent = `${calendar.monthName} ${calendar.year}`;
+            
+            // Generate calendar grid
+            let gridHtml = '';
+            
+            calendar.weeks.forEach((week, weekIndex) => {
+                gridHtml += `<div class="grid grid-cols-7 border-t border-white border-opacity-10 relative" style="min-height: ${96 + (week.spans.length * 28)}px;">`;
+                
+                // Day cells
+                week.days.forEach((day, dayIndex) => {
+                    const isToday = day === new Date().getDate() && 
+                                  currentMonth === (new Date().getMonth() + 1) && 
+                                  currentYear === new Date().getFullYear();
+                    
+                    gridHtml += `
+                        <div class="p-3 border-r border-white border-opacity-10 ${day === 0 ? 'bg-black bg-opacity-20' : ''} relative min-h-24">
+                            ${day > 0 ? `
+                                <div class="text-sm font-light mb-2 ${isToday ? 'text-yellow-400' : 'text-slate-200'} relative z-10 tracking-wide">
+                                    ${day}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+                
+                // Add availability spans positioned absolutely over the week
+                week.spans.forEach((span, spanIndex) => {
+                    gridHtml += `
+                        <div class="absolute text-xs rounded px-2 py-1 z-10 flex items-center justify-center font-medium shadow-2xl text-white"
+                             style="background-color: ${span.color}; 
+                                    left: ${span.start_pos * 14.285714}%; 
+                                    width: ${span.width * 14.285714}%;
+                                    top: ${36 + (spanIndex * 28)}px; 
+                                    height: 24px;
+                                    margin-left: 1px;
+                                    margin-right: 1px;
+                                    backdrop-filter: blur(4px);">
+                            <span class="truncate text-xs font-light tracking-wide">
+                                ${span.location}
+                                ${span.status === 'vacation' ? ' - Vacation' : ''}
+                            </span>
+                        </div>
+                    `;
+                });
+                
+                gridHtml += '</div>';
+            });
+            
+            calendarGrid.innerHTML = gridHtml;
+            
+        } catch (error) {
+            console.error('Error loading calendar:', error);
+            calendarGrid.innerHTML = `
+                <div class="text-center py-20 text-red-300">
+                    <div class="text-6xl mb-8 opacity-50">⚠️</div>
+                    <h3 class="text-2xl font-light mb-4">Calendar Unavailable</h3>
+                    <p class="text-lg">Please contact me directly for scheduling.</p>
+                </div>
+            `;
+        }
+    }
+    
+    // Navigation event listeners
+    prevButton.addEventListener('click', () => {
+        if (currentMonth === 1) {
+            currentMonth = 12;
+            currentYear--;
+        } else {
+            currentMonth--;
+        }
+        loadCalendar(currentYear, currentMonth);
+    });
+    
+    nextButton.addEventListener('click', () => {
+        if (currentMonth === 12) {
+            currentMonth = 1;
+            currentYear++;
+        } else {
+            currentMonth++;
+        }
+        loadCalendar(currentYear, currentMonth);
+    });
+    
+    // Load initial calendar
+    loadCalendar();
+})();
+</script>
