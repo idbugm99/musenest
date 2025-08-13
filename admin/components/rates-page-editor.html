@@ -120,14 +120,37 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <div class="border rounded p-3 h-100">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h5 class="mb-0 text-warning"><i class="fas fa-credit-card me-2"></i>Payment & Booking</h5>
-                                    <div class="input-group input-group-sm" style="max-width: 380px;">
-                                        <input class="form-control" placeholder="Add term" id="payment_term_text">
-                                        <button class="btn btn-warning" id="add_payment_term">Add</button>
-                                    </div>
+                                <h5 class="mb-3 text-warning"><i class="fas fa-credit-card me-2"></i>Payment & Booking</h5>
+                                
+                                <!-- Payment Terms -->
+                                <div class="mb-3">
+                                    <label class="form-label text-primary fw-bold">Payment Terms</label>
+                                    <textarea class="form-control auto-save-input" rows="3" 
+                                              data-field="payment_terms" 
+                                              placeholder="e.g., Cash accepted • Payment due at start • Credit cards +3% fee"
+                                              id="payment_terms"></textarea>
+                                    <small class="form-text text-muted">Separate terms with " • " (bullet point space)</small>
                                 </div>
-                                <ul class="list-group list-group-flush small" id="list_payment"></ul>
+                                
+                                <!-- Booking Policies -->
+                                <div class="mb-3">
+                                    <label class="form-label text-success fw-bold">Booking Policies</label>
+                                    <textarea class="form-control auto-save-input" rows="3" 
+                                              data-field="booking_policies" 
+                                              placeholder="e.g., Advance booking recommended • Same day +$100 • 24hr cancellation"
+                                              id="booking_policies"></textarea>
+                                    <small class="form-text text-muted">Separate policies with " • " (bullet point space)</small>
+                                </div>
+                                
+                                <!-- Additional Services -->
+                                <div class="mb-0">
+                                    <label class="form-label text-purple fw-bold">Additional Services</label>
+                                    <textarea class="form-control auto-save-input" rows="3" 
+                                              data-field="additional_services" 
+                                              placeholder="e.g., Dinner dates +$100 • Travel +$500/day • Late night +$150"
+                                              id="additional_services"></textarea>
+                                    <small class="form-text text-muted">Separate services with " • " (bullet point space)</small>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -194,6 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.loadHeader();
             this.loadTables();
             this.bindHeaderAutosave();
+            this.bindPaymentBookingAutosave();
         },
         
         extractModelSlug() {
@@ -278,6 +302,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
                 publishToggle.addEventListener('change', savePublish);
             }
+        },
+        
+        bindPaymentBookingAutosave() {
+            const fields = document.querySelectorAll('.auto-save-input');
+            fields.forEach(field => {
+                const key = field.dataset.field;
+                const save = async () => {
+                    const value = field.value;
+                    try {
+                        await fetch(`/api/model-content/${this.currentModelSlug}/pages/5/${encodeURIComponent(key)}`, {
+                            method: 'PUT', 
+                            headers: { 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify({ content_value: value })
+                        });
+                        console.log(`Saved ${key}:`, value);
+                    } catch (error) {
+                        console.error(`Error saving ${key}:`, error);
+                    }
+                };
+                field.addEventListener('input', () => { 
+                    clearTimeout(this.saveTimeout); 
+                    this.saveTimeout = setTimeout(save, 1500); 
+                });
+                field.addEventListener('change', save);
+            });
         },
         
         updatePublishStatus(isPublished) {
