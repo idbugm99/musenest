@@ -3,163 +3,185 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
             <h1 class="text-4xl md:text-5xl font-bold mb-6 basic-heading">
-                Services & Rates
+                {{#if content.page_title}}{{content.page_title}}{{else}}Rates & Donations{{/if}}
             </h1>
             <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto">
-                {{content.ratesIntro}}
+                {{#if content.page_subtitle}}{{content.page_subtitle}}{{else}}Investment in time together. All arrangements are for companionship and social time only.{{/if}}
             </p>
         </div>
     </div>
 </section>
 
-<!-- Services Grid -->
-<section class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {{#if services}}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {{#each services}}
-            <div class="basic-card p-8 text-center" data-aos="fade-up" data-aos-delay="{{@index}}00">
-                <div class="w-16 h-16 mx-auto mb-6 bg-basic-primary rounded-lg flex items-center justify-center">
-                    <i class="{{this.icon}} text-2xl text-white"></i>
-                </div>
-                <h3 class="text-xl font-bold mb-4 basic-heading">{{this.name}}</h3>
-                <p class="text-gray-600 mb-6">{{this.description}}</p>
-                {{#if this.duration}}
-                <div class="text-sm text-gray-500 mb-2">
-                    <i class="fas fa-clock mr-1"></i> {{this.duration}}
-                </div>
-                {{/if}}
-                {{#if this.price}}
-                <div class="text-3xl font-bold text-basic-primary mb-4">
-                    {{formatCurrency this.price}}
-                </div>
-                {{/if}}
-                {{#if this.features}}
-                <ul class="text-left text-sm text-gray-600 space-y-1 mb-6">
-                    {{#each this.features}}
-                    <li><i class="fas fa-check text-basic-primary mr-2"></i>{{this}}</li>
-                    {{/each}}
-                </ul>
-                {{/if}}
-                <a href="/{{../modelSlug}}/contact?service={{this.slug}}" class="basic-btn w-full">
-                    Book Now
-                </a>
-            </div>
-            {{/each}}
-        </div>
-        {{else}}
-        <div class="text-center py-12">
-            <div class="w-24 h-24 mx-auto mb-6 bg-basic-primary rounded-lg flex items-center justify-center">
-                <i class="fas fa-heart text-3xl text-white"></i>
-            </div>
-            <h3 class="text-2xl font-bold mb-4 basic-heading">Professional Services</h3>
-            <p class="text-gray-600 mb-6">Please contact me for detailed information about services and rates.</p>
-            <a href="/{{modelSlug}}/contact" class="basic-btn">
-                Get in Touch
-            </a>
-        </div>
-        {{/if}}
-    </div>
-</section>
-
-<!-- Policies Section -->
+<!-- Main Rates Section - Two Column Layout -->
 <section class="py-16 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12" data-aos="fade-up">
-            <h2 class="text-3xl font-bold mb-4 basic-heading text-basic-primary">
-                Booking Information
-            </h2>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="basic-card p-6" data-aos="fade-up" data-aos-delay="0">
-                <div class="w-12 h-12 mb-4 bg-basic-primary rounded-lg flex items-center justify-center">
-                    <i class="fas fa-calendar-check text-white"></i>
-                </div>
-                <h3 class="text-lg font-bold mb-3 basic-heading">Advance Booking</h3>
-                <p class="text-gray-600 text-sm">
-                    {{content.advanceBooking}}
-                </p>
-            </div>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
-            <div class="basic-card p-6" data-aos="fade-up" data-aos-delay="100">
-                <div class="w-12 h-12 mb-4 bg-basic-primary rounded-lg flex items-center justify-center">
-                    <i class="fas fa-credit-card text-white"></i>
+            <!-- Incall Rates -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden" data-aos="fade-up" data-aos-delay="0">
+                <div class="bg-blue-600 text-white px-6 py-4">
+                    <h2 class="text-2xl font-bold text-center">Incall</h2>
                 </div>
-                <h3 class="text-lg font-bold mb-3 basic-heading">Payment</h3>
-                <p class="text-gray-600 text-sm">
-                    {{content.paymentPolicy}}
-                </p>
+                <div class="p-6">
+                    {{#each rates.incall}}
+                    <div class="flex justify-between items-center py-3 border-b border-gray-200 last:border-b-0">
+                        <div>
+                            <div class="font-semibold text-gray-900">
+                                {{#if this.service_name}}{{this.service_name}}{{else}}{{this.duration}}{{/if}}
+                            </div>
+                            {{#if this.service_name}}
+                            <div class="text-sm text-gray-600">{{this.duration}}</div>
+                            {{/if}}
+                        </div>
+                        <div class="text-xl font-bold text-blue-600">${{this.price}}</div>
+                    </div>
+                    {{/each}}
+                </div>
             </div>
-            
-            <div class="basic-card p-6" data-aos="fade-up" data-aos-delay="200">
-                <div class="w-12 h-12 mb-4 bg-basic-primary rounded-lg flex items-center justify-center">
-                    <i class="fas fa-times-circle text-white"></i>
+
+            <!-- Outcall Rates -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+                <div class="bg-amber-100 text-amber-900 px-6 py-4">
+                    <h2 class="text-2xl font-bold text-center">Outcall</h2>
                 </div>
-                <h3 class="text-lg font-bold mb-3 basic-heading">Cancellation</h3>
-                <p class="text-gray-600 text-sm">
-                    {{content.cancellationPolicy}}
-                </p>
+                <div class="p-6">
+                    {{#each rates.outcall}}
+                    <div class="flex justify-between items-center py-3 border-b border-gray-200 last:border-b-0">
+                        <div>
+                            <div class="font-semibold text-gray-900">
+                                {{#if this.service_name}}{{this.service_name}}{{else}}{{this.duration}}{{/if}}
+                            </div>
+                            {{#if this.service_name}}
+                            <div class="text-sm text-gray-600">{{this.duration}}</div>
+                            {{/if}}
+                        </div>
+                        <div class="text-xl font-bold text-amber-700">${{this.price}}</div>
+                    </div>
+                    {{/each}}
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Package Deals -->
-{{#if packages}}
+<!-- Extended Engagements Section -->
+{{#if rates.extended}}
 <section class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12" data-aos="fade-up">
             <h2 class="text-3xl font-bold mb-4 basic-heading text-basic-primary">
-                Package Deals
+                Extended Engagements
             </h2>
-            <p class="text-xl text-gray-600">
-                Save more with our exclusive packages
-            </p>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {{#each packages}}
-            <div class="basic-card p-8 relative" data-aos="fade-up" data-aos-delay="{{@index}}00">
-                {{#if this.popular}}
-                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span class="bg-basic-accent text-white px-4 py-2 rounded-full text-sm font-bold">
-                        Most Popular
-                    </span>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {{#each rates.extended}}
+            <div class="bg-blue-600 text-white rounded-lg shadow-lg p-8 text-center" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
+                <div class="w-16 h-16 mx-auto mb-6 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                    <i class="{{#eq this.service_name 'Weekend'}}fas fa-calendar-weekend{{else}}{{#eq this.service_name 'Week'}}fas fa-calendar-week{{else}}fas fa-plane{{/eq}}{{/eq}} text-2xl text-white"></i>
                 </div>
-                {{/if}}
-                
-                <div class="text-center">
-                    <h3 class="text-2xl font-bold mb-4 basic-heading">{{this.name}}</h3>
-                    <div class="text-4xl font-bold text-basic-primary mb-2">
-                        {{formatCurrency this.price}}
-                    </div>
-                    {{#if this.originalPrice}}
-                    <div class="text-gray-500 line-through mb-4">
-                        Was {{formatCurrency this.originalPrice}}
-                    </div>
-                    {{/if}}
-                    <p class="text-gray-600 mb-6">{{this.description}}</p>
-                    
-                    <ul class="text-left space-y-2 mb-8">
-                        {{#each this.includes}}
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-basic-primary mr-3"></i>
-                            <span>{{this}}</span>
-                        </li>
-                        {{/each}}
-                    </ul>
-                    
-                    <a href="/{{../modelSlug}}/contact?package={{this.slug}}" class="basic-btn w-full">
-                        Book Package
-                    </a>
-                </div>
+                <h3 class="text-2xl font-bold mb-4">{{this.service_name}}</h3>
+                <div class="text-4xl font-bold mb-2">${{this.price}}</div>
+                <p class="text-blue-100">{{this.duration}}</p>
             </div>
             {{/each}}
         </div>
     </div>
 </section>
 {{/if}}
+
+<!-- Additional Information Section -->
+{{#if content.terms_visible}}
+<section class="py-16 bg-blue-600 text-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8" data-aos="fade-up">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold mb-4">
+                {{#if content.terms_title}}{{content.terms_title}}{{else}}Additional Information{{/if}}
+            </h2>
+        </div>
+        
+        <div class="bg-white bg-opacity-10 rounded-lg p-8">
+            {{#if content.terms_content}}
+                <ul class="space-y-3 text-lg">
+                    {{#each (split content.terms_content " • ")}}
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-blue-200 mr-3 mt-1 flex-shrink-0"></i>
+                        <span>{{this}}</span>
+                    </li>
+                    {{/each}}
+                </ul>
+            {{else}}
+                <ul class="space-y-3 text-lg">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-blue-200 mr-3 mt-1 flex-shrink-0"></i>
+                        <span>All donations are for time and companionship only</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-blue-200 mr-3 mt-1 flex-shrink-0"></i>
+                        <span>Payment required at the beginning of our time together</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-blue-200 mr-3 mt-1 flex-shrink-0"></i>
+                        <span>Cash or discrete payment methods accepted</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-blue-200 mr-3 mt-1 flex-shrink-0"></i>
+                        <span>Advance booking recommended</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-blue-200 mr-3 mt-1 flex-shrink-0"></i>
+                        <span>Dinner dates: +$100 restaurant cost separate</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-blue-200 mr-3 mt-1 flex-shrink-0"></i>
+                        <span>Travel outside city: +$500/day + expenses</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-blue-200 mr-3 mt-1 flex-shrink-0"></i>
+                        <span>Same day booking: +$100</span>
+                    </li>
+                </ul>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Donations Section -->
+{{#if content.donations_visible}}
+<section class="py-16 bg-gray-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <div class="bg-white rounded-lg shadow-lg p-12">
+            <div class="w-20 h-20 mx-auto mb-6 bg-basic-primary rounded-lg flex items-center justify-center">
+                <i class="fas fa-heart text-3xl text-white"></i>
+            </div>
+            <h2 class="text-3xl font-bold mb-6 basic-heading text-basic-primary">
+                {{#if content.donation_title}}{{content.donation_title}}{{else}}Donations{{/if}}
+            </h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                {{#if content.donation_description}}{{content.donation_description}}{{else}}Donations are appreciated to help support my work{{/if}}
+            </p>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Contact Section -->
+<section class="py-16 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <h2 class="text-3xl font-bold mb-6 basic-heading text-basic-primary">
+            Contact Information
+        </h2>
+        <p class="text-xl text-gray-600 mb-8">
+            For bookings or inquiries, please reach out through the contact page.
+        </p>
+        <div class="bg-gray-50 rounded-lg p-8">
+            <p class="text-lg text-gray-700 mb-6">
+                All contact is kept strictly confidential and professional.
+            </p>
+        </div>
+    </div>
+</section>
 
 <!-- Call to Action -->
 <section class="py-16 bg-basic-primary text-white">
@@ -168,17 +190,95 @@
             Ready to Book?
         </h2>
         <p class="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-            Have questions about services or ready to make a booking? Get in touch today.
+            Contact me to discuss your preferences and arrange our time together.
         </p>
         <div class="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="/{{modelSlug}}/contact" class="basic-btn bg-white text-basic-primary hover:bg-gray-100">
+            <a href="/{{model.slug}}/contact" class="basic-btn bg-white text-basic-primary hover:bg-gray-100">
                 <i class="fas fa-envelope mr-2"></i>
                 Contact Me
             </a>
-            <a href="/{{modelSlug}}/about" class="basic-btn-outline border-white text-white hover:bg-white hover:text-basic-primary">
-                <i class="fas fa-user mr-2"></i>
-                Learn More
+            {{#if calendarEnabled}}
+            <a href="/{{model.slug}}/calendar" class="basic-btn-outline border-white text-white hover:bg-white hover:text-basic-primary">
+                <i class="fas fa-calendar mr-2"></i>
+                View Calendar
             </a>
+            {{/if}}
         </div>
     </div>
 </section>
+
+<!-- Custom Styles for Rates Page -->
+<style>
+.rates-table {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.rates-table-header {
+    padding: 1.5rem;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.rates-table-header.incall {
+    background: #2563eb;
+    color: white;
+}
+
+.rates-table-header.outcall {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.rate-item {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rate-item:last-child {
+    border-bottom: none;
+}
+
+.rate-service {
+    font-weight: 600;
+    color: #111827;
+}
+
+.rate-duration {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.rate-price {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.rate-price.incall {
+    color: #2563eb;
+}
+
+.rate-price.outcall {
+    color: #b45309;
+}
+
+@media (max-width: 768px) {
+    .grid-cols-1.lg\\:grid-cols-2 {
+        gap: 1rem;
+    }
+    
+    .rate-item {
+        padding: 0.75rem 1rem;
+    }
+    
+    .rate-price {
+        font-size: 1.125rem;
+    }
+}
+</style>

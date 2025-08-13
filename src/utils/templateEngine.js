@@ -71,6 +71,17 @@ class TemplateEngine {
 
         // Safe HTML helper (bypass escaping)
         this.registerHelper('safe', (html) => html);
+        
+        // Split string helper for rates terms
+        this.registerHelper('split', (str, delimiter) => {
+            if (!str) return [];
+            return str.split(delimiter);
+        });
+        
+        // Multiply helper for delays
+        this.registerHelper('multiply', (a, b) => {
+            return (a || 0) * (b || 1);
+        });
     }
 
     // Parse template and extract variables
