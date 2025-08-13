@@ -211,25 +211,70 @@
 </section>
 
 <!-- Call to Action -->
+{{#if content.ctaVisible}}
 <section class="py-24 bg-gradient-to-r from-black to-gray-900 text-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
         <div class="luxury-float">
             <h2 class="text-4xl md:text-5xl font-bold mb-8 luxury-heading">
-                Ready for the Ultimate Luxury?
+                {{#if content.ctaTitle}}{{content.ctaTitle}}{{else}}Ready for the Ultimate Luxury?{{/if}}
             </h2>
             <p class="text-xl mb-12 opacity-90 max-w-2xl mx-auto font-light">
-                Experience the pinnacle of sophistication and elegance. Contact me to discuss your exclusive requirements.
+                {{#if content.ctaDescription}}{{content.ctaDescription}}{{else}}Experience the pinnacle of sophistication and elegance. Contact me to discuss your exclusive requirements.{{/if}}
             </p>
             <div class="flex flex-col sm:flex-row justify-center gap-6">
-                <a href="/{{modelSlug}}/contact" class="luxury-btn text-lg px-8 py-4">
-                    <i class="fas fa-envelope mr-3"></i>
-                    Contact Me
+                <!-- Primary CTA Button -->
+                {{#if content.ctaButton1Text}}
+                    {{#eq content.ctaButton1Link 'calendar'}}
+                        <a href="/{{modelSlug}}/calendar" class="luxury-btn text-lg px-8 py-4">
+                    {{/eq}}
+                    {{#eq content.ctaButton1Link 'contact'}}
+                        <a href="/{{modelSlug}}/contact" class="luxury-btn text-lg px-8 py-4">
+                    {{/eq}}
+                    {{#eq content.ctaButton1Link 'gallery'}}
+                        <a href="/{{modelSlug}}/gallery" class="luxury-btn text-lg px-8 py-4">
+                    {{/eq}}
+                    {{#eq content.ctaButton1Link 'rates'}}
+                        <a href="/{{modelSlug}}/rates" class="luxury-btn text-lg px-8 py-4">
+                    {{/eq}}
+                    {{#eq content.ctaButton1Link 'about'}}
+                        <a href="/{{modelSlug}}/about" class="luxury-btn text-lg px-8 py-4">
+                    {{/eq}}
+                        <i class="fas fa-{{#eq content.ctaButton1Link 'calendar'}}calendar{{else}}{{#eq content.ctaButton1Link 'contact'}}envelope{{else}}{{#eq content.ctaButton1Link 'gallery'}}images{{else}}{{#eq content.ctaButton1Link 'rates'}}tags{{else}}user{{/eq}}{{/eq}}{{/eq}}{{/eq}} mr-3"></i>
+                        {{content.ctaButton1Text}}
+                {{else}}
+                    <a href="/{{modelSlug}}/contact" class="luxury-btn text-lg px-8 py-4">
+                        <i class="fas fa-envelope mr-3"></i>
+                        Contact Me
+                {{/if}}
                 </a>
-                <a href="/{{modelSlug}}/about" class="luxury-btn-outline text-lg px-8 py-4 text-white border-white hover:bg-white hover:text-gray-900">
-                    <i class="fas fa-user mr-3"></i>
-                    Learn More
+                
+                <!-- Secondary CTA Button -->
+                {{#if content.ctaButton2Text}}
+                    {{#eq content.ctaButton2Link 'calendar'}}
+                        <a href="/{{modelSlug}}/calendar" class="luxury-btn-outline text-lg px-8 py-4 text-white border-white hover:bg-white hover:text-gray-900">
+                    {{/eq}}
+                    {{#eq content.ctaButton2Link 'contact'}}
+                        <a href="/{{modelSlug}}/contact" class="luxury-btn-outline text-lg px-8 py-4 text-white border-white hover:bg-white hover:text-gray-900">
+                    {{/eq}}
+                    {{#eq content.ctaButton2Link 'gallery'}}
+                        <a href="/{{modelSlug}}/gallery" class="luxury-btn-outline text-lg px-8 py-4 text-white border-white hover:bg-white hover:text-gray-900">
+                    {{/eq}}
+                    {{#eq content.ctaButton2Link 'rates'}}
+                        <a href="/{{modelSlug}}/rates" class="luxury-btn-outline text-lg px-8 py-4 text-white border-white hover:bg-white hover:text-gray-900">
+                    {{/eq}}
+                    {{#eq content.ctaButton2Link 'about'}}
+                        <a href="/{{modelSlug}}/about" class="luxury-btn-outline text-lg px-8 py-4 text-white border-white hover:bg-white hover:text-gray-900">
+                    {{/eq}}
+                        <i class="fas fa-{{#eq content.ctaButton2Link 'calendar'}}calendar{{else}}{{#eq content.ctaButton2Link 'contact'}}envelope{{else}}{{#eq content.ctaButton2Link 'gallery'}}images{{else}}{{#eq content.ctaButton2Link 'rates'}}tags{{else}}user{{/eq}}{{/eq}}{{/eq}}{{/eq}} mr-3"></i>
+                        {{content.ctaButton2Text}}
+                {{else}}
+                    <a href="/{{modelSlug}}/about" class="luxury-btn-outline text-lg px-8 py-4 text-white border-white hover:bg-white hover:text-gray-900">
+                        <i class="fas fa-user mr-3"></i>
+                        Learn More
+                {{/if}}
                 </a>
             </div>
         </div>
     </div>
 </section>
+{{/if}}
