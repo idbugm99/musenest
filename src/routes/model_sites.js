@@ -34,7 +34,7 @@ function formatLocationDisplay(location, serviceType, radiusMiles) {
 async function getModelBySlug(slug) {
     try {
         const [models] = await db.execute(`
-            SELECT m.id, m.name, m.slug, m.email, m.status, m.theme_set_id,
+            SELECT m.id, m.name, m.slug, m.email, m.phone, m.status, m.theme_set_id,
                    ts.name as theme_name, ts.display_name as theme_display_name,
                    ts.default_color_scheme
             FROM models m
@@ -100,30 +100,34 @@ async function getModelContent(modelId, pageType) {
                 console.log('🔍 Field mapping - quick_facts_visible:', content.quick_facts_visible);
                 console.log('🔍 Field mapping - factsVisible:', content.factsVisible);
                 
-                // Load Quick Facts for about page
-                try {
-                    console.log('🔍 Loading quick facts for model ID:', modelId);
-                    console.log('🔍 Database connection type:', typeof db.execute);
-                    
-                    const query = `
-                        SELECT id, question, answer, display_order 
-                        FROM quick_facts 
-                        WHERE model_id = ? AND is_active = 1
-                        ORDER BY display_order ASC, id ASC
-                    `;
-                    console.log('🔍 SQL Query:', query);
-                    console.log('🔍 Query parameters:', [modelId]);
-                    
-                    const [quickFacts] = await db.execute(query, [modelId]);
-                    
-                    console.log('🔍 Raw query result:', quickFacts);
-                    content.quickFacts = quickFacts || [];
-                    console.log(`📋 Loaded ${quickFacts.length} quick facts for about page:`, quickFacts);
-                } catch (error) {
-                    console.log('⚠️  Quick facts table not found or error loading quick facts:', error.message);
-                    console.log('⚠️  Full error:', error);
-                    content.quickFacts = [];
+                // Build Quick Facts array from existing qf_* fields
+                content.quickFacts = [];
+                if (content.qf_location) {
+                    content.quickFacts.push({question: 'Location', answer: content.qf_location});
                 }
+                if (content.qf_languages) {
+                    content.quickFacts.push({question: 'Languages', answer: content.qf_languages});
+                }
+                if (content.qf_education) {
+                    content.quickFacts.push({question: 'Education', answer: content.qf_education});
+                }
+                if (content.qf_specialties) {
+                    content.quickFacts.push({question: 'Specialties', answer: content.qf_specialties});
+                }
+                console.log(`📋 Built ${content.quickFacts.length} quick facts from qf_* fields:`, content.quickFacts);
+            }
+        } else if (pageType === 'rates') {
+            // Get rates page content from model_rates_page_content table
+            const [ratesRows] = await db.execute(`
+                SELECT * FROM model_rates_page_content WHERE model_id = ?
+            `, [modelId]);
+            
+            if (ratesRows.length > 0) {
+                content = ratesRows[0];
+                console.log(`💰 Loaded rates page content for model ${modelId}`);
+            } else {
+                console.log(`⚠️ No rates page content found for model ${modelId}`);
+                content = {};
             }
         } else if (pageType === 'contact') {
             // Get contact page content from model_contact_page_content table
@@ -132,7 +136,19 @@ async function getModelContent(modelId, pageType) {
             `, [modelId]);
             
             if (contactRows.length > 0) {
-                content = contactRows[0];
+                const rawContent = contactRows[0];
+                
+                // Convert camelCase field names to snake_case for Handlebars template compatibility
+                content = {};
+                Object.keys(rawContent).forEach(key => {
+                    // Convert camelCase to snake_case (e.g., contactHeaderVisible -> contact_header_visible)
+                    const snakeKey = key.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
+                    content[snakeKey] = rawContent[key];
+                });
+                
+                // Add mapping for glamour theme variables
+                content.location = rawContent.location_area_text || null;
+                content.workingHours = rawContent.direct_response_text || null;
             }
         } else if (pageType === 'etiquette') {
             // Get etiquette page content from model_etiquette_page_content table
@@ -141,7 +157,15 @@ async function getModelContent(modelId, pageType) {
             `, [modelId]);
             
             if (etiquetteRows.length > 0) {
-                content = etiquetteRows[0];
+                const rawContent = etiquetteRows[0];
+                
+                // Convert camelCase field names to snake_case for Handlebars template compatibility
+                content = {};
+                Object.keys(rawContent).forEach(key => {
+                    // Convert camelCase to snake_case (e.g., etiquetteHeaderVisible -> etiquette_header_visible)
+                    const snakeKey = key.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
+                    content[snakeKey] = rawContent[key];
+                });
             }
         } else if (pageType === 'rates') {
             // Get rates page content from model_rates_page_content table
@@ -156,10 +180,22 @@ async function getModelContent(modelId, pageType) {
             // Get gallery page content and sections
             try {
                 
-                // First, get the gallery page content to see which sections are selected
+                // First, get the complete gallery page content
                 const [pageContentRows] = await db.execute(`
-                    SELECT selected_sections FROM model_gallery_page_content WHERE model_id = ?
+                    SELECT * FROM model_gallery_page_content WHERE model_id = ?
                 `, [modelId]);
+                
+                // Convert camelCase field names to snake_case for Handlebars template compatibility
+                if (pageContentRows.length > 0) {
+                    const rawContent = pageContentRows[0];
+                    Object.keys(rawContent).forEach(key => {
+                        // Convert camelCase to snake_case (e.g., galleryHeaderVisible -> gallery_header_visible)
+                        const snakeKey = key.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
+                        content[snakeKey] = rawContent[key];
+                    });
+                }
+                
+                // Get selected sections from the gallery page content
                 
                 let selectedSectionIds = [];
                 if (pageContentRows.length > 0 && pageContentRows[0].selected_sections) {
@@ -246,16 +282,7 @@ async function getModelContent(modelId, pageType) {
             });
         }
 
-        // Debug what's being returned for rates page
-        if (pageType === 'rates') {
-            console.log('🔧 getModelContent RETURNING:');
-            console.log('🔧 content keys:', Object.keys(content));
-            console.log('🔧 content.rates exists:', !!content.rates);
-            if (content.rates) {
-                console.log('🔧 content.rates keys:', Object.keys(content.rates));
-                console.log('🔧 content.rates.incall length:', content.rates.incall?.length || 0);
-            }
-        }
+
 
         return content;
     } catch (error) {
@@ -430,10 +457,10 @@ router.get('/:slug/:page?', async (req, res) => {
         if (page === 'home') {
             try {
                 const [testimonials] = await db.execute(`
-                    SELECT name, text, rating, display_order
+                    SELECT client_name as name, testimonial_text as text, rating, created_at
                     FROM testimonials 
-                    WHERE model_id = ? AND is_visible = 1 
-                    ORDER BY display_order ASC, created_at ASC
+                    WHERE model_id = ? AND is_featured = 1 
+                    ORDER BY created_at DESC
                     LIMIT 10
                 `, [model.id]);
                 
@@ -449,14 +476,14 @@ router.get('/:slug/:page?', async (req, res) => {
         let servicesData = null;
         if (page === 'home') {
             try {
+                // Use rates data as services for home page preview
                 const [services] = await db.execute(`
-                    SELECT s.id, s.name, s.description, s.icon, mr.price, mr.duration
-                    FROM services s 
-                    LEFT JOIN model_rates mr ON s.id = mr.service_id AND mr.model_id = ?
-                    WHERE s.model_id = ? AND s.is_active = 1 
-                    ORDER BY s.display_order ASC, s.created_at ASC
-                    LIMIT 10
-                `, [model.id, model.id]);
+                    SELECT rate_type as name, service_name as description, price, duration
+                    FROM model_rates 
+                    WHERE model_id = ?
+                    ORDER BY sort_order ASC, id ASC
+                    LIMIT 6
+                `, [model.id]);
                 
                 servicesData = services || [];
                 console.log(`💼 Loaded ${servicesData.length} services for ${model.slug}`);
@@ -468,22 +495,18 @@ router.get('/:slug/:page?', async (req, res) => {
 
         // Pre-load rates data for rates page
         if (page === 'rates' && rawContent) {
-            console.log(`💰 Attempting to load rates data...`);
-            console.log(`💰 Model object:`, model ? 'exists' : 'undefined');
-            console.log(`💰 Model ID:`, model ? model.id : 'N/A');
             try {
                 if (!model) {
                     throw new Error('Model object is undefined');
                 }
-                console.log(`💰 Loading rates for model ID ${model.id}...`);
                 const [allRates] = await db.execute(`
-                    SELECT rate_type, service_name, duration, price, sort_order
+                    SELECT rate_type, service_name, duration, price, sort_order, 
+                           highlight_badge, highlight_badge_text, rate_icon, rate_description,
+                           is_most_popular
                     FROM model_rates 
                     WHERE model_id = ? AND is_visible = 1
                     ORDER BY rate_type, sort_order ASC, id ASC
                 `, [model.id]);
-                
-                console.log(`💰 Raw rates data:`, allRates);
                 
                 // Group rates by type
                 const groupedRates = {
@@ -492,19 +515,26 @@ router.get('/:slug/:page?', async (req, res) => {
                     extended: allRates.filter(r => r.rate_type === 'extended')
                 };
                 
-                console.log(`💰 Grouped rates:`, {
-                    incall: groupedRates.incall.length,
-                    outcall: groupedRates.outcall.length,
-                    extended: groupedRates.extended.length
-                });
-                
+                // Convert rate field names to camelCase for Handlebars template compatibility
+                const convertRateToHandlebars = (rate) => {
+                    const converted = {};
+                    Object.keys(rate).forEach(key => {
+                        const camelKey = key.replace(/_([a-z])/g, (match, letter) => letter.toUpperCase());
+                        converted[camelKey] = rate[key];
+                    });
+                    return converted;
+                };
+
+                const convertedRates = {
+                    incall: groupedRates.incall.map(convertRateToHandlebars),
+                    outcall: groupedRates.outcall.map(convertRateToHandlebars),
+                    extended: groupedRates.extended.map(convertRateToHandlebars)
+                };
+
                 // Add rates to content
-                rawContent.rates = groupedRates;
-                console.log(`💰 Rates added to content successfully`);
-                console.log(`💰 rawContent.rates verified:`, !!rawContent.rates);
-                console.log(`💰 rawContent.rates.incall length:`, rawContent.rates?.incall?.length || 0);
+                rawContent.rates = convertedRates;
             } catch (error) {
-                console.error('💰 Error loading rates data:', error);
+                console.error('Error loading rates data:', error);
                 rawContent.rates = { incall: [], outcall: [], extended: [] };
             }
         }
@@ -634,74 +664,97 @@ router.get('/:slug/:page?', async (req, res) => {
         // Gallery data is now loaded through getModelContent for gallery pages
         let galleryData = null;
 
-        // Transform content keys to camelCase for template compatibility (after all data loading)
+        // Transform content keys for template compatibility (after all data loading)  
+        // Exception: etiquette, contact, about, rates, gallery, and home pages use snake_case field names for Handlebars templates
         const pageContent = {};
-        Object.keys(rawContent).forEach(key => {
-            // Convert snake_case to camelCase
-            const camelKey = key.replace(/_([a-z])/g, (match, letter) => letter.toUpperCase());
-            pageContent[camelKey] = rawContent[key];
-        });
-        
-        // Debug rates transformation after all data loading
-        if (page === 'rates') {
-            console.log('🔧 FINAL rawContent keys:', Object.keys(rawContent));
-            console.log('🔧 FINAL pageContent keys:', Object.keys(pageContent));
-            console.log('🔧 FINAL rawContent.rates exists:', !!rawContent.rates);
-            console.log('🔧 FINAL pageContent.rates exists:', !!pageContent.rates);
-            if (pageContent.rates) {
-                console.log('🔧 FINAL pageContent.rates.incall length:', pageContent.rates.incall?.length || 0);
-            }
+        if (page === 'etiquette' || page === 'contact' || page === 'about' || page === 'rates' || page === 'gallery' || page === 'home') {
+            // These pages use snake_case field names directly - no conversion needed
+            Object.keys(rawContent).forEach(key => {
+                pageContent[key] = rawContent[key];
+            });
+        } else {
+            // Other pages need snake_case to camelCase conversion
+            Object.keys(rawContent).forEach(key => {
+                // Convert snake_case to camelCase
+                const camelKey = key.replace(/_([a-z])/g, (match, letter) => letter.toUpperCase());
+                pageContent[camelKey] = rawContent[key];
+            });
         }
+        
 
-        // Load actual image URLs if IDs are provided (after camelCase transformation)
-        if (pageContent.portraitImageId) {
+
+        // Load actual image URLs if IDs are provided (after field name transformation)
+        const portraitIdKey = pageContent.portrait_image_id || pageContent.portraitImageId;
+        if (portraitIdKey) {
             try {
                 // First, let's check if the image exists at all
                 const [allImages] = await db.execute(`
                     SELECT id, filename, model_id, is_active FROM gallery_images WHERE id = ?
-                `, [pageContent.portraitImageId]);
+                `, [portraitIdKey]);
                 
-                console.log(`🔍 Found ${allImages.length} images with ID ${pageContent.portraitImageId}:`, allImages);
+                console.log(`🔍 Found ${allImages.length} images with ID ${portraitIdKey}:`, allImages);
                 
                 const [portraitImage] = await db.execute(`
                     SELECT filename FROM gallery_images 
                     WHERE id = ? AND model_id = ? AND is_active = 1
                     LIMIT 1
-                `, [pageContent.portraitImageId, model.id]);
+                `, [portraitIdKey, model.id]);
                 
                 console.log(`🔍 Portrait query result: ${portraitImage.length} images found`);
                 if (portraitImage.length > 0) {
-                    pageContent.portraitImageUrl = `/uploads/${model.slug}/public/gallery/${portraitImage[0].filename}`;
-                    console.log(`🖼️ Loaded portrait image: ${pageContent.portraitImageUrl}`);
+                    // Set both naming conventions for compatibility
+                    const imageUrl = `/uploads/${model.slug}/public/gallery/${portraitImage[0].filename}`;
+                    pageContent.portrait_image_url = imageUrl;
+                    pageContent.portraitImageUrl = imageUrl;
+                    console.log(`🖼️ Loaded portrait image: ${imageUrl}`);
                 } else {
-                    console.log(`❌ No portrait image found for ID ${pageContent.portraitImageId} with model_id ${model.id} and is_active=1`);
+                    console.log(`❌ No portrait image found for ID ${portraitIdKey} with model_id ${model.id} and is_active=1`);
                 }
             } catch (error) {
                 console.error('Error loading portrait image:', error);
             }
         }
         
-        if (pageContent.heroBackgroundImageId) {
+        const heroIdKey = pageContent.hero_background_image_id || pageContent.heroBackgroundImageId;
+        if (heroIdKey) {
             try {
                 const [heroImage] = await db.execute(`
                     SELECT filename FROM gallery_images 
                     WHERE id = ? AND model_id = ? AND is_active = 1
                     LIMIT 1
-                `, [pageContent.heroBackgroundImageId, model.id]);
+                `, [heroIdKey, model.id]);
                 
                 if (heroImage.length > 0) {
-                    pageContent.heroBackgroundImageUrl = `/uploads/${model.slug}/public/gallery/${heroImage[0].filename}`;
-                    console.log(`🖼️ Loaded hero background image: ${pageContent.heroBackgroundImageUrl}`);
+                    // Set both naming conventions for compatibility
+                    const imageUrl = `/uploads/${model.slug}/public/gallery/${heroImage[0].filename}`;
+                    pageContent.hero_background_image_url = imageUrl;
+                    pageContent.heroBackgroundImageUrl = imageUrl;
+                    console.log(`🖼️ Loaded hero background image: ${imageUrl}`);
                 }
             } catch (error) {
                 console.error('Error loading hero background image:', error);
             }
         }
 
-        // Set portrait image URL if we have a portrait image ID (legacy support)
+        // Load portrait image for About page (snake_case field)
         if (pageContent.portrait_image_id) {
-            pageContent.portraitImageUrl = `/uploads/${slug}/public/gallery/${pageContent.portrait_image_id}`;
-            console.log('🖼️  Set portrait image URL:', pageContent.portraitImageUrl);
+            try {
+                const [portraitImage] = await db.execute(`
+                    SELECT filename FROM gallery_images 
+                    WHERE id = ? AND model_id = ? AND is_active = 1
+                    LIMIT 1
+                `, [pageContent.portrait_image_id, model.id]);
+                
+                console.log(`🔍 About portrait query result: ${portraitImage.length} images found`);
+                if (portraitImage.length > 0) {
+                    pageContent.portraitImageUrl = `/uploads/${model.slug}/public/gallery/${portraitImage[0].filename}`;
+                    console.log(`🖼️ Loaded about portrait image: ${pageContent.portraitImageUrl}`);
+                } else {
+                    console.log(`❌ No about portrait image found for ID ${pageContent.portrait_image_id} with model_id ${model.id} and is_active=1`);
+                }
+            } catch (error) {
+                console.error('Error loading about portrait image:', error);
+            }
         }
         
         // Prepare template data with real content
@@ -721,8 +774,51 @@ router.get('/:slug/:page?', async (req, res) => {
             ...(page === 'rates' && pageContent.rates ? {
                 rates: pageContent.rates
             } : {}),
-            // Pass etiquette content directly for etiquette page
-            ...(page === 'etiquette' ? pageContent : {}),
+            // Pass home content for home page
+            ...(page === 'home' ? { 
+                home_content: pageContent && Object.keys(pageContent).length > 0 ? pageContent : {
+                    hero_section_visible: true,
+                    hero_title: siteName || 'Welcome to Glamour',
+                    hero_subtitle: 'Welcome to my exclusive world',
+                    hero_cta_visible: true,
+                    hero_cta_text: 'Discover More',
+                    hero_cta_link: `/{{modelSlug}}/contact`,
+                    about_section_visible: true,
+                    about_title: 'About Me',
+                    about_description: 'Experience the finest in luxury companionship with professional elegance.',
+                    about_cta_visible: true,
+                    about_cta_text: 'Learn More',
+                    services_section_visible: true,
+                    services_title: 'My Services',
+                    services_subtitle: 'Exclusive experiences tailored for you',
+                    service_1_visible: true,
+                    service_1_title: 'Premium Service',
+                    service_1_description: 'Luxury companionship experience',
+                    service_2_visible: true,
+                    service_2_title: 'Exclusive Experience', 
+                    service_2_description: 'Personalized attention and care',
+                    service_3_visible: true,
+                    service_3_title: 'VIP Treatment',
+                    service_3_description: 'The ultimate premium experience',
+                    services_cta_visible: true,
+                    services_cta_text: 'View All Services',
+                    cta_section_visible: true,
+                    cta_title: 'Ready for the VIP Experience?',
+                    cta_subtitle: 'Let me provide you with an unforgettable experience',
+                    cta_primary_text: 'Book Now',
+                    cta_secondary_text: 'View Rates'
+                }
+            } : {}),
+            // Pass about content for about page
+            ...(page === 'about' ? { about_content: pageContent } : {}),
+            // Pass rates content for rates page
+            ...(page === 'rates' ? { rates_content: pageContent } : {}),
+            // Pass etiquette content for etiquette page
+            ...(page === 'etiquette' ? { etiquette_content: pageContent } : {}),
+            // Pass contact content for contact page
+            ...(page === 'contact' ? { contact_content: pageContent } : {}),
+            // Pass gallery content for gallery page
+            ...(page === 'gallery' ? { gallery_content: pageContent } : {}),
             
             // Template variables expected by themes
             siteName: model.name,
@@ -731,7 +827,7 @@ router.get('/:slug/:page?', async (req, res) => {
             modelId: model.id,
             // Contact information for contact page
             contactEmail: model.email || `${model.slug}@musenest.com`,
-            contactPhone: pageContent.contactPhone || null,
+            contactPhone: model.phone || null,
             location: pageContent.location || null,
             workingHours: pageContent.workingHours || null,
             // Theme colors for CSS variables (from database or palette override)
@@ -761,9 +857,10 @@ router.get('/:slug/:page?', async (req, res) => {
                 { name: 'Home', url: `/${slug}${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'home' },
                 { name: 'About', url: `/${slug}/about${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'about' },
                 { name: 'Gallery', url: `/${slug}/gallery${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'gallery' },
+                { name: 'Rates', url: `/${slug}/rates${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'rates' },
+                { name: 'Etiquette', url: `/${slug}/etiquette${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'etiquette' },
                 ...(res.locals.calendarEnabled ? [{ name: 'Calendar', url: `/${slug}/calendar${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'calendar' }] : []),
-                { name: 'Contact', url: `/${slug}/contact${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'contact' },
-                { name: 'Rates', url: `/${slug}/rates${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'rates' }
+                { name: 'Contact', url: `/${slug}/contact${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'contact' }
             ],
             // Current page info
             currentPage: page,
@@ -983,17 +1080,7 @@ router.get('/:slug/:page?', async (req, res) => {
         // Render with theme-specific engine
         const viewPath = path.join(__dirname, `../../themes/${templatePath}.handlebars`);
         
-        // Debug rates data for rates page
-        if (page === 'rates') {
-            console.log('🔧 TEMPLATE DEBUG - Rates page data:');
-            console.log('🔧 pageContent.rates:', pageContent.rates ? 'exists' : 'missing');
-            console.log('🔧 templateData.rates:', templateData.rates ? 'exists' : 'missing');
-            if (templateData.rates) {
-                console.log('🔧 templateData.rates.incall length:', templateData.rates.incall?.length || 0);
-                console.log('🔧 templateData.rates.outcall length:', templateData.rates.outcall?.length || 0);
-            }
-        }
-        
+        // Debug completed - field name conversion fix applied
 
         
         themeEngine(viewPath, {
