@@ -387,12 +387,12 @@ class UniversalGalleryAdmin {
 
         if (!activities || activities.length === 0) {
             activityList.innerHTML = `
-                <div class="activity-item">
-                    <div class="activity-icon">
-                        <i class="fas fa-info-circle"></i>
+                <div class="d-flex align-items-center py-3">
+                    <div class="bg-info bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                        <i class="fas fa-info-circle text-info"></i>
                     </div>
-                    <div class="activity-content">
-                        <p>No recent configuration changes</p>
+                    <div>
+                        <p class="mb-0 text-muted">No recent configuration changes</p>
                     </div>
                 </div>
             `;
@@ -401,14 +401,18 @@ class UniversalGalleryAdmin {
 
         activities.forEach(activity => {
             const item = document.createElement('div');
-            item.className = 'activity-item';
+            item.className = 'd-flex align-items-center py-3 border-bottom';
+            const iconColor = this.getActivityIconColor(activity.type);
+            const timeAgo = this.getTimeAgo(activity.timestamp);
+            
             item.innerHTML = `
-                <div class="activity-icon">
-                    <i class="fas fa-${this.getActivityIcon(activity.type)}"></i>
+                <div class="bg-${iconColor} bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                    <i class="fas fa-${this.getActivityIcon(activity.type)} text-${iconColor}"></i>
                 </div>
-                <div class="activity-content">
-                    <h4>${activity.title}</h4>
-                    <p>${activity.description} • ${this.formatTimeAgo(activity.timestamp)}</p>
+                <div class="flex-grow-1">
+                    <h6 class="mb-1 fw-semibold">${activity.title}</h6>
+                    <p class="mb-1 text-muted small">${activity.description}</p>
+                    <small class="text-muted">${timeAgo} • ${activity.user}</small>
                 </div>
             `;
             activityList.appendChild(item);
@@ -421,12 +425,40 @@ class UniversalGalleryAdmin {
     getActivityIcon(type) {
         const icons = {
             'config-update': 'cog',
-            'theme-change': 'palette',
-            'validation-error': 'exclamation-triangle',
-            'performance-alert': 'tachometer-alt',
+            'theme-config': 'palette',
+            'validation': 'shield-alt',
+            'performance': 'tachometer-alt',
             'system-update': 'sync-alt'
         };
         return icons[type] || 'circle';
+    }
+
+    /**
+     * Get icon color for activity type
+     */
+    getActivityIconColor(type) {
+        const colors = {
+            'config-update': 'primary',
+            'theme-config': 'success',
+            'validation': 'info',
+            'performance': 'warning',
+            'system-update': 'secondary'
+        };
+        return colors[type] || 'secondary';
+    }
+
+    /**
+     * Format time ago from timestamp
+     */
+    getTimeAgo(timestamp) {
+        const now = new Date();
+        const time = new Date(timestamp);
+        const diff = Math.floor((now - time) / 1000);
+        
+        if (diff < 60) return `${diff}s ago`;
+        if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+        return `${Math.floor(diff / 86400)}d ago`;
     }
 
     /**

@@ -486,6 +486,9 @@ app.use('/api/home-content', require('./routes/api/model-home-content'));
 app.use('/api/etiquette-rosemastos', require('./routes/api/model-etiquette-rosemastos'));
 app.use('/api/contact-rosemastos', require('./routes/api/model-contact-rosemastos'));
 
+// Universal Gallery Admin API
+app.use('/api/universal-gallery', require('./routes/api/universal-gallery'));
+
 // New Model Admin: Gallery Page Editor
 app.get('/:slug/admin/content/gallery', async (req, res) => {
     try {
