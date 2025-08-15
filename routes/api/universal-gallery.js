@@ -95,8 +95,6 @@ router.get('/config/system', async (req, res) => {
         
     } catch (error) {
         handleApiError(error, res);
-    } finally {
-        if (db) await db.end();
     }
 });
 
