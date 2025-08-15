@@ -1,114 +1,47 @@
-<!-- Phase 2.2e: Royal Picture Galleries - Luxury Template Gallery Page -->
-<!-- Royal Gallery Hero Section -->
-{{#if gallery_content.gallery_header_visible}}
-<section class="luxury-gallery-palace min-h-96 flex items-center justify-center text-white pt-20 relative overflow-hidden" data-aos="fade-in">
-    <div class="luxury-palace-dome-gallery"></div>
-    <div class="luxury-floating-gallery-elements">
-        <div class="luxury-floating-frame-1"></div>
-        <div class="luxury-floating-camera-1"></div>
-        <div class="luxury-floating-crown-1"></div>
-        <div class="luxury-floating-gem-1"></div>
-        <div class="luxury-floating-frame-2"></div>
-        <div class="luxury-floating-camera-2"></div>
-    </div>
-    
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        <div class="luxury-gallery-royal-header">
-            <div class="luxury-gallery-crown-emblem">
-                <i class="fas fa-images"></i>
-            </div>
-            <h1 class="text-5xl md:text-7xl font-bold mb-8 luxury-heading luxury-text-shimmer" style="text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
-                {{#if gallery_content.page_title}}{{gallery_content.page_title}}{{else}}Royal Picture Galleries{{/if}}
-            </h1>
-            {{#if gallery_content.page_subtitle}}
-            <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto font-light">
-                {{gallery_content.page_subtitle}}
-            </p>
-            {{/if}}
-        </div>
-    </div>
-</section>
-{{/if}}
+<!-- Universal Gallery System for Luxury Theme -->
+{{{renderUniversalGallery modelSlug previewTheme=previewThemeId}}}
 
-<!-- Phase 2.2e: Advanced Royal Gallery System -->
-<section class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<!-- Load Universal Gallery System CSS and JavaScript -->
+<link rel="stylesheet" href="/templates/universal/gallery-styles.css">
+<script src="/templates/universal/gallery-script.js"></script>
 
-        {{#if (hasGalleries modelSlug)}}
-            <!-- Professional Royal Gallery Collections ---->
-            <div class="luxury-royal-galleries" data-aos="fade-up">
-                {{{renderGalleries modelSlug}}}
-            </div>
-        {{else}}
-            <!-- Imperial Empty State -->
-            <div class="text-center py-16">
-                <div class="luxury-imperial-gallery-chamber max-w-md mx-auto" data-aos="zoom-in">
-                    <div class="luxury-chamber-dome-empty"></div>
-                    <div class="luxury-imperial-ornament">
-                        <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-luxury-gold to-luxury-bronze rounded-full flex items-center justify-center luxury-glow luxury-float">
-                            <i class="fas fa-camera text-2xl text-white"></i>
-                        </div>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4 luxury-heading text-luxury-gold">Royal Collections Coming Soon</h3>
-                    <p class="text-gray-600 mb-8 max-w-md mx-auto">
-                        Exclusive imperial photography will be available here soon. Each image is a masterpiece worthy of royal galleries.
-                    </p>
-                    <div class="luxury-imperial-buttons">
-                        <a href="/{{modelSlug}}/contact" class="luxury-btn">
-                            <i class="fas fa-scroll mr-2"></i>
-                            Send Royal Message
-                        </a>
-                    </div>
-                </div>
-            </div>
-        {{/if}}
-    </div>
-</section>
-
-<!-- Royal CTA Palace -->
-<section class="py-16 bg-gradient-to-br from-luxury-gold via-luxury-bronze to-luxury-gold text-white relative overflow-hidden">
-    <div class="luxury-cta-palace-dome"></div>
-    <div class="luxury-floating-cta-elements">
-        <div class="luxury-floating-scepter"></div>
-        <div class="luxury-floating-orb"></div>
-        <div class="luxury-floating-jewel"></div>
-    </div>
-    
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10" data-aos="fade-up">
-        <div class="luxury-cta-royal-chamber">
-            <div class="luxury-cta-crown-emblem">
-                <i class="fas fa-gem"></i>
-            </div>
-            <h2 class="text-3xl font-bold mb-6 luxury-heading luxury-text-shimmer" style="text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);">
-                Inspired by Royal Beauty?
-            </h2>
-            <p class="text-xl mb-8 opacity-90 max-w-2xl mx-auto" style="text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);">
-                Ready to experience imperial elegance and sophistication? Let's create something truly magnificent together.
-            </p>
-            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-                <a href="/{{modelSlug}}/contact" class="luxury-btn bg-white text-luxury-gold hover:bg-gray-100 luxury-btn-glow">
-                    <i class="fas fa-scroll mr-2"></i>
-                    Send Royal Message
-                </a>
-                <a href="/{{modelSlug}}/rates" class="luxury-btn-outline border-white text-white hover:bg-white hover:text-luxury-gold">
-                    <i class="fas fa-crown mr-2"></i>
-                    View Imperial Services
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Luxury Royal Gallery Styling -->
+<!-- Luxury Theme Gallery CSS Variables Override -->
 <style>
-/* Royal Gallery Palace Hero */
-.luxury-gallery-palace {
-    background: linear-gradient(135deg, #f8f6f0 0%, #f0ead6 50%, #e8dcc0 100%);
-    position: relative;
+:root {
+    --gallery-primary: #ffd700;
+    --gallery-primary-hover: #ffed4e;
+    --gallery-secondary: #cd9500;
+    --gallery-accent: #ffb300;
+    --gallery-background: linear-gradient(135deg, #f8f6f0, #f0ead6);
+    --gallery-surface: rgba(255, 255, 255, 0.95);
+    --gallery-text: #1a1a2e;
+    --gallery-text-muted: #4a4a5e;
+    --gallery-border: rgba(255, 215, 0, 0.2);
+    --gallery-shadow: rgba(205, 149, 0, 0.2);
+    --gallery-shadow-hover: rgba(205, 149, 0, 0.4);
+    
+    --gallery-border-radius: 12px;
+    --gallery-border-radius-large: 20px;
+    --gallery-grid-columns-desktop: 3;
+    --gallery-transition-duration: 0.4s;
+    --gallery-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+    --gallery-hover-lift: -8px;
+    --gallery-hover-scale: 1.02;
+}
+</style>
+
+<!-- Luxury Theme Gallery Custom Page Styles -->
+<style>
+/* Luxury Theme Gallery Hero Section */
+.universal-gallery .gallery-hero {
+    background: linear-gradient(135deg, #f8f6f0, #f0ead6, #e8dcc0);
     color: #1a1a2e;
+    position: relative;
+    overflow: hidden;
 }
 
-.luxury-palace-dome-gallery {
+.universal-gallery .gallery-hero::before {
+    content: '';
     position: absolute;
     top: -50px;
     left: 50%;
@@ -120,145 +53,48 @@
     animation: luxury-palace-glow 4s ease-in-out infinite alternate;
 }
 
-.luxury-gallery-royal-header {
-    position: relative;
-    z-index: 2;
-}
-
-.luxury-gallery-crown-emblem {
+.universal-gallery .gallery-hero .hero-badge {
     display: inline-block;
     width: 80px;
     height: 80px;
     background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     margin: 0 auto 2rem auto;
     box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
     animation: luxury-crown-pulse 3s ease-in-out infinite;
 }
 
-.luxury-gallery-crown-emblem i {
-    font-size: 2rem;
-    color: #1a1a2e;
+@keyframes luxury-palace-glow {
+    0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+    50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
 }
 
-/* Floating Gallery Elements */
-.luxury-floating-gallery-elements {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
+@keyframes luxury-crown-pulse {
+    0%, 100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
+    50% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.8); }
 }
 
-.luxury-floating-frame-1 {
-    position: absolute;
-    top: 20%;
-    left: 10%;
-    width: 60px;
-    height: 40px;
-    border: 3px solid rgba(255, 215, 0, 0.6);
-    border-radius: 8px;
-    animation: luxury-float-frame 6s ease-in-out infinite;
-}
-
-.luxury-floating-frame-2 {
-    position: absolute;
-    top: 60%;
-    right: 15%;
-    width: 50px;
-    height: 35px;
-    border: 2px solid rgba(205, 164, 0, 0.5);
-    border-radius: 6px;
-    animation: luxury-float-frame 8s ease-in-out infinite reverse;
-}
-
-.luxury-floating-camera-1 {
-    position: absolute;
-    top: 30%;
-    right: 20%;
-    width: 20px;
-    height: 20px;
-    background: rgba(255, 215, 0, 0.4);
-    border-radius: 4px;
-    animation: luxury-float-sparkle 4s ease-in-out infinite;
-}
-
-.luxury-floating-camera-1::before {
-    content: '📷';
+/* Luxury Theme Gallery Items */
+.universal-gallery .gallery-grid-item::before {
+    content: '';
     position: absolute;
     top: -2px;
     left: -2px;
-    font-size: 16px;
-    filter: sepia(1) hue-rotate(45deg);
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+    border-radius: calc(var(--gallery-border-radius) + 2px);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
 }
 
-.luxury-floating-camera-2 {
-    position: absolute;
-    bottom: 30%;
-    left: 20%;
-    width: 15px;
-    height: 15px;
-    background: rgba(205, 164, 0, 0.3);
-    border-radius: 3px;
-    animation: luxury-float-sparkle 5s ease-in-out infinite reverse;
+.universal-gallery .gallery-grid-item:hover::before {
+    opacity: 1;
 }
 
-.luxury-floating-camera-2::before {
-    content: '🖼️';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    font-size: 12px;
-    filter: sepia(1) hue-rotate(30deg);
-}
-
-.luxury-floating-crown-1 {
-    position: absolute;
-    top: 40%;
-    left: 15%;
-    width: 25px;
-    height: 25px;
-    animation: luxury-float-crown 7s ease-in-out infinite;
-}
-
-.luxury-floating-crown-1::before {
-    content: '👑';
-    font-size: 20px;
-    filter: sepia(1) hue-rotate(45deg) brightness(1.2);
-}
-
-.luxury-floating-gem-1 {
-    position: absolute;
-    bottom: 40%;
-    right: 25%;
-    width: 20px;
-    height: 20px;
-    animation: luxury-float-gem 5s ease-in-out infinite;
-}
-
-.luxury-floating-gem-1::before {
-    content: '💎';
-    font-size: 16px;
-    filter: hue-rotate(45deg) brightness(1.3);
-}
-
-/* Royal Gallery Collections Enhanced Styling */
-.luxury-royal-galleries .gallery-section {
-    margin-bottom: 4rem;
-    padding: 3rem 0;
-    border-bottom: 1px solid rgba(255, 215, 0, 0.2);
-    position: relative;
-}
-
-.luxury-royal-galleries .gallery-section:last-child {
-    border-bottom: none;
-}
-
-.luxury-royal-galleries .gallery-section::before {
+/* Luxury Theme Gallery Sections */
+.universal-gallery .gallery-section::before {
     content: '';
     position: absolute;
     top: 0;
@@ -269,17 +105,13 @@
     background: linear-gradient(90deg, transparent, #ffd700, transparent);
 }
 
-.luxury-royal-galleries .gallery-title {
-    font-size: 2.5rem;
-    font-weight: 700;
+.universal-gallery .gallery-section-title {
     color: #ffd700;
-    margin-bottom: 2rem;
-    text-align: center;
-    position: relative;
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    position: relative;
 }
 
-.luxury-royal-galleries .gallery-title::after {
+.universal-gallery .gallery-section-title::after {
     content: '';
     position: absolute;
     bottom: -1rem;
@@ -292,54 +124,40 @@
     box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 
-/* Enhanced Gallery Items */
-.luxury-royal-galleries .grid-container {
-    max-width: 100%;
-    padding: 2rem 0;
+/* Luxury Theme Carousel Styling */
+.universal-gallery .gallery-carousel-container {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(205, 164, 0, 0.05));
+    border: 1px solid rgba(255, 215, 0, 0.1);
 }
 
-.luxury-royal-galleries .grid-item {
-    border-radius: 12px;
-    overflow: hidden;
-    transition: all 0.4s ease;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    position: relative;
+.universal-gallery .gallery-carousel-nav {
+    background: rgba(255, 215, 0, 0.9);
+    color: #1a1a2e;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
 }
 
-.luxury-royal-galleries .grid-item::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
-    border-radius: 14px;
-    z-index: -1;
-    opacity: 0;
-    transition: opacity 0.4s ease;
+.universal-gallery .gallery-carousel-nav:hover {
+    background: rgba(255, 215, 0, 1);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
 }
 
-.luxury-royal-galleries .grid-item:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 15px 40px rgba(255, 215, 0, 0.3);
+.universal-gallery .gallery-carousel-dot {
+    background: rgba(255, 215, 0, 0.4);
 }
 
-.luxury-royal-galleries .grid-item:hover::before {
-    opacity: 1;
+.universal-gallery .gallery-carousel-dot.active {
+    background: #ffd700;
 }
 
-/* Imperial Empty State */
-.luxury-imperial-gallery-chamber {
+/* Luxury Theme Empty State */
+.universal-gallery .gallery-empty-state {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
-    border-radius: 20px;
-    padding: 3rem;
-    position: relative;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 215, 0, 0.2);
+    position: relative;
 }
 
-.luxury-chamber-dome-empty {
+.universal-gallery .gallery-empty-state::before {
+    content: '';
     position: absolute;
     top: -30px;
     left: 50%;
@@ -350,18 +168,20 @@
     border-radius: 50%;
 }
 
-.luxury-imperial-ornament {
-    position: relative;
-    z-index: 2;
+.universal-gallery .gallery-empty-icon {
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
 }
 
-.luxury-imperial-buttons {
+/* Luxury Theme CTA Section */
+.universal-gallery .gallery-cta {
+    background: linear-gradient(135deg, #ffd700, #cd9500, #ffd700);
+    color: white;
     position: relative;
-    z-index: 2;
 }
 
-/* Royal CTA Palace */
-.luxury-cta-palace-dome {
+.universal-gallery .gallery-cta::before {
+    content: '';
     position: absolute;
     top: -40px;
     left: 50%;
@@ -373,515 +193,32 @@
     animation: luxury-palace-glow 4s ease-in-out infinite alternate;
 }
 
-.luxury-floating-cta-elements {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.luxury-floating-scepter {
-    position: absolute;
-    top: 20%;
-    left: 15%;
-    width: 30px;
-    height: 30px;
-    animation: luxury-float-scepter 6s ease-in-out infinite;
-}
-
-.luxury-floating-scepter::before {
-    content: '🔱';
-    font-size: 24px;
-    filter: sepia(1) hue-rotate(30deg) brightness(1.5);
-}
-
-.luxury-floating-orb {
-    position: absolute;
-    top: 60%;
-    right: 20%;
-    width: 25px;
-    height: 25px;
-    animation: luxury-float-orb 7s ease-in-out infinite;
-}
-
-.luxury-floating-orb::before {
-    content: '🔮';
-    font-size: 20px;
-    filter: hue-rotate(60deg) brightness(1.3);
-}
-
-.luxury-floating-jewel {
-    position: absolute;
-    bottom: 30%;
-    left: 25%;
-    width: 20px;
-    height: 20px;
-    animation: luxury-float-jewel 5s ease-in-out infinite reverse;
-}
-
-.luxury-floating-jewel::before {
-    content: '💍';
-    font-size: 16px;
-    filter: hue-rotate(45deg) brightness(1.4);
-}
-
-.luxury-cta-royal-chamber {
-    position: relative;
-    z-index: 2;
-}
-
-.luxury-cta-crown-emblem {
-    display: inline-block;
-    width: 60px;
-    height: 60px;
+.universal-gallery .gallery-cta-badge {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem auto;
+    color: #ffd700;
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
     animation: luxury-crown-pulse 3s ease-in-out infinite;
 }
 
-.luxury-cta-crown-emblem i {
-    font-size: 1.5rem;
+.universal-gallery .gallery-cta-primary {
+    background: white;
     color: #ffd700;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
 }
 
-/* Animations */
-@keyframes luxury-float-frame {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(3deg); }
+.universal-gallery .gallery-cta-primary:hover {
+    background: #f8f8f8;
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.4);
 }
 
-@keyframes luxury-float-sparkle {
-    0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
-    50% { transform: translateY(-15px) scale(1.1); opacity: 1; }
+.universal-gallery .gallery-cta-secondary {
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
 }
 
-@keyframes luxury-float-crown {
-    0%, 100% { transform: translateY(0) rotate(-3deg); }
-    50% { transform: translateY(-25px) rotate(3deg); }
-}
-
-@keyframes luxury-float-gem {
-    0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
-    50% { transform: translateY(-18px) scale(1.05) rotate(180deg); }
-}
-
-@keyframes luxury-float-scepter {
-    0%, 100% { transform: translateY(0) rotate(-5deg); }
-    50% { transform: translateY(-30px) rotate(5deg); }
-}
-
-@keyframes luxury-float-orb {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-22px) scale(1.1); }
-}
-
-@keyframes luxury-float-jewel {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-16px) rotate(360deg); }
-}
-
-/* Royal Carousel Styling */
-.carousel-container {
-    position: relative;
-    overflow: hidden;
-    padding: 2rem;
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(205, 164, 0, 0.05));
-    border-radius: 20px;
-    margin: 2rem 0;
-}
-
-.carousel-track {
-    display: flex;
-    gap: 1.5rem;
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.carousel-item {
-    flex: 0 0 320px;
-    max-width: 320px;
-}
-
-.carousel-item .gallery-image {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
-    transition: all 0.3s ease;
-}
-
-.carousel-item:hover .gallery-image {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(255, 215, 0, 0.5);
-}
-
-.carousel-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255, 215, 0, 0.9);
-    color: #1a1a2e;
-    border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 10;
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-}
-
-.carousel-nav:hover {
-    background: rgba(255, 215, 0, 1);
-    transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
-}
-
-.carousel-nav.prev {
-    left: 1rem;
-}
-
-.carousel-nav.next {
-    right: 1rem;
-}
-
-.carousel-nav:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.carousel-dots {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 1.5rem;
-}
-
-.carousel-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: rgba(255, 215, 0, 0.4);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.carousel-dot.active {
-    background: #ffd700;
-    transform: scale(1.2);
-}
-
-.carousel-dot:hover {
-    background: rgba(255, 215, 0, 0.7);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .luxury-royal-galleries .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-    }
-    
-    .carousel-item {
-        flex: 0 0 280px;
-    }
-    
-    .luxury-floating-gallery-elements > * {
-        display: none;
-    }
-    
-    .luxury-floating-cta-elements > * {
-        display: none;
-    }
-    
-    .luxury-gallery-royal-header h1 {
-        font-size: 2.5rem !important;
-    }
-    
-    .luxury-royal-galleries .gallery-title {
-        font-size: 2rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .luxury-royal-galleries .grid-container {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    .carousel-item {
-        flex: 0 0 250px;
-    }
-    
-    .luxury-imperial-gallery-chamber {
-        padding: 2rem 1.5rem;
-        margin: 0 1rem;
-    }
-    
-    .luxury-gallery-royal-header h1 {
-        font-size: 2rem !important;
-    }
+.universal-gallery .gallery-cta-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: white;
 }
 </style>
-
-<!-- Phase 2.2e Gallery System includes built-in royal lightbox and interactive features -->
-
-<!-- Royal Lightbox Modal -->
-<div id="lightbox-modal" class="fixed inset-0 bg-black bg-opacity-95 z-50 hidden flex items-center justify-center p-4">
-    <div class="relative max-w-6xl max-h-full">
-        <!-- Royal Close button -->
-        <button onclick="closeLightbox()" 
-                class="absolute -top-12 right-0 text-white hover:text-luxury-gold transition-colors duration-200 z-10 luxury-btn-outline border-white">
-            <i class="fas fa-times text-xl"></i>
-        </button>
-        
-        <!-- Image container with royal styling -->
-        <div class="relative">
-            <img id="lightbox-image" 
-                 src="" 
-                 alt="" 
-                 class="max-w-full max-h-full object-contain rounded-lg shadow-2xl">
-        </div>
-        
-        <!-- Royal image caption -->
-        <div class="absolute bottom-4 left-4 right-4 bg-gradient-to-r from-luxury-gold via-luxury-bronze to-luxury-gold bg-opacity-90 text-white p-3 rounded-lg">
-            <p id="lightbox-caption" class="text-center text-sm font-medium luxury-text-shimmer"></p>
-        </div>
-    </div>
-</div>
-
-<!-- Royal Lightbox JavaScript -->
-<script>
-function openLightbox(imageUrl, caption) {
-    const modal = document.getElementById('lightbox-modal');
-    const image = document.getElementById('lightbox-image');
-    const captionEl = document.getElementById('lightbox-caption');
-    
-    if (modal && image && captionEl) {
-        image.src = imageUrl;
-        image.alt = caption;
-        captionEl.textContent = caption;
-        
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        
-        // Prevent body scroll
-        document.body.style.overflow = 'hidden';
-        
-        // Close on escape key
-        document.addEventListener('keydown', handleLightboxEscape);
-        
-        // Close on background click
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                closeLightbox();
-            }
-        });
-    }
-}
-
-function closeLightbox() {
-    const modal = document.getElementById('lightbox-modal');
-    
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-        
-        // Restore body scroll
-        document.body.style.overflow = '';
-        
-        // Remove event listeners
-        document.removeEventListener('keydown', handleLightboxEscape);
-    }
-}
-
-function handleLightboxEscape(e) {
-    if (e.key === 'Escape') {
-        closeLightbox();
-    }
-}
-
-// Royal Carousel Navigation Functions
-function moveCarousel(sectionIndex, direction) {
-    const carousel = document.getElementById(`carousel-${sectionIndex}`);
-    if (!carousel) return;
-    
-    const items = carousel.querySelectorAll('.carousel-item');
-    const currentIndex = parseInt(carousel.dataset.currentIndex || 0);
-    const totalItems = items.length;
-    
-    // Get carousel configuration from data attributes
-    const visibleItems = parseInt(carousel.dataset.visibleItems || 1);
-    const itemWidth = parseInt(carousel.dataset.itemWidth || 320);
-    const itemGap = parseInt(carousel.dataset.itemGap || 24);
-    
-    // Calculate new index based on visible items
-    let newIndex = currentIndex + (direction * visibleItems);
-    
-    // Handle wrap-around for multiple visible items
-    if (newIndex < 0) {
-        newIndex = Math.max(0, totalItems - visibleItems);
-    } else if (newIndex + visibleItems > totalItems) {
-        newIndex = 0;
-    }
-    
-    // Update carousel position
-    const totalItemWidth = itemWidth + itemGap;
-    const translateX = -(newIndex * totalItemWidth);
-    carousel.style.transform = `translateX(${translateX}px)`;
-    carousel.dataset.currentIndex = newIndex;
-    
-    // Update dots
-    updateCarouselDots(sectionIndex, newIndex);
-    
-    // Update navigation buttons
-    updateCarouselNav(sectionIndex, newIndex, totalItems);
-    
-    // Restart autoplay if enabled (user interaction resets the timer)
-    const container = carousel.closest('.carousel-container');
-    if (container) {
-        const autoplaySpeed = container.dataset.autoplay;
-        if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
-            startCarouselAutoplay(sectionIndex, parseInt(autoplaySpeed));
-        }
-    }
-}
-
-function goToCarouselSlide(sectionIndex, slideIndex) {
-    const carousel = document.getElementById(`carousel-${sectionIndex}`);
-    if (!carousel) return;
-    
-    const items = carousel.querySelectorAll('.carousel-item');
-    const totalItems = items.length;
-    
-    // Get carousel configuration from data attributes
-    const visibleItems = parseInt(carousel.dataset.visibleItems || 1);
-    const itemWidth = parseInt(carousel.dataset.itemWidth || 320);
-    const itemGap = parseInt(carousel.dataset.itemGap || 24);
-    
-    // Validate slide index for multiple visible items
-    if (slideIndex < 0 || slideIndex + visibleItems > totalItems) return;
-    
-    // Update carousel position
-    const totalItemWidth = itemWidth + itemGap;
-    const translateX = -(slideIndex * totalItemWidth);
-    carousel.style.transform = `translateX(${translateX}px)`;
-    carousel.dataset.currentIndex = slideIndex;
-    
-    // Update dots
-    updateCarouselDots(sectionIndex, slideIndex);
-    
-    // Update navigation buttons
-    updateCarouselNav(sectionIndex, slideIndex, totalItems);
-    
-    // Restart autoplay if enabled (user interaction resets the timer)
-    const container = carousel.closest('.carousel-container');
-    if (container) {
-        const autoplaySpeed = container.dataset.autoplay;
-        if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
-            startCarouselAutoplay(sectionIndex, parseInt(autoplaySpeed));
-        }
-    }
-}
-
-function updateCarouselDots(sectionIndex, activeIndex) {
-    const carousel = document.querySelector(`#carousel-${sectionIndex}`);
-    if (!carousel) return;
-    
-    const container = carousel.closest('.carousel-container');
-    if (!container) return;
-    
-    // Get visible items to calculate which page/dot should be active
-    const visibleItems = parseInt(carousel.dataset.visibleItems || 1);
-    const activePage = Math.floor(activeIndex / visibleItems);
-    
-    const dots = container.querySelectorAll('.carousel-dot');
-    dots.forEach((dot, dotIndex) => {
-        dot.classList.toggle('active', dotIndex === activePage);
-    });
-}
-
-function updateCarouselNav(sectionIndex, currentIndex, totalItems) {
-    const carousel = document.querySelector(`#carousel-${sectionIndex}`);
-    if (!carousel) return;
-    
-    const container = carousel.closest('.carousel-container');
-    if (!container) return;
-    
-    const prevBtn = container.querySelector('.carousel-nav.prev');
-    const nextBtn = container.querySelector('.carousel-nav.next');
-    
-    if (prevBtn) prevBtn.disabled = false;
-    if (nextBtn) nextBtn.disabled = false;
-    
-    // Optional: Disable buttons at boundaries (uncomment if you want this behavior)
-    // if (prevBtn) prevBtn.disabled = (currentIndex === 0);
-    // if (nextBtn) nextBtn.disabled = (currentIndex === totalItems - 1);
-}
-
-// Royal Carousel autoplay timers
-window.carouselTimers = {};
-
-// Initialize royal carousels when page loads
-document.addEventListener('DOMContentLoaded', function() {
-
-    // Initialize all carousels
-    const carousels = document.querySelectorAll('.carousel-track');
-    
-    carousels.forEach((carousel, index) => {
-        carousel.dataset.currentIndex = '0';
-        
-        // Initialize at position 0 - the wrapper is already centered with margin: 0 auto
-        carousel.style.transform = 'translateX(0px)';
-        
-        // Check if autoplay is enabled for this carousel
-        const container = carousel.closest('.carousel-container');
-        if (container) {
-            const autoplaySpeed = container.dataset.autoplay;
-
-            if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
-                startCarouselAutoplay(index, parseInt(autoplaySpeed));
-            }
-        }
-    });
-    
-    // Pause autoplay on hover
-    document.querySelectorAll('.carousel-container').forEach((container, index) => {
-        container.addEventListener('mouseenter', () => pauseCarouselAutoplay(index));
-        container.addEventListener('mouseleave', () => {
-            const autoplaySpeed = container.dataset.autoplay;
-            if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
-                startCarouselAutoplay(index, parseInt(autoplaySpeed));
-            }
-        });
-    });
-});
-
-// Royal Carousel autoplay functions
-function startCarouselAutoplay(sectionIndex, speed) {
-    // Clear any existing timer
-    pauseCarouselAutoplay(sectionIndex);
-    
-    // Start new timer
-    window.carouselTimers[sectionIndex] = setInterval(() => {
-        moveCarousel(sectionIndex, 1); // Move to next slide
-    }, speed);
-}
-
-function pauseCarouselAutoplay(sectionIndex) {
-    if (window.carouselTimers[sectionIndex]) {
-        clearInterval(window.carouselTimers[sectionIndex]);
-        delete window.carouselTimers[sectionIndex];
-    }
-}
-</script>

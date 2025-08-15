@@ -1,0 +1,47 @@
+{{!-- Universal Carousel Layout Partial --}}
+<div class="gallery-carousel-container" data-layout="carousel" data-autoplay="{{galleryConfig.gallery_settings.carousel_autoplay_speed}}">
+    <div class="gallery-carousel-track" id="carousel-gallery">
+        {{#each galleryData.items}}
+        <div class="gallery-carousel-item" data-category="{{this.category}}" data-id="{{this.id}}">
+            <div class="gallery-image-wrapper">
+                <img src="{{this.srcMed}}" 
+                     alt="{{this.alt}}" 
+                     class="gallery-image"
+                     loading="lazy"
+                     onclick="{{#if ../galleryData.settings.lightbox}}openLightbox('{{this.srcFull}}', '{{this.caption}}', {{@index}}){{/if}}">
+                
+                {{#if this.featured}}
+                <div class="gallery-featured-badge">
+                    <i class="fas fa-star"></i>
+                </div>
+                {{/if}}
+                
+                {{#if ../galleryData.settings.captions}}
+                {{#if this.caption}}
+                <div class="gallery-image-caption">
+                    {{this.caption}}
+                </div>
+                {{/if}}
+                {{/if}}
+            </div>
+        </div>
+        {{/each}}
+    </div>
+    
+    <!-- Carousel Navigation -->
+    <button class="gallery-carousel-nav gallery-carousel-nav-prev" onclick="moveCarousel('gallery', -1)" aria-label="Previous image">
+        <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="gallery-carousel-nav gallery-carousel-nav-next" onclick="moveCarousel('gallery', 1)" aria-label="Next image">
+        <i class="fas fa-chevron-right"></i>
+    </button>
+    
+    <!-- Carousel Dots -->
+    <div class="gallery-carousel-dots">
+        {{#each galleryData.items}}
+        <button class="gallery-carousel-dot{{#if @first}} active{{/if}}" 
+                onclick="goToCarouselSlide('gallery', {{@index}})"
+                aria-label="Go to slide {{add @index 1}}"></button>
+        {{/each}}
+    </div>
+</div>

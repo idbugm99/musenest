@@ -108,10 +108,27 @@ app.use('/:slug/uploads/system', (req, res, next) => {
     // Serve static files from the model's system directory
     express.static(systemPath)(req, res, next);
 });
+
+// Serve model-specific uploads (thumbs, public, etc.)
+app.use('/:slug/uploads', (req, res, next) => {
+    const { slug } = req.params;
+    const modelUploadsPath = path.join(__dirname, 'public/uploads', slug);
+    
+    // Check if the model uploads directory exists
+    if (!fs.existsSync(modelUploadsPath)) {
+        return res.status(404).send('Model uploads not found');
+    }
+    
+    // Serve static files from the model's uploads directory
+    express.static(modelUploadsPath)(req, res, next);
+});
 // Admin static files (for components and assets)
 app.use('/admin/components', express.static(path.join(__dirname, 'admin/components')));
 app.use('/admin/assets', express.static(path.join(__dirname, 'admin/assets')));
 app.use('/admin/js', express.static(path.join(__dirname, 'admin/js')));
+
+// Templates static files (for universal gallery system)
+app.use('/templates', express.static(path.join(__dirname, 'templates')));
 
 // Normalize API paths: collapse multiple slashes and strip trailing slashes (except root)
 app.use('/api', (req, _res, next) => {
@@ -3280,6 +3297,26 @@ async function startServer() {
         
         if (!dbConnected) {
             console.warn('⚠️  Database connection failed, but server will still start');
+        }
+        
+        // Initialize Universal Gallery System
+        console.log('🎨 Initializing Universal Gallery System...');
+        try {
+            const GalleryHelpers = require('./src/helpers/GalleryHelpers');
+            const galleryHelpers = new GalleryHelpers(db);
+            await galleryHelpers.initialize();
+            
+            // Get the Handlebars instance from the engine
+            const handlebarsEngine = app.get('view engine');
+            const handlebars = require('handlebars');
+            
+            // Register the universal gallery helpers
+            galleryHelpers.registerHelpers(handlebars);
+            
+            console.log('✅ Universal Gallery System initialized successfully');
+        } catch (error) {
+            console.error('❌ Failed to initialize Universal Gallery System:', error.message);
+            console.warn('⚠️  Gallery system disabled, falling back to legacy helpers');
         }
         
         app.listen(PORT, () => {

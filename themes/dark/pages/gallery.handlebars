@@ -1,682 +1,127 @@
-<!-- Gallery Hero Section -->
-{{#if gallery_content.gallery_header_visible}}
-<section class="bg-purple-600 text-white py-16" data-aos="fade-in">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-6">
-                {{#if gallery_content.page_title}}{{gallery_content.page_title}}{{else}}Photo Gallery{{/if}}
-            </h1>
-            {{#if gallery_content.page_subtitle}}
-            <p class="text-xl text-gray-200 max-w-3xl mx-auto">
-                {{gallery_content.page_subtitle}}
-            </p>
-            {{/if}}
-        </div>
-    </div>
-</section>
-{{/if}}
+<!-- Universal Gallery System for Dark Theme -->
+{{{renderUniversalGallery modelSlug previewTheme=previewThemeId}}}
 
-<!-- Phase 5: Advanced Gallery System -->
-<section class="py-16" style="background-color: var(--basic-background);">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<!-- Load Universal Gallery System CSS and JavaScript -->
+<link rel="stylesheet" href="/templates/universal/gallery-styles.css">
+<script src="/templates/universal/gallery-script.js"></script>
 
-        {{#if (hasGalleries modelSlug)}}
-            <!-- Professional Gallery Sections -->
-            <div class="galleries-container rounded-lg shadow-sm border" style="padding: 24px; background-color: #1f2937; border-color: #374151;" data-aos="fade-up">
-                {{{renderGalleries modelSlug}}}
-            </div>
-        {{else}}
-            <!-- Empty State -->
-            <div class="text-center py-16">
-                <div class="basic-card p-12 max-w-md mx-auto" data-aos="zoom-in">
-                    <div class="w-20 h-20 mx-auto mb-6 bg-basic-primary rounded-full flex items-center justify-center">
-                        <i class="fas fa-camera text-2xl text-white"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4 basic-heading">Gallery Coming Soon</h3>
-                    <p class="text-gray-600 mb-8 max-w-md mx-auto">
-                        Professional photos will be available here soon. Check back for updates!
-                    </p>
-                    <a href="/{{modelSlug}}/contact" class="basic-btn">
-                        Get in Touch
-                    </a>
-                </div>
-            </div>
-        {{/if}}
-    </div>
-</section>
-
-<!-- Basic Theme Gallery Styling -->
+<!-- Dark Theme Gallery CSS Variables Override -->
 <style>
-.model-galleries .gallery-section {
-    margin-bottom: 3rem;
-    padding: 2rem 0;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.model-galleries .gallery-section:last-child {
-    border-bottom: none;
-}
-
-.model-galleries .gallery-title {
-    font-size: 1.875rem;
-    font-weight: 700;
-    color: var(--basic-primary, #2563eb);
-    margin-bottom: 2rem;
-    text-align: center;
-    position: relative;
-}
-
-.model-galleries .gallery-title::after {
-    content: '';
-    position: absolute;
-    bottom: -0.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 3px;
-    background-color: var(--basic-primary, #2563eb);
-    border-radius: 2px;
-}
-
-.model-galleries .grid-container {
-    max-width: 100%;
-}
-
-.model-galleries .grid-item {
-    border-radius: 8px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.model-galleries .grid-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
-}
-
-.model-galleries .masonry-item {
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.model-galleries .masonry-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
-}
-
-.model-galleries .carousel-inner {
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.model-galleries .lightbox-grid-container {
-    background: #f9fafb;
-    padding: 1rem;
-    border-radius: 12px;
-}
-
-.model-galleries .lightbox-thumbnail {
-    background: white;
-    border: 2px solid #e5e7eb;
-    transition: all 0.3s ease;
-}
-
-.model-galleries .lightbox-thumbnail:hover {
-    border-color: var(--basic-primary, #2563eb);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-}
-
-/* Basic theme carousel controls */
-.model-galleries .carousel-control-prev,
-.model-galleries .carousel-control-next {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    top: 50%;
-    transform: translateY(-50%);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    color: #334155;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.model-galleries .carousel-control-prev:hover,
-.model-galleries .carousel-control-next:hover {
-    background: rgba(255, 255, 255, 1);
-    transform: translateY(-50%) scale(1.05);
-}
-
-.model-galleries .carousel-indicators [data-bs-target] {
-    background-color: #94A3B8;
-    border-radius: 50%;
-    width: 8px;
-    height: 8px;
-}
-
-.model-galleries .carousel-indicators [data-bs-target].active {
-    background-color: #2563EB;
-}
-
-/* Gallery Layout Styles */
-.gallery-section {
-    margin-bottom: 3rem;
-    padding: 2rem 0;
-}
-
-.gallery-section:last-child {
-    margin-bottom: 0;
-}
-
-/* Grid Layout */
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    padding: 1rem 0;
-}
-
-.gallery-item {
-    position: relative;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    background: white;
-    aspect-ratio: 4/3;
-}
-
-.gallery-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.gallery-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    /* Ensure images load properly even if they're large */
-    max-width: 100%;
-    max-height: 100%;
-}
-
-.image-caption {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-    color: white;
-    padding: 1rem;
-    font-size: 0.9rem;
-    text-align: center;
-}
-
-/* Masonry Layout */
-.masonry-grid {
-    columns: 3;
-    column-gap: 1.5rem;
-    padding: 1rem 0;
-}
-
-.masonry-grid .gallery-item {
-    break-inside: avoid;
-    margin-bottom: 1.5rem;
-    display: block;
-}
-
-.masonry-grid .gallery-image {
-    height: auto;
-    max-height: 400px;
-}
-
-/* Carousel Layout */
-.carousel-container {
-    position: relative;
-    overflow: hidden;
-    padding: 2rem 0;
-}
-
-.carousel-track {
-    display: flex;
-    gap: 1rem;
-    transition: transform 0.5s ease-in-out;
-}
-
-.carousel-item {
-    flex: 0 0 300px;
-    max-width: 300px;
-}
-
-.carousel-item .gallery-image {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-.carousel-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.9);
-    color: #334155;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 10;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.carousel-nav:hover {
-    background: rgba(255, 255, 255, 1);
-    transform: translateY(-50%) scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.carousel-nav.prev {
-    left: 0.5rem;
-}
-
-.carousel-nav.next {
-    right: 0.5rem;
-}
-
-.carousel-nav:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.carousel-dots {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 1rem;
-}
-
-.carousel-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #94A3B8;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.carousel-dot.active {
-    background: #2563EB;
-}
-
-.carousel-dot:hover {
-    background: #64748B;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-    }
+:root {
+    --gallery-primary: #8b5cf6;
+    --gallery-primary-hover: #7c3aed;
+    --gallery-secondary: #6b46c1;
+    --gallery-accent: #a855f7;
+    --gallery-background: #111827;
+    --gallery-surface: #1f2937;
+    --gallery-text: #f9fafb;
+    --gallery-text-muted: #d1d5db;
+    --gallery-border: #374151;
+    --gallery-shadow: rgba(0, 0, 0, 0.3);
+    --gallery-shadow-hover: rgba(139, 92, 246, 0.3);
     
-    .masonry-grid {
-        columns: 2;
-        column-gap: 1rem;
-    }
-    
-    .carousel-container .gallery-item {
-        flex: 0 0 250px;
-    }
-}
-
-@media (max-width: 480px) {
-    .grid-container {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    .masonry-grid {
-        columns: 1;
-    }
-    
-    .carousel-container .gallery-item {
-        flex: 0 0 200px;
-    }
+    --gallery-border-radius: 8px;
+    --gallery-border-radius-large: 12px;
+    --gallery-grid-columns-desktop: 3;
+    --gallery-transition-duration: 0.3s;
+    --gallery-hover-lift: -2px;
+    --gallery-hover-scale: 1.05;
 }
 </style>
 
-<!-- Call to Action -->
-<section class="bg-purple-600 text-white" style="padding: 32px 0;">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
-        <p class="text-lg mb-8 max-w-prose mx-auto" style="max-width: 80ch;">
-            {{#if content.cta_section_subtitle}}{{content.cta_section_subtitle}}{{else}}Ready to book or have questions? Let's connect and discuss your needs.{{/if}}
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <!-- CTA Button 1 -->
-            {{#if content.cta_button_1_text}}
-                {{#if (eq content.cta_button_1_link 'calendar')}}
-                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                        {{content.cta_button_1_text}}
-                    </a>
-                {{else if (eq content.cta_button_1_link 'contact')}}
-                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                        {{content.cta_button_1_text}}
-                    </a>
-                {{else if (eq content.cta_button_1_link 'gallery')}}
-                    <a href="/{{modelSlug}}/gallery{{previewParam}}" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                        {{content.cta_button_1_text}}
-                    </a>
-                {{else if (eq content.cta_button_1_link 'rates')}}
-                    <a href="/{{modelSlug}}/rates{{previewParam}}" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                        {{content.cta_button_1_text}}
-                    </a>
-                {{else if (eq content.cta_button_1_link 'about')}}
-                    <a href="/{{modelSlug}}/about{{previewParam}}" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                        {{content.cta_button_1_text}}
-                    </a>
-                {{else}}
-                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                        {{content.cta_button_1_text}}
-                    </a>
-                {{/if}}
-            {{else}}
-                <a href="/{{modelSlug}}/contact{{previewParam}}" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                    Contact Me
-                </a>
-            {{/if}}
-            
-            <!-- CTA Button 2 -->
-            {{#if content.cta_button_2_text}}
-                {{#if (eq content.cta_button_2_link 'calendar')}}
-                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
-                        {{content.cta_button_2_text}}
-                    </a>
-                {{else if (eq content.cta_button_2_link 'contact')}}
-                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
-                        {{content.cta_button_2_text}}
-                    </a>
-                {{else if (eq content.cta_button_2_link 'gallery')}}
-                    <a href="/{{modelSlug}}/gallery{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
-                        {{content.cta_button_2_text}}
-                    </a>
-                {{else if (eq content.cta_button_2_link 'rates')}}
-                    <a href="/{{modelSlug}}/rates{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
-                        {{content.cta_button_2_text}}
-                    </a>
-                {{else if (eq content.cta_button_2_link 'about')}}
-                    <a href="/{{modelSlug}}/rates{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
-                        {{content.cta_button_2_text}}
-                    </a>
-                {{else}}
-                    <a href="/{{modelSlug}}/rates{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
-                        {{content.cta_button_2_text}}
-                    </a>
-                {{/if}}
-            {{else}}
-                <a href="/{{modelSlug}}/rates{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
-                    View Services
-                </a>
-            {{/if}}
-        </div>
-    </div>
-</section>
-
-<!-- Phase 5 Gallery System includes built-in lightbox and interactive features -->
-
-<!-- Lightbox Modal -->
-<div id="lightbox-modal" class="fixed inset-0 bg-black bg-opacity-95 z-50 hidden flex items-center justify-center p-4">
-    <div class="relative max-w-6xl max-h-full">
-        <!-- Close button -->
-        <button onclick="closeLightbox()" 
-                class="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors duration-200 z-10">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-        </button>
-        
-        <!-- Image container -->
-        <div class="relative">
-            <img id="lightbox-image" 
-                 src="" 
-                 alt="" 
-                 class="max-w-full max-h-full object-contain rounded-lg">
-        </div>
-        
-        <!-- Image caption -->
-        <div class="absolute bottom-4 left-4 right-4 bg-black bg-opacity-75 text-white p-3 rounded-lg">
-            <p id="lightbox-caption" class="text-center text-sm"></p>
-        </div>
-    </div>
-</div>
-
-<!-- Lightbox JavaScript -->
-<script>
-function openLightbox(imageUrl, caption) {
-    const modal = document.getElementById('lightbox-modal');
-    const image = document.getElementById('lightbox-image');
-    const captionEl = document.getElementById('lightbox-caption');
-    
-    if (modal && image && captionEl) {
-        image.src = imageUrl;
-        image.alt = caption;
-        captionEl.textContent = caption;
-        
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        
-        // Prevent body scroll
-        document.body.style.overflow = 'hidden';
-        
-        // Close on escape key
-        document.addEventListener('keydown', handleLightboxEscape);
-        
-        // Close on background click
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                closeLightbox();
-            }
-        });
-    }
+<!-- Dark Theme Gallery Custom Page Styles -->
+<style>
+/* Dark Theme Gallery Specific Styling */
+.universal-gallery .gallery-hero {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
 }
 
-function closeLightbox() {
-    const modal = document.getElementById('lightbox-modal');
-    
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-        
-        // Restore body scroll
-        document.body.style.overflow = '';
-        
-        // Remove event listeners
-        document.removeEventListener('keydown', handleLightboxEscape);
-    }
+.universal-gallery .gallery-hero .hero-badge {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
 }
 
-function handleLightboxEscape(e) {
-    if (e.key === 'Escape') {
-        closeLightbox();
-    }
+/* Dark Theme Gallery Items */
+.universal-gallery .gallery-grid-item {
+    background: #1f2937;
+    border: 1px solid #374151;
 }
 
-// Carousel Navigation Functions
-function moveCarousel(sectionIndex, direction) {
-    const carousel = document.getElementById(`carousel-${sectionIndex}`);
-    if (!carousel) return;
-    
-    const items = carousel.querySelectorAll('.carousel-item');
-    const currentIndex = parseInt(carousel.dataset.currentIndex || 0);
-    const totalItems = items.length;
-    
-    let newIndex = currentIndex + direction;
-    
-    // Handle wrap-around
-    if (newIndex < 0) newIndex = totalItems - 1;
-    if (newIndex >= totalItems) newIndex = 0;
-    
-    // Update carousel position - account for item width and gaps
-    const itemWidth = 300;
-    const itemGap = 16;
-    const totalItemWidth = itemWidth + itemGap;
-    const translateX = -(newIndex * totalItemWidth);
-    carousel.style.transform = `translateX(${translateX}px)`;
-    carousel.dataset.currentIndex = newIndex;
-    
-    // Update dots
-    updateCarouselDots(sectionIndex, newIndex);
-    
-    // Update navigation buttons
-    updateCarouselNav(sectionIndex, newIndex, totalItems);
-    
-    // Restart autoplay if enabled (user interaction resets the timer)
-    const container = carousel.closest('.carousel-container');
-    if (container) {
-        const autoplaySpeed = container.dataset.autoplay;
-        if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
-            startCarouselAutoplay(sectionIndex, parseInt(autoplaySpeed));
-        }
-    }
+.universal-gallery .gallery-grid-item:hover {
+    border-color: var(--gallery-primary);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
 }
 
-function goToCarouselSlide(sectionIndex, slideIndex) {
-    const carousel = document.getElementById(`carousel-${sectionIndex}`);
-    if (!carousel) return;
-    
-    const items = carousel.querySelectorAll('.carousel-item');
-    const totalItems = items.length;
-    
-    if (slideIndex < 0 || slideIndex >= totalItems) return;
-    
-    // Update carousel position - account for item width and gaps
-    const itemWidth = 300;
-    const itemGap = 16;
-    const totalItemWidth = itemWidth + itemGap;
-    const translateX = -(slideIndex * totalItemWidth);
-    carousel.style.transform = `translateX(${translateX}px)`;
-    carousel.dataset.currentIndex = slideIndex;
-    
-    // Update dots
-    updateCarouselDots(sectionIndex, slideIndex);
-    
-    // Update navigation buttons
-    updateCarouselNav(sectionIndex, slideIndex, totalItems);
-    
-    // Restart autoplay if enabled (user interaction resets the timer)
-    const container = carousel.closest('.carousel-container');
-    if (container) {
-        const autoplaySpeed = container.dataset.autoplay;
-        if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
-            startCarouselAutoplay(sectionIndex, parseInt(autoplaySpeed));
-        }
-    }
+/* Dark Theme Gallery Sections */
+.universal-gallery .gallery-section-title {
+    color: var(--gallery-primary);
 }
 
-function updateCarouselDots(sectionIndex, activeIndex) {
-    const carousel = document.querySelector(`#carousel-${sectionIndex}`);
-    if (!carousel) return;
-    
-    const container = carousel.closest('.carousel-container');
-    if (!container) return;
-    
-    const dots = container.querySelectorAll('.carousel-dot');
-    dots.forEach((dot, index) => {
-        dot.classList.toggle('active', index === activeIndex);
-    });
+/* Dark Theme Carousel Styling */
+.universal-gallery .gallery-carousel-container {
+    background: rgba(31, 41, 55, 0.8);
+    border: 1px solid #374151;
 }
 
-function updateCarouselNav(sectionIndex, currentIndex, totalItems) {
-    const carousel = document.querySelector(`#carousel-${sectionIndex}`);
-    if (!carousel) return;
-    
-    const container = carousel.closest('.carousel-container');
-    if (!container) return;
-    
-    const prevBtn = container.querySelector('.carousel-nav.prev');
-    const nextBtn = container.querySelector('.carousel-nav.next');
-    
-    if (prevBtn) prevBtn.disabled = false;
-    if (nextBtn) nextBtn.disabled = false;
-    
-    // Optional: Disable buttons at boundaries (uncomment if you want this behavior)
-    // if (prevBtn) prevBtn.disabled = (currentIndex === 0);
-    // if (nextBtn) nextBtn.disabled = (currentIndex === totalItems - 1);
+.universal-gallery .gallery-carousel-nav {
+    background: rgba(255, 255, 255, 0.9);
+    color: #374151;
 }
 
-// Carousel autoplay timers
-window.carouselTimers = {};
-
-// Initialize carousels when page loads
-document.addEventListener('DOMContentLoaded', function() {
-
-    // Initialize all carousels
-    const carousels = document.querySelectorAll('.carousel-track');
-
-    
-    carousels.forEach((carousel, index) => {
-        carousel.dataset.currentIndex = '0';
-        
-        // Initialize at position 0 - the wrapper is already centered with margin: 0 auto
-        carousel.style.transform = 'translateX(0px)';
-        
-        // Check if autoplay is enabled for this carousel
-        const container = carousel.closest('.carousel-container');
-        if (container) {
-            const autoplaySpeed = container.dataset.autoplay;
-
-            if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
-
-                startCarouselAutoplay(index, parseInt(autoplaySpeed));
-            } else {
-
-            }
-        } else {
-
-        }
-    });
-    
-    // Pause autoplay on hover
-    document.querySelectorAll('.carousel-container').forEach((container, index) => {
-        container.addEventListener('mouseenter', () => pauseCarouselAutoplay(index));
-        container.addEventListener('mouseleave', () => {
-            const autoplaySpeed = container.dataset.autoplay;
-            if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
-                startCarouselAutoplay(index, parseInt(autoplaySpeed));
-            }
-        });
-    });
-});
-
-// Carousel autoplay functions
-function startCarouselAutoplay(sectionIndex, speed) {
-
-    // Clear any existing timer
-    pauseCarouselAutoplay(sectionIndex);
-    
-    // Start new timer
-    window.carouselTimers[sectionIndex] = setInterval(() => {
-
-        moveCarousel(sectionIndex, 1); // Move to next slide
-    }, speed);
-
+.universal-gallery .gallery-carousel-nav:hover {
+    background: rgba(255, 255, 255, 1);
 }
 
-function pauseCarouselAutoplay(sectionIndex) {
-    if (window.carouselTimers[sectionIndex]) {
-
-        clearInterval(window.carouselTimers[sectionIndex]);
-        delete window.carouselTimers[sectionIndex];
-    }
+.universal-gallery .gallery-carousel-dot {
+    background: #94a3b8;
 }
-</script>
+
+.universal-gallery .gallery-carousel-dot.active {
+    background: var(--gallery-primary);
+}
+
+/* Dark Theme Empty State */
+.universal-gallery .gallery-empty-state {
+    background: #1f2937;
+    border: 1px solid #374151;
+    color: var(--gallery-text);
+}
+
+.universal-gallery .gallery-empty-icon {
+    background: var(--gallery-primary);
+}
+
+/* Dark Theme CTA Section */
+.universal-gallery .gallery-cta {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+}
+
+.universal-gallery .gallery-cta-badge {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.universal-gallery .gallery-cta-primary {
+    background: white;
+    color: #8b5cf6;
+}
+
+.universal-gallery .gallery-cta-primary:hover {
+    background: #f3f4f6;
+}
+
+.universal-gallery .gallery-cta-secondary {
+    border: 2px solid white;
+    background: transparent;
+    color: white;
+}
+
+.universal-gallery .gallery-cta-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+</style>

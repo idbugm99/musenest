@@ -199,10 +199,9 @@ async function getModelContent(modelId, pageType) {
                 content = ratesRows[0];
             }
         } else if (pageType === 'gallery') {
-            // Get gallery page content and sections
+            // Get gallery page content for Universal Gallery System
             try {
-                
-                // First, get the complete gallery page content
+                // Get gallery page content from model_gallery_page_content table
                 const [pageContentRows] = await db.execute(`
                     SELECT * FROM model_gallery_page_content WHERE model_id = ?
                 `, [modelId]);
@@ -217,69 +216,12 @@ async function getModelContent(modelId, pageType) {
                     });
                 }
                 
-                // Get selected sections from the gallery page content
-                
-                let selectedSectionIds = [];
-                if (pageContentRows.length > 0 && pageContentRows[0].selected_sections) {
-                    try {
-                        const rawSections = pageContentRows[0].selected_sections;
-                                                  // Check if it's already an array or needs parsing
-                          if (Array.isArray(rawSections)) {
-                              selectedSectionIds = rawSections;
-                          } else if (typeof rawSections === 'string') {
-                              selectedSectionIds = JSON.parse(rawSections);
-                          }
-                    } catch (e) {
-                        // If parsing fails, fall back to empty array
-                        selectedSectionIds = [];
-                    }
-                }
-                
-                // If no sections are selected, show all visible sections (fallback)
-                if (!selectedSectionIds || selectedSectionIds.length === 0) {
-                    const [allSections] = await db.execute(`
-                        SELECT gs.*, COUNT(gi.id) as image_count
-                        FROM gallery_sections gs
-                        LEFT JOIN gallery_images gi ON gs.id = gi.section_id AND gi.is_active = 1
-                        WHERE gs.model_id = ? AND gs.is_visible = 1
-                        GROUP BY gs.id
-                        ORDER BY gs.sort_order ASC, gs.id ASC
-                    `, [modelId]);
-                    selectedSectionIds = allSections.map(s => s.id);
-                }
-                
-                // Load only the selected gallery sections (ignore visibility since they're explicitly selected)
-                // Ensure selectedSectionIds is an array (JSON.parse sometimes returns single values as primitives)
-                if (!Array.isArray(selectedSectionIds)) {
-                    selectedSectionIds = selectedSectionIds ? [selectedSectionIds] : [];
-                }
-                
-                const [sections] = await db.execute(`
-                    SELECT gs.*, COUNT(gi.id) as image_count
-                    FROM gallery_sections gs
-                    LEFT JOIN gallery_images gi ON gs.id = gi.section_id AND gi.is_active = 1
-                    WHERE gs.id IN (${selectedSectionIds.map(() => '?').join(',')})
-                    GROUP BY gs.id
-                    ORDER BY FIELD(gs.id, ${selectedSectionIds.map(() => '?').join(',')})
-                `, [...selectedSectionIds, ...selectedSectionIds]);
-                
-                content.gallerySections = sections;
-                
-                // Load images for each section
-                for (const section of sections) {
-                    const [images] = await db.execute(`
-                        SELECT id, filename, caption, alt_text, sort_order, order_index
-                        FROM gallery_images 
-                        WHERE section_id = ? AND is_active = 1
-                        ORDER BY sort_order ASC, order_index ASC
-                    `, [section.id]);
-                    
-                    section.images = images;
-                }
+                console.log(`🎨 Gallery page content loaded for Universal Gallery System (model ${modelId})`);
                 
             } catch (error) {
-                // If there's an error, fallback to empty sections
-                content.gallerySections = [];
+                console.error('Error loading gallery page content:', error);
+                // If there's an error, fallback to empty content
+                content = {};
             }
         } else {
             // Fallback to old content_templates system for other page types

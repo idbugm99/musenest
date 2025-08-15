@@ -1,0 +1,29 @@
+{{!-- Universal Grid Layout Partial --}}
+<div class="gallery-grid-container" data-layout="grid">
+    {{#each galleryData.items}}
+    <div class="gallery-grid-item" data-category="{{this.category}}" data-id="{{this.id}}">
+        <div class="gallery-image-wrapper">
+            <img src="{{this.srcMed}}" 
+                 alt="{{this.alt}}" 
+                 class="gallery-image"
+                 loading="lazy"
+                 onclick="{{#if ../galleryData.settings.lightbox}}openLightbox('{{this.srcFull}}', '{{this.caption}}', {{@index}}){{/if}}"
+                 style="aspect-ratio: {{this.aspect}};">
+            
+            {{#if this.featured}}
+            <div class="gallery-featured-badge">
+                <i class="fas fa-star"></i>
+            </div>
+            {{/if}}
+            
+            {{#if ../galleryData.settings.captions}}
+            {{#if this.caption}}
+            <div class="gallery-image-caption">
+                {{this.caption}}
+            </div>
+            {{/if}}
+            {{/if}}
+        </div>
+    </div>
+    {{/each}}
+</div>

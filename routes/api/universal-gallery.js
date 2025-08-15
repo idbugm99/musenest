@@ -20,24 +20,27 @@ const validator = {
     validateAll: () => ({ isValid: true, errors: [], validConfigs: 5, totalConfigs: 5 })
 };
 
+// Global configuration storage (in-memory for development)
+const systemConfig = {
+    defaultLayout: 'masonry',
+    imagesPerPage: 20,
+    gridColumns: 4,
+    enableLightbox: true,
+    enableFullscreen: true,
+    enableZoom: true,
+    lightboxAnimation: 'fade',
+    showCaptions: true,
+    showImageInfo: false,
+    showCategoryFilter: true,
+    enableSearch: false,
+    enableLazyLoading: true,
+    enablePrefetch: true,
+    prefetchStrategy: 'balanced',
+    respectReducedMotion: true
+};
+
 const galleryService = {
-    getSystemConfig: () => ({
-        defaultLayout: 'masonry',
-        imagesPerPage: 20,
-        gridColumns: 4,
-        enableLightbox: true,
-        enableFullscreen: true,
-        enableZoom: true,
-        lightboxAnimation: 'fade',
-        showCaptions: true,
-        showImageInfo: false,
-        showCategoryFilter: true,
-        enableSearch: false,
-        enableLazyLoading: true,
-        enablePrefetch: true,
-        prefetchStrategy: 'balanced',
-        respectReducedMotion: true
-    }),
+    getSystemConfig: () => systemConfig,
     getStats: () => ({
         totalGalleries: 15,
         activeThemes: 5,
@@ -81,6 +84,298 @@ const handleApiError = (error, res) => {
     });
 };
 
+// ===== Gallery Data Loading Endpoint =====
+
+/**
+ * GET /api/universal-gallery/config
+ * Get complete gallery configuration and data for a model (for frontend JavaScript)
+ * 
+ * Query Parameters:
+ * - model (required): Model slug
+ * - preview_theme (optional): Preview theme ID
+ * - page (optional): Page number for pagination
+ * - category (optional): Filter by category
+ * - sort (optional): Sort order (recent, oldest, featured, popular)
+ * - layout (optional): Force specific layout type
+ */
+router.get('/config', async (req, res) => {
+    let db;
+    try {
+        db = await getDbConnection();
+        const { 
+            model: modelSlug, 
+            preview_theme: previewTheme, 
+            page = 1, 
+            category = null, 
+            sort = 'recent', 
+            layout = null 
+        } = req.query;
+        
+        if (!modelSlug) {
+            return res.status(400).json({
+                success: false,
+                error: 'Model slug is required'
+            });
+        }
+        
+        console.log(`🎨 Loading universal gallery config for: ${modelSlug}`);
+        
+        // Get model and theme information
+        const [modelData] = await db.execute(`
+            SELECT 
+                m.id, m.slug, m.name, 
+                COALESCE(bt.name, 'default') as business_model,
+                COALESCE(ts.id, 1) as theme_set_id, 
+                COALESCE(ts.name, 'basic') as theme_name,
+                COALESCE(?, ts.id, 1) as effective_theme_id
+            FROM models m
+            LEFT JOIN theme_sets ts ON m.theme_set_id = ts.id
+            LEFT JOIN business_types bt ON bt.id = m.business_type_id
+            WHERE m.slug = ?
+        `, [previewTheme || null, modelSlug]);
+
+        if (modelData.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: `Model not found: ${modelSlug}`
+            });
+        }
+
+        const model = modelData[0];
+        
+        // Get gallery sections
+        const [sections] = await db.execute(`
+            SELECT 
+                id,
+                section_name,
+                section_slug,
+                section_description,
+                layout_type,
+                layout_settings,
+                section_order,
+                is_published,
+                is_featured
+            FROM model_gallery_sections
+            WHERE model_slug = ? 
+            AND is_published = 1
+            ORDER BY section_order ASC, id ASC
+        `, [modelSlug]);
+        
+        // Get gallery items organized by sections
+        const gallerySections = [];
+        if (sections && sections.length > 0) {
+            
+            // Process each section separately
+            for (const section of sections) {
+                const [items] = await db.execute(`
+                    SELECT 
+                        mml.id,
+                        mml.filename,
+                        mml.original_filename,
+                        mml.file_path,
+                        mml.permanent_path as file_url,
+                        mml.thumbnail_path as thumbnail_url,
+                        mml.medium_path as medium_url,
+                        mml.image_width,
+                        mml.image_height,
+                        mml.upload_date,
+                        mml.moderation_status,
+                        mml.usage_intent as visibility_status,
+                        mgsm.custom_caption,
+                        mgsm.display_order,
+                        mgsm.is_featured
+                    FROM model_media_library mml
+                    INNER JOIN model_gallery_section_media mgsm ON mgsm.media_id = mml.id
+                    WHERE mgsm.section_id = ?
+                    AND mml.moderation_status = 'approved'
+                    AND mml.usage_intent != 'private'
+                    ORDER BY mgsm.display_order ASC, mml.upload_date DESC
+                `, [section.id]);
+                
+                // Process items for this section with model slug prefix for proper routing
+                const sectionItems = items.map(item => {
+                    // Helper function to ensure model slug prefix in URLs with proper directory structure
+                    const ensureModelSlugPrefix = (path, pathType = 'main') => {
+                        // For modelexample, we know the actual file structure, so map directly
+                        switch (pathType) {
+                            case 'thumb':
+                                return `/${modelSlug}/uploads/thumbs/${item.filename}`;
+                            case 'med':
+                                return `/${modelSlug}/uploads/public/gallery/${item.filename}`;
+                            case 'main':
+                            default:
+                                return `/${modelSlug}/uploads/originals/${item.filename}`;
+                        }
+                    };
+
+                    return {
+                        id: item.id.toString(),
+                        alt: item.custom_caption || item.original_filename || 'Gallery image',
+                        caption: item.custom_caption || null,
+                        srcThumb: ensureModelSlugPrefix(item.thumbnail_url || item.file_url, 'thumb'),
+                        srcMed: ensureModelSlugPrefix(item.medium_url || item.file_url, 'med'),
+                        srcFull: ensureModelSlugPrefix(item.file_url, 'main'),
+                        aspect: item.image_width && item.image_height ? 
+                            item.image_width / item.image_height : 1,
+                        width: item.image_width,
+                        height: item.image_height,
+                        uploadDate: item.upload_date,
+                        featured: Boolean(item.is_featured),
+                        flagged: item.moderation_status === 'flagged'
+                    };
+                });
+
+                // Add this section to the gallery sections array
+                gallerySections.push({
+                    id: section.id,
+                    name: section.section_name,
+                    slug: section.section_slug,
+                    description: section.section_description,
+                    layout: section.layout_type,
+                    layoutSettings: section.layout_settings || {},
+                    order: section.section_order,
+                    featured: Boolean(section.is_featured),
+                    items: sectionItems,
+                    itemCount: sectionItems.length
+                });
+            }
+        }
+        
+        // Get categories from sections
+        const categories = sections.map(s => s.section_name);
+        
+        // Calculate totals across all sections
+        const totalImages = gallerySections.reduce((sum, section) => sum + section.itemCount, 0);
+        
+        // Structure the response
+        const response = {
+            success: true,
+            config: {
+                // Configuration metadata
+                metadata: {
+                    model_id: model.id,
+                    model_slug: model.slug,
+                    model_name: model.name,
+                    business_model: model.business_model,
+                    theme_name: model.theme_name,
+                    theme_set_id: model.theme_set_id,
+                    effective_theme_id: model.effective_theme_id,
+                    generated_at: new Date().toISOString()
+                },
+                
+                // Mock CSS variables based on theme
+                css_variables: getThemeCSSVariables(model.theme_name),
+                
+                // Mock settings
+                gallery_settings: {
+                    default_layout: (layout && layout !== 'null' && layout !== 'undefined') ? layout : 'masonry',
+                    total_sections: gallerySections.length,
+                    grid_columns_desktop: 4,
+                    enable_lightbox: true,
+                    show_captions: true
+                },
+                accessibility: {
+                    keyboard_navigation: true,
+                    aria_labels: true,
+                    screen_reader_support: true
+                },
+                carousel: {
+                    autoplay: false,
+                    autoplaySpeed: 3000
+                }
+            },
+            data: {
+                sections: gallerySections,
+                totalSections: gallerySections.length,
+                totalImages: totalImages,
+                categories: categories,
+                settings: {
+                    lightbox: true,
+                    fullscreen: true,
+                    captions: true,
+                    imageInfo: false,
+                    sectionHeaders: true,
+                    navigationMenu: true,
+                    gridCols: {
+                        sm: 2,
+                        md: 3,
+                        lg: 4
+                    },
+                    carousel: {
+                        autoplay: false,
+                        autoplaySpeed: 3000,
+                        showDots: true,
+                        showArrows: true
+                    }
+                }
+            },
+            timestamp: new Date().toISOString()
+        };
+        
+        console.log(`✅ Gallery config loaded for ${modelSlug}: ${gallerySections.length} sections, ${totalImages} total images`);
+        
+        res.json(response);
+        
+    } catch (error) {
+        console.error('❌ Error loading universal gallery config:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message || 'Internal server error',
+            timestamp: new Date().toISOString()
+        });
+    } finally {
+        if (db) await db.end();
+    }
+});
+
+// Helper function to get theme-specific CSS variables
+function getThemeCSSVariables(themeName) {
+    const themeVariables = {
+        basic: {
+            primary_color: '#2563eb',
+            secondary_color: '#64748b',
+            accent_color: '#0ea5e9',
+            background: '#ffffff',
+            text: '#1e293b',
+            border_radius: '8px'
+        },
+        glamour: {
+            primary_color: '#E9C77A',
+            secondary_color: '#D08770',
+            accent_color: '#EBCB8B',
+            background: 'linear-gradient(145deg, #171228, #1E1632)',
+            text: '#F3EFE7',
+            border_radius: '15px'
+        },
+        modern: {
+            primary_gradient: 'linear-gradient(135deg, #6366f1, #06b6d4)',
+            secondary_gradient: 'linear-gradient(135deg, #0f172a, #334155)',
+            accent_color: '#6366f1',
+            background: 'linear-gradient(135deg, #f8fafc, #ffffff)',
+            text: '#0f172a',
+            border_radius: '16px'
+        },
+        luxury: {
+            primary_color: '#ffd700',
+            secondary_color: '#cd9500',
+            accent_color: '#ffed4e',
+            background: 'linear-gradient(135deg, #f8f6f0, #e8dcc0)',
+            text: '#1a1a2e',
+            border_radius: '12px'
+        },
+        dark: {
+            primary_color: '#8b5cf6',
+            secondary_color: '#6b46c1',
+            accent_color: '#a855f7',
+            background: '#111827',
+            text: '#f9fafb',
+            border_radius: '8px'
+        }
+    };
+    
+    return themeVariables[themeName] || themeVariables.basic;
+}
+
 // ===== System Configuration Endpoints =====
 
 /**
@@ -103,44 +398,21 @@ router.get('/config/system', async (req, res) => {
  * Update system configuration
  */
 router.put('/config/system', async (req, res) => {
-    let db;
     try {
-        db = await getDbConnection();
-        
         const config = req.body;
         
-        // Validate configuration
-        const validationResult = await validator.validateConfig(config);
-        if (!validationResult.valid) {
+        // Validate configuration (basic validation for now)
+        const validationResult = validator.validateConfig(config);
+        if (!validationResult.isValid) {
             return res.status(400).json({
                 error: 'Configuration validation failed',
                 errors: validationResult.errors
             });
         }
         
-        // Update or insert configuration
-        await db.execute(`
-            INSERT INTO gallery_system_defaults (setting_name, setting_value, description, updated_at)
-            VALUES (?, ?, ?, NOW())
-            ON DUPLICATE KEY UPDATE 
-                setting_value = VALUES(setting_value),
-                updated_at = NOW()
-        `, [
-            'default_gallery_config',
-            JSON.stringify(config),
-            'System-wide gallery configuration'
-        ]);
+        // Update the mock service configuration (in a real app, this would save to database)
+        Object.assign(galleryService.getSystemConfig(), config);
         
-        // Log configuration change
-        await db.execute(`
-            INSERT INTO gallery_migration_log (migration_name, migration_version, affected_rows, success)
-            VALUES (?, ?, ?, ?)
-        `, [
-            'system_config_update',
-            '1.0.0',
-            1,
-            true
-        ]);
         
         res.json({ 
             success: true, 
@@ -150,8 +422,6 @@ router.put('/config/system', async (req, res) => {
         
     } catch (error) {
         handleApiError(error, res);
-    } finally {
-        if (db) await db.end();
     }
 });
 

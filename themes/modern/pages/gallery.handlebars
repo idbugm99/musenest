@@ -1,146 +1,35 @@
-<!-- Phase 2.3e: Modern Template Gallery Page - Contemporary Visual Showcase -->
+<!-- Universal Gallery System for Modern Theme -->
+{{{renderUniversalGallery modelSlug previewTheme=previewThemeId}}}
 
-<!-- Modern Gallery Hero Section -->
-{{#if gallery_content.gallery_header_visible}}
-<section class="modern-gallery-hero min-h-96 flex items-center justify-center text-white pt-20 relative overflow-hidden" data-aos="fade-in">
-    <!-- Modern Background Elements -->
-    <div class="modern-gallery-gradient-layer-1"></div>
-    <div class="modern-gallery-gradient-layer-2"></div>
+<!-- Load Universal Gallery System CSS and JavaScript -->
+<link rel="stylesheet" href="/templates/universal/gallery-styles.css">
+<script src="/templates/universal/gallery-script.js"></script>
+
+<!-- Modern Theme Gallery CSS Variables Override -->
+
+<style>
+:root {
+    --gallery-primary: #6366f1;
+    --gallery-primary-hover: #4f46e5;
+    --gallery-secondary: #06b6d4;
+    --gallery-accent: #10b981;
+    --gallery-background: linear-gradient(135deg, #f8fafc, #ffffff);
+    --gallery-surface: rgba(255, 255, 255, 0.95);
+    --gallery-text: #0f172a;
+    --gallery-text-muted: #64748b;
+    --gallery-border: rgba(99, 102, 241, 0.1);
+    --gallery-shadow: rgba(99, 102, 241, 0.1);
+    --gallery-shadow-hover: rgba(99, 102, 241, 0.2);
     
-    <!-- Modern Floating Gallery Elements -->
-    <div class="modern-gallery-floating-elements">
-        <div class="modern-floating-camera-1"></div>
-        <div class="modern-floating-image-1"></div>
-        <div class="modern-floating-frame-1"></div>
-        <div class="modern-floating-gallery-1"></div>
-        <div class="modern-floating-picture-1"></div>
-        <div class="modern-floating-lens-1"></div>
-    </div>
-    
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        <div class="modern-gallery-hero-content" data-aos="zoom-in" data-aos-delay="200">
-            <div class="modern-gallery-badge mb-6">Visual Showcase</div>
-            <h1 class="text-5xl md:text-7xl font-bold mb-8 modern-gradient-text modern-text-glow">
-                {{#if gallery_content.page_title}}{{gallery_content.page_title}}{{else}}Gallery{{/if}}
-            </h1>
-            {{#if gallery_content.page_subtitle}}
-            <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto modern-subtitle">
-                {{gallery_content.page_subtitle}}
-            </p>
-            {{/if}}
-            {{#if gallery_content.page_description}}
-            <p class="text-lg md:text-xl opacity-80 max-w-2xl mx-auto mt-4 modern-description">
-                {{gallery_content.page_description}}
-            </p>
-            {{/if}}
-        </div>
-    </div>
-</section>
-{{/if}}
-
-<!-- Modern Gallery Main Section -->
-<section class="py-20 modern-gallery-main-section">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {{#if (hasGalleries modelSlug)}}
-            <!-- Gallery Settings Configuration -->
-            {{#if gallery_content.show_categories}}
-            <div class="modern-gallery-categories mb-8" data-aos="fade-up">
-                <div class="text-center mb-6">
-                    <h3 class="text-2xl font-bold modern-gradient-text">Browse Collections</h3>
-                </div>
-            </div>
-            {{/if}}
-            
-            {{#if gallery_content.show_search}}
-            <div class="modern-gallery-search mb-8" data-aos="fade-up" data-aos-delay="100">
-                <div class="max-w-md mx-auto">
-                    <div class="relative">
-                        <input type="text" placeholder="Search images..." 
-                               class="w-full px-4 py-3 pl-12 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    </div>
-                </div>
-            </div>
-            {{/if}}
-            
-            {{#if gallery_content.show_sort_options}}
-            <div class="modern-gallery-sort mb-8" data-aos="fade-up" data-aos-delay="200">
-                <div class="flex justify-center">
-                    <div class="modern-sort-buttons">
-                        <button class="modern-sort-btn active" data-sort="newest">Newest</button>
-                        <button class="modern-sort-btn" data-sort="oldest">Oldest</button>
-                        <button class="modern-sort-btn" data-sort="popular">Popular</button>
-                    </div>
-                </div>
-            </div>
-            {{/if}}
-            
-            <!-- Professional Modern Gallery Collections -->
-            <div class="modern-gallery-collections" 
-                 data-aos="fade-up" 
-                 data-layout="{{#if gallery_content.default_layout}}{{gallery_content.default_layout}}{{else}}masonry{{/if}}"
-                 data-lightbox="{{#if gallery_content.enable_lightbox}}{{gallery_content.enable_lightbox}}{{else}}true{{/if}}"
-                 data-fullscreen="{{#if gallery_content.enable_fullscreen}}{{gallery_content.enable_fullscreen}}{{else}}true{{/if}}"
-                 data-captions="{{#if gallery_content.show_captions}}{{gallery_content.show_captions}}{{else}}true{{/if}}"
-                 data-per-page="{{#if gallery_content.images_per_page}}{{gallery_content.images_per_page}}{{else}}20{{/if}}">
-                {{{renderGalleries modelSlug}}}
-            </div>
-        {{else}}
-            <!-- Modern Empty State -->
-            <div class="text-center py-16">
-                <div class="modern-gallery-empty-state max-w-md mx-auto" data-aos="zoom-in">
-                    <div class="modern-empty-gradient-background"></div>
-                    <div class="modern-empty-content">
-                        <div class="modern-empty-icon-container">
-                            <div class="modern-empty-icon">
-                                <i class="fas fa-camera"></i>
-                            </div>
-                            <div class="modern-empty-pulse-ring"></div>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-4 modern-gradient-text">Gallery Coming Soon</h3>
-                        <p class="text-gray-600 mb-8 max-w-md mx-auto leading-relaxed">
-                            Professional photography will be available here soon. Each image will showcase contemporary elegance and artistic vision.
-                        </p>
-                        <div class="modern-empty-buttons">
-                            <a href="/{{modelSlug}}/contact{{previewParam}}" class="modern-btn-primary">
-                                <i class="fas fa-envelope mr-3"></i>
-                                Get in Touch
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {{/if}}
-    </div>
-</section>
-
-<!-- Modern Gallery CTA Section -->
-<section class="py-16 modern-gallery-cta-section">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
-        <div class="modern-cta-gallery-card">
-            <div class="modern-cta-gallery-background-gradient"></div>
-            <div class="modern-cta-gallery-content">
-                <div class="modern-cta-gallery-badge">Inspired by What You See?</div>
-                <h2 class="text-3xl font-bold mb-6 text-white">
-                    {{#if gallery_content.cta_title}}{{gallery_content.cta_title}}{{else}}Ready to Create Beautiful Memories?{{/if}}
-                </h2>
-                <p class="text-xl mb-8 text-white opacity-90 max-w-2xl mx-auto">
-                    {{#if gallery_content.cta_description}}{{gallery_content.cta_description}}{{else}}Let's capture some amazing moments together. I believe in creating experiences that are as beautiful as they are memorable.{{/if}}
-                </p>
-                <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="modern-cta-btn-gallery bg-white text-blue-600 hover:bg-gray-100">
-                        <i class="fas fa-camera mr-3"></i>
-                        Book a Session
-                    </a>
-                    <a href="/{{modelSlug}}/about{{previewParam}}" class="modern-cta-btn-gallery-outline border-white text-white hover:bg-white hover:text-blue-600">
-                        <i class="fas fa-user mr-3"></i>
-                        Learn More About Me
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+    --gallery-border-radius: 16px;
+    --gallery-border-radius-large: 20px;
+    --gallery-grid-columns-desktop: 3;
+    --gallery-transition-duration: 0.4s;
+    --gallery-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+    --gallery-hover-lift: -8px;
+    --gallery-hover-scale: 1.02;
+}
+</style>
 
 <!-- Modern Gallery Page Styling -->
 <style>

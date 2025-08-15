@@ -1,0 +1,22 @@
+{{!-- Universal Lightbox Grid Layout Partial --}}
+<div class="gallery-lightbox-grid-container" data-layout="lightbox_grid">
+    {{#each galleryData.items}}
+    <div class="gallery-lightbox-thumbnail" data-category="{{this.category}}" data-id="{{this.id}}">
+        <img src="{{this.srcThumb}}" 
+             alt="{{this.alt}}" 
+             class="gallery-thumbnail-image"
+             loading="lazy"
+             onclick="openLightbox('{{this.srcFull}}', '{{this.caption}}', {{@index}})">
+        
+        {{#if this.featured}}
+        <div class="gallery-featured-badge">
+            <i class="fas fa-star"></i>
+        </div>
+        {{/if}}
+        
+        <div class="gallery-thumbnail-overlay">
+            <i class="fas fa-expand"></i>
+        </div>
+    </div>
+    {{/each}}
+</div>

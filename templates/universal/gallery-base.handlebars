@@ -1,0 +1,204 @@
+{{!-- Universal Gallery Base Template --}}
+{{!-- This template is dynamically loaded and styled based on model configuration --}}
+
+<!-- Gallery Hero Section -->
+{{#if galleryConfig.gallery_settings.show_header}}
+<section class="gallery-hero" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="gallery-hero-title" data-aos="fade-up" data-aos-delay="200">
+                {{#if galleryData.settings.page_title}}{{galleryData.settings.page_title}}{{else}}Photo Gallery{{/if}}
+            </h1>
+            {{#if galleryData.settings.page_subtitle}}
+            <p class="gallery-hero-subtitle" data-aos="fade-up" data-aos-delay="400">
+                {{galleryData.settings.page_subtitle}}
+            </p>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Gallery Main Section -->
+<section class="gallery-main-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {{#if (hasGalleries modelSlug)}}
+            <!-- Gallery Controls -->
+            {{#if galleryData.settings.show_controls}}
+            <div class="gallery-controls" data-aos="fade-down">
+                {{#if galleryData.settings.searchEnabled}}
+                <div class="gallery-search">
+                    <input type="text" id="gallery-search" placeholder="Search images..." class="gallery-search-input">
+                    <i class="fas fa-search gallery-search-icon"></i>
+                </div>
+                {{/if}}
+                
+                {{#if galleryData.settings.categoryFilter}}
+                <div class="gallery-filters">
+                    <select id="gallery-category-filter" class="gallery-filter-select">
+                        <option value="">All Categories</option>
+                        {{#each galleryData.categories}}
+                        <option value="{{this}}">{{this}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                {{/if}}
+                
+                {{#if galleryData.settings.sortOptions}}
+                <div class="gallery-sort">
+                    <select id="gallery-sort" class="gallery-sort-select">
+                        <option value="recent">Most Recent</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="featured">Featured</option>
+                        <option value="popular">Popular</option>
+                    </select>
+                </div>
+                {{/if}}
+            </div>
+            {{/if}}
+
+            <!-- Dynamic Gallery Rendering -->
+            <div class="galleries-container universal-gallery" data-layout="{{galleryData.layout}}" data-aos="fade-up">
+                {{#if galleryData.items}}
+                    {{#if (eq galleryData.layout "masonry")}}
+                        {{> universal-masonry-layout}}
+                    {{else if (eq galleryData.layout "grid")}}
+                        {{> universal-grid-layout}}
+                    {{else if (eq galleryData.layout "carousel")}}
+                        {{> universal-carousel-layout}}
+                    {{else if (eq galleryData.layout "lightbox_grid")}}
+                        {{> universal-lightbox-grid-layout}}
+                    {{else}}
+                        {{> universal-grid-layout}}
+                    {{/if}}
+                {{else}}
+                    <div class="gallery-loading">
+                        <div class="gallery-loading-spinner"></div>
+                        <p>Loading gallery...</p>
+                    </div>
+                {{/if}}
+            </div>
+
+            <!-- Pagination -->
+            {{#if galleryData.pagination.totalPages > 1}}
+            <div class="gallery-pagination" data-aos="fade-up">
+                {{#if galleryData.pagination.hasPrev}}
+                <a href="?page={{galleryData.pagination.prevPage}}" class="gallery-pagination-btn gallery-pagination-prev">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </a>
+                {{/if}}
+                
+                <div class="gallery-pagination-info">
+                    Page {{galleryData.pagination.page}} of {{galleryData.pagination.totalPages}}
+                </div>
+                
+                {{#if galleryData.pagination.hasNext}}
+                <a href="?page={{galleryData.pagination.nextPage}}" class="gallery-pagination-btn gallery-pagination-next">
+                    Next <i class="fas fa-chevron-right"></i>
+                </a>
+                {{/if}}
+            </div>
+            {{/if}}
+
+        {{else}}
+            <!-- Empty State -->
+            <div class="gallery-empty-state" data-aos="zoom-in">
+                <div class="gallery-empty-icon">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <h3 class="gallery-empty-title">Gallery Coming Soon</h3>
+                <p class="gallery-empty-description">
+                    Professional photos will be available here soon. Check back for updates!
+                </p>
+                <a href="/{{modelSlug}}/contact" class="gallery-empty-cta">
+                    Get in Touch
+                </a>
+            </div>
+        {{/if}}
+    </div>
+</section>
+
+{{#if galleryConfig.gallery_settings.show_cta}}
+<!-- Gallery CTA Section -->
+<section class="gallery-cta-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <h2 class="gallery-cta-title">
+            {{#if galleryConfig.gallery_settings.cta_title}}{{galleryConfig.gallery_settings.cta_title}}{{else}}Like What You See?{{/if}}
+        </h2>
+        <p class="gallery-cta-subtitle">
+            {{#if galleryConfig.gallery_settings.cta_subtitle}}{{galleryConfig.gallery_settings.cta_subtitle}}{{else}}Ready to book or have questions? Let's connect and discuss your needs.{{/if}}
+        </p>
+        <div class="gallery-cta-buttons">
+            <a href="/{{modelSlug}}/contact{{previewParam}}" class="gallery-cta-primary">
+                <i class="fas fa-envelope"></i>
+                Contact Me
+            </a>
+            <a href="/{{modelSlug}}/rates{{previewParam}}" class="gallery-cta-secondary">
+                <i class="fas fa-list"></i>
+                View Services
+            </a>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+{{#if galleryData.settings.lightbox}}
+<!-- Universal Lightbox Modal -->
+<div id="lightbox-modal" class="gallery-lightbox-modal">
+    <div class="gallery-lightbox-content">
+        <!-- Close button -->
+        <button onclick="closeLightbox()" class="gallery-lightbox-close" aria-label="Close lightbox">
+            <svg class="gallery-lightbox-close-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+        
+        <!-- Navigation arrows -->
+        <button onclick="navigateLightbox(-1)" class="gallery-lightbox-nav gallery-lightbox-nav-prev" aria-label="Previous image">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+        </button>
+        <button onclick="navigateLightbox(1)" class="gallery-lightbox-nav gallery-lightbox-nav-next" aria-label="Next image">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </button>
+        
+        <!-- Image container -->
+        <div class="gallery-lightbox-image-container">
+            <img id="lightbox-image" src="" alt="" class="gallery-lightbox-image">
+        </div>
+        
+        <!-- Image info -->
+        {{#if galleryData.settings.captions}}
+        <div class="gallery-lightbox-info">
+            <p id="lightbox-caption" class="gallery-lightbox-caption"></p>
+            {{#if galleryData.settings.imageInfo}}
+            <div id="lightbox-meta" class="gallery-lightbox-meta"></div>
+            {{/if}}
+        </div>
+        {{/if}}
+    </div>
+</div>
+{{/if}}
+
+<!-- Dynamic CSS Variables -->
+<style>
+{{{galleryConfig.cssVariables}}}
+</style>
+
+<!-- Theme-specific CSS Overrides -->
+{{#if galleryConfig.css_overrides}}
+<style>
+{{{galleryConfig.css_overrides}}}
+</style>
+{{/if}}
+
+<!-- Theme-specific JavaScript -->
+{{#if galleryConfig.javascript_overrides}}
+<script>
+{{{galleryConfig.javascript_overrides}}}
+</script>
+{{/if}}
