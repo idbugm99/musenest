@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gallery - {{site_settings.model_name}}</title>
-    <meta name="description" content="{{site_settings.meta_description}}">
-    <meta name="og:title" content="Gallery - {{site_settings.model_name}}">
-    <meta name="og:description" content="{{site_settings.meta_description}}">
+    <title>{{#if gallery_content.page_title}}{{gallery_content.page_title}} - {{site_settings.model_name}}{{else}}Gallery - {{site_settings.model_name}}{{/if}}</title>
+    <meta name="description" content="{{#if gallery_content.page_description}}{{gallery_content.page_description}}{{else}}{{site_settings.meta_description}}{{/if}}">
+    <meta name="og:title" content="{{#if gallery_content.page_title}}{{gallery_content.page_title}} - {{site_settings.model_name}}{{else}}Gallery - {{site_settings.model_name}}{{/if}}">
+    <meta name="og:description" content="{{#if gallery_content.page_description}}{{gallery_content.page_description}}{{else}}{{site_settings.meta_description}}{{/if}}">
     <meta name="og:type" content="website">
     <meta name="og:image" content="{{site_settings.og_image}}">
     
@@ -31,6 +31,10 @@
         .text-luxury-primary { color: var(--luxury-primary); }
         .bg-luxury-primary { background-color: var(--luxury-primary); }
         .border-luxury-primary { border-color: var(--luxury-primary); }
+        .text-luxury-accent { color: var(--luxury-accent); }
+        .bg-luxury-accent { background-color: var(--luxury-accent); }
+        .bg-luxury-secondary { background-color: var(--luxury-secondary); }
+        .text-luxury-secondary { color: var(--luxury-secondary); }
         
         .luxury-grain::before {
             content: "";
@@ -41,37 +45,278 @@
             opacity: 0.15;
             pointer-events: none;
         }
+        
+        .luxury-gradient {
+            background: linear-gradient(135deg, var(--luxury-primary) 0%, var(--luxury-accent) 100%);
+        }
+        
+        .luxury-shadow {
+            box-shadow: 0 25px 50px -12px rgba(212, 175, 55, 0.25);
+        }
+        
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid var(--luxury-primary);
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 30px 60px -12px rgba(212, 175, 55, 0.4);
+        }
+        
+        .gallery-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, rgba(212, 175, 55, 0.9), rgba(255, 215, 0, 0.8));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+        
+        .luxury-button {
+            background: var(--luxury-primary);
+            color: var(--luxury-background);
+            border: 2px solid var(--luxury-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .luxury-button:hover {
+            background: transparent;
+            color: var(--luxury-primary);
+        }
     </style>
 </head>
 <body class="bg-luxury-background font-serif text-luxury-text">
     <!-- Navigation Component -->
     {{component "navigation" theme="luxury" model=model navigation=navigation}}
     
-    <!-- Gallery Page Content -->
-    <section class="py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h1 class="text-4xl font-bold mb-6 text-luxury-primary">Photo Gallery</h1>
-                <p class="text-xl text-luxury-text max-w-3xl mx-auto">
-                    Professional portfolio photographs
+    <!-- Hero Header Section -->
+    {{#if gallery_content.gallery_header_visible}}
+    <section class="relative py-24 luxury-gradient overflow-hidden luxury-grain">
+        <div class="absolute inset-0 bg-black bg-opacity-30"></div>
+        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div data-aos="fade-up">
+                <h1 class="text-5xl md:text-6xl font-light text-white mb-6">
+                    {{#if gallery_content.gallery_page_title}}{{gallery_content.gallery_page_title}}{{else}}{{#if gallery_content.page_title}}{{gallery_content.page_title}}{{else}}Luxury Gallery{{/if}}{{/if}}
+                </h1>
+                <div class="w-24 h-1 bg-white mx-auto mb-8"></div>
+                {{#if gallery_content.gallery_page_subtitle}}
+                <p class="text-xl text-gray-100 max-w-2xl mx-auto leading-relaxed">
+                    {{gallery_content.gallery_page_subtitle}}
                 </p>
-            </div>
-            
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {{#each gallery_images}}
-                <div class="aspect-square bg-gray-200 rounded-lg overflow-hidden hover:opacity-90 transition-opacity cursor-pointer">
-                    <img src="/uploads/{{../model.slug}}/{{this.filename}}" 
-                         alt="{{this.alt_text}}" 
-                         class="w-full h-full object-cover">
-                </div>
                 {{else}}
-                <div class="col-span-full text-center py-12">
-                    <p class="text-luxury-text text-lg">Gallery photos will be displayed here.</p>
-                </div>
-                {{/each}}
+                {{#if gallery_content.page_subtitle}}
+                <p class="text-xl text-gray-100 max-w-2xl mx-auto leading-relaxed">
+                    {{gallery_content.page_subtitle}}
+                </p>
+                {{else}}
+                <p class="text-xl text-gray-100 max-w-2xl mx-auto leading-relaxed">
+                    An exclusive collection of professional portfolio images
+                </p>
+                {{/if}}
+                {{/if}}
             </div>
         </div>
     </section>
+    {{/if}}
+
+    <!-- Gallery Controls Section -->
+    {{#if gallery_content.show_search}}{{#if gallery_content.show_sort_options}}{{#if gallery_content.show_category_filter}}
+    <section class="py-8 bg-luxury-secondary">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-center justify-between gap-4" data-aos="fade-up">
+                <!-- Search -->
+                {{#if gallery_content.show_search}}
+                <div class="flex items-center">
+                    <input type="text" id="gallery-search" placeholder="Search images..." 
+                           class="bg-luxury-background text-luxury-text px-4 py-2 rounded-lg border-2 border-luxury-primary focus:outline-none focus:border-luxury-accent">
+                </div>
+                {{/if}}
+                
+                <!-- Sort Options -->
+                {{#if gallery_content.show_sort_options}}
+                <div class="flex items-center gap-4">
+                    <label class="text-luxury-primary font-medium">Sort:</label>
+                    <select id="gallery-sort" class="bg-luxury-background text-luxury-text px-4 py-2 rounded-lg border-2 border-luxury-primary focus:outline-none focus:border-luxury-accent">
+                        <option value="newest" {{#if (eq gallery_content.default_sort_order 'newest')}}selected{{/if}}>Newest First</option>
+                        <option value="oldest" {{#if (eq gallery_content.default_sort_order 'oldest')}}selected{{/if}}>Oldest First</option>
+                        <option value="name" {{#if (eq gallery_content.default_sort_order 'name')}}selected{{/if}}>Alphabetical</option>
+                    </select>
+                </div>
+                {{/if}}
+                
+                <!-- Category Filter -->
+                {{#if gallery_content.show_category_filter}}
+                <div class="flex items-center gap-4">
+                    <label class="text-luxury-primary font-medium">Category:</label>
+                    <select id="gallery-category" class="bg-luxury-background text-luxury-text px-4 py-2 rounded-lg border-2 border-luxury-primary focus:outline-none focus:border-luxury-accent">
+                        <option value="all">All Categories</option>
+                        <option value="portrait">Portrait</option>
+                        <option value="lifestyle">Lifestyle</option>
+                        <option value="fashion">Fashion</option>
+                        <option value="glamour">Glamour</option>
+                    </select>
+                </div>
+                {{/if}}
+                
+                <!-- Image Count -->
+                {{#if gallery_content.show_image_count}}
+                <div class="text-luxury-accent font-medium">
+                    <span id="image-count">{{gallery_images.length}}</span> Images
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </section>
+    {{/if}}{{/if}}{{/if}}
+
+    <!-- Gallery Grid Section -->
+    <section class="py-16 bg-luxury-background">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {{#if gallery_images.length}}
+                <!-- Dynamic Grid Based on Database Settings -->
+                <div class="grid gap-6 {{#if (eq gallery_content.default_grid_columns 2)}}grid-cols-1 md:grid-cols-2{{else}}{{#if (eq gallery_content.default_grid_columns 4)}}grid-cols-2 md:grid-cols-3 lg:grid-cols-4{{else}}grid-cols-1 md:grid-cols-2 lg:grid-cols-3{{/if}}{{/if}}" id="gallery-grid">
+                    {{#each gallery_images}}
+                    <div class="gallery-item luxury-shadow" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}" data-category="{{this.category}}" data-date="{{this.created_at}}">
+                        {{#if ../gallery_content.enable_lightbox}}
+                        <img src="/uploads/{{../model.slug}}/{{this.filename}}" 
+                             alt="{{#if ../gallery_content.show_captions}}{{this.alt_text}}{{else}}Portfolio image{{/if}}" 
+                             class="w-full h-80 object-cover cursor-pointer"
+                             onclick="openLuxuryLightbox('{{this.filename}}', '{{this.alt_text}}', '{{this.category}}')">
+                        {{else}}
+                        <img src="/uploads/{{../model.slug}}/{{this.filename}}" 
+                             alt="{{#if ../gallery_content.show_captions}}{{this.alt_text}}{{else}}Portfolio image{{/if}}" 
+                             class="w-full h-80 object-cover">
+                        {{/if}}
+                        
+                        {{#if ../gallery_content.enable_lightbox}}
+                        <div class="gallery-overlay">
+                            <div class="text-center text-luxury-background">
+                                {{#if ../gallery_content.enable_fullscreen}}
+                                <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                                <p class="font-bold text-lg">View Full Size</p>
+                                {{else}}
+                                <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                <p class="font-bold text-lg">View Image</p>
+                                {{/if}}
+                            </div>
+                        </div>
+                        {{/if}}
+                        
+                        <!-- Image Info/Caption -->
+                        {{#if ../gallery_content.show_image_info}}
+                        {{#if ../gallery_content.show_captions}}
+                        {{#if this.alt_text}}
+                        <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-75 text-white p-3">
+                            <p class="text-sm">{{this.alt_text}}</p>
+                            {{#if ../gallery_content.show_categories}}
+                            {{#if this.category}}
+                            <span class="inline-block bg-luxury-primary text-luxury-background px-2 py-1 text-xs rounded mt-1">{{this.category}}</span>
+                            {{/if}}
+                            {{/if}}
+                        </div>
+                        {{/if}}
+                        {{/if}}
+                        {{/if}}
+                    </div>
+                    {{/each}}
+                </div>
+                
+                <!-- Load More Button (if pagination enabled) -->
+                {{#if (gt gallery_content.images_per_page gallery_images.length)}}
+                <div class="text-center mt-12" data-aos="fade-up">
+                    <button class="luxury-button px-8 py-4 rounded-lg font-bold text-lg hover:luxury-shadow transition-all duration-300">
+                        Load More Images
+                    </button>
+                </div>
+                {{/if}}
+                
+            {{else}}
+                <div class="text-center py-20" data-aos="fade-up">
+                    <div class="w-24 h-24 bg-luxury-primary bg-opacity-20 rounded-full mx-auto mb-6 flex items-center justify-center">
+                        <svg class="w-12 h-12 text-luxury-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-3xl font-light text-luxury-primary mb-4">Gallery Collection</h3>
+                    <p class="text-luxury-text text-lg max-w-md mx-auto leading-relaxed">
+                        Exclusive portfolio images will be available here soon. Each photograph is carefully curated to reflect sophistication and elegance.
+                    </p>
+                </div>
+            {{/if}}
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-luxury-secondary">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+            <h2 class="text-4xl font-light text-luxury-primary mb-6">Experience Luxury</h2>
+            <div class="w-16 h-1 bg-luxury-accent mx-auto mb-8"></div>
+            <p class="text-lg text-luxury-text mb-8 leading-relaxed">
+                Let's create something extraordinary together with the same attention to detail you see in every image.
+            </p>
+            <a href="/{{model.slug}}/contact" 
+               class="inline-flex items-center luxury-button px-8 py-4 rounded-lg font-bold text-lg hover:luxury-shadow transition-all duration-300 transform hover:scale-105">
+                Arrange Consultation
+                <svg class="w-6 h-6 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- Luxury Lightbox Modal -->
+    {{#if gallery_content.enable_lightbox}}
+    <div id="luxury-lightbox" class="fixed inset-0 bg-black bg-opacity-95 z-50 hidden flex items-center justify-center p-4">
+        <div class="relative max-w-6xl max-h-full">
+            {{#if gallery_content.enable_fullscreen}}
+            <img id="luxury-lightbox-image" src="" alt="" class="max-w-full max-h-full object-contain rounded-lg luxury-shadow">
+            {{else}}
+            <img id="luxury-lightbox-image" src="" alt="" class="max-w-4xl max-h-4xl object-contain rounded-lg luxury-shadow">
+            {{/if}}
+            
+            <!-- Close Button -->
+            <button onclick="closeLuxuryLightbox()" 
+                    class="absolute top-4 right-4 text-luxury-accent text-3xl bg-luxury-background bg-opacity-80 w-12 h-12 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all duration-300 luxury-shadow">
+                ×
+            </button>
+            
+            <!-- Image Caption -->
+            {{#if gallery_content.show_captions}}
+            <div id="luxury-lightbox-caption" class="absolute bottom-4 left-4 right-4 text-center">
+                <div class="bg-luxury-background bg-opacity-90 text-luxury-text py-3 px-6 rounded-lg luxury-shadow">
+                    <p id="luxury-caption-text" class="text-lg font-medium"></p>
+                    <p id="luxury-caption-category" class="text-sm text-luxury-primary mt-1"></p>
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Navigation Buttons -->
+            <button id="luxury-prev-btn" onclick="previousImage()" 
+                    class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-luxury-primary bg-opacity-80 text-luxury-background w-12 h-12 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all duration-300 luxury-shadow">
+                ‹
+            </button>
+            <button id="luxury-next-btn" onclick="nextImage()" 
+                    class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-luxury-primary bg-opacity-80 text-luxury-background w-12 h-12 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all duration-300 luxury-shadow">
+                ›
+            </button>
+        </div>
+    </div>
+    {{/if}}
     
     <script>
         // Initialize AOS
@@ -80,6 +325,206 @@
             once: true,
             offset: 100
         });
+        
+        // Gallery functionality
+        let currentImageIndex = 0;
+        let galleryImages = [];
+        
+        // Initialize gallery images array
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = document.querySelectorAll('.gallery-item img');
+            galleryImages = Array.from(images).map(img => ({
+                src: img.src,
+                alt: img.alt,
+                category: img.closest('.gallery-item').dataset.category || ''
+            }));
+        });
+        
+        // Luxury Lightbox functionality
+        function openLuxuryLightbox(filename, altText, category) {
+            {{#if gallery_content.enable_lightbox}}
+            const lightbox = document.getElementById('luxury-lightbox');
+            const image = document.getElementById('luxury-lightbox-image');
+            
+            image.src = `/uploads/{{model.slug}}/${filename}`;
+            image.alt = altText || 'Portfolio image';
+            
+            // Find current image index
+            currentImageIndex = galleryImages.findIndex(img => img.src.includes(filename));
+            
+            {{#if gallery_content.show_captions}}
+            const captionText = document.getElementById('luxury-caption-text');
+            const captionCategory = document.getElementById('luxury-caption-category');
+            if (captionText) captionText.textContent = altText || 'Portfolio image';
+            if (captionCategory && category) captionCategory.textContent = category;
+            {{/if}}
+            
+            lightbox.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            {{/if}}
+        }
+        
+        function closeLuxuryLightbox() {
+            {{#if gallery_content.enable_lightbox}}
+            const lightbox = document.getElementById('luxury-lightbox');
+            lightbox.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            {{/if}}
+        }
+        
+        function previousImage() {
+            if (galleryImages.length > 0) {
+                currentImageIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length;
+                updateLightboxImage();
+            }
+        }
+        
+        function nextImage() {
+            if (galleryImages.length > 0) {
+                currentImageIndex = (currentImageIndex + 1) % galleryImages.length;
+                updateLightboxImage();
+            }
+        }
+        
+        function updateLightboxImage() {
+            if (galleryImages[currentImageIndex]) {
+                const image = document.getElementById('luxury-lightbox-image');
+                const current = galleryImages[currentImageIndex];
+                
+                image.src = current.src;
+                image.alt = current.alt;
+                
+                {{#if gallery_content.show_captions}}
+                const captionText = document.getElementById('luxury-caption-text');
+                const captionCategory = document.getElementById('luxury-caption-category');
+                if (captionText) captionText.textContent = current.alt || 'Portfolio image';
+                if (captionCategory) captionCategory.textContent = current.category || '';
+                {{/if}}
+            }
+        }
+        
+        // Close lightbox on click outside image
+        {{#if gallery_content.enable_lightbox}}
+        document.getElementById('luxury-lightbox')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLuxuryLightbox();
+            }
+        });
+        {{/if}}
+        
+        // Close lightbox on escape key
+        document.addEventListener('keydown', function(e) {
+            {{#if gallery_content.enable_lightbox}}
+            if (e.key === 'Escape') {
+                closeLuxuryLightbox();
+            }
+            {{/if}}
+            if (e.key === 'ArrowLeft') {
+                previousImage();
+            }
+            if (e.key === 'ArrowRight') {
+                nextImage();
+            }
+        });
+        
+        // Gallery filtering and sorting functionality
+        {{#if gallery_content.show_search}}
+        const searchInput = document.getElementById('gallery-search');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                filterGallery();
+            });
+        }
+        {{/if}}
+        
+        {{#if gallery_content.show_sort_options}}
+        const sortSelect = document.getElementById('gallery-sort');
+        if (sortSelect) {
+            sortSelect.addEventListener('change', function() {
+                sortGallery();
+            });
+        }
+        {{/if}}
+        
+        {{#if gallery_content.show_category_filter}}
+        const categorySelect = document.getElementById('gallery-category');
+        if (categorySelect) {
+            categorySelect.addEventListener('change', function() {
+                filterGallery();
+            });
+        }
+        {{/if}}
+        
+        function filterGallery() {
+            const searchTerm = document.getElementById('gallery-search')?.value.toLowerCase() || '';
+            const selectedCategory = document.getElementById('gallery-category')?.value || 'all';
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            let visibleCount = 0;
+            
+            galleryItems.forEach(item => {
+                const img = item.querySelector('img');
+                const alt = img.alt.toLowerCase();
+                const category = item.dataset.category || '';
+                
+                const matchesSearch = alt.includes(searchTerm);
+                const matchesCategory = selectedCategory === 'all' || category === selectedCategory;
+                
+                if (matchesSearch && matchesCategory) {
+                    item.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Update image count
+            {{#if gallery_content.show_image_count}}
+            const imageCount = document.getElementById('image-count');
+            if (imageCount) {
+                imageCount.textContent = visibleCount;
+            }
+            {{/if}}
+        }
+        
+        function sortGallery() {
+            const sortOrder = document.getElementById('gallery-sort')?.value || 'newest';
+            const galleryGrid = document.getElementById('gallery-grid');
+            const items = Array.from(galleryGrid.children);
+            
+            items.sort((a, b) => {
+                const aImg = a.querySelector('img');
+                const bImg = b.querySelector('img');
+                
+                switch (sortOrder) {
+                    case 'oldest':
+                        return new Date(a.dataset.date) - new Date(b.dataset.date);
+                    case 'newest':
+                        return new Date(b.dataset.date) - new Date(a.dataset.date);
+                    case 'name':
+                        return aImg.alt.localeCompare(bImg.alt);
+                    default:
+                        return 0;
+                }
+            });
+            
+            // Re-append sorted items
+            items.forEach(item => galleryGrid.appendChild(item));
+        }
+        
+        // Helper function for AOS delay calculation
+        if (typeof Handlebars !== 'undefined') {
+            Handlebars.registerHelper('multiply', function(a, b) {
+                return a * b;
+            });
+            
+            Handlebars.registerHelper('eq', function(a, b) {
+                return a === b;
+            });
+            
+            Handlebars.registerHelper('gt', function(a, b) {
+                return a > b;
+            });
+        }
     </script>
 </body>
 </html>

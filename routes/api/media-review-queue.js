@@ -105,7 +105,8 @@ router.get('/queue', async (req, res) => {
         }));
 
         res.set('Cache-Control', 'private, max-age=15');
-        res.success({
+        res.json({
+            success: true,
             queue: processedItems,
             pagination: {
                 page: parseInt(page),
@@ -118,7 +119,11 @@ router.get('/queue', async (req, res) => {
 
     } catch (error) {
         logger.error('media-review.queue error', { error: error.message });
-        res.fail(500, 'Failed to fetch media review queue', error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch media review queue',
+            error: error.message
+        });
     }
 });
 
@@ -198,7 +203,10 @@ router.get('/item/:id', async (req, res) => {
         );
 
         if (items.length === 0) {
-            return res.fail(404, 'Media item not found');
+            return res.status(404).json({
+                success: false,
+                message: 'Media item not found'
+            });
         }
 
         const item = items[0];
@@ -230,11 +238,11 @@ router.get('/item/:id', async (req, res) => {
             has_appeal: Boolean(item.appeal_requested)
         };
 
-        res.success({ item: processedItem });
+        res.json({ success: true, item: processedItem });
 
     } catch (error) {
         logger.error('media-review.item error', { error: error.message });
-        res.fail(500, 'Failed to fetch media item', error.message);
+        res.status(500).json({ success: false, message: 'Failed to fetch media item', error: error.message });
     }
 });
 
@@ -246,26 +254,48 @@ router.post('/approve/:id', async (req, res) => {
         const { id } = req.params;
         const { admin_notes, reviewed_by = 1, final_location } = req.body;
 
+        console.log('🟢 APPROVE: Starting approve process for ID:', id);
+        console.log('🟢 APPROVE: Request body:', req.body);
+
         const [items] = await db.execute(
             'SELECT * FROM media_review_queue WHERE id = ?',
             [id]
         );
 
+        console.log('🟢 APPROVE: Database query result:', items.length, 'items found');
+
         if (items.length === 0) {
+            console.log('🔴 APPROVE: No items found for ID:', id);
             return res.fail(404, 'Media item not found');
         }
 
         const item = items[0];
+        console.log('🟢 APPROVE: Item found:', { 
+            model_name: item.model_name,
+            usage_intent: item.usage_intent,
+            content_moderation_id: item.content_moderation_id 
+        });
+        
         const targetLocation = final_location || getFinalLocationFromUsageIntent(item.usage_intent);
+        console.log('🟢 APPROVE: Target location determined:', targetLocation);
 
         // Move file to appropriate folder
+        console.log('🟢 APPROVE: About to move file:', {
+            original_path: item.original_path,
+            model_name: item.model_name,
+            targetLocation
+        });
+        
         const success = await moveMediaFile(item.original_path, item.model_name, targetLocation);
+        console.log('🟢 APPROVE: File move result:', success);
         
         if (!success) {
+            console.log('🔴 APPROVE: Failed to move media file');
             throw new Error('Failed to move media file');
         }
 
         // Update media review queue
+        console.log('🟢 APPROVE: About to update media review queue');
         await db.execute(`
             UPDATE media_review_queue 
             SET 
@@ -273,28 +303,41 @@ router.post('/approve/:id', async (req, res) => {
                 final_location = ?,
                 file_moved = TRUE,
                 moved_at = NOW(),
-                admin_notes = ?,
                 reviewed_by = ?,
                 reviewed_at = NOW(),
                 updated_at = NOW()
             WHERE id = ?
-        `, [targetLocation, admin_notes, reviewed_by, id]);
+        `, [targetLocation, reviewed_by, id]);
+        console.log('🟢 APPROVE: Media review queue updated successfully');
 
         // Update original content_moderation record
+        console.log('🟢 APPROVE: About to update content_moderation record:', item.content_moderation_id);
         await db.execute(`
             UPDATE content_moderation 
             SET 
                 moderation_status = 'approved',
                 final_location = ?,
-                admin_notes = ?,
                 reviewed_by = ?,
                 reviewed_at = NOW()
             WHERE id = ?
-        `, [targetLocation, admin_notes, reviewed_by, item.content_moderation_id]);
+        `, [targetLocation, reviewed_by, item.content_moderation_id]);
+        console.log('🟢 APPROVE: Content moderation record updated successfully');
 
+        // CRITICAL FIX: Update model_media_library table (where gallery gets data from)
+        console.log('🟢 APPROVE: About to update model_media_library table');
+        const libraryUpdateResult = await db.execute(`
+            UPDATE model_media_library 
+            SET moderation_status = 'approved' 
+            WHERE model_slug = ? AND filename LIKE ?
+        `, [item.model_slug, `%${path.basename(item.original_path)}%`]);
+        console.log('🟢 APPROVE: Model media library updated, affected rows:', libraryUpdateResult[0].affectedRows);
+
+        console.log('🟢 APPROVE: All operations completed successfully, sending response');
         res.success({ final_location: targetLocation }, { message: 'Media approved and moved successfully' });
 
     } catch (error) {
+        console.log('🔴 APPROVE: Error occurred:', error.message);
+        console.log('🔴 APPROVE: Error stack:', error.stack);
         logger.error('media-review.approve error', { error: error.message });
         res.fail(500, 'Failed to approve media', error.message);
     }
@@ -335,7 +378,10 @@ router.post('/approve-blur/:id', async (req, res) => {
         );
 
         if (items.length === 0) {
-            return res.fail(404, 'Media item not found');
+            return res.status(404).json({
+                success: false,
+                message: 'Media item not found'
+            });
         }
 
         const item = items[0];
@@ -377,12 +423,11 @@ router.post('/approve-blur/:id', async (req, res) => {
                 final_location = 'public_blurred',
                 file_moved = TRUE,
                 moved_at = NOW(),
-                admin_notes = ?,
                 reviewed_by = ?,
                 reviewed_at = NOW(),
                 updated_at = NOW()
             WHERE id = ?
-        `, [JSON.stringify(blur_settings), blurredPath, admin_notes, reviewed_by, id]);
+        `, [JSON.stringify(blur_settings), blurredPath, reviewed_by, id]);
 
         // Update original content_moderation record
         console.log('Updating content_moderation record with ID:', item.content_moderation_id);
@@ -426,6 +471,15 @@ router.post('/approve-blur/:id', async (req, res) => {
             `, [id]);
             
             console.log('Media review queue update successful, affected rows:', queueUpdateResult.affectedRows);
+
+            // CRITICAL FIX: Update model_media_library table (where gallery gets data from)
+            console.log('🟡 APPROVE-BLUR: About to update model_media_library table');
+            const libraryUpdateResult = await db.execute(`
+                UPDATE model_media_library 
+                SET moderation_status = 'approved' 
+                WHERE model_slug = ? AND filename LIKE ?
+            `, [item.model_slug, `%${path.basename(item.original_path)}%`]);
+            console.log('🟡 APPROVE-BLUR: Model media library updated, affected rows:', libraryUpdateResult[0].affectedRows);
             
         } catch (updateError) {
             console.error('Error updating content_moderation:', updateError);
@@ -437,11 +491,11 @@ router.post('/approve-blur/:id', async (req, res) => {
             throw updateError;
         }
 
-        res.success({ blurred_path: blurredPath, blur_settings }, { message: 'Media approved with blur successfully' });
+        res.json({ success: true, blurred_path: blurredPath, blur_settings, message: 'Media approved with blur successfully' });
 
     } catch (error) {
         logger.error('media-review.approve-blur error', { error: error.message });
-        res.fail(500, 'Failed to approve media with blur', error.message);
+        res.status(500).json({ success: false, message: 'Failed to approve media with blur', error: error.message });
     }
 });
 
@@ -454,7 +508,10 @@ router.post('/reject/:id', async (req, res) => {
         const { admin_notes, reviewed_by = 1, reason } = req.body;
 
         if (!admin_notes || !admin_notes.trim()) {
-            return res.fail(400, 'Admin notes are required for rejection');
+            return res.status(400).json({
+                success: false,
+                message: 'Admin notes are required for rejection'
+            });
         }
 
         const [items] = await db.execute(
@@ -463,7 +520,10 @@ router.post('/reject/:id', async (req, res) => {
         );
 
         if (items.length === 0) {
-            return res.fail(404, 'Media item not found');
+            return res.status(404).json({
+                success: false,
+                message: 'Media item not found'
+            });
         }
 
         const item = items[0];
@@ -483,12 +543,11 @@ router.post('/reject/:id', async (req, res) => {
                 final_location = 'rejected',
                 file_moved = TRUE,
                 moved_at = NOW(),
-                admin_notes = ?,
                 reviewed_by = ?,
                 reviewed_at = NOW(),
                 updated_at = NOW()
             WHERE id = ?
-        `, [admin_notes, reviewed_by, id]);
+        `, [reviewed_by, id]);
 
         // Update original content_moderation record
         await db.execute(`
@@ -496,17 +555,25 @@ router.post('/reject/:id', async (req, res) => {
             SET 
                 moderation_status = 'rejected',
                 final_location = 'rejected',
-                admin_notes = ?,
                 reviewed_by = ?,
                 reviewed_at = NOW()
             WHERE id = ?
-        `, [admin_notes, reviewed_by, item.content_moderation_id]);
+        `, [reviewed_by, item.content_moderation_id]);
 
-        res.success({ reason: admin_notes }, { message: 'Media rejected and moved to rejected folder' });
+        // CRITICAL FIX: Update model_media_library table (where gallery gets data from)
+        console.log('🔴 REJECT: About to update model_media_library table');
+        const libraryUpdateResult = await db.execute(`
+            UPDATE model_media_library 
+            SET moderation_status = 'rejected' 
+            WHERE model_slug = ? AND filename LIKE ?
+        `, [item.model_slug, `%${path.basename(item.original_path)}%`]);
+        console.log('🔴 REJECT: Model media library updated, affected rows:', libraryUpdateResult[0].affectedRows);
+
+        res.json({ success: true, reason: 'Rejected by admin', message: 'Media rejected and moved to rejected folder' });
 
     } catch (error) {
         logger.error('media-review.reject error', { error: error.message });
-        res.fail(500, 'Failed to reject media', error.message);
+        res.status(500).json({ success: false, message: 'Failed to reject media', error: error.message });
     }
 });
 

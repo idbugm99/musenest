@@ -1,0 +1,1782 @@
+<!-- Gallery Image Picker Modal Component (Phase 2 - New Implementation) -->
+<div class="modal fade" id="galleryImagePickerModal" tabindex="-1" role="dialog" aria-labelledby="galleryImagePickerTitle" aria-describedby="galleryImagePickerDescription">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h4 class="modal-title" id="galleryImagePickerTitle">
+          <i class="fas fa-images me-2"></i>Add Images to Gallery Section
+        </h4>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body">
+        <!-- Context Info -->
+        <div class="alert alert-info mb-3" id="pickerContextInfo" role="alert">
+          <i class="fas fa-info-circle me-2"></i>
+          <span id="pickerContextText">Loading section information...</span>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label for="pickerSearchInput" class="form-label">
+              <i class="fas fa-search me-1"></i>Search Images
+            </label>
+            <input type="text" class="form-control" id="pickerSearchInput" placeholder="Search filenames...">
+          </div>
+          
+          <div class="col-md-3">
+            <label for="pickerStatusFilter" class="form-label">
+              <i class="fas fa-shield-alt me-1"></i>Status Filter
+              <i class="fas fa-question-circle text-muted ms-1" 
+                 data-bs-toggle="tooltip" 
+                 title="Filter by content moderation status. Public sections require 'Approved Only' for safety."></i>
+            </label>
+            <select class="form-select" id="pickerStatusFilter">
+              <option value="approved">Approved Only (Public Safe)</option>
+              <option value="approved_blurred">Approved + Blurred</option>
+              <option value="all">All Statuses</option>
+            </select>
+            <div class="form-text d-none" id="statusFilterHelp">
+              <i class="fas fa-info-circle text-primary"></i>
+              <span id="statusFilterMessage">Default filter applied for public section safety.</span>
+            </div>
+          </div>
+          
+          <div class="col-md-3">
+            <label for="pickerContextFilter" class="form-label">
+              <i class="fas fa-tag me-1"></i>Context Filter
+              <i class="fas fa-question-circle text-muted ms-1" 
+                 data-bs-toggle="tooltip" 
+                 title="Filter by content usage intent: public site (free), paysite (premium), or private (personal)."></i>
+            </label>
+            <select class="form-select" id="pickerContextFilter">
+              <option value="all">All Contexts</option>
+              <option value="public_site">Public Site (Free)</option>
+              <option value="paysite">Paysite (Premium)</option>
+              <option value="private">Private (Personal)</option>
+            </select>
+            <div class="form-text d-none" id="contextFilterHelp">
+              <i class="fas fa-info-circle text-primary"></i>
+              <span id="contextFilterMessage">Default filter applied for section type.</span>
+            </div>
+          </div>
+          
+          <div class="col-md-2">
+            <label for="pickerSortSelect" class="form-label">
+              <i class="fas fa-sort me-1"></i>Sort By
+            </label>
+            <select class="form-select" id="pickerSortSelect">
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="name">Name A-Z</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Multi-select Controls -->
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group" role="group" aria-label="Selection controls">
+                <button type="button" class="btn btn-outline-primary btn-sm" id="toggleMultiSelect">
+                  <i class="fas fa-check-square me-1"></i>Multi-Select Mode
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="selectAllPage" disabled>
+                  <i class="fas fa-check-double me-1"></i>Select All (Page)
+                </button>
+                <button type="button" class="btn btn-outline-warning btn-sm" id="clearSelection" disabled>
+                  <i class="fas fa-times me-1"></i>Clear Selection
+                </button>
+              </div>
+              
+              <div class="text-muted">
+                <span id="selectionCounter">0 selected</span> 
+                <span class="text-muted">| </span>
+                <span id="totalCounter">0 total images</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Selected Items Preview (when items are selected) -->
+        <div class="row mb-3 d-none" id="selectedPreview">
+          <div class="col-12">
+            <div class="card bg-light">
+              <div class="card-body py-2">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h6 class="mb-0">
+                    <i class="fas fa-layer-group me-1"></i>Selected Images 
+                    <span class="badge bg-primary" id="selectedCount">0</span>
+                  </h6>
+                  
+                  <!-- Batch Operation Controls -->
+                  <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-danger" id="batchRemoveSelected" 
+                            title="Remove selected images from gallery">
+                      <i class="fas fa-trash me-1"></i>Remove from Gallery
+                    </button>
+                    <button type="button" class="btn btn-outline-info" id="batchMoveSelected"
+                            title="Move selected images to another section">
+                      <i class="fas fa-arrows-alt me-1"></i>Move to Section
+                    </button>
+                  </div>
+                </div>
+                
+                <div id="selectedChips" class="d-flex flex-wrap gap-1">
+                  <!-- Selected image chips will be inserted here -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="text-center py-5" id="pickerLoading">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading images...</span>
+          </div>
+          <p class="text-muted mt-2">Loading your image library...</p>
+        </div>
+
+        <!-- Images Grid -->
+        <div class="row g-3" id="pickerImageGrid" 
+             role="grid" 
+             aria-label="Gallery images"
+             aria-multiselectable="true"
+             style="display: none;">
+          <!-- Images will be dynamically inserted here -->
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Image picker pagination" class="mt-4" id="pickerPagination" style="display: none;">
+          <ul class="pagination justify-content-center" id="pickerPaginationList">
+            <!-- Pagination will be dynamically inserted here -->
+          </ul>
+        </nav>
+
+        <!-- No Results Message -->
+        <div class="text-center py-5 d-none" id="noResultsMessage">
+          <i class="fas fa-search text-muted" style="font-size: 3rem;"></i>
+          <h5 class="text-muted mt-3">No Images Found</h5>
+          <p class="text-muted">Try adjusting your filters or search terms.</p>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <div class="me-auto">
+          <label class="btn btn-outline-primary position-relative" id="uploadNewButton">
+            <i class="fas fa-cloud-upload-alt me-1"></i>Upload & Add
+            <input type="file" id="pickerFileUpload" class="position-absolute top-0 start-0 w-100 h-100 opacity-0" 
+                   accept="image/*" multiple style="cursor: pointer;">
+          </label>
+          <small class="text-muted ms-2" id="uploadStatus" style="display: none;"></small>
+        </div>
+        
+        <div>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-1"></i>Cancel
+          </button>
+          <button type="button" class="btn btn-success" id="addSelectedImages" disabled>
+            <i class="fas fa-plus me-1"></i>Add <span id="addButtonCount">0</span> to Gallery
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Progress Modal for Batch Operations -->
+<div class="modal fade" id="batchProgressModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="progressModalTitle">
+          <i class="fas fa-cog fa-spin me-2"></i>Adding Images
+        </h5>
+      </div>
+      <div class="modal-body">
+        <div class="progress mb-3">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" 
+               id="batchProgressBar" role="progressbar" style="width: 0%"></div>
+        </div>
+        <p class="text-center mb-0" id="batchProgressText">Preparing to add images...</p>
+        
+        <!-- Upload Progress (hidden by default) -->
+        <div id="uploadProgress" style="display: none;">
+          <h6 class="mt-3 mb-2">Upload Progress:</h6>
+          <div id="uploadFilesList" class="small">
+            <!-- Individual file upload progress will be inserted here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Results Modal for Batch Operations -->
+<div class="modal fade" id="batchResultsModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="batchResultsTitle">
+          <i class="fas fa-check-circle text-success me-2"></i>Operation Complete
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row text-center mb-3">
+          <div class="col-4">
+            <div class="text-success">
+              <i class="fas fa-check-circle fa-2x"></i>
+              <h4 id="addedCount">0</h4>
+              <small class="text-muted">Added</small>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="text-warning">
+              <i class="fas fa-exclamation-triangle fa-2x"></i>
+              <h4 id="skippedCount">0</h4>
+              <small class="text-muted">Skipped</small>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="text-danger">
+              <i class="fas fa-times-circle fa-2x"></i>
+              <h4 id="failedCount">0</h4>
+              <small class="text-muted">Failed</small>
+            </div>
+          </div>
+        </div>
+        
+        <div id="batchResultDetails" class="mt-3" style="max-height: 300px; overflow-y: auto;">
+          <!-- Detailed results will be inserted here -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="continueButton">
+          <i class="fas fa-arrow-right me-1"></i>Continue
+        </button>
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="closeAndRefreshButton">
+          <i class="fas fa-sync-alt me-1"></i>Close & Refresh Gallery
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section Selection Modal for Move Operation -->
+<div class="modal fade" id="sectionSelectModal" tabindex="-1" aria-labelledby="sectionSelectTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="sectionSelectTitle">
+          <i class="fas fa-arrows-alt me-2"></i>Move Images to Section
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted mb-3">
+          Move <span id="moveImageCount">0</span> selected images to another section.
+          <strong>Note:</strong> This will remove them from the current section.
+        </p>
+        
+        <div class="mb-3">
+          <label for="targetSectionSelect" class="form-label">Target Section:</label>
+          <select class="form-select" id="targetSectionSelect">
+            <option value="">Select a section...</option>
+            <!-- Options will be populated dynamically -->
+          </select>
+        </div>
+        
+        <div class="alert alert-warning">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          <strong>Warning:</strong> Moving images will remove them from their current section. 
+          This action cannot be undone easily.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmMoveImages" disabled>
+          <i class="fas fa-arrows-alt me-1"></i>Move Images
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Gallery Image Picker Styles */
+.picker-image-tile {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.picker-image-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.picker-image-tile.selected {
+  border-color: #0d6efd;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13,110,253,0.3);
+}
+
+.picker-image-tile.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.picker-image-tile .multi-select-checkbox {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
+  display: none;
+}
+
+.multi-select-mode .picker-image-tile .multi-select-checkbox {
+  display: block;
+}
+
+.picker-image-tile .image-badges {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+}
+
+.picker-image-tile .in-section-badge {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  z-index: 5;
+}
+
+.status-badge-approved { background-color: #198754 !important; }
+.status-badge-approved_blurred { background-color: #0d6efd !important; }  
+.status-badge-pending { background-color: #ffc107 !important; color: #000; }
+.status-badge-flagged { background-color: #dc3545 !important; }
+
+.context-badge-public_site { background-color: #20c997; }
+.context-badge-paysite { background-color: #6f42c1; }
+.context-badge-private { background-color: #6c757d; }
+
+.selected-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  background-color: #e3f2fd;
+  border: 1px solid #2196f3;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  margin: 2px;
+}
+
+.selected-chip .remove-chip {
+  margin-left: 6px;
+  cursor: pointer;
+  color: #666;
+  font-weight: bold;
+}
+
+.selected-chip .remove-chip:hover {
+  color: #dc3545;
+}
+
+/* Accessibility */
+.picker-image-tile:focus {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+/* Loading states */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Accessibility utilities */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .picker-image-tile {
+    border: 2px solid ButtonText;
+  }
+  
+  .picker-image-tile.selected {
+    border-color: Highlight;
+    background-color: Highlight;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .picker-image-tile {
+    transition: none;
+  }
+  
+  .loading-skeleton {
+    animation: none;
+  }
+}
+</style>
+
+<script>
+// Gallery Image Picker Component
+class GalleryImagePicker {
+  constructor() {
+    this.modal = null;
+    this.currentSlug = null;
+    this.currentSectionId = null;
+    this.sectionInfo = null;
+    
+    // State
+    this.selectedImages = new Set();
+    this.isMultiSelectMode = true;
+    this.currentPage = 1;
+    this.totalPages = 1;
+    this.totalImages = 0;
+    this.images = []; // Store current images for lightbox
+    
+    // Filters
+    this.filters = {
+      search: '',
+      status: 'approved',
+      context: 'all',
+      sort: 'newest'
+    };
+    
+    // Debounced search
+    this.searchTimeout = null;
+    
+    // Performance optimizations
+    this.requestCache = new Map();
+    this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
+    this.pendingRequests = new Map();
+    
+    this.initializeElements();
+    this.bindEvents();
+    this.loadUserPreferences();
+  }
+
+  // localStorage persistence methods
+  loadUserPreferences() {
+    try {
+      const savedPrefs = localStorage.getItem('galleryImagePicker.preferences');
+      if (savedPrefs) {
+        const prefs = JSON.parse(savedPrefs);
+        
+        // Only load non-search preferences to avoid confusion
+        if (prefs.status && ['approved', 'approved_blurred', 'all'].includes(prefs.status)) {
+          this.filters.status = prefs.status;
+        }
+        if (prefs.context && ['all', 'public_site', 'paysite', 'private'].includes(prefs.context)) {
+          this.filters.context = prefs.context;
+        }
+        if (prefs.sort && ['newest', 'oldest', 'name'].includes(prefs.sort)) {
+          this.filters.sort = prefs.sort;
+        }
+        
+        // Load multi-select preference
+        if (typeof prefs.isMultiSelectMode === 'boolean') {
+          this.isMultiSelectMode = prefs.isMultiSelectMode;
+        }
+      }
+    } catch (error) {
+      console.warn('Could not load gallery picker preferences:', error);
+    }
+  }
+
+  saveUserPreferences() {
+    try {
+      const prefs = {
+        status: this.filters.status,
+        context: this.filters.context,
+        sort: this.filters.sort,
+        isMultiSelectMode: this.isMultiSelectMode,
+        lastSaved: Date.now()
+      };
+      
+      localStorage.setItem('galleryImagePicker.preferences', JSON.stringify(prefs));
+    } catch (error) {
+      console.warn('Could not save gallery picker preferences:', error);
+    }
+  }
+
+  initializeElements() {
+    this.modal = new bootstrap.Modal(document.getElementById('galleryImagePickerModal'));
+    this.progressModal = new bootstrap.Modal(document.getElementById('batchProgressModal'));
+    this.resultsModal = new bootstrap.Modal(document.getElementById('batchResultsModal'));
+    
+    // Get DOM references
+    this.elements = {
+      searchInput: document.getElementById('pickerSearchInput'),
+      statusFilter: document.getElementById('pickerStatusFilter'),
+      contextFilter: document.getElementById('pickerContextFilter'),
+      sortSelect: document.getElementById('pickerSortSelect'),
+      
+      toggleMultiSelect: document.getElementById('toggleMultiSelect'),
+      selectAllPage: document.getElementById('selectAllPage'),
+      clearSelection: document.getElementById('clearSelection'),
+      
+      selectionCounter: document.getElementById('selectionCounter'),
+      totalCounter: document.getElementById('totalCounter'),
+      
+      selectedPreview: document.getElementById('selectedPreview'),
+      selectedChips: document.getElementById('selectedChips'),
+      selectedCount: document.getElementById('selectedCount'),
+      
+      pickerLoading: document.getElementById('pickerLoading'),
+      imageGrid: document.getElementById('pickerImageGrid'),
+      pagination: document.getElementById('pickerPagination'),
+      paginationList: document.getElementById('pickerPaginationList'),
+      noResultsMessage: document.getElementById('noResultsMessage'),
+      
+      contextInfo: document.getElementById('pickerContextInfo'),
+      contextText: document.getElementById('pickerContextText'),
+      
+      addSelectedImages: document.getElementById('addSelectedImages'),
+      addButtonCount: document.getElementById('addButtonCount'),
+      
+      // Upload elements
+      fileUpload: document.getElementById('pickerFileUpload'),
+      uploadNewButton: document.getElementById('uploadNewButton'),
+      uploadStatus: document.getElementById('uploadStatus'),
+      uploadProgress: document.getElementById('uploadProgress'),
+      uploadFilesList: document.getElementById('uploadFilesList'),
+      
+      // Batch operation elements
+      batchRemoveSelected: document.getElementById('batchRemoveSelected'),
+      batchMoveSelected: document.getElementById('batchMoveSelected')
+    };
+    
+    // Initialize section select modal
+    this.sectionSelectModal = new bootstrap.Modal(document.getElementById('sectionSelectModal'));
+  }
+
+  bindEvents() {
+    // Filter controls
+    this.elements.searchInput.addEventListener('input', (e) => {
+      clearTimeout(this.searchTimeout);
+      this.searchTimeout = setTimeout(() => {
+        this.filters.search = e.target.value.trim();
+        this.currentPage = 1;
+        this.loadImages();
+      }, 300);
+    });
+
+    this.elements.statusFilter.addEventListener('change', (e) => {
+      this.filters.status = e.target.value;
+      this.currentPage = 1;
+      this.saveUserPreferences();
+      this.loadImages();
+    });
+
+    this.elements.contextFilter.addEventListener('change', (e) => {
+      this.filters.context = e.target.value;
+      this.currentPage = 1;
+      this.saveUserPreferences();
+      this.loadImages();
+    });
+
+    this.elements.sortSelect.addEventListener('change', (e) => {
+      this.filters.sort = e.target.value;
+      this.currentPage = 1;
+      this.saveUserPreferences();
+      this.loadImages();
+    });
+
+    // Multi-select controls
+    this.elements.toggleMultiSelect.addEventListener('click', () => {
+      this.toggleMultiSelectMode();
+    });
+
+    this.elements.selectAllPage.addEventListener('click', () => {
+      this.selectAllOnPage();
+    });
+
+    this.elements.clearSelection.addEventListener('click', () => {
+      this.clearSelection();
+    });
+
+    // Add selected images
+    this.elements.addSelectedImages.addEventListener('click', () => {
+      this.addSelectedImages();
+    });
+
+    // Keyboard support
+    document.addEventListener('keydown', (e) => {
+      if (this.modal._isShown) {
+        this.handleKeyboardNavigation(e);
+      }
+    });
+
+    // Upload files
+    this.elements.fileUpload.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        this.handleFileUpload(e.target.files);
+      }
+    });
+
+    // Batch operations
+    this.elements.batchRemoveSelected.addEventListener('click', () => {
+      this.handleBatchRemove();
+    });
+
+    this.elements.batchMoveSelected.addEventListener('click', () => {
+      this.handleBatchMove();
+    });
+
+    // Section select modal events
+    document.getElementById('targetSectionSelect').addEventListener('change', (e) => {
+      document.getElementById('confirmMoveImages').disabled = !e.target.value;
+    });
+
+    document.getElementById('confirmMoveImages').addEventListener('click', () => {
+      this.confirmMoveToSection();
+    });
+
+    // Close and refresh button
+    document.getElementById('closeAndRefreshButton').addEventListener('click', () => {
+      // Trigger gallery refresh if parent page has the function
+      if (typeof window.refreshGallerySection === 'function') {
+        window.refreshGallerySection(this.currentSectionId);
+      }
+    });
+  }
+
+  // Public API
+  open(options = {}) {
+    const { slug, sectionId, sectionInfo } = options;
+    
+    if (!slug || !sectionId) {
+      console.error('GalleryImagePicker: slug and sectionId are required');
+      return;
+    }
+    
+    this.currentSlug = slug;
+    this.currentSectionId = sectionId;
+    this.sectionInfo = sectionInfo || {};
+    
+    // Reset state
+    this.selectedImages.clear();
+    this.currentPage = 1;
+    this.isMultiSelectMode = true;
+    
+    // Set default filters based on section visibility
+    if (this.sectionInfo.is_visible) {
+      this.filters.status = 'approved';
+      this.filters.context = 'public_site';
+    } else {
+      this.filters.status = 'approved_blurred';
+      this.filters.context = 'all';
+    }
+    
+    this.updateUI();
+    this.updateContextInfo();
+    this.modal.show();
+    
+    // Load images after modal is shown
+    setTimeout(() => {
+      this.loadImages();
+    }, 100);
+  }
+
+  updateContextInfo() {
+    const sectionName = this.sectionInfo.title || 'Gallery Section';
+    const visibility = this.sectionInfo.is_visible ? 'Public' : 'Private';
+    const safetyNote = this.sectionInfo.is_visible 
+      ? 'Only approved content suitable for public viewing can be added. Flagged or private content will be automatically blocked.'
+      : 'Any content can be added, but flagged items will show warnings and require confirmation.';
+    
+    const alertClass = this.sectionInfo.is_visible ? 'alert-info' : 'alert-warning';
+    const icon = this.sectionInfo.is_visible ? 'fa-shield-alt' : 'fa-exclamation-triangle';
+    
+    this.elements.contextInfo.className = `alert ${alertClass} mb-3`;
+    this.elements.contextText.innerHTML = `
+      <i class="fas ${icon} me-2"></i>
+      Adding images to <strong>${sectionName}</strong> (${visibility} section). ${safetyNote}
+    `;
+    
+    // Show/hide filter help messages
+    this.showFilterHelp();
+  }
+
+  showFilterHelp() {
+    const statusHelp = document.getElementById('statusFilterHelp');
+    const contextHelp = document.getElementById('contextFilterHelp');
+    const statusMessage = document.getElementById('statusFilterMessage');
+    const contextMessage = document.getElementById('contextFilterMessage');
+    
+    if (this.sectionInfo.is_visible) {
+      // Public section - show safety guardrails
+      statusHelp.classList.remove('d-none');
+      contextHelp.classList.remove('d-none');
+      
+      statusMessage.textContent = 'Public sections require approved content only for visitor safety.';
+      contextMessage.textContent = 'Only public site content can be added to visible sections.';
+      
+      // Lock dangerous options for public sections
+      const statusFilter = document.getElementById('pickerStatusFilter');
+      const contextFilter = document.getElementById('pickerContextFilter');
+      
+      statusFilter.querySelector('option[value="all"]').disabled = true;
+      contextFilter.querySelector('option[value="paysite"]').disabled = true;
+      contextFilter.querySelector('option[value="private"]').disabled = true;
+      
+    } else {
+      // Private section - hide help but allow all options
+      statusHelp.classList.add('d-none');  
+      contextHelp.classList.add('d-none');
+      
+      // Enable all options for private sections
+      const statusFilter = document.getElementById('pickerStatusFilter');
+      const contextFilter = document.getElementById('pickerContextFilter');
+      
+      Array.from(statusFilter.options).forEach(opt => opt.disabled = false);
+      Array.from(contextFilter.options).forEach(opt => opt.disabled = false);
+    }
+  }
+
+  async loadImages() {
+    this.showLoading();
+    
+    try {
+      const params = new URLSearchParams({
+        page: this.currentPage,
+        limit: 24,
+        status: this.filters.status,
+        context: this.filters.context,
+        sort: this.filters.sort,
+        section_id: this.currentSectionId
+      });
+      
+      if (this.filters.search) {
+        params.set('search', this.filters.search);
+      }
+      
+      const cacheKey = `${this.currentSlug}-${params.toString()}`;
+      const url = `/api/model-gallery/${this.currentSlug}/library?${params}`;
+      
+      // Check cache first
+      const cachedResult = this.getCachedResult(cacheKey);
+      if (cachedResult) {
+        const { images, pagination } = cachedResult.data;
+        this.totalPages = pagination.pages;
+        this.totalImages = pagination.total;
+        this.renderImages(images);
+        this.renderPagination(pagination);
+        this.updateCounters();
+        
+        // Still announce for accessibility
+        this.announceToScreenReader(`${images.length} images loaded from cache. Page ${this.currentPage} of ${this.totalPages}.`);
+        return;
+      }
+      
+      // Check if request is already pending (deduplication)
+      if (this.pendingRequests.has(cacheKey)) {
+        const result = await this.pendingRequests.get(cacheKey);
+        return this.handleLoadImagesResult(result);
+      }
+      
+      // Make new request
+      const requestPromise = fetch(url).then(response => response.json());
+      this.pendingRequests.set(cacheKey, requestPromise);
+      
+      const result = await requestPromise;
+      this.pendingRequests.delete(cacheKey);
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to load images');
+      }
+      
+      // Cache the successful result
+      this.setCachedResult(cacheKey, result);
+      
+      this.handleLoadImagesResult(result);
+      
+    } catch (error) {
+      console.error('Error loading images:', error);
+      this.showError('Failed to load images. Please try again.');
+      this.announceToScreenReader('Error loading images. Please try again.');
+    }
+  }
+
+  handleLoadImagesResult(result) {
+    const { images, pagination } = result.data;
+    
+    this.images = images; // Store images for lightbox access
+    this.totalPages = pagination.pages;
+    this.totalImages = pagination.total;
+    
+    this.renderImages(images);
+    this.renderPagination(pagination);
+    this.updateCounters();
+    
+    // Announce results and manage focus
+    const count = images.length;
+    this.announceToScreenReader(`${count} images loaded. Page ${this.currentPage} of ${this.totalPages}.`);
+    
+    // Set focus to first image if this is the initial load
+    if (this.currentPage === 1) {
+      setTimeout(() => this.manageFocus(), 100);
+    }
+  }
+
+  getCachedResult(cacheKey) {
+    const cached = this.requestCache.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp) < this.cacheTimeout) {
+      return cached.result;
+    }
+    if (cached) {
+      this.requestCache.delete(cacheKey);
+    }
+    return null;
+  }
+
+  setCachedResult(cacheKey, result) {
+    // Limit cache size to prevent memory issues
+    if (this.requestCache.size > 50) {
+      const oldestKey = this.requestCache.keys().next().value;
+      this.requestCache.delete(oldestKey);
+    }
+    
+    this.requestCache.set(cacheKey, {
+      result: result,
+      timestamp: Date.now()
+    });
+  }
+
+  clearCache() {
+    this.requestCache.clear();
+    this.pendingRequests.clear();
+  }
+
+  renderImages(images) {
+    this.hideLoading();
+    
+    if (images.length === 0) {
+      this.elements.noResultsMessage.classList.remove('d-none');
+      this.elements.imageGrid.style.display = 'none';
+      this.elements.pagination.style.display = 'none';
+      return;
+    }
+    
+    this.elements.noResultsMessage.classList.add('d-none');
+    this.elements.imageGrid.style.display = 'block';
+    this.elements.pagination.style.display = 'block';
+    
+    this.elements.imageGrid.innerHTML = images.map((img, index) => {
+      const isSelected = this.selectedImages.has(img.filename);
+      
+      // Enhanced disability detection based on section safety rules
+      let isDisabled = img.in_section;
+      let disabilityReason = '';
+      
+      if (img.in_section) {
+        disabilityReason = 'Already in this section';
+      } else if (this.sectionInfo.is_visible) {
+        // Public section safety checks
+        if (!['approved', 'approved_blurred'].includes(img.moderation_status)) {
+          isDisabled = true;
+          disabilityReason = `Cannot add to public section: ${img.moderation_status} content`;
+        } else if (img.usage_intent !== 'public_site') {
+          isDisabled = true;
+          disabilityReason = `Cannot add to public section: ${img.usage_intent} content`;
+        }
+      }
+      
+      const tabIndex = index + 1;
+      
+      return `
+        <div class="col-md-3 col-sm-4 col-6">
+          <div class="card picker-image-tile ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}" 
+               data-filename="${img.filename}" 
+               tabindex="${tabIndex}"
+               role="gridcell" 
+               aria-selected="${isSelected}"
+               aria-label="${img.filename} - ${img.moderation_status} status${img.in_section ? ' - already in section' : ''}"
+               ${isDisabled ? `aria-describedby="tooltip-${img.filename}" data-bs-toggle="tooltip" title="${disabilityReason}"` : ''}>
+            
+            <div class="multi-select-checkbox">
+              <input class="form-check-input" type="checkbox" 
+                     ${isSelected ? 'checked' : ''} 
+                     ${isDisabled ? 'disabled' : ''}>
+            </div>
+            
+            <img src="/uploads/${encodeURIComponent(this.currentSlug)}/public/gallery/${encodeURIComponent(img.filename)}" 
+                 class="card-img-top" 
+                 style="height: 150px; object-fit: cover;"
+                 alt="${img.filename}"
+                 loading="lazy">
+            
+            <div class="image-badges">
+              <span class="badge status-badge-${img.moderation_status}">${img.moderation_status}</span>
+              ${img.usage_intent !== 'public_site' ? 
+                `<span class="badge context-badge-${img.usage_intent}">${img.usage_intent}</span>` : ''}
+            </div>
+            
+            ${img.in_section ? 
+              '<div class="in-section-badge"><span class="badge bg-secondary">In Section</span></div>' : ''}
+            
+            <div class="card-body p-2">
+              <small class="text-muted text-truncate d-block" title="${img.filename}">${img.filename}</small>
+              <small class="text-muted">${this.formatFileSize(img.size || 0)}</small>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    // Bind click events to tiles and initialize tooltips
+    this.elements.imageGrid.querySelectorAll('.picker-image-tile').forEach(tile => {
+      if (!tile.classList.contains('disabled')) {
+        tile.addEventListener('click', () => {
+          this.toggleImageSelection(tile.dataset.filename);
+        });
+        
+        // Double-click to preview image in lightbox
+        tile.addEventListener('dblclick', (e) => {
+          e.preventDefault();
+          this.openImagePreview(tile.dataset.filename);
+        });
+      }
+      
+      // Initialize Bootstrap tooltips for disabled items
+      if (tile.hasAttribute('data-bs-toggle')) {
+        new bootstrap.Tooltip(tile);
+      }
+    });
+  }
+
+  async checkMixedSafetyContent(filenames) {
+    // For private sections, check if there are flagged items that need confirmation
+    try {
+      // Get image details to check for flagged content
+      const params = new URLSearchParams({
+        context: 'all',
+        status: 'all',
+        limit: 100
+      });
+      
+      const response = await fetch(`/api/model-gallery/${this.currentSlug}/library?${params}`);
+      const result = await response.json();
+      
+      if (!result.success) return false;
+      
+      const libraryImages = result.data.images;
+      const selectedImageDetails = libraryImages.filter(img => filenames.includes(img.filename));
+      
+      const flaggedImages = selectedImageDetails.filter(img => 
+        ['flagged', 'pending', 'rejected'].includes(img.moderation_status) ||
+        ['paysite', 'private'].includes(img.usage_intent)
+      );
+      
+      if (flaggedImages.length > 0) {
+        const flaggedCount = flaggedImages.length;
+        const safeCount = selectedImageDetails.length - flaggedCount;
+        
+        const confirmMessage = `
+          You are adding ${selectedImageDetails.length} images to this private section:
+          
+          • ${safeCount} approved/public images
+          • ${flaggedCount} flagged/private images (${flaggedImages.map(img => img.filename).join(', ')})
+          
+          Flagged content may not be suitable for all viewers. Continue anyway?
+        `;
+        
+        const userConfirmed = confirm(confirmMessage);
+        if (!userConfirmed) {
+          return true; // User cancelled, stop the operation
+        }
+      }
+      
+      return false; // No mixed content or user confirmed
+    } catch (error) {
+      console.warn('Could not check mixed safety content:', error);
+      return false; // Proceed on error
+    }
+  }
+
+  renderPagination(pagination) {
+    if (pagination.pages <= 1) {
+      this.elements.pagination.style.display = 'none';
+      return;
+    }
+    
+    const { page, pages } = pagination;
+    let paginationHTML = '';
+    
+    // Previous button
+    if (page > 1) {
+      paginationHTML += `
+        <li class="page-item">
+          <a class="page-link" href="#" data-page="${page - 1}">
+            <i class="fas fa-chevron-left"></i>
+          </a>
+        </li>
+      `;
+    }
+    
+    // Page numbers (show up to 5 pages)
+    const startPage = Math.max(1, page - 2);
+    const endPage = Math.min(pages, page + 2);
+    
+    for (let i = startPage; i <= endPage; i++) {
+      paginationHTML += `
+        <li class="page-item ${i === page ? 'active' : ''}">
+          <a class="page-link" href="#" data-page="${i}">${i}</a>
+        </li>
+      `;
+    }
+    
+    // Next button
+    if (page < pages) {
+      paginationHTML += `
+        <li class="page-item">
+          <a class="page-link" href="#" data-page="${page + 1}">
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        </li>
+      `;
+    }
+    
+    this.elements.paginationList.innerHTML = paginationHTML;
+    
+    // Bind pagination clicks
+    this.elements.paginationList.querySelectorAll('a[data-page]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.currentPage = parseInt(link.dataset.page);
+        this.loadImages();
+      });
+    });
+  }
+
+  toggleImageSelection(filename) {
+    const wasSelected = this.selectedImages.has(filename);
+    
+    if (wasSelected) {
+      this.selectedImages.delete(filename);
+    } else {
+      this.selectedImages.add(filename);
+    }
+    
+    this.updateSelectionUI();
+    this.updateCounters();
+    
+    // Announce selection change to screen readers
+    const action = wasSelected ? 'deselected' : 'selected';
+    this.announceToScreenReader(`Image ${filename} ${action}. ${this.selectedImages.size} images selected.`);
+  }
+
+  updateSelectionUI() {
+    // Update checkboxes and tile selection state
+    this.elements.imageGrid.querySelectorAll('.picker-image-tile').forEach(tile => {
+      const filename = tile.dataset.filename;
+      const checkbox = tile.querySelector('input[type="checkbox"]');
+      const isSelected = this.selectedImages.has(filename);
+      
+      tile.classList.toggle('selected', isSelected);
+      tile.setAttribute('aria-selected', isSelected);
+      if (checkbox) checkbox.checked = isSelected;
+    });
+    
+    // Update selected chips
+    this.updateSelectedChips();
+  }
+
+  updateSelectedChips() {
+    const selectedArray = Array.from(this.selectedImages);
+    
+    if (selectedArray.length > 0) {
+      this.elements.selectedPreview.classList.remove('d-none');
+      
+      this.elements.selectedChips.innerHTML = selectedArray.map(filename => `
+        <span class="selected-chip">
+          <span class="text-truncate" style="max-width: 150px;" title="${filename}">${filename}</span>
+          <span class="remove-chip" data-filename="${filename}">&times;</span>
+        </span>
+      `).join('');
+      
+      // Bind remove chip events
+      this.elements.selectedChips.querySelectorAll('.remove-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          this.selectedImages.delete(chip.dataset.filename);
+          this.updateSelectionUI();
+          this.updateCounters();
+        });
+      });
+      
+    } else {
+      this.elements.selectedPreview.classList.add('d-none');
+    }
+  }
+
+  updateCounters() {
+    const selectedCount = this.selectedImages.size;
+    
+    this.elements.selectionCounter.textContent = `${selectedCount} selected`;
+    this.elements.totalCounter.textContent = `${this.totalImages} total images`;
+    this.elements.selectedCount.textContent = selectedCount;
+    this.elements.addButtonCount.textContent = selectedCount;
+    
+    // Enable/disable buttons
+    this.elements.selectAllPage.disabled = selectedCount === this.totalImages;
+    this.elements.clearSelection.disabled = selectedCount === 0;
+    this.elements.addSelectedImages.disabled = selectedCount === 0;
+  }
+
+  toggleMultiSelectMode() {
+    this.isMultiSelectMode = !this.isMultiSelectMode;
+    
+    this.elements.imageGrid.classList.toggle('multi-select-mode', this.isMultiSelectMode);
+    
+    const button = this.elements.toggleMultiSelect;
+    button.innerHTML = this.isMultiSelectMode 
+      ? '<i class="fas fa-check-square me-1"></i>Multi-Select Mode'
+      : '<i class="far fa-check-square me-1"></i>Single-Select Mode';
+    
+    button.classList.toggle('active', this.isMultiSelectMode);
+    
+    // Save preference
+    this.saveUserPreferences();
+  }
+
+  selectAllOnPage() {
+    this.elements.imageGrid.querySelectorAll('.picker-image-tile:not(.disabled)').forEach(tile => {
+      this.selectedImages.add(tile.dataset.filename);
+    });
+    
+    this.updateSelectionUI();
+    this.updateCounters();
+  }
+
+  clearSelection() {
+    this.selectedImages.clear();
+    this.updateSelectionUI();
+    this.updateCounters();
+  }
+
+  async addSelectedImages() {
+    if (this.selectedImages.size === 0) return;
+    
+    const filenames = Array.from(this.selectedImages);
+    
+    // Check for mixed safety content and show confirmation if needed
+    if (!this.sectionInfo.is_visible && await this.checkMixedSafetyContent(filenames)) {
+      return; // User cancelled or confirmation dialog handled the operation
+    }
+    
+    // Show progress modal
+    this.modal.hide();
+    this.progressModal.show();
+    
+    const progressBar = document.getElementById('batchProgressBar');
+    const progressText = document.getElementById('batchProgressText');
+    
+    progressText.textContent = `Adding ${filenames.length} images to gallery...`;
+    progressBar.style.width = '10%';
+    
+    try {
+      const response = await fetch(`/api/model-gallery/${this.currentSlug}/sections/${this.currentSectionId}/images/batch`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filenames })
+      });
+      
+      progressBar.style.width = '90%';
+      
+      const result = await response.json();
+      
+      progressBar.style.width = '100%';
+      setTimeout(() => {
+        this.progressModal.hide();
+        this.showResults(result.data || result);
+      }, 500);
+      
+    } catch (error) {
+      console.error('Error adding images:', error);
+      this.progressModal.hide();
+      this.showError('Failed to add images. Please try again.');
+    }
+  }
+
+  showResults(results) {
+    const { summary, results: itemResults } = results;
+    
+    document.getElementById('addedCount').textContent = summary.added || 0;
+    document.getElementById('skippedCount').textContent = summary.skipped || 0;
+    document.getElementById('failedCount').textContent = summary.failed || 0;
+    
+    const detailsContainer = document.getElementById('batchResultDetails');
+    
+    if (itemResults && itemResults.length > 0) {
+      const groupedResults = {
+        success: itemResults.filter(r => r.status === 'success'),
+        skipped: itemResults.filter(r => r.status === 'skipped'),
+        failed: itemResults.filter(r => r.status === 'failed')
+      };
+      
+      let detailsHTML = '';
+      
+      Object.entries(groupedResults).forEach(([status, items]) => {
+        if (items.length > 0) {
+          const statusClass = {
+            success: 'text-success',
+            skipped: 'text-warning', 
+            failed: 'text-danger'
+          }[status];
+          
+          detailsHTML += `
+            <div class="mb-2">
+              <h6 class="${statusClass}">${status.charAt(0).toUpperCase() + status.slice(1)} (${items.length})</h6>
+              <ul class="list-unstyled ms-3">
+                ${items.map(item => `
+                  <li class="small">
+                    <code>${item.filename}</code>
+                    ${item.reason ? `<br><small class="text-muted">${item.reason}</small>` : ''}
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+          `;
+        }
+      });
+      
+      detailsContainer.innerHTML = detailsHTML;
+    } else {
+      detailsContainer.innerHTML = '<p class="text-muted text-center">No additional details available.</p>';
+    }
+    
+    this.resultsModal.show();
+    
+    // Clear selection after successful operation
+    if (summary.added > 0) {
+      this.selectedImages.clear();
+    }
+  }
+
+  showLoading() {
+    this.elements.pickerLoading.style.display = 'block';
+    this.elements.imageGrid.style.display = 'none';
+    this.elements.pagination.style.display = 'none';
+    this.elements.noResultsMessage.classList.add('d-none');
+    
+    // Announce loading to screen readers
+    this.announceToScreenReader('Loading images...');
+  }
+
+  hideLoading() {
+    this.elements.pickerLoading.style.display = 'none';
+  }
+
+  showError(message) {
+    this.hideLoading();
+    this.elements.noResultsMessage.classList.remove('d-none');
+    this.elements.noResultsMessage.innerHTML = `
+      <i class="fas fa-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+      <h5 class="text-warning mt-3">Error Loading Images</h5>
+      <p class="text-muted">${message}</p>
+    `;
+  }
+
+  updateUI() {
+    // Set filter values
+    this.elements.statusFilter.value = this.filters.status;
+    this.elements.contextFilter.value = this.filters.context;
+    this.elements.sortSelect.value = this.filters.sort;
+    this.elements.searchInput.value = this.filters.search;
+    
+    // Set multi-select mode
+    this.elements.imageGrid.classList.toggle('multi-select-mode', this.isMultiSelectMode);
+    
+    const button = this.elements.toggleMultiSelect;
+    button.innerHTML = this.isMultiSelectMode 
+      ? '<i class="fas fa-check-square me-1"></i>Multi-Select Mode'
+      : '<i class="far fa-check-square me-1"></i>Single-Select Mode';
+    
+    button.classList.toggle('active', this.isMultiSelectMode);
+  }
+
+  handleKeyboardNavigation(e) {
+    // Enhanced keyboard support for accessibility
+    if (e.key === 'Escape') {
+      this.modal.hide();
+      return;
+    }
+    
+    // Focus management and navigation
+    const focusedElement = document.activeElement;
+    const imageTiles = Array.from(this.elements.imageGrid.querySelectorAll('.picker-image-tile:not(.disabled)'));
+    
+    if (imageTiles.length === 0) return;
+    
+    const currentIndex = imageTiles.findIndex(tile => tile === focusedElement || tile.contains(focusedElement));
+    
+    switch (e.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        e.preventDefault();
+        const nextIndex = (currentIndex + 1) % imageTiles.length;
+        imageTiles[nextIndex].focus();
+        break;
+        
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        e.preventDefault();
+        const prevIndex = currentIndex <= 0 ? imageTiles.length - 1 : currentIndex - 1;
+        imageTiles[prevIndex].focus();
+        break;
+        
+      case ' ': // Space bar
+      case 'Enter':
+        e.preventDefault();
+        if (currentIndex >= 0) {
+          const filename = imageTiles[currentIndex].dataset.filename;
+          if (filename) {
+            if (e.key === ' ') {
+              // Space toggles selection
+              this.toggleImageSelection(filename);
+            } else if (e.key === 'Enter' && this.selectedImages.size > 0) {
+              // Enter adds selected images
+              this.addSelectedImages();
+            }
+          }
+        }
+        break;
+        
+      case 'a':
+      case 'A':
+        // Ctrl+A or Cmd+A to select all on page
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault();
+          this.selectAllOnPage();
+        }
+        break;
+        
+      case 'Backspace':
+      case 'Delete':
+        // Delete key to remove selected images
+        if (this.selectedImages.size > 0 && !focusedElement.matches('input, textarea')) {
+          e.preventDefault();
+          this.handleBatchRemove();
+        }
+        break;
+    }
+  }
+
+  // Enhanced focus management
+  manageFocus() {
+    // Set initial focus when modal opens
+    if (this.modal._isShown) {
+      const firstTile = this.elements.imageGrid.querySelector('.picker-image-tile:not(.disabled)');
+      if (firstTile) {
+        firstTile.focus();
+      } else {
+        this.elements.searchInput.focus();
+      }
+    }
+  }
+
+  // Live region announcements for screen readers
+  announceToScreenReader(message) {
+    let liveRegion = document.getElementById('galleryPickerLiveRegion');
+    if (!liveRegion) {
+      liveRegion = document.createElement('div');
+      liveRegion.id = 'galleryPickerLiveRegion';
+      liveRegion.setAttribute('aria-live', 'polite');
+      liveRegion.setAttribute('aria-atomic', 'true');
+      liveRegion.className = 'visually-hidden';
+      document.body.appendChild(liveRegion);
+    }
+    
+    // Clear and set message
+    liveRegion.textContent = '';
+    setTimeout(() => {
+      liveRegion.textContent = message;
+    }, 100);
+  }
+
+  async handleFileUpload(files) {
+    if (!files || files.length === 0) return;
+    
+    // Show upload progress
+    this.modal.hide();
+    this.elements.uploadProgress.style.display = 'block';
+    
+    const progressTitle = document.getElementById('progressModalTitle');
+    progressTitle.innerHTML = '<i class="fas fa-cloud-upload-alt fa-spin me-2"></i>Uploading Images';
+    
+    this.progressModal.show();
+    
+    const uploadedFiles = [];
+    const failedFiles = [];
+    
+    try {
+      let completedUploads = 0;
+      const totalFiles = files.length;
+      
+      // Reset upload files list
+      this.elements.uploadFilesList.innerHTML = '';
+      
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const fileId = `upload-file-${i}`;
+        
+        // Add file progress item
+        const fileProgress = document.createElement('div');
+        fileProgress.className = 'mb-2';
+        fileProgress.innerHTML = `
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="text-truncate me-2">${file.name}</span>
+            <span class="text-muted small" id="${fileId}-status">Uploading...</span>
+          </div>
+          <div class="progress" style="height: 4px;">
+            <div class="progress-bar" id="${fileId}-progress" style="width: 0%"></div>
+          </div>
+        `;
+        this.elements.uploadFilesList.appendChild(fileProgress);
+        
+        try {
+          // Create FormData for this file
+          const formData = new FormData();
+          formData.append('image', file);
+          
+          // Upload to the section's upload endpoint
+          const response = await fetch(`/api/model-gallery/${this.currentSlug}/sections/${this.currentSectionId}/upload`, {
+            method: 'POST',
+            body: formData
+          });
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            uploadedFiles.push(result.data.filename);
+            document.getElementById(`${fileId}-status`).innerHTML = '<i class="fas fa-check text-success"></i> Uploaded';
+            document.getElementById(`${fileId}-progress`).style.width = '100%';
+            document.getElementById(`${fileId}-progress`).classList.add('bg-success');
+            
+            // Auto-select the uploaded file
+            this.selectedImages.add(result.data.filename);
+            
+          } else {
+            failedFiles.push({ name: file.name, reason: result.message });
+            document.getElementById(`${fileId}-status`).innerHTML = '<i class="fas fa-times text-danger"></i> Failed';
+            document.getElementById(`${fileId}-progress`).style.width = '100%';
+            document.getElementById(`${fileId}-progress`).classList.add('bg-danger');
+          }
+          
+        } catch (error) {
+          failedFiles.push({ name: file.name, reason: error.message });
+          document.getElementById(`${fileId}-status`).innerHTML = '<i class="fas fa-times text-danger"></i> Error';
+          document.getElementById(`${fileId}-progress`).style.width = '100%';
+          document.getElementById(`${fileId}-progress`).classList.add('bg-danger');
+        }
+        
+        completedUploads++;
+        const overallProgress = Math.round((completedUploads / totalFiles) * 100);
+        document.getElementById('batchProgressBar').style.width = `${overallProgress}%`;
+        document.getElementById('batchProgressText').textContent = 
+          `Uploaded ${completedUploads} of ${totalFiles} files...`;
+      }
+      
+      // Show results
+      setTimeout(() => {
+        this.progressModal.hide();
+        
+        if (uploadedFiles.length > 0) {
+          // Refresh the image list to show newly uploaded files
+          this.loadImages();
+          
+          // Show success message with auto-selected info
+          const successMsg = `
+            Successfully uploaded ${uploadedFiles.length} image(s)!
+            ${uploadedFiles.length > 0 ? 'Images have been automatically selected for adding to gallery.' : ''}
+            ${failedFiles.length > 0 ? `\n${failedFiles.length} uploads failed.` : ''}
+          `;
+          
+          // Show a toast or update counters
+          this.updateCounters();
+          
+          // Re-open the main picker modal
+          this.modal.show();
+          
+          // Show success toast
+          this.showToast('success', successMsg);
+          
+        } else {
+          this.showToast('error', 'All uploads failed. Please try again.');
+          this.modal.show();
+        }
+        
+      }, 1000);
+      
+    } catch (error) {
+      this.progressModal.hide();
+      this.showToast('error', `Upload error: ${error.message}`);
+      this.modal.show();
+    }
+    
+    // Clear the file input
+    this.elements.fileUpload.value = '';
+  }
+
+  showToast(type, message) {
+    // Simple toast implementation - could be enhanced with a proper toast library
+    const toastContainer = document.getElementById('toastContainer') || this.createToastContainer();
+    
+    const toastId = 'toast-' + Date.now();
+    const toastEl = document.createElement('div');
+    toastEl.id = toastId;
+    toastEl.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0`;
+    toastEl.setAttribute('role', 'alert');
+    toastEl.innerHTML = `
+      <div class="d-flex">
+        <div class="toast-body">${message}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    `;
+    
+    toastContainer.appendChild(toastEl);
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
+    
+    // Remove after showing
+    toastEl.addEventListener('hidden.bs.toast', () => {
+      toastEl.remove();
+    });
+  }
+
+  createToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+    container.style.zIndex = '1055';
+    document.body.appendChild(container);
+    return container;
+  }
+
+  async handleBatchRemove() {
+    if (this.selectedImages.size === 0) return;
+    
+    const selectedArray = Array.from(this.selectedImages);
+    const confirmMessage = `Are you sure you want to remove ${selectedArray.length} image(s) from this gallery section?\n\nThis will not delete the images from your library, only remove them from this section.`;
+    
+    if (!confirm(confirmMessage)) return;
+    
+    try {
+      // Show progress
+      this.modal.hide();
+      document.getElementById('progressModalTitle').innerHTML = '<i class="fas fa-trash fa-spin me-2"></i>Removing Images';
+      document.getElementById('batchProgressText').textContent = 'Removing images from gallery section...';
+      document.getElementById('batchProgressBar').style.width = '50%';
+      this.progressModal.show();
+      
+      // Call batch remove API
+      const response = await fetch(`/api/model-gallery/${this.currentSlug}/sections/${this.currentSectionId}/images/batch`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filenames: selectedArray })
+      });
+      
+      const result = await response.json();
+      document.getElementById('batchProgressBar').style.width = '100%';
+      
+      setTimeout(() => {
+        this.progressModal.hide();
+        
+        if (result.success) {
+          this.showToast('success', `Successfully removed ${result.data.removed || selectedArray.length} images from gallery section.`);
+          this.selectedImages.clear();
+          this.loadImages(); // Refresh to show updated state
+          this.modal.show();
+        } else {
+          this.showToast('error', `Failed to remove images: ${result.message}`);
+          this.modal.show();
+        }
+      }, 1000);
+      
+    } catch (error) {
+      this.progressModal.hide();
+      this.showToast('error', `Error removing images: ${error.message}`);
+      this.modal.show();
+    }
+  }
+
+  async handleBatchMove() {
+    if (this.selectedImages.size === 0) return;
+    
+    // Load available sections for this model
+    try {
+      const response = await fetch(`/api/model-gallery/${this.currentSlug}/sections`);
+      const result = await response.json();
+      
+      if (!result.success) {
+        this.showToast('error', 'Failed to load available sections');
+        return;
+      }
+      
+      const sections = result.data.sections || [];
+      const otherSections = sections.filter(s => s.id !== this.currentSectionId);
+      
+      if (otherSections.length === 0) {
+        this.showToast('warning', 'No other sections available to move images to. Create another section first.');
+        return;
+      }
+      
+      // Populate section select dropdown
+      const sectionSelect = document.getElementById('targetSectionSelect');
+      sectionSelect.innerHTML = '<option value="">Select a section...</option>' +
+        otherSections.map(section => 
+          `<option value="${section.id}">${section.title} (${section.is_visible ? 'Public' : 'Private'})</option>`
+        ).join('');
+      
+      // Update move count
+      document.getElementById('moveImageCount').textContent = this.selectedImages.size;
+      
+      // Reset confirmation button
+      document.getElementById('confirmMoveImages').disabled = true;
+      
+      // Hide main picker and show section selector
+      this.modal.hide();
+      this.sectionSelectModal.show();
+      
+    } catch (error) {
+      this.showToast('error', `Error loading sections: ${error.message}`);
+    }
+  }
+
+  async confirmMoveToSection() {
+    const targetSectionId = document.getElementById('targetSectionSelect').value;
+    if (!targetSectionId) return;
+    
+    const selectedArray = Array.from(this.selectedImages);
+    
+    try {
+      // Hide section select modal and show progress
+      this.sectionSelectModal.hide();
+      document.getElementById('progressModalTitle').innerHTML = '<i class="fas fa-arrows-alt fa-spin me-2"></i>Moving Images';
+      document.getElementById('batchProgressText').textContent = 'Moving images between sections...';
+      document.getElementById('batchProgressBar').style.width = '25%';
+      this.progressModal.show();
+      
+      // Step 1: Add images to target section
+      const addResponse = await fetch(`/api/model-gallery/${this.currentSlug}/sections/${targetSectionId}/images/batch`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filenames: selectedArray })
+      });
+      
+      const addResult = await addResponse.json();
+      document.getElementById('batchProgressBar').style.width = '75%';
+      
+      if (!addResult.success) {
+        throw new Error(`Failed to add to target section: ${addResult.message}`);
+      }
+      
+      // Step 2: Remove from current section
+      const removeResponse = await fetch(`/api/model-gallery/${this.currentSlug}/sections/${this.currentSectionId}/images/batch`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filenames: selectedArray })
+      });
+      
+      const removeResult = await removeResponse.json();
+      document.getElementById('batchProgressBar').style.width = '100%';
+      
+      setTimeout(() => {
+        this.progressModal.hide();
+        
+        if (removeResult.success) {
+          const moved = addResult.data.summary?.added || 0;
+          this.showToast('success', `Successfully moved ${moved} images to the target section.`);
+          this.selectedImages.clear();
+          this.loadImages(); // Refresh current section
+          this.modal.show();
+        } else {
+          this.showToast('warning', `Images added to target section but failed to remove from current section: ${removeResult.message}`);
+          this.modal.show();
+        }
+      }, 1000);
+      
+    } catch (error) {
+      this.progressModal.hide();
+      this.showToast('error', `Error moving images: ${error.message}`);
+      this.modal.show();
+    }
+  }
+
+  formatFileSize(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  }
+
+  openImagePreview(filename) {
+    // Find images from the current library data
+    const imageIndex = this.images.findIndex(img => img.filename === filename);
+    if (imageIndex === -1) return;
+    
+    if (window.openAdvancedImageLightbox) {
+      window.openAdvancedImageLightbox({
+        images: this.images,
+        currentIndex: imageIndex,
+        slug: this.currentSlug,
+        sectionId: this.currentSectionId
+      });
+    }
+  }
+}
+
+// Initialize the picker when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+  window.galleryImagePicker = new GalleryImagePicker();
+  
+  // Initialize Bootstrap tooltips for help icons
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  const tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+  });
+});
+
+// Utility function for other components to use
+window.openGalleryImagePicker = function(options) {
+  if (window.galleryImagePicker) {
+    window.galleryImagePicker.open(options);
+  } else {
+    console.error('GalleryImagePicker not initialized');
+  }
+};
+</script>

@@ -105,6 +105,7 @@ router.post('/upload', upload.single('image'), async (req, res) => {
                 message: getStatusMessage(result),
                 data: {
                     content_moderation_id: result.contentModerationId,
+                    batch_id: result.batch_id,
                     moderation_status: result.moderation_status,
                     usage_intent: result.usage_intent,
                     nudity_score: result.nudity_score,
@@ -552,6 +553,241 @@ router.get('/model/:model_id/status', async (req, res) => {
     } catch (error) {
         logger.error('enhanced-cm.status error', { error: error.message });
         res.fail(500, 'Status fetch error', error.message);
+    }
+});
+
+/**
+ * CLIP NSFW Processing Endpoint - for manual testing
+ */
+router.post('/process-clip', async (req, res) => {
+    try {
+        const { content_moderation_id } = req.body;
+        
+        if (!content_moderation_id) {
+            return res.fail(400, 'content_moderation_id is required');
+        }
+
+        console.log('🔍 Processing CLIP NSFW analysis for content_moderation_id:', content_moderation_id);
+
+        // Get the content moderation record
+        const [contentRecord] = await db.execute(
+            'SELECT id, image_path, original_path, has_nudity, detected_parts FROM content_moderation WHERE id = ?',
+            [content_moderation_id]
+        );
+
+        if (!contentRecord || contentRecord.length === 0) {
+            return res.fail(404, 'Content moderation record not found');
+        }
+
+        const record = contentRecord[0];
+        console.log('📄 Found content record:', { id: record.id, has_nudity: record.has_nudity });
+
+        // Get image path and call local CLIP processor
+        let imagePath = record.image_path || record.original_path;
+        if (!imagePath) {
+            return res.fail(400, 'No image path found in database record');
+        }
+
+        // Convert database path to filesystem path
+        const path = require('path');
+        const fs = require('fs');
+        
+        if (imagePath.startsWith('/uploads/')) {
+            imagePath = path.join(__dirname, '../../public', imagePath);
+        } else if (!imagePath.startsWith('/Users/')) {
+            imagePath = path.join(__dirname, '../../public/uploads', imagePath);
+        }
+
+        console.log('📁 Using image path for CLIP analysis:', imagePath);
+
+        // Check if file exists
+        if (!fs.existsSync(imagePath)) {
+            return res.fail(404, 'Image file not found on filesystem', imagePath);
+        }
+
+        try {
+            // Call local CLIP processor using spawn
+            const { spawn } = require('child_process');
+            const clipProcess = spawn('python3', [
+                'admin/python/clip_nsfw_processor.py',
+                '--top-k', '3',
+                imagePath
+            ], {
+                cwd: path.join(__dirname, '../..'),
+                env: { ...process.env, PATH: './venv/bin:' + process.env.PATH }
+            });
+
+            let clipOutput = '';
+            let clipError = '';
+
+            clipProcess.stdout.on('data', (data) => {
+                clipOutput += data.toString();
+            });
+
+            clipProcess.stderr.on('data', (data) => {
+                clipError += data.toString();
+            });
+
+            clipProcess.on('close', async (code) => {
+                if (code !== 0) {
+                    console.error('❌ CLIP process failed with code:', code);
+                    console.error('❌ CLIP stderr:', clipError);
+                    return res.fail(500, 'CLIP processing failed', clipError);
+                }
+
+                try {
+                    console.log('📊 CLIP raw output:', clipOutput);
+                    
+                    // Parse CLIP JSON output
+                    const lines = clipOutput.trim().split('\n');
+                    let clipResult = null;
+                    
+                    // Find the JSON line (not the loading messages)
+                    for (const line of lines) {
+                        if (line.startsWith('{')) {
+                            try {
+                                clipResult = JSON.parse(line);
+                                if (clipResult.results || clipResult.matches) break;
+                            } catch (e) {
+                                // Skip malformed JSON lines
+                            }
+                        }
+                    }
+
+                    if (!clipResult || (!clipResult.results && !clipResult.matches)) {
+                        return res.fail(500, 'Invalid CLIP output format', clipOutput);
+                    }
+
+                    // Get best match (handle both old and new format)
+                    const matches = clipResult.results || clipResult.matches;
+                    const bestMatch = matches[0];
+                    
+                    // Update database with CLIP results
+                    await db.execute(
+                        'UPDATE content_moderation SET nsfw_description = ?, nsfw_category = ?, nsfw_confidence = ? WHERE id = ?',
+                        [bestMatch.description, bestMatch.category, bestMatch.confidence, content_moderation_id]
+                    );
+
+                    console.log('✅ CLIP analysis completed:', bestMatch);
+
+                    res.success({
+                        content_moderation_id,
+                        nsfw_description: bestMatch.description,
+                        nsfw_category: bestMatch.category,
+                        nsfw_confidence: bestMatch.confidence,
+                        all_matches: clipResult.matches
+                    }, { message: 'CLIP NSFW analysis completed successfully' });
+
+                } catch (parseError) {
+                    console.error('❌ CLIP output parsing error:', parseError);
+                    return res.fail(500, 'Failed to parse CLIP output', parseError.message);
+                }
+            });
+
+        } catch (spawnError) {
+            console.error('❌ CLIP spawn error:', spawnError);
+            return res.fail(500, 'Failed to start CLIP processor', spawnError.message);
+        }
+
+    } catch (error) {
+        console.error('❌ CLIP processing error:', error);
+        res.fail(500, 'CLIP processing failed', error.message);
+    }
+});
+
+/**
+ * Manual Venice.ai request for existing content
+ * POST /api/enhanced-content-moderation/request-venice/:content_moderation_id
+ */
+router.post('/request-venice/:content_moderation_id', async (req, res) => {
+    try {
+        const { content_moderation_id } = req.params;
+        
+        if (!content_moderation_id) {
+            return res.fail(400, 'content_moderation_id is required');
+        }
+
+        console.log(`🌊 Processing manual Venice.ai request for content_moderation_id: ${content_moderation_id}`);
+
+        // Get the existing content moderation record
+        const [contentRecord] = await db.execute(
+            'SELECT id, original_path, image_path, model_id, context_type, usage_intent FROM content_moderation WHERE id = ?',
+            [content_moderation_id]
+        );
+
+        if (!contentRecord || contentRecord.length === 0) {
+            return res.fail(404, 'Content moderation record not found');
+        }
+
+        const record = contentRecord[0];
+        const imagePath = record.original_path || record.image_path;
+        
+        if (!imagePath) {
+            return res.fail(400, 'No image path found in database record');
+        }
+
+        console.log(`📁 Processing Venice.ai for image: ${imagePath}`);
+
+        // Process image with Venice.ai
+        const VeniceAIService = require('../../src/services/VeniceAIService');
+        const veniceResult = await VeniceAIService.processImage(imagePath, {
+            modelId: record.model_id,
+            modelSlug: 'manual-request',
+            usageIntent: record.usage_intent,
+            contextType: record.context_type
+        });
+
+        if (veniceResult.success) {
+            // Update the database record with Venice.ai results
+            const updateQuery = `
+                UPDATE content_moderation 
+                SET venice_description = ?,
+                    venice_detailed_description = ?,
+                    venice_brief_description = ?,
+                    venice_children_detected = ?,
+                    venice_children_terms = ?,
+                    admin_notification_needed = ?
+                WHERE id = ?
+            `;
+
+            await db.execute(updateQuery, [
+                veniceResult.fullResponse || null,
+                veniceResult.detailedDescription || null,
+                veniceResult.briefDescription || null,
+                veniceResult.childrenDetected?.detected ? 1 : 0,
+                veniceResult.childrenDetected?.termsFound ? JSON.stringify(veniceResult.childrenDetected.termsFound) : null,
+                veniceResult.childrenDetected?.detected ? 1 : 0,
+                content_moderation_id
+            ]);
+
+            console.log(`✅ Venice.ai results updated for content_moderation_id: ${content_moderation_id}`);
+
+            res.success({
+                content_moderation_id: parseInt(content_moderation_id),
+                venice_results: {
+                    detailed_description: veniceResult.detailedDescription,
+                    brief_description: veniceResult.briefDescription,
+                    children_detected: veniceResult.childrenDetected?.detected || false,
+                    children_terms: veniceResult.childrenDetected?.termsFound || [],
+                    tokens_used: veniceResult.tokensUsed
+                }
+            }, { message: 'Venice.ai analysis completed and saved to database' });
+
+        } else {
+            console.error(`❌ Venice.ai processing failed for content_moderation_id: ${content_moderation_id}`, veniceResult.error);
+            
+            // Update with error information
+            await db.execute(
+                'UPDATE content_moderation SET venice_processing_error = ?, admin_notification_needed = 1 WHERE id = ?',
+                [veniceResult.error || 'Unknown Venice.ai error', content_moderation_id]
+            );
+
+            res.fail(500, 'Venice.ai processing failed', veniceResult.error);
+        }
+
+    } catch (error) {
+        logger.error('enhanced-cm.request-venice error', { error: error.message });
+        res.fail(500, 'Venice.ai request error', error.message);
     }
 });
 

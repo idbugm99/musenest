@@ -1,0 +1,36 @@
+<!-- Rose Theme Hero Component -->
+{{!-- Expected context: {
+      title, subtitle, bgImageUrl, opacity (0-1),
+      button1: {text, url},
+      button2: {text, url}
+  } --}}
+<section class="relative w-full min-h-[70vh] flex items-center justify-center overflow-hidden">
+  {{#if bgImageUrl}}
+    <img src="{{bgImageUrl}}" alt="" class="absolute inset-0 w-full h-full object-cover" style="opacity: {{#if opacity}}{{opacity}}{{else}}0.35{{/if}};" loading="lazy" />
+  {{/if}}
+  <!-- Rose → Transparent gradient overlay -->
+  <div class="absolute inset-0" style="background: linear-gradient(180deg, rgba(184,15,46,0.65) 0%, rgba(43,10,14,0.55) 100%);"></div>
+
+  <div class="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl">
+    {{#if title}}
+      <h1 class="font-serif text-4xl md:text-6xl text-porcelain mb-6 leading-tight">{{title}}</h1>
+    {{/if}}
+    {{#if subtitle}}
+      <p class="text-lg md:text-2xl text-porcelain/90 mb-10 leading-relaxed">{{subtitle}}</p>
+    {{/if}}
+
+    <div class="flex flex-col sm:flex-row justify-center gap-4">
+      {{#if button1}}
+        <a href="{{button1.url}}" class="px-8 py-3 rounded-full text-white bg-[color:var(--rose)] hover:bg-[color:var(--gold)] shadow">{{button1.text}}</a>
+      {{/if}}
+      {{#if button2}}
+        <a href="{{button2.url}}" class="px-8 py-3 rounded-full text-[color:var(--rose)] border border-[color:var(--rose)] hover:bg-[color:var(--rose)] hover:text-white transition-colors">{{button2.text}}</a>
+      {{/if}}
+    </div>
+  </div>
+
+  {{!-- Optional subtle petal shimmer respecting reduced motion --}}
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div class="rose-petal-shimmer"></div>
+  </div>
+</section>

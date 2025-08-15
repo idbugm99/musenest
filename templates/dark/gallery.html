@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{#if gallery_content.page_title}}{{gallery_content.page_title}} - {{site_settings.model_name}}{{else}}Gallery - {{site_settings.model_name}}{{/if}}</title>
+    <meta name="description" content="{{#if gallery_content.page_description}}{{gallery_content.page_description}}{{else}}{{site_settings.meta_description}}{{/if}}">
+    <meta name="og:title" content="{{#if gallery_content.page_title}}{{gallery_content.page_title}} - {{site_settings.model_name}}{{else}}Gallery - {{site_settings.model_name}}{{/if}}">
+    <meta name="og:description" content="{{#if gallery_content.page_description}}{{gallery_content.page_description}}{{else}}{{site_settings.meta_description}}{{/if}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{site_settings.og_image}}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Dynamic Theme Colors -->
+    <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
+    
+    <style>
+        /* Dark Theme Color Variables */
+        :root {
+            --dark-primary: var(--color-primary, #8B5CF6);
+            --dark-secondary: var(--color-secondary, #7C3AED);
+            --dark-accent: var(--color-accent, #F59E0B);
+            --dark-text: var(--color-text, #F9FAFB);
+            --dark-background: var(--color-background, #111827);
+        }
+        
+        .text-dark-primary { color: var(--dark-primary); }
+        .bg-dark-primary { background-color: var(--dark-primary); }
+        .border-dark-primary { border-color: var(--dark-primary); }
+        .text-dark-accent { color: var(--dark-accent); }
+        .bg-dark-accent { background-color: var(--dark-accent); }
+        .bg-dark-secondary { background-color: var(--dark-secondary); }
+        .text-dark-secondary { color: var(--dark-secondary); }
+        .text-dark-text { color: var(--dark-text); }
+        .bg-dark-background { background-color: var(--dark-background); }
+        
+        .dark-glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dark-gradient {
+            background: linear-gradient(135deg, var(--dark-primary) 0%, var(--dark-secondary) 100%);
+        }
+        
+        .dark-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.02) translateY(-8px);
+            box-shadow: 0 30px 60px -12px rgba(139, 92, 246, 0.3);
+            border-color: rgba(139, 92, 246, 0.4);
+        }
+        
+        .gallery-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, rgba(139, 92, 246, 0.9), rgba(124, 58, 237, 0.8));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+        
+        .dark-button {
+            background: linear-gradient(135deg, var(--dark-primary) 0%, var(--dark-secondary) 100%);
+            color: var(--dark-text);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .dark-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+            border-color: rgba(139, 92, 246, 0.6);
+        }
+        
+        .dark-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--dark-text);
+            backdrop-filter: blur(10px);
+        }
+        
+        .dark-input:focus {
+            outline: none;
+            border-color: var(--dark-primary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+        
+        /* Ambient light effects */
+        .dark-ambient {
+            position: relative;
+        }
+        
+        .dark-ambient::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 10%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float-ambient 8s ease-in-out infinite;
+        }
+        
+        .dark-ambient::after {
+            content: '';
+            position: absolute;
+            bottom: 20%;
+            right: 15%;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float-ambient 6s ease-in-out infinite reverse;
+        }
+        
+        @keyframes float-ambient {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+    </style>
+</head>
+<body class="bg-dark-background text-dark-text">
+    <!-- Navigation Component -->
+    {{component "navigation" theme="dark" model=model navigation=navigation}}
+    
+    <!-- Hero Header Section -->
+    {{#if gallery_content.gallery_header_visible}}
+    <section class="relative py-32 dark-gradient overflow-hidden dark-ambient">
+        <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div data-aos="fade-up" data-aos-duration="1000">
+                <h1 class="text-6xl md:text-7xl font-thin text-dark-text mb-8 tracking-wider">
+                    {{#if gallery_content.gallery_page_title}}{{gallery_content.gallery_page_title}}{{else}}{{#if gallery_content.page_title}}{{gallery_content.page_title}}{{else}}Dark Gallery{{/if}}{{/if}}
+                </h1>
+                <div class="w-32 h-px bg-dark-accent mx-auto mb-10"></div>
+                {{#if gallery_content.gallery_page_subtitle}}
+                <p class="text-2xl text-dark-text opacity-90 max-w-3xl mx-auto leading-relaxed font-light">
+                    {{gallery_content.gallery_page_subtitle}}
+                </p>
+                {{else}}
+                {{#if gallery_content.page_subtitle}}
+                <p class="text-2xl text-dark-text opacity-90 max-w-3xl mx-auto leading-relaxed font-light">
+                    {{gallery_content.page_subtitle}}
+                </p>
+                {{else}}
+                <p class="text-2xl text-dark-text opacity-90 max-w-3xl mx-auto leading-relaxed font-light">
+                    A sophisticated collection unveiled in shadow and light
+                </p>
+                {{/if}}
+                {{/if}}
+            </div>
+        </div>
+        
+        <!-- Elegant Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 opacity-60">
+            <div class="w-8 h-12 border border-dark-text border-opacity-30 rounded-full flex justify-center">
+                <div class="w-px h-4 bg-dark-accent mt-3 animate-pulse"></div>
+            </div>
+        </div>
+    </section>
+    {{/if}}
+
+    <!-- Gallery Controls Section -->
+    {{#if gallery_content.show_search}}{{#if gallery_content.show_sort_options}}{{#if gallery_content.show_category_filter}}
+    <section class="py-12 bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="dark-glass rounded-2xl p-8">
+                <div class="flex flex-wrap items-center justify-between gap-6" data-aos="fade-up">
+                    <!-- Search -->
+                    {{#if gallery_content.show_search}}
+                    <div class="flex items-center">
+                        <input type="text" id="gallery-search" placeholder="Search collection..." 
+                               class="dark-input px-6 py-3 rounded-lg font-light text-lg focus:ring-2 focus:ring-dark-primary">
+                    </div>
+                    {{/if}}
+                    
+                    <!-- Sort Options -->
+                    {{#if gallery_content.show_sort_options}}
+                    <div class="flex items-center gap-4">
+                        <label class="text-dark-accent font-light text-lg">Arrange:</label>
+                        <select id="gallery-sort" class="dark-input px-4 py-3 rounded-lg font-light focus:ring-2 focus:ring-dark-primary">
+                            <option value="newest" {{#if (eq gallery_content.default_sort_order 'newest')}}selected{{/if}}>Latest First</option>
+                            <option value="oldest" {{#if (eq gallery_content.default_sort_order 'oldest')}}selected{{/if}}>Earliest First</option>
+                            <option value="name" {{#if (eq gallery_content.default_sort_order 'name')}}selected{{/if}}>Alphabetical</option>
+                        </select>
+                    </div>
+                    {{/if}}
+                    
+                    <!-- Category Filter -->
+                    {{#if gallery_content.show_category_filter}}
+                    <div class="flex items-center gap-4">
+                        <label class="text-dark-accent font-light text-lg">Collection:</label>
+                        <select id="gallery-category" class="dark-input px-4 py-3 rounded-lg font-light focus:ring-2 focus:ring-dark-primary">
+                            <option value="all">All Categories</option>
+                            <option value="portrait">Portrait</option>
+                            <option value="lifestyle">Lifestyle</option>
+                            <option value="fashion">Fashion</option>
+                            <option value="artistic">Artistic</option>
+                        </select>
+                    </div>
+                    {{/if}}
+                    
+                    <!-- Image Count -->
+                    {{#if gallery_content.show_image_count}}
+                    <div class="text-dark-text font-light text-lg opacity-80">
+                        <span id="image-count">{{gallery_images.length}}</span> Images
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </section>
+    {{/if}}{{/if}}{{/if}}
+
+    <!-- Gallery Grid Section -->
+    <section class="py-24 bg-black">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {{#if gallery_images.length}}
+                <!-- Dynamic Grid Based on Database Settings -->
+                <div class="grid gap-8 {{#if (eq gallery_content.default_grid_columns 2)}}grid-cols-1 md:grid-cols-2{{else}}{{#if (eq gallery_content.default_grid_columns 4)}}grid-cols-2 md:grid-cols-3 lg:grid-cols-4{{else}}grid-cols-1 md:grid-cols-2 lg:grid-cols-3{{/if}}{{/if}}" id="gallery-grid">
+                    {{#each gallery_images}}
+                    <div class="gallery-item dark-shadow" data-aos="fade-up" data-aos-delay="{{multiply @index 150}}" data-category="{{this.category}}" data-date="{{this.created_at}}">
+                        {{#if ../gallery_content.enable_lightbox}}
+                        <img src="/uploads/{{../model.slug}}/{{this.filename}}" 
+                             alt="{{#if ../gallery_content.show_captions}}{{this.alt_text}}{{else}}Portfolio image{{/if}}" 
+                             class="w-full h-96 object-cover cursor-pointer"
+                             onclick="openDarkLightbox('{{this.filename}}', '{{this.alt_text}}', '{{this.category}}')">
+                        {{else}}
+                        <img src="/uploads/{{../model.slug}}/{{this.filename}}" 
+                             alt="{{#if ../gallery_content.show_captions}}{{this.alt_text}}{{else}}Portfolio image{{/if}}" 
+                             class="w-full h-96 object-cover">
+                        {{/if}}
+                        
+                        {{#if ../gallery_content.enable_lightbox}}
+                        <div class="gallery-overlay">
+                            <div class="text-center text-dark-text">
+                                {{#if ../gallery_content.enable_fullscreen}}
+                                <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                                <p class="font-light text-xl">View Fullscreen</p>
+                                {{else}}
+                                <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                <p class="font-light text-xl">View Image</p>
+                                {{/if}}
+                            </div>
+                        </div>
+                        {{/if}}
+                        
+                        <!-- Image Info/Caption -->
+                        {{#if ../gallery_content.show_image_info}}
+                        {{#if ../gallery_content.show_captions}}
+                        {{#if this.alt_text}}
+                        <div class="absolute bottom-0 left-0 right-0 dark-glass text-dark-text p-4">
+                            <p class="text-sm font-light">{{this.alt_text}}</p>
+                            {{#if ../gallery_content.show_categories}}
+                            {{#if this.category}}
+                            <span class="inline-block bg-dark-primary text-dark-text px-3 py-1 text-xs rounded-full mt-2 font-light">{{this.category}}</span>
+                            {{/if}}
+                            {{/if}}
+                        </div>
+                        {{/if}}
+                        {{/if}}
+                        {{/if}}
+                    </div>
+                    {{/each}}
+                </div>
+                
+                <!-- Load More Button (if pagination enabled) -->
+                {{#if (gt gallery_content.images_per_page gallery_images.length)}}
+                <div class="text-center mt-16" data-aos="fade-up">
+                    <button class="dark-button px-10 py-4 rounded-lg font-light text-lg dark-shadow">
+                        Reveal More
+                    </button>
+                </div>
+                {{/if}}
+                
+            {{else}}
+                <div class="text-center py-32" data-aos="fade-up">
+                    <div class="dark-glass rounded-3xl p-16 max-w-2xl mx-auto">
+                        <div class="w-32 h-32 bg-dark-primary bg-opacity-20 rounded-full mx-auto mb-10 flex items-center justify-center">
+                            <svg class="w-16 h-16 text-dark-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-4xl font-thin text-dark-text mb-8">Gallery Awaits</h3>
+                        <p class="text-dark-text text-xl opacity-80 max-w-lg mx-auto leading-relaxed font-light">
+                            A curated collection of sophisticated imagery will be revealed here soon. Each piece carefully selected to reflect elegance in darkness.
+                        </p>
+                    </div>
+                </div>
+            {{/if}}
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-32 bg-gray-900 relative overflow-hidden">
+        <div class="absolute inset-0 dark-gradient opacity-20"></div>
+        <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+            <h2 class="text-5xl font-thin text-dark-text mb-8">Experience Elegance</h2>
+            <div class="w-20 h-px bg-dark-accent mx-auto mb-10"></div>
+            <p class="text-2xl text-dark-text opacity-80 mb-12 leading-relaxed font-light max-w-3xl mx-auto">
+                Step into a world where sophistication meets artistry, crafted for those who appreciate refined beauty.
+            </p>
+            <a href="/{{model.slug}}/contact" 
+               class="dark-glass px-12 py-6 text-dark-text font-light text-xl rounded-lg hover:bg-white hover:bg-opacity-10 transition-all duration-500 transform hover:scale-105 inline-flex items-center border border-white border-opacity-20">
+                Private Consultation
+                <svg class="w-6 h-6 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- Dark Lightbox Modal -->
+    {{#if gallery_content.enable_lightbox}}
+    <div id="dark-lightbox" class="fixed inset-0 bg-black bg-opacity-95 z-50 hidden flex items-center justify-center p-4">
+        <div class="relative max-w-7xl max-h-full">
+            {{#if gallery_content.enable_fullscreen}}
+            <img id="dark-lightbox-image" src="" alt="" class="max-w-full max-h-full object-contain rounded-xl dark-shadow">
+            {{else}}
+            <img id="dark-lightbox-image" src="" alt="" class="max-w-5xl max-h-5xl object-contain rounded-xl dark-shadow">
+            {{/if}}
+            
+            <!-- Close Button -->
+            <button onclick="closeDarkLightbox()" 
+                    class="absolute top-4 right-4 text-dark-accent text-4xl dark-glass w-16 h-16 rounded-full flex items-center justify-center hover:bg-white hover:bg-opacity-10 transition-all duration-300 dark-shadow">
+                ×
+            </button>
+            
+            <!-- Image Caption -->
+            {{#if gallery_content.show_captions}}
+            <div id="dark-lightbox-caption" class="absolute bottom-4 left-4 right-4 text-center">
+                <div class="dark-glass text-dark-text py-4 px-8 rounded-xl dark-shadow">
+                    <p id="dark-caption-text" class="text-xl font-light"></p>
+                    <p id="dark-caption-category" class="text-sm text-dark-accent mt-2 font-light"></p>
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Navigation Buttons -->
+            <button id="dark-prev-btn" onclick="previousImage()" 
+                    class="absolute left-4 top-1/2 transform -translate-y-1/2 dark-glass text-dark-text w-16 h-16 rounded-full flex items-center justify-center hover:bg-white hover:bg-opacity-10 transition-all duration-300 dark-shadow">
+                ‹
+            </button>
+            <button id="dark-next-btn" onclick="nextImage()" 
+                    class="absolute right-4 top-1/2 transform -translate-y-1/2 dark-glass text-dark-text w-16 h-16 rounded-full flex items-center justify-center hover:bg-white hover:bg-opacity-10 transition-all duration-300 dark-shadow">
+                ›
+            </button>
+        </div>
+    </div>
+    {{/if}}
+    
+    <script>
+        // Initialize AOS with dark theme timing
+        AOS.init({
+            duration: 1200,
+            once: true,
+            offset: 50,
+            easing: 'ease-out-cubic'
+        });
+        
+        // Gallery functionality
+        let currentImageIndex = 0;
+        let galleryImages = [];
+        
+        // Initialize gallery images array
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = document.querySelectorAll('.gallery-item img');
+            galleryImages = Array.from(images).map(img => ({
+                src: img.src,
+                alt: img.alt,
+                category: img.closest('.gallery-item').dataset.category || ''
+            }));
+        });
+        
+        // Dark Lightbox functionality
+        function openDarkLightbox(filename, altText, category) {
+            {{#if gallery_content.enable_lightbox}}
+            const lightbox = document.getElementById('dark-lightbox');
+            const image = document.getElementById('dark-lightbox-image');
+            
+            image.src = `/uploads/{{model.slug}}/${filename}`;
+            image.alt = altText || 'Portfolio image';
+            
+            // Find current image index
+            currentImageIndex = galleryImages.findIndex(img => img.src.includes(filename));
+            
+            {{#if gallery_content.show_captions}}
+            const captionText = document.getElementById('dark-caption-text');
+            const captionCategory = document.getElementById('dark-caption-category');
+            if (captionText) captionText.textContent = altText || 'Portfolio image';
+            if (captionCategory && category) captionCategory.textContent = category;
+            {{/if}}
+            
+            lightbox.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            {{/if}}
+        }
+        
+        function closeDarkLightbox() {
+            {{#if gallery_content.enable_lightbox}}
+            const lightbox = document.getElementById('dark-lightbox');
+            lightbox.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            {{/if}}
+        }
+        
+        function previousImage() {
+            if (galleryImages.length > 0) {
+                currentImageIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length;
+                updateLightboxImage();
+            }
+        }
+        
+        function nextImage() {
+            if (galleryImages.length > 0) {
+                currentImageIndex = (currentImageIndex + 1) % galleryImages.length;
+                updateLightboxImage();
+            }
+        }
+        
+        function updateLightboxImage() {
+            if (galleryImages[currentImageIndex]) {
+                const image = document.getElementById('dark-lightbox-image');
+                const current = galleryImages[currentImageIndex];
+                
+                image.src = current.src;
+                image.alt = current.alt;
+                
+                {{#if gallery_content.show_captions}}
+                const captionText = document.getElementById('dark-caption-text');
+                const captionCategory = document.getElementById('dark-caption-category');
+                if (captionText) captionText.textContent = current.alt || 'Portfolio image';
+                if (captionCategory) captionCategory.textContent = current.category || '';
+                {{/if}}
+            }
+        }
+        
+        // Close lightbox on click outside image
+        {{#if gallery_content.enable_lightbox}}
+        document.getElementById('dark-lightbox')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDarkLightbox();
+            }
+        });
+        {{/if}}
+        
+        // Close lightbox on escape key
+        document.addEventListener('keydown', function(e) {
+            {{#if gallery_content.enable_lightbox}}
+            if (e.key === 'Escape') {
+                closeDarkLightbox();
+            }
+            {{/if}}
+            if (e.key === 'ArrowLeft') {
+                previousImage();
+            }
+            if (e.key === 'ArrowRight') {
+                nextImage();
+            }
+        });
+        
+        // Gallery filtering and sorting functionality
+        {{#if gallery_content.show_search}}
+        const searchInput = document.getElementById('gallery-search');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                filterGallery();
+            });
+        }
+        {{/if}}
+        
+        {{#if gallery_content.show_sort_options}}
+        const sortSelect = document.getElementById('gallery-sort');
+        if (sortSelect) {
+            sortSelect.addEventListener('change', function() {
+                sortGallery();
+            });
+        }
+        {{/if}}
+        
+        {{#if gallery_content.show_category_filter}}
+        const categorySelect = document.getElementById('gallery-category');
+        if (categorySelect) {
+            categorySelect.addEventListener('change', function() {
+                filterGallery();
+            });
+        }
+        {{/if}}
+        
+        function filterGallery() {
+            const searchTerm = document.getElementById('gallery-search')?.value.toLowerCase() || '';
+            const selectedCategory = document.getElementById('gallery-category')?.value || 'all';
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            let visibleCount = 0;
+            
+            galleryItems.forEach(item => {
+                const img = item.querySelector('img');
+                const alt = img.alt.toLowerCase();
+                const category = item.dataset.category || '';
+                
+                const matchesSearch = alt.includes(searchTerm);
+                const matchesCategory = selectedCategory === 'all' || category === selectedCategory;
+                
+                if (matchesSearch && matchesCategory) {
+                    item.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Update image count
+            {{#if gallery_content.show_image_count}}
+            const imageCount = document.getElementById('image-count');
+            if (imageCount) {
+                imageCount.textContent = visibleCount;
+            }
+            {{/if}}
+        }
+        
+        function sortGallery() {
+            const sortOrder = document.getElementById('gallery-sort')?.value || 'newest';
+            const galleryGrid = document.getElementById('gallery-grid');
+            const items = Array.from(galleryGrid.children);
+            
+            items.sort((a, b) => {
+                const aImg = a.querySelector('img');
+                const bImg = b.querySelector('img');
+                
+                switch (sortOrder) {
+                    case 'oldest':
+                        return new Date(a.dataset.date) - new Date(b.dataset.date);
+                    case 'newest':
+                        return new Date(b.dataset.date) - new Date(a.dataset.date);
+                    case 'name':
+                        return aImg.alt.localeCompare(bImg.alt);
+                    default:
+                        return 0;
+                }
+            });
+            
+            // Re-append sorted items
+            items.forEach(item => galleryGrid.appendChild(item));
+        }
+        
+        // Subtle parallax effect for ambient elements
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll('.dark-ambient');
+            parallaxElements.forEach(el => {
+                const speed = 0.2;
+                el.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+        
+        // Helper function for AOS delay calculation
+        if (typeof Handlebars !== 'undefined') {
+            Handlebars.registerHelper('multiply', function(a, b) {
+                return a * b;
+            });
+            
+            Handlebars.registerHelper('eq', function(a, b) {
+                return a === b;
+            });
+            
+            Handlebars.registerHelper('gt', function(a, b) {
+                return a > b;
+            });
+        }
+    </script>
+</body>
+</html>

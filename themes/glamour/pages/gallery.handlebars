@@ -1,13 +1,13 @@
-<!-- Gallery Hero Section -->
-<section class="py-16 bg-gradient-to-r from-glamour-primary to-glamour-accent text-white" data-aos="fade-in">
+<!-- Professional Gallery Hero Section -->
+<section class="glamour-gallery-hero" data-aos="fade-in">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-6 glamour-heading">
-                Photo Gallery
+            <h1 class="glamour-gallery-hero-title" data-aos="fade-up" data-aos-delay="200">
+                {{#if gallery_content.page_title}}{{gallery_content.page_title}}{{else}}Photo Gallery{{/if}}
             </h1>
-            <p class="text-xl md:text-2xl text-pink-100 max-w-3xl mx-auto">
-                {{#if content.galleryIntro}}
-                    {{content.galleryIntro}}
+            <p class="glamour-gallery-hero-subtitle" data-aos="fade-up" data-aos-delay="400">
+                {{#if gallery_content.page_subtitle}}
+                    {{gallery_content.page_subtitle}}
                 {{else}}
                     Discover my exclusive collection of professional photography
                 {{/if}}
@@ -17,7 +17,7 @@
 </section>
 
 <!-- Phase 5: Advanced Gallery Sections -->
-<section class="py-16 bg-gradient-to-br from-pink-50 to-purple-50">
+<section class="py-16 glamour-gallery-main-section">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {{#if (hasGalleries modelSlug)}}
             <!-- Render all gallery sections -->
@@ -42,99 +42,563 @@
 
 <!-- Glamour Theme Gallery Styling -->
 <style>
+/* Professional Glamour Gallery Variables */
+:root {
+    --glamour-primary: #E9C77A;
+    --glamour-primary-hover: #D9B66A;
+    --glamour-gold: #EBCB8B;
+    --glamour-rose-gold: #D08770;
+    --glamour-deep-purple: #171228;
+    --glamour-neutral: #1E1632;
+    --glamour-champagne: #F5F2EA;
+    --glamour-heading-color: #F3EFE7;
+    --glamour-black: #0F0F0F;
+    --glamour-white: #FEFEFE;
+    --glamour-card: #1E1730;
+    --glamour-border: rgba(235, 203, 139, 0.15);
+}
+
+/* Professional Gallery Hero Section */
+.glamour-gallery-hero {
+    position: relative;
+    min-height: 60vh;
+    background: linear-gradient(160deg, #A61147 0%, #7E1B5C 45%, #2B203F 100%);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    color: var(--glamour-white);
+}
+
+.glamour-gallery-hero-title {
+    font-size: 48px;
+    line-height: 56px;
+    font-weight: 800;
+    color: var(--glamour-white);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(45deg, var(--glamour-white) 30%, var(--glamour-gold) 70%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 50px rgba(255, 255, 255, 0.18);
+}
+
+.glamour-gallery-hero-subtitle {
+    font-size: 18px;
+    line-height: 28px;
+    color: var(--glamour-champagne);
+    text-align: center;
+    font-weight: 400;
+    max-width: 600px;
+    margin: 0 auto;
+    opacity: 0.9;
+}
+
+.glamour-gallery-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(ellipse at 20% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(232, 180, 184, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 40% 80%, rgba(139, 21, 56, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.glamour-heading {
+    background: linear-gradient(135deg, var(--glamour-gold), var(--glamour-rose-gold));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+}
+
+/* Gallery CTA Section */
+.glamour-gallery-cta {
+    background: linear-gradient(45deg, var(--glamour-burgundy) 0%, var(--glamour-deep-purple) 50%, var(--glamour-black) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.glamour-gallery-cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        repeating-linear-gradient(
+            90deg,
+            transparent 0px,
+            rgba(139, 21, 56, 0.1) 50px,
+            transparent 100px
+        ),
+        radial-gradient(ellipse at center, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+    animation: glamourRedCarpet 10s infinite linear;
+}
+
+@keyframes glamourRedCarpet {
+    0% { transform: translateX(0px); }
+    100% { transform: translateX(100px); }
+}
+
+/* Gallery Main Section */
+.glamour-gallery-main-section {
+    background: linear-gradient(180deg, var(--glamour-black) 0%, var(--glamour-deep-purple) 100%);
+    color: var(--glamour-white);
+}
+
 .model-galleries .gallery-section {
     margin-bottom: 4rem;
+    padding: 3rem 0;
+    background: linear-gradient(145deg, var(--glamour-deep-purple) 0%, var(--glamour-black) 100%);
+    border-radius: 20px;
+    margin-bottom: 3rem;
 }
 
 .model-galleries .gallery-title {
     font-size: 2rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #e91e63, #9c27b0);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-weight: 600;
+    color: var(--glamour-heading-color);
     margin-bottom: 2rem;
     text-align: center;
+    letter-spacing: -0.01em;
 }
 
 .model-galleries .grid-container {
-    border-radius: 12px;
-    overflow: hidden;
+    max-width: 100%;
+    padding: 2rem;
 }
 
 .model-galleries .grid-item {
-    border-radius: 8px;
+    border-radius: 15px;
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .model-galleries .grid-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(233, 30, 99, 0.2);
+    transform: translateY(-10px);
+    box-shadow: 0 25px 50px rgba(212, 175, 55, 0.4);
 }
 
 .model-galleries .grid-image-wrapper img {
-    border-radius: 8px;
+    border-radius: 15px;
     transition: transform 0.3s ease;
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
 }
 
 .model-galleries .grid-image-wrapper:hover img {
-    transform: scale(1.05);
+    transform: scale(1.1);
 }
 
 .model-galleries .masonry-item {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+    margin-bottom: 1.5rem;
 }
 
 .model-galleries .masonry-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 30px rgba(233, 30, 99, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(212, 175, 55, 0.3);
 }
 
 .model-galleries .carousel-inner {
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
 }
 
 .model-galleries .lightbox-grid-item:hover {
     transform: scale(1.05);
-    box-shadow: 0 10px 25px rgba(233, 30, 99, 0.3);
+    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.4);
 }
 
-/* Glamour theme overrides for Bootstrap carousel */
+/* Glamour theme carousel controls */
 .model-galleries .carousel-control-prev,
 .model-galleries .carousel-control-next {
-    background: linear-gradient(135deg, rgba(233, 30, 99, 0.8), rgba(156, 39, 176, 0.8));
+    background: linear-gradient(45deg, var(--glamour-gold) 0%, var(--glamour-rose-gold) 100%);
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     top: 50%;
     transform: translateY(-50%);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.model-galleries .carousel-control-prev:hover,
+.model-galleries .carousel-control-next:hover {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
 }
 
 .model-galleries .carousel-indicators [data-bs-target] {
-    background-color: #e91e63;
+    background-color: var(--glamour-gold);
     border-radius: 50%;
-    width: 12px;
-    height: 12px;
+    width: 15px;
+    height: 15px;
+    transition: all 0.3s ease;
+}
+
+.model-galleries .carousel-indicators [data-bs-target].active {
+    background-color: var(--glamour-rose-gold);
+    transform: scale(1.2);
+}
+
+/* Gallery Layout Styles for Glamour Theme */
+.gallery-section {
+    margin-bottom: 4rem;
+    padding: 3rem 2rem;
+    background: linear-gradient(145deg, var(--glamour-deep-purple) 0%, var(--glamour-black) 100%);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.gallery-section::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, var(--glamour-gold), var(--glamour-rose-gold));
+    border-radius: 22px;
+    z-index: -1;
+    opacity: 0.6;
+    filter: blur(8px);
+}
+
+/* Grid Layout - Glamour Style */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 2rem 0;
+}
+
+.gallery-item {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+    transition: all 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 25px 50px rgba(212, 175, 55, 0.4);
+}
+
+.gallery-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.3s ease;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.gallery-item:hover .gallery-image {
+    transform: scale(1.1);
+}
+
+.image-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+    color: var(--glamour-champagne);
+    padding: 1.5rem;
+    font-size: 1rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Masonry Layout - Glamour Style */
+.masonry-grid {
+    columns: 3;
+    column-gap: 2rem;
+    padding: 2rem 0;
+}
+
+.masonry-grid .gallery-item {
+    break-inside: avoid;
+    margin-bottom: 2rem;
+    display: block;
+}
+
+.masonry-grid .gallery-image {
+    height: auto;
+    max-height: 500px;
+}
+
+/* Professional Carousel Layout */
+.carousel-container {
+    position: relative;
+    overflow: hidden;
+    padding: 16px;
+    background: var(--glamour-card);
+    border-radius: 16px;
+    margin: 2rem 0;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.carousel-track {
+    display: flex;
+    gap: 1.5rem;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carousel-item {
+    flex: 0 0 320px;
+    max-width: 320px;
+}
+
+.carousel-item .gallery-image {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.carousel-item:hover .gallery-image {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.5);
+}
+
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--glamour-heading-color);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+}
+
+.carousel-nav:hover {
+    background: rgba(255, 255, 255, 0.14);
+    transform: translateY(-50%);
+}
+
+.carousel-nav.prev {
+    left: 1rem;
+}
+
+.carousel-nav.next {
+    right: 1rem;
+}
+
+.carousel-nav:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 1.5rem;
+}
+
+.carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(233, 199, 122, 0.35);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.carousel-dot.active {
+    background: #E9C77A;
+}
+
+.carousel-dot:hover {
+    background: rgba(233, 199, 122, 0.6);
+}
+
+/* Professional Button System */
+.glamour-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    padding: 0 24px;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 22px;
+    transition: all 0.2s ease;
+    overflow: hidden;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.glamour-btn-primary {
+    background: linear-gradient(135deg, var(--glamour-primary) 0%, var(--glamour-primary-hover) 100%);
+    color: var(--glamour-black);
+    border: none;
+    box-shadow: 0 2px 8px rgba(233, 199, 122, 0.2);
+}
+
+.glamour-btn-primary:hover {
+    background: linear-gradient(135deg, var(--glamour-primary-hover) 0%, #C7A55B 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(233, 199, 122, 0.3);
+    text-decoration: none;
+    color: var(--glamour-black);
+}
+
+.glamour-btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--glamour-white);
+    border: 1px solid var(--glamour-border);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.glamour-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--glamour-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+    color: var(--glamour-white);
+}
+
+/* Professional CTA Section */
+.glamour-gallery-cta {
+    padding: 32px 0 40px;
+    background: linear-gradient(160deg, rgba(166, 17, 71, 0.8) 0%, rgba(126, 27, 92, 0.8) 45%, rgba(43, 32, 63, 0.8) 100%);
+    color: var(--glamour-white);
+    text-align: center;
+}
+
+.glamour-cta-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--glamour-white);
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+}
+
+.glamour-cta-subtitle {
+    font-size: 1.125rem;
+    color: var(--glamour-champagne);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    opacity: 0.9;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.glamour-cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+    .glamour-cta-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .glamour-btn {
+        width: 240px;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .masonry-grid {
+        columns: 2;
+        column-gap: 1.5rem;
+    }
+    
+    .carousel-item {
+        flex: 0 0 280px;
+    }
+}
+
+@media (max-width: 480px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .masonry-grid {
+        columns: 1;
+    }
+    
+    .carousel-item {
+        flex: 0 0 250px;
+    }
+    
+    .carousel-nav {
+        width: 40px;
+        height: 40px;
+    }
 }
 </style>
 
-<!-- Call to Action -->
-<section class="py-16 bg-gradient-to-r from-glamour-secondary to-glamour-primary text-white">
+<!-- Professional CTA Section -->
+<section class="glamour-gallery-cta">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
-        <h2 class="text-3xl md:text-4xl font-bold mb-6 glamour-heading">
+        <h2 class="glamour-cta-title">
             Like What You See?
         </h2>
-        <p class="text-xl mb-8 text-pink-100 max-w-2xl mx-auto">
+        <p class="glamour-cta-subtitle">
             These photos are just a preview. Let's discuss how we can create unforgettable moments together.
         </p>
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="/{{modelSlug}}/contact" class="glamour-btn bg-white text-glamour-primary hover:bg-pink-50">
-                <i class="fas fa-envelope mr-2"></i>
+        <div class="glamour-cta-buttons">
+            <a href="/{{modelSlug}}/contact{{previewParam}}" class="glamour-btn glamour-btn-primary">
+                <i class="fas fa-envelope" style="margin-right: 8px;"></i>
                 Contact Me
             </a>
-            <a href="/{{modelSlug}}/rates" class="glamour-btn bg-transparent border-2 border-white hover:bg-white hover:text-glamour-primary">
-                <i class="fas fa-list mr-2"></i>
+            <a href="/{{modelSlug}}/rates{{previewParam}}" class="glamour-btn glamour-btn-secondary">
+                <i class="fas fa-list" style="margin-right: 8px;"></i>
                 View Services
             </a>
         </div>
@@ -142,3 +606,242 @@
 </section>
 
 <!-- Phase 5 Gallery System includes its own lightbox and interactive features -->
+
+<!-- Glamour Lightbox Modal -->
+<div id="lightbox-modal" class="fixed inset-0 bg-black bg-opacity-98 z-50 hidden flex items-center justify-center p-4">
+    <div class="relative max-w-6xl max-h-full">
+        <!-- Professional Close button -->
+        <button onclick="closeLightbox()" 
+                class="absolute -top-16 right-0 text-glamour-heading-color hover:text-glamour-primary transition-colors duration-200 z-10" 
+                aria-label="Close lightbox">
+            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+        
+        <!-- Image container with glamour styling -->
+        <div class="relative">
+            <img id="lightbox-image" 
+                 src="" 
+                 alt="" 
+                 class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl">
+        </div>
+        
+        <!-- Image caption with professional styling -->
+        <div class="absolute bottom-6 left-6 right-6 bg-glamour-card bg-opacity-90 text-glamour-champagne p-4 rounded-xl backdrop-filter backdrop-blur-lg border border-glamour-border">
+            <p id="lightbox-caption" class="text-center text-lg font-medium"></p>
+        </div>
+    </div>
+</div>
+
+<!-- Glamour Theme Gallery JavaScript -->
+<script>
+// Lightbox functionality
+function openLightbox(imageUrl, caption) {
+    const modal = document.getElementById('lightbox-modal');
+    const image = document.getElementById('lightbox-image');
+    const captionEl = document.getElementById('lightbox-caption');
+    
+    if (modal && image && captionEl) {
+        image.src = imageUrl;
+        image.alt = caption;
+        captionEl.textContent = caption;
+        
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+        
+        // Close on escape key
+        document.addEventListener('keydown', handleLightboxEscape);
+        
+        // Close on background click
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeLightbox();
+            }
+        });
+    }
+}
+
+function closeLightbox() {
+    const modal = document.getElementById('lightbox-modal');
+    
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
+        
+        // Remove event listeners
+        document.removeEventListener('keydown', handleLightboxEscape);
+    }
+}
+
+function handleLightboxEscape(e) {
+    if (e.key === 'Escape') {
+        closeLightbox();
+    }
+}
+
+// Carousel Navigation Functions (Enhanced for Glamour theme)
+function moveCarousel(sectionIndex, direction) {
+    const carousel = document.getElementById(`carousel-${sectionIndex}`);
+    if (!carousel) return;
+    
+    const items = carousel.querySelectorAll('.carousel-item');
+    const currentIndex = parseInt(carousel.dataset.currentIndex || 0);
+    const totalItems = items.length;
+    
+    let newIndex = currentIndex + direction;
+    
+    // Handle wrap-around
+    if (newIndex < 0) newIndex = totalItems - 1;
+    if (newIndex >= totalItems) newIndex = 0;
+    
+    // Update carousel position - account for item width and gaps (adjusted for glamour theme)
+    const itemWidth = 320;
+    const itemGap = 24; // 1.5rem = 24px
+    const totalItemWidth = itemWidth + itemGap;
+    const translateX = -(newIndex * totalItemWidth);
+    carousel.style.transform = `translateX(${translateX}px)`;
+    carousel.dataset.currentIndex = newIndex;
+    
+    // Update dots
+    updateCarouselDots(sectionIndex, newIndex);
+    
+    // Update navigation buttons
+    updateCarouselNav(sectionIndex, newIndex, totalItems);
+    
+    // Restart autoplay if enabled
+    const container = carousel.closest('.carousel-container');
+    if (container) {
+        const autoplaySpeed = container.dataset.autoplay;
+        if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
+            startCarouselAutoplay(sectionIndex, parseInt(autoplaySpeed));
+        }
+    }
+}
+
+function goToCarouselSlide(sectionIndex, slideIndex) {
+    const carousel = document.getElementById(`carousel-${sectionIndex}`);
+    if (!carousel) return;
+    
+    const items = carousel.querySelectorAll('.carousel-item');
+    const totalItems = items.length;
+    
+    if (slideIndex < 0 || slideIndex >= totalItems) return;
+    
+    // Update carousel position (adjusted for glamour theme)
+    const itemWidth = 320;
+    const itemGap = 24;
+    const totalItemWidth = itemWidth + itemGap;
+    const translateX = -(slideIndex * totalItemWidth);
+    carousel.style.transform = `translateX(${translateX}px)`;
+    carousel.dataset.currentIndex = slideIndex;
+    
+    // Update dots
+    updateCarouselDots(sectionIndex, slideIndex);
+    
+    // Update navigation buttons
+    updateCarouselNav(sectionIndex, slideIndex, totalItems);
+    
+    // Restart autoplay if enabled
+    const container = carousel.closest('.carousel-container');
+    if (container) {
+        const autoplaySpeed = container.dataset.autoplay;
+        if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
+            startCarouselAutoplay(sectionIndex, parseInt(autoplaySpeed));
+        }
+    }
+}
+
+function updateCarouselDots(sectionIndex, activeIndex) {
+    const carousel = document.querySelector(`#carousel-${sectionIndex}`);
+    if (!carousel) return;
+    
+    const container = carousel.closest('.carousel-container');
+    if (!container) return;
+    
+    const dots = container.querySelectorAll('.carousel-dot');
+    dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === activeIndex);
+    });
+}
+
+function updateCarouselNav(sectionIndex, currentIndex, totalItems) {
+    const carousel = document.querySelector(`#carousel-${sectionIndex}`);
+    if (!carousel) return;
+    
+    const container = carousel.closest('.carousel-container');
+    if (!container) return;
+    
+    const prevBtn = container.querySelector('.carousel-nav.prev');
+    const nextBtn = container.querySelector('.carousel-nav.next');
+    
+    if (prevBtn) prevBtn.disabled = false;
+    if (nextBtn) nextBtn.disabled = false;
+}
+
+// Carousel autoplay timers
+window.carouselTimers = {};
+
+// Initialize carousels when page loads (Enhanced for Glamour theme)
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all carousels
+    const carousels = document.querySelectorAll('.carousel-track');
+    
+    carousels.forEach((carousel, index) => {
+        carousel.dataset.currentIndex = '0';
+        
+        // Initialize at position 0
+        carousel.style.transform = 'translateX(0px)';
+        
+        // Check if autoplay is enabled for this carousel
+        const container = carousel.closest('.carousel-container');
+        if (container) {
+            const autoplaySpeed = container.dataset.autoplay;
+            if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
+                startCarouselAutoplay(index, parseInt(autoplaySpeed));
+            }
+        }
+    });
+    
+    // Pause autoplay on hover (enhanced with glamour effects)
+    document.querySelectorAll('.carousel-container').forEach((container, index) => {
+        container.addEventListener('mouseenter', () => {
+            pauseCarouselAutoplay(index);
+            // Add subtle glow effect on hover
+            container.style.boxShadow = '0 25px 60px rgba(212, 175, 55, 0.3)';
+        });
+        container.addEventListener('mouseleave', () => {
+            const autoplaySpeed = container.dataset.autoplay;
+            if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
+                startCarouselAutoplay(index, parseInt(autoplaySpeed));
+            }
+            // Remove glow effect
+            container.style.boxShadow = '';
+        });
+    });
+});
+
+// Carousel autoplay functions
+function startCarouselAutoplay(sectionIndex, speed) {
+    // Clear any existing timer
+    pauseCarouselAutoplay(sectionIndex);
+    
+    // Start new timer
+    window.carouselTimers[sectionIndex] = setInterval(() => {
+        moveCarousel(sectionIndex, 1); // Move to next slide
+    }, speed);
+}
+
+function pauseCarouselAutoplay(sectionIndex) {
+    if (window.carouselTimers[sectionIndex]) {
+        clearInterval(window.carouselTimers[sectionIndex]);
+        delete window.carouselTimers[sectionIndex];
+    }
+}
+</script>

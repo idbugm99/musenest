@@ -1,0 +1,1211 @@
+<!-- Glamour Theme Home Page - Movie Star Aesthetic -->
+
+<!-- Hero Section with Spotlight Effect -->
+{{#if content.hero_section_visible}}
+<section class="glamour-hero {{#if heroBackgroundImageUrl}}glamour-hero-with-bg{{/if}}" data-aos="fade-in" 
+         {{#if heroBackgroundImageUrl}}style="background-image: url('{{heroBackgroundImageUrl}}')"{{/if}}>
+    {{#if heroBackgroundImageUrl}}
+    <!-- Dynamic overlay for better text contrast -->
+    <div class="absolute inset-0 bg-black" style="opacity: {{#if content.hero_background_opacity}}{{content.hero_background_opacity}}{{else}}0.6{{/if}};"></div>
+    {{/if}}
+    
+    <!-- Spotlight Background Effects -->
+    <div class="glamour-spotlight-container">
+        <div class="glamour-spotlight glamour-spotlight-1"></div>
+        <div class="glamour-spotlight glamour-spotlight-2"></div>
+        <div class="glamour-spotlight glamour-spotlight-3"></div>
+    </div>
+    
+    <!-- Hero Content -->
+    <div class="glamour-hero-content">
+        <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+            <!-- Main Title with Dramatic Effect -->
+            <h1 class="glamour-hero-title" data-aos="fade-up" data-aos-delay="200">
+                {{#if content.hero_title}}{{content.hero_title}}{{else}}Welcome to Glamour{{/if}}
+            </h1>
+            
+            <!-- Subtitle with Elegant Typography -->
+            {{#if content.hero_subtitle}}
+            <p class="glamour-hero-subtitle" data-aos="fade-up" data-aos-delay="400">
+                {{content.hero_subtitle}}
+            </p>
+            {{/if}}
+            
+            <!-- CTA Buttons with Movie Star Styling -->
+            <div class="glamour-cta-container" data-aos="fade-up" data-aos-delay="600">
+                <!-- Primary Button -->
+                {{#if content.hero_button_1_text}}
+                    {{#if (eq content.hero_button_1_link 'calendar')}}
+                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="glamour-btn glamour-btn-primary"><span>{{content.hero_button_1_text}}</span></a>
+                    {{else if (eq content.hero_button_1_link 'contact')}}
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="glamour-btn glamour-btn-primary"><span>{{content.hero_button_1_text}}</span></a>
+                    {{else if (eq content.hero_button_1_link 'about')}}
+                        <a href="/{{modelSlug}}/about{{previewParam}}" class="glamour-btn glamour-btn-primary"><span>{{content.hero_button_1_text}}</span></a>
+                    {{else if (eq content.hero_button_1_link 'rates')}}
+                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="glamour-btn glamour-btn-primary"><span>{{content.hero_button_1_text}}</span></a>
+                    {{else if (eq content.hero_button_1_link 'gallery')}}
+                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="glamour-btn glamour-btn-primary"><span>{{content.hero_button_1_text}}</span></a>
+                    {{else}}
+                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="glamour-btn glamour-btn-primary"><span>{{content.hero_button_1_text}}</span></a>
+                    {{/if}}
+                {{else}}
+                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="glamour-btn glamour-btn-primary"><span>Discover More</span></a>
+                {{/if}}
+                
+                <!-- Secondary Button -->
+                {{#if content.hero_button_2_text}}
+                    {{#if (eq content.hero_button_2_link 'calendar')}}
+                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="glamour-btn glamour-btn-secondary"><span>{{content.hero_button_2_text}}</span></a>
+                    {{else if (eq content.hero_button_2_link 'contact')}}
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="glamour-btn glamour-btn-secondary"><span>{{content.hero_button_2_text}}</span></a>
+                    {{else if (eq content.hero_button_2_link 'about')}}
+                        <a href="/{{modelSlug}}/about{{previewParam}}" class="glamour-btn glamour-btn-secondary"><span>{{content.hero_button_2_text}}</span></a>
+                    {{else if (eq content.hero_button_2_link 'rates')}}
+                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="glamour-btn glamour-btn-secondary"><span>{{content.hero_button_2_text}}</span></a>
+                    {{else if (eq content.hero_button_2_link 'gallery')}}
+                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="glamour-btn glamour-btn-secondary"><span>{{content.hero_button_2_text}}</span></a>
+                    {{else}}
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="glamour-btn glamour-btn-secondary"><span>{{content.hero_button_2_text}}</span></a>
+                    {{/if}}
+                {{else}}
+                    <a href="/{{modelSlug}}/gallery{{previewParam}}" class="glamour-btn glamour-btn-secondary"><span>View Gallery</span></a>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Floating Glamour Elements -->
+    <div class="glamour-floating-elements" aria-hidden="true">
+        <div class="glamour-star glamour-star-1">✦</div>
+        <div class="glamour-star glamour-star-2">✧</div>
+        <div class="glamour-star glamour-star-3">✦</div>
+        <div class="glamour-star glamour-star-4">✧</div>
+    </div>
+</section>
+{{/if}}
+
+<!-- About Section with Dramatic Presentation -->
+{{#if content.about_section_visible}}
+<section class="glamour-about-section" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            
+            <!-- Portrait with Hollywood Styling -->
+            {{#if content.portrait_section_visible}}
+            <div class="glamour-portrait-container" data-aos="fade-right">
+                <div class="glamour-portrait-frame">
+                    {{#if portraitImageUrl}}
+                    <img src="{{portraitImageUrl}}" 
+                         alt="{{#if content.portraitAlt}}{{content.portrait_alt}}{{else}}Professional Portrait{{/if}}"
+                         class="glamour-portrait-image">
+                    {{else}}
+                    <div class="glamour-portrait-placeholder">
+                        <i class="fas fa-camera glamour-icon-large"></i>
+                        <p class="glamour-placeholder-text">{{#if content.portraitAlt}}{{content.portrait_alt}}{{else}}Professional portrait coming soon{{/if}}</p>
+                    </div>
+                    {{/if}}
+                    
+                    <!-- Dramatic Lighting Effect -->
+                    <div class="glamour-portrait-glow"></div>
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- About Content -->
+            <div class="glamour-about-content" data-aos="fade-left">
+                <div class="glamour-section-header">
+                    <h2 class="glamour-section-title">
+                        {{#if content.about_title}}{{content.about_title}}{{else}}About {{siteName}}{{/if}}
+                    </h2>
+                    <div class="glamour-title-underline"></div>
+                </div>
+                
+                <div class="glamour-text-content glamour-text-constrained">
+                    {{#if content.about_paragraph_1}}
+                    <p class="glamour-lead-text">{{content.about_paragraph_1}}</p>
+                    {{/if}}
+                    {{#if content.about_paragraph_2}}
+                    <p class="glamour-lead-text">{{content.about_paragraph_2}}</p>
+                    {{/if}}
+                    {{#unless content.about_paragraph_1}}
+                    <p class="glamour-lead-text">Welcome to my world of elegance and sophistication. I am a professional companion who values discretion, intelligence, and genuine connection.</p>
+                    <p class="glamour-lead-text">With years of experience in providing exceptional companionship services, I pride myself on creating memorable experiences tailored to each client's unique needs.</p>
+                    {{/unless}}
+                </div>
+                
+                <div class="glamour-about-cta">
+                    {{#if content.about_link_text}}
+                        {{#if (eq content.about_link_destination 'about')}}
+                            <a href="/{{modelSlug}}/about{{previewParam}}" class="glamour-link glamour-elegant-link">
+                        {{else if (eq content.about_link_destination 'contact')}}
+                            <a href="/{{modelSlug}}/contact{{previewParam}}" class="glamour-link glamour-elegant-link">
+                        {{else if (eq content.about_link_destination 'gallery')}}
+                            <a href="/{{modelSlug}}/gallery{{previewParam}}" class="glamour-link glamour-elegant-link">
+                        {{else if (eq content.about_link_destination 'rates')}}
+                            <a href="/{{modelSlug}}/rates{{previewParam}}" class="glamour-link glamour-elegant-link">
+                        {{else if (eq content.about_link_destination 'calendar')}}
+                            <a href="/{{modelSlug}}/calendar{{previewParam}}" class="glamour-link glamour-elegant-link">
+                        {{else}}
+                            <a href="/{{modelSlug}}/about{{previewParam}}" class="glamour-link glamour-elegant-link">
+                        {{/if}}
+                        {{content.about_link_text}}
+                        <i class="fas fa-arrow-right glamour-link-icon"></i>
+                    </a>
+                    {{else}}
+                        <a href="/{{modelSlug}}/about{{previewParam}}" class="glamour-link glamour-elegant-link">
+                        Learn More About Me
+                        <i class="fas fa-arrow-right glamour-link-icon"></i>
+                    </a>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Gallery Preview Section -->
+{{#if content.gallery_section_visible}}
+<section class="glamour-gallery-section" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="glamour-section-header text-center mb-16">
+            <h2 class="glamour-section-title">
+                {{#if content.gallery_section_title}}{{content.gallery_section_title}}{{else}}Gallery{{/if}}
+            </h2>
+            <div class="glamour-title-underline mx-auto"></div>
+        </div>
+        <div class="glamour-gallery-grid">
+            {{#each galleryImages}}
+            <div class="glamour-gallery-item" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                <img src="/uploads/{{../modelSlug}}/public/gallery/{{this.filename}}" 
+                     alt="{{#if this.caption}}{{this.caption}}{{else}}Gallery image{{/if}}" 
+                     class="glamour-gallery-image">
+                <div class="glamour-gallery-overlay">
+                    <i class="fas fa-expand-alt glamour-gallery-icon"></i>
+                </div>
+            </div>
+            {{else}}
+            {{#times 6}}
+            <div class="glamour-gallery-placeholder" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                <i class="fas fa-camera glamour-icon-large"></i>
+                <p class="glamour-placeholder-text">Photo</p>
+            </div>
+            {{/times}}
+            {{/each}}
+        </div>
+        <div class="text-center mt-12" data-aos="fade-up" data-aos-delay="500">
+            <a href="/{{modelSlug}}/gallery{{previewParam}}" class="glamour-btn glamour-btn-primary">
+                <span>{{#if content.gallery_button_text}}{{content.gallery_button_text}}{{else}}View Full Gallery{{/if}}</span>
+            </a>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Travel Schedule/Calendar Section -->
+{{#if content.travel_section_visible}}
+<section class="glamour-travel-section" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="glamour-section-header text-center mb-16">
+            <h2 class="glamour-section-title">
+                {{#if content.travel_section_title}}{{content.travel_section_title}}{{else}}Travel Schedule{{/if}}
+            </h2>
+            <div class="glamour-title-underline mx-auto"></div>
+        </div>
+        {{#if upcomingEvents}}
+        <div class="glamour-travel-grid">
+            {{#each upcomingEvents}}
+            <div class="glamour-travel-card" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                <div class="glamour-travel-glow"></div>
+                <div class="text-center mb-6">
+                    <div class="glamour-travel-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h3 class="glamour-travel-location">{{this.location}}</h3>
+                    <div class="glamour-professional-badge">
+                        {{#if this.dateRange}}
+                            {{this.dateRange}}
+                        {{else}}
+                            {{formatDate this.date}}
+                        {{/if}}
+                    </div>
+                </div>
+                <div class="text-center">
+                    <span class="glamour-available-badge">Available</span>
+                </div>
+                {{#if this.notes}}
+                <p class="glamour-travel-notes">{{this.notes}}</p>
+                {{/if}}
+            </div>
+            {{/each}}
+        </div>
+        <div class="text-center mt-12" data-aos="fade-up" data-aos-delay="400">
+            <a href="/{{modelSlug}}/{{#if content.travel_cta_link}}{{content.travel_cta_link}}{{else}}calendar{{/if}}{{previewParam}}" 
+               class="glamour-btn glamour-btn-gold">
+                <span>{{#if content.travel_cta_text}}{{content.travel_cta_text}}{{else}}View Full Calendar{{/if}}</span>
+            </a>
+        </div>
+        {{else}}
+        <div class="text-center">
+            <div class="glamour-placeholder-card">
+                <div class="glamour-placeholder-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <h3 class="glamour-placeholder-title">Check My Calendar</h3>
+                <p class="glamour-placeholder-subtitle">View available dates and book your appointment</p>
+                <a href="/{{modelSlug}}/calendar{{previewParam}}" class="glamour-btn glamour-btn-primary">
+                    <span>View Calendar</span>
+                </a>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+</section>
+{{/if}}
+
+<!-- Testimonials Section -->
+{{#if content.testimonials_section_visible}}
+<section class="glamour-testimonials-section" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="glamour-section-header text-center mb-16">
+            <h2 class="glamour-section-title">
+                {{#if content.testimonials_section_title}}{{content.testimonials_section_title}}{{else}}What Clients Say{{/if}}
+            </h2>
+            <div class="glamour-title-underline mx-auto"></div>
+        </div>
+        <div class="glamour-testimonials-grid">
+            {{#each testimonials}}
+            <div class="glamour-testimonial-card" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                <div class="glamour-testimonial-shine"></div>
+                <div class="glamour-stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <blockquote class="glamour-testimonial-text">"{{this.text}}"</blockquote>
+                <cite class="glamour-testimonial-author">{{this.name}}</cite>
+            </div>
+            {{else}}
+            <div class="glamour-testimonial-card" data-aos="fade-up" data-aos-delay="0">
+                <div class="glamour-testimonial-shine"></div>
+                <div class="glamour-stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <blockquote class="glamour-testimonial-text">"Professional, elegant, and truly caring. An unforgettable experience."</blockquote>
+                <cite class="glamour-testimonial-author">Michael D.</cite>
+            </div>
+            <div class="glamour-testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="glamour-testimonial-shine"></div>
+                <div class="glamour-stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <blockquote class="glamour-testimonial-text">"Discretion and class personified. Made our evening magical."</blockquote>
+                <cite class="glamour-testimonial-author">James S.</cite>
+            </div>
+            <div class="glamour-testimonial-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="glamour-testimonial-shine"></div>
+                <div class="glamour-stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <blockquote class="glamour-testimonial-text">"Exceptional service and genuine warmth. Highly recommended."</blockquote>
+                <cite class="glamour-testimonial-author">Robert T.</cite>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Call to Action Section with Red Carpet Treatment -->
+{{#if content.cta_section_visible}}
+<section class="glamour-cta-section" data-aos="fade-in">
+    <!-- Red Carpet Background Effect -->
+    <div class="glamour-red-carpet-bg"></div>
+    
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <h2 class="glamour-cta-title" data-aos="fade-up">
+            {{#if content.cta_section_title}}{{content.cta_section_title}}{{else}}Ready for the VIP Experience?{{/if}}
+        </h2>
+        
+        {{#if content.cta_section_subtitle}}
+        <p class="glamour-cta-subtitle" data-aos="fade-up" data-aos-delay="200">
+            {{content.cta_section_subtitle}}
+        </p>
+        {{/if}}
+        
+        <div class="glamour-cta-buttons" data-aos="fade-up" data-aos-delay="400">
+            <a href="{{#if content.cta_button_1_link}}{{content.cta_button_1_link}}{{else}}/{{modelSlug}}/contact{{previewParam}}{{/if}}" 
+               class="glamour-btn glamour-btn-gold">
+                <span>{{#if content.cta_button_1_text}}{{content.cta_button_1_text}}{{else}}Book Now{{/if}}</span>
+            </a>
+            
+            <a href="{{#if content.cta_button_2_link}}{{content.cta_button_2_link}}{{else}}/{{modelSlug}}/rates{{previewParam}}{{/if}}" 
+               class="glamour-btn glamour-btn-secondary">
+                <span>{{#if content.cta_button_2_text}}{{content.cta_button_2_text}}{{else}}View Rates{{/if}}</span>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Glamour Particles Effect -->
+    <div class="glamour-particles-container" aria-hidden="true">
+        <div class="glamour-particle"></div>
+        <div class="glamour-particle"></div>
+        <div class="glamour-particle"></div>
+        <div class="glamour-particle"></div>
+        <div class="glamour-particle"></div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Mobile Sticky Bottom Bar (Home Page Only) -->
+<div class="glamour-mobile-sticky-bar" id="mobile-sticky-bar">
+    <div class="glamour-sticky-actions">
+        <a href="/{{modelSlug}}/contact{{previewParam}}" class="glamour-sticky-btn glamour-sticky-primary">
+            <i class="fas fa-envelope"></i>
+            <span>Contact</span>
+        </a>
+        <a href="/{{modelSlug}}/rates{{previewParam}}" class="glamour-sticky-btn glamour-sticky-secondary">
+            <i class="fas fa-list"></i>
+            <span>Rates</span>
+        </a>
+    </div>
+</div>
+
+<!-- Glamour Theme Custom Styles -->
+<style>
+/* Professional Glamour Theme Variables */
+:root {
+    --glamour-primary: #E9C77A;
+    --glamour-primary-hover: #D9B66A;
+    --glamour-gold: #EBCB8B;
+    --glamour-rose-gold: #D08770;
+    --glamour-deep-purple: #171228;
+    --glamour-neutral: #1E1632;
+    --glamour-champagne: #F5F2EA;
+    --glamour-black: #0F0F0F;
+    --glamour-white: #FEFEFE;
+    --glamour-card: #252032;
+    --glamour-border: rgba(235, 203, 139, 0.15);
+}
+
+/* Professional Hero Section */
+.glamour-hero {
+    position: relative;
+    min-height: 100vh;
+    background: linear-gradient(160deg, #A61147 0%, #7E1B5C 45%, #2B203F 100%);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Hero with Background Image */
+.glamour-hero-with-bg {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.glamour-spotlight-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.glamour-spotlight {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 40%, transparent 70%);
+    filter: blur(20px);
+    animation: glamourSpotlightMove 20s infinite linear;
+}
+
+.glamour-spotlight-1 {
+    top: 10%;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.glamour-spotlight-2 {
+    top: 60%;
+    right: 30%;
+    animation-delay: -7s;
+}
+
+.glamour-spotlight-3 {
+    bottom: 20%;
+    left: 60%;
+    animation-delay: -14s;
+}
+
+@keyframes glamourSpotlightMove {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(100px, -50px) scale(1.2); }
+    66% { transform: translate(-80px, 80px) scale(0.8); }
+    100% { transform: translate(0, 0) scale(1); }
+}
+
+.glamour-hero-content {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+}
+
+.glamour-hero-title {
+    font-size: 48px;
+    line-height: 56px;
+    font-weight: 800;
+    color: var(--glamour-white);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(45deg, var(--glamour-white) 30%, var(--glamour-gold) 70%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 50px rgba(255, 255, 255, 0.18);
+}
+
+.glamour-hero-subtitle {
+    font-size: 1.5rem;
+    color: var(--glamour-champagne);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+/* Professional Button System */
+.glamour-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    padding: 0 24px;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 22px;
+    transition: all 0.2s ease;
+    overflow: hidden;
+    margin: 0 8px;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.glamour-btn-primary {
+    background: linear-gradient(135deg, var(--glamour-primary) 0%, var(--glamour-primary-hover) 100%);
+    color: var(--glamour-black);
+    border: none;
+    box-shadow: 0 2px 8px rgba(233, 199, 122, 0.2);
+}
+
+.glamour-btn-primary:hover {
+    background: linear-gradient(135deg, var(--glamour-primary-hover) 0%, #C7A55B 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(233, 199, 122, 0.3);
+    text-decoration: none;
+    color: var(--glamour-black);
+}
+
+.glamour-btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--glamour-white);
+    border: 1px solid var(--glamour-border);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.glamour-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--glamour-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+    color: var(--glamour-white);
+}
+
+/* Sparkle Effect for Primary Button */
+.glamour-sparkle-effect::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    transition: left 0.5s ease;
+}
+
+.glamour-sparkle-effect:hover::before {
+    left: 100%;
+}
+
+/* Floating Stars */
+.glamour-floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.glamour-star {
+    position: absolute;
+    color: var(--glamour-gold);
+    font-size: 1.5rem;
+    animation: glamourFloat 6s infinite ease-in-out;
+    opacity: 0.7;
+}
+
+.glamour-star-1 { top: 20%; left: 15%; animation-delay: 0s; }
+.glamour-star-2 { top: 80%; right: 20%; animation-delay: 2s; }
+.glamour-star-3 { top: 40%; right: 10%; animation-delay: 4s; }
+.glamour-star-4 { top: 70%; left: 80%; animation-delay: 1s; }
+
+@keyframes glamourFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+/* About Section */
+.glamour-about-section {
+    padding: 6rem 0;
+    background: linear-gradient(180deg, var(--glamour-black) 0%, var(--glamour-deep-purple) 100%);
+    color: var(--glamour-white);
+}
+
+.glamour-portrait-container {
+    position: relative;
+}
+
+.glamour-portrait-frame {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.glamour-portrait-image {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.glamour-portrait-frame:hover .glamour-portrait-image {
+    transform: scale(1.05);
+}
+
+.glamour-portrait-glow {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: linear-gradient(45deg, var(--glamour-gold), var(--glamour-rose-gold));
+    border-radius: 25px;
+    z-index: -1;
+    opacity: 0.6;
+    filter: blur(15px);
+}
+
+.glamour-portrait-placeholder {
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, rgba(212, 175, 55, 0.1) 0%, rgba(232, 180, 184, 0.1) 100%);
+    border: 2px dashed rgba(212, 175, 55, 0.3);
+    border-radius: 20px;
+    color: var(--glamour-champagne);
+    text-align: center;
+}
+
+.glamour-icon-large {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    color: var(--glamour-gold);
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+.glamour-section-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--glamour-white);
+    margin-bottom: 1rem;
+}
+
+.glamour-title-underline {
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--glamour-gold) 0%, var(--glamour-rose-gold) 100%);
+    border-radius: 2px;
+}
+
+.glamour-lead-text {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: var(--glamour-champagne);
+    margin-bottom: 2rem;
+}
+
+.glamour-text-constrained {
+    max-width: 560px;
+}
+
+/* About CTA Link Styles */
+.glamour-link {
+    color: var(--glamour-gold);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.glamour-elegant-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--glamour-gold);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    padding: 1rem 2rem;
+    border: 2px solid var(--glamour-gold);
+    border-radius: 50px;
+    background: transparent;
+}
+
+.glamour-elegant-link:hover {
+    background: var(--glamour-gold);
+    color: var(--glamour-black);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+}
+
+.glamour-link-icon {
+    transition: transform 0.3s ease;
+}
+
+.glamour-elegant-link:hover .glamour-link-icon {
+    transform: translateX(5px);
+}
+
+/* Gallery Section */
+.glamour-gallery-section {
+    padding: 6rem 0;
+    background: linear-gradient(180deg, var(--glamour-deep-purple) 0%, var(--glamour-black) 100%);
+    color: var(--glamour-white);
+}
+
+.glamour-gallery-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 15px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glamour-gallery-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(212, 175, 55, 0.3);
+}
+
+.glamour-gallery-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    transition: transform 0.3s ease;
+}
+
+.glamour-gallery-item:hover .glamour-gallery-image {
+    transform: scale(1.1);
+}
+
+.glamour-gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, var(--glamour-gold) 0%, var(--glamour-rose-gold) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.glamour-gallery-item:hover .glamour-gallery-overlay {
+    opacity: 0.9;
+}
+
+.glamour-gallery-icon {
+    font-size: 2rem;
+    color: var(--glamour-black);
+}
+
+.glamour-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+}
+
+.glamour-gallery-placeholder {
+    aspect-ratio: 1;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .glamour-gallery-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .glamour-gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.glamour-placeholder-text {
+    color: var(--glamour-champagne);
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Travel Section */
+.glamour-travel-section {
+    padding: 6rem 0;
+    background: var(--glamour-deep-purple);
+    color: var(--glamour-white);
+}
+
+.glamour-travel-card {
+    position: relative;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+.glamour-travel-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(139, 21, 56, 0.3);
+}
+
+.glamour-travel-glow {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: linear-gradient(45deg, var(--glamour-burgundy), transparent);
+    border-radius: 25px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.glamour-travel-card:hover .glamour-travel-glow {
+    opacity: 0.6;
+}
+
+.glamour-travel-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(45deg, var(--glamour-gold) 0%, var(--glamour-rose-gold) 100%);
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    color: var(--glamour-black);
+}
+
+.glamour-travel-location {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--glamour-white);
+    margin-bottom: 0.5rem;
+}
+
+.glamour-travel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.glamour-professional-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--glamour-primary) 0%, var(--glamour-primary-hover) 100%);
+    color: var(--glamour-black);
+    padding: 6px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.glamour-travel-date {
+    font-size: 1.1rem;
+    color: var(--glamour-gold);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.glamour-available-badge {
+    background: linear-gradient(45deg, var(--glamour-gold) 0%, #ffdc73 100%);
+    color: var(--glamour-black);
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.glamour-travel-notes {
+    color: var(--glamour-champagne);
+    font-style: italic;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+}
+
+.glamour-placeholder-card {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 4rem 2rem;
+    text-align: center;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.glamour-placeholder-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(45deg, var(--glamour-gold) 0%, var(--glamour-rose-gold) 100%);
+    border-radius: 50%;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    color: var(--glamour-black);
+}
+
+.glamour-placeholder-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--glamour-white);
+    margin-bottom: 1rem;
+}
+
+.glamour-placeholder-subtitle {
+    color: var(--glamour-champagne);
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+/* Testimonials Section */
+.glamour-testimonials-section {
+    padding: 6rem 0;
+    background: linear-gradient(180deg, var(--glamour-black) 0%, var(--glamour-deep-purple) 100%);
+    color: var(--glamour-white);
+}
+
+.glamour-testimonial-card {
+    position: relative;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+.glamour-testimonial-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(212, 175, 55, 0.3);
+}
+
+.glamour-testimonial-shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.6s ease;
+}
+
+.glamour-testimonial-card:hover .glamour-testimonial-shine {
+    left: 100%;
+}
+
+.glamour-stars {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 2rem;
+}
+
+.glamour-stars i {
+    color: var(--glamour-gold);
+    font-size: 1.2rem;
+}
+
+.glamour-testimonial-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--glamour-champagne);
+    margin-bottom: 2rem;
+    font-style: italic;
+}
+
+.glamour-testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.glamour-testimonial-author {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--glamour-white);
+    font-style: normal;
+}
+
+@media (max-width: 768px) {
+    .glamour-testimonials-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .glamour-travel-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+/* Professional CTA Section */
+.glamour-cta-section {
+    position: relative;
+    padding: 6rem 0;
+    background: linear-gradient(160deg, rgba(166, 17, 71, 0.8) 0%, rgba(126, 27, 92, 0.8) 45%, rgba(43, 32, 63, 0.8) 100%);
+    color: var(--glamour-white);
+    overflow: hidden;
+}
+
+.glamour-red-carpet-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        repeating-linear-gradient(
+            90deg,
+            transparent 0px,
+            rgba(139, 21, 56, 0.1) 50px,
+            transparent 100px
+        ),
+        radial-gradient(ellipse at center, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+    animation: glamourRedCarpet 10s infinite linear;
+}
+
+@keyframes glamourRedCarpet {
+    0% { transform: translateX(0px); }
+    100% { transform: translateX(100px); }
+}
+
+.glamour-cta-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(45deg, var(--glamour-gold) 0%, var(--glamour-white) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.glamour-cta-subtitle {
+    font-size: 1.3rem;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    color: var(--glamour-champagne);
+}
+
+.glamour-cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.glamour-btn-gold {
+    background: linear-gradient(135deg, var(--glamour-primary) 0%, var(--glamour-primary-hover) 100%);
+    color: var(--glamour-black);
+    position: relative;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 2px 8px rgba(233, 199, 122, 0.2);
+}
+
+.glamour-btn-gold:hover {
+    background: linear-gradient(135deg, var(--glamour-primary-hover) 0%, #C7A55B 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(233, 199, 122, 0.3);
+    text-decoration: none;
+    color: var(--glamour-black);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .glamour-hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .glamour-hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .glamour-section-title {
+        font-size: 2rem;
+    }
+    
+    .glamour-cta-title {
+        font-size: 2.5rem;
+    }
+    
+    .glamour-cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .glamour-btn {
+        width: 280px;
+        margin: 8px 0;
+    }
+}
+
+/* Mobile Sticky Bottom Bar */
+.glamour-mobile-sticky-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, var(--glamour-card) 0%, var(--glamour-neutral) 100%);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--glamour-border);
+    padding: 12px 16px 20px;
+    z-index: 50;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    display: none;
+}
+
+.glamour-sticky-actions {
+    display: flex;
+    gap: 12px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.glamour-sticky-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    gap: 4px;
+}
+
+.glamour-sticky-primary {
+    background: linear-gradient(135deg, var(--glamour-primary) 0%, var(--glamour-primary-hover) 100%);
+    color: var(--glamour-black);
+}
+
+.glamour-sticky-primary:hover {
+    background: linear-gradient(135deg, var(--glamour-primary-hover) 0%, #C7A55B 100%);
+    transform: translateY(-1px);
+    text-decoration: none;
+    color: var(--glamour-black);
+}
+
+.glamour-sticky-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glamour-border);
+    color: var(--glamour-white);
+}
+
+.glamour-sticky-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+    text-decoration: none;
+    color: var(--glamour-white);
+}
+
+.glamour-sticky-btn i {
+    font-size: 12px;
+}
+
+@media (max-width: 768px) {
+    .glamour-mobile-sticky-bar {
+        display: block;
+    }
+    
+    /* Add bottom padding to prevent content overlap */
+    body {
+        padding-bottom: 80px;
+    }
+}
+</style>

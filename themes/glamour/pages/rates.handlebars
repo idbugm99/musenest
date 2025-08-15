@@ -1,159 +1,164 @@
-<!-- Rates Hero Section -->
-<section class="bg-gradient-to-r from-glamour-primary to-glamour-secondary text-white py-20" data-aos="fade-in">
+<!-- Rates Hero Section with Movie Star Treatment -->
+<section class="glamour-rates-hero" data-aos="fade-in">
+    <!-- Spotlight Background Effects -->
+    <div class="glamour-hero-spotlight-container">
+        <div class="glamour-hero-spotlight glamour-hero-spotlight-1"></div>
+        <div class="glamour-hero-spotlight glamour-hero-spotlight-2"></div>
+    </div>
+    
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
-            <h1 class="text-4xl md:text-6xl font-bold mb-6 glamour-heading">
-                Services & Rates
+            <h1 class="glamour-rates-title" data-aos="fade-up">
+                {{#if rates_content.page_title}}{{rates_content.page_title}}{{else}}Rates & Donations{{/if}}
             </h1>
-            <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto font-light">
-                {{content.ratesIntro}}
+            
+            <!-- Optional Divider -->
+            {{#if rates_content.hero_divider_visible}}
+            <div class="mb-6" data-aos="fade-up" data-aos-delay="100">
+                {{#if (eq rates_content.hero_divider_type 'line')}}
+                <div class="w-32 h-1 bg-gradient-to-r from-glamour-gold to-glamour-rose-gold mx-auto opacity-80"></div>
+                {{else}}
+                <i class="{{#if rates_content.hero_divider_icon}}{{rates_content.hero_divider_icon}}{{else}}fas fa-gem{{/if}} text-3xl text-glamour-gold opacity-80"></i>
+                {{/if}}
+            </div>
+            {{/if}}
+            
+            <p class="glamour-rates-subtitle" data-aos="fade-up" data-aos-delay="200">
+                {{#if rates_content.page_subtitle}}{{rates_content.page_subtitle}}{{else}}Investment in time together. Experience sophistication and elegance.{{/if}}
             </p>
         </div>
     </div>
+    
+    <!-- Floating Glamour Elements -->
+    <div class="glamour-rates-stars" aria-hidden="true">
+        <div class="glamour-star glamour-star-rates-1">✦</div>
+        <div class="glamour-star glamour-star-rates-2">✧</div>
+        <div class="glamour-star glamour-star-rates-3">✦</div>
+    </div>
 </section>
 
-<!-- Services Grid -->
-<section class="py-20 bg-white">
+<!-- Glamour Sticky Sub-Navigation -->
+<div id="glamour-sticky-nav" class="glamour-sticky-nav">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {{#if services}}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {{#each services}}
-            <div class="glamour-card p-8 text-center shadow-2xl transform hover:scale-105 transition-all duration-300" data-aos="fade-up" data-aos-delay="{{@index}}00">
-                <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-glamour-primary to-glamour-secondary rounded-full flex items-center justify-center shadow-lg">
-                    <i class="{{this.icon}} text-2xl text-white"></i>
-                </div>
-                <h3 class="text-xl font-bold mb-4 glamour-heading">{{this.name}}</h3>
-                <p class="text-gray-600 mb-6">{{this.description}}</p>
-                {{#if this.duration}}
-                <div class="text-sm text-gray-500 mb-2">
-                    <i class="fas fa-clock mr-1"></i> {{this.duration}}
-                </div>
-                {{/if}}
-                {{#if this.price}}
-                <div class="text-3xl font-bold text-glamour-primary mb-4">
-                    {{formatCurrency this.price}}
-                </div>
-                {{/if}}
-                {{#if this.features}}
-                <ul class="text-left text-sm text-gray-600 space-y-1 mb-6">
-                    {{#each this.features}}
-                    <li><i class="fas fa-gem text-glamour-primary mr-2"></i>{{this}}</li>
-                    {{/each}}
-                </ul>
-                {{/if}}
-                <a href="/{{../modelSlug}}/contact?service={{this.slug}}" class="glamour-btn w-full">
-                    Book Experience
-                </a>
-            </div>
-            {{/each}}
-        </div>
-        {{else}}
-        <div class="text-center py-16">
-            <div class="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-glamour-primary to-glamour-secondary rounded-full flex items-center justify-center shadow-lg">
-                <i class="fas fa-gem text-4xl text-white"></i>
-            </div>
-            <h3 class="text-2xl font-bold mb-4 glamour-heading">Exclusive Services</h3>
-            <p class="text-gray-600 mb-6">Contact me for detailed information about my premium services and rates.</p>
-            <a href="/{{modelSlug}}/contact" class="glamour-btn">
-                Get in Touch
+        <nav class="flex justify-center space-x-8 py-4" aria-label="Page navigation">
+            <a href="#rates-section" class="glamour-nav-link">
+                {{#if rates_content.nav_rates_label}}{{rates_content.nav_rates_label}}{{else}}Rates{{/if}}
             </a>
+            {{#if rates.extended.length}}
+            <a href="#extended-section" class="glamour-nav-link">
+                {{#if rates_content.nav_extended_label}}{{rates_content.nav_extended_label}}{{else}}Extended{{/if}}
+            </a>
+            {{/if}}
+            {{#if rates_content.rates_additional_visible}}
+            <a href="#services-section" class="glamour-nav-link">
+                {{#if rates_content.nav_services_label}}{{rates_content.nav_services_label}}{{else}}Services{{/if}}
+            </a>
+            {{/if}}
+            <a href="#policies-section" class="glamour-nav-link">
+                {{#if rates_content.nav_policies_label}}{{rates_content.nav_policies_label}}{{else}}Policies{{/if}}
+            </a>
+            {{#if rates_content.rates_payment_visible}}
+            <a href="#payment-section" class="glamour-nav-link">
+                {{#if rates_content.nav_payment_label}}{{rates_content.nav_payment_label}}{{else}}Payment{{/if}}
+            </a>
+            {{/if}}
+            {{#if rates_content.cta_visible}}
+            <a href="#contact-section" class="glamour-nav-link">
+                {{#if rates_content.nav_contact_label}}{{rates_content.nav_contact_label}}{{else}}Contact{{/if}}
+            </a>
+            {{/if}}
+        </nav>
+    </div>
+</div>
+
+<!-- Main Rates Section with Glamour Styling -->
+{{#if rates_content.rates_table_visible}}
+<section id="rates-section" class="glamour-rates-section" data-aos="fade-in">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Incall Rates -->
+            {{#if rates_content.rates_incall_visible}}
+            <div class="glamour-rates-card" data-aos="fade-up" data-aos-delay="0">
+                <div class="glamour-rates-header">
+                    <h2 class="glamour-rates-heading">Incall</h2>
+                    <div class="glamour-rates-accent"></div>
+                </div>
+                <div class="glamour-rates-content">
+                    {{#each rates.incall}}
+                    <div class="glamour-rate-item">
+                        <div class="glamour-rate-service">
+                            <div class="glamour-service-name">
+                                {{#if this.service_name}}{{this.service_name}}{{else}}{{this.duration}}{{/if}}
+                                {{#if this.is_most_popular}}
+                                <span class="glamour-popular-badge">Most Popular</span>
+                                {{/if}}
+                            </div>
+                            {{#if this.service_name}}
+                            <div class="glamour-service-duration">{{this.duration}}</div>
+                            {{/if}}
+                        </div>
+                        <div class="glamour-rate-leader"></div>
+                        <div class="glamour-rate-price">
+                            <span class="glamour-rate-numeric">{{this.price}}</span>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Outcall Rates -->
+            {{#if rates_content.rates_outcall_visible}}
+            <div class="glamour-rates-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="glamour-rates-header">
+                    <h2 class="glamour-rates-heading">Outcall</h2>
+                    <div class="glamour-rates-accent"></div>
+                </div>
+                <div class="glamour-rates-content">
+                    {{#each rates.outcall}}
+                    <div class="glamour-rate-item">
+                        <div class="glamour-rate-service">
+                            <div class="glamour-service-name">
+                                {{#if this.service_name}}{{this.service_name}}{{else}}{{this.duration}}{{/if}}
+                                {{#if this.is_most_popular}}
+                                <span class="glamour-popular-badge">Most Popular</span>
+                                {{/if}}
+                            </div>
+                            {{#if this.service_name}}
+                            <div class="glamour-service-duration">{{this.duration}}</div>
+                            {{/if}}
+                        </div>
+                        <div class="glamour-rate-leader"></div>
+                        <div class="glamour-rate-price">
+                            <span class="glamour-rate-numeric">{{this.price}}</span>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
         </div>
-        {{/if}}
     </div>
 </section>
+{{/if}}
 
-<!-- Policies Section -->
-<section class="py-20 bg-gradient-to-r from-pink-50 to-purple-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16" data-aos="fade-up">
-            <h2 class="text-3xl font-bold mb-4 glamour-heading text-glamour-primary">
-                Booking Information
-            </h2>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="glamour-card p-8 shadow-lg" data-aos="fade-up" data-aos-delay="0">
-                <div class="w-16 h-16 mb-6 bg-gradient-to-br from-glamour-primary to-glamour-secondary rounded-full flex items-center justify-center shadow-lg">
-                    <i class="fas fa-calendar-check text-white text-xl"></i>
+<!-- Extended Rates Section -->
+{{#if rates.extended.length}}
+<section id="extended-section" class="glamour-extended-section" data-aos="fade-in">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="glamour-section-title mb-12">Extended Engagements</h2>
+        <div class="glamour-extended-grid">
+            {{#each rates.extended}}
+            <div class="glamour-extended-card" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                <div class="glamour-extended-icon">
+                    <i class="fas fa-crown"></i>
                 </div>
-                <h3 class="text-lg font-bold mb-3 glamour-heading">Advance Booking</h3>
-                <p class="text-gray-600 text-sm">
-                    {{content.advanceBooking}}
-                </p>
-            </div>
-            
-            <div class="glamour-card p-8 shadow-lg" data-aos="fade-up" data-aos-delay="100">
-                <div class="w-16 h-16 mb-6 bg-gradient-to-br from-glamour-primary to-glamour-secondary rounded-full flex items-center justify-center shadow-lg">
-                    <i class="fas fa-credit-card text-white text-xl"></i>
-                </div>
-                <h3 class="text-lg font-bold mb-3 glamour-heading">Payment</h3>
-                <p class="text-gray-600 text-sm">
-                    {{content.paymentPolicy}}
-                </p>
-            </div>
-            
-            <div class="glamour-card p-8 shadow-lg" data-aos="fade-up" data-aos-delay="200">
-                <div class="w-16 h-16 mb-6 bg-gradient-to-br from-glamour-primary to-glamour-secondary rounded-full flex items-center justify-center shadow-lg">
-                    <i class="fas fa-shield-alt text-white text-xl"></i>
-                </div>
-                <h3 class="text-lg font-bold mb-3 glamour-heading">Cancellation</h3>
-                <p class="text-gray-600 text-sm">
-                    {{content.cancellationPolicy}}
-                </p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Package Deals -->
-{{#if packages}}
-<section class="py-20 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16" data-aos="fade-up">
-            <h2 class="text-3xl font-bold mb-4 glamour-heading text-glamour-primary">
-                Exclusive Packages
-            </h2>
-            <p class="text-xl text-gray-600">
-                Curated experiences for the ultimate in luxury
-            </p>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {{#each packages}}
-            <div class="glamour-card p-10 relative shadow-2xl transform hover:scale-105 transition-all duration-300" data-aos="fade-up" data-aos-delay="{{@index}}00">
-                {{#if this.popular}}
-                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span class="bg-gradient-to-r from-glamour-accent to-yellow-400 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
-                        Most Popular
-                    </span>
-                </div>
+                <h3 class="glamour-extended-name">{{this.duration}}</h3>
+                <div class="glamour-extended-price">{{#if (eq this.duration 'Travel')}}Custom{{else}}${{this.price}}{{/if}}</div>
+                {{#if this.description}}
+                <p class="glamour-extended-description">{{this.description}}</p>
                 {{/if}}
-                
-                <div class="text-center">
-                    <h3 class="text-2xl font-bold mb-4 glamour-heading">{{this.name}}</h3>
-                    <div class="text-4xl font-bold text-glamour-primary mb-2">
-                        {{formatCurrency this.price}}
-                    </div>
-                    {{#if this.originalPrice}}
-                    <div class="text-gray-500 line-through mb-4">
-                        Was {{formatCurrency this.originalPrice}}
-                    </div>
-                    {{/if}}
-                    <p class="text-gray-600 mb-8">{{this.description}}</p>
-                    
-                    <ul class="text-left space-y-3 mb-8">
-                        {{#each this.includes}}
-                        <li class="flex items-center">
-                            <i class="fas fa-gem text-glamour-primary mr-3"></i>
-                            <span>{{this}}</span>
-                        </li>
-                        {{/each}}
-                    </ul>
-                    
-                    <a href="/{{../modelSlug}}/contact?package={{this.slug}}" class="glamour-btn w-full">
-                        Book Package
-                    </a>
-                </div>
             </div>
             {{/each}}
         </div>
@@ -161,24 +166,1542 @@
 </section>
 {{/if}}
 
-<!-- Call to Action -->
-<section class="py-20 bg-gradient-to-r from-glamour-primary to-glamour-secondary text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
-        <h2 class="text-3xl font-bold mb-6 glamour-heading">
-            Ready for Luxury?
-        </h2>
-        <p class="text-xl mb-8 opacity-90 max-w-2xl mx-auto font-light">
-            Experience sophistication and elegance. Let's create something extraordinary together.
-        </p>
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="/{{modelSlug}}/contact" class="glamour-btn bg-white text-glamour-primary hover:bg-gray-100">
-                <i class="fas fa-envelope mr-2"></i>
-                Contact Me
-            </a>
-            <a href="/{{modelSlug}}/about" class="glamour-btn-outline border-white text-white hover:bg-white hover:text-glamour-primary">
-                <i class="fas fa-user mr-2"></i>
-                Learn More
-            </a>
+<!-- Additional Services Section -->
+{{#if rates_content.rates_additional_visible}}
+<section id="services-section" class="glamour-services-section" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="glamour-section-title">
+                {{#if rates_content.additional_title}}{{rates_content.additional_title}}{{else}}Additional Services{{/if}}
+            </h2>
+            <div class="glamour-title-underline mx-auto"></div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Services List -->
+            <div class="glamour-services-list" data-aos="fade-up" data-aos-delay="100">
+                <div class="glamour-services-card">
+                    <div class="glamour-services-header">
+                        <div class="glamour-services-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h3 class="glamour-services-heading">Premium Services</h3>
+                    </div>
+                    <div class="glamour-services-content">
+                        {{#if rates_content.additional_services}}
+                        {{{rates_content.additional_services}}}
+                        {{else}}
+                        <ul class="glamour-service-list">
+                            <li>Dinner Dates</li>
+                            <li>Travel Companion</li>
+                            <li>Special Events</li>
+                            <li>Extended Bookings</li>
+                        </ul>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Booking Policies -->
+            <div class="glamour-booking-policies" data-aos="fade-up" data-aos-delay="200">
+                <div class="glamour-services-card">
+                    <div class="glamour-services-header">
+                        <div class="glamour-services-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3 class="glamour-services-heading">Booking Guidelines</h3>
+                    </div>
+                    <div class="glamour-services-content">
+                        {{#if rates_content.booking_guidelines}}
+                        {{{rates_content.booking_guidelines}}}
+                        {{else}}
+                        <ul class="glamour-guideline-list">
+                            <li><strong>Advance Notice:</strong> 24-48 hours preferred</li>
+                            <li><strong>Deposit:</strong> Required for new clients</li>
+                            <li><strong>Screening:</strong> References or ID verification</li>
+                            <li><strong>Cancellation:</strong> 2+ hours notice appreciated</li>
+                        </ul>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
+{{/if}}
+
+<!-- Policies Section with Hollywood Elegance -->
+{{#if rates_content.rates_policies_visible}}
+<section id="policies-section" class="glamour-policies-section" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="glamour-section-title">
+                {{#if rates_content.policies_title}}{{rates_content.policies_title}}{{else}}Booking Policies{{/if}}
+            </h2>
+            <div class="glamour-title-underline mx-auto"></div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {{#if rates_content.booking_policy_visible}}
+            <div class="glamour-policy-card" data-aos="fade-up" data-aos-delay="0">
+                <div class="glamour-policy-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h3 class="glamour-policy-heading">Advance Booking</h3>
+                <p class="glamour-policy-text">
+                    {{#if rates_content.booking_policy}}{{rates_content.booking_policy}}{{else}}At least 24 hours advance booking is preferred for the best possible experience.{{/if}}
+                </p>
+            </div>
+            {{/if}}
+            
+            {{#if rates_content.payment_policy_visible}}
+            <div class="glamour-policy-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="glamour-policy-icon">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+                <h3 class="glamour-policy-heading">Payment</h3>
+                <p class="glamour-policy-text">
+                    {{#if rates_content.payment_policy}}{{rates_content.payment_policy}}{{else}}Payment is expected at the beginning of our time together in cash or through agreed upon methods.{{/if}}
+                </p>
+            </div>
+            {{/if}}
+            
+            {{#if rates_content.cancellation_policy_visible}}
+            <div class="glamour-policy-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="glamour-policy-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="glamour-policy-heading">Cancellation</h3>
+                <p class="glamour-policy-text">
+                    {{#if rates_content.cancellation_policy}}{{rates_content.cancellation_policy}}{{else}}Please provide at least 2 hours notice for any cancellations or rescheduling requests.{{/if}}
+                </p>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Payment Terms Section -->
+{{#if rates_content.rates_payment_visible}}
+<section id="payment-section" class="glamour-payment-section" data-aos="fade-in">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="glamour-section-title">
+                {{#if rates_content.payment_title}}{{rates_content.payment_title}}{{else}}Payment & Terms{{/if}}
+            </h2>
+            <div class="glamour-title-underline mx-auto"></div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Payment Methods -->
+            <div class="glamour-payment-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="glamour-payment-header">
+                    <div class="glamour-payment-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <h3 class="glamour-payment-heading">Accepted Payment Methods</h3>
+                </div>
+                <div class="glamour-payment-content">
+                    {{#if rates_content.payment_methods}}
+                    {{{rates_content.payment_methods}}}
+                    {{else}}
+                    <ul class="glamour-payment-list">
+                        <li><i class="fas fa-money-bill-wave"></i> Cash (preferred)</li>
+                        <li><i class="fab fa-paypal"></i> PayPal</li>
+                        <li><i class="fas fa-credit-card"></i> Credit/Debit Cards</li>
+                        <li><i class="fab fa-bitcoin"></i> Cryptocurrency</li>
+                    </ul>
+                    {{/if}}
+                </div>
+            </div>
+            
+            <!-- Terms & Conditions -->
+            <div class="glamour-terms-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="glamour-payment-header">
+                    <div class="glamour-payment-icon">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <h3 class="glamour-payment-heading">Terms & Conditions</h3>
+                </div>
+                <div class="glamour-payment-content">
+                    {{#if rates_content.terms_conditions}}
+                    {{{rates_content.terms_conditions}}}
+                    {{else}}
+                    <ul class="glamour-terms-list">
+                        <li>All appointments require advance booking</li>
+                        <li>Payment is due at the start of our meeting</li>
+                        <li>Respectful behavior is mandatory</li>
+                        <li>Confidentiality and discretion assured</li>
+                        <li>No refunds for completed services</li>
+                    </ul>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Donations Section -->
+{{#if rates_content.donations_visible}}
+<section class="glamour-donations-section" data-aos="fade-in">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="glamour-donations-card" data-aos="fade-up">
+            <div class="glamour-donations-icon">
+                <i class="fas fa-heart"></i>
+            </div>
+            <h2 class="glamour-donations-title">
+                {{#if rates_content.donations_title}}{{rates_content.donations_title}}{{else}}Donations Appreciated{{/if}}
+            </h2>
+            <div class="glamour-donations-content">
+                {{#if rates_content.donations_text}}
+                <p class="glamour-donations-text">{{rates_content.donations_text}}</p>
+                {{else}}
+                <p class="glamour-donations-text">Your generosity helps support my work and allows me to continue providing exceptional experiences. All donations are deeply appreciated.</p>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Contact Information Section -->
+{{#if rates_content.contact_info_visible}}
+<section id="contact-section" class="glamour-contact-section" data-aos="fade-in">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="glamour-section-title">
+                {{#if rates_content.contact_title}}{{rates_content.contact_title}}{{else}}Get in Touch{{/if}}
+            </h2>
+            <div class="glamour-title-underline mx-auto"></div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Email Contact -->
+            {{#if rates_content.contact_email_visible}}
+            <div class="glamour-contact-card" data-aos="fade-up" data-aos-delay="0">
+                <div class="glamour-contact-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h3 class="glamour-contact-heading">Email</h3>
+                <p class="glamour-contact-text">
+                    {{#if rates_content.contact_email_text}}{{rates_content.contact_email_text}}{{else}}Preferred method for initial contact and booking inquiries.{{/if}}
+                </p>
+                <a href="/{{modelSlug}}/contact{{previewParam}}" class="glamour-contact-link">
+                    Send Message
+                </a>
+            </div>
+            {{/if}}
+            
+            <!-- Phone Contact -->
+            {{#if rates_content.contact_phone_visible}}
+            <div class="glamour-contact-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="glamour-contact-icon">
+                    <i class="fas fa-phone"></i>
+                </div>
+                <h3 class="glamour-contact-heading">Phone</h3>
+                <p class="glamour-contact-text">
+                    {{#if rates_content.contact_phone_text}}{{rates_content.contact_phone_text}}{{else}}Available for established clients and urgent inquiries only.{{/if}}
+                </p>
+                {{#if rates_content.phone_number}}
+                <a href="tel:{{rates_content.phone_number}}" class="glamour-contact-link">
+                    {{rates_content.phone_number}}
+                </a>
+                {{/if}}
+            </div>
+            {{/if}}
+            
+            <!-- Social Media -->
+            {{#if rates_content.contact_social_visible}}
+            <div class="glamour-contact-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="glamour-contact-icon">
+                    <i class="fas fa-share-alt"></i>
+                </div>
+                <h3 class="glamour-contact-heading">Social Media</h3>
+                <p class="glamour-contact-text">
+                    {{#if rates_content.contact_social_text}}{{rates_content.contact_social_text}}{{else}}Follow me for updates and behind-the-scenes content.{{/if}}
+                </p>
+                <div class="glamour-social-links">
+                    {{#if contact.twitter}}<a href="{{contact.twitter}}" class="glamour-social-link"><i class="fab fa-twitter"></i></a>{{/if}}
+                    {{#if contact.instagram}}<a href="{{contact.instagram}}" class="glamour-social-link"><i class="fab fa-instagram"></i></a>{{/if}}
+                    {{#if contact.snapchat}}<a href="{{contact.snapchat}}" class="glamour-social-link"><i class="fab fa-snapchat"></i></a>{{/if}}
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- CTA Section with Red Carpet Treatment -->
+{{#if rates_content.cta_visible}}
+<section class="glamour-rates-cta-section" data-aos="fade-in">
+    <div class="glamour-cta-red-carpet"></div>
+    
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <h2 class="glamour-cta-title" data-aos="fade-up">
+            {{#if rates_content.cta_title}}{{rates_content.cta_title}}{{else}}Ready to Book?{{/if}}
+        </h2>
+        
+        {{#if rates_content.cta_subtitle}}
+        <p class="glamour-cta-subtitle" data-aos="fade-up" data-aos-delay="200">
+            {{rates_content.cta_subtitle}}
+        </p>
+        {{/if}}
+        
+        <div class="glamour-cta-buttons" data-aos="fade-up" data-aos-delay="400">
+            <a href="/{{modelSlug}}/contact{{previewParam}}" class="glamour-btn glamour-btn-gold glamour-premium-effect">
+                <span>{{#if rates_content.cta_button_text}}{{rates_content.cta_button_text}}{{else}}Book Now{{/if}}</span>
+                <div class="glamour-btn-particles"></div>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Glamour Particles Effect -->
+    <div class="glamour-particles-container" aria-hidden="true">
+        <div class="glamour-particle"></div>
+        <div class="glamour-particle"></div>
+        <div class="glamour-particle"></div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Footer Section -->
+{{#if rates_content.footer_visible}}
+<footer class="glamour-footer-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="glamour-footer-content">
+            <div class="glamour-footer-brand">
+                <h3 class="glamour-footer-title">{{profile.display_name}}</h3>
+                <p class="glamour-footer-tagline">
+                    {{#if rates_content.footer_tagline}}{{rates_content.footer_tagline}}{{else}}Elegance, Sophistication, Discretion{{/if}}
+                </p>
+            </div>
+            
+            <div class="glamour-footer-nav">
+                <a href="/{{modelSlug}}/{{previewParam}}" class="glamour-footer-link">Home</a>
+                <a href="/{{modelSlug}}/about{{previewParam}}" class="glamour-footer-link">About</a>
+                <a href="/{{modelSlug}}/gallery{{previewParam}}" class="glamour-footer-link">Gallery</a>
+                <a href="/{{modelSlug}}/rates{{previewParam}}" class="glamour-footer-link">Rates</a>
+                <a href="/{{modelSlug}}/contact{{previewParam}}" class="glamour-footer-link">Contact</a>
+            </div>
+        </div>
+        
+        <div class="glamour-footer-bottom">
+            <p class="glamour-footer-copyright">
+                © {{currentYear}} {{profile.display_name}}. All rights reserved.
+            </p>
+        </div>
+    </div>
+</footer>
+{{/if}}
+
+<!-- Glamour Rates Page Styles -->
+<style>
+/* Refined Glamour Theme Variables */
+:root {
+    --glamour-gold: #EBCB8B;
+    --glamour-rose-gold: #D08770;
+    --glamour-deep-purple: #171228;
+    --glamour-neutral: #1E1632;
+    --glamour-champagne: #F5F2EA;
+    --glamour-black: #0F0F0F;
+    --glamour-white: #FEFEFE;
+    --glamour-card: #252032;
+    --glamour-border: rgba(235, 203, 139, 0.15);
+}
+
+/* Rates Hero Section */
+.glamour-rates-hero {
+    position: relative;
+    padding: 8rem 0 6rem;
+    background: linear-gradient(135deg, #1a0d2e 0%, #2d1b3d 50%, #8b1538 100%);
+    overflow: hidden;
+}
+
+.glamour-hero-spotlight-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.glamour-hero-spotlight {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(235, 203, 139, 0.08) 0%, rgba(235, 203, 139, 0.03) 40%, transparent 70%);
+    filter: blur(20px);
+    animation: glamourRatesSpotlight 15s infinite ease-in-out;
+}
+
+.glamour-hero-spotlight-1 {
+    top: 10%;
+    left: 15%;
+    animation-delay: 0s;
+}
+
+.glamour-hero-spotlight-2 {
+    bottom: 20%;
+    right: 20%;
+    animation-delay: 6s;
+}
+
+@keyframes glamourRatesSpotlight {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.6; }
+    50% { transform: scale(1.3) rotate(180deg); opacity: 0.8; }
+}
+
+.glamour-rates-title {
+    font-size: 4.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    letter-spacing: -0.02em;
+    background: linear-gradient(45deg, var(--glamour-white) 30%, var(--glamour-gold) 70%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(235, 203, 139, 0.2);
+}
+
+.glamour-rates-subtitle {
+    font-size: 1.125rem;
+    color: var(--glamour-champagne);
+    text-align: center;
+    font-weight: 400;
+    line-height: 1.55;
+    max-width: 600px;
+    margin: 0 auto;
+    opacity: 0.9;
+}
+
+/* Floating Stars for Rates */
+.glamour-rates-stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.glamour-star-rates-1 {
+    position: absolute;
+    top: 20%;
+    right: 8%;
+    color: var(--glamour-gold);
+    font-size: 1.5rem;
+    opacity: 0.3;
+    animation: glamourRatesFloat 12s infinite ease-in-out;
+    animation-delay: 0s;
+}
+
+.glamour-star-rates-2 {
+    display: none;
+}
+
+.glamour-star-rates-3 {
+    display: none;
+}
+
+@keyframes glamourRatesFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+    50% { transform: translateY(-10px) rotate(180deg); opacity: 0.5; }
+}
+
+/* Main Rates Section */
+.glamour-rates-section {
+    padding: 10rem 0;
+    background: var(--glamour-neutral);
+}
+
+.glamour-rates-card {
+    background: var(--glamour-card);
+    border: 1px solid var(--glamour-border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glamour-rates-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+}
+
+.glamour-rates-header {
+    background: rgba(233, 199, 122, 0.9);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.glamour-rates-heading {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #2B203F;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.glamour-rates-accent {
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 10px;
+    background: var(--glamour-black);
+    border-radius: 10px;
+    opacity: 0.3;
+}
+
+.glamour-rates-content {
+    padding: 3rem 2.5rem;
+    background: #1E1730;
+}
+
+.glamour-rate-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.glamour-rate-item:last-child {
+    border-bottom: none;
+}
+
+.glamour-rate-item:hover {
+    background: rgba(212, 175, 55, 0.05);
+    border-radius: 10px;
+}
+
+.glamour-rate-service {
+    flex: 1;
+}
+
+.glamour-service-name {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--glamour-white);
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    line-height: 1.55;
+}
+
+.glamour-popular-badge {
+    background: linear-gradient(45deg, var(--glamour-gold) 0%, #ffdc73 100%);
+    color: var(--glamour-black);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.glamour-service-duration {
+    font-size: 0.9375rem;
+    color: var(--glamour-champagne);
+    font-weight: 400;
+    opacity: 0.8;
+    line-height: 1.55;
+}
+
+.glamour-rate-price {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--glamour-gold);
+    text-align: right;
+    min-width: 86px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.glamour-rate-price::before {
+    content: '$';
+    width: 14px;
+    text-align: left;
+}
+
+.glamour-rate-numeric {
+    width: 72px;
+    text-align: right;
+    display: inline-block;
+}
+
+/* Extended Rates Section */
+.glamour-extended-section {
+    padding: 10rem 0;
+    background: var(--glamour-neutral);
+}
+
+.glamour-extended-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.glamour-extended-card {
+    background: var(--glamour-card);
+    border: 1px solid var(--glamour-border);
+    border-radius: 12px;
+    width: 180px;
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    margin: 0 auto;
+}
+
+.glamour-extended-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+}
+
+.glamour-extended-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    font-size: 28px;
+    color: var(--glamour-gold);
+}
+
+.glamour-extended-name {
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    color: var(--glamour-white);
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.glamour-extended-price {
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 600;
+    color: var(--glamour-gold);
+    margin: 0;
+}
+
+.glamour-extended-description {
+    color: var(--glamour-champagne);
+    font-size: 1rem;
+    line-height: 1.55;
+    opacity: 0.85;
+}
+
+/* Policies Section */
+.glamour-policies-section {
+    padding: 10rem 0;
+    background: var(--glamour-neutral);
+}
+
+.glamour-policy-card {
+    background: var(--glamour-card);
+    border: 1px solid var(--glamour-border);
+    border-radius: 12px;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+.glamour-policy-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+}
+
+.glamour-policy-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--glamour-gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    font-size: 1.25rem;
+    color: var(--glamour-black);
+    box-shadow: 0 2px 12px rgba(235, 203, 139, 0.2);
+}
+
+.glamour-policy-heading {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--glamour-white);
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.01em;
+}
+
+.glamour-policy-text {
+    color: var(--glamour-champagne);
+    font-size: 1rem;
+    line-height: 1.55;
+    opacity: 0.9;
+}
+
+/* CTA Section */
+.glamour-rates-cta-section {
+    position: relative;
+    padding: 8rem 0;
+    background: linear-gradient(135deg, var(--glamour-deep-purple) 0%, var(--glamour-rose-gold) 50%, var(--glamour-gold) 100%);
+    overflow: hidden;
+}
+
+.glamour-cta-red-carpet {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        repeating-linear-gradient(
+            90deg,
+            transparent 0px,
+            rgba(139, 21, 56, 0.1) 50px,
+            transparent 100px
+        ),
+        radial-gradient(ellipse at center, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+    animation: glamourRedCarpetFlow 15s infinite linear;
+}
+
+@keyframes glamourRedCarpetFlow {
+    0% { transform: translateX(0px); }
+    100% { transform: translateX(100px); }
+}
+
+/* Common Shared Styles */
+.glamour-section-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--glamour-white);
+    text-align: center;
+    margin-bottom: 2rem;
+    letter-spacing: -0.02em;
+}
+
+.glamour-title-underline {
+    width: 48px;
+    height: 2px;
+    background: var(--glamour-gold);
+    border-radius: 1px;
+}
+
+/* Button Styles */
+.glamour-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 28px;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+    line-height: 1.55;
+}
+
+.glamour-btn-gold {
+    background: var(--glamour-gold);
+    color: var(--glamour-black);
+    box-shadow: 0 4px 16px rgba(235, 203, 139, 0.2);
+}
+
+.glamour-btn-gold:hover {
+    background: #D4B071;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(235, 203, 139, 0.3);
+    text-decoration: none;
+    color: var(--glamour-black);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .glamour-rates-title {
+        font-size: 3rem;
+    }
+    
+    .glamour-rates-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .glamour-section-title {
+        font-size: 2rem;
+    }
+    
+    .glamour-rates-card {
+        margin-bottom: 2rem;
+    }
+    
+    .glamour-rate-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .glamour-rate-price {
+        font-size: 1.8rem;
+    }
+    
+    .glamour-extended-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .glamour-footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .glamour-footer-nav {
+        justify-content: center;
+    }
+    
+    .glamour-sticky-nav nav {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+}
+
+/* Additional Services Section */
+.glamour-services-section {
+    padding: 10rem 0;
+    background: var(--glamour-neutral);
+}
+
+
+.glamour-services-card {
+    background: var(--glamour-card);
+    border: 1px solid var(--glamour-border);
+    border-radius: 12px;
+    padding: 3.5rem 2.5rem;
+    height: 100%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+.glamour-services-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+}
+
+.glamour-services-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.glamour-services-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--glamour-gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1.5rem;
+    font-size: 1.125rem;
+    color: var(--glamour-black);
+    box-shadow: 0 2px 8px rgba(235, 203, 139, 0.2);
+}
+
+.glamour-services-heading {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--glamour-white);
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.glamour-services-content {
+    color: #EDE9DF;
+    line-height: 1.625;
+    font-size: 16px;
+    opacity: 1;
+}
+
+.glamour-services-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.glamour-services-content ul li {
+    padding: 8px 0;
+    position: relative;
+    padding-left: 20px;
+}
+
+.glamour-services-content ul li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: var(--glamour-gold);
+    font-weight: bold;
+}
+
+.glamour-service-list, .glamour-guideline-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.glamour-service-list li, .glamour-guideline-list li {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--glamour-border);
+    position: relative;
+    padding-left: 2rem;
+    font-size: 1rem;
+    line-height: 1.55;
+}
+
+.glamour-service-list li:before {
+    content: '\2726';
+    color: var(--glamour-gold);
+    position: absolute;
+    left: 0;
+    top: 0.8rem;
+    font-size: 0.8rem;
+}
+
+.glamour-guideline-list li:before {
+    content: '\2713';
+    color: var(--glamour-rose-gold);
+    position: absolute;
+    left: 0;
+    top: 0.8rem;
+    font-weight: bold;
+}
+
+/* Payment Terms Section */
+.glamour-payment-section {
+    padding: 10rem 0;
+    background: var(--glamour-neutral);
+}
+
+
+.glamour-payment-card, .glamour-terms-card {
+    background: var(--glamour-card);
+    border: 1px solid var(--glamour-border);
+    border-radius: 12px;
+    padding: 3.5rem 2.5rem;
+    height: 100%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+.glamour-payment-card:hover, .glamour-terms-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 50px rgba(212, 175, 55, 0.2);
+}
+
+.glamour-payment-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.glamour-payment-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(45deg, var(--glamour-gold) 0%, var(--glamour-rose-gold) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1.5rem;
+    font-size: 1.5rem;
+    color: var(--glamour-black);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+}
+
+.glamour-payment-heading {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--glamour-white);
+    margin: 0;
+    position: relative;
+}
+
+.glamour-payment-content {
+    color: #EDE9DF;
+    line-height: 1.625;
+    font-size: 16px;
+}
+
+.glamour-payment-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.glamour-payment-content ul li {
+    padding: 8px 0;
+    position: relative;
+    padding-left: 20px;
+}
+
+.glamour-payment-content ul li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--glamour-gold);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.glamour-payment-list, .glamour-terms-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.glamour-payment-list li, .glamour-terms-list li {
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.glamour-payment-list li:last-child, .glamour-terms-list li:last-child {
+    border-bottom: none;
+}
+
+.glamour-payment-list li i {
+    color: var(--glamour-gold);
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
+}
+
+/* Donations Section */
+.glamour-donations-section {
+    padding: 8rem 0;
+    background: var(--glamour-neutral);
+    position: relative;
+}
+
+
+.glamour-donations-card {
+    background: var(--glamour-card);
+    border: 1px solid var(--glamour-border);
+    border-radius: 16px;
+    padding: 4rem 3rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glamour-donations-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+}
+
+.glamour-donations-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 28px;
+    color: var(--glamour-gold);
+}
+
+.glamour-donations-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--glamour-white);
+    margin-bottom: 2rem;
+    letter-spacing: -0.02em;
+    text-align: center;
+}
+
+.glamour-donations-text {
+    font-size: 16px;
+    line-height: 26px;
+    color: #EDE9DF;
+    margin: 0;
+    text-align: center;
+    opacity: 1;
+}
+
+/* Contact Information Section */
+.glamour-contact-section {
+    padding: 10rem 0;
+    background: var(--glamour-neutral);
+}
+
+
+.glamour-contact-card {
+    background: var(--glamour-card);
+    border: 1px solid var(--glamour-border);
+    border-radius: 12px;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    height: 100%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+.glamour-contact-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+}
+
+.glamour-contact-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--glamour-gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    font-size: 1.25rem;
+    color: var(--glamour-black);
+    box-shadow: 0 2px 12px rgba(235, 203, 139, 0.2);
+}
+
+.glamour-contact-heading {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--glamour-white);
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.01em;
+}
+
+.glamour-contact-text {
+    color: var(--glamour-champagne);
+    font-size: 1rem;
+    line-height: 1.55;
+    margin-bottom: 1.5rem;
+    opacity: 0.9;
+}
+
+.glamour-contact-link {
+    display: inline-block;
+    background: var(--glamour-gold);
+    color: var(--glamour-black);
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(235, 203, 139, 0.2);
+    font-size: 0.9375rem;
+}
+
+.glamour-contact-link:hover {
+    background: #D4B071;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(235, 203, 139, 0.3);
+    text-decoration: none;
+    color: var(--glamour-black);
+}
+
+.glamour-social-links {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.glamour-social-link {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(45deg, var(--glamour-gold) 0%, var(--glamour-rose-gold) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--glamour-black);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+}
+
+.glamour-social-link:hover {
+    transform: translateY(-3px) scale(1.1);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+    color: var(--glamour-black);
+    text-decoration: none;
+}
+
+/* Footer Section */
+.glamour-footer-section {
+    background: var(--glamour-neutral);
+    padding: 6rem 0 3rem;
+    border-top: 1px solid var(--glamour-border);
+}
+
+.glamour-footer-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--glamour-gold) 50%, transparent 100%);
+}
+
+.glamour-footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.glamour-footer-brand {
+    flex: 1;
+}
+
+.glamour-footer-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--glamour-white);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+}
+
+.glamour-footer-tagline {
+    color: var(--glamour-champagne);
+    font-size: 1rem;
+    margin: 0;
+    font-style: italic;
+}
+
+.glamour-footer-nav {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.glamour-footer-link {
+    color: var(--glamour-champagne);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.glamour-footer-link:hover {
+    color: var(--glamour-gold);
+    text-decoration: none;
+}
+
+.glamour-footer-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--glamour-gold) 0%, var(--glamour-rose-gold) 100%);
+    transition: width 0.3s ease;
+}
+
+.glamour-footer-link:hover::after {
+    width: 100%;
+}
+
+.glamour-footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.glamour-footer-copyright {
+    color: var(--glamour-champagne);
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.8;
+}
+
+/* Sticky Navigation Styles */
+.glamour-sticky-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--glamour-card);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--glamour-border);
+    z-index: 1000;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+}
+
+.glamour-sticky-nav::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--glamour-gold) 20%, 
+        var(--glamour-rose-gold) 50%, 
+        var(--glamour-gold) 80%, 
+        transparent 100%
+    );
+    animation: glamourNavShimmer 3s ease-in-out infinite;
+}
+
+@keyframes glamourNavShimmer {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+.glamour-sticky-nav.visible {
+    transform: translateY(0);
+}
+
+.glamour-nav-link {
+    color: var(--glamour-champagne);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.glamour-nav-link:hover {
+    color: var(--glamour-black);
+    background: var(--glamour-gold);
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(235, 203, 139, 0.2);
+}
+
+.glamour-nav-link.active {
+    color: var(--glamour-black);
+    background: var(--glamour-gold);
+    box-shadow: 0 2px 12px rgba(235, 203, 139, 0.3);
+}
+
+/* CTA Enhancements */
+.glamour-cta-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--glamour-white);
+    margin-bottom: 1.5rem;
+    background: linear-gradient(45deg, var(--glamour-gold) 30%, var(--glamour-white) 70%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
+}
+
+.glamour-cta-subtitle {
+    font-size: 1.4rem;
+    color: var(--glamour-champagne);
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+.glamour-cta-buttons {
+    margin-bottom: 2rem;
+}
+
+.glamour-premium-effect {
+    position: relative;
+    overflow: hidden;
+}
+
+.glamour-premium-effect:hover {
+    animation: glamourPremiumPulse 0.6s ease-in-out;
+}
+
+@keyframes glamourPremiumPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.glamour-btn-particles {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+}
+
+.glamour-particles-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.glamour-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--glamour-gold);
+    border-radius: 50%;
+    opacity: 0.7;
+    animation: glamourParticleFloat 8s infinite ease-in-out;
+}
+
+.glamour-particle:nth-child(1) {
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+    animation-duration: 8s;
+}
+
+.glamour-particle:nth-child(2) {
+    top: 60%;
+    right: 15%;
+    animation-delay: 2s;
+    animation-duration: 10s;
+    background: var(--glamour-rose-gold);
+}
+
+.glamour-particle:nth-child(3) {
+    bottom: 30%;
+    left: 70%;
+    animation-delay: 4s;
+    animation-duration: 12s;
+}
+
+@keyframes glamourParticleFloat {
+    0%, 100% { 
+        transform: translateY(0px) rotate(0deg);
+        opacity: 0.7;
+    }
+    25% { 
+        transform: translateY(-20px) rotate(90deg);
+        opacity: 1;
+    }
+    50% { 
+        transform: translateY(-35px) rotate(180deg);
+        opacity: 0.8;
+    }
+    75% { 
+        transform: translateY(-15px) rotate(270deg);
+        opacity: 0.9;
+    }
+}
+</style>
+
+<!-- Glamour Sticky Navigation JavaScript -->
+<script>
+// Sticky Navigation Functionality
+let ticking = false;
+
+function updateStickyNav() {
+    const stickyNav = document.getElementById('glamour-sticky-nav');
+    if (!stickyNav) return;
+    
+    const scrollPosition = window.pageYOffset;
+    const windowHeight = window.innerHeight;
+    
+    // Show sticky nav after scrolling past the hero section
+    if (scrollPosition > windowHeight * 0.3) {
+        stickyNav.classList.add('visible');
+    } else {
+        stickyNav.classList.remove('visible');
+    }
+    
+    // Update active navigation link based on scroll position
+    const sections = ['rates-section', 'extended-section', 'services-section', 'policies-section', 'payment-section', 'contact-section'];
+    const navLinks = stickyNav.querySelectorAll('.glamour-nav-link');
+    
+    sections.forEach((sectionId, index) => {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            const sectionTop = section.offsetTop - 100;
+            const sectionBottom = sectionTop + section.offsetHeight;
+            
+            if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+                navLinks.forEach(link => link.classList.remove('active'));
+                if (navLinks[index]) {
+                    navLinks[index].classList.add('active');
+                }
+            }
+        }
+    });
+    
+    ticking = false;
+}
+
+// Smooth scroll to sections
+function scrollToSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        const offsetTop = section.offsetTop - 80; // Account for sticky nav height
+        window.scrollTo({
+            top: offsetTop,
+            behavior: 'smooth'
+        });
+    }
+}
+
+// Throttled scroll event listener
+function requestTick() {
+    if (!ticking) {
+        requestAnimationFrame(updateStickyNav);
+        ticking = true;
+    }
+}
+
+// Initialize sticky navigation
+document.addEventListener('DOMContentLoaded', function() {
+    window.addEventListener('scroll', requestTick);
+    
+    // Add click event listeners to navigation links
+    const navLinks = document.querySelectorAll('.glamour-nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            
+            // Only prevent default if it's a hash link (anchor link)
+            if (href && href.startsWith('#')) {
+                e.preventDefault();
+                const sectionId = href.substring(1); // Remove the '#' character
+                scrollToSection(sectionId);
+            }
+            // For regular page links, let them work normally (don't preventDefault)
+        });
+    });
+    
+    // Initial check
+    updateStickyNav();
+});
+</script>
+

@@ -54,77 +54,91 @@
     {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
 
     <!-- Hero Section -->
+    {{#if about_content.page_title_visible}}
     <section class="relative py-32 modern-gradient overflow-hidden">
         <div class="absolute inset-0 bg-black bg-opacity-20"></div>
         <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div data-aos="fade-up">
-                <h1 class="text-5xl md:text-6xl font-light text-white mb-6">About {{site_settings.model_name}}</h1>
+                <h1 class="text-5xl md:text-6xl font-light text-white mb-6">
+                    {{#if about_content.page_title}}{{about_content.page_title}}{{else}}About {{site_settings.model_name}}{{/if}}
+                </h1>
                 <div class="w-24 h-1 bg-modern-accent mx-auto mb-8"></div>
+                {{#if about_content.page_subtitle}}
+                <p class="text-xl text-gray-100 max-w-2xl mx-auto leading-relaxed">
+                    {{about_content.page_subtitle}}
+                </p>
+                {{else}}
                 <p class="text-xl text-gray-100 max-w-2xl mx-auto leading-relaxed">
                     Discover the person behind the professional service
                 </p>
+                {{/if}}
             </div>
         </div>
     </section>
+    {{/if}}
 
-    <!-- About Content -->
+    <!-- Main About Content -->
+    {{#if about_content.main_content_visible}}
     <section class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid lg:grid-cols-2 gap-16 items-start">
                 <!-- Content -->
                 <div data-aos="fade-right">
-                    {{#if about_content.main_content}}
-                        <div class="prose prose-lg max-w-none">
-                            {{{about_content.main_content}}}
-                        </div>
-                    {{else}}
-                        <h2 class="text-3xl font-light text-modern-text mb-6">Professional Excellence</h2>
-                        <div class="w-16 h-1 bg-modern-primary mb-8"></div>
-                        
-                        <p class="text-lg text-gray-600 mb-6 leading-relaxed">
-                            With a commitment to contemporary professionalism and sophisticated service, I bring a modern approach to traditional values of discretion, elegance, and excellence.
-                        </p>
-                        
-                        <p class="text-gray-600 mb-6 leading-relaxed">
-                            My background combines extensive experience in hospitality, business, and personal relations, allowing me to provide services that meet the highest standards of quality and professionalism.
-                        </p>
-                        
-                        <p class="text-gray-600 mb-8 leading-relaxed">
-                            Whether for business engagements, social events, or private companionship, I understand the importance of adaptability, intelligence, and genuine connection in creating memorable experiences.
-                        </p>
+                    <h2 class="text-3xl font-light text-modern-text mb-6">Professional Excellence</h2>
+                    <div class="w-16 h-1 bg-modern-primary mb-8"></div>
+                    
+                    {{#if about_content.main_paragraph_1}}
+                    <p class="text-lg text-gray-600 mb-6 leading-relaxed">
+                        {{about_content.main_paragraph_1}}
+                    </p>
                     {{/if}}
                     
-                    <!-- Contact CTA -->
-                    <div class="bg-modern-background rounded-2xl p-8 modern-shadow">
-                        <h3 class="text-xl font-semibold text-modern-text mb-4">Ready to Connect?</h3>
-                        <p class="text-gray-600 mb-6">
-                            I'd love to hear about your needs and discuss how we can work together.
-                        </p>
-                        <a href="/{{model.slug}}/contact" 
-                           class="inline-flex items-center bg-modern-primary text-white px-6 py-3 rounded-lg hover:bg-modern-secondary transition-colors">
-                            Get In Touch
-                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.001 8.001 0 01-7.75-6M3 12c0-4.418 3.582-8 8-8s8 3.582 8 8"></path>
-                            </svg>
-                        </a>
-                    </div>
+                    {{#if about_content.main_paragraph_2}}
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        {{about_content.main_paragraph_2}}
+                    </p>
+                    {{/if}}
+                    
+                    {{#if about_content.main_paragraph_3}}
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        {{about_content.main_paragraph_3}}
+                    </p>
+                    {{/if}}
+                    
+                    {{#if about_content.main_paragraph_4}}
+                    <p class="text-gray-600 mb-8 leading-relaxed">
+                        {{about_content.main_paragraph_4}}
+                    </p>
+                    {{/if}}
+                    
+                    <!-- Fallback content if no paragraphs -->
+                    {{#unless about_content.main_paragraph_1}}
+                    <p class="text-lg text-gray-600 mb-6 leading-relaxed">
+                        With a commitment to contemporary professionalism and sophisticated service, I bring a modern approach to traditional values of discretion, elegance, and excellence.
+                    </p>
+                    
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        My background combines extensive experience in hospitality, business, and personal relations, allowing me to provide services that meet the highest standards of quality and professionalism.
+                    </p>
+                    
+                    <p class="text-gray-600 mb-8 leading-relaxed">
+                        Whether for business engagements, social events, or private companionship, I understand the importance of adaptability, intelligence, and genuine connection in creating memorable experiences.
+                    </p>
+                    {{/unless}}
                 </div>
                 
-                <!-- Images/Visual Content -->
+                <!-- Portrait Image -->
                 <div class="space-y-8" data-aos="fade-left">
-                    {{#if gallery_images}}
-                        {{#each gallery_images}}
-                            {{#if @first}}
-                            <div class="relative">
-                                <img src="/uploads/{{../model.slug}}/{{this.filename}}" 
-                                     alt="{{../site_settings.model_name}}" 
-                                     class="w-full h-80 object-cover rounded-2xl modern-shadow">
-                                <!-- Decorative overlay -->
-                                <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-modern-accent bg-opacity-20 rounded-full -z-10"></div>
-                            </div>
-                            {{/if}}
-                        {{/each}}
-                    {{else}}
+                    {{#if about_content.portrait_visible}}
+                        {{#if about_content.portrait_image_id}}
+                        <div class="relative">
+                            <img src="/api/gallery-images/{{about_content.portrait_image_id}}/display" 
+                                 alt="{{#if about_content.portrait_alt}}{{about_content.portrait_alt}}{{else}}{{site_settings.model_name}}{{/if}}" 
+                                 class="w-full h-80 object-cover rounded-2xl modern-shadow">
+                            <!-- Decorative overlay -->
+                            <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-modern-accent bg-opacity-20 rounded-full -z-10"></div>
+                        </div>
+                        {{else}}
                         <div class="w-full h-80 bg-gray-200 rounded-2xl flex items-center justify-center modern-shadow">
                             <div class="text-center text-gray-500">
                                 <div class="w-16 h-16 bg-modern-primary bg-opacity-20 rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -133,32 +147,214 @@
                                 <p>Professional Image</p>
                             </div>
                         </div>
+                        {{/if}}
                     {{/if}}
                     
-                    <!-- Stats/Info Cards -->
+                    <!-- Quick Facts Cards -->
+                    {{#if about_content.quick_facts_visible}}
                     <div class="grid grid-cols-2 gap-4">
+                        {{#if about_content.qf_location}}
                         <div class="bg-white rounded-xl p-6 modern-shadow text-center">
                             <div class="w-12 h-12 bg-modern-primary bg-opacity-10 rounded-lg mx-auto mb-3 flex items-center justify-center">
-                                <div class="w-6 h-6 bg-modern-primary rounded"></div>
+                                <svg class="w-6 h-6 text-modern-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
                             </div>
-                            <h4 class="font-semibold text-modern-text mb-1">Professional</h4>
-                            <p class="text-sm text-gray-600">Service Excellence</p>
+                            <h4 class="font-semibold text-modern-text mb-1">Location</h4>
+                            <p class="text-sm text-gray-600">{{about_content.qf_location}}</p>
                         </div>
+                        {{/if}}
                         
+                        {{#if about_content.qf_languages}}
                         <div class="bg-white rounded-xl p-6 modern-shadow text-center">
                             <div class="w-12 h-12 bg-modern-accent bg-opacity-10 rounded-lg mx-auto mb-3 flex items-center justify-center">
-                                <div class="w-6 h-6 bg-modern-accent rounded"></div>
+                                <svg class="w-6 h-6 text-modern-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+                                </svg>
                             </div>
-                            <h4 class="font-semibold text-modern-text mb-1">Discreet</h4>
-                            <p class="text-sm text-gray-600">Complete Privacy</p>
+                            <h4 class="font-semibold text-modern-text mb-1">Languages</h4>
+                            <p class="text-sm text-gray-600">{{about_content.qf_languages}}</p>
                         </div>
+                        {{/if}}
+                        
+                        {{#if about_content.qf_education}}
+                        <div class="bg-white rounded-xl p-6 modern-shadow text-center">
+                            <div class="w-12 h-12 bg-modern-secondary bg-opacity-10 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-modern-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-semibold text-modern-text mb-1">Education</h4>
+                            <p class="text-sm text-gray-600">{{about_content.qf_education}}</p>
+                        </div>
+                        {{/if}}
+                        
+                        {{#if about_content.qf_specialties}}
+                        <div class="bg-white rounded-xl p-6 modern-shadow text-center">
+                            <div class="w-12 h-12 bg-modern-primary bg-opacity-10 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-modern-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-semibold text-modern-text mb-1">Specialties</h4>
+                            <p class="text-sm text-gray-600">{{about_content.qf_specialties}}</p>
+                        </div>
+                        {{/if}}
                     </div>
+                    {{/if}}
                 </div>
             </div>
         </div>
     </section>
+    {{/if}}
+    
+    <!-- Services Section -->
+    {{#if about_content.services_visible}}
+    <section class="py-20 bg-modern-background">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-4xl font-light text-modern-text mb-4">
+                    {{#if about_content.services_title}}{{about_content.services_title}}{{else}}My Services{{/if}}
+                </h2>
+                <div class="w-16 h-1 bg-modern-primary mx-auto mb-6"></div>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Professional services tailored to your unique needs
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {{#if about_content.service_1}}
+                <div class="bg-white rounded-2xl p-8 modern-shadow text-center" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-16 h-16 bg-modern-primary bg-opacity-10 rounded-2xl mx-auto mb-6 flex items-center justify-center">
+                        <div class="w-8 h-8 bg-modern-primary rounded-xl"></div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-modern-text mb-4">{{about_content.service_1}}</h3>
+                </div>
+                {{/if}}
+                
+                {{#if about_content.service_2}}
+                <div class="bg-white rounded-2xl p-8 modern-shadow text-center" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-16 h-16 bg-modern-accent bg-opacity-10 rounded-2xl mx-auto mb-6 flex items-center justify-center">
+                        <div class="w-8 h-8 bg-modern-accent rounded-xl"></div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-modern-text mb-4">{{about_content.service_2}}</h3>
+                </div>
+                {{/if}}
+                
+                {{#if about_content.service_3}}
+                <div class="bg-white rounded-2xl p-8 modern-shadow text-center" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-16 h-16 bg-modern-secondary bg-opacity-10 rounded-2xl mx-auto mb-6 flex items-center justify-center">
+                        <div class="w-8 h-8 bg-modern-secondary rounded-xl"></div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-modern-text mb-4">{{about_content.service_3}}</h3>
+                </div>
+                {{/if}}
+                
+                {{#if about_content.service_4}}
+                <div class="bg-white rounded-2xl p-8 modern-shadow text-center" data-aos="fade-up" data-aos-delay="400">
+                    <div class="w-16 h-16 bg-modern-primary bg-opacity-10 rounded-2xl mx-auto mb-6 flex items-center justify-center">
+                        <div class="w-8 h-8 bg-modern-primary rounded-xl"></div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-modern-text mb-4">{{about_content.service_4}}</h3>
+                </div>
+                {{/if}}
+                
+                {{#if about_content.service_5}}
+                <div class="bg-white rounded-2xl p-8 modern-shadow text-center" data-aos="fade-up" data-aos-delay="500">
+                    <div class="w-16 h-16 bg-modern-accent bg-opacity-10 rounded-2xl mx-auto mb-6 flex items-center justify-center">
+                        <div class="w-8 h-8 bg-modern-accent rounded-xl"></div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-modern-text mb-4">{{about_content.service_5}}</h3>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </section>
+    {{/if}}
+    
+    <!-- Interests Section -->
+    {{#if about_content.interests_visible}}
+    <section class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12" data-aos="fade-up">
+                <h2 class="text-4xl font-light text-modern-text mb-4">
+                    {{#if about_content.interests_title}}{{about_content.interests_title}}{{else}}My Interests{{/if}}
+                </h2>
+                <div class="w-16 h-1 bg-modern-primary mx-auto mb-6"></div>
+            </div>
+            
+            <div class="bg-modern-background rounded-2xl p-8 modern-shadow" data-aos="fade-up">
+                <p class="text-lg text-gray-600 leading-relaxed text-center">
+                    {{about_content.interests}}
+                </p>
+            </div>
+        </div>
+    </section>
+    {{/if}}
 
-    <!-- Modern Values Section -->
+    <!-- CTA Section -->
+    {{#if about_content.about_cta_visible}}
+    <section class="py-20 bg-modern-background">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-2xl p-12 modern-shadow text-center" data-aos="fade-up">
+                <h2 class="text-3xl font-light text-modern-text mb-6">
+                    {{#if about_content.cta_title}}{{about_content.cta_title}}{{else}}Ready to Connect?{{/if}}
+                </h2>
+                <div class="w-16 h-1 bg-modern-primary mx-auto mb-8"></div>
+                
+                {{#if about_content.cta_description}}
+                <p class="text-lg text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto">
+                    {{about_content.cta_description}}
+                </p>
+                {{else}}
+                <p class="text-lg text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto">
+                    I'd love to hear about your needs and discuss how we can work together.
+                </p>
+                {{/if}}
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    {{#if about_content.cta_button_1_text}}
+                    <a href="/{{model.slug}}/{{#if about_content.cta_button_1_link}}{{about_content.cta_button_1_link}}{{else}}contact{{/if}}" 
+                       class="inline-flex items-center justify-center bg-modern-primary text-white px-8 py-4 rounded-lg hover:bg-modern-secondary transition-colors font-semibold">
+                        {{about_content.cta_button_1_text}}
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m0 0V3a2 2 0 012-2h4a2 2 0 012 2v4m0 0v8a2 2 0 01-2 2H6a2 2 0 01-2-2V7"></path>
+                        </svg>
+                    </a>
+                    {{/if}}
+                    
+                    {{#if about_content.cta_button_2_text}}
+                    <a href="/{{model.slug}}/{{#if about_content.cta_button_2_link}}{{about_content.cta_button_2_link}}{{else}}contact{{/if}}" 
+                       class="inline-flex items-center justify-center border-2 border-modern-primary text-modern-primary px-8 py-4 rounded-lg hover:bg-modern-primary hover:text-white transition-colors font-semibold">
+                        {{about_content.cta_button_2_text}}
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.001 8.001 0 01-7.75-6M3 12c0-4.418 3.582-8 8-8s8 3.582 8 8"></path>
+                        </svg>
+                    </a>
+                    {{/if}}
+                    
+                    <!-- Fallback single CTA if no buttons defined -->
+                    {{#unless about_content.cta_button_1_text}}
+                    {{#unless about_content.cta_button_2_text}}
+                    <a href="/{{model.slug}}/contact" 
+                       class="inline-flex items-center justify-center bg-modern-primary text-white px-8 py-4 rounded-lg hover:bg-modern-secondary transition-colors font-semibold">
+                        Get In Touch
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.001 8.001 0 01-7.75-6M3 12c0-4.418 3.582-8 8-8s8 3.582 8 8"></path>
+                        </svg>
+                    </a>
+                    {{/unless}}
+                    {{/unless}}
+                </div>
+            </div>
+        </div>
+    </section>
+    {{/if}}
+    
+    <!-- Modern Values Section (Fallback) -->
+    {{#unless about_content.about_cta_visible}}
     <section class="py-20 bg-modern-background">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16" data-aos="fade-up">
@@ -202,6 +398,7 @@
             </div>
         </div>
     </section>
+    {{/unless}}
 
     <script>
         // Initialize AOS

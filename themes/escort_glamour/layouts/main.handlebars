@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{#if pageTitle}}{{pageTitle}} - {{siteName}}{{else}}{{siteName}}{{/if}}</title>
+    <meta name="description" content="{{metaDescription}}">
+    <meta name="og:title" content="{{#if pageTitle}}{{pageTitle}} - {{siteName}}{{else}}{{siteName}}{{/if}}">
+    <meta name="og:description" content="{{metaDescription}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{ogImage}}">
+    
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Escort Glamour Theme Styles -->
+    <style>
+        /* Escort Glamour Theme Colors */
+        :root {
+            --escort-primary: #ec4899;
+            --escort-secondary: #be185d;
+            --escort-accent: #f472b6;
+            --escort-text: #831843;
+            --escort-background: #fdf2f8;
+        }
+        
+        .text-escort-primary { color: var(--escort-primary); }
+        .bg-escort-primary { background-color: var(--escort-primary); }
+        .border-escort-primary { border-color: var(--escort-primary); }
+        
+        .text-escort-secondary { color: var(--escort-secondary); }
+        .bg-escort-secondary { background-color: var(--escort-secondary); }
+        .border-escort-secondary { border-color: var(--escort-secondary); }
+        
+        .text-escort-accent { color: var(--escort-accent); }
+        .bg-escort-accent { background-color: var(--escort-accent); }
+        .border-escort-accent { border-color: var(--escort-accent); }
+        
+        .escort-gradient {
+            background: linear-gradient(135deg, var(--escort-primary) 0%, var(--escort-secondary) 100%);
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--escort-background) 0%, #fce7f3 100%);
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .escort-nav {
+            background: rgba(236, 72, 153, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .escort-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            letter-spacing: 0.05em;
+        }
+        
+        .escort-nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .escort-nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            text-decoration: none;
+        }
+        
+        .escort-nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+        
+        .content-card {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navigation -->
+    {{> navigation}}
+    
+    <!-- Page Content -->
+    <main>
+        {{{body}}}
+    </main>
+    
+    <!-- Scripts -->
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    </script>
+</body>
+</html>

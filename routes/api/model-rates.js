@@ -42,9 +42,9 @@ router.put('/:slug/rate/:id', async (req, res) => {
     const m = await getModel(req.params.slug);
     if (!m) return res.fail(404, 'Model not found');
     const { id } = req.params;
-    const { service_name, duration, price, sort_order, is_visible } = req.body || {};
-    await db.query('UPDATE model_rates SET service_name = COALESCE(?, service_name), duration = COALESCE(?, duration), price = COALESCE(?, price), sort_order = COALESCE(?, sort_order), is_visible = COALESCE(?, is_visible) WHERE id = ? AND model_id = ?',
-      [service_name, duration, price, sort_order, typeof is_visible === 'undefined' ? null : (is_visible ? 1 : 0), parseInt(id), m.id]);
+    const { service_name, duration, price, sort_order, is_visible, is_most_popular, highlight_badge, highlight_badge_text } = req.body || {};
+    await db.query('UPDATE model_rates SET service_name = COALESCE(?, service_name), duration = COALESCE(?, duration), price = COALESCE(?, price), sort_order = COALESCE(?, sort_order), is_visible = COALESCE(?, is_visible), is_most_popular = COALESCE(?, is_most_popular), highlight_badge = COALESCE(?, highlight_badge), highlight_badge_text = COALESCE(?, highlight_badge_text) WHERE id = ? AND model_id = ?',
+      [service_name, duration, price, sort_order, typeof is_visible === 'undefined' ? null : (is_visible ? 1 : 0), typeof is_most_popular === 'undefined' ? null : (is_most_popular ? 1 : 0), typeof highlight_badge === 'undefined' ? null : (highlight_badge ? 1 : 0), highlight_badge_text, parseInt(id), m.id]);
     return res.success({ updated: true });
   }catch(e){ return res.fail(500, 'Failed to update rate', e.message); }
 });
@@ -93,6 +93,88 @@ router.delete('/:slug/term/:id', async (req, res) => {
     await db.query('DELETE FROM model_rate_terms WHERE id = ? AND model_id = ?', [parseInt(req.params.id), m.id]);
     return res.success({ deleted: true });
   }catch(e){ return res.fail(500, 'Failed to delete term', e.message); }
+});
+
+// Get rates page content settings
+router.get('/:slug/page-content', async (req, res) => {
+  try{
+    const m = await getModel(req.params.slug);
+    if (!m) return res.fail(404, 'Model not found');
+    
+    const content = await db.query('SELECT * FROM model_rates_page_content WHERE model_id = ? LIMIT 1', [m.id]);
+    
+    if (content.length > 0) {
+      return res.success(content[0]);
+    } else {
+      // Return default values if no content exists
+      return res.success({});
+    }
+  }catch(e){ return res.fail(500, 'Failed to load page content', e.message); }
+});
+
+// Reset rates page content to template defaults
+router.post('/:slug/page-content/reset', async (req, res) => {
+  try{
+    const m = await getModel(req.params.slug);
+    if (!m) return res.fail(404, 'Model not found');
+    
+    // Get template defaults from content_templates
+    const templateDefaults = await db.query(`
+      SELECT content_key, content_value 
+      FROM content_templates 
+      WHERE model_id = ? AND page_type_id = 5 
+      AND content_key IN ('hero_subtitle_size', 'hero_subtitle_color', 'hero_divider_visible', 'hero_divider_type')
+    `, [m.id]);
+    
+    const defaults = {};
+    templateDefaults.forEach(item => {
+      defaults[item.content_key] = item.content_value;
+    });
+    
+    // Convert template values to rates page content format
+    const resetValues = {
+      hero_subtitle_size: defaults.hero_subtitle_size || 'medium',
+      hero_subtitle_color: defaults.hero_subtitle_color || '#FFFFFF',
+      hero_divider_visible: (defaults.hero_divider_visible === 'on' || defaults.hero_divider_visible === '1') ? 1 : 0,
+      hero_divider_type: defaults.hero_divider_type || 'line',
+    };
+    
+    // Update each field in model_rates_page_content
+    for (const [field, value] of Object.entries(resetValues)) {
+      const existing = await db.query('SELECT id FROM model_rates_page_content WHERE model_id = ? LIMIT 1', [m.id]);
+      
+      if (existing.length > 0) {
+        await db.query(`UPDATE model_rates_page_content SET ${field} = ?, updated_at = NOW() WHERE model_id = ?`, [value, m.id]);
+      } else {
+        await db.query(`INSERT INTO model_rates_page_content (model_id, ${field}) VALUES (?, ?)`, [m.id, value]);
+      }
+    }
+    
+    return res.success({ reset: true, values: resetValues });
+  }catch(e){ return res.fail(500, 'Failed to reset page content', e.message); }
+});
+
+// Update rates page content settings
+router.put('/:slug/page-content/:field', async (req, res) => {
+  try{
+    const m = await getModel(req.params.slug);
+    if (!m) return res.fail(404, 'Model not found');
+    const { field } = req.params;
+    const { content_value } = req.body || {};
+    
+    // Check if content exists
+    const existing = await db.query('SELECT id FROM model_rates_page_content WHERE model_id = ? LIMIT 1', [m.id]);
+    
+    if (existing.length > 0) {
+      // Update existing content
+      await db.query(`UPDATE model_rates_page_content SET ${field} = ?, updated_at = NOW() WHERE model_id = ?`, [content_value, m.id]);
+    } else {
+      // Create new content with this field
+      await db.query(`INSERT INTO model_rates_page_content (model_id, ${field}) VALUES (?, ?)`, [m.id, content_value]);
+    }
+    
+    return res.success({ updated: true });
+  }catch(e){ return res.fail(500, 'Failed to update page content', e.message); }
 });
 
 module.exports = router;

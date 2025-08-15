@@ -1,235 +1,1339 @@
-<!-- Hero Section -->
-<section class="modern-hero min-h-screen flex items-center justify-center text-white relative pt-16" data-aos="fade-in">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        <div class="modern-slide">
-            <h1 class="text-5xl md:text-7xl font-bold mb-6 modern-heading">
-                {{content.heroTitle}}
-            </h1>
-            <p class="text-xl md:text-2xl mb-8 opacity-90 font-light max-w-3xl mx-auto">
-                {{content.heroSubtitle}}
-            </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="/{{modelSlug}}/contact" class="modern-btn text-base px-8 py-4">
-                    <i class="fas fa-arrow-right mr-2"></i>
-                    Get Started
-                </a>
-                <a href="/{{modelSlug}}/about" class="modern-btn-outline text-base px-8 py-4 text-white border-white hover:bg-white hover:text-gray-900">
-                    <i class="fas fa-info-circle mr-2"></i>
-                    Learn More
-                </a>
+<!-- Phase 2.3a: Modern Template Home Page - Clean Gradient-Based Design -->
+
+<!-- Modern Hero Section -->
+{{#if content.hero_section_visible}}
+<section class="modern-hero-canvas min-h-screen flex items-center justify-center text-white relative overflow-hidden" data-aos="fade-in">
+    <!-- Dynamic Background Gradients -->
+    <div class="modern-gradient-layer-1"></div>
+    <div class="modern-gradient-layer-2"></div>
+    <div class="modern-gradient-layer-3"></div>
+    
+    <!-- Modern Floating Elements -->
+    <div class="modern-floating-elements">
+        <div class="modern-floating-circle-1"></div>
+        <div class="modern-floating-circle-2"></div>
+        <div class="modern-floating-line-1"></div>
+        <div class="modern-floating-line-2"></div>
+        <div class="modern-floating-dot-1"></div>
+        <div class="modern-floating-dot-2"></div>
+    </div>
+    
+    <!-- Hero Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center">
+            <div class="modern-hero-content-wrapper" data-aos="zoom-in" data-aos-delay="200">
+                <h1 class="text-5xl md:text-7xl font-bold mb-8 modern-gradient-text modern-text-glow">
+                    {{#if content.hero_title}}{{content.hero_title}}{{else}}{{siteName}}{{/if}}
+                </h1>
+                <p class="text-xl md:text-2xl mb-10 max-w-3xl mx-auto opacity-90 modern-subtitle">
+                    {{#if content.hero_subtitle}}{{content.hero_subtitle}}{{else}}{{#if content.tagline}}{{content.tagline}}{{else}}Contemporary elegance meets professional sophistication{{/if}}{{/if}}
+                </p>
+                
+                <!-- Modern Button Group -->
+                <div class="flex flex-col sm:flex-row justify-center gap-6 modern-button-group">
+                    <!-- Hero Button 1 -->
+                    {{#if content.hero_button_1_text}}
+                        {{#if (eq content.hero_button_1_link 'calendar')}}
+                            <a href="/{{modelSlug}}/calendar{{previewParam}}" class="modern-btn-primary">
+                                <i class="fas fa-calendar-alt mr-3"></i>
+                                {{content.hero_button_1_text}}
+                            </a>
+                        {{else if (eq content.hero_button_1_link 'contact')}}
+                            <a href="/{{modelSlug}}/contact{{previewParam}}" class="modern-btn-primary">
+                                <i class="fas fa-envelope mr-3"></i>
+                                {{content.hero_button_1_text}}
+                            </a>
+                        {{else if (eq content.hero_button_1_link 'gallery')}}
+                            <a href="/{{modelSlug}}/gallery{{previewParam}}" class="modern-btn-primary">
+                                <i class="fas fa-images mr-3"></i>
+                                {{content.hero_button_1_text}}
+                            </a>
+                        {{else if (eq content.hero_button_1_link 'rates')}}
+                            <a href="/{{modelSlug}}/rates{{previewParam}}" class="modern-btn-primary">
+                                <i class="fas fa-tag mr-3"></i>
+                                {{content.hero_button_1_text}}
+                            </a>
+                        {{else if (eq content.hero_button_1_link 'about')}}
+                            <a href="/{{modelSlug}}/about{{previewParam}}" class="modern-btn-primary">
+                                <i class="fas fa-user mr-3"></i>
+                                {{content.hero_button_1_text}}
+                            </a>
+                        {{else}}
+                            <a href="/{{modelSlug}}/contact{{previewParam}}" class="modern-btn-primary">
+                                <i class="fas fa-envelope mr-3"></i>
+                                {{content.hero_button_1_text}}
+                            </a>
+                        {{/if}}
+                    {{else}}
+                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="modern-btn-primary">
+                            <i class="fas fa-calendar-alt mr-3"></i>
+                            View Calendar
+                        </a>
+                    {{/if}}
+                    
+                    <!-- Hero Button 2 -->
+                    {{#if content.hero_button_2_text}}
+                        {{#if (eq content.hero_button_2_link 'calendar')}}
+                            <a href="/{{modelSlug}}/calendar{{previewParam}}" class="modern-btn-outline">
+                                <i class="fas fa-calendar-alt mr-3"></i>
+                                {{content.hero_button_2_text}}
+                            </a>
+                        {{else if (eq content.hero_button_2_link 'contact')}}
+                            <a href="/{{modelSlug}}/contact{{previewParam}}" class="modern-btn-outline">
+                                <i class="fas fa-envelope mr-3"></i>
+                                {{content.hero_button_2_text}}
+                            </a>
+                        {{else if (eq content.hero_button_2_link 'gallery')}}
+                            <a href="/{{modelSlug}}/gallery{{previewParam}}" class="modern-btn-outline">
+                                <i class="fas fa-images mr-3"></i>
+                                {{content.hero_button_2_text}}
+                            </a>
+                        {{else if (eq content.hero_button_2_link 'rates')}}
+                            <a href="/{{modelSlug}}/rates{{previewParam}}" class="modern-btn-outline">
+                                <i class="fas fa-tag mr-3"></i>
+                                {{content.hero_button_2_text}}
+                            </a>
+                        {{else if (eq content.hero_button_2_link 'about')}}
+                            <a href="/{{modelSlug}}/about{{previewParam}}" class="modern-btn-outline">
+                                <i class="fas fa-user mr-3"></i>
+                                {{content.hero_button_2_text}}
+                            </a>
+                        {{else}}
+                            <a href="/{{modelSlug}}/contact{{previewParam}}" class="modern-btn-outline">
+                                <i class="fas fa-envelope mr-3"></i>
+                                {{content.hero_button_2_text}}
+                            </a>
+                        {{/if}}
+                    {{else}}
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="modern-btn-outline">
+                            <i class="fas fa-envelope mr-3"></i>
+                            Contact Me
+                        </a>
+                    {{/if}}
+                </div>
             </div>
         </div>
     </div>
     
-    <!-- Modern geometric shapes -->
-    <div class="absolute inset-0 overflow-hidden opacity-10">
-        <div class="absolute top-1/4 right-1/4 w-32 h-32 bg-white transform rotate-45"></div>
-        <div class="absolute bottom-1/4 left-1/4 w-24 h-24 bg-white rounded-full"></div>
-        <div class="absolute top-1/2 left-1/2 w-16 h-16 bg-white transform -translate-x-1/2 -translate-y-1/2 rotate-12"></div>
+    <!-- Modern Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 modern-scroll-indicator" data-aos="bounce" data-aos-delay="1000">
+        <div class="modern-scroll-arrow"></div>
     </div>
 </section>
+{{/if}}
 
-<!-- About Preview Section -->
-<section class="py-20 bg-white">
+<!-- Modern About Preview -->
+{{#if content.about_section_visible}}
+<section class="py-20 modern-about-section">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="modern-grid modern-grid-2 items-center">
-            <div data-aos="fade-right">
-                <div class="modern-badge mb-4">About</div>
-                <h2 class="text-4xl md:text-5xl font-bold mb-6 modern-heading text-modern-primary">
-                    Meet {{siteName}}
-                </h2>
-                <div class="text-lg text-modern-muted leading-relaxed space-y-4 mb-8">
-                    {{{content.aboutPreview}}}
+        {{#if content.portrait_section_visible}}
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <div class="modern-about-content" data-aos="fade-right">
+                <div class="modern-section-header">
+                    <h2 class="text-4xl font-bold mb-8 modern-gradient-text">
+                        {{#if content.about_title}}{{content.about_title}}{{else}}About {{siteName}}{{/if}}
+                    </h2>
                 </div>
-                <div class="flex flex-wrap gap-4 mb-8">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-2 h-2 bg-modern-primary rounded-full"></div>
-                        <span class="text-sm font-medium text-modern-muted modern-mono">Professional</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-2 h-2 bg-modern-accent rounded-full"></div>
-                        <span class="text-sm font-medium text-modern-muted modern-mono">Reliable</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-2 h-2 bg-modern-secondary rounded-full"></div>
-                        <span class="text-sm font-medium text-modern-muted modern-mono">Modern</span>
-                    </div>
+                
+                <div class="modern-about-text">
+                    {{#if content.about_paragraph_1}}
+                    <p class="text-lg text-gray-700 mb-6 modern-paragraph">{{content.about_paragraph_1}}</p>
+                    {{/if}}
+                    {{#if content.about_paragraph_2}}
+                    <p class="text-lg text-gray-700 mb-8 modern-paragraph">{{content.about_paragraph_2}}</p>
+                    {{/if}}
+                    {{#unless content.about_paragraph_1}}
+                    <p class="text-lg text-gray-700 mb-6 modern-paragraph">Welcome to a world where contemporary elegance meets professional excellence. I specialize in creating sophisticated experiences that blend modern sensibilities with timeless grace.</p>
+                    <p class="text-lg text-gray-700 mb-8 modern-paragraph">With a focus on genuine connection and attention to detail, I provide companionship services that cater to the discerning individual who appreciates quality and discretion.</p>
+                    {{/unless}}
+                    
+                    {{#if content.about_link_text}}
+                        {{#eq content.about_link_destination 'about'}}
+                            <a href="/{{modelSlug}}/about{{previewParam}}" class="modern-link-primary">
+                        {{/eq}}
+                        {{#eq content.about_link_destination 'contact'}}
+                            <a href="/{{modelSlug}}/contact{{previewParam}}" class="modern-link-primary">
+                        {{/eq}}
+                        {{#eq content.about_link_destination 'gallery'}}
+                            <a href="/{{modelSlug}}/gallery{{previewParam}}" class="modern-link-primary">
+                        {{/eq}}
+                        {{#eq content.about_link_destination 'rates'}}
+                            <a href="/{{modelSlug}}/rates{{previewParam}}" class="modern-link-primary">
+                        {{/eq}}
+                        {{#eq content.about_link_destination 'calendar'}}
+                            <a href="/{{modelSlug}}/calendar{{previewParam}}" class="modern-link-primary">
+                        {{/eq}}
+                    {{else}}
+                        <a href="/{{modelSlug}}/about{{previewParam}}" class="modern-link-primary">
+                    {{/if}}
+                        {{#if content.about_link_text}}{{content.about_link_text}}{{else}}Discover More About Me{{/if}}
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
                 </div>
-                <a href="/{{modelSlug}}/about" class="modern-btn">
-                    <i class="fas fa-user mr-2"></i>
-                    About Me
-                </a>
             </div>
-            <div data-aos="fade-left">
-                {{#if content.aboutImage}}
-                <div class="relative">
-                    <img src="{{content.aboutImage}}" alt="{{siteName}}" 
-                         class="w-full rounded-2xl shadow-xl">
-                    <div class="absolute inset-0 bg-modern-primary opacity-10 rounded-2xl"></div>
+            
+            <!-- Modern Portrait Card -->
+            <div class="modern-portrait-card" data-aos="fade-left">
+                <div class="modern-portrait-gradient"></div>
+                <div class="modern-portrait-container">
+                    {{#if content.portrait_image_url}}
+                        <img src="{{content.portrait_image_url}}" 
+                             alt="{{#if content.portrait_alt}}{{content.portrait_alt}}{{else}}Professional Portrait{{/if}}"
+                             class="modern-portrait-image">
+                    {{else}}
+                        <div class="modern-portrait-placeholder">
+                            <i class="fas fa-user text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-gray-500">{{#if content.portrait_alt}}{{content.portrait_alt}}{{else}}Professional portrait coming soon{{/if}}</p>
+                        </div>
+                    {{/if}}
                 </div>
-                {{else}}
-                <div class="modern-card p-12 text-center">
-                    <div class="w-32 h-32 mx-auto mb-6 bg-modern-primary rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-user text-4xl text-white"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4 modern-heading">Professional Profile</h3>
-                    <p class="text-modern-muted">Professional content coming soon</p>
-                </div>
-                {{/if}}
             </div>
-        </div>
-    </div>
-</section>
-
-<!-- Services Preview Section -->
-<section class="py-20 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16" data-aos="fade-up">
-            <div class="modern-badge mb-4">Services</div>
-            <h2 class="text-4xl md:text-5xl font-bold mb-6 modern-heading text-modern-primary">
-                What I Offer
-            </h2>
-            <p class="text-xl text-modern-muted max-w-3xl mx-auto">
-                {{content.servicesPreview}}
-            </p>
-        </div>
-        
-        {{#if services}}
-        <div class="modern-grid modern-grid-3">
-            {{#each services}}
-            <div class="modern-card p-8 text-center group" data-aos="fade-up" data-aos-delay="{{@index}}00">
-                <div class="w-16 h-16 mx-auto mb-6 bg-modern-primary rounded-2xl flex items-center justify-center group-hover:bg-modern-secondary transition-colors">
-                    <i class="{{this.icon}} text-2xl text-white"></i>
-                </div>
-                <h3 class="text-xl font-bold mb-4 modern-heading">{{this.name}}</h3>
-                <p class="text-modern-muted mb-6 leading-relaxed">{{this.description}}</p>
-                {{#if this.price}}
-                <p class="text-2xl font-bold text-modern-primary modern-mono">{{formatCurrency this.price}}</p>
-                {{/if}}
-            </div>
-            {{/each}}
         </div>
         {{else}}
-        <div class="modern-card p-12 text-center max-w-2xl mx-auto">
-            <div class="w-24 h-24 mx-auto mb-6 bg-modern-primary rounded-2xl flex items-center justify-center">
-                <i class="fas fa-cogs text-3xl text-white"></i>
+        <!-- Centered Layout -->
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="modern-section-header" data-aos="fade-up">
+                <h2 class="text-4xl font-bold mb-8 modern-gradient-text">
+                    {{#if content.about_title}}{{content.about_title}}{{else}}About {{siteName}}{{/if}}
+                </h2>
             </div>
-            <h3 class="text-2xl font-bold mb-4 modern-heading">Professional Services</h3>
-            <p class="text-modern-muted mb-6">Modern, efficient services tailored to your needs</p>
-            <a href="/{{modelSlug}}/rates" class="modern-btn">
-                <i class="fas fa-list mr-2"></i>
-                View Services
-            </a>
+            
+            <div class="modern-about-text" data-aos="fade-up" data-aos-delay="200">
+                {{#if content.about_paragraph_1}}
+                <p class="text-lg text-gray-700 mb-6 modern-paragraph">{{content.about_paragraph_1}}</p>
+                {{/if}}
+                {{#if content.about_paragraph_2}}
+                <p class="text-lg text-gray-700 mb-8 modern-paragraph">{{content.about_paragraph_2}}</p>
+                {{/if}}
+                {{#unless content.about_paragraph_1}}
+                <p class="text-lg text-gray-700 mb-6 modern-paragraph">Welcome to a world where contemporary elegance meets professional excellence. I specialize in creating sophisticated experiences that blend modern sensibilities with timeless grace.</p>
+                <p class="text-lg text-gray-700 mb-8 modern-paragraph">With a focus on genuine connection and attention to detail, I provide companionship services that cater to the discerning individual who appreciates quality and discretion.</p>
+                {{/unless}}
+                
+                {{#if content.about_link_text}}
+                    {{#eq content.about_link_destination 'about'}}
+                        <a href="/{{modelSlug}}/about{{previewParam}}" class="modern-link-primary">
+                    {{/eq}}
+                    {{#eq content.about_link_destination 'contact'}}
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="modern-link-primary">
+                    {{/eq}}
+                    {{#eq content.about_link_destination 'gallery'}}
+                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="modern-link-primary">
+                    {{/eq}}
+                    {{#eq content.about_link_destination 'rates'}}
+                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="modern-link-primary">
+                    {{/eq}}
+                    {{#eq content.about_link_destination 'calendar'}}
+                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="modern-link-primary">
+                    {{/eq}}
+                {{else}}
+                    <a href="/{{modelSlug}}/about{{previewParam}}" class="modern-link-primary">
+                {{/if}}
+                    {{#if content.about_link_text}}{{content.about_link_text}}{{else}}Discover More About Me{{/if}}
+                    <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
         </div>
         {{/if}}
-        
-        <div class="text-center mt-12" data-aos="fade-up">
-            <a href="/{{modelSlug}}/rates" class="modern-btn-outline">
-                <i class="fas fa-arrow-right mr-2"></i>
-                All Services & Rates
-            </a>
-        </div>
     </div>
 </section>
+{{/if}}
 
-<!-- Gallery Preview Section -->
-{{#if galleryImages}}
-<section class="py-20 bg-white">
+<!-- Modern Gallery Preview -->
+{{#if content.gallery_section_visible}}
+<section class="py-20 modern-gallery-section">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16" data-aos="fade-up">
-            <div class="modern-badge mb-4">Gallery</div>
-            <h2 class="text-4xl md:text-5xl font-bold mb-6 modern-heading text-modern-primary">
-                Recent Work
+        <div class="modern-section-header text-center mb-16" data-aos="fade-up">
+            <h2 class="text-4xl font-bold modern-gradient-text">
+                {{#if content.gallery_section_title}}{{content.gallery_section_title}}{{else}}Gallery{{/if}}
             </h2>
-            <p class="text-xl text-modern-muted">
-                A showcase of professional content and projects
-            </p>
+            <div class="modern-section-divider"></div>
         </div>
         
-        <div class="modern-grid modern-grid-4">
+        <div class="modern-gallery-grid" data-aos="fade-up" data-aos-delay="200">
             {{#each galleryImages}}
-            {{#if (lt @index 8)}}
-            <div class="relative group overflow-hidden rounded-2xl modern-card" data-aos="zoom-in" data-aos-delay="{{@index}}0">
-                <img src="{{this.thumbnail}}" alt="Gallery Image" 
-                     class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105">
-                <div class="absolute inset-0 bg-modern-primary opacity-0 group-hover:opacity-80 transition-opacity duration-300 flex items-center justify-center">
-                    <div class="text-center text-white">
-                        <i class="fas fa-expand text-2xl mb-2"></i>
-                        {{#if this.caption}}
-                        <p class="text-sm font-medium">{{this.caption}}</p>
-                        {{/if}}
+            <div class="modern-gallery-card">
+                <div class="modern-gallery-image-container">
+                    <img src="/uploads/{{../modelSlug}}/public/gallery/{{this.filename}}" 
+                         alt="{{#if this.caption}}{{this.caption}}{{else}}Gallery image{{/if}}" 
+                         class="modern-gallery-image">
+                    <div class="modern-gallery-overlay">
+                        <i class="fas fa-search-plus text-2xl"></i>
                     </div>
                 </div>
             </div>
-            {{/if}}
+            {{else}}
+            {{#times 5}}
+            <div class="modern-gallery-card modern-gallery-placeholder">
+                <div class="modern-gallery-placeholder-content">
+                    <i class="fas fa-image text-2xl text-gray-400 mb-2"></i>
+                    <p class="text-gray-500 text-sm">Photo</p>
+                </div>
+            </div>
+            {{/times}}
             {{/each}}
         </div>
         
-        <div class="text-center mt-12" data-aos="fade-up">
-            <a href="/{{modelSlug}}/gallery" class="modern-btn">
-                <i class="fas fa-images mr-2"></i>
-                View Gallery
+        <div class="text-center mt-12" data-aos="fade-up" data-aos-delay="400">
+            <a href="/{{modelSlug}}/gallery{{previewParam}}" class="modern-btn-primary">
+                <i class="fas fa-images mr-3"></i>
+                {{#if content.gallery_button_text}}{{content.gallery_button_text}}{{else}}Explore Full Gallery{{/if}}
             </a>
         </div>
     </div>
 </section>
 {{/if}}
 
-<!-- Stats Section -->
-<section class="py-20 bg-modern-primary text-white">
+<!-- Modern Travel Schedule -->
+{{#if content.travel_section_visible}}
+<section class="py-20 modern-travel-section">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16" data-aos="fade-up">
-            <h2 class="text-3xl font-bold mb-4 modern-heading">
-                By the Numbers
+        <div class="modern-section-header text-center mb-16" data-aos="fade-up">
+            <h2 class="text-4xl font-bold modern-gradient-text">
+                {{#if content.travel_section_title}}{{content.travel_section_title}}{{else}}Travel Schedule{{/if}}
             </h2>
+            <div class="modern-section-divider"></div>
         </div>
         
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div class="text-center" data-aos="fade-up" data-aos-delay="0">
-                <div class="text-4xl font-bold mb-2 modern-mono">100%</div>
-                <div class="text-sm opacity-90 uppercase tracking-wide">Satisfaction</div>
+        {{#if upcomingEvents}}
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {{#each upcomingEvents}}
+            <div class="modern-travel-card" data-aos="zoom-in" data-aos-delay="{{multiply @index 100}}">
+                <div class="modern-travel-gradient"></div>
+                <div class="modern-travel-content">
+                    <div class="modern-travel-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">{{this.location}}</h3>
+                    <div class="text-lg font-semibold text-gray-600 mb-4">
+                        {{#if this.dateRange}}
+                            {{this.dateRange}}
+                        {{else}}
+                            {{formatDate this.date}}
+                        {{/if}}
+                    </div>
+                    <div class="modern-travel-status">
+                        <span class="modern-status-badge">Available</span>
+                    </div>
+                    {{#if this.notes}}
+                    <p class="text-sm text-gray-600 mt-3 italic">{{this.notes}}</p>
+                    {{/if}}
+                </div>
             </div>
+            {{/each}}
+        </div>
+        
+        <div class="text-center mt-12" data-aos="fade-up" data-aos-delay="600">
+            <a href="/{{modelSlug}}/{{#if content.travel_cta_link}}{{content.travel_cta_link}}{{else}}calendar{{/if}}{{previewParam}}" class="modern-btn-primary">
+                <i class="fas fa-calendar-alt mr-3"></i>
+                {{#if content.travel_cta_text}}{{content.travel_cta_text}}{{else}}View Complete Calendar{{/if}}
+            </a>
+        </div>
+        {{else}}
+        <!-- Empty State -->
+        <div class="text-center">
+            <div class="modern-empty-state" data-aos="zoom-in">
+                <div class="modern-empty-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4">Check My Calendar</h3>
+                <p class="text-gray-600 mb-8">Discover available dates and schedule your appointment</p>
+                <a href="/{{modelSlug}}/calendar{{previewParam}}" class="modern-btn-primary">
+                    <i class="fas fa-calendar-alt mr-3"></i>
+                    View Calendar
+                </a>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+</section>
+{{/if}}
+
+<!-- Modern Services Section -->
+{{#if content.services_section_visible}}
+<section class="py-20 modern-services-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="modern-section-header text-center mb-16" data-aos="fade-up">
+            <h2 class="text-4xl font-bold modern-gradient-text">
+                {{#if content.services_title}}{{content.services_title}}{{else}}My Services{{/if}}
+            </h2>
+            <div class="modern-section-divider"></div>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Service 1 -->
+            {{#if content.service_1_visible}}
+            <div class="modern-service-card" data-aos="fade-up" data-aos-delay="0">
+                <div class="modern-service-gradient"></div>
+                <div class="modern-service-content">
+                    <div class="modern-service-icon">
+                        <i class="{{#if content.service_1_icon}}{{content.service_1_icon}}{{else}}fas fa-gem{{/if}}"></i>
+                    </div>
+                    <h3 class="modern-service-title">
+                        {{#if content.service_1_title}}{{content.service_1_title}}{{else}}Premium Experience{{/if}}
+                    </h3>
+                    {{#if content.service_1_description}}
+                    <p class="modern-service-description">{{content.service_1_description}}</p>
+                    {{/if}}
+                </div>
+            </div>
+            {{/if}}
             
-            <div class="text-center" data-aos="fade-up" data-aos-delay="100">
-                <div class="text-4xl font-bold mb-2 modern-mono">24/7</div>
-                <div class="text-sm opacity-90 uppercase tracking-wide">Support</div>
+            <!-- Service 2 -->
+            {{#if content.service_2_visible}}
+            <div class="modern-service-card" data-aos="fade-up" data-aos-delay="150">
+                <div class="modern-service-gradient"></div>
+                <div class="modern-service-content">
+                    <div class="modern-service-icon">
+                        <i class="{{#if content.service_2_icon}}{{content.service_2_icon}}{{else}}fas fa-star{{/if}}"></i>
+                    </div>
+                    <h3 class="modern-service-title">
+                        {{#if content.service_2_title}}{{content.service_2_title}}{{else}}Exclusive Access{{/if}}
+                    </h3>
+                    {{#if content.service_2_description}}
+                    <p class="modern-service-description">{{content.service_2_description}}</p>
+                    {{/if}}
+                </div>
             </div>
+            {{/if}}
             
-            <div class="text-center" data-aos="fade-up" data-aos-delay="200">
-                <div class="text-4xl font-bold mb-2 modern-mono">5★</div>
-                <div class="text-sm opacity-90 uppercase tracking-wide">Rating</div>
+            <!-- Service 3 -->
+            {{#if content.service_3_visible}}
+            <div class="modern-service-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="modern-service-gradient"></div>
+                <div class="modern-service-content">
+                    <div class="modern-service-icon">
+                        <i class="{{#if content.service_3_icon}}{{content.service_3_icon}}{{else}}fas fa-crown{{/if}}"></i>
+                    </div>
+                    <h3 class="modern-service-title">
+                        {{#if content.service_3_title}}{{content.service_3_title}}{{else}}Professional Service{{/if}}
+                    </h3>
+                    {{#if content.service_3_description}}
+                    <p class="modern-service-description">{{content.service_3_description}}</p>
+                    {{/if}}
+                </div>
             </div>
-            
-            <div class="text-center" data-aos="fade-up" data-aos-delay="300">
-                <div class="text-4xl font-bold mb-2 modern-mono">Pro</div>
-                <div class="text-sm opacity-90 uppercase tracking-wide">Service</div>
+            {{/if}}
+        </div>
+        
+        <!-- Services CTA -->
+        {{#if content.services_cta_text}}
+        <div class="text-center mt-16" data-aos="fade-up" data-aos-delay="450">
+            <a href="{{#if content.services_cta_link}}{{content.services_cta_link}}{{else}}/{{modelSlug}}/rates{{previewParam}}{{/if}}" 
+               class="modern-btn-primary">
+                <i class="fas fa-arrow-right mr-3"></i>
+                {{content.services_cta_text}}
+            </a>
+        </div>
+        {{/if}}
+    </div>
+</section>
+{{/if}}
+
+<!-- Modern Testimonials -->
+{{#if content.testimonials_section_visible}}
+<section class="py-20 modern-testimonials-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="modern-section-header text-center mb-16" data-aos="fade-up">
+            <h2 class="text-4xl font-bold modern-gradient-text">
+                {{#if content.testimonials_section_title}}{{content.testimonials_section_title}}{{else}}Client Testimonials{{/if}}
+            </h2>
+            <div class="modern-section-divider"></div>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8">
+            {{#each testimonials}}
+            {{#if (lt @index (or content.testimonials_display_count 3))}}
+            <div class="modern-testimonial-card" data-aos="fade-up" data-aos-delay="{{multiply @index 150}}">
+                <div class="modern-testimonial-gradient"></div>
+                <div class="modern-testimonial-content">
+                    <div class="modern-rating">
+                        {{#times this.rating}}
+                        <i class="fas fa-star"></i>
+                        {{/times}}
+                    </div>
+                    <blockquote class="modern-testimonial-text">
+                        "{{this.text}}"
+                    </blockquote>
+                    <cite class="modern-testimonial-author">{{this.name}}</cite>
+                </div>
             </div>
+            {{/if}}
+            {{else}}
+            <div class="modern-testimonial-card" data-aos="fade-up" data-aos-delay="0">
+                <div class="modern-testimonial-gradient"></div>
+                <div class="modern-testimonial-content">
+                    <div class="modern-rating">
+                        {{#times 5}}<i class="fas fa-star"></i>{{/times}}
+                    </div>
+                    <blockquote class="modern-testimonial-text">
+                        "Exceptional professionalism paired with genuine warmth. A truly memorable experience that exceeded all expectations."
+                    </blockquote>
+                    <cite class="modern-testimonial-author">Michael D.</cite>
+                </div>
+            </div>
+            <div class="modern-testimonial-card" data-aos="fade-up" data-aos-delay="150">
+                <div class="modern-testimonial-gradient"></div>
+                <div class="modern-testimonial-content">
+                    <div class="modern-rating">
+                        {{#times 5}}<i class="fas fa-star"></i>{{/times}}
+                    </div>
+                    <blockquote class="modern-testimonial-text">
+                        "Sophistication and discretion personified. Made our evening absolutely magical with attention to every detail."
+                    </blockquote>
+                    <cite class="modern-testimonial-author">James S.</cite>
+                </div>
+            </div>
+            <div class="modern-testimonial-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="modern-testimonial-gradient"></div>
+                <div class="modern-testimonial-content">
+                    <div class="modern-rating">
+                        {{#times 5}}<i class="fas fa-star"></i>{{/times}}
+                    </div>
+                    <blockquote class="modern-testimonial-text">
+                        "Outstanding service with genuine care and consideration. Highly recommended for discerning individuals."
+                    </blockquote>
+                    <cite class="modern-testimonial-author">Robert T.</cite>
+                </div>
+            </div>
+            {{/each}}
         </div>
     </div>
 </section>
+{{/if}}
 
-<!-- Call to Action Section -->
-<section class="py-20 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
-        <div class="max-w-3xl mx-auto">
-            <h2 class="text-4xl md:text-5xl font-bold mb-6 modern-heading text-modern-primary">
-                {{content.ctaTitle}}
+<!-- Modern CTA Section -->
+{{#if content.cta_section_visible}}
+<section class="py-20 modern-cta-section">
+    <div class="modern-cta-background"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <div class="modern-cta-content" data-aos="zoom-in">
+            <h2 class="text-4xl font-bold mb-8 text-white modern-text-glow">
+                {{#if content.cta_section_title}}{{content.cta_section_title}}{{else}}Ready to Connect?{{/if}}
             </h2>
-            <p class="text-xl text-modern-muted mb-8">
-                {{content.ctaSubtitle}}
+            <p class="text-xl mb-10 text-white opacity-90 max-w-2xl mx-auto">
+                {{#if content.cta_section_subtitle}}{{content.cta_section_subtitle}}{{else}}Experience contemporary elegance and professional sophistication with personalized companionship services{{/if}}
             </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="/{{modelSlug}}/contact" class="modern-btn text-lg px-8 py-4">
-                    <i class="fas fa-envelope mr-2"></i>
-                    Contact Me
-                </a>
-                {{#if bookingUrl}}
-                <a href="{{bookingUrl}}" class="modern-btn-outline text-lg px-8 py-4">
-                    <i class="fas fa-calendar mr-2"></i>
-                    Schedule
-                </a>
+            
+            <!-- Modern CTA Buttons -->
+            <div class="flex flex-col sm:flex-row justify-center gap-6">
+                <!-- CTA Button 1 -->
+                {{#if content.cta_button_1_text}}
+                    {{#if (eq content.cta_button_1_link 'calendar')}}
+                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="modern-btn-cta-primary">
+                            <i class="fas fa-calendar-alt mr-3"></i>
+                            {{content.cta_button_1_text}}
+                        </a>
+                    {{else if (eq content.cta_button_1_link 'contact')}}
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="modern-btn-cta-primary">
+                            <i class="fas fa-envelope mr-3"></i>
+                            {{content.cta_button_1_text}}
+                        </a>
+                    {{else if (eq content.cta_button_1_link 'gallery')}}
+                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="modern-btn-cta-primary">
+                            <i class="fas fa-images mr-3"></i>
+                            {{content.cta_button_1_text}}
+                        </a>
+                    {{else if (eq content.cta_button_1_link 'rates')}}
+                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="modern-btn-cta-primary">
+                            <i class="fas fa-tag mr-3"></i>
+                            {{content.cta_button_1_text}}
+                        </a>
+                    {{else if (eq content.cta_button_1_link 'about')}}
+                        <a href="/{{modelSlug}}/about{{previewParam}}" class="modern-btn-cta-primary">
+                            <i class="fas fa-user mr-3"></i>
+                            {{content.cta_button_1_text}}
+                        </a>
+                    {{else}}
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="modern-btn-cta-primary">
+                            <i class="fas fa-envelope mr-3"></i>
+                            {{content.cta_button_1_text}}
+                        </a>
+                    {{/if}}
+                {{else}}
+                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="modern-btn-cta-primary">
+                        <i class="fas fa-calendar-alt mr-3"></i>
+                        View Calendar
+                    </a>
+                {{/if}}
+                
+                <!-- CTA Button 2 -->
+                {{#if content.cta_button_2_text}}
+                    {{#if (eq content.cta_button_2_link 'calendar')}}
+                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="modern-btn-cta-outline">
+                            <i class="fas fa-calendar-alt mr-3"></i>
+                            {{content.cta_button_2_text}}
+                        </a>
+                    {{else if (eq content.cta_button_2_link 'contact')}}
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="modern-btn-cta-outline">
+                            <i class="fas fa-envelope mr-3"></i>
+                            {{content.cta_button_2_text}}
+                        </a>
+                    {{else if (eq content.cta_button_2_link 'gallery')}}
+                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="modern-btn-cta-outline">
+                            <i class="fas fa-images mr-3"></i>
+                            {{content.cta_button_2_text}}
+                        </a>
+                    {{else if (eq content.cta_button_2_link 'rates')}}
+                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="modern-btn-cta-outline">
+                            <i class="fas fa-tag mr-3"></i>
+                            {{content.cta_button_2_text}}
+                        </a>
+                    {{else if (eq content.cta_button_2_link 'about')}}
+                        <a href="/{{modelSlug}}/about{{previewParam}}" class="modern-btn-cta-outline">
+                            <i class="fas fa-user mr-3"></i>
+                            {{content.cta_button_2_text}}
+                        </a>
+                    {{else}}
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="modern-btn-cta-outline">
+                            <i class="fas fa-envelope mr-3"></i>
+                            {{content.cta_button_2_text}}
+                        </a>
+                    {{/if}}
+                {{else}}
+                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="modern-btn-cta-outline">
+                        <i class="fas fa-envelope mr-3"></i>
+                        Contact Me
+                    </a>
                 {{/if}}
             </div>
         </div>
     </div>
 </section>
+{{/if}}
+
+<!-- Modern Template Styling -->
+<style>
+/* Modern Color Palette */
+:root {
+    --modern-primary: #6366f1;
+    --modern-secondary: #8b5cf6;
+    --modern-accent: #06b6d4;
+    --modern-gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    --modern-gradient-2: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+    --modern-gradient-3: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+}
+
+/* Modern Hero Section */
+.modern-hero-canvas {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.modern-gradient-layer-1 {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+    animation: modern-rotate 20s linear infinite;
+}
+
+.modern-gradient-layer-2 {
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+    animation: modern-rotate 25s linear infinite reverse;
+}
+
+.modern-gradient-layer-3 {
+    position: absolute;
+    bottom: -50%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+    animation: modern-pulse 15s ease-in-out infinite;
+}
+
+/* Modern Floating Elements */
+.modern-floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.modern-floating-circle-1 {
+    position: absolute;
+    top: 20%;
+    left: 15%;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 2px solid rgba(99, 102, 241, 0.3);
+    animation: modern-float-slow 8s ease-in-out infinite;
+}
+
+.modern-floating-circle-2 {
+    position: absolute;
+    top: 70%;
+    right: 20%;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    animation: modern-float-slow 6s ease-in-out infinite reverse;
+}
+
+.modern-floating-line-1 {
+    position: absolute;
+    top: 30%;
+    right: 10%;
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(6, 182, 212, 0.5), transparent);
+    animation: modern-slide 12s ease-in-out infinite;
+}
+
+.modern-floating-line-2 {
+    position: absolute;
+    bottom: 40%;
+    left: 10%;
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.4), transparent);
+    animation: modern-slide 10s ease-in-out infinite reverse;
+}
+
+.modern-floating-dot-1 {
+    position: absolute;
+    top: 50%;
+    left: 5%;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(139, 92, 246, 0.6);
+    animation: modern-blink 4s ease-in-out infinite;
+}
+
+.modern-floating-dot-2 {
+    position: absolute;
+    bottom: 20%;
+    right: 5%;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(6, 182, 212, 0.5);
+    animation: modern-blink 5s ease-in-out infinite reverse;
+}
+
+/* Modern Text Styling */
+.modern-gradient-text {
+    background: var(--modern-gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.modern-text-glow {
+    text-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+}
+
+.modern-subtitle {
+    line-height: 1.6;
+    font-weight: 300;
+}
+
+.modern-paragraph {
+    line-height: 1.7;
+    font-weight: 400;
+}
+
+/* Modern Button Styles */
+.modern-btn-primary {
+    background: var(--modern-gradient-1);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.modern-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    color: white;
+}
+
+.modern-btn-outline {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.modern-btn-outline:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: translateY(-2px);
+    color: white;
+}
+
+.modern-btn-cta-primary {
+    background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+    color: #1e293b;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+}
+
+.modern-btn-cta-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
+    color: #1e293b;
+}
+
+.modern-btn-cta-outline {
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.modern-btn-cta-outline:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.7);
+    transform: translateY(-2px);
+    color: white;
+}
+
+.modern-link-primary {
+    color: #6366f1;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.modern-link-primary:hover {
+    color: #4f46e5;
+    transform: translateX(5px);
+}
+
+/* Modern Scroll Indicator */
+.modern-scroll-indicator {
+    animation: modern-bounce 2s infinite;
+}
+
+.modern-scroll-arrow {
+    width: 2px;
+    height: 30px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), transparent);
+    margin: 0 auto;
+    position: relative;
+}
+
+.modern-scroll-arrow::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid rgba(255, 255, 255, 0.8);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.8);
+    transform: translateX(-50%) rotate(45deg);
+}
+
+/* Modern Section Styles */
+.modern-about-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+}
+
+.modern-section-header {
+    position: relative;
+}
+
+.modern-section-divider {
+    width: 60px;
+    height: 4px;
+    background: var(--modern-gradient-1);
+    margin: 1rem auto 0;
+    border-radius: 2px;
+}
+
+/* Modern Portrait Card */
+.modern-portrait-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+}
+
+.modern-portrait-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--modern-gradient-2);
+    opacity: 0.1;
+    z-index: 1;
+}
+
+.modern-portrait-container {
+    position: relative;
+    z-index: 2;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modern-portrait-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+}
+
+.modern-portrait-placeholder {
+    text-align: center;
+    color: #64748b;
+}
+
+/* Modern Gallery Styles */
+.modern-gallery-section {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+}
+
+.modern-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.modern-gallery-card {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    background: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.modern-gallery-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modern-gallery-image-container {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+}
+
+.modern-gallery-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.3s ease;
+}
+
+.modern-gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(99, 102, 241, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.modern-gallery-card:hover .modern-gallery-overlay {
+    opacity: 1;
+}
+
+.modern-gallery-placeholder {
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.modern-gallery-placeholder-content {
+    text-align: center;
+}
+
+/* Modern Travel Section */
+.modern-travel-section {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.modern-travel-card {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.modern-travel-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+.modern-travel-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--modern-gradient-2);
+}
+
+.modern-travel-content {
+    padding: 2rem;
+    text-align: center;
+}
+
+.modern-travel-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: var(--modern-gradient-1);
+    color: white;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.modern-status-badge {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.modern-empty-state {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.modern-empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    background: var(--modern-gradient-1);
+    color: white;
+    border-radius: 50%;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+}
+
+/* Modern Services Section */
+.modern-services-section {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.modern-service-card {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    height: 100%;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+}
+
+.modern-service-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 25px 50px rgba(99, 102, 241, 0.15);
+}
+
+.modern-service-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--modern-gradient-1);
+}
+
+.modern-service-content {
+    padding: 2rem;
+    text-align: center;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.modern-service-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    background: var(--modern-gradient-1);
+    color: white;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem auto;
+    font-size: 1.75rem;
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+}
+
+.modern-service-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 1rem;
+    background: var(--modern-gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.modern-service-description {
+    color: #4b5563;
+    line-height: 1.7;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+}
+
+/* Modern Testimonials */
+.modern-testimonials-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.modern-testimonial-card {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.modern-testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.modern-testimonial-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--modern-gradient-3);
+}
+
+.modern-testimonial-content {
+    padding: 2rem;
+}
+
+.modern-rating {
+    color: #fbbf24;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+}
+
+.modern-testimonial-text {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: #4b5563;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+}
+
+.modern-testimonial-author {
+    font-weight: 600;
+    color: #1f2937;
+    font-style: normal;
+}
+
+/* Modern CTA Section */
+.modern-cta-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.modern-cta-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e293b 100%);
+}
+
+.modern-cta-background::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 50%);
+    animation: modern-rotate 30s linear infinite;
+}
+
+.modern-cta-content {
+    position: relative;
+    z-index: 2;
+}
+
+/* Animations */
+@keyframes modern-rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes modern-pulse {
+    0%, 100% { opacity: 0.1; transform: scale(1); }
+    50% { opacity: 0.2; transform: scale(1.05); }
+}
+
+@keyframes modern-float-slow {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes modern-slide {
+    0%, 100% { transform: translateX(0px); }
+    50% { transform: translateX(30px); }
+}
+
+@keyframes modern-blink {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+@keyframes modern-bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modern-floating-elements > * {
+        display: none;
+    }
+    
+    .modern-hero-canvas h1 {
+        font-size: 2.5rem !important;
+    }
+    
+    .modern-gallery-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+    
+    .modern-gallery-image-container {
+        height: 200px;
+    }
+    
+    .modern-travel-content,
+    .modern-testimonial-content,
+    .modern-service-content {
+        padding: 1.5rem;
+    }
+    
+    .modern-empty-state {
+        padding: 2rem;
+        margin: 0 1rem;
+    }
+    
+    .modern-service-card {
+        min-height: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .modern-gallery-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modern-portrait-container {
+        height: 400px;
+    }
+    
+    .modern-hero-canvas h1 {
+        font-size: 2rem !important;
+    }
+    
+    .modern-btn-primary,
+    .modern-btn-outline,
+    .modern-btn-cta-primary,
+    .modern-btn-cta-outline {
+        padding: 0.875rem 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .modern-service-card {
+        min-height: 220px;
+    }
+    
+    .modern-service-content {
+        padding: 1.25rem;
+    }
+    
+    .modern-service-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+}
+</style>

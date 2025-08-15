@@ -409,57 +409,60 @@ class GalleryRenderingService {
 
         const {
             carousel_autoplay = 'false',
-            carousel_transition = 'slide',
+            carousel_transition = 'slide', 
             carousel_height = '400',
             carousel_indicators = true,
-            carousel_controls = true
+            carousel_controls = true,
+            // New camelCase properties
+            carouselAutoplay,
+            carouselSpeed,
+            carouselTransition,
+            carouselDots,
+            carouselArrows
         } = settings;
+        
+        // Support both old and new property names
+        const autoplayEnabled = carouselAutoplay || (carousel_autoplay !== 'false');
+        const autoplayInterval = carouselSpeed || carousel_autoplay || '5000';
+        const showIndicators = carouselDots !== false && carousel_indicators !== false;
+        const showControls = carouselArrows !== false && carousel_controls !== false;
 
-        const carouselId = `carousel-${section.id}`;
-        const autoplayAttr = carousel_autoplay !== 'false' ? `data-bs-ride="carousel" data-bs-interval="${carousel_autoplay}"` : '';
-        const heightStyle = carousel_height === 'auto' ? 'height: auto;' : `height: ${carousel_height}px;`;
-
+        // Generate carousel HTML that matches all theme expectations
         const html = `
         <div class="gallery-section gallery-carousel" data-section-id="${section.id}" data-layout="carousel">
             <div class="gallery-header">
                 <h3 class="gallery-title">${section.section_name}</h3>
             </div>
-            <div id="${carouselId}" class="carousel slide" ${autoplayAttr} style="margin-top: 20px;">
-                ${carousel_indicators ? `
-                <div class="carousel-indicators">
-                    ${media.map((_, index) => `
-                    <button type="button" data-bs-target="#${carouselId}" data-bs-slide-to="${index}" 
-                            ${index === 0 ? 'class="active" aria-current="true"' : ''} 
-                            aria-label="Slide ${index + 1}"></button>
-                    `).join('')}
-                </div>
+            <div class="carousel-container" data-autoplay="${autoplayEnabled ? autoplayInterval : '0'}">
+                ${showControls ? `
+                <button class="carousel-nav prev" onclick="moveCarousel(${section.id}, -1)" aria-label="Previous">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-nav next" onclick="moveCarousel(${section.id}, 1)" aria-label="Next">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
                 ` : ''}
                 
-                <div class="carousel-inner" style="${heightStyle} border-radius: 12px; overflow: hidden;">
+                <div class="carousel-track" id="carousel-${section.id}" data-current-index="0">
                     ${media.map((item, index) => `
-                    <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                    <div class="carousel-item">
                         <img src="${item.file_url}" 
-                             class="d-block w-100" 
-                             alt="${item.custom_caption || item.original_filename}"
-                             style="height: 100%; object-fit: cover;">
-                        ${item.custom_caption ? `
-                        <div class="carousel-caption d-none d-md-block">
-                            <p>${item.custom_caption}</p>
-                        </div>
-                        ` : ''}
+                             alt="${item.custom_caption || item.original_filename}" 
+                             data-full="${item.file_url}" 
+                             class="gallery-image" 
+                             onclick="openLightbox ? openLightbox('${item.file_url}', '${item.custom_caption || 'Gallery Image'}') : openModernGalleryLightbox('${item.file_url}', '${item.custom_caption || 'Gallery Image'}')" 
+                             loading="lazy">
+                        ${item.custom_caption ? `<div class="image-caption">${item.custom_caption}</div>` : ''}
                     </div>
                     `).join('')}
                 </div>
                 
-                ${carousel_controls ? `
-                <button class="carousel-control-prev" type="button" data-bs-target="#${carouselId}" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#${carouselId}" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
+                ${showIndicators ? `
+                <div class="carousel-dots">
+                    ${media.map((_, index) => `
+                    <button class="carousel-dot ${index === 0 ? 'active' : ''}" onclick="goToCarouselSlide(${section.id}, ${index})" data-slide="${index}" aria-label="Go to slide ${index + 1}"></button>
+                    `).join('')}
+                </div>
                 ` : ''}
             </div>
         </div>`;

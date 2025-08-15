@@ -1,80 +1,1564 @@
-<div class="d-flex justify-content-between align-items-center mb-3">
+<<div class="d-flex justify-content-between align-items-center mb-3">
   <h3 class="mb-0"><i class="fas fa-palette me-2"></i>Color Themes — {{model.name}}</h3>
   <a class="btn btn-outline-secondary" href="/{{model.slug}}/admin"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
 </div>
 
-<div class="card mb-3">
-  <div class="card-header bg-white"><strong>Add New Theme</strong></div>
+<!-- Current Active Theme Display -->
+<div class="alert alert-info mb-4" id="current-theme-display" style="display: none;">
+  <div class="d-flex align-items-center">
+    <i class="fas fa-bolt text-warning me-2"></i>
+    <span id="active-theme-text">Loading current theme...</span>
+  </div>
+</div>
+
+<!-- Custom Palettes Section -->
+<div class="card mb-4">
+  <div class="card-header bg-white d-flex justify-content-between align-items-center">
+    <h5 class="mb-0"><strong>Custom Color Palettes</strong></h5>
+    <button class="btn btn-primary btn-sm" id="create-new-palette">
+      <i class="fas fa-plus me-1"></i>Create New Palette
+    </button>
+  </div>
   <div class="card-body">
-    <div class="row g-2">
-      <div class="col-md-4"><input class="form-control" id="th_name" placeholder="Theme Name (e.g., Autumn Warmth)"></div>
-      <div class="col-md-2"><input class="form-control" id="th_primary" value="#E11D48" placeholder="#RRGGBB"></div>
-      <div class="col-md-2"><input class="form-control" id="th_secondary" value="#F97316" placeholder="#RRGGBB"></div>
-      <div class="col-md-2"><input class="form-control" id="th_accent" value="#F59E0B" placeholder="#RRGGBB"></div>
-      <div class="col-md-2"><button class="btn btn-primary w-100" id="th_add">Add Theme</button></div>
+    <div class="row g-3" id="custom-palettes-grid">
+      <!-- Custom palettes will be loaded here -->
+      <div class="col-12 text-center py-4" id="palettes-loading">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2 text-muted">Loading custom palettes...</p>
+      </div>
+    </div>
+    
+    <!-- Palette Creation/Edit Interface -->
+    <div class="palette-editor mt-4" id="palette-editor" style="display: none;">
+      <div class="border rounded p-4 bg-light">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="mb-0 fw-bold">
+            <i class="fas fa-palette me-2"></i>
+            <span id="editor-title">Create New Palette</span>
+          </h6>
+          <button class="btn btn-sm btn-outline-secondary" id="cancel-palette-edit">
+            <i class="fas fa-times me-1"></i>Cancel
+          </button>
+        </div>
+        
+        <!-- Palette Name -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Palette Name</label>
+            <input type="text" class="form-control" id="palette-name" placeholder="e.g., My Custom Colors">
+          </div>
+        </div>
+        
+        <!-- Color Inputs -->
+        <div class="row g-3 mb-4" id="palette-color-controls">
+          <!-- Color controls will be populated here -->
+        </div>
+        
+        <!-- Live Preview -->
+        <div class="mb-4">
+          <h6 class="fw-bold mb-3">Palette Preview</h6>
+          <div class="border rounded p-3" id="palette-preview" style="min-height: 150px; background: #f8f9fa;">
+            <div class="preview-content">
+              <!-- Live preview of palette colors will be shown here -->
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="d-flex gap-2">
+          <button class="btn btn-success" id="save-palette">
+            <i class="fas fa-save me-1"></i>Save Palette
+          </button>
+          <button class="btn btn-outline-primary" id="save-and-apply-palette" style="display: none;">
+            <i class="fas fa-paint-brush me-1"></i>Save & Apply to Selected Theme
+          </button>
+          <button class="btn btn-outline-warning" id="reset-to-default" onclick="themeManager.resetToDefaultColors()">
+            <i class="fas fa-undo me-1"></i>Reset to Default
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="card">
-  <div class="card-header bg-white"><strong>Existing Themes</strong></div>
-  <div class="card-body" id="th_list"><div class="text-muted">Loading…</div></div>
+<!-- Theme Color Override Section -->
+<div class="card mb-4" id="theme-color-override" style="display: none;">
+  <div class="card-header bg-white d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">
+      <strong>Apply Custom Palette to Theme</strong>
+      <small class="text-muted ms-2" id="override-theme-name"></small>
+    </h5>
+    <div>
+      <button class="btn btn-sm btn-outline-warning" id="remove-color-override">
+        <i class="fas fa-undo me-1"></i>Remove Override
+      </button>
+      <button class="btn btn-sm btn-primary" id="activate-theme-with-palette">
+        <i class="fas fa-check-circle me-1"></i>Activate Theme with Palette
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="alert alert-info">
+      <i class="fas fa-info-circle me-2"></i>
+      <strong id="applied-palette-name">Palette Name</strong> colors are applied to 
+      <strong id="applied-theme-name">Theme Name</strong>. 
+      You can activate this combination or remove the override to use the theme's default colors.
+    </div>
+    
+    <!-- Combined Preview -->
+    <div class="mt-3">
+      <h6 class="fw-bold mb-3">Theme with Custom Palette Preview</h6>
+      <div class="border rounded p-3" id="combined-preview" style="min-height: 150px;">
+        <div class="preview-content">
+          <!-- Combined preview will be shown here -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Theme Selection -->
+<div class="card mb-4">
+  <div class="card-header bg-white">
+    <h5 class="mb-0"><strong>Select Theme</strong></h5>
+  </div>
+  <div class="card-body">
+    <div class="row g-3" id="theme-selection">
+      <!-- Available themes will be loaded here -->
+      <div class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2 text-muted">Loading available themes...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Theme Color Editor (Model-Level Customization) -->
+<div class="card mb-4" id="theme-color-editor" style="display: none;">
+  <div class="card-header bg-white d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">
+      <strong>Customize Theme Colors</strong>
+      <small class="text-muted ms-2" id="editing-theme-name"></small>
+    </h5>
+    <div>
+      <button class="btn btn-outline-warning btn-sm me-2" id="reset-theme-colors">
+        <i class="fas fa-undo me-1"></i>Reset to Default
+      </button>
+      <button class="btn btn-primary btn-sm" id="save-theme-colors">
+        <i class="fas fa-save me-1"></i>Save Model Colors
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="alert alert-info">
+      <i class="fas fa-info-circle me-2"></i>
+      <strong>Model-Level Customization:</strong> These color changes will only affect your model's site and won't override the global theme defaults.
+    </div>
+    
+    <div class="row g-3" id="theme-color-controls">
+      <!-- Color controls will be dynamically generated here -->
+    </div>
+    
+    <div class="mt-4">
+      <h6 class="fw-bold mb-3">Color Preview</h6>
+      <div class="border rounded p-4" id="theme-color-preview" style="min-height: 150px;">
+        <!-- Color preview will be shown here -->
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-(function(){
-  let slug = {{{json model.slug}}}; if (!slug){ const m=location.pathname.match(/^\/([^\/]+)\/admin/); if(m) slug=m[1]; }
-  const list = document.getElementById('th_list');
-  async function load(){
-    const r = await fetch(`/api/model-themes/${encodeURIComponent(slug)}`);
-    const d = await r.json();
-    if (!d.success) { list.innerHTML = '<div class="text-danger">Failed to load</div>'; return; }
-    const items = d.data.themes || [];
-    if (!items.length) { list.innerHTML = '<div class="text-muted">No themes yet.</div>'; return; }
-    list.innerHTML = items.map(it => `
-      <div class=\"border rounded p-2 mb-2\">
-        <div class=\"d-flex align-items-center justify-content-between\">
-          <div>
-            <strong>${it.theme_name}</strong>
-            <span class=\"badge ${it.is_active? 'bg-success':'bg-secondary'} ms-2\">${it.is_active? 'Active':'Inactive'}</span>
-          </div>
-          <div class=\"d-flex align-items-center gap-2\">
-            <div class=\"d-flex align-items-center gap-1\">
-              <span class=\"rounded-circle d-inline-block\" style=\"width:16px;height:16px;background:${it.primary_color}\"></span>
-              <span class=\"rounded-circle d-inline-block\" style=\"width:16px;height:16px;background:${it.secondary_color}\"></span>
-              <span class=\"rounded-circle d-inline-block\" style=\"width:16px;height:16px;background:${it.accent_color}\"></span>
-            </div>
-            <button class=\"btn btn-sm btn-outline-secondary btn-activate\" data-id=\"${it.id}\" data-active=\"${it.is_active?1:0}\">${it.is_active? 'Deactivate':'Activate'}</button>
-            <button class=\"btn btn-sm btn-outline-danger btn-del\" data-id=\"${it.id}\">Delete</button>
-          </div>
-        </div>
-      </div>`).join('');
-    list.querySelectorAll('.btn-del').forEach(b=>b.addEventListener('click', async ()=>{
-      if (!confirm('Delete this theme?')) return;
-      const id = b.getAttribute('data-id');
-      const r = await fetch(`/api/model-themes/${encodeURIComponent(slug)}/${id}`, { method:'DELETE' });
-      const d = await r.json(); if (!d.success){ notify('danger', d.message||'Delete failed'); return; }
-      notify('success', 'Deleted'); load();
-    }));
-    list.querySelectorAll('.btn-activate').forEach(b=>b.addEventListener('click', async ()=>{
-      const id = b.getAttribute('data-id');
-      const active = b.getAttribute('data-active')==='1';
-      const r = await fetch(`/api/model-themes/${encodeURIComponent(slug)}/${id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ is_active: !active }) });
-      const d = await r.json(); if (!d.success){ notify('danger', d.message||'Update failed'); return; }
-      notify('success', !active? 'Activated':'Deactivated'); load();
-    }));
+class ModelThemeManager {
+  constructor() {
+    this.slug = {{{json model.slug}}};
+    if (!this.slug) {
+      const m = location.pathname.match(/^\/([^\/]+)\/admin/);
+      if (m) this.slug = m[1];
+    }
+    
+    this.availableThemes = [];
+    this.customPalettes = [];
+    this.currentTheme = null;
+    this.activeTheme = null; // Currently live theme on website
+    this.currentColors = {};
+    this.hasUnsavedChanges = false;
+    
+    // Palette management
+    this.isEditingPalette = false;
+    this.editingPaletteId = null;
+    this.currentPaletteColors = {};
+    this.selectedPalette = null;
+    this.appliedPalette = null; // Palette applied to current theme
+    
+    this.init();
+  }
+  
+  async init() {
+    console.log('🎨 Initializing Model Theme Manager for:', this.slug);
+    await this.loadAvailableThemes();
+    await this.loadCustomPalettes();
+    await this.loadActiveTheme();
+    await this.loadCurrentTheme();
+    this.bindEventListeners();
+    this.bindPaletteEventListeners();
+    console.log('✅ Model Theme Manager initialized');
+  }
+  
+  async loadAvailableThemes() {
+    try {
+      const response = await fetch('/api/theme-management/themes');
+      const data = await response.json();
+      
+      this.availableThemes = data.success && data.data && data.data.themes ? data.data.themes : [];
+      console.log('🌈 Loaded themes:', this.availableThemes);
+    } catch (error) {
+      console.error('❌ Error loading themes:', error);
+      this.showError('Failed to load available themes');
+    }
+  }
+  
+  async loadActiveTheme() {
+    try {
+      const response = await fetch(`/api/model-theme-settings/${encodeURIComponent(this.slug)}/active`);
+      const data = await response.json();
+      
+      if (data.success) {
+        // Handle nested response structure
+        const themeId = data.data.theme_set_id || (data.data.data && data.data.data.theme_set_id);
+        this.activeTheme = themeId;
+        console.log('🌟 Active theme:', this.activeTheme);
+        this.updateActiveThemeIndicator();
+        // Render themes now that we have the active theme data
+        this.renderThemeSelection();
+      }
+    } catch (error) {
+      console.error('❌ Error loading active theme:', error);
+      // Render themes even if active theme loading fails
+      this.renderThemeSelection();
+    }
   }
 
-  document.getElementById('th_add').addEventListener('click', async ()=>{
-    const body = { theme_name: document.getElementById('th_name').value.trim(), primary_color: document.getElementById('th_primary').value.trim(), secondary_color: document.getElementById('th_secondary').value.trim(), accent_color: document.getElementById('th_accent').value.trim() };
-    if (!body.theme_name) { notify('warning','Enter a name'); return; }
-    const r = await fetch(`/api/model-themes/${encodeURIComponent(slug)}`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
-    const d = await r.json(); if (!d.success){ notify('danger', d.message||'Create failed'); return; }
-    notify('success','Theme added'); document.getElementById('th_name').value=''; load();
-  });
+  async loadCurrentTheme() {
+    try {
+      const response = await fetch(`/api/model-theme-settings/${encodeURIComponent(this.slug)}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        this.currentTheme = data.data.theme_set_id;
+        this.currentColors = data.data.custom_colors || {};
+        this.updateThemeSelection();
+        
+        if (this.currentTheme) {
+          this.showColorCustomization();
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error loading current theme:', error);
+    }
+  }
 
-  load();
-})();
+  async loadCustomPalettes() {
+    try {
+      // For now, create some default palettes - this would come from API later
+      this.customPalettes = [
+        {
+          id: 1,
+          name: "Sunset Orange",
+          colors: {
+            primary: "#FF6B35",
+            secondary: "#FF8C42", 
+            accent: "#FFD23F",
+            background: "#FFFFFF",
+            text: "#2C3E50"
+          },
+          created_at: new Date(),
+          is_default: false
+        },
+        {
+          id: 2,
+          name: "Ocean Blue",
+          colors: {
+            primary: "#2E86AB",
+            secondary: "#A23B72",
+            accent: "#F18F01",
+            background: "#F8F9FA",
+            text: "#212529"
+          },
+          created_at: new Date(),
+          is_default: false
+        }
+      ];
+      
+      this.renderCustomPalettes();
+      console.log('🌈 Loaded custom palettes:', this.customPalettes);
+    } catch (error) {
+      console.error('❌ Error loading custom palettes:', error);
+      this.showError('Failed to load custom palettes');
+    }
+  }
+
+  renderCustomPalettes() {
+    const container = document.getElementById('custom-palettes-grid');
+    const loadingIndicator = document.getElementById('palettes-loading');
+    
+    if (loadingIndicator) {
+      loadingIndicator.style.display = 'none';
+    }
+    
+    if (!this.customPalettes.length) {
+      container.innerHTML = `
+        <div class="col-12 text-center py-4">
+          <i class="fas fa-palette fs-1 text-muted mb-3"></i>
+          <p class="text-muted">No custom palettes yet. Create your first one!</p>
+        </div>`;
+      return;
+    }
+    
+    container.innerHTML = this.customPalettes.map(palette => {
+      return `
+      <div class="col-md-6 col-lg-4">
+        <div class="palette-card ${this.selectedPalette === palette.id ? 'selected' : ''}" 
+             data-palette-id="${palette.id}">
+          <div class="palette-header p-3 pb-2">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <h6 class="mb-1 fw-bold">${palette.name}</h6>
+                <small class="text-muted">${palette.is_default ? 'Default' : 'Custom'}</small>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-primary" 
+                        onclick="themeManager.editPalette(${palette.id})"
+                        title="Edit palette">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-outline-success" 
+                        onclick="themeManager.selectPalette(${palette.id})"
+                        title="Select palette">
+                  <i class="fas fa-check"></i>
+                </button>
+                ${!palette.is_default ? `
+                <button class="btn btn-outline-danger" 
+                        onclick="themeManager.deletePalette(${palette.id})"
+                        title="Delete palette">
+                  <i class="fas fa-trash"></i>
+                </button>` : ''}
+              </div>
+            </div>
+          </div>
+          <div class="palette-preview-mini p-3 pt-0">
+            <div class="color-swatches d-flex gap-1">
+              <div class="color-swatch" style="background-color: ${palette.colors.primary}"></div>
+              <div class="color-swatch" style="background-color: ${palette.colors.secondary}"></div>
+              <div class="color-swatch" style="background-color: ${palette.colors.accent}"></div>
+              <div class="color-swatch" style="background-color: ${palette.colors.background}; border: 1px solid #dee2e6;"></div>
+              <div class="color-swatch" style="background-color: ${palette.colors.text}"></div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Palette Management Methods
+  createNewPalette() {
+    this.isEditingPalette = true;
+    this.editingPaletteId = null;
+    this.currentPaletteColors = {
+      primary: "#3B82F6",
+      secondary: "#10B981", 
+      accent: "#F59E0B",
+      background: "#FFFFFF",
+      text: "#1F2937"
+    };
+    
+    document.getElementById('editor-title').textContent = 'Create New Palette';
+    document.getElementById('palette-name').value = '';
+    this.showPaletteEditor();
+    this.renderPaletteColorControls();
+    this.updatePalettePreview();
+  }
+
+  editPalette(paletteId) {
+    const palette = this.customPalettes.find(p => p.id === paletteId);
+    if (!palette) return;
+    
+    this.isEditingPalette = true;
+    this.editingPaletteId = paletteId;
+    this.currentPaletteColors = { ...palette.colors };
+    
+    document.getElementById('editor-title').textContent = 'Edit Palette';
+    document.getElementById('palette-name').value = palette.name;
+    this.showPaletteEditor();
+    this.renderPaletteColorControls();
+    this.updatePalettePreview();
+  }
+
+  selectPalette(paletteId) {
+    console.log('🔄 Selecting palette with ID:', paletteId, 'Previous selected:', this.selectedPalette);
+    this.selectedPalette = paletteId;
+    this.renderCustomPalettes();
+    
+    const palette = this.customPalettes.find(p => p.id === paletteId);
+    if (palette) {
+      console.log('🎨 Palette selected:', palette.name, 'Colors:', palette.colors);
+      console.log('✅ this.selectedPalette is now:', this.selectedPalette);
+      this.showSuccess(`Selected palette: ${palette.name}`);
+      
+      // Show save-and-apply option if a theme is selected
+      const saveApplyBtn = document.getElementById('save-and-apply-palette');
+      if (this.currentTheme && saveApplyBtn) {
+        saveApplyBtn.style.display = 'block';
+      }
+    }
+  }
+
+  resetToDefaultColors() {
+    console.log('🔄 Resetting to default theme colors');
+    this.selectedPalette = null;
+    this.renderCustomPalettes();
+    
+    // Hide save-and-apply button
+    const saveApplyBtn = document.getElementById('save-and-apply-palette');
+    if (saveApplyBtn) {
+      saveApplyBtn.style.display = 'none';
+    }
+    
+    this.showSuccess('Reset to default theme colors');
+    
+    // If a theme is selected, update the preview to show default colors
+    if (this.currentTheme) {
+      this.updatePreview();
+    }
+  }
+
+  showPaletteEditor() {
+    document.getElementById('palette-editor').style.display = 'block';
+    // Scroll to editor
+    document.getElementById('palette-editor').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  hidePaletteEditor() {
+    document.getElementById('palette-editor').style.display = 'none';
+    this.isEditingPalette = false;
+    this.editingPaletteId = null;
+    this.currentPaletteColors = {};
+  }
+
+  renderPaletteColorControls() {
+    const container = document.getElementById('palette-color-controls');
+    const colorProperties = ['primary', 'secondary', 'accent', 'background', 'text'];
+    
+    container.innerHTML = colorProperties.map(property => {
+      const currentValue = this.currentPaletteColors[property] || '#000000';
+      
+      return `
+      <div class="col-md-6 col-lg-4">
+        <div class="color-control">
+          <label class="form-label fw-bold text-capitalize">${property} Color</label>
+          <div class="input-group">
+            <input type="color" 
+                   class="form-control form-control-color" 
+                   id="palette-color-${property}"
+                   value="${currentValue}"
+                   onchange="themeManager.updatePaletteColor('${property}', this.value)">
+            <input type="text" 
+                   class="form-control" 
+                   id="palette-text-${property}"
+                   value="${currentValue}"
+                   onchange="themeManager.updatePaletteColorFromText('${property}', this.value)">
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  updatePaletteColor(property, value) {
+    this.currentPaletteColors[property] = value;
+    this.updatePalettePreview();
+    
+    // Update the text input too
+    const textInput = document.getElementById(`palette-text-${property}`);
+    if (textInput) textInput.value = value;
+  }
+
+  updatePaletteColorFromText(property, value) {
+    if (!/^#[0-9A-F]{6}$/i.test(value)) {
+      this.showError('Invalid hex color format. Use #RRGGBB format.');
+      return;
+    }
+    
+    this.currentPaletteColors[property] = value;
+    this.updatePalettePreview();
+    
+    // Update the color input too
+    const colorInput = document.getElementById(`palette-color-${property}`);
+    if (colorInput) colorInput.value = value;
+  }
+
+  updatePalettePreview() {
+    const preview = document.getElementById('palette-preview');
+    const colors = this.currentPaletteColors;
+    
+    preview.innerHTML = `
+      <div style="background: ${colors.background || '#ffffff'}; color: ${colors.text || '#000000'}; padding: 20px; border-radius: 8px;">
+        <h5 style="color: ${colors.primary}; margin-bottom: 10px;">Sample Heading</h5>
+        <p style="margin-bottom: 15px;">This is how your custom palette colors will look.</p>
+        <div class="d-flex gap-2 flex-wrap">
+          <button style="background: ${colors.primary}; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 14px;">Primary</button>
+          <button style="background: ${colors.secondary}; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 14px;">Secondary</button>
+          <button style="background: ${colors.accent}; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 14px;">Accent</button>
+        </div>
+        <div style="margin-top: 10px; padding: 8px; background: rgba(0,0,0,0.05); border-radius: 4px; font-size: 12px;">
+          Background: ${colors.background} | Text: ${colors.text}
+        </div>
+      </div>
+    `;
+  }
+
+  async savePalette() {
+    const name = document.getElementById('palette-name').value.trim();
+    if (!name) {
+      this.showError('Please enter a palette name');
+      return;
+    }
+    
+    try {
+      const paletteData = {
+        name: name,
+        colors: { ...this.currentPaletteColors }
+      };
+      
+      if (this.editingPaletteId) {
+        // Update existing palette
+        const paletteIndex = this.customPalettes.findIndex(p => p.id === this.editingPaletteId);
+        if (paletteIndex !== -1) {
+          this.customPalettes[paletteIndex] = {
+            ...this.customPalettes[paletteIndex],
+            name: name,
+            colors: { ...this.currentPaletteColors }
+          };
+          this.showSuccess(`Palette "${name}" updated successfully!`);
+        }
+      } else {
+        // Create new palette
+        const newPalette = {
+          id: Date.now(), // Simple ID generation for demo
+          name: name,
+          colors: { ...this.currentPaletteColors },
+          created_at: new Date(),
+          is_default: false
+        };
+        this.customPalettes.push(newPalette);
+        this.showSuccess(`Palette "${name}" created successfully!`);
+      }
+      
+      this.renderCustomPalettes();
+      this.hidePaletteEditor();
+      
+    } catch (error) {
+      console.error('❌ Error saving palette:', error);
+      this.showError('Failed to save palette');
+    }
+  }
+
+  async deletePalette(paletteId) {
+    const palette = this.customPalettes.find(p => p.id === paletteId);
+    if (!palette || palette.is_default) return;
+    
+    if (!confirm(`Delete palette "${palette.name}"? This action cannot be undone.`)) {
+      return;
+    }
+    
+    try {
+      this.customPalettes = this.customPalettes.filter(p => p.id !== paletteId);
+      this.renderCustomPalettes();
+      this.showSuccess(`Palette "${palette.name}" deleted`);
+      
+      if (this.selectedPalette === paletteId) {
+        this.selectedPalette = null;
+      }
+    } catch (error) {
+      console.error('❌ Error deleting palette:', error);
+      this.showError('Failed to delete palette');
+    }
+  }
+  
+  renderThemeSelection() {
+    const container = document.getElementById('theme-selection');
+    
+    if (!this.availableThemes.length) {
+      container.innerHTML = '<div class="col-12 text-center text-muted">No themes available</div>';
+      return;
+    }
+    
+    container.innerHTML = this.availableThemes.map(theme => {
+      const isActive = this.activeTheme && (this.activeTheme == theme.id);
+      const isSelected = this.currentTheme && (this.currentTheme == theme.id);
+      
+      return `
+      <div class="col-md-6 col-lg-4">
+        <div class="theme-card ${isSelected ? 'selected' : ''} ${isActive ? 'active-theme' : ''}" 
+             data-theme-id="${theme.id}" 
+             onclick="themeManager.selectTheme(${theme.id})">
+          ${isActive ? '<div class="active-badge"><i class="fas fa-bolt me-1"></i>LIVE</div>' : ''}
+          <div class="theme-preview" style="background: linear-gradient(135deg, ${theme.primary_color || '#3B82F6'}, ${theme.accent_color || '#10B981'});">
+            <div class="theme-overlay">
+              <h6>${theme.name}</h6>
+            </div>
+            <div class="position-absolute top-0 end-0 p-2">
+              <button class="btn btn-light btn-sm preview-btn" 
+                      onclick="event.stopPropagation(); themeManager.previewTheme(${theme.id})"
+                      title="Preview this theme">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="theme-info">
+            <h6>${theme.name}</h6>
+            <p>${theme.description || 'Professional theme template'}</p>
+            <div class="color-dots">
+              <div class="color-dot" style="background-color: ${theme.primary_color || '#3B82F6'};" title="Primary: ${theme.primary_color || '#3B82F6'}"></div>
+              <div class="color-dot" style="background-color: ${theme.secondary_color || '#6B7280'};" title="Secondary: ${theme.secondary_color || '#6B7280'}"></div>
+              <div class="color-dot" style="background-color: ${theme.accent_color || '#10B981'};" title="Accent: ${theme.accent_color || '#10B981'}"></div>
+              <div class="color-dot" style="background-color: ${theme.background_color || '#FFFFFF'}; border: 1px solid #dee2e6;" title="Background: ${theme.background_color || '#FFFFFF'}"></div>
+              <div class="color-dot" style="background-color: ${theme.text_color || '#1F2937'};" title="Text: ${theme.text_color || '#1F2937'}"></div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  selectTheme(themeId) {
+    console.log('🎨 Selecting theme:', themeId);
+    
+    // Remove previous selection
+    document.querySelectorAll('.theme-card').forEach(card => {
+      card.classList.remove('selected');
+    });
+    
+    // Add selection to clicked theme
+    const themeCard = document.querySelector(`[data-theme-id="${themeId}"]`);
+    if (themeCard) {
+      themeCard.classList.add('selected');
+    }
+    
+    // Find the selected theme
+    const selectedTheme = this.availableThemes.find(t => t.id == themeId);
+    if (selectedTheme) {
+      this.currentTheme = themeId;
+      
+      // Show save-and-apply option if a palette is selected  
+      const saveApplyBtn = document.getElementById('save-and-apply-palette');
+      if (this.selectedPalette && saveApplyBtn) {
+        saveApplyBtn.style.display = 'block';
+      }
+      
+      // Show theme color editor
+      this.showThemeColorEditor(selectedTheme);
+      
+      console.log('✅ Theme selected:', selectedTheme.display_name || selectedTheme.name);
+      this.showSuccess(`Selected theme: ${selectedTheme.display_name || selectedTheme.name}`);
+    }
+  }
+
+  // Theme Color Editor Methods (Model-Level Customization)
+  showThemeColorEditor(theme) {
+    const editor = document.getElementById('theme-color-editor');
+    const themeName = document.getElementById('editing-theme-name');
+    
+    if (editor && themeName) {
+      editor.style.display = 'block';
+      themeName.textContent = theme.display_name || theme.name;
+      
+      // Load current model's custom colors or use theme defaults
+      this.loadModelThemeColors(theme);
+      
+      // Scroll to editor
+      editor.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+  
+  async loadModelThemeColors(theme) {
+    try {
+      // Get current model's custom colors for this theme
+      const response = await fetch(`/api/model-theme-settings/${encodeURIComponent(this.slug)}`);
+      const data = await response.json();
+      
+      let currentColors = {};
+      if (data.success && data.data && data.data.custom_colors) {
+        currentColors = data.data.custom_colors;
+      }
+      
+      // Merge with theme defaults (custom colors override defaults)
+      this.currentThemeColors = {
+        primary: currentColors.primary || theme.primary_color || '#3B82F6',
+        secondary: currentColors.secondary || theme.secondary_color || '#6B7280',
+        accent: currentColors.accent || theme.accent_color || '#10B981',
+        background: currentColors.background || theme.background_color || '#FFFFFF',
+        text: currentColors.text || theme.text_color || '#1F2937'
+      };
+      
+      // Store original theme colors for reset functionality
+      this.originalThemeColors = {
+        primary: theme.primary_color || '#3B82F6',
+        secondary: theme.secondary_color || '#6B7280',
+        accent: theme.accent_color || '#10B981',
+        background: theme.background_color || '#FFFFFF',
+        text: theme.text_color || '#1F2937'
+      };
+      
+      this.renderThemeColorControls();
+      this.updateThemeColorPreview();
+      
+    } catch (error) {
+      console.error('Error loading model theme colors:', error);
+      // Fallback to theme defaults
+      this.currentThemeColors = {
+        primary: theme.primary_color || '#3B82F6',
+        secondary: theme.secondary_color || '#6B7280',
+        accent: theme.accent_color || '#10B981',
+        background: theme.background_color || '#FFFFFF',
+        text: theme.text_color || '#1F2937'
+      };
+      this.originalThemeColors = { ...this.currentThemeColors };
+      this.renderThemeColorControls();
+      this.updateThemeColorPreview();
+    }
+  }
+  
+  renderThemeColorControls() {
+    const container = document.getElementById('theme-color-controls');
+    if (!container) return;
+    
+    const colorProperties = [
+      { key: 'primary', label: 'Primary Color', description: 'Main brand color for buttons and highlights' },
+      { key: 'secondary', label: 'Secondary Color', description: 'Supporting color for secondary elements' },
+      { key: 'accent', label: 'Accent Color', description: 'Accent color for special elements and calls-to-action' },
+      { key: 'background', label: 'Background Color', description: 'Main background color for the site' },
+      { key: 'text', label: 'Text Color', description: 'Primary text color for content' }
+    ];
+    
+    container.innerHTML = colorProperties.map(property => {
+      const currentValue = this.currentThemeColors[property.key] || '#000000';
+      const originalValue = this.originalThemeColors[property.key] || '#000000';
+      
+      return `
+      <div class="col-md-6 col-lg-4">
+        <div class="color-control">
+          <label class="form-label fw-bold">${property.label}</label>
+          <div class="input-group mb-2">
+            <input type="color" 
+                   class="form-control form-control-color" 
+                   id="theme-color-${property.key}"
+                   value="${currentValue}"
+                   onchange="themeManager.updateThemeColor('${property.key}', this.value)">
+            <input type="text" 
+                   class="form-control" 
+                   id="theme-color-text-${property.key}"
+                   value="${currentValue}"
+                   onchange="themeManager.updateThemeColorFromText('${property.key}', this.value)">
+          </div>
+          <small class="text-muted">${property.description}</small>
+          <div class="mt-2">
+            <small class="text-muted">Default: <span style="color: ${originalValue}">${originalValue}</span></small>
+            <button class="btn btn-outline-secondary btn-sm ms-2" 
+                    onclick="themeManager.resetThemeColor('${property.key}')"
+                    title="Reset to theme default">
+              <i class="fas fa-undo"></i>
+            </button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  
+  updateThemeColor(property, value) {
+    this.currentThemeColors[property] = value;
+    
+    // Update the text input too
+    const textInput = document.getElementById(`theme-color-text-${property}`);
+    if (textInput) textInput.value = value;
+    
+    this.updateThemeColorPreview();
+    this.hasUnsavedChanges = true;
+  }
+  
+  updateThemeColorFromText(property, value) {
+    if (!/^#[0-9A-F]{6}$/i.test(value)) {
+      this.showError('Invalid hex color format. Use #RRGGBB format.');
+      return;
+    }
+    
+    this.currentThemeColors[property] = value;
+    
+    // Update the color input too
+    const colorInput = document.getElementById(`theme-color-${property}`);
+    if (colorInput) colorInput.value = value;
+    
+    this.updateThemeColorPreview();
+    this.hasUnsavedChanges = true;
+  }
+  
+  resetThemeColor(property) {
+    const originalValue = this.originalThemeColors[property];
+    this.currentThemeColors[property] = originalValue;
+    
+    // Update both inputs
+    const colorInput = document.getElementById(`theme-color-${property}`);
+    const textInput = document.getElementById(`theme-color-text-${property}`);
+    
+    if (colorInput) colorInput.value = originalValue;
+    if (textInput) textInput.value = originalValue;
+    
+    this.updateThemeColorPreview();
+    this.hasUnsavedChanges = true;
+  }
+  
+  updateThemeColorPreview() {
+    const preview = document.getElementById('theme-color-preview');
+    if (!preview) return;
+    
+    const colors = this.currentThemeColors;
+    
+    preview.innerHTML = `
+      <div style="background: ${colors.background}; color: ${colors.text}; padding: 20px; border-radius: 8px; border: 1px solid #dee2e6;">
+        <h4 style="color: ${colors.primary}; margin-bottom: 15px;">Sample Heading</h4>
+        <p style="margin-bottom: 15px;">This is how your custom theme colors will look on your site.</p>
+        <div class="d-flex gap-2 mb-3">
+          <button style="background: ${colors.primary}; color: white; border: none; padding: 8px 16px; border-radius: 4px;">Primary Button</button>
+          <button style="background: ${colors.secondary}; color: white; border: none; padding: 8px 16px; border-radius: 4px;">Secondary</button>
+          <button style="background: ${colors.accent}; color: white; border: none; padding: 8px 16px; border-radius: 4px;">Accent</button>
+        </div>
+        <div style="padding: 15px; background: rgba(0,0,0,0.05); border-radius: 4px; border: 1px solid ${colors.secondary}20;">
+          <small style="color: ${colors.text}">Preview of how your custom colors work together</small>
+        </div>
+      </div>
+    `;
+  }
+  
+  async saveModelThemeColors() {
+    if (!this.currentTheme || !this.currentThemeColors) {
+      this.showError('No theme selected or colors to save');
+      return;
+    }
+    
+    try {
+      const response = await fetch(`/api/model-theme-settings/${encodeURIComponent(this.slug)}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          theme_set_id: this.currentTheme,
+          custom_colors: this.currentThemeColors
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        this.hasUnsavedChanges = false;
+        this.showSuccess('Model theme colors saved successfully!');
+      } else {
+        this.showError('Failed to save theme colors: ' + (result.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error saving model theme colors:', error);
+      this.showError('Failed to save theme colors');
+    }
+  }
+  
+  resetAllThemeColors() {
+    if (!this.originalThemeColors) return;
+    
+    this.currentThemeColors = { ...this.originalThemeColors };
+    this.renderThemeColorControls();
+    this.updateThemeColorPreview();
+    this.hasUnsavedChanges = false;
+    
+    this.showSuccess('All colors reset to theme defaults');
+  }
+  
+  updateThemeSelection() {
+    if (this.currentTheme && this.availableThemes.length) {
+      const themeCard = document.querySelector(`[data-theme-id="${this.currentTheme}"]`);
+      if (themeCard) {
+        themeCard.classList.add('selected');
+      }
+    }
+  }
+  
+  // Removed: old saveColors method - replaced by palette system
+  
+  bindEventListeners() {
+    // Theme-related event listeners
+    const resetAllColors = document.getElementById('reset-all-colors');
+    const saveColors = document.getElementById('save-colors');
+    const activateTheme = document.getElementById('activate-theme');
+    
+    if (resetAllColors) {
+      resetAllColors.addEventListener('click', () => {
+        this.resetAllColors();
+      });
+    }
+    
+    if (saveColors) {
+      saveColors.addEventListener('click', () => {
+        this.saveColors();
+      });
+    }
+    
+    if (activateTheme) {
+      activateTheme.addEventListener('click', () => {
+        this.activateTheme();
+      });
+    }
+    
+    // Theme color editor event listeners
+    const resetThemeColors = document.getElementById('reset-theme-colors');
+    const saveThemeColors = document.getElementById('save-theme-colors');
+    
+    if (resetThemeColors) {
+      resetThemeColors.addEventListener('click', () => {
+        this.resetAllThemeColors();
+      });
+    }
+    
+    if (saveThemeColors) {
+      saveThemeColors.addEventListener('click', () => {
+        this.saveModelThemeColors();
+      });
+    }
+    
+    // Warn about unsaved changes
+    window.addEventListener('beforeunload', (e) => {
+      if (this.hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+      }
+    });
+  }
+
+  bindPaletteEventListeners() {
+    // Palette management event listeners
+    document.getElementById('create-new-palette').addEventListener('click', () => {
+      this.createNewPalette();
+    });
+    
+    document.getElementById('cancel-palette-edit').addEventListener('click', () => {
+      this.hidePaletteEditor();
+    });
+    
+    document.getElementById('save-palette').addEventListener('click', () => {
+      this.savePalette();
+    });
+    
+    const saveAndApplyBtn = document.getElementById('save-and-apply-palette');
+    if (saveAndApplyBtn) {
+      saveAndApplyBtn.addEventListener('click', () => {
+        this.saveAndApplyPaletteToTheme();
+      });
+    }
+    
+    // Theme color override event listeners
+    const removeOverride = document.getElementById('remove-color-override');
+    const activateWithPalette = document.getElementById('activate-theme-with-palette');
+    
+    if (removeOverride) {
+      removeOverride.addEventListener('click', () => {
+        this.removeColorOverride();
+      });
+    }
+    
+    if (activateWithPalette) {
+      activateWithPalette.addEventListener('click', () => {
+        this.activateThemeWithPalette();
+      });
+    }
+  }
+
+  // Apply-to-theme functionality
+  async saveAndApplyPaletteToTheme() {
+    if (!this.selectedPalette || !this.currentTheme) {
+      this.showError('Please select both a palette and a theme');
+      return;
+    }
+    
+    // First save the palette if we're editing
+    await this.savePalette();
+    
+    // Then apply it to the selected theme
+    this.applyPaletteToTheme(this.selectedPalette, this.currentTheme);
+  }
+
+  applyPaletteToTheme(paletteId, themeId) {
+    const palette = this.customPalettes.find(p => p.id === paletteId);
+    const theme = this.availableThemes.find(t => t.id == themeId);
+    
+    if (!palette || !theme) {
+      this.showError('Invalid palette or theme selection');
+      return;
+    }
+    
+    // Set the override
+    this.appliedPalette = paletteId;
+    this.currentColors = { ...palette.colors };
+    
+    // Update displays
+    this.showThemeColorOverride(palette, theme);
+    this.updateCombinedPreview();
+    
+    this.showSuccess(`Applied "${palette.name}" colors to "${theme.name}" theme`);
+  }
+
+  showThemeColorOverride(palette, theme) {
+    const overrideSection = document.getElementById('theme-color-override');
+    const paletteNameSpan = document.getElementById('applied-palette-name');
+    const themeNameSpan = document.getElementById('applied-theme-name');
+    const overrideThemeName = document.getElementById('override-theme-name');
+    
+    if (paletteNameSpan) paletteNameSpan.textContent = palette.name;
+    if (themeNameSpan) themeNameSpan.textContent = theme.name;
+    if (overrideThemeName) overrideThemeName.textContent = `(${theme.name})`;
+    
+    overrideSection.style.display = 'block';
+  }
+
+  updateCombinedPreview() {
+    const preview = document.getElementById('combined-preview');
+    const colors = this.currentColors;
+    
+    preview.innerHTML = `
+      <div style="background: ${colors.background || '#ffffff'}; color: ${colors.text || '#000000'}; padding: 20px; border-radius: 8px;">
+        <h4 style="color: ${colors.primary}; margin-bottom: 10px;">Combined Theme Preview</h4>
+        <p style="margin-bottom: 15px;">Your custom palette applied to the selected theme layout.</p>
+        <div class="d-flex gap-2 flex-wrap mb-3">
+          <button style="background: ${colors.primary}; color: white; border: none; padding: 8px 16px; border-radius: 4px;">Primary Button</button>
+          <button style="background: ${colors.secondary}; color: white; border: none; padding: 8px 16px; border-radius: 4px;">Secondary</button>
+          <button style="background: ${colors.accent}; color: white; border: none; padding: 8px 16px; border-radius: 4px;">Accent</button>
+        </div>
+        <div style="padding: 12px; background: rgba(0,0,0,0.05); border-radius: 4px;">
+          <small><strong>Custom Palette Applied:</strong> Your palette colors override the theme's default colors</small>
+        </div>
+      </div>
+    `;
+  }
+
+  removeColorOverride() {
+    if (!confirm('Remove the custom palette override? The theme will revert to its default colors.')) {
+      return;
+    }
+    
+    this.appliedPalette = null;
+    this.currentColors = {};
+    
+    // Hide override section
+    const overrideSection = document.getElementById('theme-color-override');
+    if (overrideSection) {
+      overrideSection.style.display = 'none';
+    }
+    
+    this.showSuccess('Custom palette override removed');
+  }
+
+  async activateThemeWithPalette() {
+    if (!this.currentTheme || !this.appliedPalette) {
+      this.showError('No theme and palette combination to activate');
+      return;
+    }
+    
+    try {
+      const response = await fetch(`/api/model-theme-settings/${encodeURIComponent(this.slug)}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          theme_set_id: this.currentTheme,
+          custom_colors: this.currentColors
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Now activate the theme
+        const activateResponse = await fetch(`/api/model-theme-settings/${encodeURIComponent(this.slug)}/activate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            theme_set_id: this.currentTheme
+          })
+        });
+        
+        const activateResult = await activateResponse.json();
+        
+        if (activateResult.success) {
+          this.showSuccess('Theme with custom palette activated successfully! Your website is now using this combination.');
+          this.activeTheme = this.currentTheme;
+          this.renderThemeSelection();
+          this.updateActiveThemeIndicator();
+        } else {
+          this.showError('Failed to activate theme: ' + (activateResult.message || 'Unknown error'));
+        }
+      } else {
+        this.showError('Failed to save custom colors: ' + (result.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('❌ Error activating theme with palette:', error);
+      this.showError('Failed to activate theme with custom palette');
+    }
+  }
+  
+  async activateTheme() {
+    if (!this.currentTheme) {
+      this.showError('Please select a theme first');
+      return;
+    }
+    
+    if (this.hasUnsavedChanges) {
+      if (!confirm('You have unsaved color changes. Save them before activating the theme?')) {
+        return;
+      }
+      await this.saveColors();
+    }
+    
+    try {
+      const response = await fetch(`/api/model-theme-settings/${encodeURIComponent(this.slug)}/activate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          theme_set_id: this.currentTheme
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        this.showSuccess('Theme activated successfully! Your website is now using this theme.');
+        // Update the active theme and refresh the display
+        this.activeTheme = this.currentTheme;
+        this.renderThemeSelection();
+      } else {
+        this.showError('Failed to activate theme: ' + (result.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('❌ Error activating theme:', error);
+      this.showError('Failed to activate theme');
+    }
+  }
+  
+  updateActiveThemeIndicator() {
+    // Update the current theme display at the top
+    const currentThemeDisplay = document.getElementById('current-theme-display');
+    const activeThemeText = document.getElementById('active-theme-text');
+    
+    if (this.activeTheme) {
+      const activeTheme = this.availableThemes.find(t => t.id == this.activeTheme);
+      if (activeTheme) {
+        activeThemeText.textContent = `Currently active theme: ${activeTheme.name}`;
+        currentThemeDisplay.style.display = 'block';
+      }
+    } else {
+      activeThemeText.textContent = 'No theme currently active';
+      currentThemeDisplay.style.display = 'block';
+    }
+    
+    // Re-render themes to show active indicators
+    this.renderThemeSelection();
+  }
+  
+  previewTheme(themeId) {
+    const theme = this.availableThemes.find(t => t.id === themeId);
+    if (!theme) return;
+    
+    // Build preview URL with palette colors if selected
+    let previewUrl = `/${this.slug}?preview_theme=${themeId}`;
+    
+    // If a palette is selected, add palette colors to the preview
+    if (this.selectedPalette) {
+      const selectedPalette = this.customPalettes.find(p => p.id === this.selectedPalette);
+      if (selectedPalette) {
+        console.log('🎨 Applying palette to preview:', selectedPalette.name, selectedPalette.colors);
+        // Add palette colors as URL parameters for preview
+        const colorParams = new URLSearchParams();
+        Object.entries(selectedPalette.colors).forEach(([key, value]) => {
+          colorParams.append(`palette_${key}`, value);
+        });
+        previewUrl += `&${colorParams.toString()}`;
+        console.log('🔗 Preview URL with palette:', previewUrl);
+      }
+    }
+    
+    // Create preview modal
+    const modal = document.createElement('div');
+    modal.className = 'modal fade theme-preview-modal';
+    modal.innerHTML = `
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-eye me-2"></i>Preview: ${theme.display_name || theme.name}
+              ${this.selectedPalette ? `<small class="text-muted ms-2">with ${this.customPalettes.find(p => p.id === this.selectedPalette)?.name} palette</small>` : ''}
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body p-0">
+            <div class="preview-toolbar bg-light p-2 d-flex justify-content-between align-items-center">
+              <span class="text-muted">
+                <i class="fas fa-info-circle me-1"></i>Preview of how your site would look with this ${this.selectedPalette ? 'theme + palette combination' : 'theme'}
+              </span>
+              <div>
+                <button class="btn btn-sm btn-outline-secondary me-2" onclick="themeManager.openFullPreview(${themeId})">
+                  <i class="fas fa-external-link-alt me-1"></i>Full Page
+                </button>
+                <button class="btn btn-sm btn-primary" onclick="themeManager.selectAndClosePreview(${themeId})">
+                  <i class="fas fa-check me-1"></i>Use This ${this.selectedPalette ? 'Combination' : 'Theme'}
+                </button>
+              </div>
+            </div>
+            <div class="preview-iframe-container" style="height: 600px; overflow: hidden;">
+              <iframe src="${previewUrl}" 
+                      style="width: 100%; height: 100%; border: none; transform: scale(1); transform-origin: top left;">
+              </iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    const modalInstance = new bootstrap.Modal(modal);
+    modalInstance.show();
+    
+    // Clean up when modal is closed
+    modal.addEventListener('hidden.bs.modal', () => {
+      document.body.removeChild(modal);
+    });
+  }
+  
+  openFullPreview(themeId) {
+    // Build preview URL with palette colors if selected
+    let previewUrl = `/${this.slug}?preview_theme=${themeId}`;
+    
+    // If a palette is selected, add palette colors to the preview
+    if (this.selectedPalette) {
+      const selectedPalette = this.customPalettes.find(p => p.id === this.selectedPalette);
+      if (selectedPalette) {
+        console.log('🎨 Applying palette to preview:', selectedPalette.name, selectedPalette.colors);
+        // Add palette colors as URL parameters for preview
+        const colorParams = new URLSearchParams();
+        Object.entries(selectedPalette.colors).forEach(([key, value]) => {
+          colorParams.append(`palette_${key}`, value);
+        });
+        previewUrl += `&${colorParams.toString()}`;
+        console.log('🔗 Preview URL with palette:', previewUrl);
+      }
+    }
+    
+    window.open(previewUrl, '_blank');
+  }
+  
+  selectAndClosePreview(themeId) {
+    // Close modal first
+    const modal = document.querySelector('.theme-preview-modal');
+    const modalInstance = bootstrap.Modal.getInstance(modal);
+    modalInstance.hide();
+    
+    // Select the theme
+    this.selectTheme(themeId);
+  }
+
+  showSuccess(message) {
+    this.showNotification(message, 'success');
+  }
+  
+  showError(message) {
+    this.showNotification(message, 'danger');
+  }
+  
+  showNotification(message, type = 'info') {
+    const alertClass = type === 'success' ? 'alert-success' : 
+                      type === 'danger' ? 'alert-danger' : 'alert-info';
+    
+    const notification = document.createElement('div');
+    notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.remove();
+      }
+    }, 5000);
+  }
+}
+
+// Initialize the theme manager
+let themeManager;
+
+document.addEventListener('DOMContentLoaded', () => {
+  themeManager = new ModelThemeManager();
+});
 </script>
+
+<style>
+.theme-card {
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+  margin-bottom: 20px;
+}
+
+.theme-card:hover {
+  border-color: #0d6efd;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.theme-card.selected {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.2);
+}
+
+.theme-preview {
+  height: 100px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-overlay h6 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.theme-info {
+  padding: 12px;
+}
+
+.theme-info h6 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.theme-info p {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  color: #6c757d;
+  line-height: 1.3;
+}
+
+.color-dots {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.color-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid white;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.color-dot:hover {
+  transform: scale(1.2);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.color-control {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.color-control .form-control-color {
+  width: 50px;
+  height: 38px;
+}
+
+#color-preview {
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.active-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 20px;
+  z-index: 20;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4), 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 2px solid white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: activePulse 2s infinite;
+}
+
+.theme-card.active-theme {
+  border: 3px solid #28a745;
+  background: linear-gradient(45deg, rgba(40, 167, 69, 0.08), rgba(255, 255, 255, 1));
+  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.2), 0 4px 10px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  position: relative;
+}
+
+@keyframes activePulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4), 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.6), 0 3px 6px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.preview-btn {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.theme-card:hover .preview-btn {
+  opacity: 1;
+}
+
+.preview-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Custom Palette Card Styles */
+.palette-card {
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+  margin-bottom: 15px;
+}
+
+.palette-card:hover {
+  border-color: #0d6efd;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.palette-card.selected {
+  border-color: #198754;
+  box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.2);
+  background: linear-gradient(45deg, rgba(25, 135, 84, 0.05), rgba(255, 255, 255, 1));
+}
+
+.palette-header {
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.palette-preview-mini .color-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.1);
+  flex: 1;
+}
+
+.palette-editor {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Theme Color Override Section */
+#theme-color-override {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#theme-color-override .alert {
+  background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+  border-color: #abdde5;
+}
+
+/* Enhanced Color Control Styling */
+.color-control {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.color-control:hover {
+  background: #e9ecef;
+}
+
+/* Button Group Enhancements */
+.btn-group-sm .btn {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+/* Loading Animation */
+#palettes-loading .spinner-border {
+  width: 2rem;
+  height: 2rem;
+}
+
+</style>
 
 

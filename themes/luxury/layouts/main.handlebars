@@ -28,29 +28,101 @@
     
     <style>
         :root {
-            --luxury-primary: {{theme.colors.primary}};
-            --luxury-secondary: {{theme.colors.secondary}};
-            --luxury-accent: {{theme.colors.accent}};
-            --luxury-text: {{theme.colors.text}};
-            --luxury-background: {{theme.colors.background}};
+            /* Luxury theme tokens with sensible fallbacks */
+            --luxury-bg-start: {{theme.colors.bg_start}}; /* optional theme override */
+            --luxury-bg-end: {{theme.colors.bg_end}};
+            --luxury-surface: {{theme.colors.surface}};
+            --luxury-card: {{theme.colors.card}};
+            --luxury-accent: {{#if theme.colors.accent}}{{theme.colors.accent}}{{else}}#E0B84E{{/if}}; /* gold */
+            --luxury-text: {{#if theme.colors.text}}{{theme.colors.text}}{{else}}#e9e7f1{{/if}};
+            --luxury-muted: {{#if theme.colors.muted}}{{theme.colors.muted}}{{else}}#b9b5c8{{/if}};
+            --luxury-background: {{#if theme.colors.background}}{{theme.colors.background}}{{else}}#0b0b15{{/if}};
+
+            /* Back-compat variables (used by some existing rules) */
+            --luxury-primary: var(--luxury-accent);
+            --luxury-secondary: {{#if theme.colors.secondary}}{{theme.colors.secondary}}{{else}}#b8860b{{/if}};
         }
         
-        /* Luxury Typography */
+        /* Luxury Typography System */
         .luxury-heading {
             font-family: 'Playfair Display', serif;
             font-weight: 700;
             letter-spacing: -0.025em;
         }
         
+        /* Standardized heading sizes */
+        h1, .luxury-h1 {
+            font-size: 3.75rem; /* 60px */
+            line-height: 1.1;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+        }
+        
+        h2, .luxury-h2 {
+            font-size: 2.5rem; /* 40px */
+            line-height: 1.2;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+        
+        h3, .luxury-h3 {
+            font-size: 1.875rem; /* 30px */
+            line-height: 1.3;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+        
+        /* Body text consistency */
+        .luxury-text-lg {
+            font-size: 1.125rem; /* 18px */
+            line-height: 1.6;
+        }
+        
+        .luxury-text-base {
+            font-size: 1rem; /* 16px */
+            line-height: 1.6;
+        }
+        
+        /* Text contrast helpers for gradient backgrounds */
+        .luxury-text-contrast {
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .luxury-text-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: inherit;
+            z-index: -1;
+        }
+        
+        /* Responsive typography */
+        @media (max-width: 768px) {
+            h1, .luxury-h1 { font-size: 2.5rem; }
+            h2, .luxury-h2 { font-size: 2rem; }
+            h3, .luxury-h3 { font-size: 1.5rem; }
+        }
+        
         body {
             font-family: 'Poppins', sans-serif;
             background-color: var(--luxury-background);
             color: var(--luxury-text);
+            padding-top: 80px; /* Height of luxury navigation (h-20 = 80px) */
         }
+
+        /* Global container and vertical rhythm */
+        .luxury-container { max-width: 1200px; margin-left: auto; margin-right: auto; padding-left: 1rem; padding-right: 1rem; }
+        .luxury-section { padding-top: 6rem; padding-bottom: 6rem; }
+        @media (max-width: 768px) { .luxury-section { padding-top: 4rem; padding-bottom: 4rem; } }
+        .luxury-space-y > * + * { margin-top: 4rem; }
         
         /* Luxury Card Styling */
         .luxury-card {
-            background: linear-gradient(145deg, #ffffff 0%, #fefefe 100%);
+            background: #fff;
             border-radius: 20px;
             border: 1px solid rgba(0,0,0,0.05);
             box-shadow: 0 20px 40px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.05);
@@ -74,10 +146,18 @@
             box-shadow: 0 32px 64px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.05);
         }
         
+        /* Card variant for dark surfaces */
+        .luxury-card-dark {
+            background: var(--luxury-card, #131327);
+            border-radius: 1rem;
+            border: 1px solid rgba(224,184,78,0.15);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+        }
+
         /* Luxury Button Styling */
         .luxury-btn {
-            background: linear-gradient(135deg, var(--luxury-primary) 0%, var(--luxury-secondary) 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--luxury-accent) 0%, color-mix(in srgb, var(--luxury-accent), #000 25%) 100%);
+            color: #0f0f1a;
             padding: 16px 32px;
             border-radius: 50px;
             font-weight: 600;
@@ -118,8 +198,8 @@
         
         .luxury-btn-outline {
             background: transparent;
-            color: var(--luxury-primary);
-            border: 2px solid var(--luxury-primary);
+            color: var(--luxury-accent);
+            border: 2px solid var(--luxury-accent);
             padding: 14px 30px;
             border-radius: 50px;
             font-weight: 600;
@@ -134,18 +214,22 @@
         }
         
         .luxury-btn-outline:hover {
-            background: var(--luxury-primary);
-            color: white;
+            background: var(--luxury-accent);
+            color: #0f0f1a;
             transform: translateY(-2px);
             box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         }
+
+        /* Focus visibility for accessibility */
+        .luxury-btn:focus-visible, .nav-link:focus-visible, a:focus-visible { outline: 2px solid var(--luxury-accent); outline-offset: 2px; border-radius: 8px; }
         
         /* Luxury Navigation */
         .luxury-nav {
-            background: rgba(255,255,255,0.95);
+            background: rgba(15,15,26,0.45);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-            box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(224,184,78,0.15);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
         
         .luxury-nav .nav-link {
@@ -154,30 +238,45 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-size: 14px;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
             position: relative;
+            padding: 12px 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px; /* Consistent touch target */
         }
         
         .luxury-nav .nav-link::after {
             content: '';
             position: absolute;
-            bottom: -4px;
+            bottom: -2px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 2px;
-            background: linear-gradient(90deg, var(--luxury-primary), var(--luxury-accent));
-            transition: width 0.3s ease;
+            background: linear-gradient(90deg, var(--luxury-accent), #ffd86b);
+            transition: width 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            border-radius: 1px;
         }
         
         .luxury-nav .nav-link:hover::after,
         .luxury-nav .nav-link.active::after {
-            width: 100%;
+            width: 80%;
         }
         
         .luxury-nav .nav-link:hover,
         .luxury-nav .nav-link.active {
-            color: var(--luxury-primary);
+            color: var(--luxury-accent);
+            background: rgba(224, 184, 78, 0.08);
+            transform: translateY(-1px);
+        }
+        
+        .luxury-nav .nav-link:focus-visible {
+            outline: 2px solid var(--luxury-accent);
+            outline-offset: 2px;
+            border-radius: 8px;
         }
         
         /* Luxury Brand */
@@ -192,7 +291,8 @@
         
         /* Hero Section Styling */
         .luxury-hero {
-            background: linear-gradient(135deg, var(--luxury-primary) 0%, var(--luxury-secondary) 50%, var(--luxury-accent) 100%);
+            background: radial-gradient(1200px 600px at 50% -10%, rgba(0,0,0,0.25), transparent 60%),
+                        linear-gradient(135deg, var(--luxury-bg-start, #2a0f3a) 0%, var(--luxury-bg-end, #7a1a3d) 100%);
             position: relative;
             overflow: hidden;
         }
@@ -251,11 +351,47 @@
         ::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(135deg, var(--luxury-secondary), var(--luxury-primary));
         }
+
+.luxury-gallery-section { background: var(--luxury-surface); }
+.luxury-gallery-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; }
+.luxury-gallery-item { overflow: hidden; border-radius: 0.75rem; }
+.luxury-gallery-item img { transition: transform 0.3s ease; }
+.luxury-gallery-item:hover img { transform: scale(1.05); }
+.luxury-gallery-placeholder { background: var(--luxury-card); color: var(--luxury-muted); }
+
+.luxury-travel-section { background: var(--luxury-surface); }
+.luxury-travel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+.luxury-travel-card { text-align: center; }
+.luxury-available-badge { background: var(--luxury-accent); color: #fff; padding: 0.5rem 1rem; border-radius: 9999px; }
+.luxury-travel-notes { font-style: italic; color: var(--luxury-muted); }
+
+.luxury-testimonials-section { background: var(--luxury-background); }
+.luxury-testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+.luxury-stars { display: flex; justify-content: center; gap: 0.25rem; }
+.luxury-testimonial-text { font-style: italic; }
+.luxury-testimonial-author { color: var(--luxury-accent); }
+
+/* Responsive Media Queries */
+@media (max-width: 1024px) {
+  .luxury-gallery-grid { grid-template-columns: repeat(3, 1fr); }
+  .luxury-travel-grid, .luxury-testimonials-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .luxury-gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  .luxury-travel-grid, .luxury-testimonials-grid { grid-template-columns: 1fr; }
+}
     </style>
 </head>
 <body>
     <!-- Navigation -->
     {{> navigation}}
+    
+    <!-- Theme Preview Banner -->
+    {{#if theme.isPreview}}
+    <div class="bg-gradient-to-r from-amber-500 to-yellow-600 text-white py-2 px-4 text-center text-sm font-semibold">
+        <i class="fas fa-eye me-2"></i>You are previewing the <strong>{{theme.previewThemeName}}</strong> theme. This is not your active theme.
+    </div>
+    {{/if}}
     
     <!-- Main Content -->
     <main>

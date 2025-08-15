@@ -207,6 +207,26 @@ class MuseNestImageEditor {
         // Reset form values
         const customRotation = document.getElementById('custom-rotation');
         if (customRotation) customRotation.value = '';
+        
+        // Reset to original image if available
+        this.resetToOriginalImage();
+    }
+    
+    /**
+     * Reset to the original uncropped image
+     */
+    resetToOriginalImage() {
+        if (this.currentMedia && this.currentMedia.original_file_url) {
+            console.log('🔄 Resetting to original image');
+            this.refreshImagePreview(this.currentMedia.original_file_url);
+            
+            // Reset dimensions to original
+            if (this.currentMedia.original_width && this.currentMedia.original_height) {
+                this.currentMedia.image_width = this.currentMedia.original_width;
+                this.currentMedia.image_height = this.currentMedia.original_height;
+                this.updateImageInfo(this.currentMedia);
+            }
+        }
     }
     
     /**
@@ -218,7 +238,19 @@ class MuseNestImageEditor {
         if (previewImg && this.currentMedia) {
             previewImg.onload = () => {
                 console.log('🖼️ Image loaded for editing');
+                console.log(`  - Natural size: ${previewImg.naturalWidth}x${previewImg.naturalHeight}`);
+                console.log(`  - Expected size: ${this.currentMedia.image_width}x${this.currentMedia.image_height}`);
+                console.log(`  - Current src: ${previewImg.src}`);
+                
                 this.originalImage = previewImg.cloneNode(true);
+                
+                // Check if dimensions match expected - if not, this might be a stretched image
+                if (previewImg.naturalWidth !== this.currentMedia.image_width || 
+                    previewImg.naturalHeight !== this.currentMedia.image_height) {
+                    console.warn('⚠️ Image dimensions mismatch - possible stretching issue');
+                    console.warn(`  Expected: ${this.currentMedia.image_width}x${this.currentMedia.image_height}`);
+                    console.warn(`  Actual: ${previewImg.naturalWidth}x${previewImg.naturalHeight}`);
+                }
             };
         }
     }
@@ -307,24 +339,43 @@ class MuseNestImageEditor {
         const canvas = document.getElementById('crop-canvas');
         const previewImg = document.getElementById('preview-image');
         
-        if (canvas && previewImg) {
+        if (canvas && previewImg && previewImg.complete && previewImg.naturalWidth !== 0) {
             // Copy image to canvas
             const ctx = canvas.getContext('2d');
             canvas.width = previewImg.naturalWidth;
             canvas.height = previewImg.naturalHeight;
             
-            // Scale canvas to fit container
+            // Scale canvas to fit container while maintaining aspect ratio
             const containerWidth = canvas.parentElement.clientWidth * 0.9;
             const containerHeight = canvas.parentElement.clientHeight * 0.9;
             const scale = Math.min(containerWidth / canvas.width, containerHeight / canvas.height);
             
-            canvas.style.width = (canvas.width * scale) + 'px';
-            canvas.style.height = (canvas.height * scale) + 'px';
+            // Calculate actual display size maintaining aspect ratio
+            const displayWidth = canvas.width * scale;
+            const displayHeight = canvas.height * scale;
             
-            ctx.drawImage(previewImg, 0, 0);
+            canvas.style.width = displayWidth + 'px';
+            canvas.style.height = displayHeight + 'px';
+            canvas.style.objectFit = 'contain';
+            
+            // Draw the image to canvas - use natural dimensions
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(previewImg, 0, 0, canvas.width, canvas.height);
+            
+            console.log('🖼️ Canvas initialized:');
+            console.log('  - Natural:', previewImg.naturalWidth, 'x', previewImg.naturalHeight);
+            console.log('  - Canvas internal:', canvas.width, 'x', canvas.height);
+            console.log('  - Display size:', displayWidth, 'x', displayHeight);
+            console.log('  - Scale:', scale);
             
             canvas.classList.remove('d-none');
             previewImg.classList.add('d-none');
+        } else {
+            console.warn('⚠️ Cannot initialize crop canvas - image not ready');
+            if (previewImg) {
+                console.warn('  - Image complete:', previewImg.complete);
+                console.warn('  - Natural dimensions:', previewImg.naturalWidth, 'x', previewImg.naturalHeight);
+            }
         }
     }
     
@@ -349,6 +400,12 @@ class MuseNestImageEditor {
         this.cropTool = new CropTool(canvas, {
             onCropChange: (cropData) => this.updateCropCoordinates(cropData)
         });
+        
+        // Store the original image data for redrawing
+        const previewImg = document.getElementById('preview-image');
+        if (previewImg && this.cropTool) {
+            this.cropTool.setOriginalImage(previewImg);
+        }
     }
     
     /**
@@ -404,6 +461,12 @@ class MuseNestImageEditor {
             return;
         }
         
+        // Debug: Log crop parameters
+        console.log('🔍 Crop Debug Info:');
+        console.log('Original image dimensions:', this.currentMedia.image_width, 'x', this.currentMedia.image_height);
+        console.log('Crop coordinates:', cropData);
+        console.log('Canvas dimensions:', document.getElementById('crop-canvas')?.width, 'x', document.getElementById('crop-canvas')?.height);
+        
         try {
             this.showProcessing('Cropping image...');
             
@@ -428,6 +491,17 @@ class MuseNestImageEditor {
                 this.showNotification('Image cropped successfully!', 'success');
                 this.refreshImagePreview(result.result.editedUrl);
                 this.disableCropMode();
+                
+                // Update current media dimensions with the new values
+                if (result.result.newDimensions) {
+                    this.currentMedia.image_width = result.result.newDimensions.width;
+                    this.currentMedia.image_height = result.result.newDimensions.height;
+                    this.currentMedia.file_url = result.result.editedUrl;
+                    this.updateImageInfo(this.currentMedia);
+                    
+                    // Force complete image refresh to prevent stretching
+                    this.forceImageRefresh();
+                }
             } else {
                 this.showNotification(`Crop failed: ${result.error}`, 'error');
             }
@@ -708,10 +782,36 @@ class MuseNestImageEditor {
     refreshImagePreview(newUrl) {
         const previewImg = document.getElementById('preview-image');
         if (previewImg) {
+            // Force a complete reload by removing and re-adding the image
+            previewImg.style.display = 'none';
+            previewImg.onload = () => {
+                previewImg.style.display = '';
+                console.log(`🔄 Image refreshed: ${previewImg.naturalWidth}x${previewImg.naturalHeight}`);
+            };
             previewImg.src = newUrl + '?t=' + Date.now(); // Cache bust
         }
     }
     
+    /**
+     * Force complete image refresh to prevent display issues
+     */
+    forceImageRefresh() {
+        const previewImg = document.getElementById('preview-image');
+        if (previewImg) {
+            // Reset any inline styles that might cause stretching
+            previewImg.style.width = '';
+            previewImg.style.height = '';
+            previewImg.style.maxWidth = '90%';
+            previewImg.style.maxHeight = '90%';
+            previewImg.style.objectFit = 'contain';
+            
+            // Force reflow
+            previewImg.offsetHeight;
+            
+            console.log(`🔧 Forced image refresh - natural: ${previewImg.naturalWidth}x${previewImg.naturalHeight}`);
+        }
+    }
+
     /**
      * Update image dimensions in UI
      */
@@ -819,6 +919,7 @@ class CropTool {
         this.endX = 0;
         this.endY = 0;
         this.aspectRatio = null;
+        this.originalImageData = null;
         
         this.init();
     }
@@ -839,6 +940,7 @@ class CropTool {
         this.startX = (e.clientX - rect.left) * (this.canvas.width / rect.width);
         this.startY = (e.clientY - rect.top) * (this.canvas.height / rect.height);
         this.isDrawing = true;
+        console.log('🖱️ Mouse down:', this.startX, this.startY);
     }
     
     onMouseMove(e) {
@@ -850,6 +952,7 @@ class CropTool {
         
         this.adjustForAspectRatio();
         this.redraw();
+        console.log('🖱️ Mouse move - drawing selection:', this.startX, this.startY, 'to', this.endX, this.endY);
     }
     
     onMouseUp(e) {
@@ -900,37 +1003,55 @@ class CropTool {
     }
     
     redraw() {
-        // Clear and redraw original image
+        // Clear canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
-        const img = document.getElementById('preview-image');
-        if (img) {
-            this.ctx.drawImage(img, 0, 0);
+        // Redraw the original image from stored data or from image element
+        if (this.originalImageData) {
+            this.ctx.putImageData(this.originalImageData, 0, 0);
+        } else {
+            const img = document.getElementById('preview-image');
+            if (img && img.complete && img.naturalWidth !== 0) {
+                this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+            }
         }
         
-        // Draw crop selection
-        this.ctx.strokeStyle = '#28a745';
-        this.ctx.lineWidth = 2;
-        this.ctx.setLineDash([5, 5]);
-        this.ctx.strokeRect(
-            this.startX,
-            this.startY,
-            this.endX - this.startX,
-            this.endY - this.startY
-        );
-        
-        // Draw semi-transparent overlay
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-        this.ctx.setLineDash([]);
-        
-        // Top
-        this.ctx.fillRect(0, 0, this.canvas.width, this.startY);
-        // Bottom
-        this.ctx.fillRect(0, this.endY, this.canvas.width, this.canvas.height - this.endY);
-        // Left
-        this.ctx.fillRect(0, this.startY, this.startX, this.endY - this.startY);
-        // Right
-        this.ctx.fillRect(this.endX, this.startY, this.canvas.width - this.endX, this.endY - this.startY);
+        // Only draw selection if we have valid coordinates
+        if (this.startX !== this.endX && this.startY !== this.endY) {
+            // Draw crop selection
+            this.ctx.strokeStyle = '#28a745';
+            this.ctx.lineWidth = 2;
+            this.ctx.setLineDash([5, 5]);
+            this.ctx.strokeRect(
+                this.startX,
+                this.startY,
+                this.endX - this.startX,
+                this.endY - this.startY
+            );
+            
+            // Draw semi-transparent overlay
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            this.ctx.setLineDash([]);
+            
+            // Top
+            this.ctx.fillRect(0, 0, this.canvas.width, this.startY);
+            // Bottom
+            this.ctx.fillRect(0, this.endY, this.canvas.width, this.canvas.height - this.endY);
+            // Left
+            this.ctx.fillRect(0, this.startY, this.startX, this.endY - this.startY);
+            // Right
+            this.ctx.fillRect(this.endX, this.startY, this.canvas.width - this.endX, this.endY - this.startY);
+        }
+    }
+    
+    setOriginalImage(imgElement) {
+        if (imgElement && imgElement.complete && imgElement.naturalWidth !== 0) {
+            // Store the image data for redrawing
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.drawImage(imgElement, 0, 0, this.canvas.width, this.canvas.height);
+            this.originalImageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+            console.log('🖼️ Original image data stored for crop tool');
+        }
     }
     
     setAspectRatio(ratio) {

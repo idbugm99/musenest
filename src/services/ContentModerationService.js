@@ -6,6 +6,9 @@
 const path = require('path');
 const fs = require('fs').promises;
 const { spawn } = require('child_process');
+const VeniceAIService = require('./VeniceAIService');
+const sharp = require('sharp');
+const crypto = require('crypto');
 
 class ContentModerationService {
     constructor(dbConnection) {
@@ -16,31 +19,6 @@ class ContentModerationService {
         this.configCacheExpiry = 10 * 60 * 1000; // 10 minutes
     }
 
-    /**
-     * Get webhook URL for BLIP data delivery
-     * 🚨 DEV ONLY: Uses ngrok for local development
-     * 🚨 TODO: Remove ngrok logic before production deployment
-     */
-    getWebhookUrl() {
-        // 🚨 DEVELOPMENT ONLY - REMOVE BEFORE PRODUCTION 🚨
-        if (process.env.NODE_ENV !== 'production') {
-            // Check for ngrok URL first (for local development)
-            if (process.env.NGROK_URL) {
-                const webhookUrl = `${process.env.NGROK_URL}/api/blip/webhook`;
-                console.log('🚨 DEV MODE: Using ngrok URL for webhooks:', webhookUrl);
-                return webhookUrl;
-            }
-            
-            // Fallback: disable webhooks in local dev if no ngrok
-            console.log('⚠️ DEV MODE: No NGROK_URL set - webhooks disabled');
-            return null;
-        }
-        // 🚨 END DEVELOPMENT ONLY SECTION 🚨
-        
-        // Production webhook URL
-        const baseUrl = process.env.WEBHOOK_BASE_URL || 'https://musenest.com';
-        return `${baseUrl}/api/blip/webhook`;
-    }
 
     /**
      * Load analysis configuration from new system (preferred method)
@@ -177,6 +155,100 @@ class ContentModerationService {
     }
 
     /**
+     * Extract comprehensive image metadata including EXIF, hash, dimensions
+     */
+    async extractImageMetadata(imagePath) {
+        try {
+            console.log('📊 Extracting comprehensive metadata for:', path.basename(imagePath));
+            
+            // Get file stats
+            const fileStats = await fs.stat(imagePath);
+            const fileSize = fileStats.size;
+            
+            // Calculate file hash
+            const fileBuffer = await fs.readFile(imagePath);
+            const fileHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
+            
+            // Extract image metadata and EXIF using Sharp
+            const imageMetadata = await sharp(imagePath).metadata();
+            const { width, height, density, format, exif, orientation } = imageMetadata;
+            
+            // Parse EXIF data if available
+            let parsedExifData = null;
+            if (exif && exif.length > 0) {
+                try {
+                    // Convert EXIF buffer to object using sharp's metadata
+                    parsedExifData = {
+                        imageWidth: width,
+                        imageHeight: height,
+                        orientation: orientation,
+                        density: density,
+                        format: format,
+                        // Additional EXIF fields that Sharp can extract
+                        hasColorProfile: !!imageMetadata.hasProfile,
+                        colorSpace: imageMetadata.space,
+                        channels: imageMetadata.channels,
+                        isProgressive: imageMetadata.isProgressive,
+                        resolutionUnit: imageMetadata.resolutionUnit || 'inch'
+                    };
+                    
+                    console.log('📷 EXIF data extracted successfully');
+                } catch (exifError) {
+                    console.warn('⚠️ EXIF parsing failed:', exifError.message);
+                    parsedExifData = null;
+                }
+            }
+            
+            const metadata = {
+                // File information
+                fileHash: fileHash,
+                fileSize: fileSize,
+                fileName: path.basename(imagePath),
+                
+                // Image dimensions and technical details
+                width: width || null,
+                height: height || null,
+                format: format || null,
+                density: density || null,
+                
+                // EXIF and metadata
+                exifData: parsedExifData,
+                orientation: orientation || 1,
+                hasColorProfile: !!imageMetadata.hasProfile,
+                colorSpace: imageMetadata.space || null,
+                channels: imageMetadata.channels || null,
+                
+                // Processing metadata
+                extractedAt: new Date().toISOString(),
+                extractionMethod: 'sharp_nodejs'
+            };
+            
+            console.log('✅ Metadata extraction complete:', {
+                hash: fileHash.substring(0, 12) + '...',
+                dimensions: `${width}x${height}`,
+                fileSize: Math.round(fileSize / 1024) + 'KB',
+                format: format,
+                hasExif: !!parsedExifData
+            });
+            
+            return metadata;
+            
+        } catch (error) {
+            console.error('❌ Metadata extraction failed:', error);
+            return {
+                fileHash: null,
+                fileSize: 0,
+                width: null,
+                height: null,
+                exifData: null,
+                error: error.message,
+                extractedAt: new Date().toISOString(),
+                extractionMethod: 'failed'
+            };
+        }
+    }
+
+    /**
      * Create folder structure for a model
      */
     async createModelFolderStructure(modelSlug) {
@@ -239,62 +311,98 @@ class ContentModerationService {
             // 2. Move file to originals folder
             const originalPath = await this.moveToOriginals(filePath, modelSlug, originalName);
 
-            // 3. Get AI analysis
-            const aiAnalysis = await this.analyzeWithNudeNet(originalPath, contextType, modelId, usageIntent);
-            
-            console.log(`🔍 DEBUG aiAnalysis keys:`, Object.keys(aiAnalysis));
-            console.log(`🔍 DEBUG aiAnalysis.batch_id:`, aiAnalysis.batch_id);
-            console.log(`🔍 DEBUG aiAnalysis.moderation_status:`, aiAnalysis.moderation_status);
+            // 2.5. Extract comprehensive metadata
+            const imageMetadata = await this.extractImageMetadata(originalPath);
+            console.log('📊 Image metadata extracted:', {
+                hash: imageMetadata.fileHash,
+                dimensions: `${imageMetadata.width}x${imageMetadata.height}`,
+                fileSize: imageMetadata.fileSize,
+                hasExif: !!imageMetadata.exifData
+            });
 
-            // 4. Check if EC2 returned a complete response with batch_id
-            if (aiAnalysis.batch_id && aiAnalysis.moderation_status) {
-                console.log(`✅ EC2 returned complete response with batch_id: ${aiAnalysis.batch_id}`);
-                console.log(`📋 Saving EC2 response directly to database without modification`);
+            // 3. Parallel processing: NudeNet + Venice.ai
+            console.log('🔄 Starting parallel processing: NudeNet + Venice.ai...');
+            const [aiAnalysis, veniceResult] = await Promise.allSettled([
+                this.analyzeWithNudeNet(originalPath, contextType, modelId, usageIntent),
+                VeniceAIService.processImage(originalPath, { 
+                    modelId, 
+                    modelSlug, 
+                    usageIntent, 
+                    contextType 
+                })
+            ]);
+
+            // Handle NudeNet result
+            if (aiAnalysis.status === 'rejected') {
+                console.error('❌ NudeNet analysis failed:', aiAnalysis.reason);
+                throw new Error(`NudeNet analysis failed: ${aiAnalysis.reason.message}`);
+            }
+            const nudenetData = aiAnalysis.value;
+            
+            console.log(`🔍 DEBUG aiAnalysis keys:`, Object.keys(nudenetData));
+            console.log(`🔍 DEBUG aiAnalysis.batch_id:`, nudenetData.batch_id);
+            console.log(`🔍 DEBUG aiAnalysis.moderation_status:`, nudenetData.moderation_status);
+
+            // Handle Venice.ai result
+            let veniceData = null;
+            let adminNotificationNeeded = false;
+            
+            if (veniceResult.status === 'fulfilled' && veniceResult.value.success) {
+                veniceData = veniceResult.value;
+                console.log('✅ Venice.ai processing successful');
                 
-                // Store EC2 response directly in database
-                const contentModerationId = await this.storeModerationResult({
-                    batch_id: aiAnalysis.batch_id,
-                    originalPath,
-                    image_path: originalPath,
-                    modelId,
-                    usageIntent,
-                    contextType,
-                    // Use EC2's analysis results directly
-                    nudity_score: aiAnalysis.nudity_score,
-                    detected_parts: aiAnalysis.detected_parts,
-                    part_locations: aiAnalysis.part_locations,
-                    moderation_status: aiAnalysis.moderation_status,
-                    flagged: aiAnalysis.flagged || false,
-                    human_review_required: aiAnalysis.human_review_required || false,
-                    final_location: aiAnalysis.final_location,
-                    final_risk_score: aiAnalysis.final_risk_score,
-                    risk_level: aiAnalysis.risk_level,
-                    combined_assessment: aiAnalysis.combined_assessment,
-                    pose_analysis: aiAnalysis.pose_analysis
-                });
-                
-                return {
-                    success: true,
-                    contentModerationId,
-                    ...aiAnalysis
+                // Check for children detection
+                if (veniceData.childrenDetected && veniceData.childrenDetected.detected) {
+                    console.warn('🚨 CHILDREN DETECTED in Venice.ai description:', veniceData.childrenDetected.termsFound);
+                }
+            } else {
+                console.error('❌ Venice.ai processing failed:', veniceResult.reason || veniceResult.value?.error);
+                adminNotificationNeeded = true;
+                veniceData = {
+                    success: false,
+                    error: veniceResult.reason?.message || veniceResult.value?.error || 'Unknown Venice.ai error',
+                    requiresManualRetry: true
                 };
             }
 
-            // 4. Apply local moderation rules (only if EC2 didn't provide complete response)
-            console.log(`⚠️ EC2 response incomplete, applying local moderation rules`);
-            const moderationResult = await this.applyModerationRules(aiAnalysis, usageIntent, modelId);
+            // 4. Merge Venice.ai child detection results into NudeNet analysis before applying moderation rules
+            if (veniceData?.success && veniceData.childrenDetected?.detected) {
+                console.log(`🔗 Merging Venice.ai child detection data into analysis object`);
+                nudenetData.venice_children_detected = true;
+                nudenetData.venice_children_terms = veniceData.childrenDetected.termsFound;
+                console.log(`✅ Added Venice.ai child detection: ${veniceData.childrenDetected.termsFound.join(', ')}`);
+            } else {
+                nudenetData.venice_children_detected = false;
+                nudenetData.venice_children_terms = [];
+            }
 
-            // 5. Store in database
+            // 5. Apply local moderation rules to merged NudeNet + Venice.ai results
+            console.log(`🔍 Applying local moderation rules to merged analysis results`);
+            const moderationResult = await this.applyModerationRules(nudenetData, usageIntent, modelId);
+
+            // 6. Store in database with Venice.ai data and comprehensive metadata
             const contentModerationId = await this.storeModerationResult({
                 ...moderationResult,
                 originalPath,
                 modelId,
                 usageIntent,
                 contextType,
-                image_path: originalPath
+                image_path: originalPath,
+                // Add Venice.ai data with SEO enhancements
+                venice_description: veniceData?.fullResponse || null,
+                venice_detailed_description: veniceData?.detailedDescription || null,
+                venice_brief_description: veniceData?.briefDescription || null,
+                venice_seo_keywords: veniceData?.seoKeywords ? JSON.stringify(veniceData.seoKeywords) : null,
+                venice_alt_text: veniceData?.altText || null,
+                venice_children_detected: veniceData?.childrenDetected?.detected || false,
+                venice_children_terms: veniceData?.childrenDetected?.termsFound ? JSON.stringify(veniceData.childrenDetected.termsFound) : null,
+                venice_processing_error: veniceData?.success === false ? veniceData.error : null,
+                admin_notification_needed: adminNotificationNeeded,
+                // Add comprehensive image metadata
+                image_metadata: imageMetadata
             });
 
-            // 6. Handle flagged content
+            // 7. Handle flagged content
             if (moderationResult.flagged) {
                 await this.handleFlaggedContent(contentModerationId, {
                     ...moderationResult,
@@ -302,7 +410,7 @@ class ContentModerationService {
                 });
             }
 
-            // 7. Process approved content
+            // 8. Process approved content
             if (moderationResult.moderation_status === 'approved') {
                 await this.processApprovedContent(contentModerationId, originalPath, modelSlug, usageIntent);
             }
@@ -310,7 +418,16 @@ class ContentModerationService {
             return {
                 success: true,
                 contentModerationId,
-                ...moderationResult
+                ...moderationResult,
+                // Include Venice.ai data for downstream processing
+                venice_data: {
+                    seoKeywords: veniceData?.seoKeywords || [],
+                    altText: veniceData?.altText || null,
+                    briefDescription: veniceData?.briefDescription || null,
+                    detailedDescription: veniceData?.detailedDescription || null
+                },
+                // Include extracted metadata
+                image_metadata: imageMetadata
             };
 
         } catch (error) {
@@ -338,247 +455,94 @@ class ContentModerationService {
     }
 
     /**
-     * Analyze image with Enhanced MediaPipe API (NudeNet + Pose Analysis)
+     * Analyze image with local NudeNet processing
      */
     async analyzeWithNudeNet(imagePath, contextType, modelId, usageIntent = 'public_site') {
-        console.log(`🚀 Starting enhanced analysis for image: ${imagePath}`);
-        console.log(`📡 Target: 18.221.22.72:5000/analyze`);
+        console.log(`🚀 Starting local NudeNet analysis for image: ${imagePath}`);
         
-        // Get model slug from database for the API call
-        const [modelRows] = await this.db.execute('SELECT slug FROM models WHERE id = ?', [modelId]);
-        const modelSlug = modelRows[0]?.slug || `model-${modelId}`;
-        
-        // Load analysis configuration to determine what to analyze
-        const analysisConfig = await this.loadAnalysisConfiguration(usageIntent, modelId);
-        if (analysisConfig) {
-            console.log(`📋 Using analysis configuration: ${JSON.stringify(analysisConfig.detection_config)}`);
-        } else {
-            console.log(`⚠️ No specific analysis configuration found, using defaults`);
-        }
+        // Generate batch ID for tracking (compatible with test interface)
+        const batchId = `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
         return new Promise((resolve, reject) => {
-            const FormData = require('form-data');
-            const fs = require('fs');
-            const http = require('http');
-            
-            // Create form data for enhanced API
-            const form = new FormData();
-            form.append('image', fs.createReadStream(imagePath));
-            form.append('context_type', contextType);
-            form.append('model_id', modelId.toString());
-            form.append('model_slug', modelSlug);
-            form.append('usage_intent', usageIntent);
-            
-            console.log(`🔧 DEBUG: Sending fields - model_slug="${modelSlug}", usage_intent="${usageIntent}", model_id="${modelId}"`);
-            
-            // If the first request fails, we'll need to try a different format
-            // but for now, let's see what the exact error is
-            
-            // Add analysis configuration parameters
-            if (analysisConfig) {
-                const nudenetComponents = analysisConfig.detection_config.nudenet_components;
-                const blipComponents = analysisConfig.detection_config.blip_components;
-                
-                // Send component flags to API
-                form.append('enable_breast_detection', nudenetComponents.breast_detection.toString());
-                form.append('enable_genitalia_detection', nudenetComponents.genitalia_detection.toString());
-                form.append('enable_buttocks_detection', nudenetComponents.buttocks_detection.toString());
-                form.append('enable_anus_detection', nudenetComponents.anus_detection.toString());
-                form.append('enable_face_detection', nudenetComponents.face_detection.toString());
-                
-                form.append('enable_age_estimation', blipComponents.age_estimation.toString());
-                form.append('enable_child_detection', blipComponents.child_content_detection.toString());
-                form.append('enable_image_description', blipComponents.image_description.toString());
-                
-                // Send analysis configuration version for debugging
-                form.append('config_version', analysisConfig.version?.toString() || '1');
-                
-                console.log(`📊 Analysis components enabled:`);
-                console.log(`  NudeNet: breast=${nudenetComponents.breast_detection}, genitalia=${nudenetComponents.genitalia_detection}, face=${nudenetComponents.face_detection}`);
-                console.log(`  BLIP: age=${blipComponents.age_estimation}, child=${blipComponents.child_content_detection}, desc=${blipComponents.image_description}`);
-            } else {
-                console.log(`⚠️ No analysis config found - using default detection settings`);
-            }
-            
-            // Add webhook URL for automatic BLIP delivery
-            const webhookUrl = this.getWebhookUrl();
-            if (webhookUrl) {
-                form.append('webhook_url', webhookUrl);
-                console.log(`📡 Webhook URL provided: ${webhookUrl}`);
-            } else {
-                console.log('⚠️ No webhook URL configured - BLIP data will need manual retrieval');
-            }
+            const python = spawn('python3', [
+                path.join(__dirname, '../../nudenet-cli.py'),
+                '--image', imagePath,
+                '--context_type', contextType
+            ], {
+                cwd: path.join(__dirname, '../..'),
+                env: { 
+                    ...process.env, 
+                    PATH: path.join(__dirname, '../../.venv/bin') + ':' + process.env.PATH,
+                    VIRTUAL_ENV: path.join(__dirname, '../../.venv')
+                }
+            });
 
-            console.log(`📝 Form data prepared: context_type=${contextType}, model_id=${modelId}, model_slug=${modelSlug}, usage_intent=${usageIntent}`);
-            console.log(`📡 Webhook URL: ${webhookUrl || 'NONE'}`);
-            console.log(`🚀 Sending request to EC2 server...`);
-            
-            const startTime = Date.now();
-            
-            // Send to enhanced MediaPipe API with proper connection handling
-            const req = http.request({
-                hostname: '18.221.22.72',
-                port: 5000,
-                path: '/analyze',
-                method: 'POST',
-                headers: {
-                    ...form.getHeaders(),
-                    'Connection': 'close',
-                    'Keep-Alive': 'timeout=5, max=1'
-                },
-                timeout: 10000, // 10 second timeout
-                agent: false // Don't use connection pooling
-            }, (res) => {
-                const responseTime = Date.now() - startTime;
-                console.log(`✅ Enhanced API response received in ${responseTime}ms`);
-                console.log(`📊 Status: ${res.statusCode}, Content-Length: ${res.headers['content-length']}`);
-                
-                let data = '';
-                
-                res.on('data', (chunk) => {
-                    data += chunk;
-                });
-                
-                res.on('end', () => {
-                    const totalTime = Date.now() - startTime;
-                    console.log(`🏁 Complete response received in ${totalTime}ms, size: ${data.length} bytes`);
-                    console.log(`📄 Raw response preview: ${data.substring(0, 500)}...`);
+            let stdout = '';
+            let stderr = '';
+
+            python.stdout.on('data', (data) => {
+                stdout += data.toString();
+            });
+
+            python.stderr.on('data', (data) => {
+                stderr += data.toString();
+            });
+
+            python.on('close', (code) => {
+                if (code !== 0) {
+                    console.error(`❌ Local NudeNet process failed with code ${code}`);
+                    console.error('stderr:', stderr);
+                    reject(new Error(`Local NudeNet process failed: ${stderr}`));
+                    return;
+                }
+
+                try {
+                    console.log('📝 Raw NudeNet output:', stdout);
+                    const result = JSON.parse(stdout.trim());
                     
-                    try {
-                        const result = JSON.parse(data);
-                        console.log(`✅ JSON parsed successfully, success: ${result.success}`);
-                        
-                        // Check if this is a valid response (either has success=true OR has batch_id + detected_parts)
-                        const isValidResponse = result.success === true || 
-                                              (result.batch_id && result.detected_parts);
-                        
-                        console.log(`🔍 Response validation: isValid=${isValidResponse}, hasBatchId=${!!result.batch_id}, hasDetectedParts=${!!result.detected_parts}`);
-                        
-                        if (isValidResponse) {
-                            console.log('🎯 Transforming enhanced API response...');
-                            
-                            // DEBUG: Log the complete raw API response structure
-                            console.log('🔍 DEBUG - Complete API response structure:');
-                            console.log(JSON.stringify(result, null, 2));
-                            
-                            // Log key response data for debugging (v3.0 format)
-                            const nudityScore = result.image_analysis?.nudity_detection?.nudity_score;
-                            const faceCount = result.image_analysis?.face_analysis?.face_count;
-                            const minAge = result.image_analysis?.face_analysis?.min_age;
-                            const riskLevel = result.image_analysis?.combined_assessment?.risk_level;
-                            const imageDescription = result.image_analysis?.image_description;
-                            
-                            console.log(`📊 Raw API results: nudity=${nudityScore}, faces=${faceCount}, minAge=${minAge}, risk=${riskLevel}`);
-                            console.log(`📝 Image description found:`, imageDescription);
-                            
-                            // Transform enhanced API response to match expected format
-                            // The actual data is nested under result.data
-                            const transformedResult = this.transformEnhancedResponse(result.data || result);
-                            
-                            // Add batch_id and paths from the response for tracking
-                            if (result.data?.batch_id) {
-                                transformedResult.batch_id = result.data.batch_id;
-                                console.log(`📋 Batch ID received: ${result.data.batch_id}`);
-                            }
-                            if (result.data?.original_path) {
-                                transformedResult.original_path = result.data.original_path;
-                            }
-                            if (result.data?.image_path) {
-                                transformedResult.image_path = result.data.image_path;
-                            }
-                            
-                            console.log(`✅ Transformation complete, final nudity score: ${transformedResult.nudity_score}`);
-                            console.log(`🎭 Pose analysis: ${transformedResult.pose_category} (${transformedResult.explicit_pose_score})`);
-                            console.log(`🔍 Debug - Full transformed result keys:`, Object.keys(transformedResult));
-                            console.log(`🔍 Debug - Pose analysis data:`, transformedResult.pose_analysis);
-                            console.log(`🔍 Debug - Combined assessment:`, transformedResult.combined_assessment);
-                            
-                            resolve(transformedResult);
-                        } else {
-                            // Check if this is flagged content vs actual processing error
-                            if (result.data && (result.data.moderation_status === 'flagged' || result.data.human_review_required)) {
-                                console.log('✅ Content flagged for human review - processing as successful result');
-                                console.log(`📋 Flagged content details: status=${result.data.moderation_status}, nudity=${result.data.nudity_score}%`);
-                                console.log(`🔍 Detected parts:`, Object.keys(result.data.detected_parts || {}));
-                                
-                                // Transform flagged content response to expected format
-                                // The actual data is nested under result.data
-                                const flaggedResult = this.transformEnhancedResponse(result.data || result);
-                                console.log(`✅ Flagged content transformed successfully - final nudity: ${flaggedResult.nudity_score}%`);
-                                resolve(flaggedResult);
-                            } else {
-                                // This is an actual processing error
-                                console.error('❌ Enhanced API processing error (not flagged content)');
-                                console.error('Full API response:', JSON.stringify(result, null, 2));
-                                console.error('Error details:', result.error);
-                                const errorMessage = result.error || 'Enhanced analysis failed - processing error';
-                                reject(new Error(errorMessage));
-                            }
+                    // Apply nudity score correction (exclude faces and covered parts)
+                    const detectedParts = result.detected_parts || {};
+                    const ACTUAL_NUDITY_PARTS = [
+                        'FEMALE_GENITALIA_EXPOSED',
+                        'MALE_GENITALIA_EXPOSED', 
+                        'BUTTOCKS_EXPOSED',
+                        'FEMALE_BREAST_EXPOSED',
+                        'ANUS_EXPOSED'
+                    ];
+                    
+                    let correctedNudityScore = 0;
+                    Object.entries(detectedParts).forEach(([part, confidence]) => {
+                        if (ACTUAL_NUDITY_PARTS.includes(part)) {
+                            correctedNudityScore = Math.max(correctedNudityScore, confidence);
                         }
-                    } catch (parseError) {
-                        console.error('❌ JSON parse error:', parseError.message);
-                        console.error('Raw response preview:', data.substring(0, 300) + '...');
-                        reject(new Error('Failed to parse enhanced analysis response'));
-                    }
-                });
-            });
-
-            req.on('error', (error) => {
-                const errorTime = Date.now() - startTime;
-                console.error(`❌ Enhanced API request error after ${errorTime}ms:`, error.message);
-                console.error(`Error details: code=${error.code}, syscall=${error.syscall}`);
-                console.log('🚨 FALLING BACK TO CONSERVATIVE ANALYSIS');
-                
-                // Fallback to basic analysis when enhanced API is unavailable
-                this.fallbackToBasicAnalysis(imagePath, contextType, modelId, usageIntent)
-                    .then(result => {
-                        console.log('✅ Fallback analysis completed');
-                        resolve(result);
-                    })
-                    .catch(fallbackError => {
-                        console.error('❌ Fallback analysis also failed:', fallbackError);
-                        reject(new Error(`Both enhanced and fallback analysis failed: ${error.message}`));
                     });
-            });
 
-            req.on('timeout', () => {
-                const timeoutTime = Date.now() - startTime;
-                console.log(`⏰ Enhanced API timeout after ${timeoutTime}ms`);
-                req.destroy();
-                console.log('🚨 FALLING BACK TO CONSERVATIVE ANALYSIS');
-                
-                // Fallback to basic analysis when enhanced API times out
-                this.fallbackToBasicAnalysis(imagePath, contextType, modelId, usageIntent)
-                    .then(result => {
-                        console.log('✅ Fallback analysis completed after timeout');
-                        resolve(result);
-                    })
-                    .catch(fallbackError => {
-                        console.error('❌ Fallback analysis also failed:', fallbackError);
-                        reject(new Error(`Enhanced API timeout and fallback failed: ${fallbackError.message}`));
+                    console.log(`🔍 Local NudeNet results: Original=${result.nudity_score?.toFixed(1)}%, Corrected=${correctedNudityScore.toFixed(1)}%`);
+                    
+                    resolve({
+                        ...result,
+                        nudity_score: correctedNudityScore,
+                        processing_method: 'local_nudenet',
+                        analysis_version: 'local_v1.0',
+                        batch_id: batchId,
+                        moderation_status: 'pending' // Will be determined by moderation rules
                     });
+                } catch (parseError) {
+                    console.error(`❌ Failed to parse NudeNet result:`, parseError.message);
+                    console.error('stdout:', stdout);
+                    reject(new Error(`Failed to parse local NudeNet result: ${parseError.message}`));
+                }
             });
 
-            // Add connection tracking
-            req.on('socket', (socket) => {
-                console.log('🔌 Socket assigned for enhanced API request');
-                
-                socket.on('connect', () => {
-                    console.log('🌐 Socket connected to EC2');
-                });
-                
-                socket.on('timeout', () => {
-                    console.log('⏰ Socket timeout occurred');
-                });
+            python.on('error', (error) => {
+                console.error(`❌ Failed to start local NudeNet process:`, error.message);
+                reject(new Error(`Failed to start local NudeNet process: ${error.message}`));
             });
-
-            console.log('📤 Sending form data to enhanced API...');
-            form.pipe(req);
         });
     }
 
     /**
-     * Fallback to basic NudeNet analysis when enhanced API is unavailable
+     * Fallback to basic NudeNet analysis when local processing fails
      */
     async fallbackToBasicAnalysis(imagePath, contextType, modelId, usageIntent = 'public_site') {
         console.log('🔄 Fallback: Attempting direct NudeNet analysis...');
@@ -988,7 +952,7 @@ except Exception as e:
             combined_assessment: {
                 final_risk_score: 95.0,
                 risk_level: 'critical',
-                reasoning: ['SERVER_ANALYSIS_ERROR', 'NUDENET_FAILED_ON_EC2']
+                reasoning: ['LOCAL_ANALYSIS_ERROR', 'NUDENET_FAILED_LOCALLY']
             },
             
             // Moderation decision
@@ -1009,85 +973,6 @@ except Exception as e:
         };
     }
 
-    /**
-     * Transform webhook-style response (flat structure) to v3 format
-     */
-    transformWebhookResponse(webhookResult) {
-        return {
-            // NudeNet results from webhook
-            detected_parts: webhookResult.detected_parts || {},
-            part_locations: webhookResult.part_locations || {},
-            nudity_score: webhookResult.nudity_score || 0,
-            has_nudity: webhookResult.nudity_score > 30,
-            
-            // Simulated face analysis (webhook doesn't include face data yet)
-            face_analysis: {
-                faces_detected: false,
-                face_count: 0,
-                min_age: null,
-                underage_detected: false,
-                simulation_note: 'Face analysis pending - BLIP webhook will follow'
-            },
-            face_count: 0,
-            min_detected_age: null,
-            max_detected_age: null,
-            underage_detected: false,
-            age_risk_multiplier: 1.0,
-            
-            // Image description placeholder (BLIP webhook will follow)
-            image_description: {
-                description: 'BLIP analysis in progress via webhook',
-                tags: [],
-                generation_method: 'webhook_pending',
-                batch_id: webhookResult.batch_id
-            },
-            description_text: 'BLIP description will arrive via webhook',
-            description_tags: [],
-            contains_children: false,
-            description_risk: 0.0,
-            
-            // Risk assessment from webhook
-            final_risk_score: webhookResult.final_risk_score || webhookResult.nudity_score || 0,
-            risk_level: webhookResult.risk_level || 'unknown',
-            risk_reasoning: ['webhook_nudity_analysis', `batch_id_${webhookResult.batch_id}`],
-            
-            // Combined assessment placeholder
-            combined_assessment: {
-                final_risk_score: webhookResult.final_risk_score || webhookResult.nudity_score || 0,
-                risk_level: webhookResult.risk_level || 'unknown',
-                reasoning: ['webhook_response', 'blip_analysis_pending'],
-                batch_id: webhookResult.batch_id
-            },
-            
-            // Pose analysis compatibility
-            pose_analysis: {
-                pose_detected: false,
-                pose_category: 'webhook_analysis_pending',
-                suggestive_score: 0,
-                details: { 
-                    reasoning: ['webhook_nudity_complete', 'blip_pending'],
-                    batch_id: webhookResult.batch_id
-                }
-            },
-            
-            // Moderation decision
-            moderation_decision: {
-                status: webhookResult.moderation_status || 'pending',
-                action: webhookResult.human_review_required ? 'require_human_review' : 'auto_approve',
-                human_review_required: webhookResult.human_review_required || false
-            },
-            moderation_status: webhookResult.moderation_status || 'pending',
-            human_review_required: webhookResult.human_review_required || false,
-            flagged: webhookResult.flagged || false,
-            auto_rejected: false,
-            rejection_reason: null,
-            
-            // Webhook metadata
-            batch_id: webhookResult.batch_id,
-            success: true,
-            analysis_version: 'webhook_v3_with_blip_pending'
-        };
-    }
 
     /**
      * Transform v1 API response to clean format (no legacy compatibility)
@@ -1099,15 +984,6 @@ except Exception as e:
             return this.createStructuredFallback();
         }
 
-        // Check if this is a webhook-style response (flat structure)
-        if (enhancedResult.batch_id && enhancedResult.detected_parts && !enhancedResult.image_analysis) {
-            console.log('🔄 Detected webhook-style response - transforming to v3 structure');
-            console.log(`🔍 DEBUG: Input nudity_score = ${enhancedResult.nudity_score}`);
-            console.log(`🔍 DEBUG: Input detected_parts =`, Object.keys(enhancedResult.detected_parts));
-            const result = this.transformWebhookResponse(enhancedResult);
-            console.log(`🔍 DEBUG: Output nudity_score = ${result.nudity_score}`);
-            return result;
-        }
 
         const analysis = enhancedResult.image_analysis;
         const nudityDetection = analysis?.nudity_detection;
@@ -1121,10 +997,38 @@ except Exception as e:
         const partLocations = {};
         let maxNudityScore = 0;
 
+        // Define which parts actually constitute nudity (exclude faces and covered parts)
+        const ACTUAL_NUDITY_PARTS = [
+            'FEMALE_GENITALIA_EXPOSED',
+            'MALE_GENITALIA_EXPOSED', 
+            'BUTTOCKS_EXPOSED',
+            'FEMALE_BREAST_EXPOSED',
+            'ANUS_EXPOSED'
+        ];
+
+        // Define non-nudity parts that should not contribute to nudity score
+        const NON_NUDITY_PARTS = [
+            'FACE_FEMALE',
+            'FACE_MALE', 
+            'FEMALE_BREAST_COVERED',
+            'MALE_BREAST_COVERED',
+            'BUTTOCKS_COVERED',
+            'BELLY_COVERED',
+            'BELLY_EXPOSED',
+            'ARMPITS_EXPOSED'
+        ];
+
         if (nudityDetection?.detected_parts) {
             Object.entries(nudityDetection.detected_parts).forEach(([part, confidence]) => {
                 detectedParts[part] = confidence;
-                maxNudityScore = Math.max(maxNudityScore, confidence);
+                
+                // Only count actual nude body parts toward nudity score
+                if (ACTUAL_NUDITY_PARTS.includes(part)) {
+                    maxNudityScore = Math.max(maxNudityScore, confidence);
+                    console.log(`🔍 ACTUAL NUDITY DETECTED: ${part} (${confidence.toFixed(1)}%)`);
+                } else {
+                    console.log(`ℹ️  Non-nudity detection: ${part} (${confidence.toFixed(1)}%) - not counted toward nudity score`);
+                }
                 
                 if (nudityDetection.part_locations?.[part]) {
                     partLocations[part] = nudityDetection.part_locations[part];
@@ -1136,6 +1040,12 @@ except Exception as e:
             });
         }
 
+        console.log(`📊 NUDITY SCORE CALCULATION: Final score = ${maxNudityScore.toFixed(1)}% (based only on exposed body parts)`);
+
+        // Calculate has_nudity based on actual nudity score (not original detection)
+        const hasActualNudity = maxNudityScore > 15; // Threshold for actual nudity
+        console.log(`📊 HAS_NUDITY FLAG: ${hasActualNudity} (score: ${maxNudityScore.toFixed(1)}%, threshold: 15%)`);
+
         // Extract image description details
         const descriptionText = imageDescription?.description || 'No description available';
         const descriptionTags = imageDescription?.tags || [];
@@ -1146,7 +1056,7 @@ except Exception as e:
             detected_parts: detectedParts,
             part_locations: partLocations,
             nudity_score: maxNudityScore,
-            has_nudity: nudityDetection?.has_nudity || false,
+            has_nudity: hasActualNudity,
             
             // Face analysis results
             face_analysis: faceAnalysis,
@@ -1296,6 +1206,27 @@ except Exception as e:
     }
 
     /**
+     * Map NudeNet detection labels to configuration keys
+     */
+    mapNudeNetToConfigKey(nudeNetLabel) {
+        const labelMap = {
+            'FEMALE_GENITALIA_EXPOSED': 'GENITALIA',
+            'MALE_GENITALIA_EXPOSED': 'GENITALIA',
+            'FEMALE_BREAST_EXPOSED': 'BREAST_EXPOSED',
+            'MALE_BREAST_EXPOSED': 'BREAST_EXPOSED',
+            'BUTTOCKS_EXPOSED': 'BUTTOCKS_EXPOSED',
+            'ANUS_EXPOSED': 'ANUS_EXPOSED',
+            'FACE_FEMALE': 'FACE_DETECTED',
+            'FACE_MALE': 'FACE_DETECTED',
+            'ARMPITS_EXPOSED': 'ARMPITS_EXPOSED',
+            'BELLY_EXPOSED': 'BELLY_EXPOSED',
+            'FEET_EXPOSED': 'FEET_EXPOSED'
+        };
+        
+        return labelMap[nudeNetLabel] || nudeNetLabel;
+    }
+
+    /**
      * Apply new configuration-based moderation rules
      */
     applyNewModerationRules(aiAnalysis, analysisConfig, usageIntent) {
@@ -1320,7 +1251,9 @@ except Exception as e:
         
         if (result.detected_parts) {
             for (const [bodyPart, confidence] of Object.entries(result.detected_parts)) {
-                const weight = detectionWeights[bodyPart] || 0;
+                // Map NudeNet detection labels to configuration keys
+                const mappedBodyPart = this.mapNudeNetToConfigKey(bodyPart);
+                const weight = detectionWeights[mappedBodyPart] || detectionWeights[bodyPart] || 0;
                 const contribution = (confidence * weight) / 100;
                 weightedScore += contribution;
                 
@@ -1339,6 +1272,12 @@ except Exception as e:
         if (result.contains_children && riskMultipliers.child_content_blip) {
             weightedScore *= riskMultipliers.child_content_blip;
             console.log(`⚠️ Child content detected - applying ${riskMultipliers.child_content_blip}x multiplier`);
+        }
+        
+        // Check Venice.ai child detection results
+        if (result.venice_children_detected && riskMultipliers.child_content_blip) {
+            weightedScore *= riskMultipliers.child_content_blip;
+            console.log(`⚠️ Venice.ai child content detected - applying ${riskMultipliers.child_content_blip}x multiplier`);
         }
 
         // Update the final score
@@ -1376,7 +1315,7 @@ except Exception as e:
         }
 
         // Force high priority for specific conditions
-        if (result.underage_detected || result.contains_children) {
+        if (result.underage_detected || result.contains_children || result.venice_children_detected) {
             result.flagged = true;
             result.human_review_required = true;
             result.moderation_status = 'flagged';
@@ -1430,8 +1369,11 @@ except Exception as e:
                 contains_children, description_risk,
                 final_risk_score, risk_level, risk_reasoning,
                 moderation_status, human_review_required, flagged, 
-                auto_rejected, rejection_reason, confidence_score, final_location
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                auto_rejected, rejection_reason, confidence_score, final_location,
+                venice_description, venice_brief_description, venice_detailed_description,
+                venice_children_detected, venice_children_terms, venice_processing_error,
+                venice_seo_keywords, venice_alt_text
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const values = [
@@ -1465,7 +1407,15 @@ except Exception as e:
             data.auto_rejected ? 1 : 0,
             data.rejection_reason || '',
             data.confidence_score || 0,
-            data.final_location || 'originals'
+            data.final_location || 'originals',
+            data.venice_description || null,
+            data.venice_brief_description || null,
+            data.venice_detailed_description || null,
+            data.venice_children_detected ? 1 : 0,
+            data.venice_children_terms ? JSON.stringify(data.venice_children_terms) : null,
+            data.venice_processing_error || null,
+            data.venice_seo_keywords || null,
+            data.venice_alt_text || null
         ];
 
         try {

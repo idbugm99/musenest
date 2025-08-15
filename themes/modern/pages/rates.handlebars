@@ -1,162 +1,341 @@
-<!-- Rates Hero Section -->
-<section class="modern-hero min-h-96 flex items-center justify-center text-white pt-16" data-aos="fade-in">
+<!-- Modern Rates Hero Section -->
+{{#if rates_content.rates_header_visible}}
+<section class="modern-rates-hero min-h-96 flex items-center justify-center text-white pt-20 relative overflow-hidden" data-aos="fade-in">
+    <!-- Modern Background Elements -->
+    <div class="modern-rates-gradient-layer-1"></div>
+    <div class="modern-rates-gradient-layer-2"></div>
+    
+    <!-- Modern Floating Elements -->
+    <div class="modern-rates-floating-elements">
+        <div class="modern-floating-rate-1"></div>
+        <div class="modern-floating-rate-2"></div>
+        <div class="modern-floating-badge-1"></div>
+        <div class="modern-floating-badge-2"></div>
+    </div>
+    
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        <div class="modern-badge mb-4">Services</div>
-        <h1 class="text-5xl md:text-6xl font-bold mb-6 modern-heading">
-            Services & Rates
-        </h1>
-        <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto font-light">
-            {{content.ratesIntro}}
-        </p>
+        <div class="modern-rates-hero-content" data-aos="zoom-in" data-aos-delay="200">
+            <div class="modern-rates-badge mb-6">
+                {{#if rates_content.hero_badge_text}}{{rates_content.hero_badge_text}}{{else}}Services{{/if}}
+            </div>
+            <h1 class="text-5xl md:text-7xl font-bold mb-8 modern-gradient-text modern-text-glow">
+                {{#if rates_content.page_title}}{{rates_content.page_title}}{{else}}Services & Rates{{/if}}
+            </h1>
+            {{#if rates_content.page_subtitle}}
+            <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto modern-subtitle">
+                {{rates_content.page_subtitle}}
+            </p>
+            {{else}}
+            <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto modern-subtitle">
+                Professional services with transparent pricing and exceptional quality.
+            </p>
+            {{/if}}
+        </div>
     </div>
 </section>
+{{/if}}
 
-<!-- Services Grid -->
-<section class="py-20 bg-white">
+<!-- Modern Rates Tables Section -->
+{{#if rates_content.rates_table_visible}}
+<section class="py-20 modern-rates-main-section">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {{#if services}}
-        <div class="modern-grid modern-grid-3">
-            {{#each services}}
-            <div class="modern-card p-8 text-center group" data-aos="fade-up" data-aos-delay="{{@index}}00">
-                <div class="w-16 h-16 mx-auto mb-6 bg-modern-primary rounded-2xl flex items-center justify-center group-hover:bg-modern-secondary transition-colors">
-                    <i class="{{this.icon}} text-2xl text-white"></i>
+        <!-- Section Header -->
+        {{#if rates_content.table_title}}
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-8 modern-gradient-text">
+                {{rates_content.table_title}}
+            </h2>
+            {{#if rates_content.table_description}}
+            <p class="text-lg leading-relaxed max-w-3xl mx-auto text-gray-700">
+                {{rates_content.table_description}}
+            </p>
+            {{/if}}
+        </div>
+        {{/if}}
+        
+        <!-- Modern Rate Cards -->
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Incall Rates -->
+            {{#if rates_content.rates_incall_visible}}
+            <div class="modern-rates-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="modern-rates-card-header">
+                    <div class="modern-rates-icon">
+                        <i class="fas fa-home text-2xl"></i>
+                    </div>
+                    <h3 class="modern-rates-card-title">Incall</h3>
                 </div>
-                <h3 class="text-xl font-bold mb-4 modern-heading">{{this.name}}</h3>
-                <p class="text-modern-muted mb-6 leading-relaxed">{{this.description}}</p>
-                {{#if this.duration}}
-                <div class="text-sm text-modern-muted mb-3 modern-mono">
-                    <i class="fas fa-clock mr-1"></i> {{this.duration}}
-                </div>
-                {{/if}}
-                {{#if this.price}}
-                <div class="text-3xl font-bold text-modern-primary mb-4 modern-mono">
-                    {{formatCurrency this.price}}
-                </div>
-                {{/if}}
-                {{#if this.features}}
-                <ul class="text-left text-sm text-modern-muted space-y-1 mb-6 bg-gray-50 p-4 rounded-lg">
-                    {{#each this.features}}
-                    <li class="flex items-center">
-                        <div class="w-1 h-1 bg-modern-primary rounded-full mr-3"></div>
-                        <span>{{this}}</span>
-                    </li>
+                
+                <div class="modern-rates-list">
+                    {{#each rates.incall}}
+                    <div class="modern-rate-item">
+                        <div class="modern-rate-service">
+                            <span class="modern-rate-duration">
+                                {{#if this.serviceName}}{{this.serviceName}}{{else}}{{this.duration}}{{/if}}
+                            </span>
+                            {{#if ../rates_content.rates_highlight_badge_visible}}
+                            {{#if this.highlightBadge}}
+                            <span class="modern-highlight-badge">Most Popular</span>
+                            {{/if}}
+                            {{/if}}
+                        </div>
+                        <div class="modern-rate-price">{{this.price}}</div>
+                    </div>
                     {{/each}}
-                </ul>
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Outcall Rates -->
+            {{#if rates_content.rates_outcall_visible}}
+            <div class="modern-rates-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="modern-rates-card-header">
+                    <div class="modern-rates-icon">
+                        <i class="fas fa-map-marker-alt text-2xl"></i>
+                    </div>
+                    <h3 class="modern-rates-card-title">Outcall</h3>
+                </div>
+                
+                <div class="modern-rates-list">
+                    {{#each rates.outcall}}
+                    <div class="modern-rate-item">
+                        <div class="modern-rate-service">
+                            <span class="modern-rate-duration">
+                                {{#if this.serviceName}}{{this.serviceName}}{{else}}{{this.duration}}{{/if}}
+                            </span>
+                            {{#if ../rates_content.rates_highlight_badge_visible}}
+                            {{#if this.highlightBadge}}
+                            <span class="modern-highlight-badge">Most Popular</span>
+                            {{/if}}
+                            {{/if}}
+                        </div>
+                        <div class="modern-rate-price">{{this.price}}</div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Modern Extended Engagements -->
+{{#if rates_content.rates_extended_visible}}
+{{#if rates.extended.length}}
+<section class="py-20 modern-extended-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-8 modern-gradient-text">
+                {{#if rates_content.extended_title}}{{rates_content.extended_title}}{{else}}Extended Engagements{{/if}}
+            </h2>
+            {{#if rates_content.extended_description}}
+            <p class="text-lg leading-relaxed max-w-3xl mx-auto text-gray-700">
+                {{rates_content.extended_description}}
+            </p>
+            {{/if}}
+        </div>
+        
+        <!-- Extended Service Cards -->
+        <div class="grid md:grid-cols-3 gap-8">
+            {{#each rates.extended}}
+            <div class="modern-extended-card text-center" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
+                {{#if ../rates_content.extended_icon_visible}}
+                <div class="modern-extended-icon">
+                    <i class="{{#if this.rateIcon}}{{this.rateIcon}}{{else}}fas fa-clock{{/if}} text-2xl"></i>
+                </div>
                 {{/if}}
-                <a href="/{{../modelSlug}}/contact?service={{this.slug}}" class="modern-btn w-full">
-                    <i class="fas fa-arrow-right mr-2"></i>
-                    Book Service
-                </a>
+                
+                {{#if ../rates_content.extended_show_service_name}}
+                <h3 class="modern-extended-title">{{this.serviceName}}</h3>
+                {{/if}}
+                
+                {{#if ../rates_content.extended_show_price}}
+                {{#if (eq this.serviceName "Custom")}}
+                <div class="modern-extended-custom">Contact for pricing</div>
+                {{else}}
+                <div class="modern-extended-price">${{this.price}}</div>
+                {{/if}}
+                {{/if}}
+                
+                {{#if ../rates_content.extended_show_duration}}
+                <div class="modern-extended-duration">{{this.duration}}</div>
+                {{/if}}
+                
+                {{#if ../rates_content.extended_description_visible}}
+                {{#if this.rateDescription}}
+                <p class="modern-extended-description">{{this.rateDescription}}</p>
+                {{/if}}
+                {{/if}}
             </div>
             {{/each}}
         </div>
-        {{else}}
-        <div class="text-center py-16">
-            <div class="w-24 h-24 mx-auto mb-6 bg-modern-primary rounded-2xl flex items-center justify-center">
-                <i class="fas fa-cogs text-3xl text-white"></i>
-            </div>
-            <h3 class="text-2xl font-bold mb-4 modern-heading">Professional Services</h3>
-            <p class="text-modern-muted mb-6">Contact me for detailed service information and rates.</p>
-            <a href="/{{modelSlug}}/contact" class="modern-btn">
-                <i class="fas fa-envelope mr-2"></i>
-                Get in Touch
-            </a>
-        </div>
-        {{/if}}
     </div>
 </section>
+{{/if}}
+{{/if}}
 
-<!-- Policies Section -->
-<section class="py-20 bg-gray-50">
+<!-- Modern Service Information -->
+<section class="py-20 modern-service-info-section">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16" data-aos="fade-up">
-            <div class="modern-badge mb-4">Policies</div>
-            <h2 class="text-3xl font-bold mb-4 modern-heading text-modern-primary">
+            <div class="modern-service-badge mb-6">Policies</div>
+            <h2 class="text-3xl font-bold mb-8 modern-gradient-text">
                 Service Information
             </h2>
         </div>
         
-        <div class="modern-grid modern-grid-3">
-            <div class="modern-card p-8" data-aos="fade-up" data-aos-delay="0">
-                <div class="w-14 h-14 mb-6 bg-modern-primary rounded-2xl flex items-center justify-center">
-                    <i class="fas fa-calendar-check text-white text-lg"></i>
+        <!-- Service Info Cards -->
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Booking Card -->
+            <div class="modern-service-card" data-aos="fade-up" data-aos-delay="0">
+                <div class="modern-service-card-icon">
+                    <i class="fas fa-calendar-check text-2xl"></i>
                 </div>
-                <h3 class="text-lg font-bold mb-3 modern-heading">Booking</h3>
-                <p class="text-modern-muted text-sm leading-relaxed">
-                    {{content.advanceBooking}}
-                </p>
+                <h3 class="modern-service-card-title">Booking</h3>
+                <ul class="modern-service-list">
+                    <li class="modern-service-item">
+                        <div class="modern-service-check">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span>Advance booking recommended</span>
+                    </li>
+                    <li class="modern-service-item">
+                        <div class="modern-service-check">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span>Same-day: additional fee applies</span>
+                    </li>
+                    <li class="modern-service-item">
+                        <div class="modern-service-check">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span>Screening required for new clients</span>
+                    </li>
+                </ul>
             </div>
             
-            <div class="modern-card p-8" data-aos="fade-up" data-aos-delay="100">
-                <div class="w-14 h-14 mb-6 bg-modern-primary rounded-2xl flex items-center justify-center">
-                    <i class="fas fa-credit-card text-white text-lg"></i>
+            <!-- Payment Card -->
+            <div class="modern-service-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="modern-service-card-icon">
+                    <i class="fas fa-credit-card text-2xl"></i>
                 </div>
-                <h3 class="text-lg font-bold mb-3 modern-heading">Payment</h3>
-                <p class="text-modern-muted text-sm leading-relaxed">
-                    {{content.paymentPolicy}}
-                </p>
+                <h3 class="modern-service-card-title">Payment</h3>
+                <ul class="modern-service-list">
+                    <li class="modern-service-item">
+                        <div class="modern-service-check">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span>Secure and discrete processing</span>
+                    </li>
+                    <li class="modern-service-item">
+                        <div class="modern-service-check">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span>Payment at time of meeting</span>
+                    </li>
+                    <li class="modern-service-item">
+                        <div class="modern-service-check">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span>Multiple payment methods accepted</span>
+                    </li>
+                </ul>
             </div>
             
-            <div class="modern-card p-8" data-aos="fade-up" data-aos-delay="200">
-                <div class="w-14 h-14 mb-6 bg-modern-primary rounded-2xl flex items-center justify-center">
-                    <i class="fas fa-times-circle text-white text-lg"></i>
+            <!-- Policies Card -->
+            <div class="modern-service-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="modern-service-card-icon">
+                    <i class="fas fa-shield-alt text-2xl"></i>
                 </div>
-                <h3 class="text-lg font-bold mb-3 modern-heading">Cancellation</h3>
-                <p class="text-modern-muted text-sm leading-relaxed">
-                    {{content.cancellationPolicy}}
-                </p>
+                <h3 class="modern-service-card-title">Policies</h3>
+                <ul class="modern-service-list">
+                    <li class="modern-service-item">
+                        <div class="modern-service-check">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span>Discretion and confidentiality</span>
+                    </li>
+                    <li class="modern-service-item">
+                        <div class="modern-service-check">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span>Professional standards maintained</span>
+                    </li>
+                    <li class="modern-service-item">
+                        <div class="modern-service-check">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span>Cancellation policy applies</span>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Package Deals -->
+<!-- Modern Donations Section -->
+{{#if rates_content.donations_visible}}
+<section class="py-16 modern-donations-section">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <div class="modern-donations-card">
+            <div class="modern-donations-icon">
+                <i class="fas fa-heart text-2xl"></i>
+            </div>
+            <p class="modern-donations-text">
+                {{#if rates_content.donation_description}}{{rates_content.donation_description}}{{else}}Donations are appreciated and help support my work.{{/if}}
+            </p>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Modern Package Deals -->
 {{#if packages}}
-<section class="py-20 bg-white">
+<section class="py-20 modern-packages-section">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16" data-aos="fade-up">
-            <div class="modern-badge mb-4">Packages</div>
-            <h2 class="text-3xl font-bold mb-4 modern-heading text-modern-primary">
-                Service Packages
+            <div class="modern-packages-badge mb-6">Packages</div>
+            <h2 class="text-3xl font-bold mb-8 modern-gradient-text">
+                {{#if rates_content.packages_title}}{{rates_content.packages_title}}{{else}}Service Packages{{/if}}
             </h2>
-            <p class="text-xl text-modern-muted">
-                Comprehensive packages for better value
+            <p class="text-lg leading-relaxed max-w-3xl mx-auto text-gray-700">
+                {{#if rates_content.packages_subtitle}}{{rates_content.packages_subtitle}}{{else}}Comprehensive packages for better value{{/if}}
             </p>
         </div>
         
-        <div class="modern-grid modern-grid-2">
+        <div class="grid lg:grid-cols-2 gap-8">
             {{#each packages}}
-            <div class="modern-card p-10 relative" data-aos="fade-up" data-aos-delay="{{@index}}00">
+            <div class="modern-package-card relative" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
                 {{#if this.popular}}
-                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span class="modern-badge">Most Popular</span>
-                </div>
+                <div class="modern-popular-badge">Most Popular</div>
                 {{/if}}
                 
-                <div class="text-center">
-                    <h3 class="text-2xl font-bold mb-4 modern-heading">{{this.name}}</h3>
-                    <div class="text-4xl font-bold text-modern-primary mb-2 modern-mono">
+                <div class="modern-package-content">
+                    <h3 class="modern-package-title">{{this.name}}</h3>
+                    <div class="modern-package-price">
                         {{formatCurrency this.price}}
                     </div>
                     {{#if this.originalPrice}}
-                    <div class="text-modern-muted line-through mb-4">
+                    <div class="modern-package-original">
                         Was {{formatCurrency this.originalPrice}}
                     </div>
                     {{/if}}
-                    <p class="text-modern-muted mb-8">{{this.description}}</p>
+                    <p class="modern-package-description">{{this.description}}</p>
                     
-                    <ul class="text-left space-y-2 mb-8">
+                    <ul class="modern-package-includes">
                         {{#each this.includes}}
-                        <li class="flex items-center">
-                            <div class="w-2 h-2 bg-modern-primary rounded-full mr-3"></div>
-                            <span class="text-modern-muted">{{this}}</span>
+                        <li class="modern-package-item">
+                            <div class="modern-package-check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <span>{{this}}</span>
                         </li>
                         {{/each}}
                     </ul>
                     
-                    <a href="/{{../modelSlug}}/contact?package={{this.slug}}" class="modern-btn w-full">
-                        <i class="fas fa-arrow-right mr-2"></i>
-                        Book Package
+                    <a href="/{{../modelSlug}}/contact?package={{this.slug}}" 
+                       class="modern-package-btn">
+                        Book {{this.name}}
                     </a>
                 </div>
             </div>
@@ -166,72 +345,764 @@
 </section>
 {{/if}}
 
-<!-- Process Section -->
-<section class="py-20 bg-modern-primary text-white">
+<!-- Modern Process Section -->
+{{#if rates_content.process_visible}}
+<section class="modern-process-hero py-20" data-aos="fade-up">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16" data-aos="fade-up">
-            <h2 class="text-3xl font-bold mb-4 modern-heading">
-                How It Works
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold mb-8 text-white modern-text-glow">
+                {{#if rates_content.process_title}}{{rates_content.process_title}}{{else}}How It Works{{/if}}
             </h2>
-            <p class="text-xl opacity-90">
-                Simple, straightforward process
+            <p class="text-xl leading-relaxed text-white opacity-90 max-w-3xl mx-auto">
+                {{#if rates_content.process_subtitle}}{{rates_content.process_subtitle}}{{else}}Simple, straightforward process{{/if}}
             </p>
         </div>
         
-        <div class="modern-grid modern-grid-4">
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div class="text-center" data-aos="fade-up" data-aos-delay="0">
-                <div class="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center">
-                    <span class="text-2xl font-bold modern-mono">1</span>
+                <div class="modern-process-step">
+                    <span class="modern-process-number">1</span>
                 </div>
-                <h3 class="text-lg font-bold mb-2 modern-heading">Contact</h3>
-                <p class="opacity-90 text-sm">Reach out via email or phone</p>
+                <h3 class="modern-process-title">
+                    {{#if rates_content.process_step_1_title}}{{rates_content.process_step_1_title}}{{else}}Contact{{/if}}
+                </h3>
+                <p class="modern-process-description">
+                    {{#if rates_content.process_step_1_description}}{{rates_content.process_step_1_description}}{{else}}Reach out via email or phone{{/if}}
+                </p>
             </div>
             
             <div class="text-center" data-aos="fade-up" data-aos-delay="100">
-                <div class="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center">
-                    <span class="text-2xl font-bold modern-mono">2</span>
+                <div class="modern-process-step">
+                    <span class="modern-process-number">2</span>
                 </div>
-                <h3 class="text-lg font-bold mb-2 modern-heading">Discuss</h3>
-                <p class="opacity-90 text-sm">We discuss your needs and preferences</p>
+                <h3 class="modern-process-title">
+                    {{#if rates_content.process_step_2_title}}{{rates_content.process_step_2_title}}{{else}}Discuss{{/if}}
+                </h3>
+                <p class="modern-process-description">
+                    {{#if rates_content.process_step_2_description}}{{rates_content.process_step_2_description}}{{else}}We discuss your preferences{{/if}}
+                </p>
             </div>
             
             <div class="text-center" data-aos="fade-up" data-aos-delay="200">
-                <div class="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center">
-                    <span class="text-2xl font-bold modern-mono">3</span>
+                <div class="modern-process-step">
+                    <span class="modern-process-number">3</span>
                 </div>
-                <h3 class="text-lg font-bold mb-2 modern-heading">Schedule</h3>
-                <p class="opacity-90 text-sm">Book your preferred time and date</p>
+                <h3 class="modern-process-title">
+                    {{#if rates_content.process_step_3_title}}{{rates_content.process_step_3_title}}{{else}}Schedule{{/if}}
+                </h3>
+                <p class="modern-process-description">
+                    {{#if rates_content.process_step_3_description}}{{rates_content.process_step_3_description}}{{else}}Book your preferred time{{/if}}
+                </p>
             </div>
             
             <div class="text-center" data-aos="fade-up" data-aos-delay="300">
-                <div class="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center">
-                    <span class="text-2xl font-bold modern-mono">4</span>
+                <div class="modern-process-step">
+                    <span class="modern-process-number">4</span>
                 </div>
-                <h3 class="text-lg font-bold mb-2 modern-heading">Deliver</h3>
-                <p class="opacity-90 text-sm">Professional service delivered</p>
+                <h3 class="modern-process-title">
+                    {{#if rates_content.process_step_4_title}}{{rates_content.process_step_4_title}}{{else}}Experience{{/if}}
+                </h3>
+                <p class="modern-process-description">
+                    {{#if rates_content.process_step_4_description}}{{rates_content.process_step_4_description}}{{else}}Enjoy professional service{{/if}}
+                </p>
             </div>
         </div>
     </div>
 </section>
+{{/if}}
 
-<!-- Call to Action -->
-<section class="py-20 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
-        <h2 class="text-4xl font-bold mb-6 modern-heading text-modern-primary">
-            Ready to Get Started?
+<!-- Modern Bottom CTA -->
+{{#if rates_content.cta_visible}}
+<section class="py-20 modern-cta-hero" data-aos="fade-up">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold mb-8 text-white modern-text-glow">
+            {{#if rates_content.cta_title}}{{rates_content.cta_title}}{{else}}Ready to Get Started?{{/if}}
         </h2>
-        <p class="text-xl text-modern-muted mb-8 max-w-2xl mx-auto">
-            Contact me today to discuss your needs and schedule your service.
+        
+        <p class="text-xl leading-relaxed mb-12 text-white opacity-90 max-w-3xl mx-auto">
+            {{#if rates_content.cta_description}}{{rates_content.cta_description}}{{else}}Contact me to discuss your needs and schedule your service.{{/if}}
         </p>
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="/{{modelSlug}}/contact" class="modern-btn text-lg px-8 py-4">
-                <i class="fas fa-envelope mr-2"></i>
-                Contact Me
+        
+        <!-- Modern CTA Buttons -->
+        <div class="modern-cta-buttons">
+            <a href="/{{modelSlug}}/{{#if rates_content.cta_button_1_link}}{{rates_content.cta_button_1_link}}{{else}}contact{{/if}}" 
+               class="modern-cta-btn-primary">
+               <i class="fas fa-envelope mr-3"></i>
+               {{#if rates_content.cta_button_1_text}}{{rates_content.cta_button_1_text}}{{else}}Contact{{/if}}
             </a>
-            <a href="/{{modelSlug}}/about" class="modern-btn-outline text-lg px-8 py-4">
-                <i class="fas fa-user mr-2"></i>
-                Learn More
+            
+            <a href="/{{modelSlug}}/{{#if rates_content.cta_button_2_link}}{{rates_content.cta_button_2_link}}{{else}}calendar{{/if}}" 
+               class="modern-cta-btn-outline">
+               <i class="fas fa-calendar-alt mr-3"></i>
+               {{#if rates_content.cta_button_2_text}}{{rates_content.cta_button_2_text}}{{else}}View Calendar{{/if}}
             </a>
         </div>
     </div>
 </section>
+{{/if}}
+
+<!-- Modern Rates Page Styling -->
+<style>
+/* CSS Custom Properties */
+:root {
+    --modern-gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    --modern-gradient-2: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+}
+
+/* Modern Rates Hero Section */
+.modern-rates-hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.modern-rates-gradient-layer-1 {
+    position: absolute;
+    top: -50%;
+    left: -30%;
+    width: 160%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 50%);
+    animation: modern-rotate 25s linear infinite;
+}
+
+.modern-rates-gradient-layer-2 {
+    position: absolute;
+    bottom: -50%;
+    right: -30%;
+    width: 160%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+    animation: modern-rotate 20s linear infinite reverse;
+}
+
+/* Modern Floating Elements */
+.modern-rates-floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.modern-floating-rate-1 {
+    position: absolute;
+    top: 25%;
+    left: 10%;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid rgba(99, 102, 241, 0.4);
+    animation: modern-float-slow 10s ease-in-out infinite;
+}
+
+.modern-floating-rate-2 {
+    position: absolute;
+    top: 60%;
+    right: 15%;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 1px solid rgba(6, 182, 212, 0.3);
+    animation: modern-float-slow 8s ease-in-out infinite reverse;
+}
+
+.modern-floating-badge-1 {
+    position: absolute;
+    top: 40%;
+    right: 10%;
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.5), transparent);
+    animation: modern-slide 15s ease-in-out infinite;
+}
+
+.modern-floating-badge-2 {
+    position: absolute;
+    bottom: 35%;
+    left: 15%;
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(6, 182, 212, 0.4), transparent);
+    animation: modern-slide 12s ease-in-out infinite reverse;
+}
+
+/* Modern Rates Badge */
+.modern-rates-badge {
+    display: inline-block;
+    background: rgba(99, 102, 241, 0.15);
+    color: rgba(255, 255, 255, 0.9);
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.modern-service-badge, .modern-packages-badge {
+    display: inline-block;
+    background: rgba(99, 102, 241, 0.1);
+    color: #6366f1;
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+/* Modern Main Sections */
+.modern-rates-main-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+}
+
+.modern-extended-section {
+    background: rgba(248, 250, 252, 0.5);
+}
+
+.modern-service-info-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+}
+
+.modern-donations-section {
+    background: rgba(248, 250, 252, 0.5);
+}
+
+.modern-packages-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+}
+
+/* Modern Cards */
+.modern-rates-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    transition: all 0.3s ease;
+}
+
+.modern-rates-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+}
+
+.modern-rates-card-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.modern-rates-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--modern-gradient-1);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.modern-rates-card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #374151;
+    margin: 0;
+}
+
+/* Modern Rate Items */
+.modern-rates-list {
+    space-y: 1rem;
+}
+
+.modern-rate-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 12px;
+    border: 1px solid rgba(99, 102, 241, 0.05);
+    transition: all 0.2s ease;
+}
+
+.modern-rate-item:hover {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    transform: translateX(4px);
+}
+
+.modern-rate-service {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.modern-rate-duration {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.modern-highlight-badge {
+    background: #F59E0B;
+    color: #111827;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.modern-rate-price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #6366f1;
+}
+
+/* Extended Services */
+.modern-extended-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(6, 182, 212, 0.1);
+    transition: all 0.3s ease;
+}
+
+.modern-extended-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.modern-extended-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--modern-gradient-2);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+}
+
+.modern-extended-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 1rem;
+}
+
+.modern-extended-price {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #6366f1;
+    margin-bottom: 0.5rem;
+}
+
+.modern-extended-custom {
+    font-size: 1.125rem;
+    color: #6B7280;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+}
+
+.modern-extended-duration {
+    font-size: 0.875rem;
+    color: #6B7280;
+    margin-bottom: 1rem;
+}
+
+.modern-extended-description {
+    font-size: 0.875rem;
+    color: #6B7280;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Service Info Cards */
+.modern-service-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    transition: all 0.3s ease;
+}
+
+.modern-service-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.modern-service-card-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--modern-gradient-1);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.modern-service-card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 1.5rem;
+}
+
+.modern-service-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    space-y: 1rem;
+}
+
+.modern-service-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+}
+
+.modern-service-check {
+    width: 24px;
+    height: 24px;
+    background: var(--modern-gradient-1);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+
+/* Donations */
+.modern-donations-card {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.1);
+}
+
+.modern-donations-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+.modern-donations-text {
+    font-size: 1.125rem;
+    color: #374151;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* Package Cards */
+.modern-package-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    transition: all 0.3s ease;
+}
+
+.modern-package-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+}
+
+.modern-popular-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #F59E0B;
+    color: #111827;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.modern-package-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.modern-package-price {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #6366f1;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.modern-package-original {
+    font-size: 1rem;
+    color: #6B7280;
+    text-decoration: line-through;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.modern-package-description {
+    font-size: 1.125rem;
+    color: #6B7280;
+    text-align: center;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.modern-package-includes {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem 0;
+}
+
+.modern-package-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+}
+
+.modern-package-check {
+    width: 24px;
+    height: 24px;
+    background: var(--modern-gradient-1);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+
+.modern-package-btn {
+    display: block;
+    background: var(--modern-gradient-1);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.modern-package-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+/* Process Hero */
+.modern-process-hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.modern-process-step {
+    width: 80px;
+    height: 80px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.modern-process-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+}
+
+.modern-process-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.modern-process-description {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* CTA Hero */
+.modern-cta-hero {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    position: relative;
+}
+
+.modern-cta-buttons {
+    display: flex;
+    flex-direction: column;
+    sm:flex-direction: row;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.modern-cta-btn-primary {
+    background: white;
+    color: #6366f1;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+}
+
+.modern-cta-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
+    color: #6366f1;
+    text-decoration: none;
+}
+
+.modern-cta-btn-outline {
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.modern-cta-btn-outline:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.8);
+    transform: translateY(-2px);
+    color: white;
+    text-decoration: none;
+}
+
+/* Animations */
+@keyframes modern-rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes modern-float-slow {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(180deg); }
+}
+
+@keyframes modern-slide {
+    0%, 100% { transform: translateX(0px); opacity: 0.5; }
+    50% { transform: translateX(20px); opacity: 0.8; }
+}
+
+/* Typography */
+.modern-gradient-text {
+    background: var(--modern-gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.modern-text-glow {
+    text-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+}
+
+.modern-subtitle {
+    line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modern-rates-floating-elements > * {
+        display: none;
+    }
+    
+    .modern-rates-hero h1 {
+        font-size: 2.5rem !important;
+    }
+    
+    .modern-rates-card,
+    .modern-service-card,
+    .modern-extended-card,
+    .modern-package-card {
+        padding: 1.5rem;
+    }
+    
+    .modern-cta-buttons {
+        flex-direction: column;
+    }
+    
+    .modern-cta-btn-primary,
+    .modern-cta-btn-outline {
+        width: 100%;
+        max-width: 280px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .modern-rates-hero h1 {
+        font-size: 2rem !important;
+    }
+    
+    .modern-process-step {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .modern-process-number {
+        font-size: 1.25rem;
+    }
+    
+    .grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+</style>

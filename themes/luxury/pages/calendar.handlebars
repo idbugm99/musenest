@@ -1,89 +1,153 @@
-{{!-- Luxury Theme - Calendar Page with Visual Monthly Grid --}}
-<div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-    <div class="min-h-screen bg-opacity-50 backdrop-blur-sm">
-        <div class="container mx-auto px-4 py-12">
-            {{!-- Page Header --}}
-            <div class="text-center mb-16">
-                <h1 class="text-6xl font-thin mb-8 text-white tracking-wide">
-                    Availability Calendar
-                </h1>
-                <p class="text-xl text-slate-300 max-w-4xl mx-auto leading-relaxed">
-                    Exclusive appointments and travel schedule. Contact me directly to arrange a sophisticated encounter.
-                </p>
+{{!-- Luxury Theme Calendar Page - Royal Appointment Scheduler --}}
+
+<!-- Dramatic Calendar Hero Section -->
+<section class="luxury-calendar-hero" data-aos="fade-in">
+    <!-- Rich Gradient Background -->
+    <div class="luxury-calendar-hero-bg"></div>
+    
+    <!-- Floating Luxurious Elements -->
+    <div class="luxury-hero-floating-elements">
+        <div class="luxury-floating-element luxury-element-calendar">📅</div>
+        <div class="luxury-floating-element luxury-element-clock">🕐</div>
+        <div class="luxury-floating-element luxury-element-crown">👑</div>
+        <div class="luxury-floating-element luxury-element-scroll">📜</div>
+        <div class="luxury-floating-element luxury-element-gem">💎</div>
+        <div class="luxury-floating-element luxury-element-quill">🪶</div>
+    </div>
+    
+    <!-- Royal Overlay for Text Contrast -->
+    <div class="luxury-hero-overlay"></div>
+    
+    <div class="max-w-6xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative z-20">
+        <!-- Imperial Crown Icon -->
+        <div class="luxury-calendar-hero-icon" data-aos="fade-down" data-aos-delay="200">
+            <i class="fas fa-calendar-alt"></i>
+        </div>
+        
+        <!-- Majestic Title -->
+        <h1 class="luxury-calendar-hero-title" data-aos="fade-up" data-aos-delay="400">
+            {{#if calendar_content.page_title}}{{calendar_content.page_title}}{{else}}Royal Appointment Calendar{{/if}}
+        </h1>
+        
+        <!-- Elegant Subtitle -->
+        {{#if calendar_content.page_subtitle}}
+        <p class="luxury-calendar-hero-subtitle" data-aos="fade-up" data-aos-delay="600">
+            {{calendar_content.page_subtitle}}
+        </p>
+        {{else}}
+        <p class="luxury-calendar-hero-subtitle" data-aos="fade-up" data-aos-delay="600">
+            View my current location and availability. Check where I am traveling and when I am available for exclusive appointments.
+        </p>
+        {{/if}}
+        
+        <!-- Royal Divider with Crown -->
+        <div class="luxury-calendar-hero-divider" data-aos="fade-up" data-aos-delay="800">
+            <div class="luxury-divider-line-left"></div>
+            <div class="luxury-divider-crown">
+                <i class="fas fa-crown"></i>
             </div>
+            <div class="luxury-divider-line-right"></div>
+        </div>
+    </div>
+    
+    <!-- Floating Sparkles -->
+    <div class="luxury-hero-sparkles">
+        <div class="luxury-sparkle luxury-sparkle-1">✨</div>
+        <div class="luxury-sparkle luxury-sparkle-2">✨</div>
+        <div class="luxury-sparkle luxury-sparkle-3">✨</div>
+        <div class="luxury-sparkle luxury-sparkle-4">✨</div>
+    </div>
+</section>
 
-            {{!-- Calendar Container --}}
-            <div class="max-w-7xl mx-auto">
-                {{!-- Calendar Navigation --}}
-                <div class="flex justify-between items-center mb-12">
-                    <button id="prev-month" class="px-8 py-4 rounded-full bg-white bg-opacity-10 text-white font-light text-lg backdrop-blur-xl border border-white border-opacity-20 hover:bg-opacity-20 transition-all duration-500 tracking-wide">
-                        ← Previous
-                    </button>
-                    <h2 id="month-title" class="text-4xl font-thin text-white tracking-wider"></h2>
-                    <button id="next-month" class="px-8 py-4 rounded-full bg-white bg-opacity-10 text-white font-light text-lg backdrop-blur-xl border border-white border-opacity-20 hover:bg-opacity-20 transition-all duration-500 tracking-wide">
-                        Next →
-                    </button>
-                </div>
+<!-- Main Calendar Palace Section -->
+<section class="luxury-calendar-palace">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Calendar Navigation -->
+        <div class="luxury-calendar-navigation" data-aos="fade-up">
+            <button id="prev-month" class="luxury-nav-btn luxury-nav-prev">
+                <i class="fas fa-chevron-left"></i>
+                <span>Previous</span>
+            </button>
+            
+            <h2 id="month-title" class="luxury-month-title"></h2>
+            
+            <button id="next-month" class="luxury-nav-btn luxury-nav-next">
+                <span>Next</span>
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
 
-                {{!-- Calendar Grid --}}
-                <div class="bg-white bg-opacity-10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white border-opacity-20 overflow-hidden mb-12">
-                    {{!-- Calendar Header --}}
-                    <div class="grid grid-cols-7 bg-gradient-to-r from-slate-800 to-slate-700 border-b border-white border-opacity-10">
-                        <div class="p-6 text-center font-light text-slate-200 border-r border-white border-opacity-10 tracking-wide">Sun</div>
-                        <div class="p-6 text-center font-light text-slate-200 border-r border-white border-opacity-10 tracking-wide">Mon</div>
-                        <div class="p-6 text-center font-light text-slate-200 border-r border-white border-opacity-10 tracking-wide">Tue</div>
-                        <div class="p-6 text-center font-light text-slate-200 border-r border-white border-opacity-10 tracking-wide">Wed</div>
-                        <div class="p-6 text-center font-light text-slate-200 border-r border-white border-opacity-10 tracking-wide">Thu</div>
-                        <div class="p-6 text-center font-light text-slate-200 border-r border-white border-opacity-10 tracking-wide">Fri</div>
-                        <div class="p-6 text-center font-light text-slate-200 tracking-wide">Sat</div>
+        <!-- Royal Calendar Chamber -->
+        <div class="luxury-calendar-chamber" data-aos="fade-up" data-aos-delay="200">
+            <!-- Calendar Days Header -->
+            <div class="luxury-calendar-header-row">
+                <div class="luxury-calendar-day-header">Sun</div>
+                <div class="luxury-calendar-day-header">Mon</div>
+                <div class="luxury-calendar-day-header">Tue</div>
+                <div class="luxury-calendar-day-header">Wed</div>
+                <div class="luxury-calendar-day-header">Thu</div>
+                <div class="luxury-calendar-day-header">Fri</div>
+                <div class="luxury-calendar-day-header">Sat</div>
+            </div>
+            
+            <!-- Calendar Grid -->
+            <div id="calendar-grid" class="luxury-calendar-grid">
+                <div class="luxury-calendar-loading">
+                    <div class="luxury-loading-crown">
+                        <i class="fas fa-crown"></i>
                     </div>
-                    
-                    {{!-- Calendar Body --}}
-                    <div id="calendar-grid">
-                        <div class="text-center py-20">
-                            <div class="animate-spin rounded-full h-12 w-12 border-2 border-white border-opacity-20 border-t-white mx-auto mb-8"></div>
-                            <p class="text-xl text-slate-300">Loading schedule...</p>
-                        </div>
-                    </div>
-                </div>
-
-                {{!-- Legend --}}
-                <div class="flex flex-wrap justify-center gap-8 mb-12">
-                    <div class="flex items-center">
-                        <div class="w-5 h-5 rounded mr-3 shadow-lg" style="background-color: #10B981;"></div>
-                        <span class="text-lg text-slate-200 font-light tracking-wide">Available</span>
-                    </div>
-                    <div class="flex items-center">
-                        <div class="w-5 h-5 rounded mr-3 shadow-lg" style="background-color: #3B82F6;"></div>
-                        <span class="text-lg text-slate-200 font-light tracking-wide">Travel</span>
-                    </div>
-                    <div class="flex items-center">
-                        <div class="w-5 h-5 rounded mr-3 shadow-lg" style="background-color: #F59E0B;"></div>
-                        <span class="text-lg text-slate-200 font-light tracking-wide">Vacation</span>
-                    </div>
-                    <div class="flex items-center">
-                        <div class="w-5 h-5 rounded mr-3 shadow-lg" style="background-color: #6B7280;"></div>
-                        <span class="text-lg text-slate-200 font-light tracking-wide">Unavailable</span>
-                    </div>
-                </div>
-
-                {{!-- Contact Call-to-Action --}}
-                <div class="bg-white bg-opacity-10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white border-opacity-20 p-12 text-center">
-                    <h3 class="text-3xl font-light mb-6 text-white tracking-wide">
-                        Arrange an Exclusive Appointment
-                    </h3>
-                    <p class="text-slate-300 mb-10 text-xl leading-relaxed max-w-3xl mx-auto">
-                        For exclusive consultations and sophisticated encounters, please reach out through my preferred contact method.
-                    </p>
-                    <a href="/{{modelSlug}}/contact{{previewParam}}" 
-                       class="inline-block px-12 py-5 rounded-full bg-white text-slate-800 font-medium text-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-500 tracking-wide">
-                        Contact Me
-                    </a>
+                    <p class="luxury-loading-text">Loading Royal Schedule...</p>
                 </div>
             </div>
         </div>
+
+        <!-- Royal Legend -->
+        <div class="luxury-calendar-legend" data-aos="fade-up" data-aos-delay="400">
+            <div class="luxury-legend-item">
+                <div class="luxury-legend-indicator luxury-available"></div>
+                <span class="luxury-legend-label">Available</span>
+            </div>
+            <div class="luxury-legend-item">
+                <div class="luxury-legend-indicator luxury-travel"></div>
+                <span class="luxury-legend-label">Travel</span>
+            </div>
+            <div class="luxury-legend-item">
+                <div class="luxury-legend-indicator luxury-vacation"></div>
+                <span class="luxury-legend-label">Vacation</span>
+            </div>
+            <div class="luxury-legend-item">
+                <div class="luxury-legend-indicator luxury-unavailable"></div>
+                <span class="luxury-legend-label">Unavailable</span>
+            </div>
+        </div>
+
+        <!-- Royal CTA Palace -->
+        <div class="luxury-calendar-cta" data-aos="fade-up" data-aos-delay="600">
+            <div class="luxury-cta-ornament">
+                <i class="fas fa-gem"></i>
+            </div>
+            <h3 class="luxury-cta-title">
+                {{#if calendar_content.cta_title}}{{calendar_content.cta_title}}{{else}}Schedule an Imperial Appointment{{/if}}
+            </h3>
+            <p class="luxury-cta-description">
+                {{#if calendar_content.cta_text}}{{calendar_content.cta_text}}{{else}}Contact me to schedule an exclusive appointment when I am in your area.{{/if}}
+            </p>
+            <div class="luxury-cta-buttons">
+                <a href="/{{modelSlug}}/contact{{previewParam}}" class="luxury-btn luxury-btn-primary">
+                    <i class="fas fa-scroll mr-2"></i>
+                    <span>{{#if calendar_content.cta_button_text}}{{calendar_content.cta_button_text}}{{else}}Contact Me{{/if}}</span>
+                    <div class="luxury-btn-glow"></div>
+                </a>
+                <a href="/{{modelSlug}}/rates{{previewParam}}" class="luxury-btn luxury-btn-secondary">
+                    <i class="fas fa-crown mr-2"></i>
+                    <span>View Services</span>
+                    <div class="luxury-btn-shine"></div>
+                </a>
+            </div>
+        </div>
     </div>
-</div>
+</section>
 
 {{!-- Calendar JavaScript --}}
 <script>
@@ -198,3 +262,684 @@
     loadCalendar();
 })();
 </script>
+
+<!-- Luxury Calendar Styling -->
+<style>
+/* CSS Variables for Luxury Calendar */
+:root {
+    --luxury-marble-white: #f8f6f0;
+    --luxury-marble-cream: #f0ead6;
+    --luxury-pearl: #e8dcc0;
+    --luxury-gold: #d4af37;
+    --luxury-rich-gold: #b8860b;
+    --luxury-rose-gold: #e8b4b8;
+    --luxury-deep-burgundy: #722f37;
+    --luxury-royal-purple: #663399;
+    --luxury-obsidian: #1a1a2e;
+    --luxury-text: #2d3748;
+}
+
+/* Dramatic Calendar Hero Section */
+.luxury-calendar-hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8rem 0 6rem;
+    overflow: hidden;
+}
+
+.luxury-calendar-hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #2D1B69 0%, #8B4D7C 25%, #C65B7C 50%, #D4AF37 75%, #8B4D7C 100%);
+    opacity: 0.95;
+}
+
+.luxury-hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.3) 100%);
+    z-index: 5;
+}
+
+/* Floating Elements */
+.luxury-hero-floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.luxury-floating-element {
+    position: absolute;
+    font-size: 2.5rem;
+    opacity: 0.7;
+    animation: luxury-hero-float 8s ease-in-out infinite;
+}
+
+.luxury-element-calendar {
+    top: 15%;
+    left: 8%;
+    animation-delay: 0s;
+    font-size: 3rem;
+}
+
+.luxury-element-clock {
+    top: 25%;
+    right: 12%;
+    animation-delay: 1.5s;
+    font-size: 2.2rem;
+}
+
+.luxury-element-crown {
+    top: 45%;
+    left: 5%;
+    animation-delay: 3s;
+    font-size: 2.8rem;
+}
+
+.luxury-element-scroll {
+    top: 65%;
+    right: 8%;
+    animation-delay: 4.5s;
+    font-size: 2.6rem;
+}
+
+.luxury-element-gem {
+    bottom: 20%;
+    left: 15%;
+    animation-delay: 6s;
+    font-size: 2rem;
+}
+
+.luxury-element-quill {
+    bottom: 35%;
+    right: 20%;
+    animation-delay: 7.5s;
+    font-size: 2.4rem;
+}
+
+@keyframes luxury-hero-float {
+    0%, 100% { 
+        transform: translateY(0px) rotate(0deg) scale(1);
+        opacity: 0.7;
+    }
+    25% { 
+        transform: translateY(-20px) rotate(5deg) scale(1.1);
+        opacity: 0.9;
+    }
+    50% { 
+        transform: translateY(-10px) rotate(-3deg) scale(1.05);
+        opacity: 1;
+    }
+    75% { 
+        transform: translateY(-25px) rotate(8deg) scale(1.15);
+        opacity: 0.8;
+    }
+}
+
+/* Hero Content */
+.luxury-calendar-hero-icon {
+    font-size: 5rem;
+    color: #FFD700;
+    margin-bottom: 2.5rem;
+    filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.6));
+    animation: luxury-hero-crown-pulse 4s infinite ease-in-out;
+}
+
+@keyframes luxury-hero-crown-pulse {
+    0%, 100% { 
+        transform: scale(1);
+        filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.6));
+    }
+    50% { 
+        transform: scale(1.15);
+        filter: drop-shadow(0 0 50px rgba(255, 215, 0, 0.9));
+    }
+}
+
+.luxury-calendar-hero-title {
+    font-size: 5.5rem;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #FFFFFF;
+    text-shadow: 
+        0 0 20px rgba(255, 215, 0, 0.8),
+        0 4px 15px rgba(0, 0, 0, 0.5),
+        0 2px 30px rgba(255, 215, 0, 0.4);
+    letter-spacing: 3px;
+    font-family: 'Playfair Display', serif;
+    line-height: 1.1;
+    background: linear-gradient(45deg, #FFFFFF 0%, #FFD700 50%, #FFFFFF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.luxury-calendar-hero-subtitle {
+    font-size: 1.6rem;
+    color: rgba(255, 255, 255, 0.95);
+    text-align: center;
+    margin-bottom: 3rem;
+    font-weight: 400;
+    letter-spacing: 1px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    font-style: italic;
+}
+
+.luxury-calendar-hero-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.luxury-divider-line-left,
+.luxury-divider-line-right {
+    width: 120px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.8), rgba(255, 255, 255, 0.6));
+    border-radius: 2px;
+}
+
+.luxury-divider-crown {
+    font-size: 2rem;
+    color: #FFD700;
+    animation: luxury-divider-crown-glow 3s infinite ease-in-out;
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+}
+
+@keyframes luxury-divider-crown-glow {
+    0%, 100% { 
+        opacity: 0.8;
+        transform: scale(1) rotate(0deg);
+    }
+    50% { 
+        opacity: 1;
+        transform: scale(1.2) rotate(10deg);
+    }
+}
+
+/* Floating Sparkles */
+.luxury-hero-sparkles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 15;
+}
+
+.luxury-sparkle {
+    position: absolute;
+    font-size: 1.5rem;
+    opacity: 0.8;
+    animation: luxury-sparkle-twinkle 4s ease-in-out infinite;
+}
+
+.luxury-sparkle-1 {
+    top: 20%;
+    left: 25%;
+    animation-delay: 0s;
+}
+
+.luxury-sparkle-2 {
+    top: 35%;
+    right: 30%;
+    animation-delay: 1s;
+}
+
+.luxury-sparkle-3 {
+    bottom: 25%;
+    left: 35%;
+    animation-delay: 2s;
+}
+
+.luxury-sparkle-4 {
+    bottom: 40%;
+    right: 25%;
+    animation-delay: 3s;
+}
+
+@keyframes luxury-sparkle-twinkle {
+    0%, 100% { 
+        opacity: 0.3;
+        transform: scale(0.5) rotate(0deg);
+    }
+    50% { 
+        opacity: 1;
+        transform: scale(1.2) rotate(180deg);
+    }
+}
+
+/* Calendar Palace Section */
+.luxury-calendar-palace {
+    padding: 6rem 0;
+    background: linear-gradient(180deg, var(--luxury-pearl) 0%, var(--luxury-marble-cream) 100%);
+}
+
+/* Calendar Navigation */
+.luxury-calendar-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4rem;
+    padding: 0 2rem;
+}
+
+.luxury-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 100%);
+    color: var(--luxury-obsidian);
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.luxury-nav-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 35px rgba(212, 175, 55, 0.5);
+}
+
+.luxury-month-title {
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, var(--luxury-rich-gold) 0%, var(--luxury-gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+    font-family: 'Playfair Display', serif;
+    letter-spacing: 1px;
+}
+
+/* Royal Calendar Chamber */
+.luxury-calendar-chamber {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(248, 246, 240, 0.9));
+    border-radius: 25px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(212, 175, 55, 0.2);
+    overflow: hidden;
+    margin-bottom: 4rem;
+}
+
+.luxury-calendar-header-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: linear-gradient(135deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 100%);
+    border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+}
+
+.luxury-calendar-day-header {
+    padding: 1.5rem;
+    text-align: center;
+    font-weight: 700;
+    color: var(--luxury-obsidian);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-right: 1px solid rgba(26, 26, 46, 0.1);
+    font-size: 0.95rem;
+}
+
+.luxury-calendar-day-header:last-child {
+    border-right: none;
+}
+
+.luxury-calendar-grid {
+    padding: 2rem;
+    min-height: 400px;
+}
+
+/* Calendar Loading State */
+.luxury-calendar-loading {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.luxury-loading-crown {
+    font-size: 3rem;
+    color: var(--luxury-gold);
+    margin-bottom: 1.5rem;
+    animation: luxury-loading-spin 2s linear infinite;
+}
+
+@keyframes luxury-loading-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.luxury-loading-text {
+    font-size: 1.2rem;
+    color: var(--luxury-deep-burgundy);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* Calendar Day Cells */
+.calendar-day {
+    aspect-ratio: 1;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.calendar-day:hover {
+    background: rgba(212, 175, 55, 0.1);
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.calendar-day-number {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--luxury-obsidian);
+}
+
+.calendar-day-status {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Royal Legend */
+.luxury-calendar-legend {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-bottom: 4rem;
+    flex-wrap: wrap;
+}
+
+.luxury-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.1);
+}
+
+.luxury-legend-indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.luxury-available { background: linear-gradient(135deg, #10B981, #059669); }
+.luxury-travel { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
+.luxury-vacation { background: linear-gradient(135deg, #F59E0B, #D97706); }
+.luxury-unavailable { background: linear-gradient(135deg, #6B7280, #4B5563); }
+
+.luxury-legend-label {
+    font-weight: 600;
+    color: var(--luxury-obsidian);
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+}
+
+/* Royal CTA Palace */
+.luxury-calendar-cta {
+    background: linear-gradient(145deg, rgba(212, 175, 55, 0.1) 0%, rgba(232, 180, 184, 0.1) 100%);
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    border-radius: 30px;
+    padding: 4rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.luxury-cta-ornament {
+    font-size: 3rem;
+    color: var(--luxury-gold);
+    margin-bottom: 2rem;
+    animation: luxury-cta-ornament-glow 4s infinite ease-in-out;
+}
+
+@keyframes luxury-cta-ornament-glow {
+    0%, 100% { opacity: 0.8; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+}
+
+.luxury-cta-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, var(--luxury-rich-gold) 0%, var(--luxury-gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1.5rem;
+    font-family: 'Playfair Display', serif;
+    letter-spacing: 1px;
+}
+
+.luxury-cta-description {
+    font-size: 1.2rem;
+    color: var(--luxury-deep-burgundy);
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+    font-weight: 400;
+}
+
+.luxury-cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.luxury-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.luxury-btn-primary {
+    background: linear-gradient(135deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 100%);
+    color: var(--luxury-obsidian);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+}
+
+.luxury-btn-primary:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.6);
+}
+
+.luxury-btn-secondary {
+    background: transparent;
+    color: var(--luxury-gold);
+    border: 2px solid var(--luxury-gold);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+}
+
+.luxury-btn-secondary:hover {
+    background: var(--luxury-gold);
+    color: var(--luxury-obsidian);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
+}
+
+.luxury-btn-glow,
+.luxury-btn-shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s;
+}
+
+.luxury-btn:hover .luxury-btn-glow,
+.luxury-btn:hover .luxury-btn-shine {
+    left: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .luxury-calendar-hero {
+        min-height: 70vh;
+        padding: 6rem 0 4rem;
+    }
+    
+    .luxury-calendar-hero-title {
+        font-size: 3.5rem;
+        letter-spacing: 2px;
+    }
+    
+    .luxury-calendar-hero-subtitle {
+        font-size: 1.2rem;
+        padding: 0 1rem;
+    }
+    
+    .luxury-calendar-hero-icon {
+        font-size: 4rem;
+        margin-bottom: 2rem;
+    }
+    
+    .luxury-floating-element {
+        font-size: 2rem;
+    }
+    
+    .luxury-element-calendar {
+        font-size: 2.5rem;
+    }
+    
+    .luxury-hero-sparkles .luxury-sparkle {
+        font-size: 1.2rem;
+    }
+    
+    .luxury-month-title {
+        font-size: 2rem;
+    }
+    
+    .luxury-calendar-navigation {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 0 1rem;
+    }
+    
+    .luxury-nav-btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .luxury-calendar-legend {
+        gap: 1.5rem;
+        padding: 0 1rem;
+    }
+    
+    .luxury-cta-title {
+        font-size: 2rem;
+    }
+    
+    .luxury-cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .luxury-btn {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .luxury-calendar-hero {
+        min-height: 60vh;
+        padding: 4rem 0 3rem;
+    }
+    
+    .luxury-calendar-hero-title {
+        font-size: 2.8rem;
+        letter-spacing: 1px;
+    }
+    
+    .luxury-calendar-hero-subtitle {
+        font-size: 1.1rem;
+        padding: 0 1.5rem;
+    }
+    
+    .luxury-calendar-hero-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .luxury-floating-element {
+        font-size: 1.8rem;
+    }
+    
+    .luxury-element-calendar {
+        font-size: 2.2rem;
+    }
+    
+    .luxury-divider-line-left,
+    .luxury-divider-line-right {
+        width: 80px;
+    }
+    
+    .luxury-calendar-legend {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .luxury-calendar-cta {
+        padding: 3rem 1.5rem;
+        margin: 0 1rem;
+    }
+}
+</style>

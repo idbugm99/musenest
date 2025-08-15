@@ -1,0 +1,72 @@
+:root {
+  --rose: #B80F2E;
+  --merlot: #2B0A0E;
+  --blush: #FFE5EC;
+  --porcelain: #FAF7F8;
+  --gold: #C9A86A;
+  --charcoal: #222222;
+  --radius: 16px;
+  --shadow: 0 8px 24px rgba(0,0,0,.08);
+}
+
+/* Reduce motion for users with preference */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Base Rose Theme styles (placeholder) */
+body.theme-rose {
+  font-family: "Inter", system-ui, sans-serif;
+  color: var(--charcoal);
+  background-color: var(--porcelain);
+}
+
+/* Subtle noise texture */
+body.theme-rose {
+  background-image: url('/public/themes/rose/noise.png');
+  background-size: 200px 200px;
+  background-repeat: repeat;
+}
+
+/* Rose Navbar Shadow (sticky handled in JS) */
+#roseNavbar {
+  background-color: var(--porcelain);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: box-shadow 0.2s ease;
+}
+
+/* Rose badge divider utility */
+.rose-badge-divider {
+  background: url('/public/themes/rose/roses.svg') center/contain no-repeat;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+  opacity: 0.6;
+}
+
+/* Petal shimmer animation */
+@keyframes petalShimmer {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+  50% { opacity: 0.9; }
+  100% { transform: translateY(-20vh) rotate(30deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rose-petal-shimmer::before {
+    content: url('/public/themes/rose/petals.svg');
+    position: absolute;
+    bottom: -10vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: auto;
+    opacity: 0.4;
+    animation: petalShimmer 20s linear infinite;
+    pointer-events: none;
+  }
+}

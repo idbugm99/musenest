@@ -1,0 +1,131 @@
+<!-- Rose Theme About Page -->
+{{component 'navigation' theme='rose' nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+
+<!-- Page Header -->
+{{#if about_content.page_title_visible}}
+<header class="pt-32 pb-20 bg-gradient-to-b from-[color:var(--rose)] to-[color:var(--merlot)] text-center text-porcelain">
+  <h1 class="font-serif text-5xl mb-4">{{about_content.page_title}}</h1>
+  {{#if about_content.page_subtitle}}
+  <p class="text-xl max-w-2xl mx-auto opacity-90">{{about_content.page_subtitle}}</p>
+  {{/if}}
+</header>
+{{/if}}
+
+<!-- Main Content & Portrait -->
+{{#if about_content.main_content_visible}}
+<section class="py-24 bg-porcelain relative overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-start">
+    <!-- Text Block -->
+    <div class="text-charcoal text-lg leading-relaxed space-y-6">
+      {{#if about_content.main_paragraph_1}}<p>{{about_content.main_paragraph_1}}</p>{{/if}}
+      {{#if about_content.main_paragraph_2}}<p>{{about_content.main_paragraph_2}}</p>{{/if}}
+      {{#if about_content.main_paragraph_3}}<p>{{about_content.main_paragraph_3}}</p>{{/if}}
+      {{#if about_content.main_paragraph_4}}<p>{{about_content.main_paragraph_4}}</p>{{/if}}
+    </div>
+
+    <!-- Portrait + Services Card -->
+    <div class="space-y-8">
+      {{#if about_content.portrait_visible}}
+      <div class="relative">
+        {{#if about_content.portrait_image_id}}
+          <img src="/uploads/{{model.slug}}/{{about_content.portrait_image_id}}" alt="{{about_content.portrait_alt}}" class="w-full h-96 object-cover rounded-[var(--radius)] shadow-lg" loading="lazy" />
+        {{else}}
+          <div class="w-full h-96 rounded-[var(--radius)] bg-blush flex items-center justify-center text-charcoal/30">Portrait Coming Soon</div>
+        {{/if}}
+        <!-- Decorative Rose Badge -->
+        {{component '_rose_badge' theme='rose'}}
+      </div>
+      {{/if}}
+
+      <!-- Services List -->
+      {{#if about_content.services_visible}}
+      <div class="bg-blush/40 rounded-[var(--radius)] p-8 shadow space-y-2">
+        <h3 class="font-serif text-2xl text-charcoal mb-4">{{about_content.services_title}}</h3>
+        <ul class="space-y-2">
+          {{#if about_content.service_1}}<li class="flex items-start"><span class="text-[color:var(--rose)] mr-2">&#10070;</span>{{about_content.service_1}}</li>{{/if}}
+          {{#if about_content.service_2}}<li class="flex items-start"><span class="text-[color:var(--rose)] mr-2">&#10070;</span>{{about_content.service_2}}</li>{{/if}}
+          {{#if about_content.service_3}}<li class="flex items-start"><span class="text-[color:var(--rose)] mr-2">&#10070;</span>{{about_content.service_3}}</li>{{/if}}
+          {{#if about_content.service_4}}<li class="flex items-start"><span class="text-[color:var(--rose)] mr-2">&#10070;</span>{{about_content.service_4}}</li>{{/if}}
+          {{#if about_content.service_5}}<li class="flex items-start"><span class="text-[color:var(--rose)] mr-2">&#10070;</span>{{about_content.service_5}}</li>{{/if}}
+        </ul>
+      </div>
+      {{/if}}
+    </div>
+  </div>
+</section>
+{{/if}}
+
+<!-- Interests Block -->
+{{#if about_content.interests_visible}}
+<section class="py-24 bg-blush/50">
+  <div class="max-w-3xl mx-auto px-6 text-center">
+    <h2 class="font-serif text-4xl text-charcoal mb-6">{{about_content.interests_title}}</h2>
+    <p class="text-lg text-charcoal leading-relaxed">{{about_content.interests}}</p>
+  </div>
+</section>
+{{/if}}
+
+<!-- Quick Facts Grid -->
+{{#if about_content.quick_facts_visible}}
+<section class="py-24 bg-porcelain">
+  <div class="max-w-6xl mx-auto px-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    {{#if about_content.qf_age}}
+    <div class="bg-white rounded-[var(--radius)] p-6 shadow">
+      <h4 class="font-semibold text-charcoal mb-1">Age</h4>
+      <p>{{about_content.qf_age}}</p>
+    </div>
+    {{/if}}
+    {{#if about_content.qf_height}}
+    <div class="bg-white rounded-[var(--radius)] p-6 shadow"><h4 class="font-semibold text-charcoal mb-1">Height</h4><p>{{about_content.qf_height}}</p></div>
+    {{/if}}
+    {{#if about_content.qf_languages}}
+    <div class="bg-white rounded-[var(--radius)] p-6 shadow"><h4 class="font-semibold text-charcoal mb-1">Languages</h4><p>{{about_content.qf_languages}}</p></div>
+    {{/if}}
+    {{#if about_content.qf_education}}
+    <div class="bg-white rounded-[var(--radius)] p-6 shadow"><h4 class="font-semibold text-charcoal mb-1">Education</h4><p>{{about_content.qf_education}}</p></div>
+    {{/if}}
+    {{#if about_content.qf_availability}}
+    <div class="bg-white rounded-[var(--radius)] p-6 shadow"><h4 class="font-semibold text-charcoal mb-1">Availability</h4><p>{{about_content.qf_availability}}</p></div>
+    {{/if}}
+    {{#if about_content.qf_custom}}
+    <div class="bg-white rounded-[var(--radius)] p-6 shadow"><h4 class="font-semibold text-charcoal mb-1">{{about_content.qf_custom_label}}</h4><p>{{about_content.qf_custom}}</p></div>
+    {{/if}}
+  </div>
+</section>
+{{/if}}
+
+<!-- Inline Gallery Slice -->
+{{#if about_content.inline_gallery_visible}}
+<section class="py-24">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center mb-12">
+    <h2 class="font-serif text-4xl text-charcoal mb-4">{{about_content.inline_gallery_title}}</h2>
+  </div>
+  {{#if gallery_images.length}}
+  <div class="max-w-7xl mx-auto px-6 lg:px-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+    {{#each gallery_images}}
+      <img src="/uploads/{{this.filename}}?w=500" alt="{{this.alt_text}}" class="w-full h-64 object-cover rounded-[var(--radius)]" loading="lazy" />
+    {{/each}}
+  </div>
+  {{/if}}
+</section>
+{{/if}}
+
+<!-- CTA Strip -->
+{{#if about_content.about_cta_visible}}
+<section class="py-24 bg-gradient-to-r from-[color:var(--rose)] to-[color:var(--merlot)] text-porcelain text-center">
+  <div class="max-w-4xl mx-auto px-6">
+    <h2 class="font-serif text-4xl mb-6">{{about_content.cta_title}}</h2>
+    <p class="text-lg leading-relaxed mb-8">{{about_content.cta_description}}</p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      {{#if about_content.cta_button_1_text}}
+      <a href="{{about_content.cta_button_1_link}}" class="px-8 py-4 rounded-full text-white bg-[color:var(--gold)] hover:bg-white hover:text-[color:var(--rose)] shadow">{{about_content.cta_button_1_text}}</a>
+      {{/if}}
+      {{#if about_content.cta_button_2_text}}
+      <a href="{{about_content.cta_button_2_link}}" class="px-8 py-4 rounded-full border border-white text-white hover:bg-white hover:text-[color:var(--rose)]">{{about_content.cta_button_2_text}}</a>
+      {{/if}}
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{component '_footer' theme='rose'}}

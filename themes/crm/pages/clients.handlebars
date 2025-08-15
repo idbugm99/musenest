@@ -1,0 +1,324 @@
+<!-- Clients Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Client Management</h2>
+        <p class="text-muted mb-0">Manage your client relationships and screening</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-crm-primary" data-bs-toggle="modal" data-bs-target="#addClientModal">
+            <i class="fas fa-plus me-2"></i>Add Client
+        </button>
+        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#importClientsModal">
+            <i class="fas fa-upload me-2"></i>Import
+        </button>
+    </div>
+</div>
+
+<!-- Filters and Search -->
+<div class="crm-card mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="statusFilter" class="form-label">Status</label>
+                <select class="form-select" id="statusFilter">
+                    <option value="all">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                    <option value="pending_references">Pending References</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="screeningFilter" class="form-label">Screening Method</label>
+                <select class="form-select" id="screeningFilter">
+                    <option value="all">All Methods</option>
+                    <option value="none">No Screening</option>
+                    <option value="references">References</option>
+                    <option value="job_validation">Job Validation</option>
+                    <option value="reference_sites">Reference Sites</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="searchInput" class="form-label">Search</label>
+                <div class="crm-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search clients...">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Clients Table -->
+<div class="crm-card">
+    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="fas fa-users me-2"></i>
+            Clients ({{pagination.totalClients}})
+        </h5>
+        <div class="d-flex align-items-center gap-2">
+            <small class="text-muted">Page {{pagination.currentPage}} of {{pagination.totalPages}}</small>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        {{#if clients.length}}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Status</th>
+                        <th>Screening</th>
+                        <th>Visits</th>
+                        <th>Revenue</th>
+                        <th>Last Visit</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each clients}}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm me-2">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">{{client_identifier}}</div>
+                                    <small class="text-muted">Added {{formatDate created_at 'MMM DD, YYYY'}}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="status-badge status-{{screening_status}}">
+                                {{screening_status}}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark">{{screening_method}}</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold">{{total_visits}}</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold text-success">${{formatCurrency total_revenue}}</span>
+                        </td>
+                        <td>
+                            {{#if last_visit_date}}
+                                {{formatDate last_visit_date 'MMM DD, YYYY'}}
+                            {{else}}
+                                <span class="text-muted">Never</span>
+                            {{/if}}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" onclick="viewClient({{id}})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="editClient({{id}})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline-success" onclick="addVisit({{id}})">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {{#if (gt pagination.totalPages 1)}}
+        <div class="card-footer">
+            <nav aria-label="Clients pagination">
+                <ul class="pagination justify-content-center mb-0">
+                    {{#if pagination.hasPrev}}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{subtract pagination.currentPage 1}}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {{/if}}
+                    
+                    {{#each (range 1 pagination.totalPages)}}
+                    <li class="page-item {{#if (eq this ../pagination.currentPage)}}active{{/if}}">
+                        <a class="page-link" href="?page={{this}}">{{this}}</a>
+                    </li>
+                    {{/each}}
+                    
+                    {{#if pagination.hasNext}}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{add pagination.currentPage 1}}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {{/if}}
+                </ul>
+            </nav>
+        </div>
+        {{/if}}
+        
+        {{else}}
+        <div class="text-center py-5">
+            <i class="fas fa-users text-muted" style="font-size: 4rem;"></i>
+            <h4 class="mt-3 text-muted">No Clients Yet</h4>
+            <p class="text-muted mb-4">Start building your client database by adding your first client</p>
+            <button class="btn btn-crm-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addClientModal">
+                <i class="fas fa-plus me-2"></i>Add Your First Client
+            </button>
+        </div>
+        {{/if}}
+    </div>
+</div>
+
+<!-- Add Client Modal -->
+<div class="modal fade" id="addClientModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-user-plus me-2"></i>
+                    Add New Client
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addClientForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="clientIdentifier" class="form-label">Client Name/Alias *</label>
+                            <input type="text" class="form-control" id="clientIdentifier" name="client_identifier" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="screeningMethod" class="form-label">Screening Method</label>
+                            <select class="form-select" id="screeningMethod" name="screening_method">
+                                <option value="none">No Screening</option>
+                                <option value="references">References</option>
+                                <option value="job_validation">Job Validation</option>
+                                <option value="reference_sites">Reference Sites</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Any additional notes about this client..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="addClientForm" class="btn btn-crm-primary">
+                    <i class="fas fa-save me-2"></i>Add Client
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Import Clients Modal -->
+<div class="modal fade" id="importClientsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-upload me-2"></i>
+                    Import Clients
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Coming Soon!</strong> Client import functionality will be available once the database is set up.
+                </div>
+                <p class="text-muted">
+                    You'll be able to import clients from CSV files, including:
+                </p>
+                <ul class="text-muted">
+                    <li>Client names and aliases</li>
+                    <li>Contact information</li>
+                    <li>Screening status</li>
+                    <li>Initial notes</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Handle form submission
+        $('#addClientForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            // Show coming soon message for now
+            showAlert('Client management will be available once the database is set up!', 'info');
+            
+            // Close modal
+            $('#addClientModal').modal('hide');
+            
+            // Reset form
+            this.reset();
+        });
+        
+        // Handle filters
+        $('#statusFilter, #screeningFilter').on('change', function() {
+            // Will implement filtering once database is set up
+            console.log('Filter changed:', $(this).val());
+        });
+        
+        // Handle search
+        $('#searchInput').on('input', function() {
+            // Will implement search once database is set up
+            console.log('Search:', $(this).val());
+        });
+    });
+    
+    function viewClient(clientId) {
+        showAlert('Client details will be available once the database is set up!', 'info');
+    }
+    
+    function editClient(clientId) {
+        showAlert('Client editing will be available once the database is set up!', 'info');
+    }
+    
+    function addVisit(clientId) {
+        showAlert('Visit recording will be available once the database is set up!', 'info');
+    }
+    
+    function showAlert(message, type) {
+        const alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'info' ? 'info-circle' : 'exclamation-triangle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        $('.crm-content').prepend(alertHtml);
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            $('.alert').fadeOut();
+        }, 5000);
+    }
+</script>

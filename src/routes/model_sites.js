@@ -167,6 +167,28 @@ async function getModelContent(modelId, pageType) {
                     content[snakeKey] = rawContent[key];
                 });
             }
+        } else if (pageType === "calendar") {
+            // Get calendar page content from model_calendar_page_content table
+            const [calendarRows] = await db.execute(`
+                SELECT * FROM model_calendar_page_content WHERE model_id = ?
+            `, [modelId]);
+            
+            if (calendarRows.length > 0) {
+                const rawContent = calendarRows[0];
+                
+                // Convert camelCase field names to snake_case for Handlebars template compatibility
+                content = {};
+                Object.keys(rawContent).forEach(key => {
+                    // Convert camelCase to snake_case (e.g., pageTitle -> page_title)
+                    const snakeKey = key.replace(/([a-z])([A-Z])/g, "$1_$2").toLowerCase();
+                    content[snakeKey] = rawContent[key];
+                });
+                
+                console.log(`📅 Loaded calendar page content for model ${modelId}`);
+            } else {
+                console.log(`⚠️ No calendar page content found for model ${modelId}`);
+                content = {};
+            }
         } else if (pageType === 'rates') {
             // Get rates page content from model_rates_page_content table
             const [ratesRows] = await db.execute(`
@@ -419,7 +441,8 @@ router.get('/:slug/:page?', async (req, res) => {
             'salon_glamour': 'glamour',
             'luxury': 'luxury',
             'modern': 'modern',
-            'dark': 'dark'
+            'dark': 'dark',
+            'rose': 'rose'
         };
         
         // Use preview theme if available, otherwise use model's assigned theme
@@ -667,7 +690,7 @@ router.get('/:slug/:page?', async (req, res) => {
         // Transform content keys for template compatibility (after all data loading)  
         // Exception: etiquette, contact, about, rates, gallery, and home pages use snake_case field names for Handlebars templates
         const pageContent = {};
-        if (page === 'etiquette' || page === 'contact' || page === 'about' || page === 'rates' || page === 'gallery' || page === 'home') {
+        if (page === 'etiquette' || page === 'contact' || page === 'about' || page === 'rates' || page === 'gallery' || page === 'home' || page === 'calendar') {
             // These pages use snake_case field names directly - no conversion needed
             Object.keys(rawContent).forEach(key => {
                 pageContent[key] = rawContent[key];
@@ -817,6 +840,8 @@ router.get('/:slug/:page?', async (req, res) => {
             ...(page === 'etiquette' ? { etiquette_content: pageContent } : {}),
             // Pass contact content for contact page
             ...(page === 'contact' ? { contact_content: pageContent } : {}),
+            // Pass calendar content for calendar page
+            ...(page === "calendar" ? { calendar_content: pageContent } : {}),
             // Pass gallery content for gallery page
             ...(page === 'gallery' ? { gallery_content: pageContent } : {}),
             
@@ -938,41 +963,40 @@ router.get('/:slug/:page?', async (req, res) => {
                         let imagesHtml = '';
                         let navigationHtml = '';
                         
+                        // Calculate carousel-specific values (even for non-carousel, set defaults)
+                        const visibleItems = parseInt(settings.carouselItemsVisible || '1');
+                        const itemWidth = 320;
+                        const itemGap = 24;
+                        // Calculate container width: (itemWidth * visibleItems) + gaps + padding
+                        // Add extra space to ensure both images fit comfortably
+                        const containerWidth = (itemWidth * visibleItems) + (itemGap * (visibleItems - 1)) + 100; // +100px for padding and safety
+                        
                         if (section.images && section.images.length > 0) {
                             if (section.layout_type === 'carousel') {
-                                // Get carousel-specific settings
-                                const visibleItems = parseInt(settings.carouselItemsVisible || '1');
-                                const itemWidth = 300;
-                                const itemGap = 16;
-                                
-                                // Calculate container width based on visible items
-                                const containerWidth = (itemWidth * visibleItems) + (itemGap * (visibleItems - 1));
                                 
                                 // Calculate total track width (all items + gaps)
                                 const totalTrackWidth = (itemWidth * section.images.length) + (itemGap * (section.images.length - 1));
                                 
-                                // Generate carousel HTML with navigation
+                                // Generate carousel HTML with proper structure for multiple visible items
                                 imagesHtml = `
-                                    <div class="carousel-wrapper" style="width: ${containerWidth}px; margin: 0 auto; overflow: hidden; position: relative;">
-                                        <div class="carousel-track" id="carousel-${sectionIndex}" style="width: ${totalTrackWidth}px; transform: translateX(0px);">
-                                            ${section.images.map((img, index) => {
-                                                const imageUrl = `/uploads/${modelSlug}/public/gallery/${img.filename}`;
-                                                const isLastItem = index === section.images.length - 1;
-                                                return `
-                                                    <div class="carousel-item" style="flex: 0 0 ${itemWidth}px; ${!isLastItem ? `margin-right: ${itemGap}px;` : ''}">
-                                                        <div class="gallery-item" data-aos="fade-up" data-aos-delay="${Math.random() * 300}">
-                                                            <img src="${imageUrl}" 
-                                                                 alt="${img.alt_text || img.caption || 'Gallery Image'}"
-                                                                 data-full="${imageUrl}"
-                                                                 class="gallery-image cursor-pointer hover:scale-105 transition-transform duration-300"
-                                                                 onclick="openLightbox('${imageUrl}', '${img.alt_text || img.caption || 'Gallery Image'}')"
-                                                                 loading="lazy">
-                                                            ${img.caption ? `<div class="image-caption">${img.caption}</div>` : ''}
-                                                        </div>
-                                                    </div>
-                                                `;
-                                            }).join('')}
-                                        </div>
+                                    <div class="carousel-track" id="carousel-${sectionIndex}" data-current-index="0" 
+                                         data-visible-items="${visibleItems}" data-item-width="${itemWidth}" data-item-gap="${itemGap}" style="gap: ${itemGap}px;">
+                                        ${section.images.map((img, index) => {
+                                            const imageUrl = `/uploads/${modelSlug}/public/gallery/${img.filename}`;
+                                            const captionRaw = img.alt_text || img.caption || 'Gallery Image';
+                                            const captionSafe = String(captionRaw).replace(/'/g, "\\'");
+                                            return `
+                                                <div class="carousel-item" style="width: ${itemWidth}px; max-width: ${itemWidth}px;">
+                                                    <img src="${imageUrl}" 
+                                                         alt="${captionRaw}"
+                                                         data-full="${imageUrl}"
+                                                         class="gallery-image"
+                                                         onclick="(window.openLightbox||window.openDarkGalleryLightbox||window.openModernGalleryLightbox) && (window.openLightbox||window.openDarkGalleryLightbox||window.openModernGalleryLightbox)('${imageUrl}', '${captionSafe}')"
+                                                         loading="lazy">
+                                                    ${img.caption ? `<div class="image-caption">${img.caption}</div>` : ''}
+                                                </div>
+                                            `;
+                                        }).join('')}
                                     </div>
                                 `;
                                 
@@ -994,15 +1018,21 @@ router.get('/:slug/:page?', async (req, res) => {
                                     `);
                                 }
                                 
-                                // Add dots if enabled
+                                // Add dots if enabled (calculate based on visible items)
                                 if (showDots) {
+                                    const totalPages = Math.ceil(section.images.length / visibleItems);
+                                    const dotsArray = Array.from({length: totalPages}, (_, pageIndex) => {
+                                        const slideIndex = pageIndex * visibleItems;
+                                        return `
+                                            <div class="carousel-dot ${pageIndex === 0 ? 'active' : ''}" 
+                                                 onclick="goToCarouselSlide(${sectionIndex}, ${slideIndex})" 
+                                                 data-slide="${slideIndex}"></div>
+                                        `;
+                                    });
+                                    
                                     navigationParts.push(`
                                         <div class="carousel-dots">
-                                            ${section.images.map((_, imgIndex) => `
-                                                <div class="carousel-dot ${imgIndex === 0 ? 'active' : ''}" 
-                                                     onclick="goToCarouselSlide(${sectionIndex}, ${imgIndex})" 
-                                                     data-slide="${imgIndex}"></div>
-                                            `).join('')}
+                                            ${dotsArray.join('')}
                                         </div>
                                     `);
                                 }
@@ -1012,13 +1042,15 @@ router.get('/:slug/:page?', async (req, res) => {
                                 // Generate regular grid/masonry HTML
                                 imagesHtml = section.images.map(img => {
                                     const imageUrl = `/uploads/${modelSlug}/public/gallery/${img.filename}`;
+                                    const captionRaw = img.alt_text || img.caption || 'Gallery Image';
+                                    const captionSafe = String(captionRaw).replace(/'/g, "\\'");
                                     return `
                                         <div class="gallery-item" data-aos="fade-up" data-aos-delay="${Math.random() * 300}">
                                             <img src="${imageUrl}" 
-                                                 alt="${img.alt_text || img.caption || 'Gallery Image'}"
+                                                 alt="${captionRaw}"
                                                  data-full="${imageUrl}"
                                                  class="gallery-image cursor-pointer hover:scale-105 transition-transform duration-300"
-                                                 onclick="openLightbox('${imageUrl}', '${img.alt_text || img.caption || 'Gallery Image'}')"
+                                                 onclick="(window.openLightbox||window.openDarkGalleryLightbox||window.openModernGalleryLightbox) && (window.openLightbox||window.openDarkGalleryLightbox||window.openModernGalleryLightbox)('${imageUrl}', '${captionSafe}')"
                                                  loading="lazy">
                                             ${img.caption ? `<div class="image-caption">${img.caption}</div>` : ''}
                                         </div>
@@ -1037,6 +1069,11 @@ router.get('/:slug/:page?', async (req, res) => {
                             autoplayAttr = autoplayEnabled ? ` data-autoplay="${autoplaySpeed}"` : ' data-autoplay="0"';
                         }
                         
+                        // If carousel: wrap track in a viewport with explicit width and overflow hidden
+                        const contentHtml = section.layout_type === 'carousel'
+                            ? `<div class="carousel-viewport" style="width: ${containerWidth}px; margin: 0 auto; overflow: hidden;">${imagesHtml}</div>${navigationHtml}`
+                            : `${imagesHtml}${navigationHtml}`;
+                        
                         return `
                             <div class="gallery-section mb-12">
                                 <div class="text-center mb-8">
@@ -1045,8 +1082,7 @@ router.get('/:slug/:page?', async (req, res) => {
                                     <div class="text-sm text-gray-500 mt-2">${section.images ? section.images.length : 0} images • ${section.layout_type} layout</div>
                                 </div>
                                 <div class="${layoutClass}"${autoplayAttr}>
-                                    ${imagesHtml}
-                                    ${navigationHtml}
+                                    ${contentHtml}
                                 </div>
                             </div>
                         `;

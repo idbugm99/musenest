@@ -82,6 +82,50 @@ class TemplateEngine {
         this.registerHelper('multiply', (a, b) => {
             return (a || 0) * (b || 1);
         });
+        
+        // String manipulation helpers
+        this.registerHelper('toLowerCase', (str) => {
+            if (!str) return '';
+            return String(str).toLowerCase();
+        });
+        
+        this.registerHelper('trim', (str) => {
+            if (!str) return '';
+            return String(str).trim();
+        });
+        
+        // Resolve link helper: builds a proper URL for known slugs and keeps absolute URLs intact
+        this.registerHelper('resolveLink', (rawLink, options) => {
+            try {
+                if (!rawLink) return '';
+                const root = options?.data?.root || {};
+                const slug = root.modelSlug || root.model?.slug || root.slug || '';
+                const preview = root.previewParam || '';
+                const link = String(rawLink).trim();
+
+                // Absolute/special schemes
+                if (/^(https?:\/\/|mailto:|tel:)/i.test(link)) {
+                    return link;
+                }
+                // Already an absolute path
+                if (link.startsWith('/')) {
+                    return `${link}${preview}`;
+                }
+                const known = ['calendar', 'contact', 'gallery', 'rates', 'about'];
+                if (known.includes(link)) {
+                    return `/${slug}/${link}${preview}`;
+                }
+                // Default to model-relative page
+                return `/${slug}/${link}${preview}`;
+            } catch (e) {
+                return '';
+            }
+        });
+
+        // Or helper for default values
+        this.registerHelper('or', (a, b) => {
+            return a || b;
+        });
     }
 
     // Parse template and extract variables

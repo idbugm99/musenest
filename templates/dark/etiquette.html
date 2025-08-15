@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{#if etiquette_content.page_title}}{{etiquette_content.page_title}} - {{site_settings.model_name || 'Dark Portfolio'}}{{else}}Etiquette - {{site_settings.model_name || 'Dark Portfolio'}}{{/if}}</title>
+    <meta name="description" content="{{site_settings.meta_description || 'Professional etiquette and guidelines for sophisticated encounters.'}}">
+    <meta name="og:title" content="{{#if etiquette_content.page_title}}{{etiquette_content.page_title}} - {{site_settings.model_name}}{{else}}Etiquette - {{site_settings.model_name}}{{/if}}">
+    <meta name="og:description" content="{{site_settings.meta_description}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{site_settings.og_image || '/uploads/opengraph.jpg'}}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <style>
+        /* Dark Theme Color Variables */
+        :root {
+            --dark-primary: var(--color-primary, #8B5CF6);
+            --dark-secondary: var(--color-secondary, #7C3AED);
+            --dark-accent: var(--color-accent, #F59E0B);
+            --dark-text: var(--color-text, #F9FAFB);
+            --dark-background: var(--color-background, #111827);
+        }
+        
+        body {
+            background-color: var(--dark-background);
+            color: var(--dark-text);
+        }
+        
+        .bg-dark-primary { background-color: var(--dark-primary); }
+        .bg-dark-secondary { background-color: var(--dark-secondary); }
+        .bg-dark-accent { background-color: var(--dark-accent); }
+        .text-dark-primary { color: var(--dark-primary); }
+        .text-dark-secondary { color: var(--dark-secondary); }
+        .text-dark-accent { color: var(--dark-accent); }
+        .text-dark-text { color: var(--dark-text); }
+        .bg-dark-background { background-color: var(--dark-background); }
+        .border-dark-primary { border-color: var(--dark-primary); }
+        
+        .dark-glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dark-gradient {
+            background: linear-gradient(135deg, var(--dark-primary) 0%, var(--dark-secondary) 100%);
+        }
+        
+        .dark-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .dark-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .dark-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(139, 92, 246, 0.2);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+        
+        .dark-icon {
+            width: 5rem;
+            height: 5rem;
+            background: linear-gradient(135deg, var(--dark-primary), var(--dark-secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dark-icon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, rgba(255,255,255,0.1), transparent);
+            animation: rotate 4s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .dark-section-title {
+            color: var(--dark-text);
+            font-weight: 100;
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            letter-spacing: 0.05em;
+        }
+        
+        .dark-divider {
+            width: 5rem;
+            height: 0.125rem;
+            background: linear-gradient(90deg, transparent, var(--dark-accent), transparent);
+            margin: 0 auto 3rem;
+            border-radius: 2px;
+        }
+        
+        /* Enhanced card variants */
+        .dark-card-primary {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(124, 58, 237, 0.05));
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+        
+        .dark-card-primary:hover {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(124, 58, 237, 0.08));
+            border-color: rgba(139, 92, 246, 0.4);
+        }
+        
+        .dark-card-accent {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(217, 119, 6, 0.04));
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        
+        .dark-card-accent:hover {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(217, 119, 6, 0.06));
+            border-color: rgba(245, 158, 11, 0.4);
+        }
+        
+        /* Ambient light effects */
+        .dark-ambient {
+            position: relative;
+        }
+        
+        .dark-ambient::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 5%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float-ambient 12s ease-in-out infinite;
+        }
+        
+        .dark-ambient::after {
+            content: '';
+            position: absolute;
+            bottom: 15%;
+            right: 10%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float-ambient 10s ease-in-out infinite reverse;
+        }
+        
+        @keyframes float-ambient {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.3; }
+            33% { transform: translate(50px, -40px) rotate(120deg); opacity: 0.6; }
+            66% { transform: translate(-30px, 30px) rotate(240deg); opacity: 0.4; }
+        }
+        
+        /* Professional button styling */
+        .dark-button {
+            background: linear-gradient(135deg, var(--dark-primary) 0%, var(--dark-secondary) 100%);
+            color: var(--dark-text);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-weight: 300;
+        }
+        
+        .dark-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.4);
+            border-color: rgba(139, 92, 246, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-dark-background text-dark-text">
+    <!-- Render Navigation Component -->
+    {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+    
+    <!-- Hero Section -->
+    {{#if etiquette_content.etiquette_header_visible}}
+    <section class="relative py-40 dark-gradient overflow-hidden dark-ambient">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div data-aos="fade-up" data-aos-duration="1200">
+                <h1 class="text-6xl md:text-7xl font-thin text-dark-text mb-10 tracking-wider">
+                    {{#if etiquette_content.page_title}}{{etiquette_content.page_title}}{{else}}Refined Etiquette{{/if}}
+                </h1>
+                <div class="w-32 h-px bg-dark-accent mx-auto mb-12"></div>
+                {{#if etiquette_content.page_subtitle}}
+                <p class="text-2xl text-dark-text opacity-90 max-w-4xl mx-auto leading-relaxed font-light">
+                    {{etiquette_content.page_subtitle}}
+                </p>
+                {{else}}
+                <p class="text-2xl text-dark-text opacity-90 max-w-4xl mx-auto leading-relaxed font-light">
+                    Guidelines for sophisticated encounters, ensuring mutual respect and memorable experiences in elegant discretion.
+                </p>
+                {{/if}}
+            </div>
+        </div>
+        
+        <!-- Elegant Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 opacity-60">
+            <div class="w-8 h-14 border border-dark-text border-opacity-20 rounded-full flex justify-center">
+                <div class="w-px h-5 bg-dark-accent mt-4 animate-pulse"></div>
+            </div>
+        </div>
+    </section>
+    {{/if}}
+
+    <!-- Main Content -->
+    <section class="py-32 bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- First Row: Booking & Respect -->
+            <div class="grid lg:grid-cols-2 gap-12 mb-20">
+                <!-- Booking & Screening -->
+                {{#if etiquette_content.etiquette_booking_visible}}
+                <div class="dark-card dark-card-primary" data-aos="fade-right" data-aos-delay="100">
+                    <div class="dark-icon">
+                        <svg class="w-10 h-10 text-dark-text relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m0 0V3a2 2 0 012-2h4a2 2 0 012 2v4m0 0v8a2 2 0 01-2 2H6a2 2 0 01-2-2V7"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-thin text-dark-text mb-8 text-center tracking-wide">
+                        {{#if etiquette_content.booking_title}}{{etiquette_content.booking_title}}{{else}}Booking & Screening{{/if}}
+                    </h2>
+                    
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="text-xl font-light text-dark-primary mb-4">
+                                {{#if etiquette_content.booking_initial_contact_title}}{{etiquette_content.booking_initial_contact_title}}{{else}}Initial Contact{{/if}}
+                            </h3>
+                            <p class="text-dark-text opacity-80 leading-relaxed font-light text-lg">
+                                {{#if etiquette_content.booking_initial_contact_text}}{{etiquette_content.booking_initial_contact_text}}{{else}}Please introduce yourself graciously and include your desired date, time, and duration when reaching out. A courteous approach is always appreciated.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-light text-dark-primary mb-4">
+                                {{#if etiquette_content.booking_screening_title}}{{etiquette_content.booking_screening_title}}{{else}}Screening Process{{/if}}
+                            </h3>
+                            <p class="text-dark-text opacity-80 leading-relaxed font-light text-lg">
+                                {{#if etiquette_content.booking_screening_text}}{{etiquette_content.booking_screening_text}}{{else}}For the safety and comfort of all parties, a discreet screening process is required for new clients. This includes basic verification and references.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-light text-dark-primary mb-4">
+                                {{#if etiquette_content.booking_advance_title}}{{etiquette_content.booking_advance_title}}{{else}}Advance Planning{{/if}}
+                            </h3>
+                            <p class="text-dark-text opacity-80 leading-relaxed font-light text-lg">
+                                {{#if etiquette_content.booking_advance_text}}{{etiquette_content.booking_advance_text}}{{else}}I prefer bookings made at least 24 hours in advance to ensure the perfect arrangement. Same-day appointments may be available with an additional consideration fee.{{/if}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Respect & Boundaries -->
+                {{#if etiquette_content.etiquette_respect_visible}}
+                <div class="dark-card dark-card-accent" data-aos="fade-left" data-aos-delay="200">
+                    <div class="dark-icon">
+                        <svg class="w-10 h-10 text-dark-text relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-thin text-dark-text mb-8 text-center tracking-wide">
+                        {{#if etiquette_content.respect_title}}{{etiquette_content.respect_title}}{{else}}Respect & Boundaries{{/if}}
+                    </h2>
+                    
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="text-xl font-light text-dark-accent mb-4">
+                                {{#if etiquette_content.respect_mutual_title}}{{etiquette_content.respect_mutual_title}}{{else}}Mutual Respect{{/if}}
+                            </h3>
+                            <p class="text-dark-text opacity-80 leading-relaxed font-light text-lg">
+                                {{#if etiquette_content.respect_mutual_text}}{{etiquette_content.respect_mutual_text}}{{else}}I treat all clients with the utmost respect, kindness, and discretion, and I expect the same consideration in return. Discourteous or disrespectful behavior will not be tolerated.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-light text-dark-accent mb-4">
+                                {{#if etiquette_content.respect_boundaries_title}}{{etiquette_content.respect_boundaries_title}}{{else}}Professional Boundaries{{/if}}
+                            </h3>
+                            <p class="text-dark-text opacity-80 leading-relaxed font-light text-lg">
+                                {{#if etiquette_content.respect_boundaries_text}}{{etiquette_content.respect_boundaries_text}}{{else}}Our time together is for sophisticated companionship and refined social interaction. Please honor all established boundaries and guidelines with grace.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-light text-dark-accent mb-4">
+                                {{#if etiquette_content.respect_personal_title}}{{etiquette_content.respect_personal_title}}{{else}}Personal Information{{/if}}
+                            </h3>
+                            <p class="text-dark-text opacity-80 leading-relaxed font-light text-lg">
+                                {{#if etiquette_content.respect_personal_text}}{{etiquette_content.respect_personal_text}}{{else}}Please refrain from requesting personal information beyond what is shared publicly. Discretion and privacy are mutual courtesies we both deserve.{{/if}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+            
+            <!-- Second Row: Hygiene & Cancellation -->
+            <div class="grid lg:grid-cols-2 gap-12 mb-20">
+                <!-- Hygiene & Presentation -->
+                {{#if etiquette_content.etiquette_hygiene_visible}}
+                <div class="dark-card" data-aos="fade-right" data-aos-delay="300">
+                    <div class="dark-icon">
+                        <svg class="w-10 h-10 text-dark-text relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-thin text-dark-text mb-8 text-center tracking-wide">
+                        {{#if etiquette_content.hygiene_title}}{{etiquette_content.hygiene_title}}{{else}}Hygiene & Presentation{{/if}}
+                    </h2>
+                    
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="text-xl font-light text-dark-primary mb-4">
+                                {{#if etiquette_content.hygiene_personal_title}}{{etiquette_content.hygiene_personal_title}}{{else}}Personal Hygiene{{/if}}
+                            </h3>
+                            <p class="text-dark-text opacity-80 leading-relaxed font-light text-lg">
+                                {{#if etiquette_content.hygiene_personal_text}}{{etiquette_content.hygiene_personal_text}}{{else}}Please arrive freshly showered and impeccably groomed. Excellent personal hygiene is essential for creating a comfortable and pleasant experience for both of us.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-light text-dark-primary mb-4">
+                                {{#if etiquette_content.hygiene_attire_title}}{{etiquette_content.hygiene_attire_title}}{{else}}Attire{{/if}}
+                            </h3>
+                            <p class="text-dark-text opacity-80 leading-relaxed font-light text-lg">
+                                {{#if etiquette_content.hygiene_attire_text}}{{etiquette_content.hygiene_attire_text}}{{else}}Please dress appropriately for our planned activities with attention to detail. I will always be elegantly attired and appreciate the same consideration from my companions.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-light text-dark-primary mb-4">
+                                {{#if etiquette_content.hygiene_substances_title}}{{etiquette_content.hygiene_substances_title}}{{else}}Substances{{/if}}
+                            </h3>
+                            <p class="text-dark-text opacity-80 leading-relaxed font-light text-lg">
+                                {{#if etiquette_content.hygiene_substances_text}}{{etiquette_content.hygiene_substances_text}}{{else}}Please do not arrive under the influence of alcohol or other substances. A glass of fine wine during our encounter is perfectly acceptable and often encouraged.{{/if}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Cancellation Policy -->
+                {{#if etiquette_content.etiquette_cancellation_visible}}
+                <div class="dark-card" data-aos="fade-left" data-aos-delay="400">
+                    <div class="dark-icon">
+                        <svg class="w-10 h-10 text-dark-text relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-thin text-dark-text mb-8 text-center tracking-wide">
+                        {{#if etiquette_content.cancellation_title}}{{etiquette_content.cancellation_title}}{{else}}Cancellation Policy{{/if}}
+                    </h2>
+                    
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="text-xl font-light text-dark-secondary mb-4">
+                                {{#if etiquette_content.cancellation_advance_title}}{{etiquette_content.cancellation_advance_title}}{{else}}Advance Notice{{/if}}
+                            </h3>
+                            <p class="text-dark-text opacity-80 leading-relaxed font-light text-lg">
+                                {{#if etiquette_content.cancellation_advance_text}}{{etiquette_content.cancellation_advance_text}}{{else}}Please provide at least 4 hours advance notice for cancellations. Last-minute cancellations may result in a cancellation fee to cover preparation time and opportunity costs.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-light text-dark-secondary mb-4">
+                                {{#if etiquette_content.cancellation_noshow_title}}{{etiquette_content.cancellation_noshow_title}}{{else}}No-Shows{{/if}}
+                            </h3>
+                            <p class="text-dark-text opacity-80 leading-relaxed font-light text-lg">
+                                {{#if etiquette_content.cancellation_noshow_text}}{{etiquette_content.cancellation_noshow_text}}{{else}}No-shows without any communication will result in being permanently blacklisted from future bookings. This policy ensures respect for everyone's valuable time.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-light text-dark-secondary mb-4">
+                                {{#if etiquette_content.cancellation_my_title}}{{etiquette_content.cancellation_my_title}}{{else}}My Cancellations{{/if}}
+                            </h3>
+                            <p class="text-dark-text opacity-80 leading-relaxed font-light text-lg">
+                                {{#if etiquette_content.cancellation_my_text}}{{etiquette_content.cancellation_my_text}}{{else}}In the rare event I need to cancel, I will provide as much advance notice as possible and offer to reschedule at your convenience, potentially with a courtesy gesture for the inconvenience.{{/if}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+            
+            <!-- Safety & Discretion Section -->
+            {{#if etiquette_content.etiquette_safety_visible}}
+            <div class="dark-glass rounded-3xl p-16 mb-20" data-aos="fade-up" data-aos-delay="500">
+                <h2 class="dark-section-title text-dark-text">
+                    {{#if etiquette_content.safety_title}}{{etiquette_content.safety_title}}{{else}}Safety & Discretion{{/if}}
+                </h2>
+                <div class="dark-divider"></div>
+                
+                <div class="grid md:grid-cols-3 gap-12">
+                    <div class="text-center">
+                        <div class="w-24 h-24 bg-dark-primary bg-opacity-20 rounded-full mx-auto mb-8 flex items-center justify-center relative overflow-hidden">
+                            <svg class="w-12 h-12 text-dark-primary relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20 transform rotate-45 animate-pulse"></div>
+                        </div>
+                        <h3 class="text-2xl font-light text-dark-primary mb-6">
+                            {{#if etiquette_content.safety_confidentiality_title}}{{etiquette_content.safety_confidentiality_title}}{{else}}Confidentiality{{/if}}
+                        </h3>
+                        <p class="text-dark-text opacity-80 leading-relaxed font-light text-lg">
+                            {{#if etiquette_content.safety_confidentiality_text}}{{etiquette_content.safety_confidentiality_text}}{{else}}Your privacy is sacred and paramount. All interactions remain strictly confidential, ensuring complete discretion for all sophisticated encounters.{{/if}}
+                        </p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-24 h-24 bg-dark-accent bg-opacity-20 rounded-full mx-auto mb-8 flex items-center justify-center relative overflow-hidden">
+                            <svg class="w-12 h-12 text-dark-accent relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20 transform rotate-45 animate-pulse"></div>
+                        </div>
+                        <h3 class="text-2xl font-light text-dark-accent mb-6">
+                            {{#if etiquette_content.safety_environment_title}}{{etiquette_content.safety_environment_title}}{{else}}Safe Environment{{/if}}
+                        </h3>
+                        <p class="text-dark-text opacity-80 leading-relaxed font-light text-lg">
+                            {{#if etiquette_content.safety_environment_text}}{{etiquette_content.safety_environment_text}}{{else}}I maintain an impeccably safe, clean, and elegantly welcoming environment for all meetings, ensuring comfort and security at every encounter.{{/if}}
+                        </p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-24 h-24 bg-dark-secondary bg-opacity-20 rounded-full mx-auto mb-8 flex items-center justify-center relative overflow-hidden">
+                            <svg class="w-12 h-12 text-dark-secondary relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                            </svg>
+                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20 transform rotate-45 animate-pulse"></div>
+                        </div>
+                        <h3 class="text-2xl font-light text-dark-secondary mb-6">
+                            {{#if etiquette_content.safety_communication_title}}{{etiquette_content.safety_communication_title}}{{else}}Professional Communication{{/if}}
+                        </h3>
+                        <p class="text-dark-text opacity-80 leading-relaxed font-light text-lg">
+                            {{#if etiquette_content.safety_communication_text}}{{etiquette_content.safety_communication_text}}{{else}}All communications are handled with the utmost professionalism, discretion, and elegance, maintaining the highest standards of refined correspondence.{{/if}}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Questions Section -->
+            {{#if etiquette_content.etiquette_questions_visible}}
+            <div class="text-center dark-glass rounded-3xl p-16" data-aos="fade-up" data-aos-delay="600">
+                <h3 class="text-4xl font-thin text-dark-text mb-8 tracking-wide">
+                    {{#if etiquette_content.questions_title}}{{etiquette_content.questions_title}}{{else}}Questions?{{/if}}
+                </h3>
+                <div class="w-20 h-px bg-gradient-to-r from-transparent via-dark-accent to-transparent mx-auto mb-10"></div>
+                <p class="text-xl text-dark-text opacity-80 mb-12 leading-relaxed font-light max-w-3xl mx-auto">
+                    {{#if etiquette_content.questions_text}}{{etiquette_content.questions_text}}{{else}}If you have any questions about these guidelines or require clarification on any point, please don't hesitate to reach out. I'm here to ensure our time together exceeds all expectations.{{/if}}
+                </p>
+                <a href="/{{model.slug}}/{{#if etiquette_content.questions_button_link}}{{etiquette_content.questions_button_link}}{{else}}contact{{/if}}" 
+                   class="dark-button px-12 py-5 rounded-xl font-light text-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center">
+                    {{#if etiquette_content.questions_button_text}}{{etiquette_content.questions_button_text}}{{else}}Contact Me{{/if}}
+                    <svg class="w-6 h-6 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.001 8.001 0 01-7.75-6M3 12c0-4.418 3.582-8 8-8s8 3.582 8 8"></path>
+                    </svg>
+                </a>
+            </div>
+            {{/if}}
+            
+        </div>
+    </section>
+
+    <script>
+        // Initialize AOS with dark theme timing
+        AOS.init({
+            duration: 1200,
+            once: true,
+            offset: 50,
+            easing: 'ease-out-cubic'
+        });
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Subtle parallax effect for ambient elements
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll('.dark-ambient');
+            parallaxElements.forEach(el => {
+                const speed = 0.15;
+                el.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+        
+        // Enhanced card interactions
+        document.querySelectorAll('.dark-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-12px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -700,12 +700,12 @@ function protectMainLayout() {
 async function loadMediaQueue() {
     try {
         console.log('📋 Loading media queue...');
-        const response = await sysFetch('/api/sysadmin/media-review/queue?status=pending&page=1&limit=24');
+        const response = await fetch('/api/media-review-queue/queue?status=pending&page=1&limit=24');
         if (response.ok) {
             const result = await response.json();
             
-            if (result.success && result.data && result.data.queue) {
-                const items = result.data.queue || [];
+            if (result.success && result.queue) {
+                const items = result.queue || [];
                 renderMediaQueue(items);
                 console.log('✅ Loaded', items.length, 'items from media queue');
             } else {
@@ -902,23 +902,68 @@ function getPriorityColor(priority) {
 
 async function approveImage(itemId) {
     try {
-        const response = await fetch('/api/enhanced-content-moderation/admin/approve', {
+        // Use the dedicated media-review-queue endpoint for clean approval
+        const response = await fetch(`/api/media-review-queue/approve/${itemId}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                content_moderation_id: itemId,
                 admin_notes: 'Approved clean via sysadmin interface',
                 reviewed_by: 1,
                 final_location: 'public'
             })
         });
-        
         const result = await response.json();
-        if (result.success) {
-            alert('✅ Image approved successfully!');
-            loadMediaQueue();
+        if (result && result.success) {
+            // Remove the specific item from the UI with animation
+            const queueItem = document.querySelector(`.queue-item[data-id="${itemId}"]`);
+            if (queueItem) {
+                const columnDiv = queueItem.closest('.col-lg-6.col-xl-4, .col-12');
+                if (columnDiv) {
+                    // Add fade-out animation
+                    columnDiv.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    columnDiv.style.opacity = '0';
+                    columnDiv.style.transform = 'scale(0.8)';
+                    
+                    // Remove after animation completes
+                    setTimeout(() => {
+                        columnDiv.remove();
+                        
+                        // Check if queue is now empty
+                        const remainingItems = document.querySelectorAll('.queue-item');
+                        if (remainingItems.length === 0) {
+                            document.getElementById('dynamicContent').innerHTML = `
+                                <div class="container-fluid py-4">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="text-center py-5">
+                                                <i class="fas fa-inbox fs-1 text-success mb-3"></i>
+                                                <h4>All Clear!</h4>
+                                                <p class="text-muted">No flagged images require review</p>
+                                                <button class="btn btn-primary" onclick="loadMediaQueue()">
+                                                    <i class="fas fa-refresh me-2"></i>Check for New Items
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            // Update the item count in the header
+                            const headerText = document.querySelector('h2 .text-muted, p.text-muted');
+                            if (headerText) {
+                                const currentCount = remainingItems.length;
+                                headerText.textContent = `Review flagged images from AI moderation system (${currentCount} items)`;
+                            }
+                        }
+                    }, 500);
+                }
+            }
+            
+            // Show success feedback
+            showToast('✅ Image approved successfully!', 'success');
         } else {
-            alert('❌ Error approving image: ' + result.error);
+            const msg = (result && (result.message || result.error)) || 'Unknown error';
+            showToast('❌ Error approving image: ' + msg, 'error');
         }
     } catch (error) {
         alert('❌ Error: ' + error.message);
@@ -932,28 +977,74 @@ function openBlurEditor(itemId) {
 
 async function rejectImage(itemId) {
     const reason = prompt('Please provide a reason for rejection:');
-    if (!reason) return;
+    if (!reason || !reason.trim()) return;
     
     try {
-        const response = await fetch('/api/enhanced-content-moderation/admin/reject', {
+        const response = await fetch(`/api/media-review-queue/reject/${itemId}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                content_moderation_id: itemId,
-                admin_notes: reason,
+                admin_notes: reason.trim(),
                 reviewed_by: 1
             })
         });
         
         const result = await response.json();
-        if (result.success) {
-            alert('❌ Image rejected successfully!');
-            loadMediaQueue();
+        if (result && result.success) {
+            // Remove the specific item from the UI with animation
+            const queueItem = document.querySelector(`.queue-item[data-id="${itemId}"]`);
+            if (queueItem) {
+                const columnDiv = queueItem.closest('.col-lg-6.col-xl-4, .col-12');
+                if (columnDiv) {
+                    // Add fade-out animation with red tint
+                    columnDiv.style.transition = 'opacity 0.5s ease, transform 0.5s ease, filter 0.5s ease';
+                    columnDiv.style.opacity = '0';
+                    columnDiv.style.transform = 'scale(0.8)';
+                    columnDiv.style.filter = 'hue-rotate(0deg) brightness(0.7)';
+                    
+                    // Remove after animation completes
+                    setTimeout(() => {
+                        columnDiv.remove();
+                        
+                        // Check if queue is now empty
+                        const remainingItems = document.querySelectorAll('.queue-item');
+                        if (remainingItems.length === 0) {
+                            document.getElementById('dynamicContent').innerHTML = `
+                                <div class="container-fluid py-4">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="text-center py-5">
+                                                <i class="fas fa-inbox fs-1 text-success mb-3"></i>
+                                                <h4>All Clear!</h4>
+                                                <p class="text-muted">No flagged images require review</p>
+                                                <button class="btn btn-primary" onclick="loadMediaQueue()">
+                                                    <i class="fas fa-refresh me-2"></i>Check for New Items
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            // Update the item count in the header
+                            const headerText = document.querySelector('h2 .text-muted, p.text-muted');
+                            if (headerText) {
+                                const currentCount = remainingItems.length;
+                                headerText.textContent = `Review flagged images from AI moderation system (${currentCount} items)`;
+                            }
+                        }
+                    }, 500);
+                }
+            }
+            
+            // Show success feedback
+            showToast('❌ Image rejected and moved to rejected folder', 'error');
         } else {
-            alert('❌ Error rejecting image: ' + result.error);
+            const msg = (result && (result.message || result.error)) || 'Unknown error';
+            showToast('❌ Error rejecting image: ' + msg, 'error');
         }
     } catch (error) {
-        alert('❌ Error: ' + error.message);
+        showToast('❌ Error: ' + error.message, 'error');
     }
 }
 
@@ -1077,6 +1168,46 @@ function renderRejectedRemoved(items) {
         </div>
     `;
     document.getElementById('dynamicContent').innerHTML = content;
+}
+
+// Toast notification system
+function showToast(message, type = 'info') {
+    // Remove existing toast if any
+    const existingToast = document.getElementById('dynamicToast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
+    const toastColors = {
+        success: 'bg-success text-white',
+        error: 'bg-danger text-white',
+        info: 'bg-info text-white',
+        warning: 'bg-warning text-dark'
+    };
+    
+    const toast = document.createElement('div');
+    toast.id = 'dynamicToast';
+    toast.className = `position-fixed top-0 end-0 m-3 px-4 py-3 rounded shadow ${toastColors[type] || toastColors.info}`;
+    toast.style.zIndex = '9999';
+    toast.innerHTML = message;
+    
+    document.body.appendChild(toast);
+    
+    // Fade in
+    setTimeout(() => {
+        toast.style.opacity = '1';
+        toast.style.transition = 'opacity 0.3s ease';
+    }, 10);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+        }, 300);
+    }, 3000);
 }
 
 // Utility function for priority badge colors

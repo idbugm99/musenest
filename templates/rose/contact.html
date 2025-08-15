@@ -1,0 +1,36 @@
+<!-- Rose Theme Contact Page -->
+{{component 'navigation' theme='rose' nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+
+<!-- Header -->
+<header class="pt-32 pb-20 bg-gradient-to-b from-[color:var(--rose)] to-[color:var(--merlot)] text-center text-porcelain">
+  <h1 class="font-serif text-5xl mb-4">{{contact_content.page_title || 'Contact'}}</h1>
+  {{#if contact_content.page_subtitle}}
+  <p class="text-lg max-w-2xl mx-auto opacity-90">{{contact_content.page_subtitle}}</p>
+  {{/if}}
+</header>
+
+<!-- Contact Card -->
+<section class="py-24 bg-porcelain">
+  <div class="max-w-xl mx-auto px-6">
+    <div class="bg-white rounded-[var(--radius)] p-10 shadow text-center space-y-6">
+      {{#if site_settings.header_image}}
+      <img src="{{site_settings.header_image}}" alt="{{site_settings.model_name}}" class="h-16 mx-auto object-contain" />
+      {{/if}}
+      <h2 class="font-serif text-3xl text-charcoal">{{site_settings.model_name}}</h2>
+      {{#if site_settings.contact_email}}
+      <p class="text-lg"><a href="mailto:{{site_settings.contact_email}}" class="text-[color:var(--rose)] hover:underline">{{site_settings.contact_email}}</a></p>
+      {{/if}}
+      {{#if site_settings.contact_phone}}
+      <p class="text-lg"><a href="tel:{{site_settings.contact_phone}}" class="text-[color:var(--rose)] hover:underline">{{site_settings.contact_phone}}</a></p>
+      {{/if}}
+      {{#if contact_content.city_text}}
+      <p class="text-charcoal/80">📍 {{contact_content.city_text}}</p>
+      {{/if}}
+      {{#if contact_content.disclaimer}}
+      <p class="text-sm text-charcoal/60 leading-relaxed">{{contact_content.disclaimer}}</p>
+      {{/if}}
+    </div>
+  </div>
+</section>
+
+{{component '_footer' theme='rose'}}

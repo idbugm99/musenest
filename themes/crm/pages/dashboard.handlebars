@@ -1,0 +1,537 @@
+<!-- Dashboard Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Welcome back, {{model.modelName}}!</h2>
+        <p class="text-muted mb-0">Here's what's happening with your clients today</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-crm-primary" data-bs-toggle="modal" data-bs-target="#addClientModal">
+            <i class="fas fa-plus me-2"></i>Add Client
+        </button>
+        <button class="btn btn-crm-secondary" data-bs-toggle="modal" data-bs-target="#addVisitModal">
+            <i class="fas fa-calendar-plus me-2"></i>Record Visit
+        </button>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="crm-card crm-stats-card p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">{{stats.total_clients}}</div>
+                    <div class="stats-label">Total Clients</div>
+                </div>
+                <div>
+                    <i class="fas fa-users" style="font-size: 2rem; opacity: 0.8;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="crm-card crm-stats-card p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">{{stats.approved_clients}}</div>
+                    <div class="stats-label">Approved Clients</div>
+                </div>
+                <div>
+                    <i class="fas fa-check-circle" style="font-size: 2rem; opacity: 0.8;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="crm-card crm-stats-card p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">{{stats.total_visits}}</div>
+                    <div class="stats-label">Total Visits</div>
+                </div>
+                <div>
+                    <i class="fas fa-calendar-check" style="font-size: 2rem; opacity: 0.8;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="crm-card crm-stats-card p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">${{formatCurrency stats.total_revenue}}</div>
+                    <div class="stats-label">Total Revenue</div>
+                </div>
+                <div>
+                    <i class="fas fa-dollar-sign" style="font-size: 2rem; opacity: 0.8;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Row -->
+<div class="row">
+    <!-- Recent Visits -->
+    <div class="col-lg-8 mb-4">
+        <div class="crm-card">
+            <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-calendar-check me-2"></i>
+                    Recent Visits
+                </h5>
+                <a href="/{{model.modelSlug}}/crm/visits" class="btn btn-sm btn-outline-primary">
+                    View All
+                </a>
+            </div>
+            <div class="card-body p-0">
+                {{#if recentVisits.length}}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Client</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each recentVisits}}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="date-badge me-2">
+                                            <div class="date-day">{{formatDate visit_date 'DD'}}</div>
+                                            <div class="date-month">{{formatDate visit_date 'MMM'}}</div>
+                                        </div>
+                                        <span>{{formatDate visit_date 'MMM DD, YYYY'}}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm me-2">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <span>{{client_identifier}}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark">{{visit_type}}</span>
+                                </td>
+                                <td>
+                                    <strong>${{formatCurrency rate_amount}}</strong>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-{{payment_status}}">
+                                        {{payment_status}}
+                                    </span>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+                {{else}}
+                <div class="text-center py-4">
+                    <i class="fas fa-calendar-times text-muted" style="font-size: 3rem;"></i>
+                    <p class="text-muted mt-2">No visits recorded yet</p>
+                    <button class="btn btn-crm-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addVisitModal">
+                        Record Your First Visit
+                    </button>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Monthly Revenue Chart -->
+    <div class="col-lg-4 mb-4">
+        <div class="crm-card">
+            <div class="card-header bg-transparent border-0">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Monthly Revenue
+                </h5>
+            </div>
+            <div class="card-body">
+                {{#if monthlyRevenue.length}}
+                <div class="monthly-revenue-chart">
+                    {{#each monthlyRevenue}}
+                    <div class="revenue-bar mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small class="text-muted">{{year_month}}</small>
+                            <small class="fw-bold">${{formatCurrency total_revenue}}</small>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: {{calculatePercentage total_revenue ../maxRevenue}}%; 
+                                        background: linear-gradient(90deg, var(--crm-primary), var(--crm-secondary));">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small class="text-muted">{{total_visits}} visits</small>
+                            <small class="text-muted">{{unique_clients}} clients</small>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+                {{else}}
+                <div class="text-center py-4">
+                    <i class="fas fa-chart-bar text-muted" style="font-size: 3rem;"></i>
+                    <p class="text-muted mt-2">No revenue data yet</p>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col-12">
+        <div class="crm-card">
+            <div class="card-header bg-transparent border-0">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>
+                    Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="/{{model.modelSlug}}/crm/clients" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                            <i class="fas fa-users mb-2" style="font-size: 2rem;"></i>
+                            <span>Manage Clients</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="/{{model.modelSlug}}/crm/screening" class="btn btn-outline-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                            <i class="fas fa-shield-alt mb-2" style="font-size: 2rem;"></i>
+                            <span>Client Screening</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="/{{model.modelSlug}}/crm/financial" class="btn btn-outline-success w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                            <i class="fas fa-chart-pie mb-2" style="font-size: 2rem;"></i>
+                            <span>Financial Reports</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="/{{model.modelSlug}}/crm/settings" class="btn btn-outline-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                            <i class="fas fa-cog mb-2" style="font-size: 2rem;"></i>
+                            <span>Settings</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Client Modal -->
+<div class="modal fade" id="addClientModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-user-plus me-2"></i>
+                    Add New Client
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addClientForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="clientIdentifier" class="form-label">Client Name/Alias *</label>
+                            <input type="text" class="form-control" id="clientIdentifier" name="client_identifier" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="screeningMethod" class="form-label">Screening Method</label>
+                            <select class="form-select" id="screeningMethod" name="screening_method">
+                                <option value="none">No Screening</option>
+                                <option value="references">References</option>
+                                <option value="job_validation">Job Validation</option>
+                                <option value="reference_sites">Reference Sites</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Any additional notes about this client..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="addClientForm" class="btn btn-crm-primary">
+                    <i class="fas fa-save me-2"></i>Add Client
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Visit Modal -->
+<div class="modal fade" id="addVisitModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-calendar-plus me-2"></i>
+                    Record Visit
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addVisitForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="visitClient" class="form-label">Client *</label>
+                            <select class="form-select" id="visitClient" name="client_id" required>
+                                <option value="">Select a client...</option>
+                                <!-- Will be populated via AJAX -->
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="visitDate" class="form-label">Visit Date *</label>
+                            <input type="date" class="form-control" id="visitDate" name="visit_date" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="visitType" class="form-label">Visit Type</label>
+                            <select class="form-select" id="visitType" name="visit_type">
+                                <option value="incall">Incall</option>
+                                <option value="outcall">Outcall</option>
+                                <option value="overnight">Overnight</option>
+                                <option value="travel">Travel</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="rateAmount" class="form-label">Rate Amount *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="rateAmount" name="rate_amount" step="0.01" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="visitNotes" class="form-label">Visit Notes</label>
+                        <textarea class="form-control" id="visitNotes" name="notes_encrypted" rows="3" placeholder="Notes about the visit, client preferences, etc..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="addVisitForm" class="btn btn-crm-primary">
+                    <i class="fas fa-save me-2"></i>Record Visit
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .date-badge {
+        width: 40px;
+        height: 40px;
+        background: var(--crm-primary);
+        color: white;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+    
+    .date-day {
+        line-height: 1;
+    }
+    
+    .date-month {
+        line-height: 1;
+        font-size: 0.7rem;
+        opacity: 0.8;
+    }
+    
+    .avatar-sm {
+        width: 32px;
+        height: 32px;
+        background: var(--crm-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--crm-dark);
+        font-size: 0.8rem;
+    }
+    
+    .monthly-revenue-chart {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .revenue-bar .progress {
+        background: var(--crm-light);
+        border-radius: 4px;
+    }
+    
+    .quick-actions .btn {
+        transition: all 0.3s ease;
+        border-radius: 12px;
+    }
+    
+    .quick-actions .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Set today's date as default for visit date
+        const today = new Date().toISOString().split('T')[0];
+        $('#visitDate').val(today);
+        
+        // Load clients for visit modal
+        loadClientsForVisit();
+        
+        // Handle add client form
+        $('#addClientForm').on('submit', function(e) {
+            e.preventDefault();
+            addClient();
+        });
+        
+        // Handle add visit form
+        $('#addVisitForm').on('submit', function(e) {
+            e.preventDefault();
+            addVisit();
+        });
+    });
+    
+    async function loadClientsForVisit() {
+        try {
+            const response = await fetch(`/api/crm/{{model.modelSlug}}/clients?limit=100`);
+            const data = await response.json();
+            
+            if (data.success) {
+                const select = $('#visitClient');
+                select.empty();
+                select.append('<option value="">Select a client...</option>');
+                
+                data.data.clients.forEach(client => {
+                    select.append(`<option value="${client.id}">${client.client_identifier}</option>`);
+                });
+            }
+        } catch (error) {
+            console.error('Error loading clients:', error);
+        }
+    }
+    
+    async function addClient() {
+        const form = $('#addClientForm')[0];
+        const formData = new FormData(form);
+        
+        try {
+            const response = await fetch(`/api/crm/{{model.modelSlug}}/clients`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Show success message
+                showAlert('Client added successfully!', 'success');
+                
+                // Close modal
+                $('#addClientModal').modal('hide');
+                
+                // Reset form
+                form.reset();
+                
+                // Reload page to show new client
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showAlert(data.error || 'Failed to add client', 'danger');
+            }
+        } catch (error) {
+            console.error('Error adding client:', error);
+            showAlert('Failed to add client. Please try again.', 'danger');
+        }
+    }
+    
+    async function addVisit() {
+        const form = $('#addVisitForm')[0];
+        const formData = new FormData(form);
+        
+        try {
+            const response = await fetch(`/api/crm/{{model.modelSlug}}/visits`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Show success message
+                showAlert('Visit recorded successfully!', 'success');
+                
+                // Close modal
+                $('#addVisitModal').modal('hide');
+                
+                // Reset form
+                form.reset();
+                $('#visitDate').val(new Date().toISOString().split('T')[0]);
+                
+                // Reload page to show new visit
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showAlert(data.error || 'Failed to record visit', 'danger');
+            }
+        } catch (error) {
+            console.error('Error adding visit:', error);
+            showAlert('Failed to record visit. Please try again.', 'danger');
+        }
+    }
+    
+    function showAlert(message, type) {
+        const alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        $('.crm-content').prepend(alertHtml);
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            $('.alert').fadeOut();
+        }, 5000);
+    }
+</script>

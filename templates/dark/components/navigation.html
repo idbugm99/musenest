@@ -1,0 +1,53 @@
+<!-- Dark Theme Navigation -->
+<nav class="dark-glass fixed w-full z-50 backdrop-blur-md bg-black bg-opacity-30 border-b border-white border-opacity-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <!-- Logo/Brand -->
+            <div class="flex items-center">
+                <a href="{{base_url}}" class="text-2xl font-light text-dark-text hover:text-dark-accent transition-colors">
+                    {{site_settings.model_name}}
+                </a>
+            </div>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center space-x-8">
+                {{#each nav_items}}
+                <a href="{{../base_url}}/{{this.path}}" 
+                   class="text-dark-text hover:text-dark-accent transition-colors font-medium px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-5">
+                    {{this.name}}
+                </a>
+                {{/each}}
+            </div>
+            
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden">
+                <button type="button" 
+                        class="text-dark-text hover:text-dark-accent focus:outline-none focus:text-dark-accent transition-colors"
+                        onclick="toggleMobileMenu()">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="md:hidden hidden bg-black bg-opacity-90 backdrop-blur-md border-t border-white border-opacity-10">
+        <div class="px-2 pt-2 pb-3 space-y-1">
+            {{#each nav_items}}
+            <a href="{{../base_url}}/{{this.path}}" 
+               class="block px-3 py-2 text-dark-text hover:text-dark-primary transition-colors font-medium rounded-lg hover:bg-dark-primary hover:bg-opacity-10">
+                {{this.name}}
+            </a>
+            {{/each}}
+        </div>
+    </div>
+</nav>
+
+<script>
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('hidden');
+}
+</script>

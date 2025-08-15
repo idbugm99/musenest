@@ -1,199 +1,1481 @@
-<!-- About Hero Section -->
-<section class="luxury-hero min-h-96 flex items-center justify-center text-white pt-20" data-aos="fade-in">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        <h1 class="text-5xl md:text-7xl font-bold mb-8 luxury-heading">
-            About {{siteName}}
+<!-- Luxury Theme About Page - Opulent Regal Portrait & Biography -->
+
+<!-- Page Header with Imperial Crown Treatment -->
+{{#if about_content.page_title_visible}}
+<section class="luxury-about-header" data-aos="fade-in">
+    <!-- Royal Background with Marble Texture -->
+    <div class="luxury-imperial-marble"></div>
+    
+    <!-- Crown Elements -->
+    <div class="luxury-royal-crowns">
+        <div class="luxury-floating-crown luxury-crown-1">
+            <i class="fas fa-crown"></i>
+        </div>
+        <div class="luxury-floating-crown luxury-crown-2">
+            <i class="fas fa-crown"></i>
+        </div>
+    </div>
+    
+    <div class="max-w-6xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <!-- Regal Title with Gold Gradient -->
+        <h1 class="luxury-about-title" data-aos="fade-up" data-aos-delay="200">
+            {{#if about_content.page_title}}{{about_content.page_title}}{{else}}Royal Biography{{/if}}
         </h1>
-        <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto font-light">
-            {{content.aboutIntro}}
+        
+        <!-- Elegant Subtitle -->
+        {{#if about_content.page_subtitle}}
+        <p class="luxury-about-subtitle" data-aos="fade-up" data-aos-delay="400">
+            {{about_content.page_subtitle}}
         </p>
+        {{/if}}
+        
+        <!-- Ornate Separator -->
+        <div class="luxury-title-separator" data-aos="fade-up" data-aos-delay="600">
+            <div class="luxury-separator-line"></div>
+            <div class="luxury-separator-ornament">♦</div>
+            <div class="luxury-separator-line"></div>
+        </div>
+    </div>
+    
+    <!-- Floating Royal Elements -->
+    <div class="luxury-header-ornaments" aria-hidden="true">
+        <div class="luxury-ornament luxury-ornament-1">⚜</div>
+        <div class="luxury-ornament luxury-ornament-2">♦</div>
+        <div class="luxury-ornament luxury-ornament-3">⚜</div>
     </div>
 </section>
+{{/if}}
 
-<!-- Main About Content -->
-<section class="py-24 bg-white">
+<!-- Main Content Section with Palace Architecture -->
+{{#if about_content.main_content_visible}}
+<section class="luxury-main-biography" data-aos="fade-in">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-            <!-- About Text -->
-            <div data-aos="fade-right">
-                <div class="prose prose-lg max-w-none">
-                    <div class="text-lg text-gray-700 leading-relaxed space-y-8">
-                        {{{content.mainContent}}}
+        <div class="grid lg:grid-cols-2 gap-16 items-start">
+            
+            <!-- Royal Portrait Chamber -->
+            {{#if about_content.portrait_visible}}
+            <div class="luxury-portrait-chamber" data-aos="fade-right">
+                <div class="luxury-portrait-throne">
+                    {{#if about_content.portrait_image_url}}
+                    <img src="{{about_content.portrait_image_url}}" 
+                         alt="{{#if about_content.portrait_alt}}{{about_content.portrait_alt}}{{else}}Royal Portrait{{/if}}"
+                         class="luxury-portrait-royal"
+                         onclick="openPortraitPreview('{{about_content.portrait_image_url}}', '{{#if about_content.portrait_alt}}{{about_content.portrait_alt}}{{else}}Royal Portrait{{/if}}')">
+                    {{else}}
+                    <div class="luxury-portrait-placeholder-throne">
+                        <i class="fas fa-crown luxury-crown-placeholder-large"></i>
+                        <p class="luxury-placeholder-text">Royal Portrait</p>
+                    </div>
+                    {{/if}}
+                    
+                    <!-- Royal Frame Effects -->
+                    <div class="luxury-portrait-frame-effects">
+                        <div class="luxury-frame-corner luxury-corner-top-left"></div>
+                        <div class="luxury-frame-corner luxury-corner-top-right"></div>
+                        <div class="luxury-frame-corner luxury-corner-bottom-left"></div>
+                        <div class="luxury-frame-corner luxury-corner-bottom-right"></div>
+                    </div>
+                    
+                    <!-- Golden Illumination -->
+                    <div class="luxury-portrait-illumination"></div>
+                </div>
+                
+                <!-- Marble Pedestal Base -->
+                <div class="luxury-portrait-pedestal"></div>
+            </div>
+            {{/if}}
+            
+            <!-- Biography Content with Regal Typography -->
+            <div class="luxury-biography-scroll" data-aos="fade-left">
+                
+                <!-- Main Biography Text -->
+                <div class="luxury-content-chamber">
+                    <!-- Decorative Header -->
+                    <div class="luxury-biography-header">
+                        <div class="luxury-royal-monogram">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <h2 class="luxury-biography-title">Royal Excellence</h2>
+                    </div>
+                    
+                    <!-- Biography Paragraphs -->
+                    <div class="luxury-biography-text">
+                        {{#if about_content.main_paragraph_1}}
+                        <p class="luxury-lead-paragraph">{{about_content.main_paragraph_1}}</p>
+                        {{else}}
+                        <p class="luxury-lead-paragraph">Welcome to a world of unparalleled luxury and sophistication. I am a distinguished companion who embodies the finest traditions of elegance, discretion, and refinement.</p>
+                        {{/if}}
+                        
+                        {{#if about_content.main_paragraph_2}}
+                        <p class="luxury-content-paragraph">{{about_content.main_paragraph_2}}</p>
+                        {{else}}
+                        <p class="luxury-content-paragraph">With an unwavering commitment to excellence, I provide exceptional experiences that surpass the highest expectations. Every encounter is carefully curated to reflect the opulence and attention to detail that defines true luxury.</p>
+                        {{/if}}
+                        
+                        {{#if about_content.main_paragraph_3}}
+                        <p class="luxury-content-paragraph">{{about_content.main_paragraph_3}}</p>
+                        {{/if}}
+                        
+                        {{#if about_content.main_paragraph_4}}
+                        <p class="luxury-content-paragraph">{{about_content.main_paragraph_4}}</p>
+                        {{/if}}
+                        
+                        {{#unless about_content.main_paragraph_1}}
+                        <p class="luxury-lead-paragraph">Welcome to a world of unparalleled luxury and sophistication. I am a distinguished companion who embodies the finest traditions of elegance, discretion, and refinement.</p>
+                        <p class="luxury-content-paragraph">With an unwavering commitment to excellence, I provide exceptional experiences that surpass the highest expectations. Every encounter is carefully curated to reflect the opulence and attention to detail that defines true luxury.</p>
+                        {{/unless}}
                     </div>
                 </div>
                 
-                {{#if content.personalInfo}}
-                <div class="mt-16">
-                    <h3 class="text-3xl font-bold mb-8 luxury-heading text-luxury-primary">
-                        Personal Details
+                <!-- Royal Services Section -->
+                {{#if about_content.services_visible}}
+                <div class="luxury-services-chamber">
+                    <div class="luxury-services-header">
+                        <h3 class="luxury-services-title">
+                            {{#if about_content.services_title}}{{about_content.services_title}}{{else}}Royal Services{{/if}}
+                        </h3>
+                        <div class="luxury-services-crown">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="luxury-services-list">
+                        {{#if about_content.service_1}}
+                        <div class="luxury-service-item">
+                            <div class="luxury-service-ornament">♦</div>
+                            <span class="luxury-service-text">{{about_content.service_1}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if about_content.service_2}}
+                        <div class="luxury-service-item">
+                            <div class="luxury-service-ornament">♦</div>
+                            <span class="luxury-service-text">{{about_content.service_2}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if about_content.service_3}}
+                        <div class="luxury-service-item">
+                            <div class="luxury-service-ornament">♦</div>
+                            <span class="luxury-service-text">{{about_content.service_3}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if about_content.service_4}}
+                        <div class="luxury-service-item">
+                            <div class="luxury-service-ornament">♦</div>
+                            <span class="luxury-service-text">{{about_content.service_4}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if about_content.service_5}}
+                        <div class="luxury-service-item">
+                            <div class="luxury-service-ornament">♦</div>
+                            <span class="luxury-service-text">{{about_content.service_5}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if about_content.service_6}}
+                        <div class="luxury-service-item">
+                            <div class="luxury-service-ornament">♦</div>
+                            <span class="luxury-service-text">{{about_content.service_6}}</span>
+                        </div>
+                        {{/if}}
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Interests with Royal Treatment -->
+                {{#if about_content.interests_visible}}
+                {{#if about_content.interests}}
+                <div class="luxury-interests-chamber">
+                    <h3 class="luxury-interests-title">
+                        {{#if about_content.interests_title}}{{about_content.interests_title}}{{else}}Royal Pursuits{{/if}}
                     </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {{#each content.personalInfo}}
-                        <div class="luxury-card p-6 flex items-center space-x-4">
-                            <div class="w-12 h-12 bg-gradient-to-br from-luxury-primary to-luxury-accent rounded-full flex items-center justify-center">
-                                <i class="{{this.icon}} text-white"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-gray-900">{{this.label}}</h4>
-                                <p class="text-gray-600">{{this.value}}</p>
-                            </div>
+                    <div class="luxury-interests-collection">
+                        {{#each (split about_content.interests ',')}}
+                        <div class="luxury-interest-medallion">
+                            <span>{{trim this}}</span>
+                            <div class="luxury-medallion-glow"></div>
                         </div>
                         {{/each}}
                     </div>
                 </div>
                 {{/if}}
-            </div>
-            
-            <!-- About Images -->
-            <div data-aos="fade-left">
-                {{#if content.aboutImages}}
-                <div class="space-y-8">
-                    {{#each content.aboutImages}}
-                    <div class="relative luxury-card overflow-hidden">
-                        <img src="{{this.url}}" alt="{{this.caption}}" 
-                             class="w-full rounded-2xl shadow-2xl">
-                        {{#if this.caption}}
-                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-6">
-                            <p class="text-white font-medium">{{this.caption}}</p>
-                        </div>
-                        {{/if}}
-                    </div>
-                    {{/each}}
-                </div>
-                {{else}}
-                <div class="luxury-card p-16 text-center">
-                    <div class="w-40 h-40 mx-auto mb-8 bg-gradient-to-br from-luxury-primary to-luxury-accent rounded-full flex items-center justify-center shadow-2xl luxury-float">
-                        <i class="fas fa-camera text-5xl text-white"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4 luxury-heading">Exclusive Gallery</h3>
-                    <p class="text-gray-600 mb-8">Professional luxury photography coming soon</p>
-                    <a href="/{{modelSlug}}/gallery" class="luxury-btn">
-                        <i class="fas fa-images mr-2"></i>
-                        View Current Gallery
-                    </a>
-                </div>
                 {{/if}}
             </div>
         </div>
     </div>
 </section>
+{{/if}}
 
-<!-- Values/Philosophy Section -->
-{{#if content.values}}
-<section class="py-24 bg-gradient-to-b from-gray-50 to-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16" data-aos="fade-up">
-            <h2 class="text-4xl md:text-5xl font-bold mb-6 luxury-heading text-luxury-primary">
-                My Philosophy
+<!-- Quick Facts Section with Palace Design -->
+{{#if about_content.quick_facts_visible}}
+<section class="luxury-quick-facts-section" data-aos="fade-in">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Section Header with Royal Treatment -->
+        <div class="luxury-facts-header text-center mb-12">
+            <div class="luxury-facts-crown">
+                <i class="fas fa-crown"></i>
+            </div>
+            <h2 class="luxury-facts-title">
+                {{#if about_content.quick_facts_title}}{{about_content.quick_facts_title}}{{else}}Royal Profile{{/if}}
             </h2>
-            <p class="text-xl text-gray-600">
-                The principles that define my approach to luxury service
-            </p>
+            <div class="luxury-facts-ornament">
+                <div class="luxury-ornament-line"></div>
+                <div class="luxury-ornament-center">♦</div>
+                <div class="luxury-ornament-line"></div>
+            </div>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {{#each content.values}}
-            <div class="luxury-card p-10 text-center group hover:scale-105 transition-all duration-500" data-aos="fade-up" data-aos-delay="{{@index}}00">
-                <div class="w-24 h-24 mx-auto mb-8 bg-gradient-to-br from-luxury-primary to-luxury-accent rounded-full flex items-center justify-center shadow-xl luxury-float">
-                    <i class="{{this.icon}} text-3xl text-white"></i>
+        <!-- Facts Palace Cards - Individual Field Support -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {{#if about_content.quickFacts}}
+            {{#each about_content.quickFacts}}
+            <div class="luxury-fact-palace" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
+                <div class="luxury-fact-dome"></div>
+                <div class="luxury-fact-content">
+                    <div class="luxury-fact-label">{{this.question}}</div>
+                    <div class="luxury-fact-answer">{{this.answer}}</div>
                 </div>
-                <h3 class="text-2xl font-bold mb-6 luxury-heading group-hover:text-luxury-primary transition-colors">{{this.title}}</h3>
-                <p class="text-gray-600 leading-relaxed">{{this.description}}</p>
+                <div class="luxury-fact-marble-base"></div>
             </div>
             {{/each}}
-        </div>
-    </div>
-</section>
-{{/if}}
-
-<!-- Experience Section -->
-{{#if content.experience}}
-<section class="py-24 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16" data-aos="fade-up">
-            <h2 class="text-4xl md:text-5xl font-bold mb-6 luxury-heading text-luxury-primary">
-                Experience & Expertise
-            </h2>
-            <p class="text-xl text-gray-600">
-                My journey in providing exceptional luxury experiences
-            </p>
-        </div>
-        
-        <div class="max-w-4xl mx-auto">
-            <div class="space-y-8">
-                {{#each content.experience}}
-                <div class="luxury-card p-10 flex items-start space-x-6" data-aos="fade-up" data-aos-delay="{{@index}}00">
-                    <div class="w-16 h-16 bg-gradient-to-br from-luxury-primary to-luxury-accent rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
-                        <i class="{{this.icon}} text-white text-xl"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="text-2xl font-bold mb-3 luxury-heading">{{this.title}}</h3>
-                        {{#if this.period}}
-                        <p class="text-luxury-primary font-semibold mb-4 text-lg">{{this.period}}</p>
-                        {{/if}}
-                        <p class="text-gray-700 leading-relaxed">{{this.description}}</p>
-                    </div>
+            {{else}}
+            <!-- Individual Quick Facts Fields -->
+            {{#if about_content.qf_location}}
+            <div class="luxury-fact-palace" data-aos="fade-up" data-aos-delay="100">
+                <div class="luxury-fact-dome"></div>
+                <div class="luxury-fact-content">
+                    <div class="luxury-fact-label">Location</div>
+                    <div class="luxury-fact-answer">{{about_content.qf_location}}</div>
                 </div>
-                {{/each}}
+                <div class="luxury-fact-marble-base"></div>
             </div>
+            {{/if}}
+            {{#if about_content.qf_languages}}
+            <div class="luxury-fact-palace" data-aos="fade-up" data-aos-delay="200">
+                <div class="luxury-fact-dome"></div>
+                <div class="luxury-fact-content">
+                    <div class="luxury-fact-label">Languages</div>
+                    <div class="luxury-fact-answer">{{about_content.qf_languages}}</div>
+                </div>
+                <div class="luxury-fact-marble-base"></div>
+            </div>
+            {{/if}}
+            {{#if about_content.qf_education}}
+            <div class="luxury-fact-palace" data-aos="fade-up" data-aos-delay="300">
+                <div class="luxury-fact-dome"></div>
+                <div class="luxury-fact-content">
+                    <div class="luxury-fact-label">Education</div>
+                    <div class="luxury-fact-answer">{{about_content.qf_education}}</div>
+                </div>
+                <div class="luxury-fact-marble-base"></div>
+            </div>
+            {{/if}}
+            {{#if about_content.qf_specialties}}
+            <div class="luxury-fact-palace" data-aos="fade-up" data-aos-delay="400">
+                <div class="luxury-fact-dome"></div>
+                <div class="luxury-fact-content">
+                    <div class="luxury-fact-label">Specialties</div>
+                    <div class="luxury-fact-answer">{{about_content.qf_specialties}}</div>
+                </div>
+                <div class="luxury-fact-marble-base"></div>
+            </div>
+            {{/if}}
+            {{/if}}
         </div>
     </div>
 </section>
 {{/if}}
 
-<!-- Luxury Stats Section -->
-<section class="py-24 bg-gradient-to-r from-luxury-primary to-luxury-secondary text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16" data-aos="fade-up">
-            <h2 class="text-4xl font-bold mb-6 luxury-heading">
-                Excellence in Numbers
-            </h2>
+<!-- Royal CTA Section -->
+{{#if about_content.about_cta_visible}}
+<section class="luxury-about-cta-section" data-aos="fade-in">
+    <!-- Imperial Palace Background -->
+    <div class="luxury-cta-palace-bg">
+        <div class="luxury-palace-pillars">
+            <div class="luxury-pillar luxury-pillar-1"></div>
+            <div class="luxury-pillar luxury-pillar-2"></div>
+            <div class="luxury-pillar luxury-pillar-3"></div>
+        </div>
+    </div>
+    
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <!-- Imperial Crown -->
+        <div class="luxury-cta-imperial-crown" data-aos="fade-down">
+            <i class="fas fa-crown"></i>
         </div>
         
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div class="text-center" data-aos="fade-up" data-aos-delay="0">
-                <div class="text-5xl font-bold mb-2 luxury-heading">100%</div>
-                <div class="text-lg opacity-90">Client Satisfaction</div>
-            </div>
+        <h2 class="luxury-cta-royal-title" data-aos="fade-up" data-aos-delay="200">
+            {{#if about_content.cta_title}}{{about_content.cta_title}}{{else}}Ready for Royal Experience?{{/if}}
+        </h2>
+        
+        <p class="luxury-cta-royal-subtitle" data-aos="fade-up" data-aos-delay="400">
+            {{#if about_content.cta_description}}{{about_content.cta_description}}{{else}}Allow me to curate an extraordinary experience that exemplifies luxury, sophistication, and unparalleled attention to detail.{{/if}}
+        </p>
+        
+        <div class="luxury-cta-royal-buttons" data-aos="fade-up" data-aos-delay="600">
+            {{#if about_content.cta_button_1_text}}
+            <a href="/{{modelSlug}}/{{#if about_content.cta_button_1_link}}{{about_content.cta_button_1_link}}{{else}}calendar{{/if}}{{previewParam}}" 
+               class="luxury-btn luxury-btn-imperial luxury-throne-effect">
+                <span>{{about_content.cta_button_1_text}}</span>
+                <div class="luxury-btn-imperial-glow"></div>
+            </a>
+            {{/if}}
             
-            <div class="text-center" data-aos="fade-up" data-aos-delay="100">
-                <div class="text-5xl font-bold mb-2 luxury-heading">24/7</div>
-                <div class="text-lg opacity-90">Availability</div>
-            </div>
-            
-            <div class="text-center" data-aos="fade-up" data-aos-delay="200">
-                <div class="text-5xl font-bold mb-2 luxury-heading">5★</div>
-                <div class="text-lg opacity-90">Premium Rating</div>
-            </div>
-            
-            <div class="text-center" data-aos="fade-up" data-aos-delay="300">
-                <div class="text-5xl font-bold mb-2 luxury-heading">VIP</div>
-                <div class="text-lg opacity-90">Exclusive Service</div>
-            </div>
+            {{#if about_content.cta_button_2_text}}
+            <a href="/{{modelSlug}}/{{#if about_content.cta_button_2_link}}{{about_content.cta_button_2_link}}{{else}}contact{{/if}}{{previewParam}}" 
+               class="luxury-btn luxury-btn-royal luxury-crystal-border">
+                <span>{{about_content.cta_button_2_text}}</span>
+            </a>
+            {{/if}}
         </div>
     </div>
+    
+    <!-- Floating Royal Crystals -->
+    <div class="luxury-cta-crystals" aria-hidden="true">
+        <div class="luxury-crystal luxury-crystal-float-1">♦</div>
+        <div class="luxury-crystal luxury-crystal-float-2">♦</div>
+        <div class="luxury-crystal luxury-crystal-float-3">♦</div>
+        <div class="luxury-crystal luxury-crystal-float-4">♦</div>
+    </div>
 </section>
+{{/if}}
 
-<!-- Call to Action -->
-<section class="py-24 bg-gradient-to-r from-black to-gray-900 text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
-        <div class="luxury-float">
-            <h2 class="text-4xl md:text-5xl font-bold mb-8 luxury-heading">
-                Ready to Experience Luxury?
-            </h2>
-            <p class="text-xl mb-12 opacity-90 max-w-2xl mx-auto font-light">
-                Let's create an unforgettable experience together. Contact me to discuss your exclusive needs.
-            </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-6">
-                <a href="/{{modelSlug}}/contact" class="luxury-btn text-lg px-8 py-4">
-                    <i class="fas fa-envelope mr-3"></i>
-                    Get in Touch
-                </a>
-                <a href="/{{modelSlug}}/rates" class="luxury-btn-outline text-lg px-8 py-4 text-white border-white hover:bg-white hover:text-gray-900">
-                    <i class="fas fa-gem mr-3"></i>
-                    View Services
-                </a>
+<!-- Additional Content Section -->
+{{#if about_content.additional_content_visible}}
+<section class="luxury-additional-content-section" data-aos="fade-in">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="luxury-additional-content-palace">
+            <div class="luxury-content-crown">
+                <i class="fas fa-crown"></i>
             </div>
+            {{#if about_content.additional_title}}
+            <h3 class="luxury-additional-title">{{about_content.additional_title}}</h3>
+            {{/if}}
+            {{#if about_content.additional_description}}
+            <div class="luxury-additional-text">
+                <p>{{about_content.additional_description}}</p>
+            </div>
+            {{/if}}
         </div>
     </div>
 </section>
+{{/if}}
+
+<!-- Portrait Preview Modal with Royal Styling -->
+<div id="portrait-preview-modal" class="luxury-portrait-modal">
+    <div class="luxury-modal-chamber">
+        <!-- Royal Close Button -->
+        <button onclick="closePortraitPreview()" class="luxury-modal-close">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <!-- Portrait Frame -->
+        <div class="luxury-modal-frame">
+            <img id="portrait-preview-image" src="" alt="" class="luxury-modal-portrait">
+            <div class="luxury-modal-frame-ornaments">
+                <div class="luxury-modal-corner luxury-modal-corner-tl"></div>
+                <div class="luxury-modal-corner luxury-modal-corner-tr"></div>
+                <div class="luxury-modal-corner luxury-modal-corner-bl"></div>
+                <div class="luxury-modal-corner luxury-modal-corner-br"></div>
+            </div>
+        </div>
+        
+        <!-- Royal Caption -->
+        <div class="luxury-modal-caption">
+            <p id="portrait-preview-caption"></p>
+        </div>
+    </div>
+</div>
+
+<!-- Luxury About Page Custom Styles -->
+<style>
+/* Luxury About Page Variables */
+:root {
+    --luxury-gold: #d4af37;
+    --luxury-rich-gold: #b8860b;
+    --luxury-rose-gold: #e8b4b8;
+    --luxury-platinum: #e5e4e2;
+    --luxury-marble-white: #f8f6f0;
+    --luxury-marble-cream: #faf5f0;
+    --luxury-deep-burgundy: #722f37;
+    --luxury-royal-purple: #663399;
+    --luxury-obsidian: #0f0f23;
+    --luxury-pearl: #f0ead6;
+}
+
+/* About Header Styling */
+.luxury-about-header {
+    position: relative;
+    padding: 8rem 0 6rem;
+    background: linear-gradient(135deg, var(--luxury-marble-white) 0%, var(--luxury-marble-cream) 50%, var(--luxury-pearl) 100%);
+    overflow: hidden;
+}
+
+.luxury-imperial-marble {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 30% 60%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 70% 30%, rgba(232, 180, 184, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 50% 80%, rgba(212, 175, 55, 0.06) 0%, transparent 50%);
+}
+
+.luxury-royal-crowns {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.luxury-floating-crown {
+    position: absolute;
+    font-size: 3rem;
+    color: var(--luxury-gold);
+    opacity: 0.2;
+    animation: luxuryCrownFloat 15s infinite ease-in-out;
+}
+
+.luxury-crown-1 {
+    top: 20%;
+    left: 15%;
+    animation-delay: 0s;
+}
+
+.luxury-crown-2 {
+    top: 60%;
+    right: 20%;
+    animation-delay: 8s;
+}
+
+@keyframes luxuryCrownFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+    33% { transform: translateY(-20px) rotate(10deg) scale(1.1); }
+    66% { transform: translateY(-5px) rotate(-5deg) scale(0.9); }
+}
+
+.luxury-about-title {
+    font-size: 5rem;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 2rem;
+    background: linear-gradient(45deg, var(--luxury-rich-gold) 0%, var(--luxury-gold) 50%, var(--luxury-rose-gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(212, 175, 55, 0.5);
+    letter-spacing: 3px;
+    position: relative;
+}
+
+.luxury-about-title::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background: radial-gradient(ellipse, rgba(0, 0, 0, 0.1) 0%, transparent 70%);
+    z-index: -1;
+    border-radius: 20px;
+}
+
+.luxury-about-subtitle {
+    font-size: 1.6rem;
+    color: var(--luxury-deep-burgundy);
+    text-align: center;
+    margin-bottom: 3rem;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: 1px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.luxury-title-separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+.luxury-separator-line {
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--luxury-gold), transparent);
+}
+
+.luxury-separator-ornament {
+    font-size: 2rem;
+    color: var(--luxury-gold);
+    animation: luxuryOrnamentPulse 4s infinite ease-in-out;
+}
+
+@keyframes luxuryOrnamentPulse {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.2); opacity: 1; }
+}
+
+/* Header Ornaments */
+.luxury-header-ornaments {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.luxury-ornament {
+    position: absolute;
+    font-size: 2.5rem;
+    color: var(--luxury-gold);
+    opacity: 0.4;
+    animation: luxuryOrnamentFloat 12s infinite ease-in-out;
+}
+
+.luxury-ornament-1 {
+    top: 25%;
+    left: 25%;
+    animation-delay: 0s;
+}
+
+.luxury-ornament-2 {
+    top: 70%;
+    right: 30%;
+    animation-delay: 4s;
+}
+
+.luxury-ornament-3 {
+    bottom: 20%;
+    left: 60%;
+    animation-delay: 8s;
+}
+
+@keyframes luxuryOrnamentFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(180deg); }
+}
+
+/* Main Biography Section */
+.luxury-main-biography {
+    padding: 8rem 0;
+    background: linear-gradient(180deg, var(--luxury-pearl) 0%, var(--luxury-marble-cream) 100%);
+}
+
+/* Portrait Chamber */
+.luxury-portrait-chamber {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.luxury-portrait-throne {
+    position: relative;
+    padding: 25px;
+    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 100%);
+    border-radius: 35px;
+    box-shadow: 
+        0 40px 80px rgba(0, 0, 0, 0.3),
+        inset 0 0 0 4px var(--luxury-pearl);
+}
+
+.luxury-portrait-royal {
+    width: 100%;
+    max-width: 500px;
+    height: 650px;
+    object-fit: cover;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: transform 0.5s ease;
+}
+
+.luxury-portrait-royal:hover {
+    transform: scale(1.02);
+}
+
+.luxury-portrait-placeholder-throne {
+    width: 100%;
+    max-width: 500px;
+    height: 650px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--luxury-marble-white);
+    border-radius: 20px;
+    color: var(--luxury-deep-burgundy);
+}
+
+.luxury-crown-placeholder-large {
+    font-size: 6rem;
+    color: var(--luxury-gold);
+    margin-bottom: 2rem;
+    animation: luxuryCrownPulse 4s infinite ease-in-out;
+}
+
+.luxury-placeholder-text {
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Portrait Frame Effects */
+.luxury-portrait-frame-effects {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.luxury-frame-corner {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--luxury-pearl);
+}
+
+.luxury-corner-top-left {
+    top: 15px;
+    left: 15px;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 15px 0 0 0;
+}
+
+.luxury-corner-top-right {
+    top: 15px;
+    right: 15px;
+    border-left: none;
+    border-bottom: none;
+    border-radius: 0 15px 0 0;
+}
+
+.luxury-corner-bottom-left {
+    bottom: 15px;
+    left: 15px;
+    border-right: none;
+    border-top: none;
+    border-radius: 0 0 0 15px;
+}
+
+.luxury-corner-bottom-right {
+    bottom: 15px;
+    right: 15px;
+    border-left: none;
+    border-top: none;
+    border-radius: 0 0 15px 0;
+}
+
+.luxury-portrait-illumination {
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background: linear-gradient(45deg, var(--luxury-gold) 0%, transparent 30%, transparent 70%, var(--luxury-rose-gold) 100%);
+    border-radius: 45px;
+    z-index: -1;
+    opacity: 0.5;
+    filter: blur(25px);
+    animation: luxuryIlluminationPulse 8s infinite ease-in-out;
+}
+
+@keyframes luxuryIlluminationPulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+.luxury-portrait-pedestal {
+    width: 80%;
+    height: 30px;
+    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 100%);
+    border-radius: 15px;
+    margin-top: -15px;
+    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.4);
+}
+
+/* Biography Scroll */
+.luxury-biography-scroll {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.luxury-content-chamber {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 234, 214, 0.9) 100%);
+    border: 2px solid rgba(212, 175, 55, 0.2);
+    border-radius: 25px;
+    padding: 3rem;
+    box-shadow: 0 20px 40px rgba(212, 175, 55, 0.1);
+}
+
+.luxury-biography-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.luxury-royal-monogram {
+    font-size: 3rem;
+    color: var(--luxury-gold);
+    margin-bottom: 1rem;
+    animation: luxuryMonogramGlow 6s infinite ease-in-out;
+}
+
+@keyframes luxuryMonogramGlow {
+    0%, 100% { filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3)); }
+    50% { filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5)); }
+}
+
+.luxury-biography-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(45deg, var(--luxury-rich-gold) 0%, var(--luxury-gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.luxury-biography-text {
+    line-height: 1.9;
+}
+
+.luxury-lead-paragraph {
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--luxury-deep-burgundy);
+    margin-bottom: 2rem;
+    font-style: italic;
+    text-align: center;
+}
+
+.luxury-content-paragraph {
+    font-size: 1.2rem;
+    color: var(--luxury-obsidian);
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+}
+
+/* Services Chamber */
+.luxury-services-chamber {
+    background: linear-gradient(145deg, rgba(212, 175, 55, 0.05) 0%, rgba(232, 180, 184, 0.05) 100%);
+    border: 2px solid rgba(212, 175, 55, 0.2);
+    border-radius: 25px;
+    padding: 3rem;
+}
+
+.luxury-services-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.luxury-services-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, var(--luxury-rich-gold) 0%, var(--luxury-gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.luxury-services-crown {
+    font-size: 2rem;
+    color: var(--luxury-gold);
+    animation: luxuryCrownSpin 8s infinite linear;
+}
+
+@keyframes luxuryCrownSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.luxury-services-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.luxury-service-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.luxury-service-item:hover {
+    transform: translateX(10px);
+    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2);
+}
+
+.luxury-service-ornament {
+    font-size: 1.5rem;
+    color: var(--luxury-gold);
+    animation: luxuryOrnamentSparkle 3s infinite ease-in-out;
+}
+
+@keyframes luxuryOrnamentSparkle {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+.luxury-service-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--luxury-deep-burgundy);
+}
+
+/* Interests Chamber */
+.luxury-interests-chamber {
+    background: linear-gradient(145deg, rgba(102, 51, 153, 0.05) 0%, rgba(212, 175, 55, 0.05) 100%);
+    border: 2px solid rgba(102, 51, 153, 0.2);
+    border-radius: 25px;
+    padding: 3rem;
+}
+
+.luxury-interests-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    background: linear-gradient(45deg, var(--luxury-royal-purple) 0%, var(--luxury-gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.luxury-interests-collection {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem 1rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.luxury-interest-medallion {
+    position: relative;
+    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 100%);
+    color: var(--luxury-obsidian);
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+    overflow: hidden;
+}
+
+.luxury-interest-medallion:hover {
+    transform: translateY(-5px) scale(1.05);
+}
+
+.luxury-medallion-glow {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    transition: left 0.6s ease;
+}
+
+.luxury-interest-medallion:hover .luxury-medallion-glow {
+    left: 100%;
+}
+
+/* Quick Facts Section */
+.luxury-quick-facts-section {
+    padding: 8rem 0;
+    background: var(--luxury-marble-white);
+}
+
+.luxury-facts-header {
+    text-align: center;
+}
+
+.luxury-facts-crown {
+    font-size: 3.5rem;
+    color: var(--luxury-gold);
+    margin-bottom: 2rem;
+    filter: drop-shadow(0 5px 15px rgba(212, 175, 55, 0.4));
+    animation: luxuryFactsCrownFloat 6s infinite ease-in-out;
+}
+
+@keyframes luxuryFactsCrownFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.luxury-facts-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    background: linear-gradient(45deg, var(--luxury-rich-gold) 0%, var(--luxury-gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.luxury-facts-ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.luxury-ornament-line {
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--luxury-gold), transparent);
+}
+
+.luxury-ornament-center {
+    font-size: 1.5rem;
+    color: var(--luxury-gold);
+}
+
+/* Fact Palace Cards */
+.luxury-fact-palace {
+    position: relative;
+    background: linear-gradient(145deg, var(--luxury-marble-cream) 0%, var(--luxury-pearl) 100%);
+    border-radius: 25px;
+    padding: 3rem 2.5rem 2rem;
+    text-align: center;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.15);
+    height: 100%;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.luxury-fact-palace:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 25px 50px rgba(212, 175, 55, 0.25);
+    border-color: var(--luxury-gold);
+}
+
+.luxury-fact-dome {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 40px;
+    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 100%);
+    border-radius: 80px 80px 0 0;
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+}
+
+.luxury-fact-content {
+    margin-top: 1rem;
+}
+
+.luxury-fact-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--luxury-gold);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+}
+
+.luxury-fact-answer {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--luxury-deep-burgundy);
+    line-height: 1.4;
+}
+
+.luxury-fact-marble-base {
+    position: absolute;
+    bottom: -15px;
+    left: 25px;
+    right: 25px;
+    height: 30px;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+    border-radius: 0 0 25px 25px;
+}
+
+/* About CTA Section */
+.luxury-about-cta-section {
+    position: relative;
+    padding: 8rem 0;
+    background: linear-gradient(135deg, var(--luxury-deep-burgundy) 0%, var(--luxury-royal-purple) 50%, var(--luxury-obsidian) 100%);
+    color: var(--luxury-pearl);
+    overflow: hidden;
+}
+
+.luxury-cta-palace-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.luxury-palace-pillars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+    padding: 0 15%;
+}
+
+.luxury-pillar {
+    width: 60px;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(212, 175, 55, 0.08) 0%, rgba(212, 175, 55, 0.04) 50%, rgba(212, 175, 55, 0.08) 100%);
+    border-radius: 30px;
+    opacity: 0.4;
+    animation: luxuryPillarGlow 12s infinite ease-in-out;
+}
+
+.luxury-pillar-1 { animation-delay: 0s; }
+.luxury-pillar-2 { animation-delay: 4s; }
+.luxury-pillar-3 { animation-delay: 8s; }
+
+@keyframes luxuryPillarGlow {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.7; }
+}
+
+.luxury-cta-imperial-crown {
+    font-size: 4.5rem;
+    color: var(--luxury-gold);
+    margin-bottom: 2rem;
+    filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.6));
+    animation: luxuryImperialPulse 5s infinite ease-in-out;
+}
+
+@keyframes luxuryImperialPulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.6)); }
+    50% { transform: scale(1.15); filter: drop-shadow(0 0 40px rgba(212, 175, 55, 0.8)); }
+}
+
+.luxury-cta-royal-title {
+    font-size: 4rem;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 2rem;
+    background: linear-gradient(45deg, var(--luxury-pearl) 0%, var(--luxury-gold) 50%, var(--luxury-pearl) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 2px;
+}
+
+.luxury-cta-royal-subtitle {
+    font-size: 1.4rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    color: var(--luxury-pearl);
+    opacity: 0.9;
+    font-style: italic;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+}
+
+.luxury-cta-royal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.luxury-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 40px;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 60px;
+    transition: all 0.4s ease;
+    overflow: hidden;
+    margin: 0 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 14px;
+    border: 2px solid transparent;
+}
+
+.luxury-btn-imperial {
+    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 100%);
+    color: var(--luxury-obsidian);
+    border: 2px solid var(--luxury-pearl);
+    position: relative;
+    overflow: hidden;
+}
+
+.luxury-btn-imperial:hover {
+    transform: translateY(-8px) scale(1.08);
+    box-shadow: 0 20px 45px rgba(212, 175, 55, 0.6);
+}
+
+.luxury-btn-imperial-glow {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+    transition: left 0.6s ease;
+}
+
+.luxury-btn-imperial:hover .luxury-btn-imperial-glow {
+    left: 100%;
+}
+
+.luxury-btn-royal {
+    background: rgba(240, 234, 214, 0.1);
+    color: var(--luxury-pearl);
+    border: 2px solid var(--luxury-gold);
+    backdrop-filter: blur(15px);
+}
+
+.luxury-btn-royal:hover {
+    background: rgba(240, 234, 214, 0.2);
+    transform: translateY(-5px);
+}
+
+/* CTA Crystals */
+.luxury-cta-crystals {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* Additional Content Section */
+.luxury-additional-content-section {
+    padding: 6rem 0;
+    background: var(--luxury-marble-white);
+}
+
+.luxury-additional-content-palace {
+    background: linear-gradient(145deg, var(--luxury-marble-cream) 0%, var(--luxury-pearl) 100%);
+    border: 2px solid rgba(212, 175, 55, 0.2);
+    border-radius: 25px;
+    padding: 4rem 3rem;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(212, 175, 55, 0.15);
+}
+
+.luxury-content-crown {
+    font-size: 3rem;
+    color: var(--luxury-gold);
+    margin-bottom: 2rem;
+    filter: drop-shadow(0 5px 15px rgba(212, 175, 55, 0.4));
+}
+
+.luxury-additional-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    background: linear-gradient(45deg, var(--luxury-rich-gold) 0%, var(--luxury-gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.luxury-additional-text {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.luxury-additional-text p {
+    font-size: 1.3rem;
+    color: var(--luxury-deep-burgundy);
+    line-height: 1.8;
+    font-style: italic;
+    margin: 0;
+}
+
+.luxury-crystal {
+    position: absolute;
+    font-size: 2.5rem;
+    color: var(--luxury-gold);
+    opacity: 0.5;
+    animation: luxuryCrystalFloat 18s infinite ease-in-out;
+}
+
+.luxury-crystal-float-1 {
+    top: 20%;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.luxury-crystal-float-2 {
+    top: 70%;
+    right: 25%;
+    animation-delay: 5s;
+}
+
+.luxury-crystal-float-3 {
+    bottom: 25%;
+    left: 70%;
+    animation-delay: 10s;
+}
+
+.luxury-crystal-float-4 {
+    top: 40%;
+    right: 15%;
+    animation-delay: 15s;
+}
+
+@keyframes luxuryCrystalFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.5; }
+    25% { transform: translateY(-25px) rotate(90deg); opacity: 0.8; }
+    50% { transform: translateY(-15px) rotate(180deg); opacity: 0.6; }
+    75% { transform: translateY(-30px) rotate(270deg); opacity: 1; }
+}
+
+/* Portrait Modal Styling */
+.luxury-portrait-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.luxury-modal-chamber {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+}
+
+.luxury-modal-close {
+    position: absolute;
+    top: -60px;
+    right: 0;
+    color: var(--luxury-gold);
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    z-index: 10;
+}
+
+.luxury-modal-close:hover {
+    color: var(--luxury-pearl);
+}
+
+.luxury-modal-frame {
+    position: relative;
+    padding: 20px;
+    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 100%);
+    border-radius: 25px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+}
+
+.luxury-modal-portrait {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 15px;
+}
+
+.luxury-modal-frame-ornaments {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.luxury-modal-corner {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--luxury-pearl);
+}
+
+.luxury-modal-corner-tl {
+    top: 10px;
+    left: 10px;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 10px 0 0 0;
+}
+
+.luxury-modal-corner-tr {
+    top: 10px;
+    right: 10px;
+    border-left: none;
+    border-bottom: none;
+    border-radius: 0 10px 0 0;
+}
+
+.luxury-modal-corner-bl {
+    bottom: 10px;
+    left: 10px;
+    border-right: none;
+    border-top: none;
+    border-radius: 0 0 0 10px;
+}
+
+.luxury-modal-corner-br {
+    bottom: 10px;
+    right: 10px;
+    border-left: none;
+    border-top: none;
+    border-radius: 0 0 10px 0;
+}
+
+.luxury-modal-caption {
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    right: 0;
+    background: linear-gradient(45deg, rgba(212, 175, 55, 0.9) 0%, rgba(184, 134, 11, 0.9) 100%);
+    color: var(--luxury-obsidian);
+    padding: 15px;
+    border-radius: 15px;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .luxury-about-title {
+        font-size: 3.5rem;
+    }
+    
+    .luxury-about-subtitle {
+        font-size: 1.3rem;
+    }
+    
+    .luxury-facts-title {
+        font-size: 2.5rem;
+    }
+    
+    .luxury-cta-royal-title {
+        font-size: 2.8rem;
+    }
+    
+    .luxury-portrait-royal,
+    .luxury-portrait-placeholder-throne {
+        height: 500px;
+    }
+    
+    .luxury-cta-royal-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .luxury-btn {
+        width: 300px;
+        margin: 10px 0;
+    }
+    
+    .luxury-content-chamber,
+    .luxury-services-chamber,
+    .luxury-interests-chamber {
+        padding: 2rem;
+    }
+}
+</style>
+
+<!-- Portrait Preview JavaScript -->
+<script>
+function openPortraitPreview(imageUrl, altText) {
+    const modal = document.querySelector('.luxury-portrait-modal');
+    const image = document.getElementById('portrait-preview-image');
+    const caption = document.getElementById('portrait-preview-caption');
+    
+    if (modal && image && caption) {
+        image.src = imageUrl;
+        image.alt = altText;
+        caption.textContent = altText;
+        
+        modal.style.display = 'flex';
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+        
+        // Close on escape key
+        document.addEventListener('keydown', handleEscapeKey);
+        
+        // Close on background click
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closePortraitPreview();
+            }
+        });
+    }
+}
+
+function closePortraitPreview() {
+    const modal = document.querySelector('.luxury-portrait-modal');
+    
+    if (modal) {
+        modal.style.display = 'none';
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
+        
+        // Remove event listeners
+        document.removeEventListener('keydown', handleEscapeKey);
+    }
+}
+
+function handleEscapeKey(e) {
+    if (e.key === 'Escape') {
+        closePortraitPreview();
+    }
+}
+</script>

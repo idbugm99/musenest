@@ -3,15 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{site_settings.model_name}} - Etiquette & Guidelines</title>
+    <title>Etiquette - {{site_settings.model_name}}</title>
+    <meta name="description" content="{{site_settings.meta_description}}">
+    <meta name="og:title" content="Etiquette - {{site_settings.model_name}}">
+    <meta name="og:description" content="{{site_settings.meta_description}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{site_settings.og_image}}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Dynamic Theme Colors -->
+    <link rel="stylesheet" href="/api/theme-custom/css/{{model.id}}" type="text/css">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Escort Glamour Theme Colors */
+        :root {
+            --escort-primary: var(--color-primary, #ec4899);
+            --escort-secondary: var(--color-secondary, #be185d);
+            --escort-accent: var(--color-accent, #f472b6);
+            --escort-text: var(--color-text, #831843);
+            --escort-background: var(--color-background, #fdf2f8);
+        }
+        
         body {
-            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+            background: linear-gradient(135deg, var(--escort-background) 0%, #fce7f3 100%);
             font-family: 'Inter', sans-serif;
         }
         .luxury-gradient {
-            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            background: linear-gradient(135deg, var(--escort-primary) 0%, var(--escort-secondary) 100%);
         }
         .content-card {
             backdrop-filter: blur(10px);
@@ -26,208 +48,234 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
         .section-divider {
-            background: linear-gradient(to right, transparent, #ec4899, transparent);
+            background: linear-gradient(to right, transparent, var(--escort-primary), transparent);
             height: 1px;
         }
     </style>
 </head>
 <body class="min-h-screen">
     <!-- Navigation -->
-    {{> navigation}}
+    {{component "navigation" theme="escort_glamour" model=model navigation=navigation}}
 
     <!-- Hero Section -->
+    {{#if etiquette_content.etiquette_header_visible}}
     <div class="luxury-gradient text-white py-16">
         <div class="max-w-4xl mx-auto px-4 text-center">
-            <h1 class="text-4xl md:text-5xl font-light mb-4">Etiquette & Guidelines</h1>
-            <p class="text-xl text-pink-100 font-light">Professional standards for our engagement</p>
+            <h1 class="text-4xl md:text-5xl font-light mb-4">{{etiquette_content.page_title or 'Etiquette & Guidelines'}}</h1>
+            <p class="text-xl text-pink-100 font-light">{{etiquette_content.page_subtitle or 'Professional standards for our engagement'}}</p>
+            {{#if etiquette_content.page_subtext}}
+            <p class="text-lg text-pink-200 mt-2">{{etiquette_content.page_subtext}}</p>
+            {{/if}}
         </div>
     </div>
+    {{/if}}
 
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto px-4 py-12">
-        <!-- Introduction -->
-        <div class="content-card rounded-xl p-8 mb-8 shadow-lg">
-            <div class="text-center mb-8">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4">A Refined Experience</h2>
-                <p class="text-gray-600 leading-relaxed">
-                    I believe that every encounter should be elegant, respectful, and memorable. 
-                    These guidelines ensure we both have the most wonderful time together.
-                </p>
-            </div>
-        </div>
-
         <!-- Booking Etiquette -->
+        {{#if etiquette_content.etiquette_booking_visible}}
         <div class="content-card rounded-xl p-8 mb-8 shadow-lg">
             <h3 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
                 <i class="fas fa-calendar-check text-pink-600 mr-3"></i>
-                Booking Etiquette
+                {{etiquette_content.booking_title or 'Booking & Screening'}}
             </h3>
             
             <div class="grid md:grid-cols-2 gap-6">
                 <div class="etiquette-item bg-gradient-to-br from-pink-50 to-rose-50 rounded-lg p-6 border border-pink-100">
                     <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
-                        <i class="fas fa-clock text-pink-500 mr-2"></i>
-                        Advance Notice
+                        <i class="fas fa-envelope text-pink-500 mr-2"></i>
+                        {{etiquette_content.booking_initial_contact_title or 'Initial Contact'}}
                     </h4>
                     <p class="text-gray-600 text-sm leading-relaxed">
-                        Please provide at least 24 hours notice for appointments. Last-minute requests may incur an additional fee.
+                        {{etiquette_content.booking_initial_contact_text or 'Please introduce yourself politely and include your desired date, time, and duration when reaching out.'}}
                     </p>
                 </div>
                 
                 <div class="etiquette-item bg-gradient-to-br from-pink-50 to-rose-50 rounded-lg p-6 border border-pink-100">
                     <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
                         <i class="fas fa-shield-alt text-pink-500 mr-2"></i>
-                        Screening Process
+                        {{etiquette_content.booking_screening_title or 'Screening Process'}}
                     </h4>
                     <p class="text-gray-600 text-sm leading-relaxed">
-                        All clients must complete our discrete screening process. This ensures safety and quality for everyone.
+                        {{etiquette_content.booking_screening_text or 'For everyone\'s safety, a brief screening process is required for all new clients. This includes basic verification and references.'}}
                     </p>
                 </div>
                 
                 <div class="etiquette-item bg-gradient-to-br from-pink-50 to-rose-50 rounded-lg p-6 border border-pink-100">
                     <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
-                        <i class="fas fa-credit-card text-pink-500 mr-2"></i>
-                        Payment
+                        <i class="fas fa-clock text-pink-500 mr-2"></i>
+                        {{etiquette_content.booking_advance_title or 'Advance Booking'}}
                     </h4>
                     <p class="text-gray-600 text-sm leading-relaxed">
-                        Payment is expected at the beginning of our time together. Cash is preferred, with other methods available.
-                    </p>
-                </div>
-                
-                <div class="etiquette-item bg-gradient-to-br from-pink-50 to-rose-50 rounded-lg p-6 border border-pink-100">
-                    <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
-                        <i class="fas fa-ban text-pink-500 mr-2"></i>
-                        Cancellations
-                    </h4>
-                    <p class="text-gray-600 text-sm leading-relaxed">
-                        Cancellations within 2 hours of appointment time may incur a 50% fee. No-shows are charged in full.
+                        {{etiquette_content.booking_advance_text or 'I prefer bookings made at least 24 hours in advance. Same-day appointments may be available with an additional fee.'}}
                     </p>
                 </div>
             </div>
         </div>
+        {{/if}}
 
-        <!-- Meeting Guidelines -->
+        <!-- Hygiene & Presentation -->
+        {{#if etiquette_content.etiquette_hygiene_visible}}
         <div class="content-card rounded-xl p-8 mb-8 shadow-lg">
             <h3 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
-                <i class="fas fa-handshake text-pink-600 mr-3"></i>
-                Meeting Guidelines
+                <i class="fas fa-spa text-pink-600 mr-3"></i>
+                {{etiquette_content.hygiene_title or 'Hygiene & Presentation'}}
             </h3>
             
             <div class="space-y-6">
                 <div class="etiquette-item bg-gradient-to-r from-rose-50 to-pink-50 rounded-lg p-6 border-l-4 border-pink-500">
-                    <h4 class="font-semibold text-gray-800 mb-3">Personal Hygiene</h4>
+                    <h4 class="font-semibold text-gray-800 mb-3">{{etiquette_content.hygiene_personal_title or 'Personal Hygiene'}}</h4>
                     <p class="text-gray-600 leading-relaxed">
-                        Please arrive freshly showered and well-groomed. Breath mints and cologne/perfume should be subtle. 
-                        Shower facilities are available if needed.
+                        {{etiquette_content.hygiene_personal_text or 'Please arrive freshly showered and well-groomed. Good personal hygiene is essential for a comfortable experience.'}}
                     </p>
                 </div>
                 
                 <div class="etiquette-item bg-gradient-to-r from-rose-50 to-pink-50 rounded-lg p-6 border-l-4 border-pink-500">
-                    <h4 class="font-semibold text-gray-800 mb-3">Dress Code</h4>
+                    <h4 class="font-semibold text-gray-800 mb-3">{{etiquette_content.hygiene_attire_title or 'Attire'}}</h4>
                     <p class="text-gray-600 leading-relaxed">
-                        Business casual or formal attire is appreciated for dinner dates. 
-                        For private encounters, clean and presentable clothing is expected.
+                        {{etiquette_content.hygiene_attire_text or 'Dress appropriately for our planned activities. I\'ll always be well-dressed and expect the same consideration.'}}
                     </p>
                 </div>
                 
                 <div class="etiquette-item bg-gradient-to-r from-rose-50 to-pink-50 rounded-lg p-6 border-l-4 border-pink-500">
-                    <h4 class="font-semibold text-gray-800 mb-3">Communication</h4>
+                    <h4 class="font-semibold text-gray-800 mb-3">{{etiquette_content.hygiene_substances_title or 'Substances'}}</h4>
                     <p class="text-gray-600 leading-relaxed">
-                        Respectful communication is essential. Please keep conversations pleasant and avoid inappropriate topics 
-                        unless specifically discussed beforehand.
+                        {{etiquette_content.hygiene_substances_text or 'Please do not arrive under the influence of alcohol or other substances. Light social drinking during our time is acceptable.'}}
                     </p>
                 </div>
             </div>
         </div>
+        {{/if}}
 
-        <!-- Boundaries & Limits -->
+        <!-- Respect & Boundaries -->
+        {{#if etiquette_content.etiquette_respect_visible}}
         <div class="content-card rounded-xl p-8 mb-8 shadow-lg">
             <h3 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
                 <i class="fas fa-heart text-pink-600 mr-3"></i>
-                Boundaries & Respect
+                {{etiquette_content.respect_title or 'Respect & Boundaries'}}
             </h3>
             
-            <div class="bg-gradient-to-br from-red-50 to-pink-50 rounded-lg p-6 border border-red-100 mb-6">
-                <h4 class="font-semibold text-red-800 mb-3 flex items-center">
-                    <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
-                    Important Notice
-                </h4>
-                <p class="text-red-700 text-sm leading-relaxed">
-                    Consent and mutual respect are paramount. Any behavior that makes me uncomfortable will result 
-                    in immediate termination of our time together, with no refund.
-                </p>
-            </div>
-            
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="space-y-4">
-                    <h4 class="font-semibold text-gray-800 flex items-center">
-                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                        What's Welcome
-                    </h4>
-                    <ul class="space-y-2 text-gray-600 text-sm">
-                        <li class="flex items-start">
-                            <i class="fas fa-dot-circle text-green-400 mr-2 mt-1 text-xs"></i>
-                            Respectful conversation and genuine connection
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-dot-circle text-green-400 mr-2 mt-1 text-xs"></i>
-                            Clear communication about preferences  
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-dot-circle text-green-400 mr-2 mt-1 text-xs"></i>
-                            Appreciation and gentlemanly behavior
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-dot-circle text-green-400 mr-2 mt-1 text-xs"></i>
-                            Flexibility and understanding
-                        </li>
-                    </ul>
+            <div class="space-y-6">
+                <div class="etiquette-item bg-gradient-to-r from-rose-50 to-pink-50 rounded-lg p-6 border-l-4 border-pink-500">
+                    <h4 class="font-semibold text-gray-800 mb-3">{{etiquette_content.respect_mutual_title or 'Mutual Respect'}}</h4>
+                    <p class="text-gray-600 leading-relaxed">
+                        {{etiquette_content.respect_mutual_text or 'I treat all clients with respect and kindness, and I expect the same in return. Rude or disrespectful behavior will not be tolerated.'}}
+                    </p>
                 </div>
                 
-                <div class="space-y-4">
-                    <h4 class="font-semibold text-gray-800 flex items-center">
-                        <i class="fas fa-times-circle text-red-500 mr-2"></i>
-                        Not Acceptable
-                    </h4>
-                    <ul class="space-y-2 text-gray-600 text-sm">
-                        <li class="flex items-start">
-                            <i class="fas fa-dot-circle text-red-400 mr-2 mt-1 text-xs"></i>
-                            Aggressive or disrespectful behavior
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-dot-circle text-red-400 mr-2 mt-1 text-xs"></i>
-                            Substance abuse during our time
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-dot-circle text-red-400 mr-2 mt-1 text-xs"></i>
-                            Pushing boundaries or ignoring limits
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-dot-circle text-red-400 mr-2 mt-1 text-xs"></i>
-                            Recording or photography without consent
-                        </li>
-                    </ul>
+                <div class="etiquette-item bg-gradient-to-r from-rose-50 to-pink-50 rounded-lg p-6 border-l-4 border-pink-500">
+                    <h4 class="font-semibold text-gray-800 mb-3">{{etiquette_content.respect_boundaries_title or 'Professional Boundaries'}}</h4>
+                    <p class="text-gray-600 leading-relaxed">
+                        {{etiquette_content.respect_boundaries_text or 'Our time together is for companionship and social interaction. Please respect all boundaries and guidelines.'}}
+                    </p>
+                </div>
+                
+                <div class="etiquette-item bg-gradient-to-r from-rose-50 to-pink-50 rounded-lg p-6 border-l-4 border-pink-500">
+                    <h4 class="font-semibold text-gray-800 mb-3">{{etiquette_content.respect_personal_title or 'Personal Information'}}</h4>
+                    <p class="text-gray-600 leading-relaxed">
+                        {{etiquette_content.respect_personal_text or 'Please do not ask for personal information beyond what is shared publicly. Discretion works both ways.'}}
+                    </p>
                 </div>
             </div>
         </div>
+        {{/if}}
+
+        <!-- Cancellation Policy -->
+        {{#if etiquette_content.etiquette_cancellation_visible}}
+        <div class="content-card rounded-xl p-8 mb-8 shadow-lg">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-calendar-times text-pink-600 mr-3"></i>
+                {{etiquette_content.cancellation_title or 'Cancellation Policy'}}
+            </h3>
+            
+            <div class="space-y-6">
+                <div class="etiquette-item bg-gradient-to-r from-rose-50 to-pink-50 rounded-lg p-6 border-l-4 border-pink-500">
+                    <h4 class="font-semibold text-gray-800 mb-3">{{etiquette_content.cancellation_advance_title or 'Advance Notice'}}</h4>
+                    <p class="text-gray-600 leading-relaxed">
+                        {{etiquette_content.cancellation_advance_text or 'Please provide at least 2 hours notice for cancellations. Last-minute cancellations may result in a cancellation fee.'}}
+                    </p>
+                </div>
+                
+                <div class="etiquette-item bg-gradient-to-r from-rose-50 to-pink-50 rounded-lg p-6 border-l-4 border-pink-500">
+                    <h4 class="font-semibold text-gray-800 mb-3">{{etiquette_content.cancellation_noshow_title or 'No-Shows'}}</h4>
+                    <p class="text-gray-600 leading-relaxed">
+                        {{etiquette_content.cancellation_noshow_text or 'No-shows without notice will result in being blacklisted from future bookings.'}}
+                    </p>
+                </div>
+                
+                <div class="etiquette-item bg-gradient-to-r from-rose-50 to-pink-50 rounded-lg p-6 border-l-4 border-pink-500">
+                    <h4 class="font-semibold text-gray-800 mb-3">{{etiquette_content.cancellation_my_title or 'My Cancellations'}}</h4>
+                    <p class="text-gray-600 leading-relaxed">
+                        {{etiquette_content.cancellation_my_text or 'In the rare event I need to cancel, I\'ll provide as much notice as possible and offer to reschedule.'}}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {{/if}}
+
+        <!-- Safety & Discretion -->
+        {{#if etiquette_content.etiquette_safety_visible}}
+        <div class="content-card rounded-xl p-8 mb-8 shadow-lg">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-shield-alt text-pink-600 mr-3"></i>
+                {{etiquette_content.safety_title or 'Safety & Discretion'}}
+            </h3>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center">
+                    <div class="bg-pink-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-lock text-pink-600 text-2xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-3">{{etiquette_content.safety_confidentiality_title or 'Confidentiality'}}</h4>
+                    <p class="text-gray-600 text-sm">{{etiquette_content.safety_confidentiality_text or 'Your privacy is paramount. All interactions remain strictly confidential.'}}</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="bg-pink-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-home text-pink-600 text-2xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-3">{{etiquette_content.safety_environment_title or 'Safe Environment'}}</h4>
+                    <p class="text-gray-600 text-sm">{{etiquette_content.safety_environment_text or 'I maintain a safe, clean, and welcoming environment for all meetings.'}}</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="bg-pink-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-comments text-pink-600 text-2xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-3">{{etiquette_content.safety_communication_title or 'Professional Communication'}}</h4>
+                    <p class="text-gray-600 text-sm">{{etiquette_content.safety_communication_text or 'All communications are handled professionally and discreetly.'}}</p>
+                </div>
+            </div>
+        </div>
+        {{/if}}
 
         <!-- Contact Information -->
+        {{#if etiquette_content.etiquette_questions_visible}}
         <div class="content-card rounded-xl p-8 shadow-lg text-center">
             <div class="section-divider mb-6"></div>
-            <h3 class="text-2xl font-semibold text-gray-800 mb-4">Ready to Meet?</h3>
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">{{etiquette_content.questions_title or 'Questions?'}}</h3>
             <p class="text-gray-600 mb-6">
-                I look forward to creating a wonderful experience together. 
-                Please review these guidelines and reach out when you're ready to book.
+                {{etiquette_content.questions_text or 'If you have any questions about these guidelines or need clarification, please don\'t hesitate to reach out.'}}
             </p>
-            <a href="/{{model.slug}}/contact" 
+            <a href="{{model_url_for('model.contact')}}" 
                class="inline-flex items-center px-8 py-3 luxury-gradient text-white rounded-lg font-medium hover:shadow-lg transform hover:scale-105 transition-all duration-300">
                 <i class="fas fa-envelope mr-2"></i>
-                Contact Me
+                {{etiquette_content.questions_button_text or 'Contact Me'}}
             </a>
         </div>
+        {{/if}}
     </div>
 
     <!-- Footer Spacer -->
     <div class="h-16"></div>
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    </script>
 </body>
 </html>

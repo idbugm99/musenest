@@ -1,70 +1,150 @@
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="d-flex justify-content-between align-items-center mb-4">
   <h3 class="mb-0"><i class="fas fa-calendar me-2"></i>Calendar Management — {{model.name}}</h3>
   <a class="btn btn-outline-secondary" href="/{{model.slug}}/admin"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
 </div>
 
-<div class="card mb-3">
-  <div class="card-header bg-white"><strong>Add Location/Vacation Period</strong></div>
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-primary text-white">
+    <h5 class="mb-0"><i class="fas fa-calendar-plus me-2"></i>Add Location/Vacation Period</h5>
+  </div>
   <div class="card-body">
-    <div class="row g-3">
-      <div class="col-md-3">
-        <label class="form-label">Start Date</label>
-        <input type="date" class="form-control" id="cal_start">
-      </div>
-      <div class="col-md-3">
-        <label class="form-label">End Date</label>
-        <input type="date" class="form-control" id="cal_end">
-      </div>
-      <div class="col-md-2 d-flex align-items-end">
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="cal_all_day" checked>
-          <label class="form-check-label" for="cal_all_day">All Day</label>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <label class="form-label">Location</label>
-        <input class="form-control" id="cal_location" placeholder="e.g., Denver, Austin, Vacation">
-      </div>
-      <div class="col-md-3">
-        <label class="form-label">Availability Status</label>
-        <select class="form-select" id="cal_status">
-          <option value="available">Available for Appointments</option>
-          <option value="unavailable">Unavailable</option>
-          <option value="travel">Travel</option>
-          <option value="vacation">Vacation</option>
-        </select>
-      </div>
-      <div class="col-md-3">
-        <label class="form-label">Status Color</label>
-        <div class="form-control-plaintext">
-          <small class="text-muted">Colors are automatically set based on availability status</small>
-          <div class="mt-2">
-            <small class="text-muted">
-              <strong>Available:</strong> Green | <strong>Travel:</strong> Blue | <strong>Vacation:</strong> Orange | <strong>Unavailable:</strong> Gray
-            </small>
+    <div class="row g-4">
+      <!-- Date & Location Card -->
+      <div class="col-lg-6">
+        <div class="card border-0 bg-light">
+          <div class="card-header bg-info text-white">
+            <h6 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Date & Location</h6>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Start Date</label>
+                <input type="date" class="form-control" id="cal_start">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-bold">End Date</label>
+                <input type="date" class="form-control" id="cal_end">
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="cal_all_day" checked>
+                  <label class="form-check-label fw-bold" for="cal_all_day">
+                    <i class="fas fa-clock me-2"></i>All Day
+                  </label>
+                </div>
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-bold">Location</label>
+                <input class="form-control" id="cal_location" placeholder="e.g., Denver, Austin, Vacation">
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="col-md-4">
-        <label class="form-label">Internal Notes</label>
-        <input class="form-control" id="cal_notes" placeholder="Internal notes for planning only">
-      </div>
-      <div class="col-md-2 d-flex align-items-end">
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="cal_visible" checked>
-          <label class="form-check-label" for="cal_visible">Public View</label>
+      
+      <!-- Service & Availability Card -->
+      <div class="col-lg-6">
+        <div class="card border-0 bg-light">
+          <div class="card-header bg-success text-white">
+            <h6 class="mb-0"><i class="fas fa-cog me-2"></i>Service & Availability</h6>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Service Type</label>
+              <div class="btn-group w-100" role="group" id="service_type_group">
+                <input type="radio" class="btn-check" name="service_type" id="service_incall" value="incall" checked>
+                <label class="btn btn-outline-primary" for="service_incall">
+                  <i class="fas fa-home me-1"></i>Incall Only
+                </label>
+                
+                <input type="radio" class="btn-check" name="service_type" id="service_outcall" value="outcall">
+                <label class="btn btn-outline-primary" for="service_outcall">
+                  <i class="fas fa-car me-1"></i>Outcall Only
+                </label>
+                
+                <input type="radio" class="btn-check" name="service_type" id="service_both" value="both">
+                <label class="btn btn-outline-primary" for="service_both">
+                  <i class="fas fa-exchange-alt me-1"></i>Both
+                </label>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label fw-bold">Radius (miles)</label>
+              <input type="number" class="form-control" id="cal_radius" placeholder="Optional" min="1" max="500">
+              <small class="text-muted">For outcall/both only</small>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label fw-bold">Availability Status</label>
+              <select class="form-select" id="cal_status">
+                <option value="available">Available for Appointments</option>
+                <option value="unavailable">Unavailable</option>
+                <option value="travel">Travel</option>
+                <option value="vacation">Vacation</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="col-12">
-        <button class="btn btn-primary" id="cal_add">Add Calendar Period</button>
-        <button class="btn btn-secondary ms-2" id="cal_cancel" style="display:none;">Cancel Edit</button>
+    </div>
+    
+    <!-- Status Color Legend -->
+    <div class="alert alert-info mt-4">
+      <h6 class="mb-2"><i class="fas fa-palette me-2"></i>Status Color Guide</h6>
+      <div class="d-flex flex-wrap gap-3">
+        <span class="badge bg-success fs-6">🟢 Available</span>
+        <span class="badge bg-primary fs-6">🔵 Travel</span>
+        <span class="badge bg-warning fs-6">🟠 Vacation</span>
+        <span class="badge bg-secondary fs-6">⚫ Unavailable</span>
       </div>
+      <small class="text-muted mt-2 d-block">Colors are automatically set based on availability status</small>
+    </div>
+    
+    <!-- Notes and Details -->
+    <div class="row mt-4">
+      <div class="col-12">
+        <div class="card border-0 bg-light">
+          <div class="card-header bg-warning text-dark">
+            <h6 class="mb-0"><i class="fas fa-sticky-note me-2"></i>Notes & Details</h6>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Internal Notes</label>
+              <input class="form-control" id="cal_notes" placeholder="Internal notes for planning only">
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label fw-bold">Location Details</label>
+              <textarea class="form-control" id="cal_location_details" rows="2" placeholder="Private location instructions for clients (e.g., 'Text for room number', 'Park on west side')"></textarea>
+              <div class="form-check mt-2">
+                <input class="form-check-input" type="checkbox" id="cal_visible" checked>
+                <label class="form-check-label fw-bold" for="cal_visible">
+                  <i class="fas fa-eye me-2"></i>Public View
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="d-flex gap-3 justify-content-end mt-4 pt-3 border-top">
+      <button class="btn btn-outline-secondary" id="cal_cancel" style="display:none;">
+        <i class="fas fa-times me-2"></i>Cancel Edit
+      </button>
+      <button class="btn btn-primary" id="cal_add">
+        <i class="fas fa-save me-2"></i>Add Calendar Period
+      </button>
     </div>
   </div>
 </div>
 
-<div class="card">
-  <div class="card-header bg-white"><strong>Current & Upcoming Availability</strong></div>
+<div class="card shadow-sm">
+  <div class="card-header bg-secondary text-white">
+    <h5 class="mb-0"><i class="fas fa-list me-2"></i>Current & Upcoming Availability</h5>
+  </div>
   <div class="card-body" id="cal_list"><div class="text-muted">Loading…</div></div>
 </div>
 
@@ -132,6 +212,20 @@ function notify(type, message) {
     return colors[status] || '#6B7280';
   }
   
+  // Format service type display for admin view
+  function formatServiceTypeDisplay(serviceType, radiusMiles) {
+    switch (serviceType) {
+      case 'incall':
+        return 'Incall';
+      case 'outcall':
+        return radiusMiles ? `Outcall (${radiusMiles}mi)` : 'Outcall';
+      case 'both':
+        return radiusMiles ? `In/Out (${radiusMiles}mi)` : 'In/Out';
+      default:
+        return 'Incall';
+    }
+  }
+  
   // Function to handle the actual deletion after confirmation
   async function proceedWithDeletion(button, id) {
     try {
@@ -170,11 +264,14 @@ function notify(type, message) {
     document.getElementById('cal_end').value = '';
     document.getElementById('cal_all_day').checked = true;
     document.getElementById('cal_location').value = '';
+    document.getElementById('service_incall').checked = true;
+    document.getElementById('cal_radius').value = '';
     document.getElementById('cal_status').value = 'available';
     document.getElementById('cal_notes').value = '';
+    document.getElementById('cal_location_details').value = '';
     document.getElementById('cal_visible').checked = true;
     editingId = null;
-    document.getElementById('cal_add').textContent = 'Add Calendar Period';
+    document.getElementById('cal_add').innerHTML = '<i class="fas fa-save me-2"></i>Add Calendar Period';
     document.getElementById('cal_cancel').style.display = 'none';
   }
 
@@ -188,23 +285,38 @@ function notify(type, message) {
     
     const items = (d.data.periods || []).sort((a,b)=> new Date(a.start_date) - new Date(b.start_date));
     if (!items.length){ list.innerHTML = '<div class="text-muted">No calendar periods yet.</div>'; return; }
-    list.innerHTML = items.map(it => `
-      <div class=\"border rounded p-2 mb-2\" style=\"border-left: 6px solid ${getStatusColor(it.status)}\">
-        <div class=\"d-flex align-items-center justify-content-between\">
-          <div>
-            <strong>${it.location || '—'}</strong>
-            <span class=\"badge ms-2 ${it.status==='available'?'bg-success':(it.status==='unavailable'?'bg-secondary':(it.status==='travel'?'bg-info':'bg-warning text-dark'))}\">${it.status}</span>
-            ${it.is_visible ? '<span class="badge bg-primary ms-1">Public</span>' : '<span class="badge bg-secondary ms-1">Hidden</span>'}
+    list.innerHTML = items.map(it => {
+      // Format service type display
+      const serviceTypeDisplay = formatServiceTypeDisplay(it.service_type, it.radius_miles);
+      
+      return `
+      <div class=\"card border-0 shadow-sm mb-3\" style=\"border-left: 4px solid ${getStatusColor(it.status)} !important\">
+        <div class=\"card-body p-3\">
+          <div class=\"d-flex align-items-center justify-content-between mb-2\">
+            <div class=\"d-flex align-items-center gap-2\">
+              <h6 class=\"mb-0 fw-bold\">${it.location || '—'}</h6>
+              <span class=\"badge bg-info text-dark\">${serviceTypeDisplay}</span>
+              <span class=\"badge ${it.status==='available'?'bg-success':(it.status==='unavailable'?'bg-secondary':(it.status==='travel'?'bg-primary':'bg-warning text-dark'))}\">${it.status}</span>
+              ${it.is_visible ? '<span class="badge bg-primary">Public</span>' : '<span class="badge bg-secondary">Hidden</span>'}
+            </div>
+            <div class=\"text-muted small fw-bold\">${formatDateRange(it.start_date, it.end_date, modelTimezone)} ${it.all_day? '(all day)':''}</div>
           </div>
-          <div class=\"text-muted small\">${formatDateRange(it.start_date, it.end_date, modelTimezone)} ${it.all_day? '(all day)':''}</div>
+          ${it.notes ? `<div class=\"small text-muted mb-2\"><i class=\"fas fa-sticky-note me-1\"></i>${it.notes.replace(/</g,'&lt;')}</div>`:''}
+          ${it.location_details ? `<div class=\"small text-info mb-2\"><i class=\"fas fa-info-circle me-1\"></i>${it.location_details.replace(/</g,'&lt;')}</div>`:''}
+          <div class=\"d-flex gap-2\">
+            <button class=\"btn btn-sm btn-outline-primary btn-edit\" data-id=\"${it.id}\">
+              <i class=\"fas fa-edit me-1\"></i>Edit
+            </button>
+            <button class=\"btn btn-sm ${it.is_visible ? 'btn-outline-secondary' : 'btn-outline-primary'} btn-toggle\" data-id=\"${it.id}\" data-visible=\"${it.is_visible}\">
+              <i class=\"fas fa-${it.is_visible ? 'eye-slash' : 'eye'} me-1\"></i>${it.is_visible ? 'Hide' : 'Show'}
+            </button>
+            <button class=\"btn btn-sm btn-outline-danger btn-del\" data-id=\"${it.id}\">
+              <i class=\"fas fa-trash me-1\"></i>Delete
+            </button>
+          </div>
         </div>
-        ${it.notes ? `<div class=\"small text-muted mt-1\">${it.notes.replace(/</g,'&lt;')}</div>`:''}
-        <div class=\"mt-2 d-flex gap-2\">
-          <button class=\"btn btn-sm btn-outline-primary btn-edit\" data-id=\"${it.id}\">Edit</button>
-          <button class=\"btn btn-sm ${it.is_visible ? 'btn-outline-secondary' : 'btn-outline-primary'} btn-toggle\" data-id=\"${it.id}\" data-visible=\"${it.is_visible}\">${it.is_visible ? 'Hide' : 'Show'}</button>
-          <button class=\"btn btn-sm btn-outline-danger btn-del\" data-id=\"${it.id}\">Delete</button>
-        </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
 
     // Bind event listeners for delete buttons
     const deleteButtons = list.querySelectorAll('.btn-del');
@@ -283,13 +395,20 @@ function notify(type, message) {
       document.getElementById('cal_end').value = item.end_date.split('T')[0];
       document.getElementById('cal_all_day').checked = item.all_day;
       document.getElementById('cal_location').value = item.location || '';
+      
+      // Set service type radio button
+      const serviceType = item.service_type || 'incall';
+      document.querySelector(`input[name="service_type"][value="${serviceType}"]`).checked = true;
+      
+      document.getElementById('cal_radius').value = item.radius_miles || '';
       document.getElementById('cal_status').value = item.status;
-              // Color is automatically set based on status
+      // Color is automatically set based on status
       document.getElementById('cal_notes').value = item.notes || '';
+      document.getElementById('cal_location_details').value = item.location_details || '';
       document.getElementById('cal_visible').checked = item.is_visible;
       
       editingId = id;
-      document.getElementById('cal_add').textContent = 'Update Calendar Period';
+      document.getElementById('cal_add').innerHTML = '<i class="fas fa-save me-2"></i>Update Calendar Period';
       document.getElementById('cal_cancel').style.display = 'inline-block';
       
       // Scroll to form
@@ -315,11 +434,18 @@ function notify(type, message) {
   }
 
   document.getElementById('cal_add').addEventListener('click', async ()=>{
+    // Get selected service type
+    const selectedServiceType = document.querySelector('input[name="service_type"]:checked').value;
+    const radiusValue = document.getElementById('cal_radius').value.trim();
+    
     const body = {
       start_date: document.getElementById('cal_start').value,
       end_date: document.getElementById('cal_end').value,
       all_day: document.getElementById('cal_all_day').checked,
       location: document.getElementById('cal_location').value.trim(),
+      service_type: selectedServiceType,
+      radius_miles: radiusValue ? parseInt(radiusValue) : null,
+      location_details: document.getElementById('cal_location_details').value.trim(),
       status: document.getElementById('cal_status').value,
       // Color is automatically set based on status
       notes: document.getElementById('cal_notes').value.trim(),

@@ -4,20 +4,36 @@
 </div>
 
 <div class="card mb-3">
-  <div class="card-header bg-white"><strong>Upload New Images</strong></div>
+  <div class="card-header bg-white"><strong>Upload New Media</strong></div>
   <div class="card-body">
     <div class="row g-2 align-items-end">
-      <div class="col-md-4">
-        <input type="file" class="form-control" id="lib_files" multiple accept="image/*">
+      <div class="col-md-3">
+        <input type="file" class="d-none" id="lib_files" multiple accept="image/*,video/*,.ico,.svg">
+        <div class="file-drop-zone border border-2 border-dashed rounded p-2 text-center" id="lib_drop_zone" style="cursor: pointer; transition: all 0.2s; min-height: 38px;">
+          <button type="button" class="btn btn-outline-secondary btn-sm w-100" id="lib_choose_files">
+            <i class="fas fa-folder-open me-1"></i>Choose Files
+          </button>
+          <div class="mt-1">
+            <small class="text-muted" id="lib_files_selected">or drag & drop here</small>
+          </div>
+        </div>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <label class="form-label mb-1">Default Gallery Section (optional)</label>
         <select class="form-select" id="lib_section"></select>
       </div>
       <div class="col-md-2">
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="lib_watermark">
-          <label class="form-check-label" for="lib_watermark">Apply watermark (uses Settings)</label>
+          <label class="form-check-label" for="lib_watermark">Apply watermark</label>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="lib_system_file" title="Upload as system file (logos, watermarks, icons). Goes to system folder, bypasses moderation.">
+          <label class="form-check-label" for="lib_system_file" title="Upload as system file (logos, watermarks, icons). Goes to system folder, bypasses moderation.">
+            <i class="fas fa-cog me-1"></i>System File
+          </label>
         </div>
       </div>
       <div class="col-md-2">
@@ -70,50 +86,112 @@
     if (!d.success){ notify('danger','Failed to load sections'); return; }
     const sections = d.data.sections || [];
     secSelect.innerHTML = '<option value="">No section (add later)</option>' + sections.map(s=>`<option value="${s.id}">${s.title}</option>`).join('');
-    filterSelect.innerHTML = sections.map(s=>`<option value="${s.id}">${s.title}</option>`).join('');
-    if (sections.length){ currentSection = sections[0].id; filterSelect.value = currentSection; loadImages(); }
-    filterSelect.addEventListener('change', ()=>{ currentSection = parseInt(filterSelect.value); currentPage=1; loadImages(); });
+    
+    // Add "All Media" as default option and other filters
+    filterSelect.innerHTML = `
+      <option value="all">All Media</option>
+      <option value="system">System Files</option>
+      <option value="videos">Videos</option>
+      <option value="approved">Approved Only</option>
+      <option value="pending">Pending Review</option>
+      ${sections.map(s=>`<option value="section_${s.id}">${s.title} (Gallery)</option>`).join('')}
+    `;
+    
+    // Start with "All Media" selected
+    currentSection = 'all';
+    filterSelect.value = 'all';
+    loadImages();
+    
+    filterSelect.addEventListener('change', ()=>{ 
+      currentSection = filterSelect.value; 
+      currentPage = 1; 
+      loadImages(); 
+    });
   }
 
   async function loadImages(){
     if (!currentSection){ grid.innerHTML = '<div class="col"><div class="text-muted">No sections. Create one in Gallery.</div></div>'; return; }
-    const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${currentSection}/images?page=${currentPage}&limit=${pageSize}`);
+    
+    let apiUrl, dataKey;
+    
+    if (currentSection.startsWith('section_')) {
+      // Gallery section view
+      const sectionId = currentSection.replace('section_', '');
+      apiUrl = `/api/model-gallery/${encodeURIComponent(slug)}/sections/${sectionId}/images?page=${currentPage}&limit=${pageSize}`;
+      dataKey = 'images';
+    } else {
+      // All media view or filtered view
+      const sortValue = document.getElementById('lib_sort')?.value || 'newest';
+      apiUrl = `/api/model-gallery/${encodeURIComponent(slug)}/media/all?page=${currentPage}&limit=${pageSize}&sort=${sortValue}&filter=${currentSection}`;
+      dataKey = 'media';
+    }
+    
+    const r = await fetch(apiUrl);
     const d = await r.json();
     if (!d.success){ grid.innerHTML = '<div class="col"><div class="text-danger">Failed to load</div></div>'; return; }
-    const imgs = d.data.images || [];
+    
+    const imgs = d.data[dataKey] || [];
     const pg = d.data.pagination || { page:1, pages:1, total: imgs.length };
-    count.textContent = `${pg.total} images`;
+    
+    const itemLabel = dataKey === 'media' ? 'media files' : 'images';
+    count.textContent = `${pg.total} ${itemLabel}`;
     pageLbl.textContent = `Page ${pg.page} / ${pg.pages}`;
     prevBtn.disabled = pg.page<=1; nextBtn.disabled = pg.page>=pg.pages;
     grid.innerHTML = imgs.map(im=>`
       <div class="col">
         <div class="border rounded p-2 position-relative image-card" data-image-id="${im.id}" data-filename="${im.filename}">
-          <img src="${(im.moderation_status==='approved_blurred' && im.blurred_path ? (im.blurred_path.startsWith('/')? im.blurred_path : '/uploads/' + slug + '/public/blurred/' + im.filename) : '/uploads/' + slug + '/public/gallery/' + im.filename)}" style="width:100%;height:200px;object-fit:cover;object-position:center top;border-radius:4px" />
+          ${im.is_video ? `
+            <video style="width:100%;height:200px;object-fit:cover;object-position:center top;border-radius:4px" controls>
+              <source src="${im.path || '/uploads/' + slug + '/public/gallery/' + im.filename}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          ` : `
+            <img src="${im.path ? im.path : (im.moderation_status==='approved_blurred' && im.blurred_path ? (im.blurred_path.startsWith('/')? im.blurred_path : '/uploads/' + slug + '/public/blurred/' + im.filename) : '/uploads/' + slug + '/public/gallery/' + im.filename)}" style="width:100%;height:200px;object-fit:cover;object-position:center top;border-radius:4px" />
+          `}
+          
+          <!-- System file indicator -->
+          ${im.is_system_file ? `
+          <div class="position-absolute" style="top: 0; right: 0; width: 0; height: 0; border-style: solid; border-width: 0 40px 40px 0; border-color: transparent #ffc107 transparent transparent; z-index: 2;">
+            <span style="position: absolute; top: 8px; right: -32px; color: #212529; font-size: 8px; font-weight: bold; transform: rotate(45deg);">SYS</span>
+          </div>` : ''}
+          
+          <!-- Approved diagonal overlay -->
+          ${(im.moderation_status === 'approved' || im.moderation_status === 'approved_blurred') ? `
+          <div class="position-absolute" style="top: 0; left: 0; width: 0; height: 0; border-style: solid; border-width: 60px 60px 0 0; border-color: #28a745 transparent transparent transparent; z-index: 2;">
+            <span style="position: absolute; top: -45px; left: 5px; color: white; font-size: 10px; font-weight: bold; transform: rotate(45deg); text-shadow: 1px 1px 1px rgba(0,0,0,0.5);">APPROVED</span>
+          </div>` : ''}
           
           <!-- Image overlay actions -->
           <div class="image-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center opacity-0" style="background: rgba(0,0,0,0.7); transition: opacity 0.3s;">
             <div class="btn-group" role="group">
-              <button type="button" class="btn btn-sm btn-light" onclick="viewImageFullsize('${im.filename}')" title="View Full Size">
+              <button type="button" class="btn btn-sm btn-light" onclick="viewMediaFullsize('${im.filename}', '${im.path || '/uploads/' + slug + '/public/gallery/' + im.filename}', ${im.is_video})" title="View Full Size">
                 <i class="fas fa-eye"></i>
               </button>
+              ${im.is_video ? '' : `
               <button type="button" class="btn btn-sm btn-primary" onclick="openImageEditor('${im.filename}')" title="Edit Image">
                 <i class="fas fa-edit"></i>
               </button>
-              <button type="button" class="btn btn-sm btn-warning" onclick="renameImage('${im.filename}')" title="Rename">
+              `}
+              <button type="button" class="btn btn-sm btn-warning" onclick="renameMedia('${im.filename}', '${im.directory || ''}')" title="Rename">
                 <i class="fas fa-tag"></i>
               </button>
+              ${im.is_video ? '' : `
               <button type="button" class="btn btn-sm btn-success" onclick="applyWatermarkSingle('${im.id}')" title="Apply Watermark">
                 <i class="fas fa-shield-alt"></i>
               </button>
-              <button type="button" class="btn btn-sm btn-danger" onclick="deleteImage('${im.id}')" title="Delete">
+              `}
+              <button type="button" class="btn btn-sm btn-danger" onclick="deleteMedia('${im.id}', '${im.filename}', '${im.directory || ''}')" title="Delete">
                 <i class="fas fa-trash"></i>
               </button>
             </div>
           </div>
           
           <div class="d-flex align-items-center justify-content-between mt-1">
-            <div class="small text-truncate" title="${im.filename}">${im.filename}</div>
-            <input type="checkbox" class="form-check-input lib_sel" value="${im.id}">
+            <div class="small text-truncate" title="${im.filename}">
+              ${im.filename}
+              ${im.directory ? `<br><span class="badge badge-sm bg-secondary">${im.directory}</span>` : ''}
+            </div>
+            <input type="checkbox" class="form-check-input lib_sel" value="${im.id || im.filename}">
           </div>
         </div>
       </div>`).join('');
@@ -126,10 +204,55 @@
   document.getElementById('lib_upload').addEventListener('click', async ()=>{
     const files = document.getElementById('lib_files').files;
     if (!files || !files.length){ notify('warning','Choose files'); return; }
-    if (!currentSection && secSelect.value){ currentSection = parseInt(secSelect.value); filterSelect.value = currentSection; }
-    if (!currentSection){ notify('warning','Pick a section first'); return; }
-    let ok = 0; for (const f of files){ const fd = new FormData(); fd.append('image', f); const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${currentSection}/upload`, { method:'POST', body: fd }); const d = await r.json(); if (d.success) ok++; }
-    notify('success', `Uploaded ${ok}/${files.length}`); loadImages();
+    
+    const isSystemFile = document.getElementById('lib_system_file').checked;
+    const applyWatermark = document.getElementById('lib_watermark').checked && !isSystemFile; // Don't watermark system files
+    const gallerySectionId = document.getElementById('lib_section').value;
+    
+    notify('info', `Uploading ${files.length} file(s)...`);
+    
+    let ok = 0, failed = 0;
+    
+    for (const file of files) {
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        if (isSystemFile) fd.append('is_system_file', 'true');
+        if (applyWatermark) fd.append('apply_watermark', 'true');
+        if (gallerySectionId) fd.append('gallery_section_id', gallerySectionId);
+        
+        const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/media/upload`, { 
+          method:'POST', 
+          body: fd 
+        });
+        
+        const d = await r.json();
+        if (d.success) {
+          ok++;
+          if (d.data.is_system_file) {
+            console.log(`File ${d.data.filename} uploaded to system folder`);
+          }
+        } else {
+          failed++;
+          console.error(`Failed to upload ${file.name}:`, d.message);
+        }
+      } catch (error) {
+        failed++;
+        console.error(`Upload error for ${file.name}:`, error);
+      }
+    }
+    
+    if (ok > 0 && failed === 0) {
+      notify('success', `Successfully uploaded ${ok} file(s)`);
+    } else if (ok > 0 && failed > 0) {
+      notify('warning', `Uploaded ${ok} file(s), ${failed} failed`);
+    } else {
+      notify('danger', `Upload failed for all ${failed} file(s)`);
+    }
+    
+    // Clear file input and refresh view
+    document.getElementById('lib_files').value = '';
+    loadImages();
   });
 
   // Apply watermarks (batch)
@@ -142,6 +265,86 @@
   });
 
   loadSections();
+  
+  // File selection functionality
+  const chooseFilesBtn = document.getElementById('lib_choose_files');
+  const fileInput = document.getElementById('lib_files');
+  const filesSelectedText = document.getElementById('lib_files_selected');
+  const dropZone = document.getElementById('lib_drop_zone');
+  
+  // Choose files button
+  chooseFilesBtn.addEventListener('click', () => {
+    fileInput.click();
+  });
+  
+  // Click anywhere in drop zone to choose files
+  dropZone.addEventListener('click', (e) => {
+    if (e.target !== chooseFilesBtn) {
+      fileInput.click();
+    }
+  });
+  
+  // File input change handler
+  function updateFileSelection(files) {
+    if (files.length === 0) {
+      filesSelectedText.textContent = 'or drag & drop here';
+      chooseFilesBtn.innerHTML = '<i class="fas fa-folder-open me-1"></i>Choose Files';
+      dropZone.classList.remove('border-success', 'bg-light');
+    } else {
+      chooseFilesBtn.innerHTML = `<i class="fas fa-check me-1"></i>${files.length} Selected`;
+      dropZone.classList.add('border-success', 'bg-light');
+      
+      // Show file names compactly
+      if (files.length <= 2) {
+        const fileNames = Array.from(files).map(f => f.name.length > 20 ? f.name.substring(0, 17) + '...' : f.name).join(', ');
+        filesSelectedText.innerHTML = `<small class="text-success">${fileNames}</small>`;
+      } else {
+        filesSelectedText.innerHTML = `<small class="text-success">${files.length} files ready</small>`;
+      }
+    }
+  }
+  
+  fileInput.addEventListener('change', (e) => {
+    updateFileSelection(e.target.files);
+  });
+  
+  // Drag and drop functionality
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, preventDefaults, false);
+    document.body.addEventListener(eventName, preventDefaults, false);
+  });
+  
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, highlight, false);
+  });
+  
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, unhighlight, false);
+  });
+  
+  dropZone.addEventListener('drop', handleDrop, false);
+  
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  
+  function highlight(e) {
+    dropZone.classList.add('border-primary', 'bg-primary', 'bg-opacity-10');
+  }
+  
+  function unhighlight(e) {
+    dropZone.classList.remove('border-primary', 'bg-primary', 'bg-opacity-10');
+  }
+  
+  function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    
+    // Update the file input with dropped files
+    fileInput.files = files;
+    updateFileSelection(files);
+  }
   
   // Add hover effects for image cards
   document.addEventListener('mouseover', (e) => {
@@ -348,19 +551,26 @@ function enableCropMode(filename) {
   // Reset crop data
   cropData = null;
   
-  // Show crop canvas and hide image
+  // Get the actual displayed size of the image BEFORE hiding it
+  // Fall back to clientWidth or a computed size if rect is zero
+  const imgRect = img.getBoundingClientRect();
+  let displayWidth = Math.round(imgRect.width);
+  let displayHeight = Math.round(imgRect.height);
+  if (!displayWidth || !displayHeight) {
+    const parentW = img.parentElement ? img.parentElement.clientWidth : img.naturalWidth;
+    displayWidth = Math.max(1, img.clientWidth || Math.min(img.naturalWidth, Math.round(parentW * 0.9)));
+    displayHeight = Math.max(1, Math.round(displayWidth * (img.naturalHeight / img.naturalWidth)));
+  }
+  
+  // Now swap visibility: hide <img>, show <canvas>
   img.style.display = 'none';
   canvas.style.display = 'block';
   canvas.classList.remove('d-none');
   
-  // Get the actual displayed size of the image
-  const imgRect = img.getBoundingClientRect();
-  const displayWidth = Math.min(img.naturalWidth, img.parentElement.clientWidth * 0.9);
-  const displayHeight = (displayWidth / img.naturalWidth) * img.naturalHeight;
-  
   // Setup canvas to match image display size
-  canvas.width = img.naturalWidth;
-  canvas.height = img.naturalHeight;
+  canvas.width = Math.max(1, img.naturalWidth);   // intrinsic pixel buffer
+  canvas.height = Math.max(1, img.naturalHeight); // intrinsic pixel buffer
+  // Match the on-screen size that the <img> was using to avoid any visual jump
   canvas.style.width = displayWidth + 'px';
   canvas.style.height = displayHeight + 'px';
   
@@ -374,7 +584,8 @@ function enableCropMode(filename) {
   const ctx = canvas.getContext('2d');
   try {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    // Draw image using natural dimensions to intrinsic canvas to avoid blit issues
+    ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, 0, 0, canvas.width, canvas.height);
     console.log('✅ Image drawn on canvas successfully');
   } catch (error) {
     console.error('❌ Failed to draw image on canvas:', error);
@@ -410,9 +621,10 @@ function setupCropSelection(canvas, ctx, img) {
   let startX, startY, currentX, currentY;
   
   const getMousePos = (e) => {
+    // Use current displayed size to compute scale factors to intrinsic canvas size
     const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / canvas.offsetWidth;
-    const scaleY = canvas.height / canvas.offsetHeight;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
     
     return {
       x: (e.clientX - rect.left) * scaleX,
@@ -423,6 +635,7 @@ function setupCropSelection(canvas, ctx, img) {
   const drawSelection = () => {
     // Clear and redraw image
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Draw image to fill the intrinsic canvas; this mirrors the original <img> aspect
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     
     if (isSelecting && startX !== undefined) {
@@ -627,6 +840,290 @@ function resizeImage(filename) {
     }
   }).catch(() => notify('danger', 'Resize request failed'));
 }
+
+// Updated media viewing function for all media types with SEO information
+async function viewMediaFullsize(filename, path, isVideo) {
+  let slug = {{{json model.slug}}}; if (!slug){ const m=location.pathname.match(/^\/([^\/]+)\/admin/); if(m) slug=m[1]; }
+  
+  const modal = document.createElement('div');
+  modal.innerHTML = `
+    <div class="modal fade show d-block" style="background: rgba(0,0,0,0.8);" onclick="this.remove()">
+      <div class="modal-dialog modal-fullscreen-lg-down modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fas fa-image me-2"></i>${filename}</h5>
+            <button type="button" class="btn-close" onclick="this.closest('.modal').remove()"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <!-- Media Display Column -->
+              <div class="col-lg-8">
+                <div class="text-center">
+                  ${isVideo ? `
+                    <video controls style="max-height: 70vh; max-width: 100%;" class="rounded">
+                      <source src="${path}" type="video/mp4">
+                      Your browser does not support the video tag.
+                    </video>
+                  ` : `
+                    <img src="${path}" class="img-fluid rounded shadow" style="max-height: 70vh;" />
+                  `}
+                </div>
+              </div>
+              
+              <!-- SEO Information Column -->
+              <div class="col-lg-4">
+                <div class="h-100">
+                  <h6 class="text-primary mb-3">
+                    <i class="fas fa-search me-2"></i>SEO Information
+                    <small class="text-muted d-block mt-1">How this image appears to search engines</small>
+                  </h6>
+                  
+                  <!-- Loading state -->
+                  <div id="seo-loading-${filename.replace(/[^a-zA-Z0-9]/g, '_')}" class="text-center py-4">
+                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <small class="text-muted">Loading SEO data...</small>
+                  </div>
+                  
+                  <!-- SEO Content (will be populated) -->
+                  <div id="seo-content-${filename.replace(/[^a-zA-Z0-9]/g, '_')}" class="d-none">
+                    
+                    <!-- Alt Text -->
+                    <div class="mb-3">
+                      <label class="form-label fw-bold text-success">
+                        <i class="fas fa-universal-access me-1"></i>Alt Text
+                        <small class="text-muted fw-normal">(Accessibility & SEO)</small>
+                      </label>
+                      <div class="bg-light border rounded p-2">
+                        <small class="text-dark" id="alt-text-display">Loading...</small>
+                      </div>
+                      <small class="text-muted">What screen readers and search engines "see"</small>
+                    </div>
+                    
+                    <!-- SEO Keywords -->
+                    <div class="mb-3">
+                      <label class="form-label fw-bold text-info">
+                        <i class="fas fa-tags me-1"></i>SEO Keywords
+                        <small class="text-muted fw-normal">(Search Terms)</small>
+                      </label>
+                      <div id="keywords-container" class="d-flex flex-wrap gap-1">
+                        <!-- Keywords will be populated here -->
+                      </div>
+                      <small class="text-muted">Terms that help people find this image</small>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="mb-3">
+                      <label class="form-label fw-bold text-warning">
+                        <i class="fas fa-align-left me-1"></i>Description
+                        <small class="text-muted fw-normal">(Caption)</small>
+                      </label>
+                      <div class="bg-light border rounded p-2" style="max-height: 120px; overflow-y: auto;">
+                        <small class="text-dark" id="description-display">Loading...</small>
+                      </div>
+                      <small class="text-muted">Brief description for image captions</small>
+                    </div>
+                    
+                    <!-- Image Details -->
+                    <div class="mb-3">
+                      <label class="form-label fw-bold text-secondary">
+                        <i class="fas fa-info-circle me-1"></i>Image Details
+                      </label>
+                      <div class="row g-2 small">
+                        <div class="col-6">
+                          <div class="bg-light border rounded p-2 text-center">
+                            <div class="fw-bold" id="image-dimensions">Loading...</div>
+                            <small class="text-muted">Dimensions</small>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="bg-light border rounded p-2 text-center">
+                            <div class="fw-bold" id="image-size">Loading...</div>
+                            <small class="text-muted">File Size</small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Future Enhancement Note -->
+                    <div class="border border-info rounded p-2 bg-info bg-opacity-10">
+                      <small class="text-info">
+                        <i class="fas fa-lightbulb me-1"></i>
+                        <strong>Coming Soon:</strong> You'll be able to edit these SEO details directly from this panel to optimize your search visibility.
+                      </small>
+                    </div>
+                    
+                  </div>
+                  
+                  <!-- Error state -->
+                  <div id="seo-error-${filename.replace(/[^a-zA-Z0-9]/g, '_')}" class="d-none text-center py-4">
+                    <i class="fas fa-exclamation-triangle text-warning mb-2"></i>
+                    <div class="text-muted">
+                      <small>SEO data not available for this image</small>
+                      <div class="mt-2">
+                        <small class="text-info">
+                          <i class="fas fa-info-circle me-1"></i>
+                          SEO information is generated automatically when images are uploaded or processed.
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  
+  // Load SEO data for the image if it's not a video
+  if (!isVideo) {
+    loadImageSEOData(filename);
+  } else {
+    // Hide SEO section for videos
+    document.getElementById('seo-loading-' + filename.replace(/[^a-zA-Z0-9]/g, '_')).innerHTML = `
+      <div class="text-center text-muted py-4">
+        <i class="fas fa-video mb-2"></i>
+        <div>SEO information is available for images only</div>
+      </div>
+    `;
+  }
+}
+
+// Load SEO data for an image from the database
+async function loadImageSEOData(filename) {
+  let slug = {{{json model.slug}}}; if (!slug){ const m=location.pathname.match(/^\/([^\/]+)\/admin/); if(m) slug=m[1]; }
+  const safeFilename = filename.replace(/[^a-zA-Z0-9]/g, '_');
+  
+  try {
+    // Fetch SEO data from both model_media_library and content_moderation tables
+    const response = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/image-seo-data/${encodeURIComponent(filename)}`);
+    const data = await response.json();
+    
+    const loadingEl = document.getElementById('seo-loading-' + safeFilename);
+    const contentEl = document.getElementById('seo-content-' + safeFilename);
+    const errorEl = document.getElementById('seo-error-' + safeFilename);
+    
+    if (data.success && data.seoData) {
+      // Hide loading, show content
+      loadingEl.classList.add('d-none');
+      contentEl.classList.remove('d-none');
+      
+      // Populate alt text
+      const altTextDisplay = document.getElementById('alt-text-display');
+      if (altTextDisplay) {
+        altTextDisplay.textContent = data.seoData.alt_text || 'Not available - SEO alt text will be generated automatically for new uploads';
+      }
+      
+      // Populate keywords
+      const keywordsContainer = document.getElementById('keywords-container');
+      if (keywordsContainer && data.seoData.keywords && data.seoData.keywords.length > 0) {
+        keywordsContainer.innerHTML = data.seoData.keywords.map(keyword => 
+          `<span class="badge bg-info bg-opacity-75 text-dark small">${keyword}</span>`
+        ).join('');
+      } else if (keywordsContainer) {
+        keywordsContainer.innerHTML = '<small class="text-muted">Keywords will be generated automatically for new uploads</small>';
+      }
+      
+      // Populate description
+      const descriptionDisplay = document.getElementById('description-display');
+      if (descriptionDisplay) {
+        descriptionDisplay.textContent = data.seoData.description || 'Description will be generated automatically for new uploads';
+      }
+      
+      // Populate image details
+      const dimensionsEl = document.getElementById('image-dimensions');
+      const sizeEl = document.getElementById('image-size');
+      
+      if (dimensionsEl && data.seoData.width && data.seoData.height) {
+        dimensionsEl.textContent = `${data.seoData.width}×${data.seoData.height}`;
+      } else if (dimensionsEl) {
+        dimensionsEl.textContent = 'Unknown';
+      }
+      
+      if (sizeEl && data.seoData.file_size) {
+        const sizeInKB = Math.round(data.seoData.file_size / 1024);
+        const sizeInMB = (data.seoData.file_size / (1024 * 1024)).toFixed(1);
+        sizeEl.textContent = sizeInKB > 1024 ? `${sizeInMB} MB` : `${sizeInKB} KB`;
+      } else if (sizeEl) {
+        sizeEl.textContent = 'Unknown';
+      }
+      
+    } else {
+      // Show error state
+      loadingEl.classList.add('d-none');
+      errorEl.classList.remove('d-none');
+    }
+    
+  } catch (error) {
+    console.error('Error loading SEO data:', error);
+    
+    // Show error state
+    const loadingEl = document.getElementById('seo-loading-' + safeFilename);
+    const errorEl = document.getElementById('seo-error-' + safeFilename);
+    
+    if (loadingEl) loadingEl.classList.add('d-none');
+    if (errorEl) errorEl.classList.remove('d-none');
+  }
+}
+
+// Updated rename function for all media types
+function renameMedia(filename, directory) {
+  let slug = {{{json model.slug}}}; if (!slug){ const m=location.pathname.match(/^\/([^\/]+)\/admin/); if(m) slug=m[1]; }
+  const newName = prompt('Enter new filename:', filename.replace(/\.[^/.]+$/, ''));
+  if (newName && newName !== filename.replace(/\.[^/.]+$/, '')) {
+    const extension = filename.split('.').pop();
+    const fullNewName = newName + '.' + extension;
+    
+    // TODO: Implement rename API call for general media files
+    notify('info', 'Rename functionality for general media files coming soon');
+  }
+}
+
+// Updated delete function for all media types  
+function deleteMedia(id, filename, directory) {
+  let slug = {{{json model.slug}}}; if (!slug){ const m=location.pathname.match(/^\/([^\/]+)\/admin/); if(m) slug=m[1]; }
+  if (confirm(`Are you sure you want to delete "${filename}"? This action cannot be undone.`)) {
+    // TODO: Implement delete API call for general media files
+    notify('info', 'Delete functionality for general media files coming soon');
+  }
+}
+
+// Simple notification function
+function notify(type, message) {
+  console.log(`[${type.toUpperCase()}] ${message}`);
+  
+  // Create a simple toast notification
+  const toast = document.createElement('div');
+  toast.className = `alert alert-${type === 'danger' ? 'danger' : type === 'warning' ? 'warning' : type === 'success' ? 'success' : 'info'} alert-dismissible position-fixed`;
+  toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+  toast.innerHTML = `
+    ${message}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Auto-remove after 5 seconds
+  setTimeout(() => {
+    if (toast.parentNode) toast.remove();
+  }, 5000);
+}
+
+// Add sort change listener to reload images when sort changes
+document.addEventListener('DOMContentLoaded', function() {
+  const sortSelect = document.getElementById('lib_sort');
+  if (sortSelect) {
+    sortSelect.addEventListener('change', () => {
+      currentPage = 1;
+      loadImages();
+    });
+  }
+});
 </script>
 
 

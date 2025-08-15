@@ -1,0 +1,633 @@
+<!-- Template Customization Controls Component -->
+<div class="template-customizer-container">
+    <!-- Header Section -->
+    <div class="customizer-header bg-gradient-to-r from-purple-600 to-indigo-700 text-white p-6 rounded-t-lg">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="text-2xl font-bold mb-2">Template Customizer</h2>
+                <p class="text-purple-100">Personalize your template's appearance and behavior</p>
+            </div>
+            <div class="flex items-center space-x-3">
+                <div class="template-status-indicator bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
+                    <span class="text-sm opacity-75">Template:</span>
+                    <span id="customizerTemplateName" class="font-semibold ml-2">Modern</span>
+                </div>
+                <button id="resetCustomizations" class="bg-white/20 hover:bg-white/30 rounded-lg px-3 py-2 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customization Tabs -->
+    <div class="customizer-tabs bg-gray-50 border-b">
+        <div class="flex overflow-x-auto">
+            <button class="tab-button active" data-tab="colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"></path>
+                </svg>
+                Colors
+            </button>
+            <button class="tab-button" data-tab="typography">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Typography
+            </button>
+            <button class="tab-button" data-tab="layout">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
+                </svg>
+                Layout
+            </button>
+            <button class="tab-button" data-tab="animations">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+                Effects
+            </button>
+            <button class="tab-button" data-tab="advanced">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                </svg>
+                Advanced
+            </button>
+        </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="customizer-content bg-white">
+        <!-- Colors Tab -->
+        <div id="colorsTab" class="tab-content active p-6">
+            <div class="space-y-6">
+                <div class="section-header">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Color Scheme</h3>
+                </div>
+
+                <!-- Color Presets -->
+                <div class="color-presets mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Quick Presets</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <button class="color-preset-btn" data-preset="default">
+                            <div class="preset-colors flex">
+                                <div class="w-4 h-8 bg-blue-600 rounded-l"></div>
+                                <div class="w-4 h-8 bg-blue-500"></div>
+                                <div class="w-4 h-8 bg-blue-400 rounded-r"></div>
+                            </div>
+                            <span class="text-xs mt-1">Default</span>
+                        </button>
+                        <button class="color-preset-btn" data-preset="warm">
+                            <div class="preset-colors flex">
+                                <div class="w-4 h-8 bg-orange-600 rounded-l"></div>
+                                <div class="w-4 h-8 bg-red-500"></div>
+                                <div class="w-4 h-8 bg-pink-400 rounded-r"></div>
+                            </div>
+                            <span class="text-xs mt-1">Warm</span>
+                        </button>
+                        <button class="color-preset-btn" data-preset="cool">
+                            <div class="preset-colors flex">
+                                <div class="w-4 h-8 bg-teal-600 rounded-l"></div>
+                                <div class="w-4 h-8 bg-blue-500"></div>
+                                <div class="w-4 h-8 bg-purple-400 rounded-r"></div>
+                            </div>
+                            <span class="text-xs mt-1">Cool</span>
+                        </button>
+                        <button class="color-preset-btn" data-preset="monochrome">
+                            <div class="preset-colors flex">
+                                <div class="w-4 h-8 bg-gray-800 rounded-l"></div>
+                                <div class="w-4 h-8 bg-gray-600"></div>
+                                <div class="w-4 h-8 bg-gray-400 rounded-r"></div>
+                            </div>
+                            <span class="text-xs mt-1">Mono</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Individual Color Controls -->
+                <div class="color-controls space-y-4">
+                    <div class="color-control-group">
+                        <label class="color-label">Primary Color</label>
+                        <div class="color-input-group">
+                            <input type="color" id="primaryColor" class="color-picker" value="#6366f1">
+                            <input type="text" class="color-text-input" placeholder="#6366f1">
+                            <div class="color-opacity-control">
+                                <label class="opacity-label">Opacity</label>
+                                <input type="range" class="opacity-slider" min="0" max="100" value="100">
+                                <span class="opacity-value">100%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="color-control-group">
+                        <label class="color-label">Secondary Color</label>
+                        <div class="color-input-group">
+                            <input type="color" id="secondaryColor" class="color-picker" value="#06b6d4">
+                            <input type="text" class="color-text-input" placeholder="#06b6d4">
+                            <div class="color-opacity-control">
+                                <label class="opacity-label">Opacity</label>
+                                <input type="range" class="opacity-slider" min="0" max="100" value="100">
+                                <span class="opacity-value">100%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="color-control-group">
+                        <label class="color-label">Accent Color</label>
+                        <div class="color-input-group">
+                            <input type="color" id="accentColor" class="color-picker" value="#8b5cf6">
+                            <input type="text" class="color-text-input" placeholder="#8b5cf6">
+                            <div class="color-opacity-control">
+                                <label class="opacity-label">Opacity</label>
+                                <input type="range" class="opacity-slider" min="0" max="100" value="100">
+                                <span class="opacity-value">100%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="color-control-group">
+                        <label class="color-label">Background</label>
+                        <div class="background-type-selector">
+                            <select class="background-type-select">
+                                <option value="solid">Solid Color</option>
+                                <option value="gradient">Gradient</option>
+                                <option value="image">Image</option>
+                            </select>
+                        </div>
+                        <div class="background-controls">
+                            <div class="solid-background">
+                                <input type="color" id="backgroundColor" class="color-picker" value="#ffffff">
+                                <input type="text" class="color-text-input" placeholder="#ffffff">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typography Tab -->
+        <div id="typographyTab" class="tab-content p-6">
+            <div class="space-y-6">
+                <div class="section-header">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Typography Settings</h3>
+                </div>
+
+                <!-- Font Family -->
+                <div class="typography-section">
+                    <label class="typography-label">Font Family</label>
+                    <div class="font-selector-group">
+                        <select id="fontFamily" class="font-family-select">
+                            <option value="inter">Inter (Modern Sans-serif)</option>
+                            <option value="playfair">Playfair Display (Elegant Serif)</option>
+                            <option value="roboto">Roboto (Clean Sans-serif)</option>
+                            <option value="merriweather">Merriweather (Readable Serif)</option>
+                            <option value="montserrat">Montserrat (Geometric Sans)</option>
+                            <option value="lora">Lora (Contemporary Serif)</option>
+                            <option value="custom">Custom Font</option>
+                        </select>
+                        <div class="font-preview">
+                            <span class="preview-text">The quick brown fox jumps</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Font Sizes -->
+                <div class="typography-section">
+                    <label class="typography-label">Font Sizes</label>
+                    <div class="font-size-controls space-y-3">
+                        <div class="size-control">
+                            <label class="size-label">Headings</label>
+                            <div class="size-input-group">
+                                <input type="range" class="size-slider" min="18" max="48" value="32">
+                                <span class="size-value">32px</span>
+                            </div>
+                        </div>
+                        <div class="size-control">
+                            <label class="size-label">Body Text</label>
+                            <div class="size-input-group">
+                                <input type="range" class="size-slider" min="12" max="20" value="16">
+                                <span class="size-value">16px</span>
+                            </div>
+                        </div>
+                        <div class="size-control">
+                            <label class="size-label">Small Text</label>
+                            <div class="size-input-group">
+                                <input type="range" class="size-slider" min="10" max="16" value="14">
+                                <span class="size-value">14px</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text Styling -->
+                <div class="typography-section">
+                    <label class="typography-label">Text Styling</label>
+                    <div class="text-styling-controls">
+                        <div class="styling-group">
+                            <label class="styling-label">Line Height</label>
+                            <select class="line-height-select">
+                                <option value="1.2">Tight (1.2)</option>
+                                <option value="1.4">Normal (1.4)</option>
+                                <option value="1.6" selected>Relaxed (1.6)</option>
+                                <option value="1.8">Loose (1.8)</option>
+                            </select>
+                        </div>
+                        <div class="styling-group">
+                            <label class="styling-label">Letter Spacing</label>
+                            <select class="letter-spacing-select">
+                                <option value="-0.05em">Tight</option>
+                                <option value="0" selected>Normal</option>
+                                <option value="0.05em">Wide</option>
+                                <option value="0.1em">Wider</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Layout Tab -->
+        <div id="layoutTab" class="tab-content p-6">
+            <div class="space-y-6">
+                <div class="section-header">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Layout & Spacing</h3>
+                </div>
+
+                <!-- Container Width -->
+                <div class="layout-section">
+                    <label class="layout-label">Container Width</label>
+                    <div class="width-selector">
+                        <select class="container-width-select">
+                            <option value="full">Full Width</option>
+                            <option value="xl" selected>Extra Large (1280px)</option>
+                            <option value="lg">Large (1024px)</option>
+                            <option value="md">Medium (768px)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Section Spacing -->
+                <div class="layout-section">
+                    <label class="layout-label">Section Spacing</label>
+                    <div class="spacing-controls">
+                        <div class="spacing-control">
+                            <label class="spacing-label">Vertical Padding</label>
+                            <div class="spacing-input-group">
+                                <input type="range" class="spacing-slider" min="20" max="120" value="80">
+                                <span class="spacing-value">80px</span>
+                            </div>
+                        </div>
+                        <div class="spacing-control">
+                            <label class="spacing-label">Section Gaps</label>
+                            <div class="spacing-input-group">
+                                <input type="range" class="spacing-slider" min="10" max="60" value="40">
+                                <span class="spacing-value">40px</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Border Radius -->
+                <div class="layout-section">
+                    <label class="layout-label">Border Radius</label>
+                    <div class="border-radius-controls">
+                        <div class="radius-presets">
+                            <button class="radius-preset-btn active" data-radius="0">Sharp</button>
+                            <button class="radius-preset-btn" data-radius="4">Subtle</button>
+                            <button class="radius-preset-btn" data-radius="8">Rounded</button>
+                            <button class="radius-preset-btn" data-radius="16">Very Rounded</button>
+                        </div>
+                        <div class="custom-radius-control">
+                            <input type="range" class="radius-slider" min="0" max="32" value="8">
+                            <span class="radius-value">8px</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Animations Tab -->
+        <div id="animationsTab" class="tab-content p-6">
+            <div class="space-y-6">
+                <div class="section-header">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Effects & Animations</h3>
+                </div>
+
+                <!-- Animation Speed -->
+                <div class="animation-section">
+                    <label class="animation-label">Animation Speed</label>
+                    <div class="animation-speed-controls">
+                        <select class="animation-speed-select">
+                            <option value="fast">Fast (0.2s)</option>
+                            <option value="normal" selected>Normal (0.3s)</option>
+                            <option value="slow">Slow (0.5s)</option>
+                            <option value="disabled">Disabled</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Hover Effects -->
+                <div class="animation-section">
+                    <label class="animation-label">Hover Effects</label>
+                    <div class="hover-effects-controls">
+                        <div class="effect-toggle">
+                            <label class="toggle-label">Card Hover</label>
+                            <input type="checkbox" class="effect-checkbox" checked>
+                        </div>
+                        <div class="effect-toggle">
+                            <label class="toggle-label">Button Animations</label>
+                            <input type="checkbox" class="effect-checkbox" checked>
+                        </div>
+                        <div class="effect-toggle">
+                            <label class="toggle-label">Image Zoom</label>
+                            <input type="checkbox" class="effect-checkbox" checked>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Page Transitions -->
+                <div class="animation-section">
+                    <label class="animation-label">Page Transitions</label>
+                    <div class="transition-controls">
+                        <select class="transition-type-select">
+                            <option value="none">None</option>
+                            <option value="fade" selected>Fade</option>
+                            <option value="slide">Slide</option>
+                            <option value="scale">Scale</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Tab -->
+        <div id="advancedTab" class="tab-content p-6">
+            <div class="space-y-6">
+                <div class="section-header">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Advanced Customizations</h3>
+                </div>
+
+                <!-- Custom CSS -->
+                <div class="advanced-section">
+                    <label class="advanced-label">Custom CSS</label>
+                    <div class="custom-css-editor">
+                        <textarea id="customCSS" class="css-textarea" placeholder="/* Add your custom CSS here */
+.custom-element {
+    color: #333;
+    font-size: 16px;
+}"></textarea>
+                        <div class="css-editor-tools">
+                            <button class="css-tool-btn" title="Format CSS">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </button>
+                            <button class="css-tool-btn" title="Validate CSS">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature Toggles -->
+                <div class="advanced-section">
+                    <label class="advanced-label">Feature Toggles</label>
+                    <div class="feature-toggles space-y-3">
+                        <div class="feature-toggle">
+                            <label class="feature-toggle-label">Dark Mode Support</label>
+                            <input type="checkbox" class="feature-checkbox">
+                        </div>
+                        <div class="feature-toggle">
+                            <label class="feature-toggle-label">Right-to-Left Support</label>
+                            <input type="checkbox" class="feature-checkbox">
+                        </div>
+                        <div class="feature-toggle">
+                            <label class="feature-toggle-label">Print Styles</label>
+                            <input type="checkbox" class="feature-checkbox">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Settings -->
+                <div class="advanced-section">
+                    <label class="advanced-label">Performance</label>
+                    <div class="performance-controls">
+                        <div class="performance-toggle">
+                            <label class="performance-label">Lazy Load Images</label>
+                            <input type="checkbox" class="performance-checkbox" checked>
+                        </div>
+                        <div class="performance-toggle">
+                            <label class="performance-label">Minify CSS</label>
+                            <input type="checkbox" class="performance-checkbox" checked>
+                        </div>
+                        <div class="performance-toggle">
+                            <label class="performance-label">Cache Templates</label>
+                            <input type="checkbox" class="performance-checkbox" checked>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview & Actions -->
+    <div class="customizer-footer bg-gray-50 p-4 border-t flex justify-between items-center">
+        <div class="preview-controls">
+            <button id="previewChanges" class="preview-btn bg-blue-100 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-200 transition-colors">
+                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                Preview Changes
+            </button>
+        </div>
+        <div class="action-controls flex space-x-3">
+            <button id="cancelCustomizations" class="cancel-btn px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">
+                Cancel
+            </button>
+            <button id="saveCustomizations" class="save-btn bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                Save Changes
+            </button>
+        </div>
+    </div>
+
+    <!-- Live Preview Modal -->
+    <div id="customizationPreviewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="preview-modal bg-white rounded-xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
+            <div class="modal-header bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+                <h3 class="text-xl font-semibold text-gray-900">Customization Preview</h3>
+                <button id="closeCustomizationPreview" class="text-gray-500 hover:text-gray-700 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-content p-6">
+                <div class="preview-frame-container bg-gray-100 rounded-lg overflow-hidden" style="height: 70vh;">
+                    <iframe id="customizationPreviewFrame" class="w-full h-full" frameborder="0"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Component Styles -->
+<style>
+.template-customizer-container {
+    @apply max-w-4xl mx-auto rounded-lg shadow-lg overflow-hidden;
+}
+
+.customizer-tabs {
+    @apply flex overflow-x-auto;
+}
+
+.tab-button {
+    @apply px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-800 border-b-2 border-transparent hover:border-gray-300 transition-colors whitespace-nowrap flex items-center;
+}
+
+.tab-button.active {
+    @apply text-purple-600 border-purple-600;
+}
+
+.tab-content {
+    @apply hidden;
+}
+
+.tab-content.active {
+    @apply block;
+}
+
+.color-preset-btn {
+    @apply flex flex-col items-center p-3 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors cursor-pointer;
+}
+
+.color-preset-btn.active {
+    @apply border-purple-500 bg-purple-50;
+}
+
+.color-control-group {
+    @apply border border-gray-200 rounded-lg p-4;
+}
+
+.color-label {
+    @apply block text-sm font-medium text-gray-700 mb-3;
+}
+
+.color-input-group {
+    @apply flex items-center space-x-3;
+}
+
+.color-picker {
+    @apply w-12 h-10 border border-gray-300 rounded cursor-pointer;
+}
+
+.color-text-input {
+    @apply px-3 py-2 border border-gray-300 rounded-md text-sm flex-1;
+}
+
+.color-opacity-control {
+    @apply flex items-center space-x-2;
+}
+
+.opacity-label {
+    @apply text-xs text-gray-600;
+}
+
+.opacity-slider {
+    @apply w-20;
+}
+
+.opacity-value {
+    @apply text-xs text-gray-600 min-w-10;
+}
+
+.typography-section {
+    @apply border border-gray-200 rounded-lg p-4;
+}
+
+.typography-label {
+    @apply block text-sm font-medium text-gray-700 mb-3;
+}
+
+.font-family-select {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md;
+}
+
+.font-preview {
+    @apply mt-2 p-3 bg-gray-50 rounded-md;
+}
+
+.preview-text {
+    @apply text-lg;
+}
+
+.font-size-controls {
+    @apply space-y-3;
+}
+
+.size-control {
+    @apply flex items-center justify-between;
+}
+
+.size-label {
+    @apply text-sm text-gray-600 min-w-20;
+}
+
+.size-input-group {
+    @apply flex items-center space-x-3;
+}
+
+.size-slider {
+    @apply w-32;
+}
+
+.size-value {
+    @apply text-sm text-gray-600 min-w-12;
+}
+
+.layout-section {
+    @apply border border-gray-200 rounded-lg p-4;
+}
+
+.layout-label {
+    @apply block text-sm font-medium text-gray-700 mb-3;
+}
+
+.radius-presets {
+    @apply flex space-x-2 mb-3;
+}
+
+.radius-preset-btn {
+    @apply px-3 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50 transition-colors;
+}
+
+.radius-preset-btn.active {
+    @apply bg-purple-100 border-purple-500 text-purple-700;
+}
+
+.css-textarea {
+    @apply w-full h-40 p-4 border border-gray-300 rounded-md font-mono text-sm resize-none;
+}
+
+.css-editor-tools {
+    @apply flex justify-end space-x-2 mt-2;
+}
+
+.css-tool-btn {
+    @apply p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded transition-colors;
+}
+
+.feature-toggle {
+    @apply flex items-center justify-between p-3 border border-gray-200 rounded-lg;
+}
+
+.feature-toggle-label {
+    @apply text-sm text-gray-700;
+}
+
+.feature-checkbox {
+    @apply h-5 w-5 text-purple-600 rounded;
+}
+</style>

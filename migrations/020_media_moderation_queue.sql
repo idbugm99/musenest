@@ -53,6 +53,19 @@ SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_
 SET @sql := IF(@col_exists = 0, "ALTER TABLE media_review_queue ADD COLUMN queue_type ENUM('auto_flagged','manual_review','appeal','admin_override') DEFAULT 'auto_flagged'", 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
+-- Ensure reviewer metadata columns exist for manual approvals
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='reviewed_by');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN reviewed_by INT NULL', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='reviewed_at');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN reviewed_at TIMESTAMP NULL', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='admin_notes');
+SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN admin_notes TEXT', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
 SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='media_review_queue' AND COLUMN_NAME='thumbnail_path');
 SET @sql := IF(@col_exists = 0, 'ALTER TABLE media_review_queue ADD COLUMN thumbnail_path TEXT', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;

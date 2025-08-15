@@ -60,6 +60,11 @@ router.get('/model-content/:slug/home-page', async (req, res) => {
                     testimonials_section_visible: true,
                     testimonials_section_title: 'What Clients Say',
                     testimonials_display_count: 3,
+                    travel_section_visible: true,
+                    travel_section_title: 'Travel Schedule',
+                    travel_display_count: 3,
+                    travel_cta_text: 'View Full Calendar',
+                    travel_cta_link: 'calendar',
                     cta_section_visible: true,
                     cta_section_title: 'Ready to Meet?',
                     cta_section_subtitle: 'Let\'s create an unforgettable experience together...',
@@ -139,6 +144,7 @@ router.put('/model-content/:slug/home-page', async (req, res) => {
             'gallery_section_visible', 'featured_gallery_section_id', 'gallery_section_title', 
             'gallery_button_text', 'gallery_button_link',
             'testimonials_section_visible', 'testimonials_section_title', 'testimonials_display_count',
+            'travel_section_visible', 'travel_section_title', 'travel_display_count', 'travel_cta_text', 'travel_cta_link',
             'cta_section_visible', 'cta_section_title', 'cta_section_subtitle', 
             'cta_button_1_text', 'cta_button_1_link', 'cta_button_2_text', 'cta_button_2_link'
         ];
@@ -219,9 +225,9 @@ router.get('/model-gallery/:slug/images', async (req, res) => {
         
         // Get gallery images
         const images = await query(`
-            SELECT id, filename, category, caption 
+            SELECT id, filename, caption 
             FROM gallery_images 
-            WHERE model_id = ? AND status = 'approved' 
+            WHERE model_id = ? AND is_active = 1 
             ORDER BY created_at DESC
             LIMIT 50
         `, [modelId]);
@@ -241,10 +247,10 @@ router.get('/model-gallery/:slug/images', async (req, res) => {
 });
 
 /**
- * GET /api/model-gallery/:slug/sections
+ * GET /api/model-content/:slug/gallery-sections
  * Get gallery sections for a specific model (for dropdowns)
  */
-router.get('/model-gallery/:slug/sections', async (req, res) => {
+router.get('/model-content/:slug/gallery-sections', async (req, res) => {
     try {
         const modelSlug = req.params.slug;
         
@@ -272,7 +278,7 @@ router.get('/model-gallery/:slug/sections', async (req, res) => {
                 gs.is_visible,
                 COUNT(gi.id) as image_count
             FROM gallery_sections gs
-            LEFT JOIN gallery_images gi ON gs.id = gi.section_id AND gi.status = 'approved'
+            LEFT JOIN gallery_images gi ON gs.id = gi.section_id AND gi.is_active = 1
             WHERE gs.model_id = ?
             GROUP BY gs.id, gs.title, gs.layout_type, gs.is_visible
             ORDER BY gs.sort_order ASC, gs.title ASC

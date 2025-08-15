@@ -1,223 +1,1369 @@
-<!-- Contact Hero Section -->
-<section class="luxury-hero min-h-96 flex items-center justify-center text-white pt-20" data-aos="fade-in">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        <h1 class="text-5xl md:text-7xl font-bold mb-8 luxury-heading">
-            Contact {{siteName}}
+<!-- Luxury Theme Contact Page - Imperial Palace Communications -->
+
+<!-- Royal Contact Header with Imperial Crown -->
+{{#if contact_content.contact_header_visible}}
+<section class="luxury-contact-header" data-aos="fade-in">
+    <!-- Imperial Palace Background -->
+    <div class="luxury-header-palace-bg"></div>
+    
+    <!-- Floating Gold Elements -->
+    <div class="luxury-header-decorations" aria-hidden="true">
+        <div class="luxury-floating-crown luxury-crown-1">
+            <i class="fas fa-crown"></i>
+        </div>
+        <div class="luxury-floating-crown luxury-crown-2">
+            <i class="fas fa-crown"></i>
+        </div>
+        <div class="luxury-floating-ornament luxury-ornament-1">❦</div>
+        <div class="luxury-floating-ornament luxury-ornament-2">❧</div>
+    </div>
+    
+    <div class="max-w-6xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <div class="luxury-royal-emblem" data-aos="zoom-in">
+            <i class="fas fa-crown"></i>
+        </div>
+        <h1 class="luxury-contact-title" data-aos="fade-up">
+            {{#if contact_content.page_title}}{{contact_content.page_title}}{{else}}Royal Communications{{/if}}
         </h1>
-        <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto font-light">
-            {{content.contactIntro}}
+        {{#if contact_content.page_subtitle}}
+        <p class="luxury-contact-subtitle" data-aos="fade-up" data-aos-delay="200">
+            {{contact_content.page_subtitle}}
         </p>
+        {{else}}
+        <p class="luxury-contact-subtitle" data-aos="fade-up" data-aos-delay="200">
+            Grace us with your presence through our distinguished channels
+        </p>
+        {{/if}}
+        {{#if contact_content.page_description}}
+        <p class="luxury-contact-description" data-aos="fade-up" data-aos-delay="300">
+            {{contact_content.page_description}}
+        </p>
+        {{/if}}
+        {{#if contact_content.page_subtext}}
+        <p class="luxury-contact-subtext" data-aos="fade-up" data-aos-delay="400">
+            {{contact_content.page_subtext}}
+        </p>
+        {{/if}}
     </div>
 </section>
+{{/if}}
 
-<!-- Contact Information & Form -->
-<section class="py-24 bg-white">
+<!-- Royal Contact Chambers -->
+<section class="luxury-contact-chambers" data-aos="fade-in">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-20">
-            <!-- Contact Information -->
-            <div data-aos="fade-right">
-                <h2 class="text-4xl font-bold mb-12 luxury-heading text-luxury-primary">
-                    Let's Connect
-                </h2>
+        <div class="grid lg:grid-cols-2 gap-16">
+            
+            <!-- Royal Message Chamber -->
+            {{#if contact_content.contact_form_visible}}
+            <div class="luxury-message-chamber" data-aos="fade-right">
+                <!-- Chamber Dome -->
+                <div class="luxury-chamber-dome-contact"></div>
                 
-                <div class="space-y-10">
-                    {{#if contactEmail}}
-                    <div class="flex items-center space-x-6">
-                        <div class="w-20 h-20 bg-gradient-to-br from-luxury-primary to-luxury-accent rounded-full flex items-center justify-center shadow-2xl luxury-float">
-                            <i class="fas fa-envelope text-white text-2xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-xl mb-2">Email</h3>
-                            <a href="mailto:{{contactEmail}}" class="text-luxury-primary hover:text-luxury-secondary transition-colors font-semibold text-lg">
-                                {{contactEmail}}
-                            </a>
-                        </div>
+                <!-- Chamber Header -->
+                <div class="luxury-chamber-header-contact">
+                    <div class="luxury-header-crown-contact">
+                        <i class="fas fa-scroll"></i>
                     </div>
-                    {{/if}}
-                    
-                    {{#if contactPhone}}
-                    <div class="flex items-center space-x-6">
-                        <div class="w-20 h-20 bg-gradient-to-br from-luxury-primary to-luxury-accent rounded-full flex items-center justify-center shadow-2xl luxury-float" style="animation-delay: 1s;">
-                            <i class="fas fa-phone text-white text-2xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-xl mb-2">Phone</h3>
-                            <a href="tel:{{contactPhone}}" class="text-luxury-primary hover:text-luxury-secondary transition-colors font-semibold text-lg">
-                                {{contactPhone}}
-                            </a>
-                        </div>
-                    </div>
-                    {{/if}}
-                    
-                    {{#if location}}
-                    <div class="flex items-center space-x-6">
-                        <div class="w-20 h-20 bg-gradient-to-br from-luxury-primary to-luxury-accent rounded-full flex items-center justify-center shadow-2xl luxury-float" style="animation-delay: 2s;">
-                            <i class="fas fa-map-marker-alt text-white text-2xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-xl mb-2">Location</h3>
-                            <p class="text-gray-600 text-lg">{{location}}</p>
-                        </div>
-                    </div>
-                    {{/if}}
-                    
-                    {{#if workingHours}}
-                    <div class="flex items-center space-x-6">
-                        <div class="w-20 h-20 bg-gradient-to-br from-luxury-primary to-luxury-accent rounded-full flex items-center justify-center shadow-2xl luxury-float" style="animation-delay: 3s;">
-                            <i class="fas fa-clock text-white text-2xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-xl mb-2">Availability</h3>
-                            <p class="text-gray-600 text-lg">{{workingHours}}</p>
-                        </div>
-                    </div>
+                    <h2 class="luxury-chamber-title-contact">
+                        {{#if contact_content.form_title}}{{contact_content.form_title}}{{else}}Royal Correspondence{{/if}}
+                    </h2>
+                    {{#if contact_content.form_description}}
+                    <p class="luxury-chamber-description-contact">
+                        {{contact_content.form_description}}
+                    </p>
                     {{/if}}
                 </div>
                 
-                <!-- Social Links -->
-                {{#if socialLinks}}
-                <div class="mt-16">
-                    <h3 class="text-2xl font-bold mb-8 luxury-heading">Follow My Journey</h3>
-                    <div class="flex space-x-6">
-                        {{#each socialLinks}}
-                        <a href="{{this.url}}" class="w-16 h-16 bg-gradient-to-br from-luxury-primary to-luxury-accent rounded-full flex items-center justify-center text-white hover:shadow-2xl transition-all duration-300 transform hover:scale-110 luxury-float">
-                            <i class="fab fa-{{this.icon}} text-xl"></i>
-                        </a>
-                        {{/each}}
+                <!-- Royal Contact Form -->
+                <div class="luxury-royal-form-container">
+                    <form method="POST" class="luxury-royal-form" id="luxuryContactForm">
+                        <!-- Name Field -->
+                        <div class="luxury-form-field">
+                            <label for="name" class="luxury-form-label">
+                                {{#if contact_content.form_name_label}}{{contact_content.form_name_label}}{{else}}Noble Name{{/if}}
+                            </label>
+                            <div class="luxury-input-wrapper">
+                                <input type="text" id="name" name="name" required 
+                                       class="luxury-royal-input">
+                                <div class="luxury-input-border"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Email Field -->
+                        <div class="luxury-form-field">
+                            <label for="email" class="luxury-form-label">
+                                {{#if contact_content.form_email_label}}{{contact_content.form_email_label}}{{else}}Royal Email{{/if}}
+                            </label>
+                            <div class="luxury-input-wrapper">
+                                <input type="email" id="email" name="email" required 
+                                       class="luxury-royal-input">
+                                <div class="luxury-input-border"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Phone Field -->
+                        <div class="luxury-form-field">
+                            <label for="phone" class="luxury-form-label">
+                                {{#if contact_content.form_phone_label}}{{contact_content.form_phone_label}}{{else}}Distinguished Contact (Optional){{/if}}
+                            </label>
+                            <div class="luxury-input-wrapper">
+                                <input type="tel" id="phone" name="phone" 
+                                       class="luxury-royal-input">
+                                <div class="luxury-input-border"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Date Field -->
+                        <div class="luxury-form-field">
+                            <label for="date" class="luxury-form-label">
+                                {{#if contact_content.form_date_label}}{{contact_content.form_date_label}}{{else}}Preferred Royal Date{{/if}}
+                            </label>
+                            <div class="luxury-input-wrapper">
+                                <input type="date" id="date" name="date" 
+                                       class="luxury-royal-input">
+                                <div class="luxury-input-border"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Duration Field -->
+                        <div class="luxury-form-field">
+                            <label for="duration" class="luxury-form-label">
+                                {{#if contact_content.form_duration_label}}{{contact_content.form_duration_label}}{{else}}Engagement Duration{{/if}}
+                            </label>
+                            <div class="luxury-input-wrapper">
+                                <select id="duration" name="duration" class="luxury-royal-input">
+                                    <option value="">Select royal engagement</option>
+                                    {{#each (split (or contact_content.form_duration_options "Royal Hour,Imperial 90 Minutes,Distinguished 2 Hours,Extended 3 Hours,Palace Overnight,Imperial Extended (specify)") ",")}}
+                                        <option value="{{trim this}}">{{trim this}}</option>
+                                    {{/each}}
+                                </select>
+                                <div class="luxury-input-border"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Message Field -->
+                        <div class="luxury-form-field">
+                            <label for="message" class="luxury-form-label">
+                                {{#if contact_content.form_message_label}}{{contact_content.form_message_label}}{{else}}Royal Message{{/if}}
+                            </label>
+                            <div class="luxury-input-wrapper">
+                                <textarea id="message" name="message" rows="5" required 
+                                          class="luxury-royal-input"
+                                          placeholder="{{#if contact_content.form_message_placeholder}}{{contact_content.form_message_placeholder}}{{else}}Share your distinguished requests and inquiries...{{/if}}"></textarea>
+                                <div class="luxury-input-border"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Royal Submit Button -->
+                        <button type="submit" class="luxury-royal-submit-btn">
+                            <span class="luxury-btn-text">
+                                {{#if contact_content.form_button_text}}{{contact_content.form_button_text}}{{else}}Send Royal Message{{/if}}
+                            </span>
+                            <div class="luxury-btn-crown">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                            <div class="luxury-btn-shimmer"></div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Royal Information Palace -->
+            <div class="luxury-info-palace" data-aos="fade-left">
+                
+                <!-- Direct Contact Palace -->
+                {{#if contact_content.contact_direct_visible}}
+                <div class="luxury-direct-contact-palace">
+                    <div class="luxury-palace-dome-small"></div>
+                    <div class="luxury-palace-header">
+                        <div class="luxury-palace-icon">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <h3 class="luxury-palace-title">
+                            {{#if contact_content.direct_title}}{{contact_content.direct_title}}{{else}}Direct Royal Contact{{/if}}
+                        </h3>
+                    </div>
+                    
+                    <div class="luxury-contact-details">
+                        <!-- Email -->
+                        <div class="luxury-contact-item" data-aos="fade-up" data-aos-delay="100">
+                            <div class="luxury-contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="luxury-contact-info">
+                                <span class="luxury-contact-label">
+                                    {{#if contact_content.direct_email_label}}{{contact_content.direct_email_label}}{{else}}Royal Email{{/if}}
+                                </span>
+                                <a href="mailto:{{contactEmail}}" class="luxury-contact-value">{{contactEmail}}</a>
+                            </div>
+                        </div>
+                        
+                        <!-- Phone -->
+                        {{#if contactPhone}}
+                        <div class="luxury-contact-item" data-aos="fade-up" data-aos-delay="200">
+                            <div class="luxury-contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="luxury-contact-info">
+                                <span class="luxury-contact-label">
+                                    {{#if contact_content.direct_phone_label}}{{contact_content.direct_phone_label}}{{else}}Royal Telephone{{/if}}
+                                </span>
+                                <a href="tel:{{contactPhone}}" class="luxury-contact-value">{{contactPhone}}</a>
+                            </div>
+                        </div>
+                        {{/if}}
+                        
+                        <!-- Response Time -->
+                        <div class="luxury-contact-item" data-aos="fade-up" data-aos-delay="300">
+                            <div class="luxury-contact-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="luxury-contact-info">
+                                <span class="luxury-contact-label">
+                                    {{#if contact_content.direct_response_label}}{{contact_content.direct_response_label}}{{else}}Royal Response{{/if}}
+                                </span>
+                                <span class="luxury-contact-value">
+                                    {{#if contact_content.direct_response_text}}{{contact_content.direct_response_text}}{{else}}Within royal hours{{/if}}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Guidelines Palace -->
+                {{#if contact_content.contact_guidelines_visible}}
+                <div class="luxury-guidelines-palace">
+                    <div class="luxury-palace-dome-small"></div>
+                    <div class="luxury-palace-header">
+                        <div class="luxury-palace-icon">
+                            <i class="fas fa-scroll"></i>
+                        </div>
+                        <h3 class="luxury-palace-title">
+                            {{#if contact_content.guidelines_title}}{{contact_content.guidelines_title}}{{else}}Royal Protocol{{/if}}
+                        </h3>
+                    </div>
+                    
+                    <div class="luxury-guidelines-content">
+                        {{#if contact_content.guidelines_content}}
+                        <div class="luxury-guidelines-rich-content">
+                            {{{contact_content.guidelines_content}}}
+                        </div>
+                        {{else}}
+                        {{#if contact_content.guideline_1}}
+                        <div class="luxury-guideline-item" data-aos="fade-up" data-aos-delay="100">
+                            <div class="luxury-guideline-crown">❦</div>
+                            <span>{{contact_content.guideline_1}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if contact_content.guideline_2}}
+                        <div class="luxury-guideline-item" data-aos="fade-up" data-aos-delay="200">
+                            <div class="luxury-guideline-crown">❦</div>
+                            <span>{{contact_content.guideline_2}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if contact_content.guideline_3}}
+                        <div class="luxury-guideline-item" data-aos="fade-up" data-aos-delay="300">
+                            <div class="luxury-guideline-crown">❦</div>
+                            <span>{{contact_content.guideline_3}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if contact_content.guideline_4}}
+                        <div class="luxury-guideline-item" data-aos="fade-up" data-aos-delay="400">
+                            <div class="luxury-guideline-crown">❦</div>
+                            <span>{{contact_content.guideline_4}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if contact_content.guideline_5}}
+                        <div class="luxury-guideline-item" data-aos="fade-up" data-aos-delay="500">
+                            <div class="luxury-guideline-crown">❦</div>
+                            <span>{{contact_content.guideline_5}}</span>
+                        </div>
+                        {{/if}}
+                        
+                        <!-- Default guidelines if none provided -->
+                        {{#unless contact_content.guideline_1}}
+                        <div class="luxury-guideline-item" data-aos="fade-up" data-aos-delay="100">
+                            <div class="luxury-guideline-crown">❦</div>
+                            <span>Advance bookings are preferred for royal engagements</span>
+                        </div>
+                        <div class="luxury-guideline-item" data-aos="fade-up" data-aos-delay="200">
+                            <div class="luxury-guideline-crown">❦</div>
+                            <span>Please provide detailed information about your distinguished request</span>
+                        </div>
+                        <div class="luxury-guideline-item" data-aos="fade-up" data-aos-delay="300">
+                            <div class="luxury-guideline-crown">❦</div>
+                            <span>All communications are treated with utmost royal discretion</span>
+                        </div>
+                        {{/unless}}
+                        {{/if}}
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Location Palace -->
+                {{#if contact_content.contact_location_visible}}
+                <div class="luxury-location-palace">
+                    <div class="luxury-palace-dome-small"></div>
+                    <div class="luxury-palace-header">
+                        <div class="luxury-palace-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h3 class="luxury-palace-title">
+                            {{#if contact_content.location_title}}{{contact_content.location_title}}{{else}}Royal Territories{{/if}}
+                        </h3>
+                    </div>
+                    
+                    <div class="luxury-location-content">
+                        {{#if contact_content.location_content}}
+                        <div class="luxury-location-rich-content">
+                            {{{contact_content.location_content}}}
+                        </div>
+                        {{else}}
+                        {{#if contact_content.location_area_text}}
+                        <p class="luxury-location-text">{{contact_content.location_area_text}}</p>
+                        {{/if}}
+                        {{#if contact_content.location_services_text}}
+                        <p class="luxury-location-text">{{contact_content.location_services_text}}</p>
+                        {{/if}}
+                        {{#if contact_content.location_travel_text}}
+                        <p class="luxury-location-text">{{contact_content.location_travel_text}}</p>
+                        {{/if}}
+                        {{/if}}
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Privacy Palace -->
+                {{#if contact_content.contact_privacy_visible}}
+                <div class="luxury-privacy-palace">
+                    <div class="luxury-palace-dome-small"></div>
+                    <div class="luxury-palace-header">
+                        <div class="luxury-palace-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3 class="luxury-palace-title">
+                            {{#if contact_content.privacy_title}}{{contact_content.privacy_title}}{{else}}Royal Discretion{{/if}}
+                        </h3>
+                    </div>
+                    
+                    <div class="luxury-privacy-content">
+                        {{#if contact_content.privacy_content}}
+                        <div class="luxury-privacy-rich-content">
+                            {{{contact_content.privacy_content}}}
+                        </div>
+                        {{else}}
+                        <p class="luxury-privacy-text">
+                            {{#if contact_content.privacy_text}}{{contact_content.privacy_text}}{{else}}All royal communications are maintained with the highest levels of discretion and confidentiality. Your privacy is safeguarded with imperial protection, and mutual respect is expected in all interactions.{{/if}}
+                        </p>
+                        {{/if}}
                     </div>
                 </div>
                 {{/if}}
             </div>
-            
-            <!-- Contact Form -->
-            <div data-aos="fade-left">
-                <div class="luxury-card p-12 shadow-2xl">
-                    <h2 class="text-3xl font-bold mb-10 luxury-heading text-luxury-primary">
-                        Send a Message
-                    </h2>
-                    
-                    <form id="contactForm" class="space-y-8">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div>
-                                <label for="firstName" class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">
-                                    First Name *
-                                </label>
-                                <input type="text" id="firstName" name="firstName" required
-                                       class="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-luxury-primary focus:border-transparent transition-all text-lg">
-                            </div>
-                            <div>
-                                <label for="lastName" class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">
-                                    Last Name *
-                                </label>
-                                <input type="text" id="lastName" name="lastName" required
-                                       class="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-luxury-primary focus:border-transparent transition-all text-lg">
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label for="email" class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">
-                                Email Address *
-                            </label>
-                            <input type="email" id="email" name="email" required
-                                   class="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-luxury-primary focus:border-transparent transition-all text-lg">
-                        </div>
-                        
-                        <div>
-                            <label for="phone" class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">
-                                Phone Number
-                            </label>
-                            <input type="tel" id="phone" name="phone"
-                                   class="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-luxury-primary focus:border-transparent transition-all text-lg">
-                        </div>
-                        
-                        <div>
-                            <label for="subject" class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">
-                                Subject *
-                            </label>
-                            <select id="subject" name="subject" required
-                                    class="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-luxury-primary focus:border-transparent transition-all text-lg">
-                                <option value="">Select a subject</option>
-                                <option value="general">General Inquiry</option>
-                                <option value="booking">Exclusive Booking</option>
-                                <option value="rates">Luxury Services & Rates</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        
-                        <div>
-                            <label for="message" class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">
-                                Message *
-                            </label>
-                            <textarea id="message" name="message" rows="6" required
-                                      class="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-luxury-primary focus:border-transparent transition-all text-lg"></textarea>
-                        </div>
-                        
-                        <div>
-                            <button type="submit" class="luxury-btn w-full text-lg py-4">
-                                <i class="fas fa-paper-plane mr-3"></i>
-                                Send Luxury Message
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
         </div>
     </div>
 </section>
 
-<!-- Response Expectations -->
-<section class="py-24 bg-gradient-to-r from-gray-50 to-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16" data-aos="fade-up">
-            <h2 class="text-4xl font-bold mb-6 luxury-heading text-luxury-primary">
-                What to Expect
+<!-- Royal CTA Palace Section -->
+<section class="luxury-contact-cta-palace" data-aos="fade-in">
+    <!-- Imperial CTA Background -->
+    <div class="luxury-cta-imperial-bg-contact">
+        <div class="luxury-imperial-columns-contact">
+            <div class="luxury-column-contact luxury-column-1-contact"></div>
+            <div class="luxury-column-contact luxury-column-2-contact"></div>
+            <div class="luxury-column-contact luxury-column-3-contact"></div>
+            <div class="luxury-column-contact luxury-column-4-contact"></div>
+        </div>
+        <div class="luxury-imperial-pattern-contact"></div>
+    </div>
+    
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <div class="luxury-cta-content-imperial-contact" data-aos="zoom-in" data-aos-delay="200">
+            <div class="luxury-cta-crown-contact" data-aos="bounce" data-aos-delay="400">
+                <i class="fas fa-crown"></i>
+            </div>
+            <h2 class="luxury-cta-title-imperial-contact" data-aos="fade-up" data-aos-delay="200">
+                {{#if contact_content.cta_title}}{{contact_content.cta_title}}{{else}}Ready to Connect?{{/if}}
             </h2>
-            <p class="text-xl text-gray-600">
-                My commitment to exceptional service begins with our first interaction
+            
+            <p class="luxury-cta-subtitle-imperial-contact" data-aos="fade-up" data-aos-delay="400">
+                {{#if contact_content.cta_description}}{{contact_content.cta_description}}{{else}}Take the next step towards an exceptional experience. Your discretion and satisfaction are my highest priorities.{{/if}}
             </p>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="luxury-card p-10 text-center group hover:scale-105 transition-all duration-500" data-aos="fade-up" data-aos-delay="0">
-                <div class="w-24 h-24 mx-auto mb-8 bg-gradient-to-br from-luxury-primary to-luxury-accent rounded-full flex items-center justify-center shadow-xl luxury-float">
-                    <i class="fas fa-bolt text-3xl text-white"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-4 luxury-heading group-hover:text-luxury-primary transition-colors">Swift Response</h3>
-                <p class="text-gray-600 leading-relaxed">I respond to all luxury inquiries within 6 hours with personalized attention and care</p>
-            </div>
             
-            <div class="luxury-card p-10 text-center group hover:scale-105 transition-all duration-500" data-aos="fade-up" data-aos-delay="100">
-                <div class="w-24 h-24 mx-auto mb-8 bg-gradient-to-br from-luxury-primary to-luxury-accent rounded-full flex items-center justify-center shadow-xl luxury-float">
-                    <i class="fas fa-shield-alt text-3xl text-white"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-4 luxury-heading group-hover:text-luxury-primary transition-colors">Ultimate Discretion</h3>
-                <p class="text-gray-600 leading-relaxed">Absolute confidentiality and the highest level of privacy in all communications</p>
-            </div>
-            
-            <div class="luxury-card p-10 text-center group hover:scale-105 transition-all duration-500" data-aos="fade-up" data-aos-delay="200">
-                <div class="w-24 h-24 mx-auto mb-8 bg-gradient-to-br from-luxury-primary to-luxury-accent rounded-full flex items-center justify-center shadow-xl luxury-float">
-                    <i class="fas fa-concierge-bell text-3xl text-white"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-4 luxury-heading group-hover:text-luxury-primary transition-colors">VIP Treatment</h3>
-                <p class="text-gray-600 leading-relaxed">Every interaction is handled with the utmost professionalism and luxury service standards</p>
+            <div class="luxury-cta-buttons-imperial-contact" data-aos="fade-up" data-aos-delay="600">
+                <!-- Primary CTA Button -->
+                <a href="/{{model.slug}}/rates{{previewParam}}" class="luxury-cta-btn-primary-contact">
+                    <span class="luxury-btn-text-contact">View Services & Rates</span>
+                    <div class="luxury-btn-crown-contact">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <div class="luxury-btn-shimmer-contact"></div>
+                </a>
+                
+                <!-- Secondary CTA Button -->
+                <a href="/{{model.slug}}/calendar{{previewParam}}" class="luxury-cta-btn-secondary-contact">
+                    <span class="luxury-btn-text-contact">Check Availability</span>
+                    <div class="luxury-btn-icon-contact">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </a>
             </div>
         </div>
     </div>
 </section>
 
+<!-- Luxury Contact Page Styles -->
+<style>
+/* Luxury Color Palette */
+:root {
+    --luxury-gold: #d4af37;
+    --luxury-gold-light: #f7e98e;
+    --luxury-gold-dark: #b8941f;
+    --luxury-rose-gold: #e8b4b8;
+    --luxury-deep-purple: #2d1b3d;
+    --luxury-burgundy: #8b1538;
+    --luxury-champagne: #f7e7ce;
+    --luxury-black: #1a1a1a;
+    --luxury-white: #ffffff;
+    --luxury-marble: #f8f9fa;
+}
+
+/* Contact Header Styling */
+.luxury-contact-header {
+    position: relative;
+    padding: 8rem 0 6rem;
+    background: linear-gradient(135deg, var(--luxury-deep-purple) 0%, var(--luxury-burgundy) 50%, var(--luxury-black) 100%);
+    overflow: hidden;
+    min-height: 60vh;
+}
+
+.luxury-header-palace-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at 30% 20%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(232, 180, 184, 0.1) 0%, transparent 50%);
+    filter: blur(40px);
+}
+
+.luxury-header-decorations {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.luxury-floating-crown {
+    position: absolute;
+    color: var(--luxury-gold);
+    font-size: 2rem;
+    animation: luxuryContactFloat 8s infinite ease-in-out;
+}
+
+.luxury-crown-1 {
+    top: 15%;
+    left: 15%;
+    animation-delay: 0s;
+}
+
+.luxury-crown-2 {
+    top: 20%;
+    right: 20%;
+    animation-delay: 4s;
+}
+
+.luxury-floating-ornament {
+    position: absolute;
+    color: var(--luxury-rose-gold);
+    font-size: 1.5rem;
+    animation: luxuryContactFloat 10s infinite ease-in-out;
+}
+
+.luxury-ornament-1 {
+    bottom: 30%;
+    left: 25%;
+    animation-delay: 2s;
+}
+
+.luxury-ornament-2 {
+    bottom: 25%;
+    right: 30%;
+    animation-delay: 6s;
+}
+
+@keyframes luxuryContactFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.6; }
+    25% { transform: translateY(-20px) rotate(90deg); opacity: 1; }
+    50% { transform: translateY(-15px) rotate(180deg); opacity: 0.8; }
+    75% { transform: translateY(-25px) rotate(270deg); opacity: 1; }
+}
+
+.luxury-royal-emblem {
+    font-size: 4rem;
+    color: var(--luxury-gold);
+    margin-bottom: 2rem;
+    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.4));
+}
+
+.luxury-contact-title {
+    font-size: 4.5rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 2rem;
+    background: linear-gradient(45deg, var(--luxury-white) 20%, var(--luxury-gold) 50%, var(--luxury-rose-gold) 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 50px rgba(212, 175, 55, 0.3);
+}
+
+.luxury-contact-subtitle {
+    font-size: 1.4rem;
+    color: var(--luxury-champagne);
+    text-align: center;
+    font-weight: 300;
+    letter-spacing: 1px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.luxury-contact-description {
+    font-size: 1.2rem;
+    color: rgba(247, 231, 206, 0.9);
+    text-align: center;
+    font-weight: 300;
+    line-height: 1.6;
+    max-width: 700px;
+    margin: 1.5rem auto 0;
+}
+
+.luxury-contact-subtext {
+    font-size: 1rem;
+    color: rgba(247, 231, 206, 0.8);
+    text-align: center;
+    font-style: italic;
+    max-width: 600px;
+    margin: 1rem auto 0;
+}
+
+/* Contact Chambers */
+.luxury-contact-chambers {
+    padding: 8rem 0;
+    background: linear-gradient(180deg, var(--luxury-black) 0%, var(--luxury-deep-purple) 100%);
+    color: var(--luxury-white);
+}
+
+/* Message Chamber */
+.luxury-message-chamber {
+    position: relative;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+    border: 2px solid rgba(212, 175, 55, 0.2);
+    border-radius: 30px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.luxury-chamber-dome-contact {
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 100px;
+    background: linear-gradient(180deg, var(--luxury-gold) 0%, var(--luxury-gold-dark) 100%);
+    border-radius: 50% 50% 0 0;
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+}
+
+.luxury-chamber-header-contact {
+    position: relative;
+    text-align: center;
+    padding: 4rem 2rem 2rem;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, transparent 100%);
+}
+
+.luxury-header-crown-contact {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--luxury-gold-light) 100%);
+    border-radius: 50%;
+    color: var(--luxury-black);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.4);
+    animation: luxuryContactPulse 3s infinite ease-in-out;
+}
+
+@keyframes luxuryContactPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.luxury-chamber-title-contact {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--luxury-white);
+    margin: 0;
+    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--luxury-white) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.luxury-chamber-description-contact {
+    font-size: 1.1rem;
+    color: var(--luxury-champagne);
+    text-align: center;
+    font-style: italic;
+    opacity: 0.9;
+    margin-top: 1rem;
+    line-height: 1.5;
+}
+
+/* Royal Form Styling */
+.luxury-royal-form-container {
+    padding: 3rem;
+}
+
+.luxury-royal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.luxury-form-field {
+    position: relative;
+}
+
+.luxury-form-label {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--luxury-gold);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.luxury-input-wrapper {
+    position: relative;
+}
+
+.luxury-royal-input {
+    width: 100%;
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    border-radius: 15px;
+    color: var(--luxury-white);
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.luxury-royal-input:focus {
+    outline: none;
+    border-color: var(--luxury-gold);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.2);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+}
+
+.luxury-royal-input::placeholder {
+    color: rgba(247, 231, 206, 0.6);
+    font-style: italic;
+}
+
+.luxury-input-border {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--luxury-gold) 0%, var(--luxury-rose-gold) 100%);
+    transition: width 0.3s ease;
+}
+
+.luxury-royal-input:focus + .luxury-input-border {
+    width: 100%;
+}
+
+/* Royal Submit Button */
+.luxury-royal-submit-btn {
+    position: relative;
+    width: 100%;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(45deg, var(--luxury-gold) 0%, #ffdc73 50%, var(--luxury-rose-gold) 100%);
+    border: none;
+    border-radius: 25px;
+    color: var(--luxury-black);
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.4);
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.luxury-royal-submit-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 20px 45px rgba(212, 175, 55, 0.5);
+}
+
+.luxury-btn-text {
+    position: relative;
+    z-index: 2;
+}
+
+.luxury-btn-crown {
+    position: absolute;
+    top: 50%;
+    right: 1.5rem;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    color: var(--luxury-black);
+    z-index: 2;
+    animation: luxuryBtnCrownRotate 4s infinite ease-in-out;
+}
+
+@keyframes luxuryBtnCrownRotate {
+    0%, 100% { transform: translateY(-50%) rotate(0deg); }
+    50% { transform: translateY(-50%) rotate(10deg); }
+}
+
+.luxury-btn-shimmer {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    transition: left 0.6s ease;
+}
+
+.luxury-royal-submit-btn:hover .luxury-btn-shimmer {
+    left: 100%;
+}
+
+/* Information Palace */
+.luxury-info-palace {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.luxury-direct-contact-palace,
+.luxury-guidelines-palace,
+.luxury-location-palace,
+.luxury-privacy-palace {
+    position: relative;
+    background: linear-gradient(145deg, rgba(212, 175, 55, 0.05) 0%, rgba(232, 180, 184, 0.05) 100%);
+    border: 2px solid rgba(212, 175, 55, 0.15);
+    border-radius: 25px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.luxury-palace-dome-small {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 60px;
+    background: linear-gradient(180deg, var(--luxury-gold) 0%, var(--luxury-gold-dark) 100%);
+    border-radius: 50% 50% 0 0;
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+}
+
+.luxury-palace-header {
+    text-align: center;
+    padding: 3rem 2rem 1.5rem;
+}
+
+.luxury-palace-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--luxury-rose-gold) 100%);
+    border-radius: 50%;
+    color: var(--luxury-black);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+}
+
+.luxury-palace-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--luxury-white);
+    margin: 0;
+    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--luxury-white) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Contact Details */
+.luxury-contact-details {
+    padding: 0 2rem 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.luxury-contact-item {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.luxury-contact-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.15);
+}
+
+.luxury-contact-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--luxury-rose-gold) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1.5rem;
+    font-size: 1.2rem;
+    color: var(--luxury-black);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+}
+
+.luxury-contact-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.luxury-contact-label {
+    font-size: 0.9rem;
+    color: var(--luxury-gold);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.25rem;
+}
+
+.luxury-contact-value {
+    font-size: 1.1rem;
+    color: var(--luxury-white);
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.luxury-contact-value:hover {
+    color: var(--luxury-gold);
+}
+
+/* Guidelines */
+.luxury-guidelines-content,
+.luxury-location-content,
+.luxury-privacy-content {
+    padding: 0 2rem 3rem;
+}
+
+.luxury-guideline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+    border-radius: 10px;
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.luxury-guideline-item:hover {
+    transform: translateX(5px);
+}
+
+.luxury-guideline-crown {
+    color: var(--luxury-gold);
+    font-size: 1.2rem;
+    margin-top: 0.1rem;
+    flex-shrink: 0;
+}
+
+.luxury-location-text,
+.luxury-privacy-text {
+    color: var(--luxury-champagne);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+}
+
+.luxury-location-text:last-child,
+.luxury-privacy-text:last-child {
+    margin-bottom: 0;
+}
+
+/* Rich Content Styling */
+.luxury-guidelines-rich-content,
+.luxury-location-rich-content,
+.luxury-privacy-rich-content {
+    color: var(--luxury-champagne);
+    line-height: 1.7;
+}
+
+.luxury-guidelines-rich-content p,
+.luxury-location-rich-content p,
+.luxury-privacy-rich-content p {
+    margin-bottom: 1rem;
+}
+
+.luxury-guidelines-rich-content p:last-child,
+.luxury-location-rich-content p:last-child,
+.luxury-privacy-rich-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* Royal Contact CTA Palace Section */
+.luxury-contact-cta-palace {
+    padding: 8rem 0;
+    background: linear-gradient(135deg, var(--luxury-deep-purple) 0%, var(--luxury-burgundy) 50%, var(--luxury-black) 100%);
+    position: relative;
+    overflow: hidden;
+    color: var(--luxury-white);
+}
+
+.luxury-cta-imperial-bg-contact {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.luxury-imperial-columns-contact {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.luxury-column-contact {
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(180deg, transparent 0%, rgba(212, 175, 55, 0.1) 50%, transparent 100%);
+    animation: luxuryContactColumnGlow 4s ease-in-out infinite alternate;
+}
+
+.luxury-column-1-contact { animation-delay: 0s; }
+.luxury-column-2-contact { animation-delay: 1s; }
+.luxury-column-3-contact { animation-delay: 2s; }
+.luxury-column-4-contact { animation-delay: 3s; }
+
+@keyframes luxuryContactColumnGlow {
+    0% { opacity: 0.3; transform: scaleY(0.8); }
+    100% { opacity: 0.8; transform: scaleY(1.2); }
+}
+
+.luxury-imperial-pattern-contact {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at 25% 25%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 75% 75%, rgba(232, 180, 184, 0.05) 0%, transparent 50%);
+}
+
+.luxury-cta-content-imperial-contact {
+    position: relative;
+    z-index: 10;
+}
+
+.luxury-cta-crown-contact {
+    font-size: 3rem;
+    color: var(--luxury-gold);
+    margin-bottom: 2rem;
+    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.4));
+}
+
+.luxury-cta-title-imperial-contact {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    background: linear-gradient(45deg, var(--luxury-white) 20%, var(--luxury-gold) 50%, var(--luxury-rose-gold) 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 50px rgba(212, 175, 55, 0.3);
+}
+
+.luxury-cta-subtitle-imperial-contact {
+    font-size: 1.4rem;
+    color: var(--luxury-champagne);
+    margin-bottom: 3rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+.luxury-cta-buttons-imperial-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.luxury-cta-btn-primary-contact,
+.luxury-cta-btn-secondary-contact {
+    position: relative;
+    padding: 1.25rem 2.5rem;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    min-width: 280px;
+    justify-content: center;
+}
+
+.luxury-cta-btn-primary-contact {
+    background: linear-gradient(45deg, var(--luxury-gold) 0%, #ffdc73 50%, var(--luxury-rose-gold) 100%);
+    color: var(--luxury-black);
+    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.4);
+}
+
+.luxury-cta-btn-primary-contact:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 20px 45px rgba(212, 175, 55, 0.5);
+}
+
+.luxury-cta-btn-secondary-contact {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+    border: 2px solid rgba(212, 175, 55, 0.5);
+    color: var(--luxury-white);
+    backdrop-filter: blur(10px);
+}
+
+.luxury-cta-btn-secondary-contact:hover {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 100%);
+    border-color: var(--luxury-gold);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.2);
+}
+
+.luxury-btn-text-contact {
+    position: relative;
+    z-index: 2;
+}
+
+.luxury-btn-crown-contact,
+.luxury-btn-icon-contact {
+    font-size: 1.2rem;
+    z-index: 2;
+}
+
+.luxury-btn-shimmer-contact {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    transition: left 0.6s ease;
+}
+
+.luxury-cta-btn-primary-contact:hover .luxury-btn-shimmer-contact {
+    left: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .luxury-contact-chambers .grid {
+        gap: 4rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .luxury-contact-title {
+        font-size: 3rem;
+    }
+    
+    .luxury-contact-subtitle {
+        font-size: 1.2rem;
+        padding: 0 1rem;
+    }
+    
+    .luxury-contact-description {
+        font-size: 1.1rem;
+    }
+    
+    .luxury-contact-subtext {
+        font-size: 0.9rem;
+    }
+    
+    .luxury-chamber-title-contact {
+        font-size: 2rem;
+    }
+    
+    .luxury-chamber-description-contact {
+        font-size: 1rem;
+    }
+    
+    .luxury-royal-form-container {
+        padding: 2rem;
+    }
+    
+    .luxury-contact-item {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .luxury-contact-icon {
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+    
+    .luxury-info-palace {
+        gap: 2rem;
+    }
+    
+    .luxury-cta-title-imperial-contact {
+        font-size: 2.5rem;
+    }
+    
+    .luxury-cta-subtitle-imperial-contact {
+        font-size: 1.2rem;
+    }
+    
+    .luxury-cta-buttons-imperial-contact {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .luxury-cta-btn-primary-contact,
+    .luxury-cta-btn-secondary-contact {
+        min-width: 250px;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .luxury-contact-header {
+        padding: 6rem 0 4rem;
+    }
+    
+    .luxury-contact-chambers {
+        padding: 4rem 0;
+    }
+    
+    .luxury-contact-title {
+        font-size: 2.5rem;
+    }
+    
+    .luxury-contact-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .luxury-contact-description {
+        font-size: 1rem;
+        padding: 0 1rem;
+    }
+    
+    .luxury-contact-subtext {
+        font-size: 0.8rem;
+        padding: 0 1rem;
+    }
+    
+    .luxury-chamber-header-contact {
+        padding: 3rem 1rem 2rem;
+    }
+    
+    .luxury-chamber-title-contact {
+        font-size: 1.8rem;
+    }
+    
+    .luxury-royal-form-container {
+        padding: 1.5rem;
+    }
+    
+    .luxury-palace-header {
+        padding: 2.5rem 1rem 1.5rem;
+    }
+    
+    .luxury-contact-cta-palace {
+        padding: 4rem 0;
+    }
+    
+    .luxury-cta-title-imperial-contact {
+        font-size: 2rem;
+    }
+    
+    .luxury-cta-subtitle-imperial-contact {
+        font-size: 1.1rem;
+        padding: 0 1rem;
+    }
+    
+    .luxury-cta-btn-primary-contact,
+    .luxury-cta-btn-secondary-contact {
+        min-width: 200px;
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+    }
+}
+</style>
+
+<!-- Royal Contact Form JavaScript -->
 <script>
-document.getElementById('contactForm').addEventListener('submit', function(e) {
+// Luxury Contact Form Handling
+document.getElementById('luxuryContactForm')?.addEventListener('submit', function(e) {
     e.preventDefault();
     
     // Get form data
     const formData = new FormData(this);
-    const data = Object.fromEntries(formData.entries());
+    const data = Object.fromEntries(formData);
     
-    // Here you would typically send the data to your backend
-    console.log('Luxury contact form submitted:', data);
+    // Royal form validation
+    if (!data.name || !data.email || !data.message) {
+        // Create royal alert
+        showRoyalAlert('Please complete all required fields for your royal correspondence.', 'warning');
+        return;
+    }
     
-    // Show success message (replace with actual implementation)
-    alert('Thank you for your luxury inquiry! I will respond personally within 6 hours.');
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.email)) {
+        showRoyalAlert('Please provide a valid royal email address.', 'warning');
+        return;
+    }
+    
+    // Show success message
+    showRoyalAlert('Your royal message has been received! We shall respond with imperial haste.', 'success');
+    
+    // Reset form with royal animation
     this.reset();
+    
+    // Add some royal sparkle effect
+    createRoyalSparkles();
 });
+
+function showRoyalAlert(message, type) {
+    // Create royal alert element
+    const alert = document.createElement('div');
+    alert.className = `luxury-royal-alert luxury-alert-${type}`;
+    alert.innerHTML = `
+        <div class="luxury-alert-crown">
+            <i class="fas fa-crown"></i>
+        </div>
+        <div class="luxury-alert-message">${message}</div>
+        <div class="luxury-alert-close" onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+        </div>
+    `;
+    
+    // Add alert styles
+    alert.style.cssText = `
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        max-width: 400px;
+        padding: 1.5rem;
+        background: linear-gradient(45deg, ${type === 'success' ? 'var(--luxury-gold)' : 'var(--luxury-burgundy)'} 0%, ${type === 'success' ? 'var(--luxury-gold-light)' : 'var(--luxury-rose-gold)'} 100%);
+        color: var(--luxury-black);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        animation: luxurySlideIn 0.5s ease;
+        font-weight: 600;
+        backdrop-filter: blur(10px);
+    `;
+    
+    document.body.appendChild(alert);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (alert.parentElement) {
+            alert.style.animation = 'luxurySlideOut 0.5s ease';
+            setTimeout(() => alert.remove(), 500);
+        }
+    }, 5000);
+}
+
+function createRoyalSparkles() {
+    for (let i = 0; i < 8; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.innerHTML = '✨';
+        sparkle.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            font-size: 1.5rem;
+            color: var(--luxury-gold);
+            pointer-events: none;
+            z-index: 9999;
+            animation: luxurySparkleFloat 2s ease-out forwards;
+            animation-delay: ${i * 0.1}s;
+        `;
+        
+        document.body.appendChild(sparkle);
+        
+        setTimeout(() => sparkle.remove(), 2500);
+    }
+}
+
+// Add required CSS animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes luxurySlideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes luxurySlideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+    
+    @keyframes luxurySparkleFloat {
+        0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 1; }
+        50% { transform: translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px) scale(1) rotate(180deg); opacity: 0.8; }
+        100% { transform: translate(${Math.random() * 400 - 200}px, ${Math.random() * 400 - 200}px) scale(0) rotate(360deg); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
 </script>

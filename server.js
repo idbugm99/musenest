@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -93,6 +94,20 @@ app.use(impersonationMiddleware);
 // Static files
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
+// Serve model-specific system uploads (logos, watermarks, etc.)
+app.use('/:slug/uploads/system', (req, res, next) => {
+    const { slug } = req.params;
+    const systemPath = path.join(__dirname, 'public/uploads', slug, 'system');
+    
+    // Check if the system directory exists
+    if (!fs.existsSync(systemPath)) {
+        return res.status(404).send('System uploads not found');
+    }
+    
+    // Serve static files from the model's system directory
+    express.static(systemPath)(req, res, next);
+});
 // Admin static files (for components and assets)
 app.use('/admin/components', express.static(path.join(__dirname, 'admin/components')));
 app.use('/admin/assets', express.static(path.join(__dirname, 'admin/assets')));
@@ -144,6 +159,7 @@ app.engine('handlebars', engine({
         path.join(__dirname, 'themes/modern/partials'),
         path.join(__dirname, 'themes/dark/partials'),
         path.join(__dirname, 'themes/admin/partials'), // Admin partials
+        path.join(__dirname, 'themes/crm/partials'), // CRM partials
         path.join(__dirname, 'themes/partials') // Global partials
     ],
     defaultLayout: false, // We'll specify layouts per theme
@@ -157,9 +173,29 @@ app.engine('handlebars', engine({
         and: (a, b) => a && b,
         or: (a, b) => a || b,
         json: (context) => JSON.stringify(context),
-        formatDate: (date) => new Date(date).toLocaleDateString(),
-        formatCurrency: (amount) => `$${parseFloat(amount).toFixed(2)}`,
+        formatDate: (date, format) => {
+            if (!date) return '';
+            const d = new Date(date);
+            if (format === 'DD') return d.getDate().toString().padStart(2, '0');
+            if (format === 'MMM') return d.toLocaleDateString('en-US', { month: 'short' });
+            if (format === 'MMM DD, YYYY') return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            return d.toLocaleDateString();
+        },
+        formatCurrency: (amount) => {
+            if (!amount || isNaN(amount)) return '$0.00';
+            return `$${parseFloat(amount).toFixed(2)}`;
+        },
         truncate: (str, length = 100) => str && str.length > length ? str.substring(0, length) + '...' : str,
+        add: (a, b) => a + b,
+        subtract: (a, b) => a - b,
+        gt: (a, b) => a > b,
+        range: (start, end) => {
+            const result = [];
+            for (let i = start; i <= end; i++) {
+                result.push(i);
+            }
+            return result;
+        },
         
         // Component rendering helper (Phase A: Admin Interface Fix)
         renderComponent: function(componentName) {
@@ -193,11 +229,29 @@ app.engine('handlebars', engine({
             // Return pre-loaded featured images
             return this.galleries && this.galleries.featuredImages ? 
                 this.galleries.featuredImages.slice(0, limit) : [];
+        },
+        
+        // String manipulation helpers for contact templates
+        toLowerCase: (str) => {
+            if (!str) return '';
+            return String(str).toLowerCase();
+        },
+        trim: (str) => {
+            if (!str) return '';
+            return String(str).trim();
+        },
+        split: (str, delimiter) => {
+            if (!str) return [];
+            return str.split(delimiter);
         }
     }
 }));
 app.set('view engine', 'handlebars');
-app.set('views', path.join(__dirname, 'themes'));
+app.set('views', [
+    path.join(__dirname, 'themes'),
+    path.join(__dirname, 'themes/crm'),
+    path.join(__dirname, 'themes/admin')
+]);
 
 // Register major admin surfaces for duplicate detection in development
 registerComponent('route:/sysadmin', 'server.js');
@@ -310,28 +364,7 @@ app.get('/:slug/admin', async (req, res) => {
     }
 });
 
-// Model Admin: Gallery page
-app.get('/:slug/admin/gallery', async (req, res) => {
-    try {
-        const { slug } = req.params;
-        const rows = await db.query(
-            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
-            [slug]
-        );
-        if (!rows || !rows.length) return res.status(404).send('Model not found');
-        res.render('admin/pages/model-gallery', {
-            layout: 'admin/layouts/main',
-            pageTitle: 'Gallery Manager',
-            currentPage: 'model-gallery',
-            isModelAdmin: true,
-            model: rows[0],
-            legacyBanner: { message: 'This is a legacy admin surface. System admin lives at /sysadmin.' }
-        });
-    } catch (e) {
-        console.error('❌ Error loading model gallery page:', e);
-        res.status(500).send('Error loading model gallery');
-    }
-});
+// Gallery routes moved to after API routes to avoid conflicts
 
 // Model Admin: Content page
 app.get('/:slug/admin/content', async (req, res) => {
@@ -447,6 +480,11 @@ app.get('/:slug/admin/content/about', async (req, res) => {
 // Rates API (table-driven)
 app.use('/api/model-rates', require('./routes/api/model-rates'));
 app.use('/api/model-etiquette', require('./routes/api/model-etiquette'));
+app.use('/api/etiquette-simple', require('./routes/api/model-etiquette-simple'));
+app.use('/api/about-content', require('./routes/api/model-about-content'));
+app.use('/api/home-content', require('./routes/api/model-home-content'));
+app.use('/api/etiquette-rosemastos', require('./routes/api/model-etiquette-rosemastos'));
+app.use('/api/contact-rosemastos', require('./routes/api/model-contact-rosemastos'));
 
 // New Model Admin: Gallery Page Editor
 app.get('/:slug/admin/content/gallery', async (req, res) => {
@@ -512,7 +550,7 @@ app.get('/:slug/admin/content/etiquette', async (req, res) => {
         );
         if (!rows || !rows.length) return res.status(404).send('Model not found');
         
-        const etiquetteEditorPath = path.join(__dirname, 'admin/components/etiquette-page-editor.html');
+        const etiquetteEditorPath = path.join(__dirname, 'admin/components/etiquette-rosemastos-editor.html');
         const fs = require('fs');
         const etiquetteEditorHTML = fs.readFileSync(etiquetteEditorPath, 'utf8');
         
@@ -539,7 +577,7 @@ app.get('/:slug/admin/content/contact', async (req, res) => {
         );
         if (!rows || !rows.length) return res.status(404).send('Model not found');
         
-        const contactEditorPath = path.join(__dirname, 'admin/components/contact-page-editor.html');
+        const contactEditorPath = path.join(__dirname, 'admin/components/contact-rosemastos-editor.html');
         const fs = require('fs');
         const contactEditorHTML = fs.readFileSync(contactEditorPath, 'utf8');
         
@@ -553,6 +591,33 @@ app.get('/:slug/admin/content/contact', async (req, res) => {
     } catch (e) {
         console.error('❌ Error loading contact page editor:', e);
         res.status(500).send('Error loading contact page editor');
+    }
+});
+
+// Model Admin: About Page Content Editor
+app.get('/:slug/admin/content/about', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const rows = await db.query(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
+        
+        const aboutEditorPath = path.join(__dirname, 'admin/components/about-page-editor.html');
+        const fs = require('fs');
+        const aboutEditorHTML = fs.readFileSync(aboutEditorPath, 'utf8');
+        
+        res.render('admin/layouts/main', {
+            pageTitle: 'About Page Content Editor',
+            currentPage: 'about-page-editor',
+            isModelAdmin: true,
+            model: rows[0],
+            body: aboutEditorHTML
+        });
+    } catch (e) {
+        console.error('❌ Error loading about page editor:', e);
+        res.status(500).send('Error loading about page editor');
     }
 });
 
@@ -735,7 +800,23 @@ app.get('/test-upload.html', (req, res) => {
 });
 
 app.get('/test-db-flow.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'test-db-flow.html'));
+    res.sendFile(path.join(__dirname, 'public', 'test', 'db-flow.html'));
+});
+
+// New route for cleaner URL
+app.get('/test/db-flow', (req, res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.sendFile(path.join(__dirname, 'public', 'test', 'db-flow.html'));
+});
+
+// Alternative test route to bypass caching
+app.get('/test/pipeline-fresh', (req, res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.sendFile(path.join(__dirname, 'public', 'test', 'db-flow.html'));
 });
 
 // Test Basic Theme Route
@@ -2693,11 +2774,10 @@ app.use('/api/system-management', require('./routes/api/sysadmin'));
 app.use('/api/impersonation', require('./routes/api/impersonation'));
 app.use('/api/content-moderation', require('./routes/api/content-moderation'));
 app.use('/api/enhanced-content-moderation', require('./routes/api/enhanced-content-moderation'));
-app.use('/api/media-review-queue', require('./routes/api/sysadmin'));
+app.use('/api/media-review-queue', require('./routes/api/media-review-queue'));
 app.use('/api/admin-models', require('./routes/api/sysadmin'));
 app.use('/api/test', require('./routes/api/test'));
-app.use('/api/blip-webhook', require('./routes/api/blip-webhook'));
-app.use('/api/moderation-webhooks', require('./routes/api/moderation-webhooks'));
+// Webhook routes removed - now using parallel Venice.ai processing
 app.use('/api/ai-server-management', require('./routes/api/sysadmin'));
 app.use('/api/site-configuration', require('./routes/api/sysadmin'));
 app.use('/api/clients', require('./routes/api/clients'));
@@ -2712,6 +2792,11 @@ try {
   app.use('/api/model-gallery', require('./routes/api/model-gallery'));
 } catch (e) {
   // ignore during scaffold if missing
+}
+try {
+  app.use('/api/gallery-monitoring', require('./routes/api/gallery-monitoring'));
+} catch (e) {
+  console.warn('Gallery monitoring API not available:', e.message);
 }
 try {
   app.use('/api/model-media-library', require('./routes/api/model-media-library'));
@@ -2733,10 +2818,20 @@ try {
 try {
   app.use('/api/model-content-new', require('./routes/api/model-content-new'));
 } catch (e) {}
+try { 
+  app.use('/api/quick-facts', require('./routes/api/quick-facts')); 
+  console.log('✅ Quick Facts API route loaded successfully');
+} catch (e) { 
+  console.error('❌ Failed to load Quick Facts API route:', e.message);
+}
 try { app.use('/api/model-settings', require('./routes/api/model-settings')); } catch (e) {}
 try { app.use('/api/model-testimonials', require('./routes/api/model-testimonials')); } catch (e) {}
 try { app.use('/api/model-themes', require('./routes/api/model-themes')); } catch (e) {}
+try { app.use('/api/model-theme-settings', require('./routes/api/model-theme-settings')); } catch (e) {}
 try { app.use('/api/model-calendar', require('./routes/api/model-calendar')); } catch (e) {}
+
+// CRM API Routes
+app.use('/api/crm', require('./routes/api/crm/clients'));
 
 // Theme Management API
 app.get('/api/theme-management/models', async (req, res) => {
@@ -2941,6 +3036,7 @@ const PAGE_TYPE_MAP = {
     'etiquette': 16
 };
 
+
 // Get content for a specific page type by model slug
 app.get('/api/model-content-new/:slug/:pageType', async (req, res) => {
     try {
@@ -3031,16 +3127,43 @@ app.put('/api/model-content-new/:slug/:pageType', async (req, res) => {
     }
 });
 
+
+
 app.get('/api/theme-management/themes', async (req, res) => {
     try {
         const buildPreview = (path) => ({ url: path, embed: `${path}?embed=1` });
-        const themes = [
-            { id: 'basic', name: 'Basic', description: 'Professional & Clean', primary_color: '#1F2937', accent_color: '#10B981', preview: buildPreview('/test-basic') },
-            { id: 'glamour', name: 'Glamour', description: 'Pink & Stylish', primary_color: '#EC4899', accent_color: '#F97316', preview: buildPreview('/test-glamour') },
-            { id: 'luxury', name: 'Luxury', description: 'Gold & Elegant', primary_color: '#D97706', accent_color: '#92400E', preview: buildPreview('/test-luxury') },
-            { id: 'modern', name: 'Modern', description: 'Contemporary & Sleek', primary_color: '#2563EB', accent_color: '#06B6D4', preview: buildPreview('/test-modern') },
-            { id: 'dark', name: 'Dark', description: 'Cyberpunk & Edgy', primary_color: '#00ff88', accent_color: '#ff0088', preview: buildPreview('/test-dark') },
-        ];
+        
+        // Fetch themes from database
+        const themeRows = await db.query(`
+            SELECT id, name, display_name, description, default_color_scheme 
+            FROM theme_sets 
+            WHERE is_active = 1 
+            ORDER BY id ASC
+        `);
+        
+        const themes = themeRows.map(theme => {
+            // Parse the JSON color scheme
+            let colors = {};
+            try {
+                colors = theme.default_color_scheme ? 
+                    (typeof theme.default_color_scheme === 'string' ? 
+                        JSON.parse(theme.default_color_scheme) : theme.default_color_scheme) 
+                    : {};
+            } catch (e) {
+                console.warn('Failed to parse color scheme for theme', theme.id, e.message);
+                colors = { primary: '#3B82F6', accent: '#10B981' };
+            }
+            
+            return {
+                id: theme.id,  // Use numeric ID from database
+                name: theme.display_name || theme.name,
+                description: theme.description,
+                primary_color: colors.primary || '#3B82F6',
+                accent_color: colors.accent || colors.secondary || '#10B981',
+                preview: buildPreview(`/test-${theme.name}`)
+            };
+        });
+        
         res.json({ success: true, data: { themes } });
     } catch (error) {
         console.error('Error fetching themes:', error);
@@ -3053,9 +3176,74 @@ const apiKeyAuth = new ApiKeyAuth(db);
 const analysisConfigAPI = new AnalysisConfigAPI(db, apiKeyAuth);
 app.use('/api/v1/analysis', analysisConfigAPI.getRouter());
 
+// Model Admin: Gallery Routes (must come before catch-all route)
+app.get('/:slug/admin/gallery', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const rows = await db.query(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
+        res.render('admin/pages/model-gallery', {
+            layout: 'admin/layouts/main',
+            pageTitle: 'Gallery Manager',
+            currentPage: 'model-gallery',
+            isModelAdmin: true,
+            model: rows[0],
+            legacyBanner: { message: 'This is a legacy admin surface. System admin lives at /sysadmin.' }
+        });
+    } catch (e) {
+        console.error('❌ Error loading model gallery page:', e);
+        res.status(500).send('Error loading model gallery');
+    }
+});
+
+// Model Admin: Individual Gallery Section Management
+app.get('/:slug/admin/gallery/:sectionId', async (req, res) => {
+    try {
+        const { slug, sectionId } = req.params;
+        const rows = await db.query(
+            `SELECT id, name, slug FROM models WHERE slug = ? LIMIT 1`,
+            [slug]
+        );
+        if (!rows || !rows.length) return res.status(404).send('Model not found');
+        
+        // Get section details
+        const sectionRows = await db.query(
+            `SELECT id, title, layout_type, is_visible, layout_settings FROM gallery_sections WHERE id = ? AND model_id = ? LIMIT 1`,
+            [sectionId, rows[0].id]
+        );
+        if (!sectionRows || !sectionRows.length) return res.status(404).send('Gallery section not found');
+        
+        res.render('admin/pages/gallery-section-manager', {
+            layout: 'admin/layouts/main',
+            pageTitle: `Gallery Manager - ${sectionRows[0].title}`,
+            currentPage: 'gallery-section-manager',
+            isModelAdmin: true,
+            model: rows[0],
+            section: sectionRows[0],
+            modelSlug: slug
+        });
+    } catch (e) {
+        console.error('❌ Error loading gallery section manager:', e);
+        res.status(500).send('Error loading gallery section manager');
+    }
+});
+
+// Calendar visibility middleware for model routes
+const calendarVisibilityMiddleware = require('./middleware/calendarVisibility');
+
+// CRM Routes (must come before catch-all model_sites route)
+app.use('/:slug/crm', (req, res, next) => {
+    // Store the slug in req for CRM routes to access
+    req.crmSlug = req.params.slug;
+    next();
+}, require('./routes/crm'));
+
 // Model Sites (Handlebars Themes with Real Content) - MOVED TO END
 // This catches all remaining routes, so it must be last before 404 handler
-app.use('/', require('./src/routes/model_sites'));
+app.use('/', calendarVisibilityMiddleware, require('./src/routes/model_sites'));
 
 // 404 handler
 app.use('*', (req, res) => {

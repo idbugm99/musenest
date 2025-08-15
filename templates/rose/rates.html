@@ -1,0 +1,134 @@
+<!-- Rose Theme Rates Page -->
+{{component 'navigation' theme='rose' nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+
+<!-- Page Header -->
+<header class="pt-32 pb-20 bg-gradient-to-b from-[color:var(--rose)] to-[color:var(--merlot)] text-center text-porcelain">
+  <h1 class="font-serif text-5xl mb-4">{{rates_content.page_title || 'Rates & Services'}}</h1>
+  {{#if rates_content.page_subtitle}}
+  <p class="text-lg max-w-3xl mx-auto opacity-90">{{rates_content.page_subtitle}}</p>
+  {{/if}}
+</header>
+
+<!-- Sticky Subnav -->
+<nav id="ratesSubnav" class="sticky top-16 z-40 bg-porcelain/95 backdrop-blur border-b border-[color:var(--rose)]/10">
+  <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center gap-4 py-3 text-sm font-medium">
+    <a href="#incall" class="rose-chip">{{rates_content.nav_incall_label || 'Incall'}}</a>
+    <a href="#outcall" class="rose-chip">{{rates_content.nav_outcall_label || 'Outcall'}}</a>
+    <a href="#extended" class="rose-chip">{{rates_content.nav_extended_label || 'Extended'}}</a>
+    <a href="#services" class="rose-chip">{{rates_content.nav_services_label || 'Services'}}</a>
+    <a href="#policies" class="rose-chip">{{rates_content.nav_policies_label || 'Policies'}}</a>
+    <a href="#payment" class="rose-chip">{{rates_content.nav_payment_label || 'Payment'}}</a>
+    <a href="/{{model.slug}}/contact" class="rose-chip">{{rates_content.nav_contact_label || 'Contact'}}</a>
+  </div>
+</nav>
+
+<!-- Rates Tables -->
+<section id="incall" class="py-24 bg-porcelain">
+  {{#if rates_content.incall_visible}}
+  <div class="max-w-6xl mx-auto px-4">
+    <h2 class="font-serif text-3xl text-charcoal mb-6">{{rates_content.incall_title || 'Incall'}}</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="text-charcoal border-b">
+            <th class="py-3">Duration</th><th class="py-3">Rate</th><th class="py-3">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each rates_content.incall_rows}}
+          <tr class="border-b text-charcoal/90">
+            <td class="py-3">{{this.duration}}</td><td class="py-3">{{this.rate}}</td><td class="py-3">{{this.notes}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {{/if}}
+</section>
+
+<section id="outcall" class="py-24 bg-blush/40">
+  {{#if rates_content.outcall_visible}}
+  <div class="max-w-6xl mx-auto px-4">
+    <h2 class="font-serif text-3xl text-charcoal mb-6">{{rates_content.outcall_title || 'Outcall'}}</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead><tr class="text-charcoal border-b"><th class="py-3">Duration</th><th class="py-3">Rate</th><th class="py-3">Notes</th></tr></thead>
+        <tbody>
+          {{#each rates_content.outcall_rows}}
+          <tr class="border-b text-charcoal/90"><td class="py-3">{{this.duration}}</td><td class="py-3">{{this.rate}}</td><td class="py-3">{{this.notes}}</td></tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {{/if}}
+</section>
+
+<section id="extended" class="py-24 bg-porcelain">
+  {{#if rates_content.extended_visible}}
+  <div class="max-w-6xl mx-auto px-4">
+    <h2 class="font-serif text-3xl text-charcoal mb-6">{{rates_content.extended_title || 'Extended Engagements'}}</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead><tr class="text-charcoal border-b"><th class="py-3">Duration</th><th class="py-3">Rate</th><th class="py-3">Notes</th></tr></thead>
+        <tbody>
+          {{#each rates_content.extended_rows}}
+          <tr class="border-b text-charcoal/90"><td class="py-3">{{this.duration}}</td><td class="py-3">{{this.rate}}</td><td class="py-3">{{this.notes}}</td></tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {{/if}}
+</section>
+
+<!-- Services Bullet List -->
+<section id="services" class="py-24 bg-blush/50">
+  {{#if rates_content.services_visible}}
+  <div class="max-w-5xl mx-auto px-4">
+    <h2 class="font-serif text-3xl text-charcoal mb-6">{{rates_content.services_title || 'Services'}}</h2>
+    <ul class="space-y-3 text-charcoal text-lg">
+      {{#each rates_content.services}}
+      <li class="flex items-start"><span class="text-[color:var(--rose)] mr-3">&#10070;</span>{{this}}</li>
+      {{/each}}
+    </ul>
+  </div>
+  {{/if}}
+</section>
+
+<!-- Policies Block -->
+<section id="policies" class="py-24 bg-porcelain">
+  {{#if rates_content.policies_visible}}
+  <div class="max-w-4xl mx-auto px-4 prose max-w-none">
+    <h2 class="font-serif text-3xl text-charcoal mb-6">{{rates_content.policies_title || 'Policies'}}</h2>
+    {{{rates_content.policies_rich_text}}}
+  </div>
+  {{/if}}
+</section>
+
+<!-- Payment Info -->
+<section id="payment" class="py-24 bg-blush/40">
+  {{#if rates_content.payment_visible}}
+  <div class="max-w-4xl mx-auto px-4 prose max-w-none text-charcoal">
+    <h2 class="font-serif text-3xl mb-6">{{rates_content.payment_title || 'Payment Information'}}</h2>
+    {{{rates_content.payment_rich_text}}}
+  </div>
+  {{/if}}
+</section>
+
+<!-- Bottom CTA -->
+<section class="py-24 bg-gradient-to-r from-[color:var(--rose)] to-[color:var(--merlot)] text-porcelain text-center">
+  <div class="max-w-4xl mx-auto px-6">
+    <h2 class="font-serif text-4xl mb-6">{{rates_content.cta_title || 'Ready to Book?'}}</h2>
+    <p class="text-lg mb-8">{{rates_content.cta_description || 'Contact me today to arrange your personalized experience.'}}</p>
+    <a href="/{{model.slug}}/contact" class="px-8 py-4 rounded-full bg-[color:var(--gold)] text-white hover:bg-white hover:text-[color:var(--rose)] shadow">{{rates_content.cta_button_text || 'Contact Me'}}</a>
+  </div>
+</section>
+
+{{component '_footer' theme='rose'}}
+
+<style>
+.rose-chip{padding:0.5rem 1rem;border:1px solid var(--rose);border-radius:var(--radius);background:transparent;color:var(--charcoal);white-space:nowrap;transition:background .2s;}
+.rose-chip:hover{background:var(--rose);color:var(--porcelain);} 
+</style>

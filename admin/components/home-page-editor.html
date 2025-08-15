@@ -49,6 +49,9 @@
                         <button type="button" class="nav-link" data-section="testimonials">
                             <i class="fas fa-quote-left text-purple me-2"></i>Testimonials
                         </button>
+                        <button type="button" class="nav-link" data-section="travel">
+                            <i class="fas fa-map-marker-alt text-success me-2"></i>Travel Schedule
+                        </button>
                         <button type="button" class="nav-link" data-section="cta">
                             <i class="fas fa-bullhorn text-danger me-2"></i>Call to Action
                         </button>
@@ -522,6 +525,96 @@
                             <a href="/admin/testimonials" target="_blank" class="alert-link">Testimonials Management</a> page.
                             This section only controls display settings.
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Travel Schedule Section Tab -->
+        <div class="section-content" data-section="travel">
+            <div class="card shadow-sm">
+                <div class="card-header bg-gradient-success text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="fas fa-map-marker-alt me-2"></i>Travel Schedule Section
+                        </h4>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input auto-save-field" type="checkbox" id="travel_section_visible" 
+                                   data-field="travel_section_visible" checked>
+                            <label class="form-check-label text-white fw-bold" for="travel_section_visible">
+                                <i class="fas fa-eye me-1"></i>Visible
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <!-- Section Title -->
+                        <div class="col-md-6">
+                            <label for="travel_section_title" class="form-label fw-bold">
+                                <i class="fas fa-heading me-1"></i>Section Title
+                            </label>
+                            <input type="text" class="form-control auto-save-field" 
+                                   id="travel_section_title" 
+                                   data-field="travel_section_title"
+                                   placeholder="e.g., Travel Schedule, Location Times, Where I'll Be">
+                            <div class="save-status mt-1"></div>
+                        </div>
+                        
+                        <!-- Number of Events to Display -->
+                        <div class="col-md-6">
+                            <label for="travel_display_count" class="form-label fw-bold">
+                                <i class="fas fa-list-ol me-1"></i>Number of Events to Display
+                            </label>
+                            <select class="form-select auto-save-field" 
+                                    id="travel_display_count" 
+                                    data-field="travel_display_count">
+                                <option value="1">1 Event</option>
+                                <option value="2">2 Events</option>
+                                <option value="3" selected>3 Events</option>
+                                <option value="4">4 Events</option>
+                                <option value="5">5 Events</option>
+                                <option value="6">6 Events</option>
+                            </select>
+                            <div class="save-status mt-1"></div>
+                        </div>
+                        
+                        <!-- CTA Button Text -->
+                        <div class="col-md-6">
+                            <label for="travel_cta_text" class="form-label fw-bold">
+                                <i class="fas fa-mouse-pointer me-1"></i>Button Text
+                            </label>
+                            <input type="text" class="form-control auto-save-field" 
+                                   id="travel_cta_text" 
+                                   data-field="travel_cta_text"
+                                   placeholder="e.g., View Full Calendar, See All Dates">
+                            <div class="save-status mt-1"></div>
+                        </div>
+                        
+                        <!-- CTA Button Destination -->
+                        <div class="col-md-6">
+                            <label for="travel_cta_link" class="form-label fw-bold">
+                                <i class="fas fa-link me-1"></i>Button Destination
+                            </label>
+                            <select class="form-select auto-save-field" 
+                                    id="travel_cta_link" 
+                                    data-field="travel_cta_link">
+                                <option value="calendar" selected>Calendar Page</option>
+                                <option value="contact">Contact Page</option>
+                                <option value="about">About Page</option>
+                                <option value="rates">Rates Page</option>
+                                <option value="gallery">Gallery Page</option>
+                            </select>
+                            <div class="save-status mt-1"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Info Alert -->
+                    <div class="alert alert-info mt-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Manage Calendar Events:</strong> To add, edit, or remove calendar events, visit the 
+                        <a href="calendar" class="alert-link">Calendar Management</a> page.
+                        This section only controls display settings. Events are automatically pulled from your calendar.
                     </div>
                 </div>
             </div>
@@ -1067,6 +1160,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Add change event listener to update preview and alt text
                     portraitSelect.addEventListener('change', () => {
+                        console.log(`🔍 Portrait selection changed:`);
+                        console.log(`   - Selected value: ${portraitSelect.value}`);
+                        console.log(`   - Selected text: ${portraitSelect.selectedOptions[0]?.textContent}`);
+                        console.log(`   - Image data:`, this.imageData[portraitSelect.value]);
+                        
                         this.updatePortraitPreview();
                         this.updatePortraitAltText();
                         // Also save the selection if it's an auto-save field
@@ -1135,19 +1233,51 @@ document.addEventListener('DOMContentLoaded', function() {
             const preview = document.getElementById('portrait-preview');
             const previewImg = document.getElementById('portrait-preview-img');
             
+            console.log(`🔍 updatePortraitPreview called:`);
+            console.log(`   - Portrait select value: ${portraitSelect.value}`);
+            console.log(`   - Has selected option: ${!!portraitSelect.selectedOptions[0]}`);
+            
             if (portraitSelect.value && portraitSelect.selectedOptions[0]) {
                 // Get filename from the selected option text
                 const selectedText = portraitSelect.selectedOptions[0].textContent;
                 const filename = selectedText.split(' (')[0]; // Extract filename before " (approved)"
                 
-                // Show preview with actual image
+                console.log(`   - Selected text: "${selectedText}"`);
+                console.log(`   - Extracted filename: "${filename}"`);
+                console.log(`   - Model slug: ${this.currentModelSlug}`);
+                
+                // Show preview with actual image - use the correct gallery path
+                const imageUrl = `/uploads/${this.currentModelSlug}/public/gallery/${filename}`;
+                console.log(`   - Constructed image URL: "${imageUrl}"`);
+                
                 preview.classList.remove('d-none');
-                previewImg.src = `/uploads/${this.currentModelSlug}/thumbs/${filename}`;
+                previewImg.src = imageUrl;
+                
+                previewImg.onload = () => {
+                    console.log(`✅ Image loaded successfully: ${imageUrl}`);
+                };
+                
                 previewImg.onerror = () => {
-                    // Fallback to original if thumbnail doesn't exist
-                    previewImg.src = `/uploads/${this.currentModelSlug}/originals/${filename}`;
+                    console.log(`❌ Primary image failed to load: ${imageUrl}`);
+                    // Fallback to thumbs if gallery doesn't exist
+                    const thumbUrl = `/uploads/${this.currentModelSlug}/thumbs/${filename}`;
+                    console.log(`   - Trying thumb fallback: ${thumbUrl}`);
+                    previewImg.src = thumbUrl;
+                    
+                    previewImg.onerror = () => {
+                        console.log(`❌ Thumb fallback failed: ${thumbUrl}`);
+                        // Final fallback to originals
+                        const originalUrl = `/uploads/${this.currentModelSlug}/originals/${filename}`;
+                        console.log(`   - Trying original fallback: ${originalUrl}`);
+                        previewImg.src = originalUrl;
+                        
+                        previewImg.onerror = () => {
+                            console.log(`❌ All fallbacks failed for: ${filename}`);
+                        };
+                    };
                 };
             } else {
+                console.log(`   - No portrait selected, hiding preview`);
                 preview.classList.add('d-none');
             }
         },
@@ -1174,12 +1304,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 const selectedText = backgroundSelect.selectedOptions[0].textContent;
                 const filename = selectedText.split(' (')[0]; // Extract filename
                 
-                // Show preview with actual image
+                // Show preview with actual image - use the correct gallery path
                 preview.classList.remove('d-none');
-                previewImg.src = `/uploads/${this.currentModelSlug}/thumbs/${filename}`;
+                previewImg.src = `/uploads/${this.currentModelSlug}/public/gallery/${filename}`;
                 previewImg.onerror = () => {
-                    // Fallback to original if thumbnail doesn't exist
-                    previewImg.src = `/uploads/${this.currentModelSlug}/originals/${filename}`;
+                    // Fallback to thumbs if gallery doesn't exist
+                    previewImg.src = `/uploads/${this.currentModelSlug}/thumbs/${filename}`;
+                    previewImg.onerror = () => {
+                        // Final fallback to originals
+                        previewImg.src = `/uploads/${this.currentModelSlug}/originals/${filename}`;
+                    };
                 };
             } else {
                 preview.classList.add('d-none');

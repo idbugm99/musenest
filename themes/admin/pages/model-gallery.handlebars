@@ -1,672 +1,356 @@
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h3 class="mb-0"><i class="fas fa-images me-2"></i>Gallery Manager — {{model.name}}</h3>
-  <a class="btn btn-outline-secondary" href="/{{#if model.slug}}{{model.slug}}{{else}}modelexample{{/if}}/admin"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
-</div>
-
-<div class="row g-3">
-  <div class="col-12 col-lg-4">
-    <div class="card">
-      <div class="card-header bg-white"><strong>Create Section</strong></div>
-      <div class="card-body">
-        <div class="mb-2">
-          <label class="form-label">Title</label>
-          <input id="sec_title" class="form-control" placeholder="e.g., Portfolio" />
-        </div>
-        <div class="mb-2">
-          <label class="form-label">Layout</label>
-          <select id="sec_layout" class="form-select">
-            <option value="grid">Grid</option>
-            <option value="masonry">Masonry</option>
-            <option value="carousel">Carousel</option>
-            <option value="lightbox_grid">Lightbox Grid</option>
-          </select>
-        </div>
-        <button id="btn_create_section" class="btn btn-primary w-100">Create Section</button>
-      </div>
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-0">Gallery Manager</h1>
+      <p class="text-muted mb-0">{{model.name}} • Manage gallery sections and images</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="/{{model.slug}}/admin" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+      </a>
     </div>
   </div>
-  <div class="col-12 col-lg-8">
-    <div class="card">
-      <div class="card-header bg-white d-flex align-items-center justify-content-between">
-        <strong>Sections</strong>
-        <input id="search_sections" class="form-control form-control-sm" placeholder="Search" style="max-width:200px" />
-      </div>
-      <div class="card-body" id="sections_list">
-        <div class="text-muted">Loading…</div>
+
+  <!-- Create New Section -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="card-title mb-0">Create New Gallery Section</h5>
+    </div>
+    <div class="card-body">
+      <form id="createSectionForm">
+        <div class="row">
+          <div class="col-md-4">
+            <label for="sectionTitle" class="form-label">Section Title</label>
+            <input type="text" class="form-control" id="sectionTitle" placeholder="e.g., Portfolio, Featured, etc." required>
+          </div>
+          <div class="col-md-4">
+            <label for="sectionLayout" class="form-label">Layout Type</label>
+            <select class="form-select" id="sectionLayout" required>
+              <option value="grid">Grid</option>
+              <option value="masonry">Masonry</option>
+              <option value="carousel">Carousel</option>
+              <option value="slider">Slider</option>
+            </select>
+          </div>
+          <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-plus me-1"></i>Create Section
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Gallery Sections -->
+  <div class="card">
+    <div class="card-header">
+      <h5 class="card-title mb-0">Gallery Sections</h5>
+    </div>
+    <div class="card-body">
+      <div id="sectionsList">
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2 text-muted">Loading gallery sections...</p>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-  (function(){
-    let slug = {{{json model.slug}}};
-    if (!slug || slug === 'null' || slug === 'undefined') {
-      const m = window.location.pathname.match(/^\/([^\/]+)\/admin/);
-      if (m) slug = m[1];
-    }
-    function statusBadgeClass(status){
-      if (!status) return 'bg-secondary';
-      switch(status){
-        case 'approved': return 'bg-success';
-        case 'approved_blurred': return 'bg-info';
-        case 'flagged': return 'bg-warning text-dark';
-        case 'rejected': return 'bg-danger';
-        default: return 'bg-secondary';
+document.addEventListener('DOMContentLoaded', function() {
+  const modelSlug = '{{model.slug}}';
+  
+  // Initialize
+  loadSections();
+  bindEventListeners();
+
+  async function loadSections() {
+    try {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/sections?page=1&limit=1000`);
+      const data = await response.json();
+      
+      if (data.success) {
+        renderSections(data.data.sections || []);
+      } else {
+        showError('Failed to load sections: ' + (data.message || 'Unknown error'));
       }
+    } catch (error) {
+      console.error('Error loading sections:', error);
+      showError('Failed to load sections');
     }
-    // File picker modal state
-    let filePickerModalInstance = null;
-    let filePickerLastFiles = [];
-    let filePickerTargetInput = null;
-    const listEl = document.getElementById('sections_list');
-    const searchEl = document.getElementById('search_sections');
-    const createBtn = document.getElementById('btn_create_section');
-    const titleEl = document.getElementById('sec_title');
-    const layoutEl = document.getElementById('sec_layout');
-    let sectionsPage = 1;
-    let sectionsPageSize = 20;
-    async function load(page=1){
-      sectionsPage = page;
-      const q = searchEl.value ? `&search=${encodeURIComponent(searchEl.value)}` : '';
-      const res = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections?page=${sectionsPage}&limit=${sectionsPageSize}${q}`);
-      const data = await res.json();
-      if(!data.success){ listEl.innerHTML = `<div class="text-danger">${data.message||'Failed to load'}</div>`; return; }
-      const sections = data.data.sections || [];
-      const pg = data.data.pagination || { page: sectionsPage, pages: 1, total: sections.length };
-      const header = `
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <div class="small text-muted">Total ${pg.total}</div>
-          <div class="d-flex align-items-center gap-2">
-            <select id="sec_page_size" class="form-select form-select-sm" style="width:auto">
-              <option value="10"${sectionsPageSize===10?' selected':''}>10</option>
-              <option value="20"${sectionsPageSize===20?' selected':''}>20</option>
-              <option value="50"${sectionsPageSize===50?' selected':''}>50</option>
-            </select>
-            <button class="btn btn-sm btn-outline-secondary" id="sec_prev">Prev</button>
-            <span class="small" id="sec_page_info"></span>
-            <button class="btn btn-sm btn-outline-secondary" id="sec_next">Next</button>
-          </div>
-        </div>`;
-      const body = sections.length ? sections.map(s => `
-        <div class="border rounded p-2 mb-2">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <div class="fw-bold">${s.title}</div>
-              <div class="text-muted small">${s.layout_type} · ${s.is_visible ? 'Visible' : 'Hidden'}</div>
-            </div>
-            <div>
-              <button class="btn btn-sm btn-outline-secondary me-2 btn-rename" data-id="${s.id}">Rename</button>
-              <button class="btn btn-sm btn-outline-warning me-2 btn-toggle" data-id="${s.id}" data-visible="${s.is_visible ? 1 : 0}">${s.is_visible ? 'Hide' : 'Show'}</button>
-              <button class="btn btn-sm btn-outline-danger me-2 btn-delete" data-id="${s.id}">Delete</button>
-              <button class="btn btn-sm btn-outline-primary btn-manage" data-id="${s.id}">Manage Images</button>
-            </div>
-          </div>
-          <div class="mt-2 section-images" id="section_${s.id}_images"></div>
+  }
+
+  function getPrivacyBadge(section) {
+    const privacyStatus = section.privacy_status || 'public';
+    const unapprovedCount = section.unapproved_count || 0;
+    const blurredCount = section.blurred_count || 0;
+    
+    let badgeClass, icon, text, tooltip;
+    
+    switch (privacyStatus) {
+      case 'paywall':
+        badgeClass = 'bg-warning text-dark';
+        icon = 'fas fa-lock';
+        text = 'Paywall';
+        tooltip = 'Members-only content behind paywall';
+        break;
+      case 'auth_required':
+        badgeClass = 'bg-secondary';
+        icon = 'fas fa-user-lock';
+        text = 'Auth Required';
+        tooltip = 'Requires authentication';
+        break;
+      case 'private':
+        badgeClass = 'bg-danger';
+        icon = 'fas fa-eye-slash';
+        text = 'Private';
+        tooltip = `Contains ${unapprovedCount} unapproved image(s)`;
+        break;
+      case 'public':
+      default:
+        if (blurredCount > 0) {
+          badgeClass = 'bg-info';
+          icon = 'fas fa-blur';
+          text = 'Public+Blurred';
+          tooltip = `Public gallery with ${blurredCount} blurred teaser(s)`;
+        } else {
+          badgeClass = 'bg-success';
+          icon = 'fas fa-globe';
+          text = 'Public';
+          tooltip = 'Fully public gallery';
+        }
+        break;
+    }
+    
+    return `<span class="badge ${badgeClass}" title="${tooltip}" style="text-align: center; width: 100%;">
+              <i class="${icon} me-1"></i>${text}
+            </span>`;
+  }
+
+  function renderSections(sections) {
+    const container = document.getElementById('sectionsList');
+    
+    if (!sections || sections.length === 0) {
+      container.innerHTML = `
+        <div class="text-center py-5">
+          <i class="fas fa-images fa-3x text-muted mb-3"></i>
+          <h5 class="text-muted">No gallery sections yet</h5>
+          <p class="text-muted">Create your first gallery section using the form above</p>
         </div>
-      `).join('') : '<div class="text-muted">No sections yet.</div>';
-      listEl.innerHTML = header + `<div id="sec_list">${body}</div>`;
-
-      // bind section pagination controls
-      const pageInfo = document.getElementById('sec_page_info');
-      const prevBtn = document.getElementById('sec_prev');
-      const nextBtn = document.getElementById('sec_next');
-      const sizeSel = document.getElementById('sec_page_size');
-      if (pageInfo) pageInfo.textContent = `Page ${pg.page} of ${pg.pages}`;
-      if (prevBtn) { prevBtn.disabled = pg.page <= 1; prevBtn.addEventListener('click', () => { if (pg.page>1) load(pg.page-1); }); }
-      if (nextBtn) { nextBtn.disabled = pg.page >= pg.pages; nextBtn.addEventListener('click', () => { if (pg.page<pg.pages) load(pg.page+1); }); }
-      if (sizeSel) { sizeSel.addEventListener('change', () => { sectionsPageSize = parseInt(sizeSel.value); load(1); }); }
-
-      // Bind actions
-      listEl.querySelectorAll('.btn-rename').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = btn.getAttribute('data-id');
-          const currentTitle = btn.closest('.border').querySelector('.fw-bold').textContent.trim();
-          const next = prompt('New title', currentTitle);
-          if (!next || next === currentTitle) return;
-          const res = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}`, {
-            method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: next })
-          });
-          const data = await res.json();
-          if (!data.success) { notify('danger', data.message||'Failed to rename'); return; }
-          notify('success', 'Section renamed');
-          await load();
-        });
-      });
-
-      listEl.querySelectorAll('.btn-toggle').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = btn.getAttribute('data-id');
-          const visible = btn.getAttribute('data-visible') === '1';
-          const res = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/visibility`, {
-            method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_visible: !visible })
-          });
-          const data = await res.json();
-          if (!data.success) { notify('danger', data.message||'Failed to toggle'); return; }
-          notify('success', `Section ${!visible ? 'shown' : 'hidden'}`);
-          await load();
-        });
-      });
-
-      // Delete section
-      listEl.querySelectorAll('.btn-delete').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = btn.getAttribute('data-id');
-          if (!confirm('Delete this section and remove its image associations? This cannot be undone.')) return;
-          const res = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}`, { method: 'DELETE' });
-          const data = await res.json();
-          if (!data.success) { notify('danger', data.message||'Failed to delete section'); return; }
-          notify('success', 'Section deleted');
-          await load();
-        });
-      });
-
-      listEl.querySelectorAll('.btn-manage').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = btn.getAttribute('data-id');
-          const container = document.getElementById(`section_${id}_images`);
-          container.innerHTML = '<div class="text-muted">Loading images…</div>';
-          const res = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`);
-          const data = await res.json();
-          if (!data.success) { container.innerHTML = `<div class="text-danger">${data.message||'Failed to load images'}</div>`; return; }
-          const images = data.data.images || [];
-          if (!images.length) { container.innerHTML = '<div class="text-muted">No images in this section.</div>'; return; }
-          container.innerHTML = `
-            <div class="d-flex gap-2 align-items-center mb-2">
-              <input class="form-control form-control-sm" id="add_filename_${id}" placeholder="/uploads/${slug}/public/gallery/filename.jpg" />
-              <button class="btn btn-sm btn-secondary" id="btn_pick_${id}" data-id="${id}"><i class=\"fas fa-folder-open\"></i> Browse</button>
-              <label class="btn btn-sm btn-outline-primary mb-0">
-                <i class=\"fas fa-upload\"></i> Upload
-                <input type="file" id="file_upload_${id}" accept="image/*" style="display:none" />
-              </label>
-              <button class="btn btn-sm btn-primary" id="btn_add_${id}" data-id="${id}"><i class=\"fas fa-plus\"></i> Add</button>
-              <button class="btn btn-sm btn-outline-secondary" id="btn_refresh_${id}" data-id="${id}"><i class=\"fas fa-rotate\"></i> Refresh</button>
-            </div>
-            <div class="d-flex align-items-center gap-2 mb-2">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="select_all_${id}">
-                <label class="form-check-label" for="select_all_${id}">Select All</label>
-              </div>
-              <div class="btn-group btn-group-sm" role="group">
-                <button class="btn btn-outline-secondary" id="bulk_show_${id}">Show</button>
-                <button class="btn btn-outline-secondary" id="bulk_hide_${id}">Hide</button>
-                <button class="btn btn-outline-danger" id="bulk_delete_${id}">Delete</button>
-              </div>
-            </div>
-            <div class="row row-cols-2 row-cols-md-3 g-2 images-grid" data-section-id="${id}">
-              ${images.map((img, idx) => `
-                <div class="col">
-                  <div class="border rounded p-2 draggable-card" draggable="true" data-id="${img.id}" data-index="${idx}">
-                    <div class="form-check mb-1">
-                      <input class="form-check-input select-image" type="checkbox" value="${img.id}" id="img_sel_${img.id}">
-                      <label class="form-check-label small" for="img_sel_${img.id}">Select</label>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between">
-                      <div class="d-flex align-items-center text-truncate" title="${img.filename}" style="min-width:0">
-                      <img loading="lazy" src="${(img.moderation_status === 'approved_blurred' && img.blurred_path ? (img.blurred_path.startsWith('/') ? img.blurred_path : '/uploads/${slug}/public/blurred/' + img.filename) : (img.filename && img.filename.startsWith('/') ? img.filename : '/uploads/${slug}/public/gallery/' + img.filename))}" alt="thumb" class="me-2" style="width:48px;height:48px;object-fit:cover;border-radius:4px" onerror="this.style.visibility='hidden'" />
-                        <span class="small text-truncate"><i class=\"fas fa-grip-vertical me-1 text-muted\"></i>${img.filename}</span>
-                      </div>
-                      <div class="d-flex align-items-center">
-                        <span class="badge ${statusBadgeClass(img.moderation_status)} me-2">${img.moderation_status || 'pending'}</span>
-                        <button class="btn btn-sm btn-outline-secondary btn-toggle-image" data-id="${img.id}" data-active="${img.is_active ? 1 : 0}">${img.is_active ? 'Hide' : 'Show'}</button>
-                      </div>
-                    </div>
-                    <div class="mt-2">
-                      <input class="form-control form-control-sm mb-1 input-caption" data-id="${img.id}" placeholder="Caption" value="${(img.caption||'').replace(/\"/g,'&quot;')}" />
-                      <div class="d-flex align-items-center justify-content-between">
-                        <input class="form-control form-control-sm me-2 input-tags" data-id="${img.id}" placeholder="tags (comma)" value="${(img.tags||'').replace(/\"/g,'&quot;')}" />
-                        <span class="text-muted small">${img.is_active ? 'Visible' : 'Hidden'}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          `;
-
-          // bind add image
-          const pickBtn = document.getElementById(`btn_pick_${id}`);
-          const addBtn = document.getElementById(`btn_add_${id}`);
-          const addInput = document.getElementById(`add_filename_${id}`);
-          const fileInput = document.getElementById(`file_upload_${id}`);
-          pickBtn.addEventListener('click', async () => {
-            openFilePicker(addInput);
-          });
-          fileInput.addEventListener('change', async () => {
-            const file = fileInput.files && fileInput.files[0];
-            if (!file) return;
-            const form = new FormData();
-            form.append('image', file);
-            const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/upload`, { method: 'POST', body: form });
-            const d = await r.json();
-            if (!d.success) { notify('danger', d.message || 'Upload failed'); return; }
-            notify('success', 'Image uploaded');
-            // reload
-            const rr = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`);
-            const dd = await rr.json();
-            if (!dd.success) { return; }
-            renderImagesGrid(container, id, dd.data.images || []);
-          });
-          addBtn.addEventListener('click', async () => {
-            const filename = (addInput.value || '').trim();
-            if (!filename) { notify('warning', 'Enter a filename/path'); return; }
-            const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`, {
-              method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename })
-            });
-            const d = await r.json();
-            if (!d.success) { notify('danger', d.message || 'Failed to add image'); return; }
-            notify('success', 'Image added');
-            addInput.value = '';
-            // reload images
-            const rr = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`);
-            const dd = await rr.json();
-            if (!dd.success) { return; }
-            const imgs = dd.data.images || [];
-            renderImagesGrid(container, id, imgs);
-          });
-
-          // helper to render grid with bindings (for refresh)
-          function renderImagesGrid(container, sectionId, imgs, pagination) {
-            const grid = container.querySelector('.images-grid');
-            grid.innerHTML = imgs.map((img, idx) => `
-              <div class=\"col\">
-                <div class=\"border rounded p-2 draggable-card\" draggable=\"true\" data-id=\"${img.id}\" data-index=\"${idx}\">
-                  <div class=\"d-flex align-items-center justify-content-between\"> 
-                    <div class=\"d-flex align-items-center text-truncate\" title=\"${img.filename}\" style=\"min-width:0\">
-                      <img src=\"${(img.moderation_status === 'approved_blurred' && img.blurred_path ? (img.blurred_path.startsWith('/') ? img.blurred_path : '/uploads/${slug}/public/blurred/' + img.filename) : (img.filename && img.filename.startsWith('/') ? img.filename : '/uploads/${slug}/public/gallery/' + img.filename))}\" alt=\"thumb\" class=\"me-2\" style=\"width:48px;height:48px;object-fit:cover;border-radius:4px\" onerror=\"this.style.visibility='hidden'\" />
-                      <span class=\"small text-truncate\"><i class=\\\"fas fa-grip-vertical me-1 text-muted\\\"></i>${img.filename}</span>
-                    </div>
-                    <div class=\"d-flex align-items-center\">
-                      <span class=\"badge ${statusBadgeClass(img.moderation_status)} me-2\">${img.moderation_status || 'pending'}</span>
-                      <button class=\"btn btn-sm btn-outline-secondary btn-toggle-image\" data-id=\"${img.id}\" data-active=\"${img.is_active ? 1 : 0}\">${img.is_active ? 'Hide' : 'Show'}</button>
-                    </div>
-                  </div>
-                  <div class=\"mt-2\">
-                    <input class=\"form-control form-control-sm mb-1 input-caption\" data-id=\"${img.id}\" placeholder=\"Caption\" value=\"${(img.caption||'').replace(/\\\"/g,'&quot;')}\" />
-                    <div class=\"d-flex align-items-center justify-content-between\">
-                      <input class=\"form-control form-control-sm me-2 input-tags\" data-id=\"${img.id}\" placeholder=\"tags (comma)\" value=\"${(img.tags||'').replace(/\\\"/g,'&quot;')}\" />
-                      <span class=\"text-muted small\">${img.is_active ? 'Visible' : 'Hidden'}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            `).join('');
-            // helper for badge class
-            function statusBadgeClass(status){
-              if (!status) return 'bg-secondary';
-              switch(status){
-                case 'approved': return 'bg-success';
-                case 'approved_blurred': return 'bg-info';
-                case 'flagged': return 'bg-warning text-dark';
-                case 'rejected': return 'bg-danger';
-                default: return 'bg-secondary';
-              }
-            }
-            bindImageToggles(grid, sectionId);
-            bindDragAndDrop(grid, sectionId);
-            // pagination controls
-            const pageInfo = document.getElementById(`page_info_${id}`);
-            if (pagination) {
-              pageInfo.textContent = `Page ${pagination.page} of ${pagination.pages} (${pagination.total})`;
-              document.getElementById(`prev_${id}`).disabled = pagination.page <= 1;
-              document.getElementById(`next_${id}`).disabled = pagination.page >= pagination.pages;
-            }
-          }
-
-          function bindImageToggles(scope, sectionId) {
-            scope.querySelectorAll('.btn-toggle-image').forEach(t => {
-              t.addEventListener('click', async () => {
-                const imgId = t.getAttribute('data-id');
-                const active = t.getAttribute('data-active') === '1';
-                const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/${imgId}/visibility`, {
-                  method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_active: !active })
-                });
-                const d = await r.json();
-                if (!d.success) { notify('danger', d.message||'Failed to update'); return; }
-                // refresh current grid
-                const rr = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${sectionId}/images`);
-                const dd = await rr.json();
-                if (!dd.success) { return; }
-                renderImagesGrid(container, sectionId, dd.data.images || []);
-                notify('success', !active ? 'Image shown' : 'Image hidden');
-              });
-            });
-            // inline save caption/tags on blur
-            scope.querySelectorAll('.input-caption, .input-tags').forEach(input => {
-              input.addEventListener('blur', async () => {
-                const imgId = input.getAttribute('data-id');
-                const wrapper = input.closest('.draggable-card');
-                const caption = wrapper.querySelector('.input-caption').value;
-                const tags = wrapper.querySelector('.input-tags').value;
-                const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/${imgId}`, {
-                  method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ caption, tags })
-                });
-                const d = await r.json();
-                if (!d.success) { console.warn('Failed to save caption/tags'); notify('danger', d.message||'Save failed'); }
-                else { notify('success', 'Saved'); }
-              });
-            });
-          }
-
-          function bindDragAndDrop(grid, sectionId) {
-            let draggingEl = null;
-            grid.querySelectorAll('.draggable-card').forEach(card => {
-              card.addEventListener('dragstart', (e) => {
-                draggingEl = card;
-                e.dataTransfer.effectAllowed = 'move';
-                card.classList.add('opacity-50');
-              });
-              card.addEventListener('dragend', () => {
-                if (draggingEl) draggingEl.classList.remove('opacity-50');
-                draggingEl = null;
-              });
-              card.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                const target = e.currentTarget;
-                if (!draggingEl || draggingEl === target) return;
-                const bounding = target.getBoundingClientRect();
-                const offset = e.clientY - bounding.top;
-                const parentCol = target.closest('.col');
-                const draggingCol = draggingEl.closest('.col');
-                if (offset < bounding.height / 2) {
-                  parentCol.parentNode.insertBefore(draggingCol, parentCol);
-                } else {
-                  parentCol.parentNode.insertBefore(draggingCol, parentCol.nextSibling);
-                }
-              });
-            });
-
-            grid.addEventListener('drop', async (e) => {
-              e.preventDefault();
-              // Build new order
-              const items = Array.from(grid.querySelectorAll('.draggable-card')).map((el, idx) => ({ id: parseInt(el.getAttribute('data-id')), order_index: idx }));
-              const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/reorder`, {
-                method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ section_id: sectionId, items })
-              });
-              const d = await r.json();
-              if (!d.success) { notify('danger', d.message||'Failed to reorder'); return; }
-              // Re-render grid from server authoritative order
-              renderImagesGrid(container, sectionId, d.data.images || []);
-              notify('success', 'Order saved');
-            });
-          }
-
-          // initial bindings
-          const grid = container.querySelector('.images-grid');
-          // pagination + move wiring
-          let currentPage = 1;
-          let pageSize = 24;
-          // add pagination UI inline
-          const pagerHtml = document.createElement('div');
-          pagerHtml.className = 'd-flex align-items-center justify-content-between mt-2';
-          pagerHtml.innerHTML = `
-            <div>
-              <label class="me-2 small">Move selected to:</label>
-              <select id="move_target_${id}" class="form-select form-select-sm d-inline-block" style="width:auto; min-width: 220px;"></select>
-              <button class="btn btn-sm btn-outline-primary ms-2" id="bulk_move_${id}">Move</button>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-              <select id="img_page_size_${id}" class="form-select form-select-sm" style="width:auto">
-                <option value="12">12</option>
-                <option value="24" selected>24</option>
-                <option value="48">48</option>
-              </select>
-              <button class="btn btn-sm btn-outline-secondary" id="prev_${id}">Prev</button>
-              <span class="small" id="page_info_${id}"></span>
-              <button class="btn btn-sm btn-outline-secondary" id="next_${id}">Next</button>
-            </div>`;
-          container.appendChild(pagerHtml);
-
-          // Load sections for move dropdown
-          async function loadSectionsForMove() {
-            try {
-              const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections?page=1&limit=1000`);
-              const d = await r.json();
-              const sel = document.getElementById(`move_target_${id}`);
-              if (!d.success) { sel.innerHTML = '<option value="">Failed to load</option>'; return; }
-              const sections = d.data.sections || [];
-              sel.innerHTML = sections.map(s => `<option value="${s.id}">${s.title}</option>`).join('');
-            } catch(e) {}
-          }
-          loadSectionsForMove();
-
-          const sizeSel = document.getElementById(`img_page_size_${id}`);
-          sizeSel.addEventListener('change', async () => { pageSize = parseInt(sizeSel.value); currentPage = 1; await reloadPage(); });
-          document.getElementById(`prev_${id}`).addEventListener('click', async () => { if (currentPage>1){ currentPage--; await reloadPage(); } });
-          document.getElementById(`next_${id}`).addEventListener('click', async () => { currentPage++; await reloadPage(); });
-          async function reloadPage(){
-            const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images?page=${currentPage}&limit=${pageSize}`);
-            const d = await r.json();
-            if (!d.success) return;
-            renderImagesGrid(container, id, d.data.images || [], d.data.pagination);
-          }
-          document.getElementById(`bulk_move_${id}`).addEventListener('click', async () => {
-            const sel = document.getElementById(`move_target_${id}`);
-            const target = sel.value;
-            const ids = Array.from(container.querySelectorAll('.select-image:checked')).map(cb => parseInt(cb.value));
-            if (!ids.length || !target) { notify('warning', 'Select images and a target section'); return; }
-            const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/bulk`, {
-              method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'move', target_section_id: parseInt(target), ids })
-            });
-            const d = await r.json();
-            if (!d.success) { notify('danger', d.message||'Failed to move'); return; }
-            notify('success', 'Images moved');
-            await reloadPage();
-          });
-
-          // initial pagination state
-          (async () => {
-            const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images?page=${currentPage}&limit=${pageSize}`);
-            const d = await r.json();
-            if (d.success) {
-              renderImagesGrid(container, id, d.data.images || [], d.data.pagination);
-            }
-          })();
-          const refreshBtn = document.getElementById(`btn_refresh_${id}`);
-          refreshBtn.addEventListener('click', async () => {
-            const rr = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`);
-            const dd = await rr.json();
-            if (!dd.success) return;
-            renderImagesGrid(container, id, dd.data.images || []);
-          });
-          // bulk actions
-          document.getElementById(`select_all_${id}`).addEventListener('change', (e) => {
-            const checked = e.target.checked;
-            container.querySelectorAll('.select-image').forEach(cb => cb.checked = checked);
-          });
-          async function runBulk(action){
-            const ids = Array.from(container.querySelectorAll('.select-image:checked')).map(cb => parseInt(cb.value));
-            if (!ids.length) { notify('warning', 'No images selected'); return; }
-            if (action === 'delete' && !confirm(`Delete ${ids.length} image(s)? This cannot be undone.`)) return;
-            const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/bulk`, {
-              method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, ids })
-            });
-            const d = await r.json();
-            if (!d.success) { notify('danger', d.message||'Failed to apply'); return; }
-            const rr = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`);
-            const dd = await rr.json();
-            if (!dd.success) return;
-            renderImagesGrid(container, id, dd.data.images || []);
-            if (action === 'show') notify('success', 'Images shown');
-            else if (action === 'hide') notify('success', 'Images hidden');
-            else if (action === 'delete') notify('success', 'Images deleted');
-          }
-          document.getElementById(`bulk_show_${id}`).addEventListener('click', async () => { await runBulk('show'); notify('success', 'Images shown'); });
-          document.getElementById(`bulk_hide_${id}`).addEventListener('click', async () => { await runBulk('hide'); notify('success', 'Images hidden'); });
-          document.getElementById(`bulk_delete_${id}`).addEventListener('click', async () => { await runBulk('delete'); notify('success', 'Images deleted'); });
-
-          // Keyboard shortcuts within this section: A select all, Delete bulk delete, R refresh
-          function isTypingInField() {
-            const el = document.activeElement;
-            if (!el) return false;
-            const tag = (el.tagName || '').toLowerCase();
-            return tag === 'input' || tag === 'textarea' || el.isContentEditable;
-          }
-          const keyHandlerId = `mg_keydown_${id}`;
-          if (window[keyHandlerId]) {
-            document.removeEventListener('keydown', window[keyHandlerId]);
-          }
-          window[keyHandlerId] = function(e) {
-            if (isTypingInField()) return;
-            if (e.key === 'a' || e.key === 'A') {
-              e.preventDefault();
-              const selectAll = document.getElementById(`select_all_${id}`);
-              if (selectAll && !selectAll.checked) { selectAll.checked = true; selectAll.dispatchEvent(new Event('change')); notify('info', 'Selected all'); }
-            } else if (e.key === 'Delete' || e.key === 'Backspace') {
-              e.preventDefault();
-              const any = container.querySelector('.select-image:checked');
-              if (any) { document.getElementById(`bulk_delete_${id}`)?.click(); }
-            } else if (e.key === 'r' || e.key === 'R') {
-              e.preventDefault();
-              document.getElementById(`btn_refresh_${id}`)?.click();
-            } else if (e.key === 'Escape') {
-              // Clear selections
-              container.querySelectorAll('.select-image:checked').forEach(cb => cb.checked = false);
-              const selectAll = document.getElementById(`select_all_${id}`);
-              if (selectAll) selectAll.checked = false;
-              notify('info', 'Selection cleared');
-            }
-          };
-          document.addEventListener('keydown', window[keyHandlerId]);
-
-          bindImageToggles(grid, id);
-          bindDragAndDrop(grid, id);
-
-          // bind image toggle
-          container.querySelectorAll('.btn-toggle-image').forEach(t => {
-            t.addEventListener('click', async () => {
-              const imgId = t.getAttribute('data-id');
-              const active = t.getAttribute('data-active') === '1';
-              const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/images/${imgId}/visibility`, {
-                method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_active: !active })
-              });
-              const d = await r.json();
-              if (!d.success) { alert(d.message||'Failed to update'); return; }
-              // refresh images
-              const rr = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections/${id}/images`);
-              const dd = await rr.json();
-              if (!dd.success) { return; }
-              const imgs = dd.data.images || [];
-              container.innerHTML = `
-                <div class=\"row row-cols-2 row-cols-md-3 g-2\">${imgs.map(img => `
-                  <div class=\"col\"><div class=\"border rounded p-2\">
-                    <div class=\"small text-truncate\" title=\"${img.filename}\">${img.filename}</div>
-                    <div class=\"d-flex align-items-center justify-content-between mt-1\">
-                      <span class=\"text-muted small\">${img.is_active ? 'Visible' : 'Hidden'}</span>
-                      <button class=\"btn btn-sm btn-outline-secondary btn-toggle-image\" data-id=\"${img.id}\" data-active=\"${img.is_active ? 1 : 0}\">${img.is_active ? 'Hide' : 'Show'}</button>
-                    </div>
-                  </div></div>
-                `).join('')}</div>`;
-            });
-          });
-        });
-      });
+      `;
+      return;
     }
-    searchEl.addEventListener('input', () => load(1));
-    createBtn.addEventListener('click', async () => {
-      const title = titleEl.value.trim();
-      const layout_type = layoutEl.value;
-      if(!title){ notify('warning', 'Please provide a title'); return; }
-      const res = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/sections`, {
+
+    container.innerHTML = sections.map(section => `
+      <div class="card mb-3" data-section-id="${section.id}">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <h6 class="card-title mb-1">${section.title}</h6>
+              <div class="d-flex align-items-center" style="gap: 8px;">
+                <span class="badge bg-info" style="min-width: 80px; text-align: center; display: inline-block;">${section.layout_type}</span>
+                <div style="min-width: 120px; display: inline-block;">${getPrivacyBadge(section)}</div>
+                <small class="text-muted" style="margin-left: 8px;">${section.image_count || 0} images</small>
+              </div>
+            </div>
+            <div class="col-md-6 text-end">
+              <div class="btn-group btn-group-sm" role="group">
+                <a href="/${encodeURIComponent(modelSlug)}/admin/gallery/${section.id}" class="btn btn-outline-primary">
+                  <i class="fas fa-images me-1"></i>Manage Images
+                </a>
+                <button class="btn btn-outline-secondary btn-edit" data-id="${section.id}" data-title="${section.title}" data-layout="${section.layout_type}">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-outline-${section.members_only ? 'warning' : 'info'} btn-toggle-paywall" data-id="${section.id}" data-paywall="${section.members_only ? 1 : 0}" title="${section.members_only ? 'Remove from paywall' : 'Add to paywall'}">
+                  <i class="fas fa-${section.members_only ? 'unlock' : 'lock'}"></i>
+                </button>
+                <button class="btn btn-outline-danger btn-delete" data-id="${section.id}" data-title="${section.title}">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    // Bind section-specific event listeners
+    bindSectionEventListeners();
+  }
+
+  function bindEventListeners() {
+    // Create section form
+    document.getElementById('createSectionForm').addEventListener('submit', handleCreateSection);
+  }
+
+  function bindSectionEventListeners() {
+    // Edit section
+    document.querySelectorAll('.btn-edit').forEach(btn => {
+      btn.addEventListener('click', handleEditSection);
+    });
+
+
+    // Toggle paywall
+    document.querySelectorAll('.btn-toggle-paywall').forEach(btn => {
+      btn.addEventListener('click', handleTogglePaywall);
+    });
+
+    // Delete section
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', handleDeleteSection);
+    });
+  }
+
+  async function handleCreateSection(e) {
+    e.preventDefault();
+    
+    const title = document.getElementById('sectionTitle').value.trim();
+    const layout = document.getElementById('sectionLayout').value;
+    
+    if (!title) {
+      showWarning('Please enter a section title');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/sections`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, layout_type })
+        body: JSON.stringify({ title, layout_type: layout })
       });
-      const data = await res.json();
-      if(!data.success){ notify('danger', data.message||'Failed to create'); return; }
-      titleEl.value='';
-      notify('success', 'Section created');
-      await load(1);
-    });
-    load();
 
-    // ---------- File Picker Modal ----------
-    function ensureFilePickerModal() {
-      let modalEl = document.getElementById('filePickerModal');
-      if (modalEl) return modalEl;
-      const wrapper = document.createElement('div');
-      wrapper.innerHTML = `
-      <div class="modal fade" id="filePickerModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title"><i class="fas fa-folder-open me-2"></i>Select a File</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <div class="d-flex align-items-center mb-2">
-                <input id="filePickerSearch" class="form-control" placeholder="Search files..." />
-              </div>
-              <div id="filePickerList" class="row row-cols-1 row-cols-md-2 g-2">
-                <div class="col"><div class="text-muted">Loading…</div></div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div>`;
-      document.body.appendChild(wrapper.firstElementChild);
-      return document.getElementById('filePickerModal');
-    }
-
-    function renderFileList(files) {
-      const list = document.getElementById('filePickerList');
-      if (!files.length) {
-        list.innerHTML = '<div class="col"><div class="text-muted">No files found.</div></div>';
-        return;
+      const data = await response.json();
+      
+      if (data.success) {
+        showSuccess('Section created successfully');
+        document.getElementById('createSectionForm').reset();
+        loadSections();
+      } else {
+        showError('Failed to create section: ' + (data.message || 'Unknown error'));
       }
-      list.innerHTML = files.map(f => `
-        <div class="col">
-          <div class="border rounded p-2 d-flex align-items-center justify-content-between">
-            <div class="text-truncate" title="${f.path}">${f.path}</div>
-            <button class="btn btn-sm btn-primary" data-path="${f.path}">Select</button>
-          </div>
-        </div>
-      `).join('');
-      // bind selects
-      list.querySelectorAll('button[data-path]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          if (filePickerTargetInput) {
-            filePickerTargetInput.value = btn.getAttribute('data-path');
-          }
-          if (filePickerModalInstance) filePickerModalInstance.hide();
-        });
+    } catch (error) {
+      console.error('Error creating section:', error);
+      showError('Failed to create section');
+    }
+  }
+
+  async function handleEditSection(e) {
+    const btn = e.target;
+    const id = btn.getAttribute('data-id');
+    const currentTitle = btn.getAttribute('data-title');
+    const currentLayout = btn.getAttribute('data-layout');
+    
+    const newTitle = prompt('Enter new section title:', currentTitle);
+    if (!newTitle || newTitle.trim() === '') return;
+    
+    try {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/sections/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newTitle.trim() })
       });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        showSuccess('Section updated successfully');
+        loadSections();
+      } else {
+        showError('Failed to update section: ' + (data.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error updating section:', error);
+      showError('Failed to update section');
+    }
+  }
+
+
+  async function handleTogglePaywall(e) {
+    e.preventDefault();
+    const btn = e.currentTarget;
+    const id = btn.getAttribute('data-id');
+    const currentPaywall = btn.getAttribute('data-paywall') === '1';
+    
+    if (!id || id === 'null') {
+      showError('Invalid section ID');
+      return;
+    }
+    
+    try {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/sections/${id}/paywall`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ members_only: !currentPaywall })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        const newPaywall = !currentPaywall;
+        showSuccess(`Section ${newPaywall ? 'added to' : 'removed from'} paywall successfully`);
+        
+        // Update button immediately
+        btn.setAttribute('data-paywall', newPaywall ? '1' : '0');
+        btn.className = `btn btn-outline-${newPaywall ? 'warning' : 'info'} btn-toggle-paywall`;
+        btn.title = newPaywall ? 'Remove from paywall' : 'Add to paywall';
+        btn.innerHTML = `<i class="fas fa-${newPaywall ? 'unlock' : 'lock'}"></i>`;
+        
+        // Refresh sections to update privacy badges
+        loadSections();
+      } else {
+        showError('Failed to update section: ' + (data.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error updating section paywall status:', error);
+      showError('Failed to update section');
+    }
+  }
+
+  async function handleDeleteSection(e) {
+    const btn = e.target;
+    const id = btn.getAttribute('data-id');
+    const title = btn.getAttribute('data-title');
+    
+    if (!confirm(`Delete section "${title}"? This will also remove all associated images. This cannot be undone.`)) {
+      return;
     }
 
-    async function loadFilePickerFiles() {
-      const list = document.getElementById('filePickerList');
-      list.innerHTML = '<div class="col"><div class="text-muted">Loading…</div></div>';
-      try {
-        const r = await fetch(`/api/model-gallery/${encodeURIComponent(slug)}/uploads-list?sub=public/gallery`);
-        const d = await r.json();
-        if (!d.success) { list.innerHTML = `<div class='col'><div class='text-danger'>${d.message||'Failed to load'}</div></div>`; return; }
-        filePickerLastFiles = d.data.files || [];
-        renderFileList(filePickerLastFiles);
-      } catch (e) {
-        list.innerHTML = '<div class="col"><div class="text-danger">Failed to load</div></div>';
-      }
-    }
+    try {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/sections/${id}`, {
+        method: 'DELETE'
+      });
 
-    function openFilePicker(targetInput) {
-      const modalEl = ensureFilePickerModal();
-      // initialize bootstrap modal once
-      if (!filePickerModalInstance) {
-        // eslint-disable-next-line no-undef
-        filePickerModalInstance = new bootstrap.Modal(modalEl);
-        const searchEl = modalEl.querySelector('#filePickerSearch');
-        searchEl.addEventListener('input', () => {
-          const q = searchEl.value.toLowerCase();
-          const filtered = filePickerLastFiles.filter(f => f.path.toLowerCase().includes(q));
-          renderFileList(filtered);
-        });
+      const data = await response.json();
+      
+      if (data.success) {
+        showSuccess('Section deleted successfully');
+        loadSections();
+      } else {
+        showError('Failed to delete section: ' + (data.message || 'Unknown error'));
       }
-      filePickerTargetInput = targetInput;
-      loadFilePickerFiles();
-      filePickerModalInstance.show();
+    } catch (error) {
+      console.error('Error deleting section:', error);
+      showError('Failed to delete section');
     }
-  })();
+  }
+
+  // Utility functions for notifications
+  function showSuccess(message) {
+    console.log('Success:', message);
+    // You can implement your preferred notification system here
+  }
+
+  function showError(message) {
+    console.error('Error:', message);
+  }
+
+  function showWarning(message) {
+    console.warn('Warning:', message);
+  }
+});
 </script>
 

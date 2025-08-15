@@ -1,267 +1,682 @@
 <!-- Gallery Hero Section -->
-<section class="dark-hero min-vh-50 d-flex align-items-center text-white position-relative pt-5" data-aos="fade-in">
-    <div class="container position-relative" style="z-index: 10;">
-        <div class="row justify-content-center text-center">
-            <div class="col-lg-8">
-                <div class="dark-badge mb-4">Gallery</div>
-                <h1 class="display-2 fw-bold mb-4 dark-heading">
-                    Portfolio
-                </h1>
-                <p class="fs-4 text-dark-muted mx-auto" style="max-width: 600px;">
-                    {{content.galleryIntro}}
-                </p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Gallery Categories -->
-{{#if galleryCategories}}
-<section class="py-4 bg-dark-surface">
-    <div class="container">
+{{#if gallery_content.gallery_header_visible}}
+<section class="bg-purple-600 text-white py-16" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
-            <div class="d-inline-flex bg-dark-card rounded-4 p-1 border border-dark-border">
-                <button class="gallery-filter active dark-btn small px-4 py-2" data-category="all">
-                    All
-                </button>
-                {{#each galleryCategories}}
-                <button class="gallery-filter px-4 py-2 rounded-3 small fw-semibold text-dark-muted border-0 bg-transparent hover:bg-dark-ghost hover:text-dark-primary" data-category="{{this.slug}}">
-                    {{this.name}}
-                </button>
-                {{/each}}
-            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">
+                {{#if gallery_content.page_title}}{{gallery_content.page_title}}{{else}}Photo Gallery{{/if}}
+            </h1>
+            {{#if gallery_content.page_subtitle}}
+            <p class="text-xl text-gray-200 max-w-3xl mx-auto">
+                {{gallery_content.page_subtitle}}
+            </p>
+            {{/if}}
         </div>
     </div>
 </section>
 {{/if}}
 
-<!-- Gallery Grid -->
-<section class="py-5" style="background: var(--dark-bg);">
-    <div class="container">
-        {{#if galleryImages}}
-        
-        <!-- Gallery Grid -->
-        <div class="dark-grid dark-grid-4" id="darkGalleryGrid">
-            {{#each galleryImages}}
-            <div class="gallery-item position-relative overflow-hidden rounded-3 dark-card" 
-                 data-category="{{this.category}}" 
-                 data-aos="zoom-in" 
-                 data-aos-delay="{{@index}}0">
-                <img src="{{this.thumbnail}}" 
-                     alt="{{this.caption}}" 
-                     class="w-100" style="height: 280px; object-fit: cover; transition: transform 0.3s ease;"
-                     onmouseover="this.style.transform='scale(1.05)'"
-                     onmouseout="this.style.transform='scale(1)'">
-                
-                <!-- Dark Overlay -->
-                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" 
-                     style="background: linear-gradient(135deg, var(--dark-primary)90, var(--dark-accent)90); opacity: 0; transition: opacity 0.3s ease;"
-                     onmouseover="this.style.opacity='0.95'"
-                     onmouseout="this.style.opacity='0'">
-                    <div class="text-center text-white">
-                        <button class="dark-btn bg-white text-dark-primary mb-2" 
-                                onclick="openDarkLightbox('{{this.fullSize}}', '{{this.caption}}')">
-                            <i class="fas fa-expand me-2"></i>
-                            View
-                        </button>
-                        {{#if this.caption}}
-                        <p class="small fw-semibold">{{this.caption}}</p>
-                        {{/if}}
+<!-- Phase 5: Advanced Gallery System -->
+<section class="py-16" style="background-color: var(--basic-background);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {{#if (hasGalleries modelSlug)}}
+            <!-- Professional Gallery Sections -->
+            <div class="galleries-container rounded-lg shadow-sm border" style="padding: 24px; background-color: #1f2937; border-color: #374151;" data-aos="fade-up">
+                {{{renderGalleries modelSlug}}}
+            </div>
+        {{else}}
+            <!-- Empty State -->
+            <div class="text-center py-16">
+                <div class="basic-card p-12 max-w-md mx-auto" data-aos="zoom-in">
+                    <div class="w-20 h-20 mx-auto mb-6 bg-basic-primary rounded-full flex items-center justify-center">
+                        <i class="fas fa-camera text-2xl text-white"></i>
                     </div>
+                    <h3 class="text-2xl font-bold mb-4 basic-heading">Gallery Coming Soon</h3>
+                    <p class="text-gray-600 mb-8 max-w-md mx-auto">
+                        Professional photos will be available here soon. Check back for updates!
+                    </p>
+                    <a href="/{{modelSlug}}/contact" class="basic-btn">
+                        Get in Touch
+                    </a>
                 </div>
             </div>
-            {{/each}}
-        </div>
-        
-        <!-- Load More Button -->
-        {{#if content.hasMoreImages}}
-        <div class="text-center mt-5" data-aos="fade-up">
-            <button id="darkLoadMoreBtn" class="dark-btn-outline fs-5 px-4 py-3">
-                <i class="fas fa-plus me-2"></i>
-                Load More
-            </button>
-        </div>
-        {{/if}}
-        
-        {{else}}
-        <!-- Empty Gallery State -->
-        <div class="text-center py-5">
-            <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-4" 
-                 style="width: 160px; height: 160px; background: var(--dark-card); border: 2px solid var(--dark-primary);">
-                <i class="fas fa-camera fs-1 text-dark-primary"></i>
-            </div>
-            <h3 class="display-6 fw-bold mb-4 dark-heading">Portfolio Coming Soon</h3>
-            <p class="text-dark-muted mb-4 mx-auto" style="max-width: 500px;">
-                Professional content and portfolio pieces will be showcased here.
-            </p>
-            <a href="/{{modelSlug}}/contact" class="dark-btn">
-                <i class="fas fa-envelope me-2"></i>
-                Get in Touch
-            </a>
-        </div>
         {{/if}}
     </div>
 </section>
 
-<!-- Gallery Stats -->
-{{#if galleryStats}}
-<section class="py-5" style="background: linear-gradient(135deg, var(--dark-primary)15, var(--dark-accent)15); border-top: 1px solid var(--dark-border); border-bottom: 1px solid var(--dark-border);">
-    <div class="container">
-        <div class="text-center mb-5" data-aos="fade-up">
-            <h2 class="display-6 fw-bold mb-4 dark-heading text-dark-primary">
-                Portfolio Stats
-            </h2>
-        </div>
-        
-        <div class="row g-4">
-            {{#if galleryStats.totalPhotos}}
-            <div class="col-6 col-md-3 text-center" data-aos="fade-up" data-aos-delay="0">
-                <div class="display-4 fw-bold mb-2 dark-mono text-dark-primary">{{galleryStats.totalPhotos}}</div>
-                <div class="small text-dark-muted text-uppercase fw-bold">Images</div>
-            </div>
-            {{/if}}
-            
-            {{#if galleryStats.categories}}
-            <div class="col-6 col-md-3 text-center" data-aos="fade-up" data-aos-delay="100">
-                <div class="display-4 fw-bold mb-2 dark-mono text-dark-primary">{{galleryStats.categories}}</div>
-                <div class="small text-dark-muted text-uppercase fw-bold">Categories</div>
-            </div>
-            {{/if}}
-            
-            {{#if galleryStats.lastUpdated}}
-            <div class="col-6 col-md-3 text-center" data-aos="fade-up" data-aos-delay="200">
-                <div class="display-4 fw-bold mb-2 dark-mono text-dark-primary">{{galleryStats.lastUpdated}}</div>
-                <div class="small text-dark-muted text-uppercase fw-bold">Updates</div>
-            </div>
-            {{/if}}
-            
-            {{#if galleryStats.featured}}
-            <div class="col-6 col-md-3 text-center" data-aos="fade-up" data-aos-delay="300">
-                <div class="display-4 fw-bold mb-2 dark-mono text-dark-primary">{{galleryStats.featured}}</div>
-                <div class="small text-dark-muted text-uppercase fw-bold">Featured</div>
-            </div>
-            {{/if}}
-        </div>
-    </div>
-</section>
-{{/if}}
+<!-- Basic Theme Gallery Styling -->
+<style>
+.model-galleries .gallery-section {
+    margin-bottom: 3rem;
+    padding: 2rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.model-galleries .gallery-section:last-child {
+    border-bottom: none;
+}
+
+.model-galleries .gallery-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--basic-primary, #2563eb);
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.model-galleries .gallery-title::after {
+    content: '';
+    position: absolute;
+    bottom: -0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background-color: var(--basic-primary, #2563eb);
+    border-radius: 2px;
+}
+
+.model-galleries .grid-container {
+    max-width: 100%;
+}
+
+.model-galleries .grid-item {
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.model-galleries .grid-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
+}
+
+.model-galleries .masonry-item {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.model-galleries .masonry-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
+}
+
+.model-galleries .carousel-inner {
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.model-galleries .lightbox-grid-container {
+    background: #f9fafb;
+    padding: 1rem;
+    border-radius: 12px;
+}
+
+.model-galleries .lightbox-thumbnail {
+    background: white;
+    border: 2px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.model-galleries .lightbox-thumbnail:hover {
+    border-color: var(--basic-primary, #2563eb);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+/* Basic theme carousel controls */
+.model-galleries .carousel-control-prev,
+.model-galleries .carousel-control-next {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    color: #334155;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.model-galleries .carousel-control-prev:hover,
+.model-galleries .carousel-control-next:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.model-galleries .carousel-indicators [data-bs-target] {
+    background-color: #94A3B8;
+    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+}
+
+.model-galleries .carousel-indicators [data-bs-target].active {
+    background-color: #2563EB;
+}
+
+/* Gallery Layout Styles */
+.gallery-section {
+    margin-bottom: 3rem;
+    padding: 2rem 0;
+}
+
+.gallery-section:last-child {
+    margin-bottom: 0;
+}
+
+/* Grid Layout */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem 0;
+}
+
+.gallery-item {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    background: white;
+    aspect-ratio: 4/3;
+}
+
+.gallery-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.gallery-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    /* Ensure images load properly even if they're large */
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.image-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    color: white;
+    padding: 1rem;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* Masonry Layout */
+.masonry-grid {
+    columns: 3;
+    column-gap: 1.5rem;
+    padding: 1rem 0;
+}
+
+.masonry-grid .gallery-item {
+    break-inside: avoid;
+    margin-bottom: 1.5rem;
+    display: block;
+}
+
+.masonry-grid .gallery-image {
+    height: auto;
+    max-height: 400px;
+}
+
+/* Carousel Layout */
+.carousel-container {
+    position: relative;
+    overflow: hidden;
+    padding: 2rem 0;
+}
+
+.carousel-track {
+    display: flex;
+    gap: 1rem;
+    transition: transform 0.5s ease-in-out;
+}
+
+.carousel-item {
+    flex: 0 0 300px;
+    max-width: 300px;
+}
+
+.carousel-item .gallery-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    color: #334155;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.carousel-nav:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.carousel-nav.prev {
+    left: 0.5rem;
+}
+
+.carousel-nav.next {
+    right: 0.5rem;
+}
+
+.carousel-nav:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #94A3B8;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.carousel-dot.active {
+    background: #2563EB;
+}
+
+.carousel-dot:hover {
+    background: #64748B;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .masonry-grid {
+        columns: 2;
+        column-gap: 1rem;
+    }
+    
+    .carousel-container .gallery-item {
+        flex: 0 0 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .masonry-grid {
+        columns: 1;
+    }
+    
+    .carousel-container .gallery-item {
+        flex: 0 0 200px;
+    }
+}
+</style>
 
 <!-- Call to Action -->
-<section class="py-5 bg-dark-surface">
-    <div class="container text-center" data-aos="fade-up">
-        <h2 class="display-5 fw-bold dark-heading text-dark-primary mb-4">
-            Like What You See?
-        </h2>
-        <p class="fs-5 text-dark-muted mb-5 mx-auto" style="max-width: 600px;">
-            Ready to work together? Let's discuss your project and create something amazing.
+<section class="bg-purple-600 text-white" style="padding: 32px 0;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <p class="text-lg mb-8 max-w-prose mx-auto" style="max-width: 80ch;">
+            {{#if content.cta_section_subtitle}}{{content.cta_section_subtitle}}{{else}}Ready to book or have questions? Let's connect and discuss your needs.{{/if}}
         </p>
-        <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
-            <a href="/{{modelSlug}}/contact" class="dark-btn fs-5 px-4 py-3">
-                <i class="fas fa-envelope me-2"></i>
-                Contact Me
-            </a>
-            <a href="/{{modelSlug}}/rates" class="dark-btn-outline fs-5 px-4 py-3">
-                <i class="fas fa-list me-2"></i>
-                View Services
-            </a>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <!-- CTA Button 1 -->
+            {{#if content.cta_button_1_text}}
+                {{#if (eq content.cta_button_1_link 'calendar')}}
+                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                        {{content.cta_button_1_text}}
+                    </a>
+                {{else if (eq content.cta_button_1_link 'contact')}}
+                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                        {{content.cta_button_1_text}}
+                    </a>
+                {{else if (eq content.cta_button_1_link 'gallery')}}
+                    <a href="/{{modelSlug}}/gallery{{previewParam}}" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                        {{content.cta_button_1_text}}
+                    </a>
+                {{else if (eq content.cta_button_1_link 'rates')}}
+                    <a href="/{{modelSlug}}/rates{{previewParam}}" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                        {{content.cta_button_1_text}}
+                    </a>
+                {{else if (eq content.cta_button_1_link 'about')}}
+                    <a href="/{{modelSlug}}/about{{previewParam}}" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                        {{content.cta_button_1_text}}
+                    </a>
+                {{else}}
+                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                        {{content.cta_button_1_text}}
+                    </a>
+                {{/if}}
+            {{else}}
+                <a href="/{{modelSlug}}/contact{{previewParam}}" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                    Contact Me
+                </a>
+            {{/if}}
+            
+            <!-- CTA Button 2 -->
+            {{#if content.cta_button_2_text}}
+                {{#if (eq content.cta_button_2_link 'calendar')}}
+                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
+                        {{content.cta_button_2_text}}
+                    </a>
+                {{else if (eq content.cta_button_2_link 'contact')}}
+                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
+                        {{content.cta_button_2_text}}
+                    </a>
+                {{else if (eq content.cta_button_2_link 'gallery')}}
+                    <a href="/{{modelSlug}}/gallery{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
+                        {{content.cta_button_2_text}}
+                    </a>
+                {{else if (eq content.cta_button_2_link 'rates')}}
+                    <a href="/{{modelSlug}}/rates{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
+                        {{content.cta_button_2_text}}
+                    </a>
+                {{else if (eq content.cta_button_2_link 'about')}}
+                    <a href="/{{modelSlug}}/rates{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
+                        {{content.cta_button_2_text}}
+                    </a>
+                {{else}}
+                    <a href="/{{modelSlug}}/rates{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
+                        {{content.cta_button_2_text}}
+                    </a>
+                {{/if}}
+            {{else}}
+                <a href="/{{modelSlug}}/rates{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
+                    View Services
+                </a>
+            {{/if}}
         </div>
     </div>
 </section>
 
-<!-- Dark Lightbox Modal -->
-<div id="darkLightboxModal" class="position-fixed top-0 start-0 w-100 h-100 d-none align-items-center justify-content-center" style="background: rgba(0, 0, 0, 0.95); z-index: 9999;">
-    <div class="position-relative p-4" style="max-width: 90vw; max-height: 90vh;">
-        <button onclick="closeDarkLightbox()" class="position-absolute top-0 end-0 text-white fs-3 border-0 bg-transparent p-3" style="z-index: 10;">
-            <i class="fas fa-times"></i>
+<!-- Phase 5 Gallery System includes built-in lightbox and interactive features -->
+
+<!-- Lightbox Modal -->
+<div id="lightbox-modal" class="fixed inset-0 bg-black bg-opacity-95 z-50 hidden flex items-center justify-center p-4">
+    <div class="relative max-w-6xl max-h-full">
+        <!-- Close button -->
+        <button onclick="closeLightbox()" 
+                class="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors duration-200 z-10">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
         </button>
-        <img id="darkLightboxImage" src="" alt="" class="rounded-3" style="max-width: 100%; max-height: 90vh; object-fit: contain;">
-        <div id="darkLightboxCaption" class="text-white text-center mt-3 dark-heading d-none"></div>
+        
+        <!-- Image container -->
+        <div class="relative">
+            <img id="lightbox-image" 
+                 src="" 
+                 alt="" 
+                 class="max-w-full max-h-full object-contain rounded-lg">
+        </div>
+        
+        <!-- Image caption -->
+        <div class="absolute bottom-4 left-4 right-4 bg-black bg-opacity-75 text-white p-3 rounded-lg">
+            <p id="lightbox-caption" class="text-center text-sm"></p>
+        </div>
     </div>
 </div>
 
+<!-- Lightbox JavaScript -->
 <script>
-// Gallery filtering
-document.addEventListener('DOMContentLoaded', function() {
-    const filters = document.querySelectorAll('.gallery-filter');
-    const items = document.querySelectorAll('.gallery-item');
+function openLightbox(imageUrl, caption) {
+    const modal = document.getElementById('lightbox-modal');
+    const image = document.getElementById('lightbox-image');
+    const captionEl = document.getElementById('lightbox-caption');
     
-    filters.forEach(filter => {
-        filter.addEventListener('click', function() {
-            const filterValue = this.dataset.category;
-            
-            // Update active filter
-            filters.forEach(f => {
-                f.classList.remove('active', 'dark-btn');
-                f.classList.add('text-dark-muted', 'bg-transparent');
-            });
-            this.classList.add('active', 'dark-btn');
-            this.classList.remove('text-dark-muted', 'bg-transparent');
-            
-            // Filter items
-            items.forEach(item => {
-                if (filterValue === 'all' || item.dataset.category === filterValue) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
+    if (modal && image && captionEl) {
+        image.src = imageUrl;
+        image.alt = caption;
+        captionEl.textContent = caption;
+        
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+        
+        // Close on escape key
+        document.addEventListener('keydown', handleLightboxEscape);
+        
+        // Close on background click
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeLightbox();
+            }
         });
+    }
+}
+
+function closeLightbox() {
+    const modal = document.getElementById('lightbox-modal');
+    
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
+        
+        // Remove event listeners
+        document.removeEventListener('keydown', handleLightboxEscape);
+    }
+}
+
+function handleLightboxEscape(e) {
+    if (e.key === 'Escape') {
+        closeLightbox();
+    }
+}
+
+// Carousel Navigation Functions
+function moveCarousel(sectionIndex, direction) {
+    const carousel = document.getElementById(`carousel-${sectionIndex}`);
+    if (!carousel) return;
+    
+    const items = carousel.querySelectorAll('.carousel-item');
+    const currentIndex = parseInt(carousel.dataset.currentIndex || 0);
+    const totalItems = items.length;
+    
+    let newIndex = currentIndex + direction;
+    
+    // Handle wrap-around
+    if (newIndex < 0) newIndex = totalItems - 1;
+    if (newIndex >= totalItems) newIndex = 0;
+    
+    // Update carousel position - account for item width and gaps
+    const itemWidth = 300;
+    const itemGap = 16;
+    const totalItemWidth = itemWidth + itemGap;
+    const translateX = -(newIndex * totalItemWidth);
+    carousel.style.transform = `translateX(${translateX}px)`;
+    carousel.dataset.currentIndex = newIndex;
+    
+    // Update dots
+    updateCarouselDots(sectionIndex, newIndex);
+    
+    // Update navigation buttons
+    updateCarouselNav(sectionIndex, newIndex, totalItems);
+    
+    // Restart autoplay if enabled (user interaction resets the timer)
+    const container = carousel.closest('.carousel-container');
+    if (container) {
+        const autoplaySpeed = container.dataset.autoplay;
+        if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
+            startCarouselAutoplay(sectionIndex, parseInt(autoplaySpeed));
+        }
+    }
+}
+
+function goToCarouselSlide(sectionIndex, slideIndex) {
+    const carousel = document.getElementById(`carousel-${sectionIndex}`);
+    if (!carousel) return;
+    
+    const items = carousel.querySelectorAll('.carousel-item');
+    const totalItems = items.length;
+    
+    if (slideIndex < 0 || slideIndex >= totalItems) return;
+    
+    // Update carousel position - account for item width and gaps
+    const itemWidth = 300;
+    const itemGap = 16;
+    const totalItemWidth = itemWidth + itemGap;
+    const translateX = -(slideIndex * totalItemWidth);
+    carousel.style.transform = `translateX(${translateX}px)`;
+    carousel.dataset.currentIndex = slideIndex;
+    
+    // Update dots
+    updateCarouselDots(sectionIndex, slideIndex);
+    
+    // Update navigation buttons
+    updateCarouselNav(sectionIndex, slideIndex, totalItems);
+    
+    // Restart autoplay if enabled (user interaction resets the timer)
+    const container = carousel.closest('.carousel-container');
+    if (container) {
+        const autoplaySpeed = container.dataset.autoplay;
+        if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
+            startCarouselAutoplay(sectionIndex, parseInt(autoplaySpeed));
+        }
+    }
+}
+
+function updateCarouselDots(sectionIndex, activeIndex) {
+    const carousel = document.querySelector(`#carousel-${sectionIndex}`);
+    if (!carousel) return;
+    
+    const container = carousel.closest('.carousel-container');
+    if (!container) return;
+    
+    const dots = container.querySelectorAll('.carousel-dot');
+    dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === activeIndex);
+    });
+}
+
+function updateCarouselNav(sectionIndex, currentIndex, totalItems) {
+    const carousel = document.querySelector(`#carousel-${sectionIndex}`);
+    if (!carousel) return;
+    
+    const container = carousel.closest('.carousel-container');
+    if (!container) return;
+    
+    const prevBtn = container.querySelector('.carousel-nav.prev');
+    const nextBtn = container.querySelector('.carousel-nav.next');
+    
+    if (prevBtn) prevBtn.disabled = false;
+    if (nextBtn) nextBtn.disabled = false;
+    
+    // Optional: Disable buttons at boundaries (uncomment if you want this behavior)
+    // if (prevBtn) prevBtn.disabled = (currentIndex === 0);
+    // if (nextBtn) nextBtn.disabled = (currentIndex === totalItems - 1);
+}
+
+// Carousel autoplay timers
+window.carouselTimers = {};
+
+// Initialize carousels when page loads
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Initialize all carousels
+    const carousels = document.querySelectorAll('.carousel-track');
+
+    
+    carousels.forEach((carousel, index) => {
+        carousel.dataset.currentIndex = '0';
+        
+        // Initialize at position 0 - the wrapper is already centered with margin: 0 auto
+        carousel.style.transform = 'translateX(0px)';
+        
+        // Check if autoplay is enabled for this carousel
+        const container = carousel.closest('.carousel-container');
+        if (container) {
+            const autoplaySpeed = container.dataset.autoplay;
+
+            if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
+
+                startCarouselAutoplay(index, parseInt(autoplaySpeed));
+            } else {
+
+            }
+        } else {
+
+        }
     });
     
-    // Load more functionality
-    const loadMoreBtn = document.getElementById('darkLoadMoreBtn');
-    if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', function() {
-            // This would typically load more images via AJAX
-            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
-            
-            // Simulate loading delay
-            setTimeout(() => {
-                this.innerHTML = '<i class="fas fa-plus me-2"></i>Load More';
-                // Add new images to gallery here
-            }, 1000);
+    // Pause autoplay on hover
+    document.querySelectorAll('.carousel-container').forEach((container, index) => {
+        container.addEventListener('mouseenter', () => pauseCarouselAutoplay(index));
+        container.addEventListener('mouseleave', () => {
+            const autoplaySpeed = container.dataset.autoplay;
+            if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
+                startCarouselAutoplay(index, parseInt(autoplaySpeed));
+            }
         });
-    }
+    });
 });
 
-// Dark Lightbox functionality
-function openDarkLightbox(imageSrc, caption) {
-    const modal = document.getElementById('darkLightboxModal');
-    const image = document.getElementById('darkLightboxImage');
-    const captionDiv = document.getElementById('darkLightboxCaption');
+// Carousel autoplay functions
+function startCarouselAutoplay(sectionIndex, speed) {
+
+    // Clear any existing timer
+    pauseCarouselAutoplay(sectionIndex);
     
-    image.src = imageSrc;
-    
-    if (caption) {
-        captionDiv.textContent = caption;
-        captionDiv.classList.remove('d-none');
-    } else {
-        captionDiv.classList.add('d-none');
-    }
-    
-    modal.classList.remove('d-none');
-    modal.classList.add('d-flex');
-    document.body.style.overflow = 'hidden';
+    // Start new timer
+    window.carouselTimers[sectionIndex] = setInterval(() => {
+
+        moveCarousel(sectionIndex, 1); // Move to next slide
+    }, speed);
+
 }
 
-function closeDarkLightbox() {
-    const modal = document.getElementById('darkLightboxModal');
-    modal.classList.add('d-none');
-    modal.classList.remove('d-flex');
-    document.body.style.overflow = 'auto';
+function pauseCarouselAutoplay(sectionIndex) {
+    if (window.carouselTimers[sectionIndex]) {
+
+        clearInterval(window.carouselTimers[sectionIndex]);
+        delete window.carouselTimers[sectionIndex];
+    }
 }
-
-// Close lightbox on escape key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeDarkLightbox();
-    }
-});
-
-// Close lightbox on background click
-document.getElementById('darkLightboxModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeDarkLightbox();
-    }
-});
 </script>

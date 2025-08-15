@@ -2,29 +2,54 @@
 <div class="min-h-screen bg-white">
     <div class="container mx-auto px-4 py-16">
         {{!-- Page Header --}}
+        {{#if calendar_content.calendar_header_visible}}
         <div class="text-center mb-16">
             <h1 class="text-5xl font-black mb-8 text-gray-900 tracking-tight">
-                My Calendar
+                {{#if calendar_content.page_title}}{{calendar_content.page_title}}{{else}}My Calendar{{/if}}
             </h1>
+            {{#if calendar_content.page_subtitle}}
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                {{calendar_content.page_subtitle}}
+            </p>
+            {{else}}
             <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
                 View my availability and travel schedule. Clean, simple, and always up-to-date.
             </p>
+            {{/if}}
         </div>
+        {{/if}}
 
         {{!-- Calendar Container --}}
         <div class="max-w-6xl mx-auto">
             {{!-- Calendar Navigation --}}
+            {{#if calendar_content.calendar_navigation_visible}}
             <div class="flex justify-between items-center mb-12">
                 <button id="prev-month" class="px-6 py-3 bg-gray-900 text-white font-bold rounded-full hover:bg-gray-800 transition-colors duration-300 text-lg">
-                    ← Previous
+                    {{#if calendar_content.nav_previous_text}}{{calendar_content.nav_previous_text}}{{else}}← Previous{{/if}}
                 </button>
                 <h2 id="month-title" class="text-4xl font-black text-gray-900 tracking-tight"></h2>
                 <button id="next-month" class="px-6 py-3 bg-gray-900 text-white font-bold rounded-full hover:bg-gray-800 transition-colors duration-300 text-lg">
-                    Next →
+                    {{#if calendar_content.nav_next_text}}{{calendar_content.nav_next_text}}{{else}}Next →{{/if}}
                 </button>
+            </div>
+            {{/if}}
+
+            {{!-- Mobile View Toggle --}}
+            <div class="modern-mobile-toggle mb-8">
+                <div class="modern-toggle-container">
+                    <button id="list-view-btn" class="modern-toggle-btn" data-view="list">
+                        <i class="fas fa-list"></i>
+                        <span>List</span>
+                    </button>
+                    <button id="month-view-btn" class="modern-toggle-btn modern-toggle-active" data-view="month">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Month</span>
+                    </button>
+                </div>
             </div>
 
             {{!-- Calendar Grid --}}
+            {{#if calendar_content.calendar_grid_visible}}
             <div class="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden mb-12">
                 {{!-- Calendar Header --}}
                 <div class="grid grid-cols-7 bg-gray-900">
@@ -41,47 +66,235 @@
                 <div id="calendar-grid">
                     <div class="text-center py-16">
                         <div class="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-gray-900 mx-auto mb-6"></div>
-                        <p class="text-lg text-gray-600">Loading calendar...</p>
+                        <p class="text-lg text-gray-600">{{#if calendar_content.loading_message}}{{calendar_content.loading_message}}{{else}}Loading calendar...{{/if}}</p>
                     </div>
+                </div>
+            </div>
+            {{/if}}
+
+            {{!-- List View (Hidden by default) --}}
+            <div id="list-view" class="modern-list-view bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden mb-12" style="display: none;">
+                <div class="modern-list-loading">
+                    <div class="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-gray-900 mx-auto mb-6"></div>
+                    <p class="text-lg text-gray-600">{{#if calendar_content.loading_message}}{{calendar_content.loading_message}}{{else}}Loading calendar...{{/if}}</p>
                 </div>
             </div>
 
             {{!-- Legend --}}
+            {{#if calendar_content.calendar_legend_visible}}
             <div class="flex flex-wrap justify-center gap-8 mb-12">
                 <div class="flex items-center">
                     <div class="w-5 h-5 rounded mr-3" style="background-color: #10B981;"></div>
-                    <span class="text-lg font-medium text-gray-700">Available</span>
+                    <span class="text-lg font-medium text-gray-700">{{#if calendar_content.legend_available_label}}{{calendar_content.legend_available_label}}{{else}}Available{{/if}}</span>
                 </div>
                 <div class="flex items-center">
                     <div class="w-5 h-5 rounded mr-3" style="background-color: #3B82F6;"></div>
-                    <span class="text-lg font-medium text-gray-700">Travel</span>
+                    <span class="text-lg font-medium text-gray-700">{{#if calendar_content.legend_travel_label}}{{calendar_content.legend_travel_label}}{{else}}Travel{{/if}}</span>
                 </div>
                 <div class="flex items-center">
                     <div class="w-5 h-5 rounded mr-3" style="background-color: #F59E0B;"></div>
-                    <span class="text-lg font-medium text-gray-700">Vacation</span>
+                    <span class="text-lg font-medium text-gray-700">{{#if calendar_content.legend_vacation_label}}{{calendar_content.legend_vacation_label}}{{else}}Vacation{{/if}}</span>
                 </div>
                 <div class="flex items-center">
                     <div class="w-5 h-5 rounded mr-3" style="background-color: #6B7280;"></div>
-                    <span class="text-lg font-medium text-gray-700">Unavailable</span>
+                    <span class="text-lg font-medium text-gray-700">{{#if calendar_content.legend_unavailable_label}}{{calendar_content.legend_unavailable_label}}{{else}}Unavailable{{/if}}</span>
                 </div>
             </div>
+            {{/if}}
 
             {{!-- Contact Call-to-Action --}}
+            {{#if calendar_content.cta_visible}}
             <div class="bg-white rounded-3xl shadow-2xl border border-gray-100 p-12 text-center">
                 <h3 class="text-3xl font-black mb-6 text-gray-900">
-                    Ready to Connect?
+                    {{#if calendar_content.cta_title}}{{calendar_content.cta_title}}{{else}}Ready to Connect?{{/if}}
                 </h3>
+                {{#if calendar_content.cta_text}}
+                <p class="text-gray-600 mb-8 text-xl leading-relaxed">
+                    {{calendar_content.cta_text}}
+                </p>
+                {{else}}
                 <p class="text-gray-600 mb-8 text-xl leading-relaxed">
                     Reach out to schedule an appointment or ask about my availability.
                 </p>
-                <a href="/{{modelSlug}}/contact{{previewParam}}" 
+                {{/if}}
+                <a href="{{#if calendar_content.cta_button_link}}{{calendar_content.cta_button_link}}{{else}}/{{modelSlug}}/contact{{previewParam}}{{/if}}" 
                    class="inline-block px-10 py-5 bg-gray-900 text-white font-bold text-xl rounded-full hover:bg-gray-800 transition-colors duration-300">
-                    Contact Me
+                    {{#if calendar_content.cta_button_text}}{{calendar_content.cta_button_text}}{{else}}Contact Me{{/if}}
                 </a>
             </div>
+            {{/if}}
         </div>
     </div>
 </div>
+
+{{!-- Modern Calendar Styles --}}
+<style>
+/* Mobile View Toggle */
+.modern-mobile-toggle {
+    display: none;
+    justify-content: center;
+}
+
+.modern-toggle-container {
+    background: white;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 4px;
+    display: flex;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.modern-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: #6B7280;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modern-toggle-btn:hover {
+    background: #F3F4F6;
+    color: #374151;
+}
+
+.modern-toggle-btn.modern-toggle-active {
+    background: #111827;
+    color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* List View */
+.modern-list-view {
+    padding: 2rem;
+}
+
+.modern-list-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+}
+
+.modern-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.modern-list-item:last-child {
+    border-bottom: none;
+}
+
+.modern-list-date {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+    min-width: 120px;
+}
+
+.modern-list-status {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    margin-left: 2rem;
+}
+
+.modern-list-status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.modern-list-status-text {
+    font-size: 16px;
+    color: #374151;
+    font-weight: 500;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .modern-mobile-toggle {
+        display: flex;
+    }
+    
+    .modern-toggle-btn span {
+        display: none;
+    }
+    
+    .modern-toggle-btn {
+        padding: 10px 14px;
+    }
+    
+    /* Default to list view on mobile */
+    .bg-white.rounded-3xl.shadow-2xl.border.border-gray-100.overflow-hidden.mb-12:not(.modern-list-view) {
+        display: none !important;
+    }
+    
+    .modern-list-view {
+        display: block !important;
+    }
+    
+    .modern-toggle-btn[data-view="list"] {
+        background: #111827;
+        color: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .modern-toggle-btn[data-view="month"] {
+        background: transparent;
+        color: #6B7280;
+    }
+    
+    .modern-list-date {
+        min-width: 80px;
+        font-size: 14px;
+    }
+    
+    .modern-list-status {
+        margin-left: 1rem;
+    }
+    
+    .modern-list-status-text {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .flex.justify-between.items-center.mb-12 {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    #month-title {
+        order: -1;
+        font-size: 2rem !important;
+    }
+    
+    .modern-list-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding: 1rem 0;
+    }
+    
+    .modern-list-status {
+        margin-left: 0;
+    }
+}
+</style>
 
 {{!-- Calendar JavaScript --}}
 <script>
@@ -89,11 +302,30 @@
     const slug = {{{json modelSlug}}};
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth() + 1;
+    let currentView = window.innerWidth <= 768 ? 'list' : 'month';
     
     const calendarGrid = document.getElementById('calendar-grid');
+    const listView = document.getElementById('list-view');
     const monthTitle = document.getElementById('month-title');
     const prevButton = document.getElementById('prev-month');
     const nextButton = document.getElementById('next-month');
+    const listViewBtn = document.getElementById('list-view-btn');
+    const monthViewBtn = document.getElementById('month-view-btn');
+    
+    // Event color mapping
+    const eventColors = {
+        'available': '#10B981',
+        'travel': '#3B82F6', 
+        'vacation': '#F59E0B',
+        'unavailable': '#6B7280'
+    };
+    
+    const eventTextColors = {
+        'available': 'white',
+        'travel': 'white',
+        'vacation': 'white', 
+        'unavailable': 'white'
+    };
     
     async function loadCalendar(year = currentYear, month = currentMonth) {
         try {
@@ -159,16 +391,104 @@
             
             calendarGrid.innerHTML = gridHtml;
             
+            // Generate list view if needed
+            if (currentView === 'list') {
+                generateListView(calendar);
+            }
+            
         } catch (error) {
             console.error('Error loading calendar:', error);
             calendarGrid.innerHTML = `
                 <div class="text-center py-16 text-red-500">
                     <div class="text-6xl mb-6">⚠️</div>
-                    <h3 class="text-2xl font-bold mb-4">Calendar Unavailable</h3>
-                    <p class="text-lg">Please contact me directly for scheduling information.</p>
+                    <h3 class="text-2xl font-bold mb-4">{{#if calendar_content.error_title}}{{calendar_content.error_title}}{{else}}Calendar Unavailable{{/if}}</h3>
+                    <p class="text-lg">{{#if calendar_content.error_message}}{{calendar_content.error_message}}{{else}}Please contact me directly for scheduling information.{{/if}}</p>
                 </div>
             `;
         }
+    }
+    
+    function generateListView(calendar) {
+        if (!listView) return;
+        
+        let listHtml = '';
+        const events = [];
+        
+        // Collect all events from calendar data
+        calendar.weeks.forEach(week => {
+            week.spans.forEach(span => {
+                const startDate = new Date(calendar.year, calendar.month - 1, span.start_day);
+                events.push({
+                    date: startDate,
+                    status: span.status,
+                    location: span.location,
+                    duration: span.duration || 1
+                });
+            });
+        });
+        
+        // Sort events by date
+        events.sort((a, b) => a.date - b.date);
+        
+        // Generate list items
+        if (events.length === 0) {
+            listHtml = '<div class="text-center py-8 text-gray-500">No events this month</div>';
+        } else {
+            events.forEach(event => {
+                const dateStr = event.date.toLocaleDateString('en-US', { 
+                    weekday: 'short', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                listHtml += `
+                    <div class="modern-list-item">
+                        <div class="modern-list-date">${dateStr}</div>
+                        <div class="modern-list-status">
+                            <div class="modern-list-status-dot" style="background-color: ${eventColors[event.status]}"></div>
+                            <span class="modern-list-status-text">
+                                ${event.status.charAt(0).toUpperCase() + event.status.slice(1)} 
+                                ${event.location ? `- ${event.location}` : ''}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        listView.innerHTML = listHtml;
+    }
+    
+    function switchView(newView) {
+        currentView = newView;
+        
+        if (newView === 'list') {
+            calendarGrid.parentElement.style.display = 'none';
+            listView.style.display = 'block';
+            listViewBtn.classList.add('modern-toggle-active');
+            monthViewBtn.classList.remove('modern-toggle-active');
+        } else {
+            calendarGrid.parentElement.style.display = 'block';
+            listView.style.display = 'none';
+            monthViewBtn.classList.add('modern-toggle-active');
+            listViewBtn.classList.remove('modern-toggle-active');
+        }
+        
+        // Reload calendar data for current view
+        loadCalendar(currentYear, currentMonth);
+    }
+    
+    // View toggle event listeners
+    if (listViewBtn && monthViewBtn) {
+        listViewBtn.addEventListener('click', () => switchView('list'));
+        monthViewBtn.addEventListener('click', () => switchView('month'));
+    }
+    
+    // Set initial view based on screen size
+    if (window.innerWidth <= 768) {
+        currentView = 'list';
+        if (listViewBtn) listViewBtn.classList.add('modern-toggle-active');
+        if (monthViewBtn) monthViewBtn.classList.remove('modern-toggle-active');
     }
     
     // Navigation event listeners

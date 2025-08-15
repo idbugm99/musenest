@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etiquette - {{site_settings.model_name || 'Modern Portfolio'}}</title>
+    <meta name="description" content="{{site_settings.meta_description || 'Professional etiquette and guidelines for our time together.'}}">
+    <meta name="og:title" content="Etiquette - {{site_settings.model_name}}">
+    <meta name="og:description" content="{{site_settings.meta_description}}">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="{{site_settings.og_image || '/uploads/opengraph.jpg'}}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <style>
+        /* Modern Theme Color Variables */
+        :root {
+            --modern-primary: var(--color-primary, #06B6D4);
+            --modern-secondary: var(--color-secondary, #0891B2);
+            --modern-accent: var(--color-accent, #10B981);
+            --modern-text: var(--color-text, #0C4A6E);
+            --modern-background: var(--color-background, #F0F9FF);
+        }
+        
+        .bg-modern-primary { background-color: var(--modern-primary); }
+        .bg-modern-secondary { background-color: var(--modern-secondary); }
+        .bg-modern-accent { background-color: var(--modern-accent); }
+        .text-modern-primary { color: var(--modern-primary); }
+        .text-modern-secondary { color: var(--modern-secondary); }
+        .text-modern-accent { color: var(--modern-accent); }
+        .text-modern-text { color: var(--modern-text); }
+        .bg-modern-background { background-color: var(--modern-background); }
+        .border-modern-primary { border-color: var(--modern-primary); }
+        
+        .modern-glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .modern-gradient {
+            background: linear-gradient(135deg, var(--modern-primary) 0%, var(--modern-secondary) 100%);
+        }
+        
+        .modern-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .modern-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(6, 182, 212, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .modern-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .modern-icon {
+            width: 4rem;
+            height: 4rem;
+            background: linear-gradient(135deg, var(--modern-primary), var(--modern-secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .modern-section-title {
+            color: var(--modern-text);
+            font-weight: 300;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .modern-divider {
+            width: 4rem;
+            height: 0.25rem;
+            background: var(--modern-primary);
+            margin: 0 auto 2rem;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="bg-modern-background">
+    <!-- Render Navigation Component -->
+    {{component 'navigation' theme=theme.name nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+
+    <!-- Hero Section -->
+    {{#if etiquette_content.etiquette_header_visible}}
+    <section class="relative py-32 modern-gradient overflow-hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div data-aos="fade-up">
+                <h1 class="text-5xl md:text-6xl font-light text-white mb-6">
+                    {{#if etiquette_content.page_title}}{{etiquette_content.page_title}}{{else}}Etiquette & Guidelines{{/if}}
+                </h1>
+                <div class="w-24 h-1 bg-modern-accent mx-auto mb-8"></div>
+                {{#if etiquette_content.page_subtitle}}
+                <p class="text-xl text-gray-100 max-w-2xl mx-auto leading-relaxed">
+                    {{etiquette_content.page_subtitle}}
+                </p>
+                {{else}}
+                <p class="text-xl text-gray-100 max-w-2xl mx-auto leading-relaxed">
+                    To ensure a pleasant and respectful experience for both of us, please review these important guidelines.
+                </p>
+                {{/if}}
+            </div>
+        </div>
+    </section>
+    {{/if}}
+
+    <!-- Main Content -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- First Row: Booking & Respect -->
+            <div class="grid lg:grid-cols-2 gap-8 mb-16">
+                <!-- Booking & Screening -->
+                {{#if etiquette_content.etiquette_booking_visible}}
+                <div class="modern-card" data-aos="fade-right">
+                    <div class="modern-icon">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m0 0V3a2 2 0 012-2h4a2 2 0 012 2v4m0 0v8a2 2 0 01-2 2H6a2 2 0 01-2-2V7"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-light text-modern-text mb-6 text-center">
+                        {{#if etiquette_content.booking_title}}{{etiquette_content.booking_title}}{{else}}Booking & Screening{{/if}}
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-lg font-semibold text-modern-text mb-3">
+                                {{#if etiquette_content.booking_initial_contact_title}}{{etiquette_content.booking_initial_contact_title}}{{else}}Initial Contact{{/if}}
+                            </h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                {{#if etiquette_content.booking_initial_contact_text}}{{etiquette_content.booking_initial_contact_text}}{{else}}Please introduce yourself politely and include your desired date, time, and duration when reaching out.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold text-modern-text mb-3">
+                                {{#if etiquette_content.booking_screening_title}}{{etiquette_content.booking_screening_title}}{{else}}Screening Process{{/if}}
+                            </h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                {{#if etiquette_content.booking_screening_text}}{{etiquette_content.booking_screening_text}}{{else}}For everyone's safety, a brief screening process is required for all new clients. This includes basic verification and references.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold text-modern-text mb-3">
+                                {{#if etiquette_content.booking_advance_title}}{{etiquette_content.booking_advance_title}}{{else}}Advance Booking{{/if}}
+                            </h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                {{#if etiquette_content.booking_advance_text}}{{etiquette_content.booking_advance_text}}{{else}}I prefer bookings made at least 24 hours in advance. Same-day appointments may be available with an additional fee.{{/if}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Respect & Boundaries -->
+                {{#if etiquette_content.etiquette_respect_visible}}
+                <div class="modern-card bg-modern-primary text-white" data-aos="fade-left">
+                    <div class="modern-icon bg-white">
+                        <svg class="w-8 h-8 text-modern-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-light text-white mb-6 text-center">
+                        {{#if etiquette_content.respect_title}}{{etiquette_content.respect_title}}{{else}}Respect & Boundaries{{/if}}
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-lg font-semibold text-white mb-3">
+                                {{#if etiquette_content.respect_mutual_title}}{{etiquette_content.respect_mutual_title}}{{else}}Mutual Respect{{/if}}
+                            </h3>
+                            <p class="text-white text-opacity-90 leading-relaxed">
+                                {{#if etiquette_content.respect_mutual_text}}{{etiquette_content.respect_mutual_text}}{{else}}I treat all clients with respect and kindness, and I expect the same in return. Rude or disrespectful behavior will not be tolerated.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold text-white mb-3">
+                                {{#if etiquette_content.respect_boundaries_title}}{{etiquette_content.respect_boundaries_title}}{{else}}Professional Boundaries{{/if}}
+                            </h3>
+                            <p class="text-white text-opacity-90 leading-relaxed">
+                                {{#if etiquette_content.respect_boundaries_text}}{{etiquette_content.respect_boundaries_text}}{{else}}Our time together is for companionship and social interaction. Please respect all boundaries and guidelines.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold text-white mb-3">
+                                {{#if etiquette_content.respect_personal_title}}{{etiquette_content.respect_personal_title}}{{else}}Personal Information{{/if}}
+                            </h3>
+                            <p class="text-white text-opacity-90 leading-relaxed">
+                                {{#if etiquette_content.respect_personal_text}}{{etiquette_content.respect_personal_text}}{{else}}Please do not ask for personal information beyond what is shared publicly. Discretion works both ways.{{/if}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+            
+            <!-- Second Row: Hygiene & Cancellation -->
+            <div class="grid lg:grid-cols-2 gap-8 mb-16">
+                <!-- Hygiene & Presentation -->
+                {{#if etiquette_content.etiquette_hygiene_visible}}
+                <div class="modern-card bg-modern-accent text-white" data-aos="fade-right" data-aos-delay="200">
+                    <div class="modern-icon bg-white">
+                        <svg class="w-8 h-8 text-modern-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-light text-white mb-6 text-center">
+                        {{#if etiquette_content.hygiene_title}}{{etiquette_content.hygiene_title}}{{else}}Hygiene & Presentation{{/if}}
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-lg font-semibold text-white mb-3">
+                                {{#if etiquette_content.hygiene_personal_title}}{{etiquette_content.hygiene_personal_title}}{{else}}Personal Hygiene{{/if}}
+                            </h3>
+                            <p class="text-white text-opacity-90 leading-relaxed">
+                                {{#if etiquette_content.hygiene_personal_text}}{{etiquette_content.hygiene_personal_text}}{{else}}Please arrive freshly showered and well-groomed. Good personal hygiene is essential for a comfortable experience.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold text-white mb-3">
+                                {{#if etiquette_content.hygiene_attire_title}}{{etiquette_content.hygiene_attire_title}}{{else}}Attire{{/if}}
+                            </h3>
+                            <p class="text-white text-opacity-90 leading-relaxed">
+                                {{#if etiquette_content.hygiene_attire_text}}{{etiquette_content.hygiene_attire_text}}{{else}}Dress appropriately for our planned activities. I'll always be well-dressed and expect the same consideration.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold text-white mb-3">
+                                {{#if etiquette_content.hygiene_substances_title}}{{etiquette_content.hygiene_substances_title}}{{else}}Substances{{/if}}
+                            </h3>
+                            <p class="text-white text-opacity-90 leading-relaxed">
+                                {{#if etiquette_content.hygiene_substances_text}}{{etiquette_content.hygiene_substances_text}}{{else}}Please do not arrive under the influence of alcohol or other substances. Light social drinking during our time is acceptable.{{/if}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Cancellation Policy -->
+                {{#if etiquette_content.etiquette_cancellation_visible}}
+                <div class="modern-card bg-gray-50" data-aos="fade-left" data-aos-delay="200">
+                    <div class="modern-icon bg-modern-secondary">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-light text-modern-text mb-6 text-center">
+                        {{#if etiquette_content.cancellation_title}}{{etiquette_content.cancellation_title}}{{else}}Cancellation Policy{{/if}}
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-lg font-semibold text-modern-text mb-3">
+                                {{#if etiquette_content.cancellation_advance_title}}{{etiquette_content.cancellation_advance_title}}{{else}}Advance Notice{{/if}}
+                            </h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                {{#if etiquette_content.cancellation_advance_text}}{{etiquette_content.cancellation_advance_text}}{{else}}Please provide at least 2 hours notice for cancellations. Last-minute cancellations may result in a cancellation fee.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold text-modern-text mb-3">
+                                {{#if etiquette_content.cancellation_noshow_title}}{{etiquette_content.cancellation_noshow_title}}{{else}}No-Shows{{/if}}
+                            </h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                {{#if etiquette_content.cancellation_noshow_text}}{{etiquette_content.cancellation_noshow_text}}{{else}}No-shows without notice will result in being blacklisted from future bookings.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold text-modern-text mb-3">
+                                {{#if etiquette_content.cancellation_my_title}}{{etiquette_content.cancellation_my_title}}{{else}}My Cancellations{{/if}}
+                            </h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                {{#if etiquette_content.cancellation_my_text}}{{etiquette_content.cancellation_my_text}}{{else}}In the rare event I need to cancel, I'll provide as much notice as possible and offer to reschedule.{{/if}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+            
+            <!-- Safety & Discretion Section -->
+            {{#if etiquette_content.etiquette_safety_visible}}
+            <div class="bg-modern-text text-white rounded-2xl p-12 mb-16" data-aos="fade-up" data-aos-delay="400">
+                <h2 class="modern-section-title text-white">
+                    {{#if etiquette_content.safety_title}}{{etiquette_content.safety_title}}{{else}}Safety & Discretion{{/if}}
+                </h2>
+                <div class="modern-divider bg-modern-accent"></div>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-modern-primary rounded-2xl mx-auto mb-6 flex items-center justify-center">
+                            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-white mb-4">
+                            {{#if etiquette_content.safety_confidentiality_title}}{{etiquette_content.safety_confidentiality_title}}{{else}}Confidentiality{{/if}}
+                        </h3>
+                        <p class="text-gray-300 leading-relaxed">
+                            {{#if etiquette_content.safety_confidentiality_text}}{{etiquette_content.safety_confidentiality_text}}{{else}}Your privacy is paramount. All interactions remain strictly confidential.{{/if}}
+                        </p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-modern-accent rounded-2xl mx-auto mb-6 flex items-center justify-center">
+                            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-white mb-4">
+                            {{#if etiquette_content.safety_environment_title}}{{etiquette_content.safety_environment_title}}{{else}}Safe Environment{{/if}}
+                        </h3>
+                        <p class="text-gray-300 leading-relaxed">
+                            {{#if etiquette_content.safety_environment_text}}{{etiquette_content.safety_environment_text}}{{else}}I maintain a safe, clean, and welcoming environment for all meetings.{{/if}}
+                        </p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-modern-secondary rounded-2xl mx-auto mb-6 flex items-center justify-center">
+                            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-white mb-4">
+                            {{#if etiquette_content.safety_communication_title}}{{etiquette_content.safety_communication_title}}{{else}}Professional Communication{{/if}}
+                        </h3>
+                        <p class="text-gray-300 leading-relaxed">
+                            {{#if etiquette_content.safety_communication_text}}{{etiquette_content.safety_communication_text}}{{else}}All communications are handled professionally and discreetly.{{/if}}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Questions Section -->
+            {{#if etiquette_content.etiquette_questions_visible}}
+            <div class="text-center bg-modern-background rounded-2xl p-12" data-aos="fade-up" data-aos-delay="600">
+                <h3 class="text-3xl font-light text-modern-text mb-6">
+                    {{#if etiquette_content.questions_title}}{{etiquette_content.questions_title}}{{else}}Questions?{{/if}}
+                </h3>
+                <div class="w-16 h-1 bg-modern-primary mx-auto mb-8"></div>
+                <p class="text-lg text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto">
+                    {{#if etiquette_content.questions_text}}{{etiquette_content.questions_text}}{{else}}If you have any questions about these guidelines or need clarification, please don't hesitate to reach out.{{/if}}
+                </p>
+                <a href="/{{model.slug}}/{{#if etiquette_content.questions_button_link}}{{etiquette_content.questions_button_link}}{{else}}contact{{/if}}" 
+                   class="inline-flex items-center bg-modern-primary text-white px-8 py-4 rounded-lg font-semibold hover:bg-modern-secondary transition-colors modern-shadow">
+                    {{#if etiquette_content.questions_button_text}}{{etiquette_content.questions_button_text}}{{else}}Contact Me{{/if}}
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.001 8.001 0 01-7.75-6M3 12c0-4.418 3.582-8 8-8s8 3.582 8 8"></path>
+                    </svg>
+                </a>
+            </div>
+            {{/if}}
+            
+        </div>
+    </section>
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!-- Rose Theme Calendar / Availability Page -->
+{{component 'navigation' theme='rose' nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+
+<!-- Header -->
+<header class="pt-32 pb-20 bg-gradient-to-b from-[color:var(--rose)] to-[color:var(--merlot)] text-center text-porcelain">
+  <h1 class="font-serif text-5xl mb-4">{{calendar_content.page_title || 'Availability'}}</h1>
+  {{#if calendar_content.page_subtitle}}
+  <p class="text-lg max-w-2xl mx-auto opacity-90">{{calendar_content.page_subtitle}}</p>
+  {{/if}}
+</header>
+
+<!-- Legend -->
+<section class="bg-porcelain border-b border-[color:var(--rose)]/10 sticky top-16 z-30">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap gap-4 items-center text-sm">
+    {{#each calendar_content.status_legend}}
+    <span class="inline-flex items-center gap-2"><span class="w-3 h-3 rounded-full" style="background: {{this.color}};"></span>{{this.label}}</span>
+    {{/each}}
+    <a href="/{{model.slug}}/contact" class="ml-auto rose-chip">{{calendar_content.cta_label || 'Request Booking'}}</a>
+  </div>
+</section>
+
+<!-- Availability List -->
+<section class="py-24 bg-blush/40">
+  <div class="max-w-6xl mx-auto px-4">
+    {{#if availability.length}}
+    <div class="grid md:grid-cols-2 gap-6">
+      {{#each availability}}
+      <div class="bg-white rounded-[var(--radius)] p-6 shadow flex items-start gap-4">
+        <div class="w-3 h-3 rounded-full mt-2" style="background: {{this.color}};"></div>
+        <div class="flex-1">
+          <h3 class="font-semibold text-charcoal">{{formatDate this.start_date}} {{#if this.end_date}} - {{formatDate this.end_date}}{{/if}}</h3>
+          <p class="text-charcoal/80 text-sm">{{#if this.all_day}}All Day{{else}}{{formatTimeRange this.start_date this.end_date}}{{/if}}</p>
+          {{#if this.location}}
+          <p class="text-charcoal/80 text-sm">📍 {{this.location}}</p>
+          {{/if}}
+          {{#if this.notes}}
+          <p class="mt-2 text-charcoal text-sm">{{this.notes}}</p>
+          {{/if}}
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    {{else}}
+    <p class="text-center text-charcoal/60">No availability posted currently.</p>
+    {{/if}}
+  </div>
+</section>
+
+{{component '_footer' theme='rose'}}
+
+<script>
+// helper scroll offset for legend sticky nav chips maybe
+</script>
+
+<style>
+.rose-chip{padding:0.5rem 1rem;border:1px solid var(--rose);border-radius:var(--radius);background:var(--rose);color:var(--porcelain);white-space:nowrap;transition:background .2s;} .rose-chip:hover{background:var(--gold);}
+</style>

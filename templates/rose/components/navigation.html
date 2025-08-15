@@ -1,0 +1,62 @@
+<!-- Rose Theme Navigation Component -->
+<!-- begin duplicate of navbar.html -->
+<nav id="roseNavbar" class="fixed top-0 inset-x-0 z-50 bg-porcelain backdrop-blur-lg transition-shadow">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <!-- Logo / Site Name -->
+    <a href="/{{model.slug}}" class="flex items-center space-x-2 group">
+      {{#if site_settings.header_image}}
+        <img src="{{site_settings.header_image}}" alt="{{site_settings.model_name}}" class="h-8 w-auto object-contain" loading="lazy" />
+      {{else}}
+        <span class="font-serif text-2xl text-[color:var(--rose)] group-hover:text-[color:var(--gold)] transition-colors">{{site_settings.model_name}}</span>
+      {{/if}}
+    </a>
+
+    <!-- Desktop Navigation -->
+    <div class="hidden md:flex items-center space-x-8 font-medium">
+      {{#each navigation.nav_items}}
+        <a href="/{{../model.slug}}/{{this.path}}" class="text-charcoal hover:text-[color:var(--rose)] transition-colors">
+          {{this.name}}
+        </a>
+      {{/each}}
+      <a href="/{{model.slug}}/contact" class="ml-4 px-5 py-2 rounded-full text-white bg-[color:var(--rose)] hover:bg-[color:var(--gold)] transition-colors shadow" >
+        Book&nbsp;Now
+      </a>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button type="button" class="md:hidden text-charcoal hover:text-[color:var(--rose)] focus:outline-none" onclick="toggleRoseMobileMenu()">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="roseMobileMenu" class="md:hidden hidden bg-porcelain/95 backdrop-blur-lg border-t border-[color:var(--rose)]/10">
+    <div class="px-4 pt-4 pb-6 space-y-2">
+      {{#each navigation.nav_items}}
+        <a href="/{{../model.slug}}/{{this.path}}" class="block text-charcoal hover:text-[color:var(--rose)] py-2">{{this.name}}</a>
+      {{/each}}
+      <a href="/{{model.slug}}/contact" class="block mt-2 px-4 py-2 rounded-md text-center text-white bg-[color:var(--rose)] hover:bg-[color:var(--gold)]">Book&nbsp;Now</a>
+    </div>
+  </div>
+</nav>
+
+<script>
+  // Toggle mobile menu
+  function toggleRoseMobileMenu() {
+    const menu = document.getElementById('roseMobileMenu');
+    menu.classList.toggle('hidden');
+  }
+
+  // Add shadow to navbar on scroll
+  const roseNav = document.getElementById('roseNavbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 10) {
+      roseNav.classList.add('shadow-lg');
+    } else {
+      roseNav.classList.remove('shadow-lg');
+    }
+  });
+</script>
+<!-- end duplicate -->

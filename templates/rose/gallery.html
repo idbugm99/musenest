@@ -1,0 +1,114 @@
+<!-- Rose Theme Gallery Page -->
+{{component 'navigation' theme='rose' nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+
+<!-- Hero Header -->
+<section class="pt-32 pb-20 text-center bg-gradient-to-b from-[color:var(--rose)] to-[color:var(--merlot)] text-porcelain">
+  <h1 class="font-serif text-5xl mb-4">{{gallery_content.page_title || 'Gallery'}}</h1>
+  {{#if gallery_content.page_subtitle}}
+  <p class="text-lg max-w-2xl mx-auto opacity-90">{{gallery_content.page_subtitle}}</p>
+  {{/if}}
+</section>
+
+<!-- Category Tabs -->
+{{#if gallery_content.show_categories}}
+{{#if gallery_sections.length}}
+<nav class="sticky top-16 z-40 bg-porcelain/95 backdrop-blur border-b border-[color:var(--rose)]/10">
+  <div class="max-w-7xl mx-auto px-4 flex overflow-x-auto gap-4 py-4">
+    <button data-category="all" class="rose-chip active">All</button>
+    {{#each gallery_sections}}
+      {{#if this.visible}}
+      <button data-category="{{this.id}}" class="rose-chip">{{this.title}}</button>
+      {{/if}}
+    {{/each}}
+  </div>
+</nav>
+{{/if}}
+{{/if}}
+
+<!-- Gallery Masonry -->
+<section class="py-24 bg-porcelain">
+  <div class="max-w-7xl mx-auto px-4">
+    {{#if gallery_images.length}}
+    <div id="roseGalleryGrid" class="columns-2 sm:columns-3 md:columns-4 gap-4 [column-fill:_balance]">
+      {{#each gallery_images}}
+      {{#if this.active}}
+      <figure class="mb-4 break-inside-avoid" data-section="{{this.section_id}}" data-tags="{{join this.tags ','}}">
+        <img src="/uploads/{{../model.slug}}/{{this.filename}}?w=700" alt="{{this.alt_text}}" class="w-full rounded-[var(--radius)] cursor-pointer rose-gallery-img" loading="lazy" />
+        {{#if ../gallery_content.show_captions}}
+        <figcaption class="mt-2 text-sm text-charcoal/80">{{this.caption}}</figcaption>
+        {{/if}}
+      </figure>
+      {{/if}}
+      {{/each}}
+    </div>
+    {{else}}
+    <p class="text-center text-charcoal/60">Gallery coming soon.</p>
+    {{/if}}
+  </div>
+</section>
+
+<!-- Lightbox -->
+<div id="roseLightbox" class="fixed inset-0 bg-black/90 z-50 hidden items-center justify-center p-4">
+  <div class="relative max-w-5xl max-h-full">
+    <img id="roseLightboxImg" src="" alt="" class="max-w-full max-h-full object-contain rounded-[var(--radius)]" />
+    <button id="roseLightboxClose" class="absolute top-4 right-4 text-porcelain text-2xl bg-black/50 w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/70">×</button>
+    <div id="roseLightboxCaption" class="absolute bottom-4 left-4 right-4 text-porcelain text-center bg-black/50 py-2 px-4 rounded-[var(--radius)]"></div>
+  </div>
+</div>
+
+{{component '_footer' theme='rose'}}
+
+<script>
+// Filter by category chips
+document.querySelectorAll('.rose-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.rose-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    const cat = chip.getAttribute('data-category');
+    document.querySelectorAll('#roseGalleryGrid figure').forEach(fig => {
+      if (cat === 'all' || fig.getAttribute('data-section') === cat) {
+        fig.style.display = '';
+      } else {
+        fig.style.display = 'none';
+      }
+    });
+  });
+});
+
+// Lightbox functionality
+const lightbox = document.getElementById('roseLightbox');
+const imgEl = document.getElementById('roseLightboxImg');
+const captionEl = document.getElementById('roseLightboxCaption');
+
+document.querySelectorAll('.rose-gallery-img').forEach(img => {
+  img.addEventListener('click', () => {
+    imgEl.src = img.src.replace('?w=700', '');
+    imgEl.alt = img.alt;
+    captionEl.textContent = img.alt;
+    lightbox.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  });
+});
+
+document.getElementById('roseLightboxClose').addEventListener('click', closeLB);
+lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLB(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLB(); });
+function closeLB() { lightbox.classList.add('hidden'); document.body.style.overflow = 'auto'; }
+</script>
+
+<style>
+.rose-chip {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--rose);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--charcoal);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.rose-chip.active, .rose-chip:hover { background: var(--rose); color: var(--porcelain); }
+
+/* Improve masonry balancing in Safari */
+@media (min-width: 1024px) { #roseGalleryGrid { column-gap: 1rem; } }
+</style>

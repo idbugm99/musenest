@@ -120,6 +120,10 @@ class ImageProcessingService {
 
             const media = mediaInfo.media;
             const originalPath = this.getAbsolutePath(media.file_path);
+            
+            // Debug: Log original image info
+            console.log(`📊 Original image: ${media.image_width}x${media.image_height}`);
+            console.log(`📁 Original path: ${originalPath}`);
 
             // Validate crop parameters
             const validation = await this.validateCropParameters(originalPath, { x, y, width, height });
@@ -134,12 +138,20 @@ class ImageProcessingService {
             // Perform crop operation
             let processor = sharp(originalPath);
             
-            // Apply crop
+            // Ensure crop parameters are safe integers
+            const cropLeft = Math.max(0, Math.min(Math.round(x), validation.originalDimensions.width - 1));
+            const cropTop = Math.max(0, Math.min(Math.round(y), validation.originalDimensions.height - 1));
+            const cropWidth = Math.max(1, Math.min(Math.round(width), validation.originalDimensions.width - cropLeft));
+            const cropHeight = Math.max(1, Math.min(Math.round(height), validation.originalDimensions.height - cropTop));
+            
+            console.log(`📐 Safe crop parameters: ${cropLeft},${cropTop} ${cropWidth}x${cropHeight}`);
+            
+            // Apply crop with safe parameters
             processor = processor.extract({
-                left: Math.round(x),
-                top: Math.round(y),
-                width: Math.round(width),
-                height: Math.round(height)
+                left: cropLeft,
+                top: cropTop,
+                width: cropWidth,
+                height: cropHeight
             });
 
             // Apply output format and quality
@@ -148,17 +160,26 @@ class ImageProcessingService {
             // Save processed image
             await processor.toFile(outputPath.absolute);
 
+            // Get final image metadata first
+            const finalMetadata = await sharp(outputPath.absolute).metadata();
+            
+            // Update the main media record with new dimensions and file path
+            await this.updateMediaRecord(mediaId, {
+                filename: outputFilename,
+                file_path: `/uploads/${media.model_slug}/${this.config.editedDir}/${outputFilename}`,
+                image_width: finalMetadata.width,
+                image_height: finalMetadata.height,
+                file_size: (await fs.stat(outputPath.absolute)).size
+            });
+
             // Update database with edit history
             const historyResult = await this.recordEditHistory(mediaId, 'crop', {
                 cropArea: { x, y, width, height },
                 outputFormat,
                 quality,
                 originalDimensions: validation.originalDimensions,
-                newDimensions: { width: Math.round(width), height: Math.round(height) }
+                newDimensions: { width: finalMetadata.width, height: finalMetadata.height }
             }, outputPath.relative);
-
-            // Get final image metadata
-            const finalMetadata = await sharp(outputPath.absolute).metadata();
 
             console.log(`✅ Image cropped successfully: ${width}x${height} → ${finalMetadata.width}x${finalMetadata.height}`);
 
@@ -746,9 +767,59 @@ class ImageProcessingService {
             return relativePath;
         }
         
-        // Remove leading slash if present
-        const cleanPath = relativePath.startsWith('/') ? relativePath.substring(1) : relativePath;
-        return path.join(process.cwd(), 'public', cleanPath);
+        // Remove leading slash if present and handle different path formats
+        let cleanPath = relativePath;
+        
+        // Handle paths that start with /uploads/
+        if (cleanPath.startsWith('/uploads/')) {
+            cleanPath = cleanPath.substring(1); // Remove leading slash
+        }
+        // Handle paths that don't include uploads
+        else if (!cleanPath.includes('uploads/')) {
+            cleanPath = `uploads/${cleanPath}`;
+        }
+        
+        const absolutePath = path.join(process.cwd(), 'public', cleanPath);
+        console.log(`🔗 Path conversion: "${relativePath}" → "${absolutePath}"`);
+        
+        return absolutePath;
+    }
+
+    /**
+     * Update media record with new file information after editing
+     */
+    async updateMediaRecord(mediaId, updateData) {
+        try {
+            const { filename, file_path, image_width, image_height, file_size } = updateData;
+            
+            const updateQuery = `
+                UPDATE model_media_library 
+                SET filename = ?, 
+                    file_path = ?, 
+                    image_width = ?, 
+                    image_height = ?, 
+                    file_size = ?,
+                    last_modified = CURRENT_TIMESTAMP
+                WHERE id = ?
+            `;
+
+            await this.db.query(updateQuery, [
+                filename,
+                file_path,
+                image_width,
+                image_height,
+                file_size,
+                mediaId
+            ]);
+
+            console.log(`📝 Media record updated: ${mediaId} → ${image_width}x${image_height}`);
+
+            return { success: true };
+
+        } catch (error) {
+            console.error('Failed to update media record:', error);
+            throw new Error(`Database update failed: ${error.message}`);
+        }
     }
 
     /**

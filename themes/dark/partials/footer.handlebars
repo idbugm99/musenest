@@ -1,29 +1,72 @@
-<!-- Dark Footer -->
-<footer class="py-5" style="background: var(--dark-surface); border-top: 1px solid var(--dark-border);">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-terminal text-dark-primary me-2 fs-4"></i>
-                    <div>
-                        <h5 class="mb-1 dark-heading text-dark-primary">{{siteName}}</h5>
-                        <p class="mb-0 text-dark-muted small dark-mono">Professional Services</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+<!-- Basic Theme Footer -->
+<footer class="bg-gray-800 text-gray-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Brand Section -->
+            <div class="text-center md:text-left">
+                <h3 class="text-xl font-bold mb-4 text-white">{{siteName}}</h3>
+                <p class="text-gray-400 mb-4">{{tagline}}</p>
                 {{#if socialLinks}}
-                <div class="mb-3">
+                <div class="flex justify-center md:justify-start space-x-4">
                     {{#each socialLinks}}
-                    <a href="{{this.url}}" class="btn btn-outline-light btn-sm me-2 dark-btn-outline" style="width: 40px; height: 40px; border-radius: 10px;">
-                        <i class="fab fa-{{this.icon}}"></i>
+                    <a href="{{this.url}}" class="text-gray-400 hover:text-white transition-colors" aria-label="{{this.platform}}">
+                        <i class="fab fa-{{this.icon}} text-xl"></i>
                     </a>
                     {{/each}}
                 </div>
                 {{/if}}
-                <p class="mb-0 text-dark-muted small dark-mono">
-                    &copy; {{currentYear}} {{siteName}}. All rights reserved.
+            </div>
+            
+            <!-- Quick Links -->
+            <div class="text-center">
+                <h4 class="text-lg font-semibold mb-4 text-white">Quick Links</h4>
+                <div class="flex flex-wrap justify-center gap-x-6 gap-y-2">
+                    {{#each navigation}}
+                    <a href="{{this.url}}" class="text-gray-400 hover:text-white transition-colors">
+                        {{this.name}}
+                    </a>
+                    {{/each}}
+                </div>
+            </div>
+            
+            <!-- Contact Info -->
+            <div class="text-center md:text-right">
+                <h4 class="text-lg font-semibold mb-4 text-white">Contact</h4>
+                {{#if contactEmail}}
+                <p class="text-gray-400 mb-2">
+                    <i class="fas fa-envelope mr-2"></i>
+                    <a href="mailto:{{contactEmail}}" class="hover:text-white transition-colors">
+                        {{contactEmail}}
+                    </a>
                 </p>
+                {{/if}}
+                {{#if contactPhone}}
+                <p class="text-gray-400 mb-2">
+                    <i class="fas fa-phone mr-2"></i>
+                    <a href="tel:{{contactPhone}}" class="hover:text-white transition-colors">
+                        {{contactPhone}}
+                    </a>
+                </p>
+                {{/if}}
+                {{#if location}}
+                <p class="text-gray-400">
+                    <i class="fas fa-map-marker-alt mr-2"></i>
+                    {{location}}
+                </p>
+                {{/if}}
+            </div>
+        </div>
+        
+        <!-- Bottom Bar -->
+        <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm mb-4 md:mb-0">
+                    © {{currentYear}} {{siteName}}. All rights reserved.
+                </p>
+                <div class="flex space-x-6">
+                    <a href="/privacy" class="text-gray-400 hover:text-white text-sm transition-colors">Privacy Policy</a>
+                    <a href="/terms" class="text-gray-400 hover:text-white text-sm transition-colors">Terms of Service</a>
+                </div>
             </div>
         </div>
     </div>

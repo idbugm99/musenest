@@ -267,7 +267,9 @@ class MediaUploadService {
                 categoryId,
                 watermarkApplied,
                 moderationResult,
-                processingTime: Date.now() - startTime
+                processingTime: Date.now() - startTime,
+                // Pass Venice SEO data if available
+                veniceData: moderationResult?.venice_data || null
             });
 
             if (!databaseResult.success) {
@@ -897,7 +899,8 @@ class MediaUploadService {
                 categoryId,
                 watermarkApplied,
                 moderationResult,
-                processingTime
+                processingTime,
+                veniceData
             } = data;
 
             const insertQuery = `
@@ -905,25 +908,35 @@ class MediaUploadService {
                     model_slug, filename, original_filename, file_path, 
                     file_size, image_width, image_height, mime_type,
                     category_id, watermark_applied, processing_status,
-                    moderation_status, moderation_notes, moderation_score
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    moderation_status, moderation_notes, moderation_score,
+                    alt_text, caption, exif_data
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
 
+            // Extract metadata from moderation result
+            const imageMetadata = moderationResult?.image_metadata || {};
+            const veniceMetadata = moderationResult?.venice_data || {};
+            
             const insertParams = [
                 modelSlug,
                 filename,
                 originalFilename,
                 filePath,
                 fileSize,
-                dimensions.width,
-                dimensions.height,
+                dimensions.width || imageMetadata.width,
+                dimensions.height || imageMetadata.height,
                 mimeType,
                 categoryId || null,
                 watermarkApplied ? 1 : 0,
                 'completed',
                 moderationResult?.moderation_status || 'pending',
                 moderationResult?.moderation_notes || null,
-                moderationResult?.moderation_score || null
+                moderationResult?.moderation_score || null,
+                // Venice SEO data
+                veniceMetadata.altText || null,
+                veniceMetadata.briefDescription || null,
+                // EXIF and comprehensive metadata
+                imageMetadata.exifData ? JSON.stringify(imageMetadata) : null
             ];
             
             console.log(`💾 Storing media with moderation status: ${moderationResult?.moderation_status || 'pending'}`);

@@ -1,77 +1,264 @@
-<!-- About Hero Section -->
-<section class="modern-hero min-h-96 flex items-center justify-center text-white pt-16" data-aos="fade-in">
+<!-- Phase 2.3b: Modern Template About Page - Contemporary Personal Profile -->
+
+<!-- Modern About Hero Section -->
+{{#if about_content.page_title_visible}}
+<section class="modern-about-hero min-h-96 flex items-center justify-center text-white pt-20 relative overflow-hidden" data-aos="fade-in">
+    <!-- Modern Background Elements -->
+    <div class="modern-about-gradient-layer-1"></div>
+    <div class="modern-about-gradient-layer-2"></div>
+    
+    <!-- Modern Floating Profile Elements -->
+    <div class="modern-about-floating-elements">
+        <div class="modern-floating-profile-1"></div>
+        <div class="modern-floating-profile-2"></div>
+        <div class="modern-floating-badge-1"></div>
+        <div class="modern-floating-badge-2"></div>
+    </div>
+    
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        <div class="modern-badge mb-4">About</div>
-        <h1 class="text-5xl md:text-6xl font-bold mb-6 modern-heading">
-            About {{siteName}}
-        </h1>
-        <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto font-light">
-            {{content.aboutIntro}}
-        </p>
+        <div class="modern-about-hero-content" data-aos="zoom-in" data-aos-delay="200">
+            <div class="modern-about-badge mb-6">Personal Profile</div>
+            <h1 class="text-5xl md:text-7xl font-bold mb-8 modern-gradient-text modern-text-glow">
+                {{#if about_content.page_title}}{{about_content.page_title}}{{else}}About {{siteName}}{{/if}}
+            </h1>
+            {{#if about_content.page_subtitle}}
+            <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto modern-subtitle">
+                {{about_content.page_subtitle}}
+            </p>
+            {{/if}}
+        </div>
     </div>
 </section>
+{{/if}}
 
-<!-- Main About Content -->
-<section class="py-20 bg-white">
+<!-- Modern Main About Content -->
+<section class="py-20 modern-about-main-section">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="modern-grid modern-grid-2 items-start">
-            <!-- About Text -->
-            <div data-aos="fade-right">
-                <div class="prose prose-lg max-w-none">
-                    <div class="text-lg text-modern-muted leading-relaxed space-y-6">
-                        {{{content.mainContent}}}
+        <div class="grid lg:grid-cols-2 gap-16 items-start">
+            <!-- Left Column: Main Content & Services -->
+            <div class="modern-about-content-column">
+                {{#if about_content.main_content_visible}}
+                <div class="modern-content-section" data-aos="fade-right">
+                    <div class="space-y-6 text-lg leading-relaxed">
+                        {{#if about_content.main_paragraph_1}}
+                        <p class="text-xl text-gray-800 modern-paragraph modern-highlight">{{about_content.main_paragraph_1}}</p>
+                        {{/if}}
+                        
+                        {{#if about_content.main_paragraph_2}}
+                        <p class="text-gray-700 modern-paragraph">{{about_content.main_paragraph_2}}</p>
+                        {{/if}}
+                        
+                        {{#if about_content.main_paragraph_3}}
+                        <p class="text-gray-700 modern-paragraph">{{about_content.main_paragraph_3}}</p>
+                        {{/if}}
+                        
+                        {{#if about_content.main_paragraph_4}}
+                        <p class="text-gray-700 modern-paragraph">{{about_content.main_paragraph_4}}</p>
+                        {{/if}}
+                        
+                        {{#unless about_content.main_paragraph_1}}
+                        <p class="text-xl text-gray-800 modern-paragraph modern-highlight">Welcome to a world where contemporary elegance meets professional excellence. I specialize in creating sophisticated experiences that blend modern sensibilities with timeless grace.</p>
+                        <p class="text-gray-700 modern-paragraph">With a focus on genuine connection and attention to detail, I provide companionship services that cater to the discerning individual who appreciates quality and discretion.</p>
+                        {{/unless}}
                     </div>
                 </div>
+                {{/if}}
                 
-                {{#if content.personalInfo}}
-                <div class="mt-12">
-                    <h3 class="text-2xl font-bold mb-6 modern-heading text-modern-primary">
-                        Details
-                    </h3>
-                    <div class="modern-grid modern-grid-2">
-                        {{#each content.personalInfo}}
-                        <div class="modern-card p-4 flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-modern-primary rounded-xl flex items-center justify-center">
-                                <i class="{{this.icon}} text-white"></i>
+                {{#if about_content.services_visible}}
+                <div class="modern-services-section mt-12" data-aos="fade-right" data-aos-delay="200">
+                    <div class="modern-section-header">
+                        <h2 class="text-3xl font-bold mb-8 modern-gradient-text">
+                            {{#if about_content.services_title}}{{about_content.services_title}}{{else}}My Services{{/if}}
+                        </h2>
+                    </div>
+                    
+                    <div class="modern-services-grid space-y-4">
+                        {{#if about_content.service_1}}
+                        <div class="modern-service-item">
+                            <div class="modern-service-icon">
+                                <i class="fas fa-check"></i>
                             </div>
-                            <div>
-                                <h4 class="font-bold text-modern-text modern-mono text-sm">{{this.label}}</h4>
-                                <p class="text-modern-muted">{{this.value}}</p>
-                            </div>
+                            <span class="modern-service-text">{{about_content.service_1}}</span>
                         </div>
+                        {{/if}}
+                        {{#if about_content.service_2}}
+                        <div class="modern-service-item">
+                            <div class="modern-service-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <span class="modern-service-text">{{about_content.service_2}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if about_content.service_3}}
+                        <div class="modern-service-item">
+                            <div class="modern-service-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <span class="modern-service-text">{{about_content.service_3}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if about_content.service_4}}
+                        <div class="modern-service-item">
+                            <div class="modern-service-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <span class="modern-service-text">{{about_content.service_4}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if about_content.service_5}}
+                        <div class="modern-service-item">
+                            <div class="modern-service-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <span class="modern-service-text">{{about_content.service_5}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if about_content.service_6}}
+                        <div class="modern-service-item">
+                            <div class="modern-service-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <span class="modern-service-text">{{about_content.service_6}}</span>
+                        </div>
+                        {{/if}}
+                    </div>
+                </div>
+                {{/if}}
+                
+                {{#if about_content.interests_visible}}
+                {{#if about_content.interests}}
+                <div class="modern-interests-section mt-12" data-aos="fade-right" data-aos-delay="400">
+                    <div class="modern-section-header">
+                        <h2 class="text-3xl font-bold mb-8 modern-gradient-text">
+                            {{#if about_content.interests_title}}{{about_content.interests_title}}{{else}}My Interests{{/if}}
+                        </h2>
+                    </div>
+                    
+                    <div class="modern-interests-grid">
+                        {{#each (split about_content.interests ',')}}
+                        <div class="modern-interest-tag">{{trim this}}</div>
                         {{/each}}
                     </div>
                 </div>
                 {{/if}}
+                {{/if}}
             </div>
             
-            <!-- About Images -->
-            <div data-aos="fade-left">
-                {{#if content.aboutImages}}
-                <div class="space-y-6">
-                    {{#each content.aboutImages}}
-                    <div class="modern-card overflow-hidden">
-                        <img src="{{this.url}}" alt="{{this.caption}}" 
-                             class="w-full rounded-2xl">
-                        {{#if this.caption}}
-                        <div class="p-4">
-                            <p class="text-modern-muted text-sm">{{this.caption}}</p>
+            <!-- Right Column: Portrait, Quick Facts, CTA -->
+            <div class="modern-about-sidebar">
+                <!-- Modern Portrait Card -->
+                {{#if about_content.portrait_visible}}
+                <div class="modern-portrait-section" data-aos="fade-left">
+                    <div class="modern-portrait-card-large" onclick="openModernPortraitPreview('{{about_content.portrait_image_url}}', '{{#if about_content.portrait_alt}}{{about_content.portrait_alt}}{{else}}Professional Portrait{{/if}}')">
+                        <div class="modern-portrait-gradient-overlay"></div>
+                        <img src="{{about_content.portrait_image_url}}" 
+                             alt="{{#if about_content.portrait_alt}}{{about_content.portrait_alt}}{{else}}Professional Portrait{{/if}}"
+                             loading="lazy"
+                             class="modern-portrait-image-large">
+                        
+                        <!-- Modern Hover Effect -->
+                        <div class="modern-portrait-hover-overlay">
+                            <div class="modern-portrait-zoom-icon">
+                                <i class="fas fa-expand-alt"></i>
+                            </div>
+                            <div class="modern-portrait-hint">Click to preview</div>
                         </div>
-                        {{/if}}
                     </div>
-                    {{/each}}
                 </div>
                 {{else}}
-                <div class="modern-card p-12 text-center">
-                    <div class="w-32 h-32 mx-auto mb-6 bg-modern-primary rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-camera text-4xl text-white"></i>
+                <div class="modern-portrait-section" data-aos="fade-left">
+                    <div class="modern-portrait-placeholder-large">
+                        <div class="modern-portrait-placeholder-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <p class="modern-portrait-placeholder-text">Professional portrait coming soon</p>
                     </div>
-                    <h3 class="text-xl font-bold mb-4 modern-heading">Portfolio</h3>
-                    <p class="text-modern-muted mb-6">Professional content coming soon</p>
-                    <a href="/{{modelSlug}}/gallery" class="modern-btn">
-                        <i class="fas fa-images mr-2"></i>
-                        View Gallery
-                    </a>
+                </div>
+                {{/if}}
+                
+                <!-- Modern Quick Facts -->
+                {{#if about_content.quick_facts_visible}}
+                <div class="modern-quick-facts-section mt-8" data-aos="fade-left" data-aos-delay="200">
+                    <div class="modern-quick-facts-card">
+                        <div class="modern-quick-facts-header">
+                            <div class="modern-quick-facts-badge">Personal Details</div>
+                            <h3 class="modern-quick-facts-title">
+                                {{#if about_content.quick_facts_title}}{{about_content.quick_facts_title}}{{else}}Quick Facts{{/if}}
+                            </h3>
+                        </div>
+                        
+                        <div class="modern-quick-facts-grid">
+                            {{#if about_content.quickFacts}}
+                            {{#each about_content.quickFacts}}
+                            <div class="modern-quick-fact-item">
+                                <div class="modern-quick-fact-label">{{this.question}}</div>
+                                <div class="modern-quick-fact-value">{{this.answer}}</div>
+                            </div>
+                            {{/each}}
+                            {{else}}
+                            <!-- Individual Quick Facts Fields -->
+                            {{#if about_content.qf_location}}
+                            <div class="modern-quick-fact-item">
+                                <div class="modern-quick-fact-label">Location</div>
+                                <div class="modern-quick-fact-value">{{about_content.qf_location}}</div>
+                            </div>
+                            {{/if}}
+                            {{#if about_content.qf_languages}}
+                            <div class="modern-quick-fact-item">
+                                <div class="modern-quick-fact-label">Languages</div>
+                                <div class="modern-quick-fact-value">{{about_content.qf_languages}}</div>
+                            </div>
+                            {{/if}}
+                            {{#if about_content.qf_education}}
+                            <div class="modern-quick-fact-item">
+                                <div class="modern-quick-fact-label">Education</div>
+                                <div class="modern-quick-fact-value">{{about_content.qf_education}}</div>
+                            </div>
+                            {{/if}}
+                            {{#if about_content.qf_specialties}}
+                            <div class="modern-quick-fact-item">
+                                <div class="modern-quick-fact-label">Specialties</div>
+                                <div class="modern-quick-fact-value">{{about_content.qf_specialties}}</div>
+                            </div>
+                            {{/if}}
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Modern CTA Section -->
+                {{#if about_content.about_cta_visible}}
+                <div class="modern-cta-section mt-8" data-aos="fade-left" data-aos-delay="400">
+                    <div class="modern-cta-card">
+                        <div class="modern-cta-background-gradient"></div>
+                        <div class="modern-cta-content">
+                            <div class="modern-cta-badge">Ready to Begin</div>
+                            <h3 class="modern-cta-title">
+                                {{#if about_content.cta_title}}{{about_content.cta_title}}{{else}}Ready to Connect?{{/if}}
+                            </h3>
+                            <p class="modern-cta-description">
+                                {{#if about_content.cta_description}}{{about_content.cta_description}}{{else}}I would love to hear from you and discuss how we can create an unforgettable experience together.{{/if}}
+                            </p>
+                            
+                            <div class="modern-cta-buttons">
+                                {{#if about_content.cta_button_1_text}}
+                                <a href="/{{modelSlug}}/{{#if about_content.cta_button_1_link}}{{about_content.cta_button_1_link}}{{else}}calendar{{/if}}{{previewParam}}" 
+                                   class="modern-cta-btn-primary">
+                                   <i class="fas fa-calendar-alt mr-3"></i>
+                                   {{about_content.cta_button_1_text}}
+                                </a>
+                                {{/if}}
+                                {{#if about_content.cta_button_2_text}}
+                                <a href="/{{modelSlug}}/{{#if about_content.cta_button_2_link}}{{about_content.cta_button_2_link}}{{else}}contact{{/if}}{{previewParam}}" 
+                                   class="modern-cta-btn-outline">
+                                   <i class="fas fa-envelope mr-3"></i>
+                                   {{about_content.cta_button_2_text}}
+                                </a>
+                                {{/if}}
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 {{/if}}
             </div>
@@ -79,89 +266,763 @@
     </div>
 </section>
 
-<!-- Values Section -->
-{{#if content.values}}
-<section class="py-20 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16" data-aos="fade-up">
-            <div class="modern-badge mb-4">Values</div>
-            <h2 class="text-4xl font-bold mb-6 modern-heading text-modern-primary">
-                What I Stand For
-            </h2>
-            <p class="text-xl text-modern-muted">
-                The principles that guide my work
-            </p>
-        </div>
-        
-        <div class="modern-grid modern-grid-3">
-            {{#each content.values}}
-            <div class="modern-card p-8 text-center" data-aos="fade-up" data-aos-delay="{{@index}}00">
-                <div class="w-16 h-16 mx-auto mb-6 bg-modern-primary rounded-2xl flex items-center justify-center">
-                    <i class="{{this.icon}} text-2xl text-white"></i>
+<!-- Modern Additional Content Section -->
+{{#if about_content.additional_content_visible}}
+<section class="py-16 modern-additional-content-section">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="modern-additional-content-card" data-aos="fade-up">
+            <div class="modern-additional-background-gradient"></div>
+            <div class="modern-additional-content">
+                <div class="modern-additional-badge">Additional Information</div>
+                {{#if about_content.additional_title}}
+                <h3 class="modern-additional-title">{{about_content.additional_title}}</h3>
+                {{/if}}
+                {{#if about_content.additional_description}}
+                <div class="modern-additional-text">
+                    <p>{{about_content.additional_description}}</p>
                 </div>
-                <h3 class="text-xl font-bold mb-4 modern-heading">{{this.title}}</h3>
-                <p class="text-modern-muted leading-relaxed">{{this.description}}</p>
-            </div>
-            {{/each}}
-        </div>
-    </div>
-</section>
-{{/if}}
-
-<!-- Experience Section -->
-{{#if content.experience}}
-<section class="py-20 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16" data-aos="fade-up">
-            <div class="modern-badge mb-4">Experience</div>
-            <h2 class="text-4xl font-bold mb-6 modern-heading text-modern-primary">
-                My Journey
-            </h2>
-            <p class="text-xl text-modern-muted">
-                Professional background and expertise
-            </p>
-        </div>
-        
-        <div class="max-w-4xl mx-auto">
-            <div class="space-y-6">
-                {{#each content.experience}}
-                <div class="modern-card p-8 flex items-start space-x-6" data-aos="fade-up" data-aos-delay="{{@index}}00">
-                    <div class="w-14 h-14 bg-modern-primary rounded-2xl flex items-center justify-center flex-shrink-0">
-                        <i class="{{this.icon}} text-white text-lg"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="text-xl font-bold mb-2 modern-heading">{{this.title}}</h3>
-                        {{#if this.period}}
-                        <p class="text-modern-primary font-semibold mb-3 modern-mono text-sm">{{this.period}}</p>
-                        {{/if}}
-                        <p class="text-modern-muted leading-relaxed">{{this.description}}</p>
-                    </div>
-                </div>
-                {{/each}}
+                {{/if}}
             </div>
         </div>
     </div>
 </section>
 {{/if}}
 
-<!-- Call to Action -->
-<section class="py-20 bg-modern-primary text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
-        <h2 class="text-4xl font-bold mb-6 modern-heading">
-            Let's Work Together
-        </h2>
-        <p class="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-            Ready to get started? I'd love to discuss how I can help you achieve your goals.
-        </p>
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="/{{modelSlug}}/contact" class="modern-btn bg-white text-modern-primary hover:bg-gray-100">
-                <i class="fas fa-envelope mr-2"></i>
-                Get in Touch
-            </a>
-            <a href="/{{modelSlug}}/rates" class="modern-btn-outline border-white text-white hover:bg-white hover:text-modern-primary">
-                <i class="fas fa-list mr-2"></i>
-                View Services
-            </a>
+<!-- Modern Portrait Preview Modal -->
+<div id="modern-portrait-preview-modal" class="fixed inset-0 bg-black bg-opacity-95 z-50 hidden flex items-center justify-center p-4">
+    <div class="relative max-w-6xl max-h-full">
+        <!-- Modern Close Button -->
+        <button onclick="closeModernPortraitPreview()" 
+                class="absolute -top-12 right-0 modern-btn-close">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+        
+        <!-- Image Container -->
+        <div class="relative">
+            <img id="modern-portrait-preview-image" 
+                 src="" 
+                 alt="" 
+                 class="max-w-full max-h-full object-contain rounded-lg shadow-2xl">
+        </div>
+        
+        <!-- Modern Caption -->
+        <div class="absolute bottom-4 left-4 right-4 modern-portrait-caption">
+            <p id="modern-portrait-preview-caption" class="text-center modern-caption-text"></p>
         </div>
     </div>
-</section>
+</div>
+
+<!-- Modern About Page Styling -->
+<style>
+/* CSS Custom Properties */
+:root {
+    --modern-gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    --modern-gradient-2: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+}
+
+/* Modern About Hero Section */
+.modern-about-hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.modern-about-gradient-layer-1 {
+    position: absolute;
+    top: -50%;
+    left: -30%;
+    width: 160%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 50%);
+    animation: modern-rotate 25s linear infinite;
+}
+
+.modern-about-gradient-layer-2 {
+    position: absolute;
+    bottom: -50%;
+    right: -30%;
+    width: 160%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+    animation: modern-rotate 20s linear infinite reverse;
+}
+
+/* Modern About Floating Elements */
+.modern-about-floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.modern-floating-profile-1 {
+    position: absolute;
+    top: 25%;
+    left: 10%;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid rgba(99, 102, 241, 0.4);
+    animation: modern-float-slow 10s ease-in-out infinite;
+}
+
+.modern-floating-profile-2 {
+    position: absolute;
+    top: 60%;
+    right: 15%;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 1px solid rgba(6, 182, 212, 0.3);
+    animation: modern-float-slow 8s ease-in-out infinite reverse;
+}
+
+.modern-floating-badge-1 {
+    position: absolute;
+    top: 40%;
+    right: 10%;
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.5), transparent);
+    animation: modern-slide 15s ease-in-out infinite;
+}
+
+.modern-floating-badge-2 {
+    position: absolute;
+    bottom: 35%;
+    left: 15%;
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(6, 182, 212, 0.4), transparent);
+    animation: modern-slide 12s ease-in-out infinite reverse;
+}
+
+/* Modern About Badge */
+.modern-about-badge {
+    display: inline-block;
+    background: rgba(99, 102, 241, 0.15);
+    color: rgba(255, 255, 255, 0.9);
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+/* Modern Main About Section */
+.modern-about-main-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+}
+
+.modern-content-section {
+    margin-bottom: 2rem;
+}
+
+.modern-highlight {
+    position: relative;
+}
+
+.modern-highlight::before {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.3), rgba(6, 182, 212, 0.3));
+    border-radius: 2px;
+    z-index: -1;
+}
+
+/* Modern Services Section */
+.modern-services-section {
+    background: rgba(248, 250, 252, 0.5);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.modern-service-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.modern-service-item:hover {
+    transform: translateX(8px);
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
+}
+
+.modern-service-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--modern-gradient-1);
+    color: white;
+    border-radius: 10px;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.modern-service-text {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+/* Modern Interests Section */
+.modern-interests-section {
+    background: rgba(248, 250, 252, 0.5);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(6, 182, 212, 0.1);
+}
+
+.modern-interests-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.modern-interest-tag {
+    background: var(--modern-gradient-2);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.modern-interest-tag:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+}
+
+/* Modern Portrait Section */
+.modern-portrait-section {
+    position: relative;
+}
+
+.modern-portrait-card-large {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    background: white;
+}
+
+.modern-portrait-card-large:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+}
+
+.modern-portrait-gradient-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--modern-gradient-1);
+    opacity: 0.05;
+    z-index: 1;
+}
+
+.modern-portrait-image-large {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+    object-position: center 20%;
+    transition: all 0.4s ease;
+}
+
+.modern-portrait-hover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(99, 102, 241, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.4s ease;
+    z-index: 2;
+}
+
+.modern-portrait-card-large:hover .modern-portrait-hover-overlay {
+    opacity: 1;
+}
+
+.modern-portrait-zoom-icon {
+    background: white;
+    color: #6366f1;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    transform: scale(0.8);
+    transition: all 0.3s ease;
+}
+
+.modern-portrait-card-large:hover .modern-portrait-zoom-icon {
+    transform: scale(1);
+}
+
+.modern-portrait-hint {
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.modern-portrait-placeholder-large {
+    height: 500px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed rgba(99, 102, 241, 0.3);
+}
+
+.modern-portrait-placeholder-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--modern-gradient-1);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.modern-portrait-placeholder-text {
+    color: #64748b;
+    font-size: 1.125rem;
+    font-weight: 500;
+}
+
+/* Modern Quick Facts */
+.modern-quick-facts-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.modern-quick-facts-header {
+    margin-bottom: 1.5rem;
+}
+
+.modern-quick-facts-badge {
+    background: rgba(99, 102, 241, 0.1);
+    color: #6366f1;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+    display: inline-block;
+}
+
+.modern-quick-facts-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: var(--modern-gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.modern-quick-facts-grid {
+    space-y: 1rem;
+}
+
+.modern-quick-fact-item {
+    padding: 1rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 12px;
+    border-left: 4px solid #6366f1;
+}
+
+.modern-quick-fact-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #6366f1;
+    margin-bottom: 0.25rem;
+}
+
+.modern-quick-fact-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+/* Modern CTA Section */
+.modern-cta-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.modern-cta-background-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--modern-gradient-1);
+}
+
+.modern-cta-background-gradient::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    animation: modern-rotate 20s linear infinite;
+}
+
+.modern-cta-content {
+    position: relative;
+    z-index: 2;
+    padding: 2rem;
+    color: white;
+}
+
+.modern-cta-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+    display: inline-block;
+    backdrop-filter: blur(10px);
+}
+
+.modern-cta-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.modern-cta-description {
+    font-size: 1rem;
+    line-height: 1.6;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+}
+
+.modern-cta-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.modern-cta-btn-primary {
+    background: white;
+    color: #6366f1;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+}
+
+.modern-cta-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
+    color: #6366f1;
+}
+
+.modern-cta-btn-outline {
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.modern-cta-btn-outline:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.8);
+    transform: translateY(-2px);
+    color: white;
+}
+
+/* Modern Portrait Preview Modal */
+.modern-btn-close {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.modern-btn-close:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: scale(1.1);
+    color: white;
+}
+
+.modern-portrait-caption {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(6, 182, 212, 0.9));
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.modern-caption-text {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: white;
+}
+
+/* Modern Additional Content Section */
+.modern-additional-content-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+}
+
+.modern-additional-content-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+}
+
+.modern-additional-background-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--modern-gradient-2);
+}
+
+.modern-additional-background-gradient::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 50%);
+    animation: modern-rotate 25s linear infinite;
+}
+
+.modern-additional-content {
+    position: relative;
+    z-index: 2;
+    padding: 3rem;
+    color: white;
+    text-align: center;
+}
+
+.modern-additional-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    display: inline-block;
+    backdrop-filter: blur(10px);
+}
+
+.modern-additional-title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.modern-additional-text {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.modern-additional-text p {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    opacity: 0.95;
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modern-about-floating-elements > * {
+        display: none;
+    }
+    
+    .modern-about-hero h1 {
+        font-size: 2.5rem !important;
+    }
+    
+    .modern-portrait-image-large {
+        height: 400px;
+    }
+    
+    .modern-portrait-placeholder-large {
+        height: 400px;
+    }
+    
+    .modern-services-section,
+    .modern-interests-section {
+        padding: 1.5rem;
+    }
+    
+    .modern-quick-facts-card,
+    .modern-cta-content {
+        padding: 1.5rem;
+    }
+    
+    .modern-additional-content {
+        padding: 2rem;
+    }
+    
+    .modern-additional-title {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .modern-about-hero h1 {
+        font-size: 2rem !important;
+    }
+    
+    .modern-portrait-image-large {
+        height: 350px;
+    }
+    
+    .modern-portrait-placeholder-large {
+        height: 350px;
+    }
+    
+    .modern-interests-grid {
+        gap: 0.5rem;
+    }
+    
+    .modern-interest-tag {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+    
+    .modern-additional-content {
+        padding: 1.5rem;
+    }
+    
+    .modern-additional-title {
+        font-size: 1.5rem;
+    }
+    
+    .modern-additional-text p {
+        font-size: 1rem;
+    }
+}
+</style>
+
+<!-- Modern Portrait Preview JavaScript -->
+<script>
+function openModernPortraitPreview(imageUrl, altText) {
+    const modal = document.getElementById('modern-portrait-preview-modal');
+    const image = document.getElementById('modern-portrait-preview-image');
+    const caption = document.getElementById('modern-portrait-preview-caption');
+    
+    if (modal && image && caption) {
+        image.src = imageUrl;
+        image.alt = altText;
+        caption.textContent = altText;
+        
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+        
+        // Close on escape key
+        document.addEventListener('keydown', handleModernEscapeKey);
+        
+        // Close on background click
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModernPortraitPreview();
+            }
+        });
+    }
+}
+
+function closeModernPortraitPreview() {
+    const modal = document.getElementById('modern-portrait-preview-modal');
+    
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
+        
+        // Remove event listeners
+        document.removeEventListener('keydown', handleModernEscapeKey);
+    }
+}
+
+function handleModernEscapeKey(e) {
+    if (e.key === 'Escape') {
+        closeModernPortraitPreview();
+    }
+}
+</script>

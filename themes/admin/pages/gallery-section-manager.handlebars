@@ -1,0 +1,1796 @@
+<style>
+  .image-card {
+    transition: transform 0.2s ease-in-out;
+    cursor: grab;
+  }
+  .image-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  .image-card:active {
+    cursor: grabbing;
+  }
+  .drag-handle {
+    cursor: grab;
+    opacity: 0.7;
+  }
+  .drag-handle:hover {
+    opacity: 1;
+  }
+  .library-image-card {
+    transition: all 0.2s ease-in-out;
+  }
+  .library-image-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .library-image-card.border-success {
+    border-width: 2px !important;
+  }
+</style>
+
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-0">Gallery Manager - {{section.title}}</h1>
+      <p class="text-muted mb-0">{{model.name}} • {{section.layout_type}} layout</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="/{{modelSlug}}/admin/gallery" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to Gallery
+      </a>
+      <button class="btn btn-primary" id="btn_add_images">
+        <i class="fas fa-images me-1"></i>Add Images
+      </button>
+    </div>
+  </div>
+
+  <!-- Section Info Card -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <h5 class="card-title">Section Information</h5>
+          <dl class="row mb-0">
+            <dt class="col-sm-4">Title:</dt>
+            <dd class="col-sm-8">{{section.title}}</dd>
+            <dt class="col-sm-4">Layout:</dt>
+            <dd class="col-sm-8">
+              <span class="badge bg-info">{{section.layout_type}}</span>
+            </dd>
+            <dt class="col-sm-4">Status:</dt>
+            <dd class="col-sm-8">
+              <span class="badge {{#if section.is_visible}}bg-success{{else}}bg-secondary{{/if}}">
+                {{#if section.is_visible}}Visible{{else}}Hidden{{/if}}
+              </span>
+            </dd>
+          </dl>
+        </div>
+        <div class="col-md-6">
+          <h5 class="card-title">Quick Actions</h5>
+          <div class="d-flex flex-column gap-2">
+            <button class="btn btn-outline-primary btn-sm" id="btn_rename">
+              <i class="fas fa-edit me-1"></i>Rename Section
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" id="btn_settings">
+              <i class="fas fa-cog me-1"></i>Section Settings
+            </button>
+            <button class="btn btn-outline-{{#if section.is_visible}}warning{{else}}success{{/if}} btn-sm" id="btn_toggle_visibility">
+              <i class="fas fa-{{#if section.is_visible}}eye-slash{{else}}eye{{/if}} me-1"></i>
+              {{#if section.is_visible}}Hide{{else}}Show{{/if}} Section
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Management -->
+  <div class="card">
+    <div class="card-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Images in {{section.title}}</h5>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-secondary btn-sm" id="btn_refresh">
+            <i class="fas fa-sync-alt me-1"></i>Refresh
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" id="btn_upload">
+            <i class="fas fa-upload me-1"></i>Upload New
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <!-- Bulk Actions -->
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="select_all">
+          <label class="form-check-label" for="select_all">Select All</label>
+        </div>
+        <div class="btn-group btn-group-sm" role="group">
+          <button class="btn btn-outline-secondary" id="bulk_show" disabled>Show</button>
+          <button class="btn btn-outline-secondary" id="bulk_hide" disabled>Hide</button>
+          <button class="btn btn-outline-danger" id="bulk_delete" disabled>Delete</button>
+        </div>
+        <div class="ms-auto">
+          <label class="me-2 small">Move selected to:</label>
+          <select id="move_target" class="form-select form-select-sm d-inline-block" style="width:auto; min-width: 200px;">
+            <option value="">Select section...</option>
+          </select>
+          <button class="btn btn-outline-primary btn-sm ms-2" id="bulk_move" disabled>Move</button>
+        </div>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex align-items-center gap-2">
+          <select id="page_size" class="form-select form-select-sm" style="width:auto">
+            <option value="12">12 per page</option>
+            <option value="24" selected>24 per page</option>
+            <option value="48">48 per page</option>
+          </select>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-outline-secondary btn-sm" id="prev_page" disabled>Previous</button>
+          <span class="small" id="page_info">Page 1 of 1</span>
+          <button class="btn btn-outline-secondary btn-sm" id="next_page" disabled>Next</button>
+        </div>
+      </div>
+
+      <!-- Debug Info -->
+      <div class="alert alert-info mb-3">
+        <strong>Debug Info:</strong><br>
+        Section ID: {{section.id}}<br>
+        Model Slug: {{modelSlug}}<br>
+        Section Title: {{section.title}}
+        <div class="mt-2">
+
+        </div>
+      </div>
+      
+      <!-- Images Grid -->
+      <div id="images_container">
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2 text-muted">Loading images...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Images Modal -->
+<div class="modal fade" id="addImagesModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Images to Section</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label for="imageStatus" class="form-label">Status Filter</label>
+            <select class="form-select" id="imageStatus">
+              <option value="approved">Approved Only</option>
+              <option value="approved_blurred">Approved + Blurred</option>
+              <option value="all">All Statuses</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label for="imageContext" class="form-label">Usage Intent</label>
+            <select class="form-select" id="imageContext">
+              <option value="all">All Contexts</option>
+              <option value="public_site">Public Site</option>
+              <option value="paysite">Paysite</option>
+              <option value="private">Private</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label for="imageSearch" class="form-label">Search</label>
+            <input type="text" class="form-control" id="imageSearch" placeholder="Search filenames...">
+          </div>
+        </div>
+        
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <button class="btn btn-outline-primary btn-sm" id="refreshLibrary">
+              <i class="fas fa-sync-alt me-1"></i>Refresh
+            </button>
+            <span class="ms-3 text-muted" id="libraryInfo">Loading available images...</span>
+          </div>
+          <div>
+            <button class="btn btn-primary btn-sm" id="addSelectedImages" disabled>
+              Add Selected (<span id="selectedCount">0</span>)
+            </button>
+          </div>
+        </div>
+
+        <div id="libraryContainer" class="border rounded p-3" style="max-height: 400px; overflow-y: auto;">
+          <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted">Loading available images...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Upload New Image</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    </div>
+    <div class="modal-body">
+      <form id="uploadForm">
+        <div class="mb-3">
+          <label for="imageFile" class="form-label">Select Image</label>
+          <input type="file" class="form-control" id="imageFile" accept="image/*" required>
+          <div class="form-text">Supported formats: JPG, PNG, GIF, WebP (max 10MB)</div>
+        </div>
+        <div class="mb-3">
+          <label for="imageCaption" class="form-label">Caption (optional)</label>
+          <input type="text" class="form-control" id="imageCaption" placeholder="Enter image caption">
+        </div>
+        <div class="mb-3">
+          <label for="imageTags" class="form-label">Tags (optional)</label>
+          <input type="text" class="form-control" id="imageTags" placeholder="Enter tags separated by commas">
+          <div class="form-text">Tags help with organization and filtering</div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      <button type="submit" form="uploadForm" class="btn btn-primary">
+        <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+        Upload Image
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Rename Modal -->
+<div class="modal fade" id="renameModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Rename Section</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="renameForm">
+          <div class="mb-3">
+            <label for="sectionTitle" class="form-label">Section Title</label>
+            <input type="text" class="form-control" id="sectionTitle" value="{{section.title}}" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" form="renameForm" class="btn btn-primary">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section Settings Modal -->
+<div class="modal fade" id="settingsModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Section Settings - {{section.title}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="settingsForm">
+          <!-- Layout Selection -->
+          <div class="card mb-3">
+            <div class="card-header">
+              <h6 class="mb-0">Layout Configuration</h6>
+            </div>
+            <div class="card-body">
+              <label for="layoutType" class="form-label">Layout Type</label>
+              <select class="form-select" id="layoutType" required onchange="handleLayoutTypeChange(this.value)">
+                <option value="grid" {{#if (eq section.layout_type 'grid')}}selected{{/if}}>Grid Layout</option>
+                <option value="masonry" {{#if (eq section.layout_type 'masonry')}}selected{{/if}}>Masonry Layout</option>
+                <option value="carousel" {{#if (eq section.layout_type 'carousel')}}selected{{/if}}>Carousel Layout</option>
+                <option value="lightbox_grid" {{#if (eq section.layout_type 'lightbox_grid')}}selected{{/if}}>Lightbox Grid</option>
+              </select>
+              <div class="form-text">Choose how images are displayed in this section</div>
+            </div>
+          </div>
+
+          <!-- Dynamic Layout-Specific Settings Container -->
+          <div id="layoutSpecificSettings">
+            <!-- Content will be dynamically populated based on layout type -->
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" form="settingsForm" class="btn btn-primary">
+          <i class="fas fa-save me-1"></i>Save Settings
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+            <div class="card-header">
+              <h6 class="mb-0">Display Options</h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="showCaptions" {{#if section.show_captions}}checked{{/if}}>
+                    <label class="form-check-label" for="showCaptions">
+                      Show Image Captions
+                    </label>
+                  </div>
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="enableLightbox" {{#if section.enable_lightbox}}checked{{/if}}>
+                    <label class="form-check-label" for="enableLightbox">
+                      Enable Lightbox
+                    </label>
+                  </div>
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="showImageCount" {{#if section.show_image_count}}checked{{/if}}>
+                    <label class="form-check-label" for="showImageCount">
+                      Show Image Count
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="enableDownload" {{#if section.enable_download}}checked{{/if}}>
+                    <label class="form-check-label" for="enableDownload">
+                      Allow Image Downloads
+                    </label>
+                  </div>
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="enableZoom" {{#if section.enable_zoom}}checked{{/if}}>
+                    <label class="form-check-label" for="enableZoom">
+                      Enable Image Zoom
+                    </label>
+                  </div>
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="lazyLoading" {{#if section.lazy_loading}}checked{{/if}}>
+                    <label class="form-check-label" for="lazyLoading">
+                      Lazy Loading
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Image Settings -->
+          <div class="card mb-3">
+            <div class="card-header">
+              <h6 class="mb-0">Image Configuration</h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <label for="imageSize" class="form-label">Thumbnail Size</label>
+                  <select class="form-select" id="imageSize">
+                    <option value="small">Small (150px)</option>
+                    <option value="medium" selected>Medium (300px)</option>
+                    <option value="large">Large (500px)</option>
+                    <option value="original">Original Size</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label for="imageQuality" class="form-label">Image Quality</label>
+                  <select class="form-select" id="imageQuality">
+                    <option value="60">Low Quality (60%)</option>
+                    <option value="80" selected>Standard Quality (80%)</option>
+                    <option value="90">High Quality (90%)</option>
+                    <option value="100">Maximum Quality (100%)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col-md-12">
+                  <label for="sortOrder" class="form-label">Default Sort Order</label>
+                  <select class="form-select" id="sortOrder">
+                    <option value="order_index">Custom Order (Drag & Drop)</option>
+                    <option value="created_at">Newest First</option>
+                    <option value="created_at_desc">Oldest First</option>
+                    <option value="filename">Alphabetical (A-Z)</option>
+                    <option value="filename_desc">Alphabetical (Z-A)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Access Control -->
+          <div class="card mb-3">
+            <div class="card-header">
+              <h6 class="mb-0">Access & Visibility</h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="isVisible" {{#if section.is_visible}}checked{{/if}}>
+                    <label class="form-check-label" for="isVisible">
+                      Section Visible
+                    </label>
+                  </div>
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="requireAuth" {{#if section.require_auth}}checked{{/if}}>
+                    <label class="form-check-label" for="requireAuth">
+                      Require Authentication
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="membersOnly" {{#if section.members_only}}checked{{/if}}>
+                    <label class="form-check-label" for="membersOnly">
+                      Members Only
+                    </label>
+                  </div>
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="showInNav" {{#if section.show_in_nav}}checked{{/if}}>
+                    <label class="form-check-label" for="showInNav">
+                      Show in Navigation
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SEO Settings -->
+          <div class="card">
+            <div class="card-header">
+              <h6 class="mb-0">SEO & Meta Information</h6>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label for="seoDescription" class="form-label">Meta Description</label>
+                <textarea class="form-control" id="seoDescription" rows="3" placeholder="Brief description of this gallery section for search engines">{{section.seo_description}}</textarea>
+                <div class="form-text">Used for search engine previews and social media sharing</div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <label for="seoKeywords" class="form-label">Keywords</label>
+                  <input type="text" class="form-control" id="seoKeywords" value="{{section.seo_keywords}}" placeholder="gallery, photos, portfolio">
+                  <div class="form-text">Comma-separated keywords</div>
+                </div>
+                <div class="col-md-6">
+                  <label for="canonicalUrl" class="form-label">Canonical URL</label>
+                  <input type="url" class="form-control" id="canonicalUrl" value="{{section.canonical_url}}" placeholder="https://example.com/gallery/section">
+                  <div class="form-text">Optional: specify canonical URL</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" form="settingsForm" class="btn btn-primary">Save Settings</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const sectionId = {{section.id}};
+  const modelSlug = '{{modelSlug}}';
+  
+
+  
+  let currentPage = 1;
+  let pageSize = 24;
+  let totalImages = 0;
+  let totalPages = 1;
+
+  // Utility function for debouncing
+  function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+  // Initialize the page
+
+  console.log('🔍 modelSlug:', modelSlug, 'type:', typeof modelSlug);
+  console.log('🔍 About to call loadImages()...');
+  
+  if (!sectionId || !modelSlug) {
+    console.error('❌ Missing required variables:');
+    console.error('❌ sectionId:', sectionId);
+    console.error('❌ modelSlug:', modelSlug);
+    return;
+  }
+  
+  loadImages();
+  console.log('🔍 loadImages() called');
+  loadSectionsForMove();
+  bindEventListeners();
+
+  async function loadImages() {
+    try {
+      console.log('🔍 Loading images for section:', sectionId);
+      console.log('🔍 Model slug:', modelSlug);
+      
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/sections/${sectionId}/images?page=${currentPage}&limit=${pageSize}`);
+      const data = await response.json();
+      
+      console.log('🔍 API response:', data);
+      
+      if (data.success) {
+        totalImages = data.data.pagination.total;
+        totalPages = data.data.pagination.pages;
+        console.log('🔍 Images loaded:', data.data.images.length);
+        console.log('🔍 First image:', data.data.images[0]);
+        renderImages(data.data.images);
+        updatePagination();
+      } else {
+        console.error('❌ API error:', data.message);
+        showError('Failed to load images: ' + (data.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('❌ Error loading images:', error);
+      showError('Failed to load images');
+    }
+  }
+
+  function renderImages(images) {
+    console.log('🔍 renderImages called with:', images);
+    const container = document.getElementById('images_container');
+    console.log('🔍 Container element:', container);
+    
+    if (!images || images.length === 0) {
+      console.log('🔍 No images to render');
+      container.innerHTML = `
+        <div class="text-center py-5">
+          <i class="fas fa-images fa-3x text-muted mb-3"></i>
+          <h5 class="text-muted">No images in this section</h5>
+          <p class="text-muted">Use the "Add Images" button above to get started</p>
+        </div>
+      `;
+      return;
+    }
+
+    console.log('🔍 Rendering', images.length, 'images');
+    
+    container.innerHTML = `
+      <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3" id="imagesGrid">
+        ${images.map((img, idx) => {
+          console.log('🔍 Processing image:', img);
+          return `
+          <div class="col" data-image-id="${img.id}" data-order="${img.order_index || idx}">
+            <div class="card h-100 image-card" data-id="${img.id}" draggable="true">
+              <div class="form-check position-absolute top-0 start-0 m-2">
+                <input class="form-check-input select-image" type="checkbox" value="${img.id}">
+              </div>
+              <div class="drag-handle position-absolute top-0 end-0 m-2">
+                <i class="fas fa-grip-vertical text-muted"></i>
+              </div>
+              <img src="/uploads/${encodeURIComponent(modelSlug)}/public/gallery/${img.filename}" 
+                   class="card-img-top" alt="${img.caption || img.filename}"
+                   style="height: 200px; object-fit: cover;"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='block'; console.error('❌ Image failed to load:', this.src);">
+              <div class="card-img-top d-none" style="height: 200px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-image fa-2x text-muted"></i>
+              </div>
+              <div class="card-body">
+                <h6 class="card-title text-truncate" title="${img.filename}">${img.filename}</h6>
+                <div class="mb-2">
+                  <button class="btn btn-sm badge ${img.is_active ? 'bg-success text-white border-success' : 'bg-danger text-white border-danger'} btn-status-toggle" data-id="${img.id}" data-active="${img.is_active ? 1 : 0}" style="cursor: pointer;">
+                    ${img.is_active ? 'Active' : 'Inactive'}
+                  </button>
+                  ${img.moderation_status ? `<span class="badge bg-info ms-1">${img.moderation_status}</span>` : ''}
+                </div>
+                <div class="mb-2">
+                  <input type="text" class="form-control form-control-sm input-caption" 
+                         placeholder="Caption" value="${img.caption || ''}" data-id="${img.id}">
+                </div>
+                <div class="mb-2">
+                  <input type="text" class="form-control form-control-sm input-tags" 
+                         placeholder="Tags" value="${img.tags || ''}" data-id="${img.id}">
+                </div>
+                <div class="d-flex gap-1">
+                  <button class="btn btn-sm btn-outline-danger btn-delete-image" data-id="${img.id}">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        }).join('')}
+      </div>
+    `;
+
+    console.log('🔍 Images rendered, binding event listeners');
+    
+    // Bind image-specific event listeners
+    bindImageEventListeners();
+    
+    // Initialize drag and drop
+    initializeDragAndDrop();
+  }
+
+  function updatePagination() {
+    const pageInfo = document.getElementById('page_info');
+    const prevBtn = document.getElementById('prev_page');
+    const nextBtn = document.getElementById('next_page');
+    
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages} (${totalImages} total)`;
+    prevBtn.disabled = currentPage <= 1;
+    nextBtn.disabled = currentPage >= totalPages;
+  }
+
+  async function loadSectionsForMove() {
+    try {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/sections?page=1&limit=1000`);
+      const data = await response.json();
+      
+      if (data.success) {
+        const select = document.getElementById('move_target');
+        const sections = data.data.sections.filter(s => s.id !== sectionId);
+        
+        select.innerHTML = '<option value="">Select section...</option>' + 
+          sections.map(s => `<option value="${s.id}">${s.title}</option>`).join('');
+      }
+    } catch (error) {
+      console.error('Error loading sections for move:', error);
+    }
+  }
+
+  function bindEventListeners() {
+    // Pagination
+    document.getElementById('prev_page').addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        loadImages();
+      }
+    });
+
+    document.getElementById('next_page').addEventListener('click', () => {
+      if (currentPage < totalPages) {
+        currentPage++;
+        loadImages();
+      }
+    });
+
+    document.getElementById('page_size').addEventListener('change', (e) => {
+      pageSize = parseInt(e.target.value);
+      currentPage = 1;
+      loadImages();
+    });
+
+    // Bulk actions
+    document.getElementById('select_all').addEventListener('change', (e) => {
+      const checked = e.target.checked;
+      document.querySelectorAll('.select-image').forEach(cb => cb.checked = checked);
+      updateBulkActionButtons();
+    });
+
+    document.getElementById('bulk_show').addEventListener('click', () => runBulkAction('show'));
+    document.getElementById('bulk_hide').addEventListener('click', () => runBulkAction('hide'));
+    document.getElementById('bulk_delete').addEventListener('click', () => runBulkAction('delete'));
+    document.getElementById('bulk_move').addEventListener('click', runBulkMove);
+
+    // Other buttons
+    document.getElementById('btn_refresh').addEventListener('click', loadImages);
+    document.getElementById('btn_upload').addEventListener('click', () => {
+      new bootstrap.Modal(document.getElementById('uploadModal')).show();
+    });
+    document.getElementById('btn_rename').addEventListener('click', () => {
+      new bootstrap.Modal(document.getElementById('renameModal')).show();
+    });
+    
+    // Section Settings button
+    document.getElementById('btn_settings').addEventListener('click', () => {
+      new bootstrap.Modal(document.getElementById('settingsModal')).show();
+    });
+    
+    // Add Images button - show available images modal
+    document.getElementById('btn_add_images').addEventListener('click', () => {
+      new bootstrap.Modal(document.getElementById('addImagesModal')).show();
+      loadAvailableImages();
+    });
+
+    // Forms
+    document.getElementById('uploadForm').addEventListener('submit', handleUpload);
+    document.getElementById('renameForm').addEventListener('submit', handleRename);
+    document.getElementById('settingsForm').addEventListener('submit', handleSettingsUpdate);
+    
+    // Library modal events
+    document.getElementById('refreshLibrary').addEventListener('click', loadAvailableImages);
+    document.getElementById('addSelectedImages').addEventListener('click', addSelectedImages);
+    document.getElementById('imageStatus').addEventListener('change', loadAvailableImages);
+    document.getElementById('imageContext').addEventListener('change', loadAvailableImages);
+    document.getElementById('imageSearch').addEventListener('input', debounce(loadAvailableImages, 500));
+  }
+
+  function bindImageEventListeners() {
+    // Image selection
+    document.querySelectorAll('.select-image').forEach(cb => {
+      cb.addEventListener('change', updateBulkActionButtons);
+    });
+
+    // Toggle visibility
+    document.querySelectorAll('.btn-status-toggle').forEach(btn => {
+      btn.addEventListener('click', handleToggleVisibility);
+    });
+
+    // Delete image
+    document.querySelectorAll('.btn-delete-image').forEach(btn => {
+      btn.addEventListener('click', handleDeleteImage);
+    });
+
+    // Caption and tags
+    document.querySelectorAll('.input-caption, .input-tags').forEach(input => {
+      input.addEventListener('blur', handleSaveMetadata);
+    });
+  }
+
+  function updateBulkActionButtons() {
+    const selectedCount = document.querySelectorAll('.select-image:checked').length;
+    const hasSelection = selectedCount > 0;
+    
+    document.getElementById('bulk_show').disabled = !hasSelection;
+    document.getElementById('bulk_hide').disabled = !hasSelection;
+    document.getElementById('bulk_delete').disabled = !hasSelection;
+    document.getElementById('bulk_move').disabled = !hasSelection;
+  }
+
+  async function runBulkAction(action) {
+    const selectedIds = Array.from(document.querySelectorAll('.select-image:checked')).map(cb => parseInt(cb.value));
+    
+    if (selectedIds.length === 0) {
+      showWarning('No images selected');
+      return;
+    }
+
+    if (action === 'delete' && !confirm(`Delete ${selectedIds.length} image(s)? This cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/images/bulk`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, ids: selectedIds })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        showSuccess(`Images ${action}ed successfully`);
+        loadImages();
+      } else {
+        showError('Failed to ' + action + ' images: ' + (data.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error running bulk action:', error);
+      showError('Failed to ' + action + ' images');
+    }
+  }
+
+  async function runBulkMove() {
+    const selectedIds = Array.from(document.querySelectorAll('.select-image:checked')).map(cb => parseInt(cb.value));
+    const targetSectionId = document.getElementById('move_target').value;
+    
+    if (selectedIds.length === 0) {
+      showWarning('No images selected');
+      return;
+    }
+    
+    if (!targetSectionId) {
+      showWarning('Please select a target section');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/images/bulk`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          action: 'move', 
+          ids: selectedIds, 
+          target_section_id: parseInt(targetSectionId) 
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        showSuccess('Images moved successfully');
+        loadImages();
+      } else {
+        showError('Failed to move images: ' + (data.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error moving images:', error);
+      showError('Failed to move images');
+    }
+  }
+
+  async function handleToggleVisibility(e) {
+    e.preventDefault();
+    const btn = e.currentTarget; // Use currentTarget to get the button, not clicked elements inside it
+    const imgId = btn.getAttribute('data-id');
+    const currentActive = btn.getAttribute('data-active') === '1';
+    
+    if (!imgId || imgId === 'null') {
+      showError('Invalid image ID');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/images/${imgId}/visibility`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: !currentActive })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        showSuccess(`Image ${!currentActive ? 'activated' : 'deactivated'} successfully`);
+        
+        // Update button immediately without reloading all images
+        const newActive = !currentActive;
+        btn.setAttribute('data-active', newActive ? '1' : '0');
+        btn.className = `btn btn-sm badge ${newActive ? 'bg-success text-white border-success' : 'bg-danger text-white border-danger'} btn-status-toggle`;
+        btn.textContent = newActive ? 'Active' : 'Inactive';
+      } else {
+        showError('Failed to update image: ' + (data.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error toggling image visibility:', error);
+      showError('Failed to update image');
+    }
+  }
+
+  async function handleDeleteImage(e) {
+    const btn = e.target;
+    const imgId = btn.getAttribute('data-id');
+
+    if (!confirm('Delete this image? This cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/images/bulk`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete', ids: [parseInt(imgId)] })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        showSuccess('Image deleted successfully');
+        loadImages();
+      } else {
+        showError('Failed to delete image: ' + (data.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error deleting image:', error);
+      showError('Failed to delete image');
+    }
+  }
+
+  async function handleSaveMetadata(e) {
+    const input = e.target;
+    const imgId = input.getAttribute('data-id');
+    const value = input.value.trim();
+    const field = input.classList.contains('input-caption') ? 'caption' : 'tags';
+
+    try {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/images/${imgId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [field]: value })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        showSuccess('Saved successfully');
+      } else {
+        showError('Failed to save: ' + (data.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error saving metadata:', error);
+      showError('Failed to save');
+    }
+  }
+
+  async function handleUpload(e) {
+    e.preventDefault();
+    
+    const formData = new FormData();
+    const fileInput = document.getElementById('imageFile');
+    const captionInput = document.getElementById('imageCaption');
+    const tagsInput = document.getElementById('imageTags');
+    
+    if (!fileInput.files[0]) {
+      showWarning('Please select an image file');
+      return;
+    }
+
+    formData.append('image', fileInput.files[0]);
+    if (captionInput.value.trim()) {
+      formData.append('caption', captionInput.value.trim());
+    }
+    if (tagsInput.value.trim()) {
+      formData.append('tags', tagsInput.value.trim());
+    }
+
+    const submitBtn = document.querySelector('#uploadForm button[type="submit"]');
+    const spinner = submitBtn.querySelector('.spinner-border');
+    
+    submitBtn.disabled = true;
+    spinner.classList.remove('d-none');
+
+    try {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/sections/${sectionId}/upload`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        showSuccess('Image uploaded successfully');
+        bootstrap.Modal.getInstance(document.getElementById('uploadModal')).hide();
+        document.getElementById('uploadForm').reset();
+        loadImages();
+      } else {
+        showError('Upload failed: ' + (data.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      showError('Upload failed');
+    } finally {
+      submitBtn.disabled = false;
+      spinner.classList.add('d-none');
+    }
+  }
+
+  async function handleRename(e) {
+    e.preventDefault();
+    
+    const newTitle = document.getElementById('sectionTitle').value.trim();
+    
+    if (!newTitle) {
+      showWarning('Please enter a section title');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/sections/${sectionId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newTitle })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        showSuccess('Section renamed successfully');
+        bootstrap.Modal.getInstance(document.getElementById('renameModal')).hide();
+        // Update page title
+        document.title = `Gallery Manager - ${newTitle}`;
+        document.querySelector('h1').textContent = `Gallery Manager - ${newTitle}`;
+      } else {
+        showError('Failed to rename section: ' + (data.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error renaming section:', error);
+      showError('Failed to rename section');
+    }
+  }
+
+  async function handleSettingsUpdate(e) {
+    e.preventDefault();
+    
+    // Collect all form data
+    const settingsData = {
+      layout_type: document.getElementById('layoutType').value,
+      images_per_row: parseInt(document.getElementById('imagesPerRow').value),
+      show_captions: document.getElementById('showCaptions').checked,
+      enable_lightbox: document.getElementById('enableLightbox').checked,
+      show_image_count: document.getElementById('showImageCount').checked,
+      enable_download: document.getElementById('enableDownload').checked,
+      enable_zoom: document.getElementById('enableZoom').checked,
+      lazy_loading: document.getElementById('lazyLoading').checked,
+      image_size: document.getElementById('imageSize').value,
+      image_quality: parseInt(document.getElementById('imageQuality').value),
+      image_sort_order: document.getElementById('sortOrder').value,
+      is_visible: document.getElementById('isVisible').checked,
+      require_auth: document.getElementById('requireAuth').checked,
+      members_only: document.getElementById('membersOnly').checked,
+      show_in_nav: document.getElementById('showInNav').checked,
+      seo_description: document.getElementById('seoDescription').value.trim(),
+      seo_keywords: document.getElementById('seoKeywords').value.trim(),
+      canonical_url: document.getElementById('canonicalUrl').value.trim()
+    };
+
+    try {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/sections/${sectionId}/settings`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settingsData)
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        showSuccess('Section settings updated successfully');
+        bootstrap.Modal.getInstance(document.getElementById('settingsModal')).hide();
+        // Refresh the page or specific UI elements if needed
+        if (settingsData.layout_type !== '{{section.layout_type}}') {
+          showSuccess('Layout changed - page will refresh to apply changes');
+          setTimeout(() => location.reload(), 1500);
+        }
+      } else {
+        showError('Failed to update settings: ' + (data.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error updating settings:', error);
+      showError('Failed to update settings');
+    }
+  }
+
+  // Load available images from the available-images endpoint
+  async function loadAvailableImages() {
+    const container = document.getElementById('libraryContainer');
+    const status = document.getElementById('imageStatus').value;
+    const context = document.getElementById('imageContext').value;
+    const search = document.getElementById('imageSearch').value;
+    
+    try {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/available-images?status=${status}&context=${context}&search=${encodeURIComponent(search)}&section_id=${sectionId}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        renderAvailableImages(data.data.images);
+        document.getElementById('libraryInfo').textContent = `${data.data.images.length} images available`;
+      } else {
+        showError('Failed to load available images: ' + (data.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error loading available images:', error);
+      showError('Failed to load available images');
+    }
+  }
+
+  function renderAvailableImages(images) {
+    const container = document.getElementById('libraryContainer');
+    
+    if (!images || images.length === 0) {
+      container.innerHTML = `
+        <div class="text-center py-4">
+          <i class="fas fa-images fa-2x text-muted mb-3"></i>
+          <h6 class="text-muted">No images available</h6>
+          <p class="text-muted">Try adjusting your filters or upload new images</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = `
+      <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2">
+        ${images.map(img => `
+          <div class="col">
+            <div class="card h-100 library-image-card ${img.in_section ? 'border-success' : ''}" data-filename="${img.filename}">
+              <div class="form-check position-absolute top-0 start-0 m-2">
+                <input class="form-check-input select-library-image" type="checkbox" value="${img.filename}" 
+                       ${img.in_section ? 'disabled' : ''}>
+              </div>
+              <img src="/uploads/${encodeURIComponent(modelSlug)}/public/gallery/${img.filename}" 
+                   class="card-img-top" alt="${img.filename}"
+                   style="height: 120px; object-fit: cover;"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <div class="card-img-top d-none" style="height: 120px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-image fa-lg text-muted"></i>
+              </div>
+              <div class="card-body p-2">
+                <h6 class="card-title text-truncate small" title="${img.filename}">${img.filename}</h6>
+                <div class="mb-1">
+                  <span class="badge bg-info small">${img.moderation_status || 'unknown'}</span>
+                  ${img.usage_intent ? `<span class="badge bg-secondary small ms-1">${img.usage_intent}</span>` : ''}
+                  ${img.in_section ? '<span class="badge bg-success small ms-1">In Section</span>' : ''}
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    // Bind library image selection events
+    bindLibraryImageEvents();
+  }
+
+  function bindLibraryImageEvents() {
+    document.querySelectorAll('.select-library-image').forEach(cb => {
+      cb.addEventListener('change', updateSelectedCount);
+    });
+  }
+
+  function updateSelectedCount() {
+    const selectedCount = document.querySelectorAll('.select-library-image:checked:not(:disabled)').length;
+    document.getElementById('selectedCount').textContent = selectedCount;
+    document.getElementById('addSelectedImages').disabled = selectedCount === 0;
+  }
+
+  // Add selected images to the section
+  async function addSelectedImages() {
+    const selectedFilenames = Array.from(document.querySelectorAll('.select-library-image:checked:not(:disabled)')).map(cb => cb.value);
+    
+    if (selectedFilenames.length === 0) {
+      showWarning('No images selected');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/sections/${sectionId}/images/batch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filenames: selectedFilenames })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        showSuccess(`${selectedFilenames.length} images added to section successfully`);
+        bootstrap.Modal.getInstance(document.getElementById('addImagesModal')).hide();
+        loadImages(); // Refresh the section images
+      } else {
+        showError('Failed to add images: ' + (data.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error adding images:', error);
+      showError('Failed to add images');
+    }
+  }
+
+  // Drag and Drop functionality
+  function initializeDragAndDrop() {
+    const grid = document.getElementById('imagesGrid');
+    if (!grid) return;
+
+    let draggedElement = null;
+    let draggedIndex = -1;
+
+    // Add drag event listeners to all image cards
+    document.querySelectorAll('.image-card').forEach(card => {
+      card.addEventListener('dragstart', handleDragStart);
+      card.addEventListener('dragend', handleDragEnd);
+      card.addEventListener('dragover', handleDragOver);
+      card.addEventListener('drop', handleDrop);
+    });
+  }
+
+  function handleDragStart(e) {
+    draggedElement = e.target.closest('.col');
+    draggedIndex = Array.from(draggedElement.parentNode.children).indexOf(draggedElement);
+    e.target.style.opacity = '0.5';
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', draggedElement.outerHTML);
+  }
+
+  function handleDragEnd(e) {
+    e.target.style.opacity = '1';
+    draggedElement = null;
+    draggedIndex = -1;
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    const targetElement = e.target.closest('.col');
+    if (!targetElement || !draggedElement || targetElement === draggedElement) return;
+
+    const targetIndex = Array.from(targetElement.parentNode.children).indexOf(targetElement);
+    
+    // Reorder the DOM
+    if (draggedIndex < targetIndex) {
+      targetElement.parentNode.insertBefore(draggedElement, targetElement.nextSibling);
+    } else {
+      targetElement.parentNode.insertBefore(draggedElement, targetElement);
+    }
+
+    // Update order indices and save to database
+    updateImageOrder();
+  }
+
+  async function updateImageOrder() {
+    const imageElements = document.querySelectorAll('#imagesGrid .col');
+    const orderData = Array.from(imageElements).map((element, index) => ({
+      id: parseInt(element.getAttribute('data-image-id')),
+      order_index: index
+    }));
+
+    try {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/images/reorder`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          section_id: sectionId, 
+          items: orderData 
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        showSuccess('Image order updated successfully');
+        // Update data attributes
+        imageElements.forEach((element, index) => {
+          element.setAttribute('data-order', index);
+        });
+      } else {
+        showError('Failed to update image order: ' + (data.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error updating image order:', error);
+      showError('Failed to update image order');
+    }
+  }
+
+  // Dynamic Layout Settings System  
+  window.updateLayoutSettings = function(layoutType) {
+    const container = document.getElementById('layoutSpecificSettings');
+    
+    // Get current section's layout settings
+    let currentSettings;
+    {{#if section.layout_settings}}
+      currentSettings = {{{json section.layout_settings}}};
+    {{else}}
+      currentSettings = {};
+    {{/if}}
+    if (!currentSettings || typeof currentSettings !== 'object') {
+      currentSettings = {};
+    }
+    
+    console.log('🔍 Layout settings loaded:', currentSettings);
+    console.log('🔍 carouselAutoplay value:', currentSettings.carouselAutoplay, 'type:', typeof currentSettings.carouselAutoplay);
+    
+    // Layout-specific settings configurations
+    const layoutConfigs = {
+      grid: {
+        title: 'Grid Layout Settings',
+        settings: [
+          { type: 'select', id: 'gridColumns', label: 'Grid Columns', value: 3, options: [
+            {value: 2, label: '2 Columns'}, {value: 3, label: '3 Columns'}, {value: 4, label: '4 Columns'}, {value: 6, label: '6 Columns'}
+          ], help: 'Number of columns in the grid layout' },
+          { type: 'range', id: 'gridGap', label: 'Grid Gap', min: 0, max: 50, value: 15, unit: 'px', help: 'Spacing between grid items' },
+          { type: 'checkbox', id: 'gridMaintainAspect', label: 'Maintain Aspect Ratio', checked: true, help: 'Keep original image proportions' },
+          { type: 'select', id: 'gridAlignment', label: 'Grid Alignment', value: 'center', options: [
+            {value: 'start', label: 'Start'}, {value: 'center', label: 'Center'}, {value: 'end', label: 'End'}
+          ], help: 'How to align the grid within its container' },
+          { type: 'checkbox', id: 'gridHoverEffects', label: 'Hover Effects', checked: true, help: 'Enable hover animations and effects' }
+        ]
+      },
+      masonry: {
+        title: 'Masonry Layout Settings',
+        settings: [
+          { type: 'select', id: 'masonryColumns', label: 'Column Count', value: 3, options: [
+            {value: 2, label: '2 Columns'}, {value: 3, label: '3 Columns'}, {value: 4, label: '4 Columns'}, {value: 5, label: '5 Columns'}
+          ], help: 'Number of masonry columns' },
+          { type: 'range', id: 'masonryGap', label: 'Item Spacing', min: 5, max: 40, value: 20, unit: 'px', help: 'Space between masonry items' },
+          { type: 'checkbox', id: 'masonryProgressiveLoad', label: 'Progressive Loading', checked: true, help: 'Load images as they come into view' },
+          { type: 'select', id: 'masonryBreakpoints', label: 'Responsive Breakpoints', value: 'standard', options: [
+            {value: 'standard', label: 'Standard (SM: 2, MD: 3, LG: 4)'}, 
+            {value: 'compact', label: 'Compact (SM: 1, MD: 2, LG: 3)'},
+            {value: 'wide', label: 'Wide (SM: 3, MD: 4, LG: 5)'}
+          ], help: 'How columns adapt to screen size' },
+          { type: 'range', id: 'masonryAnimationDuration', label: 'Animation Speed', min: 100, max: 1000, value: 300, unit: 'ms', help: 'Animation duration for layout changes' }
+        ]
+      },
+      carousel: {
+        title: 'Carousel Settings',
+        settings: [
+          { type: 'select', id: 'carouselItemsVisible', label: 'Visible Items', value: 1, options: [
+            {value: 1, label: '1 Item'}, {value: 2, label: '2 Items'}, {value: 3, label: '3 Items'}, {value: 4, label: '4 Items'}
+          ], help: 'Number of items visible at once' },
+          { type: 'checkbox', id: 'carouselAutoplay', label: 'Autoplay', checked: false, help: 'Automatically advance slides' },
+          { type: 'range', id: 'carouselSpeed', label: 'Autoplay Speed', min: 1000, max: 10000, value: 5000, unit: 'ms', help: 'Time between automatic transitions' },
+          { type: 'checkbox', id: 'carouselLoop', label: 'Infinite Loop', checked: true, help: 'Loop back to start after last item' },
+          { type: 'checkbox', id: 'carouselDots', label: 'Show Dots', checked: true, help: 'Show navigation dots' },
+          { type: 'checkbox', id: 'carouselArrows', label: 'Show Arrows', checked: true, help: 'Show previous/next arrows' },
+          { type: 'select', id: 'carouselTransition', label: 'Transition Effect', value: 'slide', options: [
+            {value: 'slide', label: 'Slide'}, {value: 'fade', label: 'Fade'}, {value: 'cube', label: 'Cube'}, {value: 'flip', label: 'Flip'}
+          ], help: 'Transition animation between slides' },
+          { type: 'range', id: 'carouselTransitionDuration', label: 'Transition Duration', min: 200, max: 2000, value: 600, unit: 'ms', help: 'Speed of transition animations' }
+        ]
+      },
+      lightbox_grid: {
+        title: 'Lightbox Grid Settings',
+        settings: [
+          { type: 'select', id: 'lightboxColumns', label: 'Grid Columns', value: 4, options: [
+            {value: 3, label: '3 Columns'}, {value: 4, label: '4 Columns'}, {value: 5, label: '5 Columns'}, {value: 6, label: '6 Columns'}
+          ], help: 'Number of thumbnail columns' },
+          { type: 'select', id: 'lightboxThumbnailSize', label: 'Thumbnail Size', value: 'medium', options: [
+            {value: 'small', label: 'Small (150px)'}, {value: 'medium', label: 'Medium (200px)'}, {value: 'large', label: 'Large (250px)'}
+          ], help: 'Size of thumbnail images' },
+          { type: 'checkbox', id: 'lightboxZoom', label: 'Enable Zoom', checked: true, help: 'Allow zooming in lightbox' },
+          { type: 'checkbox', id: 'lightboxSlideshow', label: 'Slideshow Mode', checked: true, help: 'Enable automatic slideshow' },
+          { type: 'checkbox', id: 'lightboxThumbnails', label: 'Show Thumbnails', checked: true, help: 'Show thumbnail navigation in lightbox' },
+          { type: 'checkbox', id: 'lightboxFullscreen', label: 'Fullscreen Mode', checked: true, help: 'Allow fullscreen viewing' },
+          { type: 'select', id: 'lightboxTheme', label: 'Lightbox Theme', value: 'dark', options: [
+            {value: 'dark', label: 'Dark Theme'}, {value: 'light', label: 'Light Theme'}, {value: 'auto', label: 'Auto (Match Site)'}
+          ], help: 'Lightbox appearance theme' }
+        ]
+      }
+    };
+
+    // Generate HTML for the selected layout
+    const config = layoutConfigs[layoutType];
+    if (!config) return;
+    
+    let html = `
+      <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">${config.title}</h6>
+          <small class="text-muted">Layout-Specific Configuration</small>
+        </div>
+        <div class="card-body">
+          <div class="row">
+    `;
+
+    config.settings.forEach((setting, index) => {
+      const colClass = setting.type === 'checkbox' ? 'col-md-6' : 'col-md-6';
+      html += `<div class="${colClass} mb-3">`;
+      
+      switch (setting.type) {
+        case 'select':
+          const currentSelectValue = currentSettings[setting.id] !== undefined ? currentSettings[setting.id] : setting.value;
+          html += `
+            <label for="${setting.id}" class="form-label">${setting.label}</label>
+            <select class="form-select" id="${setting.id}">
+              ${setting.options.map(opt => 
+                `<option value="${opt.value}" ${opt.value == currentSelectValue ? 'selected' : ''}>${opt.label}</option>`
+              ).join('')}
+            </select>
+          `;
+          break;
+          
+        case 'range':
+          const currentRangeValue = currentSettings[setting.id] !== undefined ? currentSettings[setting.id] : setting.value;
+          html += `
+            <label for="${setting.id}" class="form-label">${setting.label}</label>
+            <div class="d-flex align-items-center gap-3">
+              <input type="range" class="form-range flex-grow-1" id="${setting.id}" 
+                     min="${setting.min}" max="${setting.max}" value="${currentRangeValue}">
+              <span class="text-muted fw-bold" id="${setting.id}Value">${currentRangeValue}${setting.unit}</span>
+            </div>
+          `;
+          break;
+          
+        case 'checkbox':
+          const currentCheckboxValue = currentSettings[setting.id] !== undefined ? currentSettings[setting.id] : setting.checked;
+          console.log(`🔍 Checkbox ${setting.id}:`, 'currentSettings[setting.id]:', currentSettings[setting.id], 'setting.checked:', setting.checked, 'final value:', currentCheckboxValue);
+          html += `
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="${setting.id}" ${currentCheckboxValue ? 'checked' : ''}>
+              <label class="form-check-label" for="${setting.id}">${setting.label}</label>
+            </div>
+          `;
+          break;
+      }
+      
+      if (setting.help) {
+        html += `<div class="form-text">${setting.help}</div>`;
+      }
+      
+      html += '</div>';
+    });
+
+    html += `
+          </div>
+        </div>
+      </div>
+      
+      <!-- Common Settings -->
+      <div class="card mb-3">
+        <div class="card-header">
+          <h6 class="mb-0">Display & Behavior</h6>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <div class="form-check form-switch">
+                <input class="form-check-input auto-save-setting" type="checkbox" id="showCaptions" {{#if section.show_captions}}checked{{/if}}>
+                <label class="form-check-label" for="showCaptions">Show Captions</label>
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <div class="form-check form-switch">
+                <input class="form-check-input auto-save-setting" type="checkbox" id="enableDownload" {{#if section.enable_download}}checked{{/if}}>
+                <label class="form-check-label" for="enableDownload">Enable Downloads</label>
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <div class="form-check form-switch">
+                <input class="form-check-input auto-save-setting" type="checkbox" id="lazyLoading" {{#if section.lazy_loading}}checked{{/if}}>
+                <label class="form-check-label" for="lazyLoading">Lazy Loading</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- SEO & Visibility -->
+      <div class="card mb-3">
+        <div class="card-header">
+          <h6 class="mb-0">Visibility & SEO</h6>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <div class="form-check form-switch">
+                <input class="form-check-input auto-save-setting" type="checkbox" id="isVisible" {{#if section.is_visible}}checked{{/if}}>
+                <label class="form-check-label" for="isVisible">Section Visible</label>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="form-check form-switch">
+                <input class="form-check-input auto-save-setting" type="checkbox" id="showInNav" {{#if section.show_in_nav}}checked{{/if}}>
+                <label class="form-check-label" for="showInNav">Show in Navigation</label>
+              </div>
+            </div>
+            <div class="col-12 mb-3">
+              <label for="seoDescription" class="form-label">SEO Description</label>
+              <textarea class="form-control auto-save-setting" id="seoDescription" rows="2" placeholder="Brief description for search engines">{{section.seo_description}}</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    container.innerHTML = html;
+    
+    // Bind range input events to update value displays AND auto-save
+    container.querySelectorAll('input[type="range"]').forEach(range => {
+      const valueSpan = document.getElementById(range.id + 'Value');
+      if (valueSpan) {
+        range.addEventListener('input', () => {
+          const setting = config.settings.find(s => s.id === range.id);
+          const unit = setting ? setting.unit : '';
+          valueSpan.textContent = range.value + unit;
+        });
+        // Add auto-save on change
+        range.addEventListener('change', () => autoSaveSettings());
+      }
+    });
+    
+    // Bind auto-save to all form inputs in the settings
+    container.querySelectorAll('input, select').forEach(input => {
+      if (input.type !== 'range') {
+        input.addEventListener('change', () => autoSaveSettings());
+      }
+    });
+  };
+  
+  // Handle layout type change with auto-save
+  window.handleLayoutTypeChange = function(layoutType) {
+    updateLayoutSettings(layoutType);
+    autoSaveSettings();
+  };
+
+  // Initialize settings modal when opened
+  document.getElementById('btn_settings').addEventListener('click', () => {
+    setTimeout(() => {
+      const currentLayout = document.getElementById('layoutType').value;
+      updateLayoutSettings(currentLayout);
+      
+      // Bind auto-save to common settings
+      document.querySelectorAll('.auto-save-setting').forEach(input => {
+        if (input.tagName === 'TEXTAREA') {
+          // Use input event with debouncing for textarea
+          let textareaTimeout;
+          input.addEventListener('input', () => {
+            if (textareaTimeout) clearTimeout(textareaTimeout);
+            textareaTimeout = setTimeout(() => autoSaveSettings(), 1500);
+          });
+        } else {
+          // Use change event for checkboxes and selects
+          input.addEventListener('change', () => autoSaveSettings());
+        }
+      });
+    }, 100); // Small delay to ensure modal is rendered
+  });
+
+  // Auto-save settings function with debouncing
+  let autoSaveTimeout = null;
+  async function autoSaveSettings() {
+    // Clear existing timeout
+    if (autoSaveTimeout) {
+      clearTimeout(autoSaveTimeout);
+    }
+    
+    // Set new timeout for debounced save
+    autoSaveTimeout = setTimeout(async () => {
+      // Show saving indicator
+      showSavingIndicator();
+      
+      try {
+        // Collect basic settings
+        const settingsData = {
+          layout_type: document.getElementById('layoutType').value,
+          show_captions: document.getElementById('showCaptions') ? document.getElementById('showCaptions').checked : false,
+          enable_download: document.getElementById('enableDownload') ? document.getElementById('enableDownload').checked : false,
+          lazy_loading: document.getElementById('lazyLoading') ? document.getElementById('lazyLoading').checked : false,
+          is_visible: document.getElementById('isVisible') ? document.getElementById('isVisible').checked : false,
+          show_in_nav: document.getElementById('showInNav') ? document.getElementById('showInNav').checked : false,
+          seo_description: document.getElementById('seoDescription') ? (document.getElementById('seoDescription').value || '').trim() : ''
+        };
+
+        // Collect layout-specific settings
+        const layoutSettings = {};
+        const layoutSpecificContainer = document.getElementById('layoutSpecificSettings');
+        if (layoutSpecificContainer) {
+          layoutSpecificContainer.querySelectorAll('input, select').forEach(input => {
+            if (input.type === 'checkbox') {
+              layoutSettings[input.id] = input.checked;
+            } else if (input.type === 'range') {
+              layoutSettings[input.id] = parseInt(input.value);
+            } else {
+              layoutSettings[input.id] = input.value;
+            }
+          });
+        }
+        
+        // Add layout settings as a JSON string
+        settingsData.layout_settings = JSON.stringify(layoutSettings);
+
+        const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/sections/${sectionId}/settings`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(settingsData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showSavedIndicator();
+        } else {
+          showSaveErrorIndicator('Save failed: ' + (data.message || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Auto-save error:', error);
+        showSaveErrorIndicator('Auto-save failed');
+      }
+    }, 1000); // 1 second debounce
+  }
+  
+  // Saving indicator functions
+  function showSavingIndicator() {
+    const modalHeader = document.querySelector('#settingsModal .modal-header h5');
+    if (modalHeader && !modalHeader.innerHTML.includes('spinner')) {
+      modalHeader.innerHTML = modalHeader.innerHTML + ' <span class="spinner-border spinner-border-sm text-primary ms-2" role="status"></span>';
+    }
+  }
+  
+  function showSavedIndicator() {
+    const modalHeader = document.querySelector('#settingsModal .modal-header h5');
+    if (modalHeader) {
+      // Remove spinner
+      modalHeader.innerHTML = modalHeader.innerHTML.replace(/<span class="spinner-border[^>]*><\/span>/, '');
+      // Add saved checkmark
+      if (!modalHeader.innerHTML.includes('fa-check')) {
+        modalHeader.innerHTML = modalHeader.innerHTML + ' <i class="fas fa-check text-success ms-2" id="save-indicator"></i>';
+        // Remove checkmark after 2 seconds
+        setTimeout(() => {
+          const indicator = document.getElementById('save-indicator');
+          if (indicator) indicator.remove();
+        }, 2000);
+      }
+    }
+  }
+  
+  function showSaveErrorIndicator(message) {
+    const modalHeader = document.querySelector('#settingsModal .modal-header h5');
+    if (modalHeader) {
+      // Remove spinner
+      modalHeader.innerHTML = modalHeader.innerHTML.replace(/<span class="spinner-border[^>]*><\/span>/, '');
+      // Add error icon
+      if (!modalHeader.innerHTML.includes('fa-exclamation')) {
+        modalHeader.innerHTML = modalHeader.innerHTML + ' <i class="fas fa-exclamation-triangle text-danger ms-2" id="save-error-indicator" title="' + message + '"></i>';
+        // Remove error indicator after 3 seconds
+        setTimeout(() => {
+          const indicator = document.getElementById('save-error-indicator');
+          if (indicator) indicator.remove();
+        }, 3000);
+      }
+    }
+  }
+
+  // Handle settings form submission
+  async function handleSettingsUpdate(e) {
+    e.preventDefault();
+    
+    // Collect basic settings
+    const settingsData = {
+      layout_type: document.getElementById('layoutType').value,
+      show_captions: document.getElementById('showCaptions') ? document.getElementById('showCaptions').checked : false,
+      enable_download: document.getElementById('enableDownload') ? document.getElementById('enableDownload').checked : false,
+      lazy_loading: document.getElementById('lazyLoading') ? document.getElementById('lazyLoading').checked : false,
+      is_visible: document.getElementById('isVisible') ? document.getElementById('isVisible').checked : false,
+      show_in_nav: document.getElementById('showInNav') ? document.getElementById('showInNav').checked : false,
+      seo_description: document.getElementById('seoDescription') ? (document.getElementById('seoDescription').value || '').trim() : ''
+    };
+
+    // Collect layout-specific settings
+    const layoutSettings = {};
+    const layoutType = settingsData.layout_type;
+    
+    // Store layout-specific settings in a JSON field
+    document.querySelectorAll('#layoutSpecificSettings input, #layoutSpecificSettings select').forEach(input => {
+      if (input.type === 'checkbox') {
+        layoutSettings[input.id] = input.checked;
+      } else if (input.type === 'range') {
+        layoutSettings[input.id] = parseInt(input.value);
+      } else {
+        layoutSettings[input.id] = input.value;
+      }
+    });
+    
+    // Add layout settings as a JSON string
+    settingsData.layout_settings = JSON.stringify(layoutSettings);
+
+    try {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/sections/${sectionId}/settings`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settingsData)
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        showSuccess('Section settings updated successfully');
+        bootstrap.Modal.getInstance(document.getElementById('settingsModal')).hide();
+        
+        // Refresh if layout changed
+        if (settingsData.layout_type !== '{{section.layout_type}}') {
+          showSuccess('Layout changed - page will refresh to apply changes');
+          setTimeout(() => location.reload(), 1500);
+        }
+      } else {
+        showError('Failed to update settings: ' + (data.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error updating settings:', error);
+      showError('Failed to update settings');
+    }
+  }
+
+  // Bind the settings form submission
+  document.getElementById('settingsForm').addEventListener('submit', handleSettingsUpdate);
+
+  // Utility functions for notifications
+  function showSuccess(message) {
+    console.log('✅ Success:', message);
+    // Create a simple success notification
+    const notification = document.createElement('div');
+    notification.className = 'alert alert-success alert-dismissible fade show position-fixed';
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+      <i class="fas fa-check-circle me-2"></i>${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.remove();
+      }
+    }, 3000);
+  }
+
+  function showError(message) {
+    console.error('❌ Error:', message);
+    // Create a simple error notification
+    const notification = document.createElement('div');
+    notification.className = 'alert alert-danger alert-dismissible fade show position-fixed';
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+      <i class="fas fa-exclamation-triangle me-2"></i>${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.remove();
+      }
+    }, 5000);
+  }
+
+  function showWarning(message) {
+    console.warn('⚠️ Warning:', message);
+    // Create a simple warning notification
+    const notification = document.createElement('div');
+    notification.className = 'alert alert-warning alert-dismissible fade show position-fixed';
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+      <i class="fas fa-exclamation-triangle me-2"></i>${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.remove();
+      }
+    }, 4000);
+  }
+
+  // Test function for debugging
+  window.testImageLoading = function() {
+    console.log('🧪 Testing image loading...');
+    console.log('🧪 Section ID:', sectionId);
+    console.log('🧪 Model Slug:', modelSlug);
+    console.log('🧪 Container element:', document.getElementById('images_container'));
+    
+    // Test the API directly
+    fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/sections/${sectionId}/images?page=1&limit=24`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('🧪 Direct API test result:', data);
+        if (data.success) {
+          console.log('🧪 Found', data.data.images.length, 'images');
+          console.log('🧪 First image:', data.data.images[0]);
+        }
+      })
+      .catch(error => {
+        console.error('🧪 API test failed:', error);
+      });
+  };
+
+  // Initialize the page
+
+  console.log('🔍 modelSlug:', modelSlug, 'type:', typeof modelSlug);
+  console.log('🔍 About to call loadImages()...');
+  
+  if (!sectionId || !modelSlug) {
+    console.error('❌ Missing required variables:');
+    console.error('❌ sectionId:', sectionId);
+    console.error('❌ modelSlug:', modelSlug);
+    return;
+  }
+  
+  loadImages();
+  console.log('🔍 loadImages() called');
+  loadSectionsForMove();
+  bindEventListeners();
+});
+</script>

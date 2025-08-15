@@ -48,7 +48,7 @@
                     <div class="row g-4">
                         <!-- Page Header -->
                         <div class="col-lg-4">
-                            <div class="bg-light rounded p-4">
+                            <div class="bg-light rounded p-4 mb-3">
                                 <h5 class="text-info mb-3">
                                     <i class="fas fa-heading me-2"></i>Page Header
                                 </h5>
@@ -61,6 +61,25 @@
                                            placeholder="About Me">
                                     <div class="save-status mt-1"></div>
                                     <small class="text-muted">The main title at the top of your about page</small>
+                                </div>
+                            </div>
+                            
+                            <!-- Portrait Section -->
+                            <div class="bg-light rounded p-4">
+                                <h5 class="text-secondary mb-3">
+                                    <i class="fas fa-portrait me-2"></i>Portrait Image
+                                </h5>
+                                
+                                <div class="enhanced-field">
+                                    <label class="form-label fw-bold">Portrait Image</label>
+                                    <select class="form-control auto-save-field" 
+                                            id="portrait_image_id" 
+                                            data-field="portrait_image_id">
+                                        <option value="">Select Portrait Image...</option>
+                                        <!-- Images loaded by JavaScript -->
+                                    </select>
+                                    <div class="save-status mt-1"></div>
+                                    <small class="text-muted">Choose an approved image for your portrait</small>
                                 </div>
                             </div>
                         </div>
@@ -148,12 +167,18 @@
                         <!-- Interests Section -->
                         <div class="col-lg-6">
                             <div class="bg-light rounded p-4">
-                                <h5 class="text-warning mb-3">
-                                    <i class="fas fa-star me-2"></i>Interests
-                                </h5>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="text-warning mb-0">
+                                        <i class="fas fa-star me-2"></i>My Interests
+                                    </h5>
+                                    <span class="badge bg-success px-3 py-2 cursor-pointer" 
+                                          onclick="toggleInterestsVisibility()" id="interests-visibility-badge">
+                                        ✅ Visible
+                                    </span>
+                                </div>
                                 
                                 <div class="enhanced-field mb-3">
-                                    <label class="form-label fw-bold">Interests Title</label>
+                                    <label class="form-label fw-bold">Section Title</label>
                                     <input type="text" class="form-control auto-save-field" 
                                            id="interests_title" 
                                            data-field="interests_title"
@@ -162,14 +187,14 @@
                                 </div>
                                 
                                 <div class="enhanced-field">
-                                    <label class="form-label fw-bold">Interests</label>
+                                    <label class="form-label fw-bold">Interests (comma-separated)</label>
                                     <textarea class="form-control auto-save-field" 
                                               id="interests" 
                                               data-field="interests"
-                                              rows="6"
-                                              placeholder="Fine dining, travel, art galleries, wine tasting, yoga, literature, music, theater"></textarea>
+                                              rows="3"
+                                              placeholder="Fine Arts, Classical Music, Literature, Travel, Fine Dining, Theater, Philosophy"></textarea>
                                     <div class="save-status mt-1"></div>
-                                    <small class="text-muted">Comma separated list of your interests</small>
+                                    <small class="text-muted">Comma-separated list. These will appear as individual tags on your about page.</small>
                                 </div>
                             </div>
                         </div>
@@ -179,28 +204,33 @@
                     <div class="row g-4 mt-4">
                         <div class="col-lg-6">
                             <div class="bg-light rounded p-4">
-                                <h5 class="text-info mb-3">
-                                    <i class="fas fa-info-circle me-2"></i>Quick Facts
-                                </h5>
-                                
-                                <div class="enhanced-field mb-3">
-                                    <label class="form-label fw-bold">Quick Facts Title</label>
-                                    <input type="text" class="form-control auto-save-field" 
-                                           id="facts_title" 
-                                           data-field="facts_title"
-                                           placeholder="Quick Facts About Me">
-                                    <div class="save-status mt-1"></div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="text-info mb-0">
+                                        <i class="fas fa-info-circle me-2"></i>Quick Facts
+                                    </h5>
+                                    <span class="badge bg-success px-3 py-2 cursor-pointer" 
+                                          onclick="toggleQuickFactsVisibility()" id="quickfacts-visibility-badge">
+                                        ✅ Visible
+                                    </span>
                                 </div>
                                 
-                                <div class="enhanced-field">
-                                    <label class="form-label fw-bold">Quick Facts</label>
-                                    <textarea class="form-control auto-save-field" 
-                                              id="quick_facts" 
-                                              data-field="quick_facts"
-                                              rows="6"
-                                              placeholder="Age: 25&#10;Height: 5'6&quot;&#10;Eyes: Brown&#10;Hair: Brunette&#10;Languages: English, French&#10;Education: University Graduate"></textarea>
-                                    <div class="save-status mt-1"></div>
-                                    <small class="text-muted">Supports JSON format or key:value per line</small>
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <p class="text-muted mb-0 small">Manage your custom quick facts that appear on the about page.</p>
+                                    <button type="button" onclick="addNewFact()" 
+                                            class="btn btn-primary btn-sm">
+                                        <i class="fas fa-plus me-1"></i> Add New Fact
+                                    </button>
+                                </div>
+                                
+                                <div id="custom-facts-container" class="space-y-3" style="max-height: 400px; overflow-y: auto;">
+                                    <!-- Custom facts will be loaded here via JavaScript -->
+                                </div>
+                                
+                                <div class="alert alert-info mt-3 mb-0">
+                                    <small>
+                                        <strong><i class="fas fa-lightbulb me-1"></i> Tip:</strong> 
+                                        Drag and drop facts to reorder them. Click the trash icon to delete. Facts are saved automatically as you type.
+                                    </small>
                                 </div>
                             </div>
                         </div>
@@ -221,14 +251,72 @@
                                     <div class="save-status mt-1"></div>
                                 </div>
                                 
-                                <div class="enhanced-field">
+                                <div class="enhanced-field mb-3">
                                     <label class="form-label fw-bold">CTA Subtitle</label>
                                     <textarea class="form-control auto-save-field" 
                                               id="cta_section_subtitle" 
                                               data-field="cta_section_subtitle"
-                                              rows="4"
-                                              placeholder="I'd love to hear from you. Let's create an unforgettable experience together. Get in touch to learn more about how we can connect."></textarea>
+                                              rows="3"
+                                              placeholder="I'd love to hear from you. Let's create an unforgettable experience together."></textarea>
                                     <div class="save-status mt-1"></div>
+                                </div>
+                                
+                                <!-- Button 1 -->
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <div class="enhanced-field">
+                                            <label class="form-label fw-bold">Button 1</label>
+                                            <input type="text" class="form-control auto-save-field" 
+                                                   id="cta_button_1_text" 
+                                                   data-field="cta_button_1_text"
+                                                   placeholder="View My Calendar">
+                                            <div class="save-status mt-1"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="enhanced-field">
+                                            <label class="form-label fw-bold">Button Destination</label>
+                                            <select class="form-control auto-save-field" 
+                                                    id="cta_button_1_link" 
+                                                    data-field="cta_button_1_link">
+                                                <option value="calendar">Calendar Page</option>
+                                                <option value="contact">Contact Page</option>
+                                                <option value="gallery">Gallery Page</option>
+                                                <option value="rates">Rates Page</option>
+                                                <option value="about">About Page</option>
+                                            </select>
+                                            <div class="save-status mt-1"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Button 2 -->
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="enhanced-field">
+                                            <label class="form-label fw-bold">Button 2</label>
+                                            <input type="text" class="form-control auto-save-field" 
+                                                   id="cta_button_2_text" 
+                                                   data-field="cta_button_2_text"
+                                                   placeholder="Contact Me">
+                                            <div class="save-status mt-1"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="enhanced-field">
+                                            <label class="form-label fw-bold">Button Destination</label>
+                                            <select class="form-control auto-save-field" 
+                                                    id="cta_button_2_link" 
+                                                    data-field="cta_button_2_link">
+                                                <option value="contact">Contact Page</option>
+                                                <option value="calendar">Calendar Page</option>
+                                                <option value="gallery">Gallery Page</option>
+                                                <option value="rates">Rates Page</option>
+                                                <option value="about">About Page</option>
+                                            </select>
+                                            <div class="save-status mt-1"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -281,6 +369,7 @@ document.addEventListener('DOMContentLoaded', function() {
         init() {
             this.extractModelSlug();
             this.loadContent();
+            this.loadApprovedImages();
             this.bindAutoSave();
         },
         
@@ -315,6 +404,31 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         },
         
+        async loadApprovedImages() {
+            try {
+                const response = await fetch(`/api/model-gallery/${this.currentModelSlug}/images`);
+                const data = await response.json();
+                
+                if (data.success && data.images) {
+                    const portraitSelect = document.getElementById('portrait_image_id');
+                    if (portraitSelect) {
+                        // Clear existing options except the first one
+                        portraitSelect.innerHTML = '<option value="">Select Portrait Image...</option>';
+                        
+                        // Add approved images
+                        data.images.forEach(image => {
+                            const option = document.createElement('option');
+                            option.value = image.id;
+                            option.textContent = `${image.filename} ${image.caption ? '(' + image.caption + ')' : ''}`;
+                            portraitSelect.appendChild(option);
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading approved images:', error);
+            }
+        },
+        
         populateFields(content) {
             for (const [field, value] of Object.entries(content)) {
                 const element = document.getElementById(field);
@@ -329,6 +443,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else {
                         element.value = value || '';
                     }
+                }
+                
+                // Update visibility badges based on loaded content
+                if (field === 'interests_visible') {
+                    updateVisibilityBadge('interests-visibility-badge', value === true || value === 1 || value === '1');
+                } else if (field === 'quick_facts_visible') {
+                    updateVisibilityBadge('quickfacts-visibility-badge', value === true || value === 1 || value === '1');
                 }
             }
         },
@@ -468,4 +589,864 @@ document.addEventListener('DOMContentLoaded', function() {
     
     aboutPageEditor.init();
 });
+
+// Professional Quick Facts Management (RoseMastos style) - Global scope
+let customFactsData = [];
+
+// Make deleteFact globally accessible
+window.deleteFact = function(factId) {
+    console.log('🗑️ Global deleteFact called for fact ID:', factId);
+    
+    // Show Bootstrap modal confirmation instead of browser confirm
+    showDeleteConfirmation(factId);
+};
+    
+    function addNewFact() {
+        const modal = document.getElementById('add-fact-modal');
+        console.log('Opening modal:', modal);
+        if (modal) {
+            // Show modal with proper classes
+            modal.classList.add('show');
+            modal.style.display = 'block';
+            document.body.classList.add('modal-open');
+            
+            // Focus on the first input
+            setTimeout(() => {
+                const questionInput = document.getElementById('new-fact-question');
+                if (questionInput) {
+                    questionInput.focus();
+                    console.log('✅ Modal opened and focused');
+                }
+            }, 100);
+        } else {
+            console.error('Modal not found!');
+            showNotification('error', 'Modal not found. Please refresh the page.');
+        }
+    }
+    
+    function closeAddFactModal() {
+        const modal = document.getElementById('add-fact-modal');
+        if (modal) {
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+            document.body.classList.remove('modal-open');
+            document.getElementById('add-fact-form')?.reset();
+        }
+    }
+    
+    function submitNewFact(event) {
+        event.preventDefault();
+        
+        const question = document.getElementById('new-fact-question').value.trim();
+        const answer = document.getElementById('new-fact-answer').value.trim();
+        
+        if (!question || !answer) {
+            alert('Please fill in both question and answer fields.');
+            return false;
+        }
+        
+        // Get current model slug from URL
+        const pathParts = window.location.pathname.split('/');
+        let modelSlug = pathParts[1]; // Try first position
+        
+        // If first position doesn't look like a model slug, try to find it
+        if (!modelSlug || modelSlug === 'admin' || modelSlug === 'content') {
+            // Look for model slug in the path
+            for (let i = 0; i < pathParts.length; i++) {
+                if (pathParts[i] && pathParts[i] !== 'admin' && pathParts[i] !== 'content' && pathParts[i] !== 'about') {
+                    modelSlug = pathParts[i];
+                    break;
+                }
+            }
+        }
+        
+        // Fallback to modelexample if we can't find a valid slug
+        if (!modelSlug || modelSlug === 'admin' || modelSlug === 'content' || modelSlug === 'about') {
+            modelSlug = 'modelexample';
+        }
+        
+        // Add to database via API
+        fetch('/api/quick-facts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                question: question,
+                answer: answer,
+                model_slug: modelSlug
+            })
+        }).then(response => response.json()).then(result => {
+            if (result.success) {
+                closeAddFactModal();
+                loadCustomFacts();
+                // Show success notification
+                showNotification('success', 'Quick fact added successfully!');
+            } else {
+                showNotification('error', 'Failed to add fact: ' + result.message);
+            }
+        }).catch(error => {
+            console.error('Error adding fact:', error);
+            showNotification('error', 'Error adding fact. Please try again.');
+        });
+        
+        return false;
+    }
+    
+    function showDeleteConfirmation(factId) {
+        const modal = document.getElementById('delete-fact-modal');
+        if (modal) {
+            // Store the fact ID for later use
+            modal.dataset.factId = factId;
+            
+            // Show modal
+            modal.classList.add('show');
+            modal.style.display = 'block';
+            document.body.classList.add('modal-open');
+            
+            console.log('🗑️ Showing delete confirmation modal for fact ID:', factId);
+        } else {
+            console.error('🗑️ Delete confirmation modal not found');
+            // Fallback to old method if modal is missing
+            deleteFact(factId);
+        }
+    }
+    
+    function closeDeleteConfirmation() {
+        const modal = document.getElementById('delete-fact-modal');
+        if (modal) {
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+            document.body.classList.remove('modal-open');
+            modal.dataset.factId = '';
+        }
+    }
+    
+    function confirmDeleteFact() {
+        const modal = document.getElementById('delete-fact-modal');
+        const factId = modal?.dataset.factId;
+        
+        if (!factId) {
+            console.error('🗑️ No fact ID found in modal');
+            return;
+        }
+        
+        console.log('🗑️ User confirmed deletion, calling API for fact ID:', factId);
+        
+        // Close modal first
+        closeDeleteConfirmation();
+        
+        // Perform deletion
+        fetch(`/api/quick-facts/${factId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).then(response => {
+            console.log('🗑️ API response status:', response.status);
+            return response.json();
+        }).then(result => {
+            console.log('🗑️ API response:', result);
+            if (result.success) {
+                console.log('🗑️ Deletion successful, reloading facts...');
+                loadCustomFacts();
+                showNotification('success', 'Quick fact deleted successfully!');
+            } else {
+                console.error('🗑️ Deletion failed:', result.message);
+                showNotification('error', 'Failed to delete fact: ' + result.message);
+            }
+        }).catch(error => {
+            console.error('🗑️ Error deleting fact:', error);
+            showNotification('error', 'Error deleting fact. Please try again.');
+        });
+    }
+    
+    function deleteFact(factId) {
+        // This function is kept for backward compatibility but now just calls the modal
+        console.log('🗑️ Delete function called for fact ID:', factId);
+        showDeleteConfirmation(factId);
+    }
+    
+    function updateFact(factId, field, value) {
+        const fact = customFactsData.find(f => f.id === factId);
+        if (fact) {
+            fact[field] = value;
+            
+            fetch(`/api/quick-facts/${factId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    question: fact.question,
+                    answer: fact.answer
+                })
+            }).then(response => response.json()).then(result => {
+                if (result.success) {
+                    showNotification('success', 'Quick fact updated successfully!');
+                } else {
+                    showNotification('error', 'Failed to update fact: ' + result.message);
+                    loadCustomFacts();
+                }
+            }).catch(error => {
+                console.error('Error updating fact:', error);
+                showNotification('error', 'Error updating fact. Please try again.');
+                loadCustomFacts();
+            });
+        }
+    }
+    
+    function renderCustomFacts() {
+        const container = document.getElementById('custom-facts-container');
+        console.log('🔍 Debug: renderCustomFacts called');
+        console.log('🔍 Debug: Container found:', !!container);
+        console.log('🔍 Debug: customFactsData length:', customFactsData.length);
+        console.log('🔍 Debug: Facts data:', customFactsData);
+        
+        if (!container) return;
+        
+        if (customFactsData.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-4 text-muted">
+                    <p><i class="fas fa-info-circle me-2"></i>No quick facts yet. Click "Add New Fact" to get started!</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const htmlContent = customFactsData.map(fact => `
+            <div class="fact-item card border-0 shadow-sm mb-3" data-fact-id="${fact.id}">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="drag-handle text-muted me-3" style="cursor: move;">
+                            <i class="fas fa-grip-vertical"></i>
+                        </div>
+                        <div class="flex-fill row g-2">
+                            <div class="col-md-5">
+                                <label class="form-label text-muted small mb-1">Question</label>
+                                <input type="text" value="${fact.question || ''}" placeholder="e.g., Age, Languages"
+                                       class="form-control form-control-sm"
+                                       onchange="updateFact(${fact.id}, 'question', this.value)">
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label text-muted small mb-1">Answer</label>
+                                <input type="text" value="${fact.answer || ''}" placeholder="e.g., 25, English & French"
+                                       class="form-control form-control-sm"
+                                       onchange="updateFact(${fact.id}, 'answer', this.value)">
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="button" class="btn btn-outline-danger btn-sm delete-fact-btn" 
+                                        data-fact-id="${fact.id}">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        console.log('🔍 Debug: Generated HTML:', htmlContent);
+        container.innerHTML = htmlContent;
+        
+        // Reinitialize drag and drop after rendering
+        setTimeout(() => {
+            console.log('🔍 Debug: Container after rendering:', container.innerHTML);
+            console.log('🔍 Debug: Number of fact items found:', container.querySelectorAll('.fact-item').length);
+            initializeDragAndDrop();
+        }, 100);
+    }
+    
+    function loadCustomFacts() {
+        // Get current model slug from URL
+        const pathParts = window.location.pathname.split('/');
+        let modelSlug = pathParts[1]; // Try first position
+        
+        console.log('🔍 Debug: URL path parts:', pathParts);
+        console.log('🔍 Debug: Initial model slug:', modelSlug);
+        
+        // If first position doesn't look like a model slug, try to find it
+        if (!modelSlug || modelSlug === 'admin' || modelSlug === 'content') {
+            // Look for model slug in the path
+            for (let i = 0; i < pathParts.length; i++) {
+                if (pathParts[i] && pathParts[i] !== 'admin' && pathParts[i] !== 'content' && pathParts[i] !== 'about') {
+                    modelSlug = pathParts[i];
+                    break;
+                }
+            }
+        }
+        
+        // Fallback to modelexample if we can't find a valid slug
+        if (!modelSlug || modelSlug === 'admin' || modelSlug === 'content' || modelSlug === 'about') {
+            modelSlug = 'modelexample';
+        }
+        
+        console.log('🔍 Debug: Final model slug:', modelSlug);
+        console.log('🔍 Debug: API URL:', `/api/quick-facts/${modelSlug}`);
+        
+        fetch(`/api/quick-facts/${modelSlug}`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).then(response => {
+            console.log('🔍 Debug: Response status:', response.status);
+            console.log('🔍 Debug: Response headers:', response.headers);
+            return response.json();
+        }).then(result => {
+            console.log('🔍 Debug: API response:', result);
+            if (result.success) {
+                customFactsData = result.data || [];
+                console.log('🔍 Debug: Loaded facts:', customFactsData);
+                renderCustomFacts();
+            } else {
+                console.error('Failed to load custom facts:', result.message);
+                customFactsData = [];
+                renderCustomFacts();
+            }
+        }).catch(error => {
+            console.error('Error loading custom facts:', error);
+            customFactsData = [];
+            renderCustomFacts();
+        });
+    }
+    
+    // Update visibility badge display based on current state
+    function updateVisibilityBadge(badgeId, isVisible) {
+        const badge = document.getElementById(badgeId);
+        if (!badge) return;
+        
+        if (isVisible) {
+            badge.className = 'badge bg-success px-3 py-2 cursor-pointer';
+            badge.textContent = '✅ Visible';
+        } else {
+            badge.className = 'badge bg-danger px-3 py-2 cursor-pointer';
+            badge.textContent = '❌ Hidden';
+        }
+    }
+    
+    // Save visibility field directly via API (for toggle functions)
+    async function saveVisibilityField(fieldName, value) {
+        // Get current model slug from URL
+        const pathParts = window.location.pathname.split('/');
+        let modelSlug = pathParts[1];
+        
+        // Fallback logic for model slug
+        if (!modelSlug || modelSlug === 'admin' || modelSlug === 'content') {
+            for (let i = 0; i < pathParts.length; i++) {
+                if (pathParts[i] && pathParts[i] !== 'admin' && pathParts[i] !== 'content' && pathParts[i] !== 'about') {
+                    modelSlug = pathParts[i];
+                    break;
+                }
+            }
+        }
+        
+        if (!modelSlug || modelSlug === 'admin' || modelSlug === 'content' || modelSlug === 'about') {
+            modelSlug = 'modelexample';
+        }
+        
+        try {
+            const response = await fetch(`/api/model-content/${modelSlug}/pages/2/${fieldName}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    content_value: value ? 1 : 0
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showNotification('success', `${fieldName.replace('_', ' ')} visibility updated successfully!`);
+            } else {
+                throw new Error(result.message || 'Save failed');
+            }
+        } catch (error) {
+            console.error('Error saving visibility field:', error);
+            showNotification('error', `Failed to save ${fieldName.replace('_', ' ')} visibility`);
+        }
+    }
+    
+    function toggleInterestsVisibility() {
+        const badge = document.getElementById('interests-visibility-badge');
+        const isVisible = badge.textContent.includes('Visible');
+        
+        if (isVisible) {
+            badge.className = 'badge bg-danger px-3 py-2 cursor-pointer';
+            badge.textContent = '❌ Hidden';
+        } else {
+            badge.className = 'badge bg-success px-3 py-2 cursor-pointer';
+            badge.textContent = '✅ Visible';
+        }
+        
+        // Save to database via direct API call
+        saveVisibilityField('interests_visible', !isVisible);
+    }
+    
+    function toggleQuickFactsVisibility() {
+        const badge = document.getElementById('quickfacts-visibility-badge');
+        const isVisible = badge.textContent.includes('Visible');
+        
+        if (isVisible) {
+            badge.className = 'badge bg-danger px-3 py-2 cursor-pointer';
+            badge.textContent = '❌ Hidden';
+        } else {
+            badge.className = 'badge bg-success px-3 py-2 cursor-pointer';  
+            badge.textContent = '✅ Visible';
+        }
+        
+        // Save to database via direct API call
+        saveVisibilityField('quick_facts_visible', !isVisible);
+    }
+    
+// Initialize Quick Facts on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Quick Facts after page load
+    setTimeout(() => {
+        loadCustomFacts();
+        
+        // Add modal event listeners
+        const form = document.getElementById('add-fact-form');
+        if (form) {
+            form.addEventListener('submit', submitNewFact);
+        }
+        
+        // Initialize drag and drop for quick facts
+        initializeDragAndDrop();
+        
+        // Add click outside modal to close
+        const modal = document.getElementById('add-fact-modal');
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeAddFactModal();
+                }
+            });
+        }
+        
+        // Add click outside delete modal to close
+        const deleteModal = document.getElementById('delete-fact-modal');
+        if (deleteModal) {
+            deleteModal.addEventListener('click', function(e) {
+                if (e.target === deleteModal) {
+                    closeDeleteConfirmation();
+                }
+            });
+        }
+    }, 1000);
+});
+
+// Notification function
+function showNotification(type, message) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const icon = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+    
+    const notification = document.createElement('div');
+    notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        <i class="${icon} me-2"></i>${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 5000);
+}
+
+// Drag and Drop functionality for quick facts
+function initializeDragAndDrop() {
+    const container = document.getElementById('custom-facts-container');
+    if (!container) return;
+    
+    console.log('🔧 Initializing drag and drop for', container.querySelectorAll('.fact-item').length, 'items');
+    
+    // Add drag and drop event listeners (only once)
+    if (!container.hasAttribute('data-drag-initialized')) {
+        container.addEventListener('dragover', handleDragOver);
+        container.addEventListener('drop', handleDrop);
+        container.setAttribute('data-drag-initialized', 'true');
+        console.log('🔧 Container drag events initialized');
+    }
+    
+    // Make fact items draggable
+    const factItems = container.querySelectorAll('.fact-item');
+    factItems.forEach((item, index) => {
+        // Only set draggable if not already set
+        if (!item.hasAttribute('data-draggable')) {
+            item.draggable = true;
+            item.addEventListener('dragstart', handleDragStart);
+            item.addEventListener('dragend', handleDragEnd);
+            item.setAttribute('data-draggable', 'true');
+            console.log(`🔧 Made item ${index + 1} draggable:`, item.dataset.factId);
+        }
+        
+        // Add delete button event listeners
+        const deleteBtn = item.querySelector('.delete-fact-btn');
+        if (deleteBtn && !deleteBtn.hasAttribute('data-delete-initialized')) {
+            deleteBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const factId = this.dataset.factId;
+                console.log('🗑️ Delete button clicked for fact ID:', factId);
+                console.log('🗑️ Delete button element:', this);
+                console.log('🗑️ Calling deleteFact function...');
+                deleteFact(factId);
+            });
+            deleteBtn.setAttribute('data-delete-initialized', 'true');
+            console.log(`🗑️ Added delete listener for fact:`, item.dataset.factId);
+        }
+    });
+}
+
+function handleDragStart(e) {
+    const factId = e.target.dataset.factId;
+    console.log('🔧 Drag started for fact:', factId);
+    e.dataTransfer.setData('text/plain', factId);
+    e.target.classList.add('dragging');
+    
+    // Don't prevent default here - it can interfere with drag operations
+    // e.preventDefault();
+}
+
+function handleDragEnd(e) {
+    // Clean up dragging class
+    e.target.classList.remove('dragging');
+    console.log('🔧 Drag ended for fact:', e.target.dataset.factId);
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    
+    // Add visual feedback for drop zones
+    const dropTarget = e.target.closest('.fact-item');
+    if (dropTarget) {
+        dropTarget.style.borderLeft = '3px solid #007bff';
+    }
+}
+
+function handleDrop(e) {
+    try {
+        e.preventDefault();
+        const draggedId = e.dataTransfer.getData('text/plain');
+        const draggedElement = document.querySelector(`[data-fact-id="${draggedId}"]`);
+        const dropTarget = e.target.closest('.fact-item');
+        
+        console.log('🔧 Drop event:', { draggedId, draggedElement: !!draggedElement, dropTarget: !!dropTarget });
+        
+        // Clean up visual feedback
+        document.querySelectorAll('.fact-item').forEach(item => {
+            item.style.borderLeft = '';
+        });
+        
+        if (draggedElement && dropTarget && draggedElement !== dropTarget) {
+            // Reorder the facts
+            const container = document.getElementById('custom-facts-container');
+            const facts = Array.from(container.querySelectorAll('.fact-item'));
+            const draggedIndex = facts.indexOf(draggedElement);
+            const dropIndex = facts.indexOf(dropTarget);
+            
+            console.log('🔧 Reordering:', { draggedIndex, dropIndex });
+            
+            // Update display order in database
+            updateFactOrder(draggedId, dropIndex + 1);
+            
+            // Reorder in the UI - use proper DOM manipulation
+            if (draggedIndex < dropIndex) {
+                // Moving down: insert after drop target
+                if (dropTarget.nextSibling) {
+                    dropTarget.parentNode.insertBefore(draggedElement, dropTarget.nextSibling);
+                } else {
+                    dropTarget.parentNode.appendChild(draggedElement);
+                }
+            } else {
+                // Moving up: insert before drop target
+                dropTarget.parentNode.insertBefore(draggedElement, dropTarget);
+            }
+            
+            // Remove dragging class
+            draggedElement.classList.remove('dragging');
+            
+            // Update the data array to match new order
+            const draggedFact = customFactsData.find(f => f.id == draggedId);
+            if (draggedFact) {
+                customFactsData.splice(draggedIndex, 1);
+                customFactsData.splice(dropIndex, 0, draggedFact);
+            }
+            
+            console.log('🔧 Reorder complete');
+        }
+    } catch (error) {
+        console.error('🔧 Error in handleDrop:', error);
+        // Clean up any dragging classes
+        document.querySelectorAll('.fact-item').forEach(item => {
+            item.classList.remove('dragging');
+            item.style.borderLeft = '';
+        });
+    }
+}
+
+function updateFactOrder(factId, newOrder) {
+    fetch(`/api/quick-facts/${factId}/reorder`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ newOrder: newOrder })
+    }).then(response => response.json()).then(result => {
+        if (!result.success) {
+            console.error('Failed to reorder fact:', result.message);
+            // Reload to get correct order
+            loadCustomFacts();
+        }
+    }).catch(error => {
+        console.error('Error reordering fact:', error);
+        // Reload to get correct order
+        loadCustomFacts();
+    });
+}
+
 </script>
+
+<style>
+.fact-item.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg) scale(1.02);
+    transition: all 0.2s ease;
+    z-index: 1000;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.fact-item {
+    transition: all 0.2s ease;
+    cursor: default;
+}
+
+.fact-item.dragging * {
+    pointer-events: none;
+}
+
+.drag-handle {
+    cursor: grab;
+    transition: color 0.2s ease;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.drag-handle:hover {
+    color: #007bff !important;
+}
+
+/* Fix modal positioning */
+#add-fact-modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 1050 !important;
+    background-color: rgba(0,0,0,0.5) !important;
+    display: none;
+}
+
+#add-fact-modal.show {
+    display: block !important;
+}
+
+/* Delete confirmation modal styles */
+#delete-fact-modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 1055 !important;
+    background-color: rgba(0,0,0,0.5) !important;
+    display: none;
+}
+
+#delete-fact-modal.show {
+    display: block !important;
+}
+
+#delete-fact-modal .modal-dialog {
+    margin: 1.75rem auto;
+    max-width: 400px;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#add-fact-modal .modal-dialog {
+    margin: 1.75rem auto;
+    max-width: 500px;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+    overflow: hidden;
+}
+
+/* Improve drag and drop visual feedback */
+.fact-item {
+    user-select: none;
+}
+
+.fact-item.dragging {
+    position: relative;
+}
+
+.fact-item.dragging::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 123, 255, 0.1);
+    border: 2px dashed #007bff;
+    border-radius: 0.375rem;
+    pointer-events: none;
+}
+
+/* Smooth transitions for all interactive elements */
+.fact-item * {
+    transition: all 0.2s ease;
+}
+
+/* Better visual hierarchy for drag handles */
+.drag-handle {
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+.drag-handle:hover {
+    opacity: 1;
+}
+
+/* Ensure proper spacing and separation of fact cards */
+.fact-item {
+    margin-bottom: 1rem !important;
+    display: block !important;
+    position: relative !important;
+    clear: both !important;
+}
+
+.fact-item:last-child {
+    margin-bottom: 0 !important;
+}
+
+.fact-item .card {
+    border: 1px solid #e9ecef !important;
+    border-radius: 0.5rem !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    background: white !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.fact-item .card-body {
+    padding: 1rem !important;
+}
+
+/* Ensure proper row/column layout */
+.fact-item .row {
+    margin: 0 !important;
+}
+
+.fact-item .col-md-5,
+.fact-item .col-md-2 {
+    padding: 0.5rem !important;
+}
+
+/* Prevent overlapping */
+#custom-facts-container {
+    position: relative !important;
+}
+
+#custom-facts-container > * {
+    position: relative !important;
+    z-index: 1 !important;
+}
+</style>
+
+<!-- Quick Facts Modal -->
+<div id="add-fact-modal" class="modal fade d-none" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-plus-circle text-primary me-2"></i>Add New Quick Fact
+                </h5>
+                <button type="button" class="btn-close" onclick="closeAddFactModal()"></button>
+            </div>
+            
+            <form id="add-fact-form">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="new-fact-question" class="form-label fw-bold">Question</label>
+                        <input type="text" id="new-fact-question" name="question" 
+                               class="form-control"
+                               placeholder="e.g., Age, Height, Languages"
+                               required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="new-fact-answer" class="form-label fw-bold">Answer</label>
+                        <input type="text" id="new-fact-answer" name="answer"
+                               class="form-control"
+                               placeholder="e.g., 25, 5'8\", English & French"
+                               required>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddFactModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Add Fact
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Fact Confirmation Modal -->
+<div id="delete-fact-modal" class="modal fade d-none" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close" onclick="closeDeleteConfirmation()"></button>
+            </div>
+            
+            <div class="modal-body">
+                <p class="mb-3">Are you sure you want to delete this quick fact?</p>
+                <p class="text-muted small mb-0">This action cannot be undone.</p>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeDeleteConfirmation()">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-danger" onclick="confirmDeleteFact()">
+                    <i class="fas fa-trash-alt me-1"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

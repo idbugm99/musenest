@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CRM CSS -->
+    <link href="/crm/css/crm.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --crm-primary: #6366f1;
+            --crm-secondary: #8b5cf6;
+            --crm-accent: #06b6d4;
+            --crm-success: #10b981;
+            --crm-warning: #f59e0b;
+            --crm-danger: #ef4444;
+            --crm-dark: #1f2937;
+            --crm-light: #f8fafc;
+            --crm-border: #e2e8f0;
+        }
+        
+        .crm-sidebar {
+            background: linear-gradient(135deg, var(--crm-primary), var(--crm-secondary));
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .crm-sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            margin: 2px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .crm-sidebar .nav-link:hover,
+        .crm-sidebar .nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .crm-sidebar .nav-link i {
+            width: 20px;
+            margin-right: 10px;
+        }
+        
+        .crm-main {
+            background: var(--crm-light);
+            min-height: 100vh;
+        }
+        
+        .crm-header {
+            background: white;
+            border-bottom: 1px solid var(--crm-border);
+            padding: 1rem 0;
+        }
+        
+        .crm-content {
+            padding: 2rem;
+        }
+        
+        .crm-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--crm-border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .crm-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .crm-stats-card {
+            background: linear-gradient(135deg, var(--crm-primary), var(--crm-secondary));
+            color: white;
+            border: none;
+        }
+        
+        .crm-stats-card .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .crm-stats-card .stats-label {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        .btn-crm-primary {
+            background: var(--crm-primary);
+            border-color: var(--crm-primary);
+            color: white;
+        }
+        
+        .btn-crm-primary:hover {
+            background: #5855eb;
+            border-color: #5855eb;
+            color: white;
+        }
+        
+        .btn-crm-secondary {
+            background: var(--crm-secondary);
+            border-color: var(--crm-secondary);
+            color: white;
+        }
+        
+        .btn-crm-secondary:hover {
+            background: #7c3aed;
+            border-color: #7c3aed;
+            color: white;
+        }
+        
+        .crm-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .crm-table th {
+            background: var(--crm-light);
+            border: none;
+            font-weight: 600;
+            color: var(--crm-dark);
+        }
+        
+        .crm-table td {
+            border-color: var(--crm-border);
+            vertical-align: middle;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-approved { background: #dcfce7; color: #166534; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+        
+        .crm-search {
+            position: relative;
+        }
+        
+        .crm-search input {
+            padding-left: 40px;
+            border-radius: 25px;
+            border: 1px solid var(--crm-border);
+        }
+        
+        .crm-search i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+        
+        .crm-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .crm-pagination .page-link {
+            border-radius: 8px;
+            border: 1px solid var(--crm-border);
+            color: var(--crm-primary);
+        }
+        
+        .crm-pagination .page-link:hover {
+            background: var(--crm-primary);
+            color: white;
+            border-color: var(--crm-primary);
+        }
+        
+        .crm-pagination .page-item.active .page-link {
+            background: var(--crm-primary);
+            border-color: var(--crm-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- CRM Sidebar -->
+            {{#if model}}
+            <div class="col-md-3 col-lg-2 px-0">
+                <div class="crm-sidebar p-3">
+                    <div class="text-center mb-4">
+                        <h5 class="mb-0">
+                            <i class="fas fa-user-circle me-2"></i>
+                            {{model.modelName}}
+                        </h5>
+                        <small class="text-muted">CRM System</small>
+                    </div>
+                    
+                    {{> navigation}}
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- CRM Main Content -->
+            <div class="col {{#unless model}}col-md-8 mx-auto{{/unless}}">
+                {{#if model}}
+                <!-- CRM Header -->
+                <div class="crm-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="mb-0">{{title}}</h4>
+                            <small class="text-muted">Client Relationship Management</small>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="crm-search">
+                                <i class="fas fa-search"></i>
+                                <input type="text" class="form-control" placeholder="Search clients..." id="globalSearch">
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-user me-2"></i>{{model.modelName}}
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/{{model.modelSlug}}/crm/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                                    <li><a class="dropdown-item" href="/{{model.modelSlug}}/admin"><i class="fas fa-external-link-alt me-2"></i>Admin Panel</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="/{{model.modelSlug}}/crm/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- CRM Content -->
+                <div class="crm-content">
+                    {{{body}}}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Custom CRM JS -->
+    <script src="/crm/js/crm.js"></script>
+    
+    <script>
+        // Global CRM functionality
+        $(document).ready(function() {
+            // Global search functionality
+            $('#globalSearch').on('input', function() {
+                const query = $(this).val().trim();
+                if (query.length >= 2) {
+                    // Implement global search
+                    console.log('Searching for:', query);
+                }
+            });
+            
+            // Auto-hide alerts after 5 seconds
+            setTimeout(function() {
+                $('.alert').fadeOut();
+            }, 5000);
+            
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+</body>
+</html>

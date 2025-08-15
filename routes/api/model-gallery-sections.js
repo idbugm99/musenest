@@ -77,46 +77,56 @@ router.get('/:modelSlug', async (req, res) => {
         const currentPage = Math.max(1, parseInt(page));
         const offset = (currentPage - 1) * perPage;
 
-        // Build query conditions
-        const conditions = ['mgs.model_slug = ?'];
+        // Build query conditions - use gallery_sections table instead
+        const conditions = ['gs.model_id = (SELECT id FROM models WHERE slug = ?)'];
         const params = [modelSlug];
 
         if (search) {
-            conditions.push('(mgs.section_name LIKE ? OR mgs.section_description LIKE ?)');
+            conditions.push('(gs.title LIKE ? OR gs.description LIKE ?)');
             params.push(`%${search}%`, `%${search}%`);
         }
 
         const whereClause = conditions.join(' AND ');
 
         // Get total count
-        const countQuery = `SELECT COUNT(*) as total FROM model_gallery_sections mgs WHERE ${whereClause}`;
+        const countQuery = `SELECT COUNT(*) as total FROM gallery_sections gs WHERE ${whereClause}`;
         const countResult = await db.query(countQuery, params);
         const total = countResult[0]?.total || 0;
 
-        // Get sections with media count
+        // Get sections with image count
         const query = `
             SELECT 
-                mgs.*,
-                COUNT(mgsm.id) as media_count
-            FROM model_gallery_sections mgs
-            LEFT JOIN model_gallery_section_media mgsm ON mgs.id = mgsm.section_id
+                gs.id,
+                gs.title as section_name,
+                gs.description as section_description,
+                gs.layout_type,
+                gs.sort_order as section_order,
+                gs.is_visible as is_published,
+                gs.created_at as created_date,
+                COUNT(gi.id) as media_count
+            FROM gallery_sections gs
+            LEFT JOIN gallery_images gi ON gs.id = gi.section_id AND gi.is_active = 1
             WHERE ${whereClause}
-            GROUP BY mgs.id
-            ORDER BY mgs.section_order ASC, mgs.created_date DESC
+            GROUP BY gs.id
+            ORDER BY gs.sort_order ASC, gs.created_at DESC
             LIMIT ? OFFSET ?
         `;
 
         params.push(perPage, offset);
         const sections = await db.query(query, params);
 
-        // Parse JSON layout_settings for each section
+        // Format sections to match frontend expectations
         const formattedSections = sections.map(section => ({
-            ...section,
-            layout_settings: section.layout_settings && typeof section.layout_settings === 'object' 
-                ? section.layout_settings 
-                : section.layout_settings 
-                    ? JSON.parse(section.layout_settings) 
-                    : defaultLayoutSettings[section.layout_type] || {}
+            id: section.id,
+            title: section.section_name,
+            description: section.section_description,
+            layout_type: section.layout_type,
+            sort_order: section.section_order,
+            is_visible: section.is_published,
+            created_at: section.created_date,
+            image_count: section.media_count,
+            // Add layout settings if needed
+            layout_settings: defaultLayoutSettings[section.layout_type] || {}
         }));
 
         // Calculate pagination

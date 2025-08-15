@@ -4,7 +4,7 @@
     [/^\/api\/admin-business(\/|$)/, '/api/sysadmin/business$1'],
     [/^\/api\/admin-models(\/|$)/, '/api/sysadmin/models$1'],
     [/^\/api\/ai-server-management(\/|$)/, '/api/sysadmin/ai-servers$1'],
-    [/^\/api\/media-review-queue(\/|$)/, '/api/sysadmin/media-review$1'],
+    [/^\/api\/media-review-queue(\/|$)/, '/api/media-review-queue$1'],
     [/^\/api\/site-configuration(\/|$)/, '/api/sysadmin/site-configuration$1'],
     [/^\/api\/model-dashboard(\/|$)/, '/api/sysadmin/model-dashboard$1'],
   ];
