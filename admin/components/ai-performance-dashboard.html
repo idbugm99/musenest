@@ -1,0 +1,430 @@
+<!-- AI Performance Prediction Dashboard -->
+<div class="container-fluid py-4" id="ai-performance-dashboard">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="card-title mb-1">🤖 AI Performance Prediction</h2>
+                            <p class="text-muted mb-0">Machine learning-powered performance optimization and forecasting</p>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-primary" onclick="refreshDashboard()">
+                                <i class="bi bi-arrow-clockwise"></i> Refresh
+                            </button>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#trainModelsModal">
+                                <i class="bi bi-cpu"></i> Train Models
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Health Status -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="service-status" id="serviceStatus">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Checking service status...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="mb-0">ML Models Status</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="modelsStatus">
+                        <div class="col-12 text-center">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                            <span class="ms-2">Loading models status...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Predictions Section -->
+    <div class="row mb-4">
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Load Time Prediction</h6>
+                    <button class="btn btn-sm btn-outline-primary" onclick="showLoadTimePredictionModal()">
+                        <i class="bi bi-plus-lg"></i> New Prediction
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="loadTimePredictionResult" class="text-center text-muted">
+                        <i class="bi bi-clock-history fs-1"></i>
+                        <p>Run a load time prediction to see results here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Resource Usage Forecast</h6>
+                    <button class="btn btn-sm btn-outline-primary" onclick="showResourcePredictionModal()">
+                        <i class="bi bi-plus-lg"></i> New Forecast
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="resourcePredictionResult" class="text-center text-muted">
+                        <i class="bi bi-cpu fs-1"></i>
+                        <p>Generate a resource usage forecast</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Anomaly Detection Section -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Anomaly Detection</h6>
+                    <button class="btn btn-sm btn-outline-warning" onclick="runAnomalyDetection()">
+                        <i class="bi bi-exclamation-triangle"></i> Check Now
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="anomalyDetectionResult" class="text-center text-muted">
+                        <i class="bi bi-shield-check fs-1"></i>
+                        <p>Run anomaly detection to analyze current performance</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="mb-0">Recent Anomalies</h6>
+                </div>
+                <div class="card-body">
+                    <div id="recentAnomalies" class="small">
+                        <div class="text-center text-muted">
+                            <i class="bi bi-clock"></i>
+                            <p class="small">Loading recent anomalies...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optimization Recommendations -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Optimization Recommendations</h6>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-secondary" onclick="filterRecommendations('all')">All</button>
+                        <button class="btn btn-outline-danger" onclick="filterRecommendations('high')">High Priority</button>
+                        <button class="btn btn-outline-warning" onclick="filterRecommendations('medium')">Medium</button>
+                        <button class="btn btn-outline-info" onclick="filterRecommendations('low')">Low</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="optimizationRecommendations">
+                        <div class="text-center text-muted py-4">
+                            <div class="spinner-border spinner-border-sm" role="status"></div>
+                            <span class="ms-2">Loading optimization recommendations...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Predictions Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Recent Predictions</h6>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-secondary active" data-prediction-type="all">All</button>
+                        <button class="btn btn-outline-secondary" data-prediction-type="load_time">Load Time</button>
+                        <button class="btn btn-outline-secondary" data-prediction-type="resource_usage">Resources</button>
+                        <button class="btn btn-outline-secondary" data-prediction-type="anomaly_detection">Anomalies</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="predictionsTable">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Model</th>
+                                    <th>Result</th>
+                                    <th>Confidence</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="predictionsTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">
+                                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                                        <span class="ms-2">Loading predictions...</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Load Time Prediction Modal -->
+<div class="modal fade" id="loadTimePredictionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Load Time Prediction</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="loadTimePredictionForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Gallery Configuration</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Model ID</label>
+                                <input type="number" class="form-control" name="modelId" value="39" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Theme ID</label>
+                                <select class="form-select" name="themeId" required>
+                                    <option value="3">Luxury Theme</option>
+                                    <option value="4">Modern Theme</option>
+                                    <option value="5" selected>Glamour Theme</option>
+                                    <option value="17">Rose Theme</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Expected Image Count</label>
+                                <input type="number" class="form-control" name="imageCount" value="25">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>User Context</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Device Type</label>
+                                <select class="form-select" name="deviceType">
+                                    <option value="desktop" selected>Desktop</option>
+                                    <option value="mobile">Mobile</option>
+                                    <option value="tablet">Tablet</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Connection Speed</label>
+                                <select class="form-select" name="connectionSpeed">
+                                    <option value="slow-2g">Slow 2G</option>
+                                    <option value="2g">2G</option>
+                                    <option value="3g">3G</option>
+                                    <option value="4g" selected>4G</option>
+                                    <option value="5g">5G</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Time of Day</label>
+                                <select class="form-select" name="timeOfDay">
+                                    <option value="morning">Morning (6-12)</option>
+                                    <option value="afternoon" selected>Afternoon (12-18)</option>
+                                    <option value="evening">Evening (18-24)</option>
+                                    <option value="night">Night (24-6)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="runLoadTimePrediction()">
+                    <i class="bi bi-play-fill"></i> Run Prediction
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resource Usage Prediction Modal -->
+<div class="modal fade" id="resourcePredictionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Resource Usage Forecast</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="resourcePredictionForm">
+                    <div class="mb-3">
+                        <label class="form-label">Expected Users</label>
+                        <input type="number" class="form-control" name="expectedUsers" value="100" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Peak Hour</label>
+                        <select class="form-select" name="peakHour">
+                            <option value="false">Normal Traffic</option>
+                            <option value="true" selected>Peak Traffic</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Time Horizon</label>
+                        <select class="form-select" name="timeHorizon">
+                            <option value="1h" selected>1 Hour</option>
+                            <option value="6h">6 Hours</option>
+                            <option value="24h">24 Hours</option>
+                            <option value="7d">7 Days</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="runResourcePrediction()">
+                    <i class="bi bi-play-fill"></i> Generate Forecast
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Train Models Modal -->
+<div class="modal fade" id="trainModelsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Train ML Models</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    Training models will update their accuracy based on recent performance data. This process may take a few minutes.
+                </div>
+                <form id="trainModelsForm">
+                    <div class="mb-3">
+                        <label class="form-label">Select Model to Train</label>
+                        <select class="form-select" name="modelName">
+                            <option value="">All Models</option>
+                            <option value="load_time_prediction">Load Time Prediction</option>
+                            <option value="resource_usage_prediction">Resource Usage Prediction</option>
+                            <option value="anomaly_detection">Anomaly Detection</option>
+                            <option value="optimization_recommendation">Optimization Recommendation</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" onclick="trainModels()">
+                    <i class="bi bi-cpu"></i> Start Training
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Styles for AI Dashboard -->
+<style>
+.service-status .status-indicator {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.status-healthy { background-color: #d4edda; color: #155724; }
+.status-warning { background-color: #fff3cd; color: #856404; }
+.status-error { background-color: #f8d7da; color: #721c24; }
+
+.model-status-card {
+    border-left: 4px solid #dee2e6;
+    margin-bottom: 1rem;
+}
+
+.model-status-card.excellent { border-left-color: #28a745; }
+.model-status-card.good { border-left-color: #17a2b8; }
+.model-status-card.fair { border-left-color: #ffc107; }
+.model-status-card.poor { border-left-color: #dc3545; }
+
+.accuracy-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.prediction-result {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.recommendation-card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+}
+
+.recommendation-card:hover {
+    border-color: #007bff;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 123, 255, 0.075);
+}
+
+.priority-high { border-left: 4px solid #dc3545; }
+.priority-medium { border-left: 4px solid #ffc107; }
+.priority-low { border-left: 4px solid #17a2b8; }
+
+.confidence-bar {
+    height: 4px;
+    background: linear-gradient(90deg, #dc3545 0%, #ffc107 50%, #28a745 100%);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.confidence-indicator {
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    transition: width 0.3s ease;
+}
+
+.anomaly-alert {
+    border: 1px solid #dc3545;
+    background: rgba(220, 53, 69, 0.1);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.anomaly-normal {
+    border: 1px solid #28a745;
+    background: rgba(40, 167, 69, 0.1);
+    color: #155724;
+}
+</style>

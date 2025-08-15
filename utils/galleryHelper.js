@@ -28,16 +28,33 @@ async function initializeRenderer() {
  * Handlebars helper to render all galleries for a model
  * Usage: {{{renderGalleries model.slug}}}
  */
-async function renderGalleries(modelSlug) {
+async function renderGalleries(modelSlug, options) {
     try {
         const renderer = await initializeRenderer();
         if (!renderer) return '';
 
+        // Get gallery content settings from template context
+        const galleryContent = options?.data?.root?.gallery_content || {};
+        
         const galleriesResult = await renderer.getPublishedGallerySections(modelSlug);
         
         if (!galleriesResult.success || galleriesResult.sections.length === 0) {
             return '<div class="galleries-empty">No galleries available</div>';
         }
+
+        // Override default settings with gallery content settings
+        const lightboxSettings = {
+            enable_lightbox: galleryContent.enable_lightbox,
+            enable_fullscreen: galleryContent.enable_fullscreen,
+            show_captions: galleryContent.show_captions,
+            show_image_info: galleryContent.show_image_info,
+            show_search: galleryContent.show_search,
+            show_sort_options: galleryContent.show_sort_options,
+            show_category_filter: galleryContent.show_category_filter
+        };
+
+        // Pass settings to renderer
+        renderer.setGalleryContentSettings(lightboxSettings);
 
         // Render all sections
         const sectionsHtml = galleriesResult.sections

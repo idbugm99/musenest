@@ -1,0 +1,358 @@
+/**
+ * Universal Gallery CSS
+ * 
+ * Complete styling system for the universal gallery with all components.
+ * Import this single file to get all gallery functionality.
+ * 
+ * @version 1.0.0
+ * @author Universal Gallery System
+ */
+
+/* ===== Import All Components ===== */
+@import url('./base.css');
+@import url('./lightbox.css');
+@import url('./filters.css');
+@import url('./pagination.css');
+
+/* ===== Universal Gallery Integration Styles ===== */
+
+/* Gallery container with all components */
+.universal-gallery-system {
+  --gallery-theme-primary: var(--gallery-color-focus);
+  --gallery-theme-secondary: var(--gallery-color-surface);
+  --gallery-theme-accent: var(--gallery-color-border);
+  
+  /* Component spacing */
+  --gallery-component-spacing: var(--gallery-spacing-lg);
+  
+  /* Animation timings */
+  --gallery-theme-transition: var(--gallery-transition-base);
+  --gallery-theme-transition-fast: var(--gallery-transition-fast);
+  --gallery-theme-transition-slow: var(--gallery-transition-slow);
+}
+
+/* Component integration spacing */
+.universal-gallery .gallery-controls + .gallery-content {
+  margin-top: 0;
+}
+
+.universal-gallery .gallery-content + .gallery-pagination {
+  margin-top: var(--gallery-component-spacing);
+}
+
+/* ===== Theme Override System ===== */
+
+/* Allow themes to override specific variables */
+.universal-gallery[data-theme] {
+  /* Themes can override these custom properties */
+}
+
+/* Rose theme example integration */
+.universal-gallery[data-theme="rose"] {
+  --gallery-theme-primary: #ff1493;
+  --gallery-theme-secondary: #ffe4e1;
+  --gallery-theme-accent: #ffc0cb;
+}
+
+/* Luxury theme example integration */
+.universal-gallery[data-theme="luxury"] {
+  --gallery-theme-primary: #d4af37;
+  --gallery-theme-secondary: #f8f6f0;
+  --gallery-theme-accent: #daa520;
+}
+
+/* Modern theme example integration */
+.universal-gallery[data-theme="modern"] {
+  --gallery-theme-primary: #6366f1;
+  --gallery-theme-secondary: #f1f5f9;
+  --gallery-theme-accent: #e2e8f0;
+}
+
+/* ===== Progressive Enhancement ===== */
+
+/* Base functionality without JavaScript */
+.universal-gallery:not(.js-enhanced) {
+  /* Ensure basic functionality works without JS */
+}
+
+.universal-gallery:not(.js-enhanced) .gallery-lightbox {
+  /* Hide lightbox if JS not available */
+  display: none !important;
+}
+
+.universal-gallery:not(.js-enhanced) .gallery-item img[data-lightbox-trigger] {
+  /* Remove pointer cursor if lightbox not available */
+  cursor: default;
+}
+
+/* Enhanced functionality with JavaScript */
+.universal-gallery.js-enhanced {
+  /* Additional enhancements when JS is available */
+}
+
+/* ===== Performance Optimizations ===== */
+
+/* Content visibility for better performance */
+.gallery-item:not(.gallery-visible) {
+  content-visibility: auto;
+  contain-intrinsic-size: 300px;
+}
+
+/* Optimize repaints */
+.gallery-item,
+.gallery-image {
+  contain: layout style paint;
+}
+
+/* GPU acceleration for smooth animations */
+.gallery-item:hover,
+.gallery-image:hover,
+.lightbox-image,
+.lightbox-nav,
+.lightbox-control {
+  will-change: transform;
+}
+
+/* ===== Layout Container Queries ===== */
+
+/* Use container queries where supported */
+@supports (container-type: inline-size) {
+  .universal-gallery {
+    container-type: inline-size;
+    container-name: gallery;
+  }
+  
+  /* Adjust layout based on container size */
+  @container gallery (max-width: 400px) {
+    .gallery-controls {
+      flex-direction: column;
+    }
+    
+    .gallery-pagination {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+  
+  @container gallery (min-width: 800px) {
+    .gallery-grid-layout {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  
+  @container gallery (min-width: 1200px) {
+    .gallery-grid-layout {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+}
+
+/* ===== Modern CSS Features ===== */
+
+/* Scroll timeline animations (future enhancement) */
+@supports (animation-timeline: scroll()) {
+  @keyframes gallery-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .gallery-item {
+    animation: gallery-reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 30%;
+  }
+}
+
+/* CSS Nesting support */
+@supports (selector(&)) {
+  .universal-gallery {
+    & .gallery-item {
+      &:hover {
+        & .gallery-item-overlay {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
+
+/* ===== Utility Classes for Theme Integration ===== */
+
+/* Layout utilities */
+.gallery-layout-grid {
+  --gallery-current-layout: grid;
+}
+
+.gallery-layout-masonry {
+  --gallery-current-layout: masonry;
+}
+
+.gallery-layout-carousel {
+  --gallery-current-layout: carousel;
+}
+
+/* Theme utilities */
+.gallery-theme-dark {
+  color-scheme: dark;
+}
+
+.gallery-theme-light {
+  color-scheme: light;
+}
+
+/* Animation utilities */
+.gallery-no-animations * {
+  transition: none !important;
+  animation: none !important;
+}
+
+.gallery-reduced-animations {
+  --gallery-transition-fast: 150ms linear;
+  --gallery-transition-base: 200ms linear;
+  --gallery-transition-slow: 300ms linear;
+}
+
+/* ===== Debug Mode ===== */
+.universal-gallery.debug-mode {
+  /* Visual debugging aids */
+  outline: 2px dashed red;
+  outline-offset: 4px;
+}
+
+.universal-gallery.debug-mode .gallery-item {
+  outline: 1px dashed blue;
+  position: relative;
+}
+
+.universal-gallery.debug-mode .gallery-item::before {
+  content: attr(data-gallery-item);
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(255, 0, 0, 0.8);
+  color: white;
+  padding: 2px 4px;
+  font-size: 10px;
+  z-index: 1000;
+}
+
+/* ===== Error Recovery ===== */
+
+/* Fallbacks for broken images */
+.gallery-image {
+  background-color: var(--gallery-color-surface);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f0f0f0'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='12' text-anchor='middle' fill='%23999'%3EImage%3C/text%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+/* Graceful degradation for CSS Grid */
+@supports not (display: grid) {
+  .gallery-grid-layout {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .gallery-grid-layout .gallery-item {
+    flex: 1 1 300px;
+    margin: var(--gallery-gutter);
+  }
+}
+
+/* ===== Browser-Specific Fixes ===== */
+
+/* Safari fixes */
+@supports (-webkit-appearance: none) {
+  .gallery-image {
+    /* Fix for Safari image rendering */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+}
+
+/* Firefox fixes */
+@-moz-document url-prefix() {
+  .gallery-item {
+    /* Firefox-specific adjustments */
+  }
+}
+
+/* ===== Print Optimizations ===== */
+@media print {
+  .universal-gallery {
+    /* Optimize for printing */
+    background: white !important;
+    color: black !important;
+  }
+  
+  .gallery-item {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+  
+  .gallery-image {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  
+  /* Hide interactive elements */
+  .gallery-controls,
+  .gallery-pagination,
+  .gallery-lightbox,
+  .gallery-item-overlay {
+    display: none !important;
+  }
+}
+
+/* ===== Future-Proofing ===== */
+
+/* CSS Custom Highlight API (future) */
+@supports (highlight: search-highlight) {
+  ::highlight(gallery-search) {
+    background-color: yellow;
+    color: black;
+  }
+}
+
+/* View Transitions API (future) */
+@supports (view-transition-name: auto) {
+  .gallery-item {
+    view-transition-name: auto;
+  }
+  
+  .lightbox-image {
+    view-transition-name: gallery-lightbox-image;
+  }
+}
+
+/* ===== Performance Monitoring Hooks ===== */
+
+/* Mark performance-critical elements */
+.gallery-item[data-performance-critical] {
+  /* Performance monitoring hook */
+  --performance-priority: critical;
+}
+
+.gallery-image[loading="lazy"] {
+  /* Performance monitoring hook */
+  --loading-strategy: lazy;
+}
+
+/* ===== Version Information ===== */
+.universal-gallery::after {
+  content: "Universal Gallery v1.0.0";
+  position: fixed;
+  bottom: -100px;
+  left: 0;
+  font-size: 1px;
+  opacity: 0;
+  pointer-events: none;
+  /* Hidden version identifier for debugging */
+}

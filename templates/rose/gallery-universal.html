@@ -1,0 +1,403 @@
+<!-- Rose Theme Gallery Page - Universal Gallery System Integration -->
+{{component 'navigation' theme='rose' nav_items=navigation.nav_items base_url=navigation.base_url user=navigation.user site_settings=site_settings}}
+
+<!-- Universal Gallery Container with Rose Theme -->
+<div class="universal-gallery" data-theme="rose" data-gallery-config="rose">
+  
+  <!-- Rose Theme Hero Header -->
+  {{#if gallery_content.gallery_header_visible}}
+  <header class="gallery-header rose-hero-section">
+    <section class="pt-32 pb-20 text-center bg-gradient-to-b from-[color:var(--rose)] to-[color:var(--merlot)] text-porcelain">
+      <h1 class="font-serif text-5xl mb-4 gallery-title">{{gallery_content.page_title || 'Rose Gallery'}}</h1>
+      {{#if gallery_content.page_subtitle}}
+      <p class="text-lg max-w-2xl mx-auto opacity-90 gallery-subtitle">{{gallery_content.page_subtitle}}</p>
+      {{/if}}
+    </section>
+  </header>
+  {{/if}}
+
+  <!-- Universal Gallery Filters with Rose Styling -->
+  {{#if gallery_content.show_filters}}
+  {{> partials/gallery/filters 
+      search_enabled=gallery_content.show_search 
+      category_filter_enabled=gallery_content.show_category_filter 
+      sort_enabled=gallery_content.show_sort_options 
+      layout_toggle_enabled=gallery_content.show_layout_toggle
+      theme_classes="rose-filters-petals"
+  }}
+  {{/if}}
+
+  <!-- Universal Gallery Content Container -->
+  {{> partials/gallery/container 
+      items=gallery_images 
+      layout=gallery_content.default_layout 
+      enable_lightbox=gallery_content.enable_lightbox 
+      show_captions=gallery_content.show_captions 
+      theme_classes="rose-gallery-garden"
+  }}
+
+  <!-- Universal Pagination with Rose Styling -->
+  {{#if gallery_pagination}}
+  {{> partials/gallery/pagination 
+      current_page=gallery_pagination.current_page 
+      total_pages=gallery_pagination.total_pages 
+      total_items=gallery_pagination.total_items 
+      per_page=gallery_pagination.per_page
+      theme_classes="rose-pagination-thorns"
+  }}
+  {{/if}}
+
+  <!-- Universal Lightbox with Rose Enhancements -->
+  {{> partials/gallery/lightbox 
+      enable_fullscreen=gallery_content.enable_fullscreen 
+      show_image_info=gallery_content.show_image_info 
+      enable_zoom=gallery_content.enable_zoom
+      theme_classes="rose-lightbox-modal"
+  }}
+
+</div>
+
+{{component '_footer' theme='rose'}}
+
+<!-- Rose Theme Gallery Configuration -->
+<script type="application/json" id="rose-gallery-config">
+{
+  "theme": "rose",
+  "version": "1.0.0",
+  "gallery": {
+    "layout": {
+      "default": "{{gallery_content.default_layout}}",
+      "options": ["masonry", "grid", "carousel"],
+      "masonry": {
+        "columnWidth": 300,
+        "gutter": 24,
+        "staggerDelay": 100,
+        "organicSpacing": true
+      }
+    },
+    "lightbox": {
+      "enabled": {{gallery_content.enable_lightbox}},
+      "fullscreen": {{gallery_content.enable_fullscreen}},
+      "zoom": {{gallery_content.enable_zoom}},
+      "navigation": {{gallery_content.enable_navigation}},
+      "animation": "rose-bloom-transition"
+    },
+    "captions": {
+      "enabled": {{gallery_content.show_captions}},
+      "style": "rose-caption-elegant",
+      "position": "overlay"
+    },
+    "filters": {
+      "search": {{gallery_content.show_search}},
+      "categories": {{gallery_content.show_category_filter}},
+      "sorting": {{gallery_content.show_sort_options}},
+      "layoutToggle": {{gallery_content.show_layout_toggle}}
+    },
+    "animations": {
+      "hover": {
+        "transform": "scale(1.05) rotate(1deg)",
+        "filter": "brightness(1.1) saturate(1.2)",
+        "transition": "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+      },
+      "loading": {
+        "type": "rose-petal-dance",
+        "duration": "2s"
+      }
+    },
+    "accessibility": {
+      "reduceMotion": true,
+      "highContrast": true,
+      "focusIndicators": "rose-focus-glow"
+    }
+  },
+  "rose": {
+    "season": "{{rose_season}}",
+    "gardenName": "{{gallery_content.page_title}}",
+    "petalColors": ["#ff69b4", "#ff1493", "#dc143c", "#b22222"],
+    "bloomIntensity": "romantic",
+    "thornPattern": "elegant"
+  }
+}
+</script>
+
+<!-- Load Universal Gallery System -->
+<script type="module">
+import { UniversalGallery } from '/js/universal-gallery/gallery.js';
+
+// Initialize universal gallery with Rose theme
+const gallery = new UniversalGallery({
+  container: '.universal-gallery[data-theme="rose"]',
+  theme: 'rose',
+  config: JSON.parse(document.getElementById('rose-gallery-config').textContent),
+  hooks: {
+    // Rose theme specific hooks
+    beforeRender: (data) => {
+      console.log('🌹 Rendering Rose Gallery:', data.items?.length || 0, 'blooms');
+      return data;
+    },
+    afterRender: (data) => {
+      // Add rose-specific enhancements
+      initializeRoseEnhancements();
+      return data;
+    },
+    itemRender: (item) => {
+      // Add seasonal styling
+      const season = new Date().getMonth() >= 2 && new Date().getMonth() <= 4 ? 'spring' : 
+                   new Date().getMonth() >= 5 && new Date().getMonth() <= 7 ? 'summer' : 
+                   new Date().getMonth() >= 8 && new Date().getMonth() <= 10 ? 'autumn' : 'winter';
+      item.seasonalClass = `rose-${season}`;
+      return item;
+    }
+  }
+});
+
+// Initialize the gallery
+gallery.init().then(() => {
+  console.log('🌹 Rose Gallery initialized with Universal Gallery System');
+}).catch(error => {
+  console.error('❌ Rose Gallery initialization failed:', error);
+});
+
+// Rose theme enhancements
+function initializeRoseEnhancements() {
+  // Add floating petals effect (accessibility-aware)
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    createFloatingPetals();
+  }
+  
+  // Add sparkle hover effects
+  document.querySelectorAll('.gallery-item').forEach(item => {
+    item.addEventListener('mouseenter', () => {
+      if (!item.classList.contains('rose-sparkle-active')) {
+        item.classList.add('rose-sparkle-active');
+      }
+    });
+    
+    item.addEventListener('mouseleave', () => {
+      item.classList.remove('rose-sparkle-active');
+    });
+  });
+}
+
+function createFloatingPetals() {
+  const petalContainer = document.createElement('div');
+  petalContainer.className = 'rose-floating-petals';
+  petalContainer.setAttribute('aria-hidden', 'true');
+  
+  for (let i = 0; i < 8; i++) {
+    const petal = document.createElement('div');
+    petal.className = 'rose-floating-petal';
+    petal.style.left = Math.random() * 100 + '%';
+    petal.style.animationDelay = Math.random() * 10 + 's';
+    petal.style.animationDuration = (Math.random() * 10 + 15) + 's';
+    petalContainer.appendChild(petal);
+  }
+  
+  document.body.appendChild(petalContainer);
+}
+</script>
+
+<!-- Rose Theme Specific Styles -->
+<style>
+/* Rose Theme Gallery Enhancements */
+.universal-gallery[data-theme="rose"] {
+  --gallery-theme-primary: #ff1493;
+  --gallery-theme-secondary: #ffe4e1;
+  --gallery-theme-accent: #ffc0cb;
+  --rose: #ff1493;
+  --merlot: #722f37;
+  --porcelain: #f8f8ff;
+  --charcoal: #2c2c2c;
+  --radius: 12px;
+}
+
+/* Rose Hero Section */
+.rose-hero-section {
+  background: linear-gradient(135deg, var(--rose), var(--merlot));
+  border-radius: 0 0 2rem 2rem;
+  margin-bottom: 2rem;
+}
+
+/* Rose Gallery Items */
+.universal-gallery[data-theme="rose"] .gallery-item {
+  border: 2px solid var(--gallery-theme-accent);
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+  background: var(--porcelain);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.universal-gallery[data-theme="rose"] .gallery-item:hover {
+  transform: scale(1.05) rotate(1deg);
+  box-shadow: 0 20px 40px rgba(255, 20, 147, 0.2);
+  border-color: var(--rose);
+}
+
+/* Rose Sparkle Effect */
+.rose-sparkle-active::after {
+  content: '✨';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.2rem;
+  animation: rose-sparkle 1s ease-in-out infinite alternate;
+  z-index: 10;
+}
+
+@keyframes rose-sparkle {
+  0% { transform: scale(1) rotate(0deg); opacity: 0.7; }
+  100% { transform: scale(1.2) rotate(15deg); opacity: 1; }
+}
+
+/* Floating Petals */
+.rose-floating-petals {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.rose-floating-petal {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(ellipse at center, var(--rose) 0%, transparent 70%);
+  border-radius: 50% 0;
+  animation: rose-petal-fall linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes rose-petal-fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Rose Filters Styling */
+.rose-filters-petals {
+  background: linear-gradient(135deg, var(--porcelain), rgba(255, 20, 147, 0.05));
+  border: 2px solid var(--gallery-theme-accent);
+  border-radius: var(--radius);
+}
+
+.rose-filters-petals .gallery-btn {
+  background: var(--gallery-theme-accent);
+  border-color: var(--rose);
+  color: var(--charcoal);
+}
+
+.rose-filters-petals .gallery-btn:hover {
+  background: var(--rose);
+  color: var(--porcelain);
+  transform: translateY(-2px) scale(1.05);
+}
+
+/* Rose Pagination Styling */
+.rose-pagination-thorns {
+  background: var(--porcelain);
+  border: 2px solid var(--gallery-theme-accent);
+  border-radius: var(--radius);
+}
+
+.rose-pagination-thorns .gallery-pagination-btn {
+  background: var(--gallery-theme-secondary);
+  border-color: var(--gallery-theme-accent);
+  color: var(--charcoal);
+}
+
+.rose-pagination-thorns .gallery-pagination-btn:hover {
+  background: var(--rose);
+  color: var(--porcelain);
+  box-shadow: 0 8px 16px rgba(255, 20, 147, 0.3);
+}
+
+/* Rose Lightbox Styling */
+.rose-lightbox-modal {
+  background: rgba(0, 0, 0, 0.95);
+}
+
+.rose-lightbox-modal .lightbox-image {
+  border-radius: var(--radius);
+  box-shadow: 0 25px 50px rgba(255, 20, 147, 0.4);
+}
+
+.rose-lightbox-modal .lightbox-control {
+  background: rgba(255, 20, 147, 0.8);
+  border: 2px solid var(--porcelain);
+  color: var(--porcelain);
+  backdrop-filter: blur(10px);
+}
+
+.rose-lightbox-modal .lightbox-control:hover {
+  background: var(--rose);
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(255, 20, 147, 0.6);
+}
+
+/* Seasonal Rose Classes */
+.rose-spring { filter: hue-rotate(30deg) brightness(1.1); }
+.rose-summer { filter: saturate(1.3) brightness(1.05); }
+.rose-autumn { filter: sepia(0.3) hue-rotate(-15deg); }
+.rose-winter { filter: brightness(0.9) contrast(1.1); }
+
+/* Rose Caption Styling */
+.rose-caption-elegant {
+  background: linear-gradient(135deg, rgba(255, 20, 147, 0.9), rgba(114, 47, 55, 0.9));
+  color: var(--porcelain);
+  padding: 1rem;
+  border-radius: 0 0 var(--radius) var(--radius);
+  font-family: serif;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Accessibility Enhancements */
+@media (prefers-reduced-motion: reduce) {
+  .rose-floating-petal,
+  .rose-sparkle-active::after {
+    animation: none !important;
+  }
+  
+  .universal-gallery[data-theme="rose"] .gallery-item:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .universal-gallery[data-theme="rose"] {
+    --gallery-theme-primary: #ff0080;
+    --gallery-theme-secondary: #ffffff;
+    --gallery-theme-accent: #ff69b4;
+  }
+  
+  .universal-gallery[data-theme="rose"] .gallery-item {
+    border-width: 3px;
+  }
+}
+
+/* Print Optimizations */
+@media print {
+  .rose-floating-petals,
+  .rose-sparkle-active::after {
+    display: none !important;
+  }
+  
+  .universal-gallery[data-theme="rose"] .gallery-item {
+    border: 2px solid #000 !important;
+    break-inside: avoid;
+  }
+}
+</style>

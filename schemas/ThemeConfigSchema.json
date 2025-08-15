@@ -1,0 +1,299 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://musenest.com/schemas/theme-config-v1.json",
+  "title": "MuseNest Theme Gallery Configuration",
+  "description": "Configuration schema for theme-specific gallery customization in MuseNest universal gallery system",
+  "version": "1.0.0",
+  "type": "object",
+  "required": ["theme", "version", "prefix"],
+  "properties": {
+    "theme": {
+      "type": "string",
+      "description": "Theme identifier matching the theme directory name",
+      "pattern": "^[a-z][a-z0-9_-]*$",
+      "examples": ["rose", "luxury", "modern", "glamour"]
+    },
+    "version": {
+      "type": "string",
+      "description": "Schema version for compatibility checking",
+      "const": "1.0.0"
+    },
+    "prefix": {
+      "type": "string",
+      "description": "CSS class prefix for all theme-specific classes",
+      "pattern": "^[a-z][a-z0-9_-]*$",
+      "examples": ["rose", "luxury", "modern"]
+    },
+    "displayName": {
+      "type": "string",
+      "description": "Human-readable theme name for admin UI",
+      "maxLength": 50,
+      "examples": ["Rose Garden", "Luxury Elegance", "Modern Minimalist"]
+    },
+    "cssClasses": {
+      "type": "object",
+      "description": "CSS class mappings for gallery components",
+      "required": ["gallery", "section", "item", "lightbox"],
+      "properties": {
+        "gallery": {
+          "type": "string",
+          "description": "Main gallery container class",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "section": {
+          "type": "string",
+          "description": "Gallery section container class",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "item": {
+          "type": "string",
+          "description": "Individual gallery item class",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "lightbox": {
+          "type": "string",
+          "description": "Lightbox modal container class",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "navigation": {
+          "type": "string",
+          "description": "Navigation controls class",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "caption": {
+          "type": "string",
+          "description": "Image caption container class",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "filters": {
+          "type": "string",
+          "description": "Gallery filters/controls container class",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "pagination": {
+          "type": "string",
+          "description": "Pagination controls container class",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "animations": {
+      "type": "object",
+      "description": "Animation class mappings for theme-specific effects",
+      "properties": {
+        "hover": {
+          "type": "string",
+          "description": "Hover effect class for gallery items",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "transition": {
+          "type": "string",
+          "description": "General transition class",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "lightboxOpen": {
+          "type": "string",
+          "description": "Lightbox opening animation class",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "lightboxClose": {
+          "type": "string",
+          "description": "Lightbox closing animation class",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "icons": {
+      "type": "object",
+      "description": "Theme-specific icon mappings (text or CSS classes)",
+      "properties": {
+        "close": {
+          "type": "string",
+          "description": "Close button icon/text",
+          "maxLength": 10,
+          "default": "✕"
+        },
+        "fullscreen": {
+          "type": "string",
+          "description": "Fullscreen toggle icon/text",
+          "maxLength": 10,
+          "default": "⤢"
+        },
+        "prev": {
+          "type": "string",
+          "description": "Previous navigation icon/text",
+          "maxLength": 10,
+          "default": "‹"
+        },
+        "next": {
+          "type": "string",
+          "description": "Next navigation icon/text",
+          "maxLength": 10,
+          "default": "›"
+        },
+        "grid": {
+          "type": "string",
+          "description": "Grid layout icon/text",
+          "maxLength": 10,
+          "default": "⊞"
+        },
+        "masonry": {
+          "type": "string",
+          "description": "Masonry layout icon/text",
+          "maxLength": 10,
+          "default": "⊡"
+        },
+        "carousel": {
+          "type": "string",
+          "description": "Carousel layout icon/text",
+          "maxLength": 10,
+          "default": "⊲"
+        }
+      },
+      "additionalProperties": false
+    },
+    "layouts": {
+      "type": "object",
+      "description": "Layout-specific configuration overrides",
+      "properties": {
+        "grid": {
+          "type": "object",
+          "properties": {
+            "defaultColumns": {
+              "type": "object",
+              "properties": {
+                "sm": {"type": "integer", "minimum": 1, "maximum": 6, "default": 2},
+                "md": {"type": "integer", "minimum": 1, "maximum": 8, "default": 3},
+                "lg": {"type": "integer", "minimum": 1, "maximum": 12, "default": 4}
+              }
+            },
+            "aspectRatio": {
+              "type": "string",
+              "pattern": "^\\d+:\\d+$|^auto$",
+              "default": "1:1"
+            }
+          }
+        },
+        "masonry": {
+          "type": "object",
+          "properties": {
+            "columnWidth": {"type": "integer", "minimum": 200, "maximum": 500, "default": 280},
+            "gutter": {"type": "integer", "minimum": 10, "maximum": 50, "default": 20}
+          }
+        },
+        "carousel": {
+          "type": "object",
+          "properties": {
+            "autoplay": {"type": "boolean", "default": false},
+            "autoplaySpeed": {"type": "integer", "minimum": 1000, "maximum": 10000, "default": 5000},
+            "slidesToShow": {"type": "integer", "minimum": 1, "maximum": 5, "default": 1},
+            "infinite": {"type": "boolean", "default": true}
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "customizations": {
+      "type": "object",
+      "description": "Theme-specific customization options",
+      "properties": {
+        "enableHoverEffects": {"type": "boolean", "default": true},
+        "enableAnimations": {"type": "boolean", "default": true},
+        "enableParallax": {"type": "boolean", "default": false},
+        "enableBlurBackground": {"type": "boolean", "default": false},
+        "colorScheme": {
+          "type": "string",
+          "enum": ["light", "dark", "auto"],
+          "default": "light"
+        }
+      },
+      "additionalProperties": false
+    },
+    "breakpoints": {
+      "type": "object",
+      "description": "Responsive breakpoint overrides",
+      "properties": {
+        "sm": {"type": "integer", "minimum": 320, "maximum": 768, "default": 576},
+        "md": {"type": "integer", "minimum": 769, "maximum": 1024, "default": 768},
+        "lg": {"type": "integer", "minimum": 1025, "maximum": 1440, "default": 992},
+        "xl": {"type": "integer", "minimum": 1441, "maximum": 2560, "default": 1200}
+      },
+      "additionalProperties": false
+    },
+    "assets": {
+      "type": "object",
+      "description": "Theme-specific asset paths",
+      "properties": {
+        "cssFile": {
+          "type": "string",
+          "description": "Main CSS file path relative to theme directory",
+          "pattern": "^[a-zA-Z0-9_.-]+\\.css$",
+          "default": "style.css"
+        },
+        "jsFile": {
+          "type": "string",
+          "description": "Optional theme-specific JavaScript file",
+          "pattern": "^[a-zA-Z0-9_.-]+\\.js$"
+        },
+        "fontFiles": {
+          "type": "array",
+          "description": "Additional font files to load",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_.-]+\\.(woff2?|ttf|eot)$"
+          },
+          "maxItems": 10
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "theme": "rose",
+      "version": "1.0.0",
+      "prefix": "rose",
+      "displayName": "Rose Garden",
+      "cssClasses": {
+        "gallery": "rose-gallery-collections",
+        "section": "rose-gallery-section",
+        "item": "rose-gallery-item",
+        "lightbox": "rose-lightbox-modal",
+        "navigation": "rose-nav",
+        "caption": "rose-caption",
+        "filters": "rose-filters",
+        "pagination": "rose-pagination"
+      },
+      "animations": {
+        "hover": "rose-hover-effect",
+        "transition": "rose-fade-in",
+        "lightboxOpen": "rose-bloom-open",
+        "lightboxClose": "rose-bloom-close"
+      },
+      "icons": {
+        "close": "🌹",
+        "fullscreen": "⤢",
+        "prev": "‹",
+        "next": "›"
+      },
+      "layouts": {
+        "grid": {
+          "defaultColumns": {"sm": 2, "md": 3, "lg": 4},
+          "aspectRatio": "1:1"
+        },
+        "masonry": {
+          "columnWidth": 300,
+          "gutter": 24
+        }
+      },
+      "customizations": {
+        "enableHoverEffects": true,
+        "enableAnimations": true,
+        "colorScheme": "light"
+      }
+    }
+  ]
+}

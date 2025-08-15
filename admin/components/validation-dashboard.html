@@ -1,0 +1,927 @@
+<!--
+Theme Validation Dashboard Component
+Comprehensive validation interface for gallery configurations, themes, and models
+-->
+
+<div class="validation-dashboard">
+    <!-- Validation Overview -->
+    <div class="validation-overview">
+        <div class="overview-header">
+            <h2>Configuration Validation Overview</h2>
+            <div class="header-actions">
+                <button class="btn btn-secondary" id="validateAllBtn">
+                    <i class="fas fa-check-double"></i>
+                    Validate All Configurations
+                </button>
+                <button class="btn btn-outline" id="refreshValidationBtn">
+                    <i class="fas fa-sync-alt"></i>
+                    Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- Validation Status Cards -->
+        <div class="status-cards">
+            <div class="status-card system-status">
+                <div class="card-header">
+                    <div class="status-icon">
+                        <i class="fas fa-cogs" id="systemStatusIcon"></i>
+                    </div>
+                    <div class="status-info">
+                        <h3>System Configuration</h3>
+                        <p class="status-text" id="systemStatusText">Checking...</p>
+                    </div>
+                </div>
+                <div class="status-details" id="systemStatusDetails">
+                    <!-- Details populated dynamically -->
+                </div>
+            </div>
+
+            <div class="status-card theme-status">
+                <div class="card-header">
+                    <div class="status-icon">
+                        <i class="fas fa-palette" id="themeStatusIcon"></i>
+                    </div>
+                    <div class="status-info">
+                        <h3>Theme Configurations</h3>
+                        <p class="status-text" id="themeStatusText">Checking...</p>
+                    </div>
+                </div>
+                <div class="status-details" id="themeStatusDetails">
+                    <!-- Details populated dynamically -->
+                </div>
+            </div>
+
+            <div class="status-card model-status">
+                <div class="card-header">
+                    <div class="status-icon">
+                        <i class="fas fa-users" id="modelStatusIcon"></i>
+                    </div>
+                    <div class="status-info">
+                        <h3>Model Overrides</h3>
+                        <p class="status-text" id="modelStatusText">Checking...</p>
+                    </div>
+                </div>
+                <div class="status-details" id="modelStatusDetails">
+                    <!-- Details populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Validation Details Section -->
+    <div class="validation-details">
+        
+        <!-- System Configuration Validation -->
+        <div class="validation-section" id="systemValidationSection">
+            <div class="section-header">
+                <h3>
+                    <i class="fas fa-cogs"></i>
+                    System Configuration Validation
+                </h3>
+                <button class="btn btn-sm btn-primary" id="validateSystemBtn">
+                    <i class="fas fa-check"></i>
+                    Validate System Config
+                </button>
+            </div>
+            
+            <div class="validation-content">
+                <div class="validation-results" id="systemValidationResults">
+                    <!-- Results populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Theme Configurations Validation -->
+        <div class="validation-section" id="themeValidationSection">
+            <div class="section-header">
+                <h3>
+                    <i class="fas fa-palette"></i>
+                    Theme Configurations Validation
+                </h3>
+                <div class="header-controls">
+                    <select id="themeValidationFilter" class="form-control form-control-sm">
+                        <option value="all">All Themes</option>
+                        <option value="errors">With Errors</option>
+                        <option value="warnings">With Warnings</option>
+                        <option value="valid">Valid Only</option>
+                    </select>
+                    <button class="btn btn-sm btn-primary" id="validateThemesBtn">
+                        <i class="fas fa-check"></i>
+                        Validate Themes
+                    </button>
+                </div>
+            </div>
+
+            <div class="validation-content">
+                <div class="theme-validation-list" id="themeValidationList">
+                    <!-- Theme validation results populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Overrides Validation -->
+        <div class="validation-section" id="modelValidationSection">
+            <div class="section-header">
+                <h3>
+                    <i class="fas fa-users"></i>
+                    Model Override Validation
+                </h3>
+                <div class="header-controls">
+                    <input type="text" id="modelValidationSearch" class="form-control form-control-sm" 
+                           placeholder="Search models...">
+                    <select id="modelValidationFilter" class="form-control form-control-sm">
+                        <option value="all">All Models</option>
+                        <option value="with-overrides">With Overrides</option>
+                        <option value="errors">With Errors</option>
+                        <option value="warnings">With Warnings</option>
+                    </select>
+                    <button class="btn btn-sm btn-primary" id="validateModelsBtn">
+                        <i class="fas fa-check"></i>
+                        Validate Models
+                    </button>
+                </div>
+            </div>
+
+            <div class="validation-content">
+                <div class="model-validation-list" id="modelValidationList">
+                    <!-- Model validation results populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Validation History -->
+        <div class="validation-section" id="validationHistorySection">
+            <div class="section-header">
+                <h3>
+                    <i class="fas fa-history"></i>
+                    Validation History
+                </h3>
+                <button class="btn btn-sm btn-outline" id="clearHistoryBtn">
+                    <i class="fas fa-trash-alt"></i>
+                    Clear History
+                </button>
+            </div>
+
+            <div class="validation-content">
+                <div class="validation-history" id="validationHistoryList">
+                    <!-- Validation history populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Configuration Editor Modal -->
+    <div class="validation-modal" id="configEditorModal" style="display: none;">
+        <div class="modal-backdrop" id="modalBackdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Edit Configuration</h3>
+                <button class="modal-close" id="modalCloseBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="config-editor">
+                    <div class="editor-tabs">
+                        <button class="editor-tab active" data-editor="visual">Visual Editor</button>
+                        <button class="editor-tab" data-editor="json">JSON Editor</button>
+                    </div>
+                    <div class="editor-content">
+                        <div class="editor-panel active" id="visualEditor">
+                            <!-- Visual form editor will be populated here -->
+                        </div>
+                        <div class="editor-panel" id="jsonEditor">
+                            <textarea id="jsonTextarea" class="json-editor" spellcheck="false"></textarea>
+                        </div>
+                    </div>
+                    <div class="editor-validation" id="editorValidation">
+                        <!-- Real-time validation feedback -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="modalCancelBtn">Cancel</button>
+                <button class="btn btn-primary" id="modalSaveBtn">
+                    <i class="fas fa-save"></i>
+                    Save Configuration
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Validation Templates -->
+<script type="text/template" id="validationResultTemplate">
+    <div class="validation-result {{status}}">
+        <div class="result-header">
+            <div class="result-icon">
+                <i class="fas fa-{{icon}}"></i>
+            </div>
+            <div class="result-info">
+                <h4>{{title}}</h4>
+                <p class="result-summary">{{summary}}</p>
+            </div>
+            <div class="result-actions">
+                {{#if canEdit}}
+                <button class="btn btn-sm btn-outline edit-config-btn" data-type="{{type}}" data-id="{{id}}">
+                    <i class="fas fa-edit"></i>
+                    Edit
+                </button>
+                {{/if}}
+                {{#if canRevalidate}}
+                <button class="btn btn-sm btn-primary revalidate-btn" data-type="{{type}}" data-id="{{id}}">
+                    <i class="fas fa-redo"></i>
+                    Revalidate
+                </button>
+                {{/if}}
+            </div>
+        </div>
+        {{#if errors.length}}
+        <div class="result-errors">
+            <h5><i class="fas fa-exclamation-triangle"></i> Errors ({{errors.length}})</h5>
+            <ul class="error-list">
+                {{#each errors}}
+                <li class="error-item">
+                    <strong>{{this.field}}</strong>: {{this.message}}
+                    {{#if this.suggestion}}
+                    <div class="error-suggestion">
+                        <i class="fas fa-lightbulb"></i>
+                        Suggestion: {{this.suggestion}}
+                    </div>
+                    {{/if}}
+                </li>
+                {{/each}}
+            </ul>
+        </div>
+        {{/if}}
+        {{#if warnings.length}}
+        <div class="result-warnings">
+            <h5><i class="fas fa-exclamation-circle"></i> Warnings ({{warnings.length}})</h5>
+            <ul class="warning-list">
+                {{#each warnings}}
+                <li class="warning-item">
+                    <strong>{{this.field}}</strong>: {{this.message}}
+                    {{#if this.suggestion}}
+                    <div class="warning-suggestion">
+                        <i class="fas fa-lightbulb"></i>
+                        Suggestion: {{this.suggestion}}
+                    </div>
+                    {{/if}}
+                </li>
+                {{/each}}
+            </ul>
+        </div>
+        {{/if}}
+        {{#if suggestions.length}}
+        <div class="result-suggestions">
+            <h5><i class="fas fa-lightbulb"></i> Optimization Suggestions ({{suggestions.length}})</h5>
+            <ul class="suggestion-list">
+                {{#each suggestions}}
+                <li class="suggestion-item">
+                    {{this.message}}
+                </li>
+                {{/each}}
+            </ul>
+        </div>
+        {{/if}}
+    </div>
+</script>
+
+<script type="text/template" id="themeValidationItemTemplate">
+    <div class="theme-validation-item {{status}}" data-theme-id="{{id}}">
+        <div class="item-header">
+            <div class="theme-info">
+                <h4>{{display_name}}</h4>
+                <p class="theme-meta">{{name}} • {{category}} • {{page_count}} pages</p>
+            </div>
+            <div class="validation-status">
+                <div class="status-badge {{status}}">
+                    <i class="fas fa-{{statusIcon}}"></i>
+                    {{statusText}}
+                </div>
+            </div>
+        </div>
+        
+        {{#if hasIssues}}
+        <div class="item-issues">
+            {{#if errors.length}}
+            <div class="issue-group errors">
+                <span class="issue-count">{{errors.length}} Error{{#if (gt errors.length 1)}}s{{/if}}</span>
+                <button class="toggle-details" data-target="errors-{{id}}">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="issue-details" id="errors-{{id}}" style="display: none;">
+                    {{#each errors}}
+                    <div class="issue-detail error">{{this.message}}</div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+            
+            {{#if warnings.length}}
+            <div class="issue-group warnings">
+                <span class="issue-count">{{warnings.length}} Warning{{#if (gt warnings.length 1)}}s{{/if}}</span>
+                <button class="toggle-details" data-target="warnings-{{id}}">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="issue-details" id="warnings-{{id}}" style="display: none;">
+                    {{#each warnings}}
+                    <div class="issue-detail warning">{{this.message}}</div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+        </div>
+        {{/if}}
+        
+        <div class="item-actions">
+            <button class="btn btn-sm btn-outline view-config-btn" data-theme-id="{{id}}">
+                <i class="fas fa-eye"></i>
+                View Config
+            </button>
+            <button class="btn btn-sm btn-primary edit-theme-btn" data-theme-id="{{id}}">
+                <i class="fas fa-edit"></i>
+                Edit
+            </button>
+            <button class="btn btn-sm btn-secondary revalidate-theme-btn" data-theme-id="{{id}}">
+                <i class="fas fa-redo"></i>
+                Revalidate
+            </button>
+        </div>
+    </div>
+</script>
+
+<script type="text/template" id="validationHistoryItemTemplate">
+    <div class="history-item {{status}}">
+        <div class="item-icon">
+            <i class="fas fa-{{icon}}"></i>
+        </div>
+        <div class="item-content">
+            <div class="item-header">
+                <h5>{{title}}</h5>
+                <span class="item-time">{{timestamp}}</span>
+            </div>
+            <p class="item-description">{{description}}</p>
+            {{#if hasIssues}}
+            <div class="item-summary">
+                {{#if errorCount}}
+                <span class="summary-badge error">{{errorCount}} Error{{#if (gt errorCount 1)}}s{{/if}}</span>
+                {{/if}}
+                {{#if warningCount}}
+                <span class="summary-badge warning">{{warningCount}} Warning{{#if (gt warningCount 1)}}s{{/if}}</span>
+                {{/if}}
+            </div>
+            {{/if}}
+        </div>
+        <div class="item-actions">
+            <button class="btn btn-sm btn-outline view-details-btn" data-history-id="{{id}}">
+                <i class="fas fa-eye"></i>
+                View Details
+            </button>
+        </div>
+    </div>
+</script>
+
+<style>
+/* Validation Dashboard Specific Styles */
+.validation-dashboard {
+    padding: 0;
+}
+
+.validation-overview {
+    margin-bottom: 2rem;
+}
+
+.overview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.overview-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.status-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.status-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.status-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.status-card .card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 0;
+    border: none;
+}
+
+.status-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.system-status .status-icon {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+}
+
+.theme-status .status-icon {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+}
+
+.model-status .status-icon {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.status-info h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.status-text {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.status-details {
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.validation-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.validation-section {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.validation-section .section-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.validation-section .section-header h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.validation-content {
+    padding: 1.5rem;
+}
+
+/* Validation Results */
+.validation-result {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.validation-result.valid {
+    border-color: #10b981;
+    background: #f0fdf4;
+}
+
+.validation-result.warning {
+    border-color: #f59e0b;
+    background: #fffbeb;
+}
+
+.validation-result.error {
+    border-color: #ef4444;
+    background: #fef2f2;
+}
+
+.result-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+}
+
+.result-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.validation-result.valid .result-icon {
+    background: #10b981;
+    color: white;
+}
+
+.validation-result.warning .result-icon {
+    background: #f59e0b;
+    color: white;
+}
+
+.validation-result.error .result-icon {
+    background: #ef4444;
+    color: white;
+}
+
+.result-info {
+    flex: 1;
+}
+
+.result-info h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.result-summary {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.result-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Issue Lists */
+.result-errors,
+.result-warnings,
+.result-suggestions {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.7);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.result-errors h5,
+.result-warnings h5,
+.result-suggestions h5 {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.error-list,
+.warning-list,
+.suggestion-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.error-item,
+.warning-item,
+.suggestion-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.error-item:last-child,
+.warning-item:last-child,
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.error-suggestion,
+.warning-suggestion {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    color: #3b82f6;
+}
+
+/* Theme Validation Items */
+.theme-validation-item {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.theme-validation-item.valid {
+    border-color: #10b981;
+}
+
+.theme-validation-item.warning {
+    border-color: #f59e0b;
+}
+
+.theme-validation-item.error {
+    border-color: #ef4444;
+}
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: white;
+}
+
+.theme-info h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.theme-meta {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status-badge.valid {
+    background: #10b981;
+    color: white;
+}
+
+.status-badge.warning {
+    background: #f59e0b;
+    color: white;
+}
+
+.status-badge.error {
+    background: #ef4444;
+    color: white;
+}
+
+.item-actions {
+    padding: 1rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Modal Styles */
+.validation-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+}
+
+.modal-content {
+    position: relative;
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 4rem;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.modal-close:hover {
+    background: #f1f5f9;
+    color: #374151;
+}
+
+.modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    padding: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+/* Editor Styles */
+.config-editor {
+    width: 100%;
+}
+
+.editor-tabs {
+    display: flex;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.editor-tab {
+    background: none;
+    border: none;
+    padding: 0.75rem 1rem;
+    color: #64748b;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease-in-out;
+}
+
+.editor-tab:hover {
+    color: #374151;
+}
+
+.editor-tab.active {
+    color: #3b82f6;
+    border-bottom-color: #3b82f6;
+}
+
+.editor-content {
+    position: relative;
+    min-height: 400px;
+}
+
+.editor-panel {
+    display: none;
+}
+
+.editor-panel.active {
+    display: block;
+}
+
+.json-editor {
+    width: 100%;
+    height: 400px;
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 0.875rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    resize: vertical;
+}
+
+.editor-validation {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    display: none;
+}
+
+.editor-validation.show {
+    display: block;
+}
+
+.editor-validation.valid {
+    background: #f0fdf4;
+    border: 1px solid #10b981;
+    color: #047857;
+}
+
+.editor-validation.error {
+    background: #fef2f2;
+    border: 1px solid #ef4444;
+    color: #dc2626;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .status-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .validation-section .section-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .header-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 640px) {
+    .overview-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .header-actions {
+        width: 100%;
+        justify-content: stretch;
+    }
+    
+    .header-actions .btn {
+        flex: 1;
+    }
+    
+    .item-actions {
+        flex-direction: column;
+    }
+    
+    .modal-content {
+        margin: 0;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+}
+</style>
+
+<script type="module" src="/admin/js/validation-dashboard.js"></script>

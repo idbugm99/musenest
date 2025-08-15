@@ -1,0 +1,145 @@
+{{!-- 
+  Universal Gallery Container Partial
+  
+  This theme-agnostic partial renders the main gallery container structure.
+  CSS classes are resolved from theme configuration to maintain consistent HTML
+  across all themes while allowing visual customization.
+  
+  Required context:
+  - galleryData: Gallery data from UniversalGalleryService
+  - themeConfig: Theme configuration with CSS classes
+  - modelSlug: Current model identifier
+  
+  Accessibility: WCAG 2.1 AA compliant with proper ARIA labels and keyboard navigation
+--}}
+
+<section class="{{themeConfig.cssClasses.gallery}}" 
+         role="img" 
+         aria-label="Gallery of {{galleryData.pagination.total}} images"
+         data-gallery-layout="{{galleryData.layout}}"
+         data-model-slug="{{modelSlug}}">
+  
+  {{!-- Gallery Header --}}
+  {{#if galleryData.settings.headerVisible}}
+    <header class="{{themeConfig.cssClasses.header}} gallery-header">
+      {{#if galleryData.title}}
+        <h1 class="gallery-title">{{galleryData.title}}</h1>
+      {{/if}}
+      {{#if galleryData.subtitle}}
+        <p class="gallery-subtitle">{{galleryData.subtitle}}</p>
+      {{/if}}
+      
+      {{!-- Skip link for accessibility --}}
+      <a href="#gallery-items" class="sr-only focus:not-sr-only">
+        Skip to gallery content
+      </a>
+    </header>
+  {{/if}}
+
+  {{!-- Gallery Controls --}}
+  {{#if galleryData.settings.showControls}}
+    <div class="{{themeConfig.cssClasses.controls}} gallery-controls" 
+         role="toolbar" 
+         aria-label="Gallery controls">
+      
+      {{!-- Search --}}
+      {{#if galleryData.settings.searchEnabled}}
+        {{> gallery/search galleryData=galleryData themeConfig=themeConfig}}
+      {{/if}}
+
+      {{!-- Filters --}}
+      {{#if galleryData.settings.categoryFilter}}
+        {{> gallery/filters galleryData=galleryData themeConfig=themeConfig}}
+      {{/if}}
+
+      {{!-- Layout Toggle --}}
+      {{#if galleryData.settings.layoutToggle}}
+        {{> gallery/layout-toggle galleryData=galleryData themeConfig=themeConfig}}
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{!-- Main Gallery Content --}}
+  <main id="gallery-items" 
+        class="{{themeConfig.cssClasses.section}} gallery-content"
+        data-layout="{{galleryData.layout}}"
+        data-columns-sm="{{galleryData.settings.gridCols.sm}}"
+        data-columns-md="{{galleryData.settings.gridCols.md}}"
+        data-columns-lg="{{galleryData.settings.gridCols.lg}}">
+
+    {{!-- Gallery Items Grid --}}
+    {{#if galleryData.items}}
+      <div class="{{themeConfig.cssClasses.grid}} gallery-grid" 
+           role="group" 
+           aria-label="Gallery images">
+        
+        {{#each galleryData.items}}
+          {{> gallery/item 
+              item=this 
+              themeConfig=../themeConfig 
+              gallerySettings=../galleryData.settings
+              index=@index
+              total=../galleryData.pagination.total}}
+        {{/each}}
+      </div>
+    {{else}}
+      {{!-- Empty State --}}
+      <div class="{{themeConfig.cssClasses.empty}} gallery-empty" 
+           role="status" 
+           aria-live="polite">
+        <div class="empty-content">
+          {{#if galleryData.emptyStateIcon}}
+            <div class="empty-icon" aria-hidden="true">
+              {{galleryData.emptyStateIcon}}
+            </div>
+          {{/if}}
+          <h3 class="empty-title">
+            {{#if galleryData.emptyStateTitle}}
+              {{galleryData.emptyStateTitle}}
+            {{else}}
+              No images found
+            {{/if}}
+          </h3>
+          {{#if galleryData.emptyStateMessage}}
+            <p class="empty-message">{{galleryData.emptyStateMessage}}</p>
+          {{/if}}
+        </div>
+      </div>
+    {{/if}}
+  </main>
+
+  {{!-- Pagination --}}
+  {{#if galleryData.pagination.totalPages}}
+    {{#gt galleryData.pagination.totalPages 1}}
+      {{> gallery/pagination pagination=galleryData.pagination themeConfig=themeConfig}}
+    {{/gt}}
+  {{/if}}
+
+  {{!-- Loading Indicator --}}
+  <div class="{{themeConfig.cssClasses.loading}} gallery-loading" 
+       role="status" 
+       aria-label="Loading gallery images"
+       aria-hidden="true"
+       style="display: none;">
+    <div class="loading-spinner" aria-hidden="true"></div>
+    <span class="loading-text sr-only">Loading images...</span>
+  </div>
+
+  {{!-- Lightbox Modal (conditionally rendered) --}}
+  {{#if galleryData.settings.lightbox}}
+    {{> gallery/lightbox galleryData=galleryData themeConfig=themeConfig}}
+  {{/if}}
+
+</section>
+
+{{!-- Performance: Preload next batch of images --}}
+{{#if galleryData.settings.prefetchEnabled}}
+  <script type="application/json" id="gallery-prefetch-data">
+    {{{json (lookup galleryData "prefetchUrls")}}}
+  </script>
+{{/if}}
+
+{{!-- Gallery State for URL management --}}
+<script type="application/json" id="gallery-state-data">
+  {{{json (pick galleryData "filters" "pagination.page" "layout")}}}
+</script>

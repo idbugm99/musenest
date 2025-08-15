@@ -1,0 +1,174 @@
+{{!-- 
+  Universal Gallery Item Partial
+  
+  Renders individual gallery items with theme-specific styling but consistent structure.
+  Supports multiple layouts: grid, masonry, carousel, lightbox_grid.
+  
+  Context:
+  - item: Gallery item data (id, alt, caption, srcThumb, srcMed, srcFull, aspect, etc.)
+  - themeConfig: Theme configuration with CSS classes and icons
+  - gallerySettings: Gallery settings (lightbox, captions, imageInfo, etc.)
+  - index: Item index in collection
+  - total: Total number of items
+  
+  Accessibility: Full keyboard navigation and screen reader support
+--}}
+
+<div class="{{themeConfig.cssClasses.item}} gallery-item"
+     data-gallery-item="{{item.id}}"
+     data-index="{{index}}"
+     data-category="{{item.category}}"
+     {{#if item.featured}}data-featured="true"{{/if}}
+     {{#if item.flagged}}data-flagged="true"{{/if}}>
+
+  {{!-- Image Container with Aspect Ratio --}}
+  <div class="{{themeConfig.cssClasses.imageContainer}} gallery-item-image"
+       style="{{#if item.aspect}}aspect-ratio: {{item.aspect}};{{/if}}">
+    
+    {{!-- Main Image --}}
+    <img src="{{item.srcThumb}}"
+         {{#if item.srcMed}}data-src-medium="{{item.srcMed}}"{{/if}}
+         {{#if item.srcFull}}data-src-full="{{item.srcFull}}"{{/if}}
+         alt="{{item.alt}}"
+         {{#if item.width}}width="{{item.width}}"{{/if}}
+         {{#if item.height}}height="{{item.height}}"{{/if}}
+         {{#if gallerySettings.lazyLoading}}
+           loading="{{#if (lt index 6)}}eager{{else}}lazy{{/if}}"
+         {{/if}}
+         class="gallery-image {{themeConfig.cssClasses.image}}"
+         {{#if gallerySettings.lightbox}}
+           role="button"
+           tabindex="0"
+           aria-expanded="false"
+           aria-describedby="{{#if gallerySettings.captions}}caption-{{item.id}}{{/if}}"
+           data-lightbox-trigger="{{item.id}}"
+         {{/if}}
+         {{#if themeConfig.animations.hover}}
+           data-hover-animation="{{themeConfig.animations.hover}}"
+         {{/if}}>
+
+    {{!-- Image Overlay --}}
+    {{#if gallerySettings.lightbox}}
+      <div class="{{themeConfig.cssClasses.overlay}} gallery-item-overlay" 
+           aria-hidden="true">
+        
+        {{!-- Expand Icon --}}
+        <div class="overlay-icon expand-icon">
+          {{#if themeConfig.icons.fullscreen}}
+            {{themeConfig.icons.fullscreen}}
+          {{else}}
+            ⤢
+          {{/if}}
+        </div>
+
+        {{!-- Featured Badge --}}
+        {{#if item.featured}}
+          <div class="overlay-badge featured-badge">
+            Featured
+          </div>
+        {{/if}}
+
+        {{!-- Image Info Preview --}}
+        {{#if gallerySettings.imageInfo}}
+          <div class="overlay-info">
+            {{#if item.uploadDate}}
+              <time datetime="{{item.uploadDate}}" class="upload-date">
+                {{formatDate item.uploadDate "MMM dd, yyyy"}}
+              </time>
+            {{/if}}
+            {{#if item.category}}
+              <span class="item-category">{{item.category}}</span>
+            {{/if}}
+          </div>
+        {{/if}}
+      </div>
+    {{/if}}
+
+    {{!-- Loading Spinner --}}
+    <div class="{{themeConfig.cssClasses.spinner}} image-loading" 
+         role="status" 
+         aria-label="Loading image"
+         style="display: none;">
+      <div class="spinner" aria-hidden="true"></div>
+    </div>
+
+    {{!-- Error State --}}
+    <div class="{{themeConfig.cssClasses.error}} image-error" 
+         role="alert" 
+         style="display: none;">
+      <div class="error-icon" aria-hidden="true">⚠</div>
+      <span class="error-message">Failed to load image</span>
+    </div>
+  </div>
+
+  {{!-- Caption --}}
+  {{#if gallerySettings.captions}}
+    {{#if item.caption}}
+      <div id="caption-{{item.id}}" 
+           class="{{themeConfig.cssClasses.caption}} gallery-item-caption">
+        <p class="caption-text">{{item.caption}}</p>
+        
+        {{!-- Additional Metadata --}}
+        {{#if gallerySettings.imageInfo}}
+          <div class="caption-meta">
+            {{#if item.uploadDate}}
+              <time datetime="{{item.uploadDate}}" class="meta-date">
+                {{formatDate item.uploadDate "MMM dd, yyyy"}}
+              </time>
+            {{/if}}
+            {{#if item.category}}
+              <span class="meta-category">{{item.category}}</span>
+            {{/if}}
+            {{#if item.dimensions}}
+              <span class="meta-dimensions">{{item.dimensions}}</span>
+            {{/if}}
+          </div>
+        {{/if}}
+      </div>
+    {{/if}}
+  {{/if}}
+
+  {{!-- Hidden Lightbox Data --}}
+  {{#if gallerySettings.lightbox}}
+    <script type="application/json" 
+            class="lightbox-item-data" 
+            data-item-id="{{item.id}}">
+      {{{json (pick item "id" "alt" "caption" "srcFull" "srcMed" "width" "height" "category" "uploadDate" "featured")}}}
+    </script>
+  {{/if}}
+
+</div>
+
+{{!-- Structured Data for SEO (JSON-LD) --}}
+{{#if (eq index 0)}}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageGallery",
+    "name": "{{#if galleryData.title}}{{galleryData.title}}{{else}}Image Gallery{{/if}}",
+    "description": "{{#if galleryData.subtitle}}{{galleryData.subtitle}}{{else}}Gallery images{{/if}}",
+    "url": "{{currentUrl}}",
+    "mainEntity": {
+      "@type": "ItemList",
+      "numberOfItems": {{total}},
+      "itemListElement": [
+        {{#each ../galleryData.items}}
+        {
+          "@type": "ListItem",
+          "position": {{add @index 1}},
+          "item": {
+            "@type": "ImageObject",
+            "contentUrl": "{{srcFull}}",
+            "thumbnailUrl": "{{srcThumb}}",
+            "caption": "{{alt}}",
+            {{#if width}}"width": {{width}},{{/if}}
+            {{#if height}}"height": {{height}},{{/if}}
+            "uploadDate": "{{uploadDate}}"
+          }
+        }{{#unless @last}},{{/unless}}
+        {{/each}}
+      ]
+    }
+  }
+  </script>
+{{/if}}

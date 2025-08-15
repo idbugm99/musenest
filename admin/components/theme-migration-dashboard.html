@@ -1,0 +1,488 @@
+<!-- Theme Migration Dashboard Component -->
+<div class="theme-migration-dashboard">
+    <!-- Header -->
+    <div class="dashboard-header mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="mb-1">🔄 Theme Migration Center</h2>
+                <p class="text-muted mb-0">Manage progressive theme rollouts and A/B testing</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#abTestModal">
+                    <i class="bi bi-graph-up"></i> New A/B Test
+                </button>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#migrationModal">
+                    <i class="bi bi-rocket-takeoff"></i> Start Migration
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overview Cards -->
+    <div class="row mb-4" id="overviewCards">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-1" id="activeMigrationsCount">-</h3>
+                            <p class="mb-0 opacity-75">Active Migrations</p>
+                        </div>
+                        <i class="bi bi-arrow-clockwise fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-1" id="completedMigrationsCount">-</h3>
+                            <p class="mb-0 opacity-75">Completed (30d)</p>
+                        </div>
+                        <i class="bi bi-check-circle fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-1" id="rollbackCount">-</h3>
+                            <p class="mb-0 opacity-75">Rollbacks (30d)</p>
+                        </div>
+                        <i class="bi bi-arrow-counterclockwise fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-1" id="affectedUsersCount">-</h3>
+                            <p class="mb-0 opacity-75">Affected Users</p>
+                        </div>
+                        <i class="bi bi-people fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Migration List and Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Migration History</h5>
+                        <div class="d-flex gap-2">
+                            <select class="form-select form-select-sm" id="statusFilter" style="width: auto;">
+                                <option value="">All Status</option>
+                                <option value="preparing">Preparing</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                                <option value="rolled_back">Rolled Back</option>
+                                <option value="failed">Failed</option>
+                            </select>
+                            <button class="btn btn-sm btn-outline-secondary" id="refreshMigrations">
+                                <i class="bi bi-arrow-clockwise"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="migrationsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Migration</th>
+                                    <th>Phase</th>
+                                    <th>Progress</th>
+                                    <th>Affected Users</th>
+                                    <th>Performance</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="migrationsTableBody">
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                        Loading migrations...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Performance Overview</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="performanceChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <div id="recentActivity">
+                        <div class="text-center text-muted py-3">
+                            <div class="spinner-border spinner-border-sm me-2"></div>
+                            Loading activity...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Migrations Detail -->
+    <div class="row" id="activeMigrationsDetail" style="display: none;">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Active Migration Details</h5>
+                </div>
+                <div class="card-body">
+                    <div id="activeMigrationContent">
+                        <!-- Dynamic content populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Start Migration Modal -->
+<div class="modal fade" id="migrationModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">🚀 Start Theme Migration</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="migrationForm">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Migration Name *</label>
+                            <input type="text" class="form-control" name="name" required 
+                                   placeholder="e.g., Modern to Luxury Migration">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Schedule</label>
+                            <select class="form-select" name="schedule">
+                                <option value="immediate">Start Immediately</option>
+                                <option value="scheduled">Schedule for Later</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="2" 
+                                  placeholder="Brief description of the migration purpose..."></textarea>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Source Theme *</label>
+                            <select class="form-select" name="sourceTheme" required id="sourceThemeSelect">
+                                <option value="">Select source theme...</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Target Theme *</label>
+                            <select class="form-select" name="targetTheme" required id="targetThemeSelect">
+                                <option value="">Select target theme...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Target Models</label>
+                        <select class="form-select" name="targetModels" multiple id="targetModelsSelect">
+                            <option value="">All models (leave empty for all)</option>
+                        </select>
+                        <div class="form-text">Hold Ctrl/Cmd to select multiple models</div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Selection Strategy</label>
+                            <select class="form-select" name="selectionStrategy">
+                                <option value="random">Random Selection</option>
+                                <option value="canary">Canary (Most Active Users First)</option>
+                                <option value="staged">Staged (Mixed Activity Levels)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Settings -->
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="showAdvanced">
+                            <label class="form-check-label" for="showAdvanced">
+                                Show Advanced Settings
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="advancedSettings" style="display: none;">
+                        <div class="border rounded p-3 bg-light">
+                            <h6>Safety Thresholds</h6>
+                            <div class="row mb-2">
+                                <div class="col-md-4">
+                                    <label class="form-label">Max Error Rate (%)</label>
+                                    <input type="number" class="form-control form-control-sm" name="maxErrorRate" 
+                                           value="5" min="0" max="20" step="0.1">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Max Perf. Degradation (%)</label>
+                                    <input type="number" class="form-control form-control-sm" name="maxPerfDegradation" 
+                                           value="15" min="0" max="50" step="1">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Min User Satisfaction (%)</label>
+                                    <input type="number" class="form-control form-control-sm" name="minSatisfaction" 
+                                           value="80" min="50" max="100" step="1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="startMigrationBtn">
+                    <i class="bi bi-rocket-takeoff"></i> Start Migration
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- A/B Test Modal -->
+<div class="modal fade" id="abTestModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">📊 Create A/B Test</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="abTestForm">
+                    <div class="mb-3">
+                        <label class="form-label">Test Name *</label>
+                        <input type="text" class="form-control" name="name" required 
+                               placeholder="e.g., Modern vs Luxury Comparison">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="2" 
+                                  placeholder="What are you testing?"></textarea>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Control Theme (A) *</label>
+                            <select class="form-select" name="controlTheme" required id="controlThemeSelect">
+                                <option value="">Select control theme...</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Variant Theme (B) *</label>
+                            <select class="form-select" name="variantTheme" required id="variantThemeSelect">
+                                <option value="">Select variant theme...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Traffic Split</label>
+                            <div class="input-group">
+                                <input type="range" class="form-range" name="trafficSplit" 
+                                       min="0.1" max="0.9" step="0.1" value="0.5" id="trafficSplitRange">
+                            </div>
+                            <div class="form-text text-center" id="trafficSplitText">50% / 50%</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Duration (days)</label>
+                            <input type="number" class="form-control" name="duration" 
+                                   value="7" min="1" max="30">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Target Models</label>
+                        <select class="form-select" name="targetModels" multiple id="abTestTargetModels">
+                            <option value="">All models (leave empty for all)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="createAbTestBtn">
+                    <i class="bi bi-graph-up"></i> Create Test
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Migration Detail Modal -->
+<div class="modal fade" id="migrationDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="migrationDetailTitle">Migration Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="migrationDetailContent">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger d-none" id="rollbackMigrationBtn">
+                    <i class="bi bi-arrow-counterclockwise"></i> Rollback Migration
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationTitle">Confirm Action</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="confirmationBody">
+                <!-- Dynamic content -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmActionBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.theme-migration-dashboard .card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: box-shadow 0.15s ease-in-out;
+}
+
+.theme-migration-dashboard .card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.progress-stacked {
+    background-color: #e9ecef;
+}
+
+.migration-phase {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.phase-canary { background-color: #fef3c7; color: #92400e; }
+.phase-pilot { background-color: #dbeafe; color: #1e40af; }
+.phase-staged { background-color: #f3e8ff; color: #7c2d12; }
+.phase-production { background-color: #dcfce7; color: #166534; }
+
+.status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-preparing { background-color: #fef3c7; color: #92400e; }
+.status-in_progress { background-color: #dbeafe; color: #1e40af; }
+.status-completed { background-color: #dcfce7; color: #166534; }
+.status-rolled_back { background-color: #fee2e2; color: #991b1b; }
+.status-failed { background-color: #fecaca; color: #dc2626; }
+
+.performance-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.perf-excellent { background-color: #10b981; }
+.perf-good { background-color: #3b82f6; }
+.perf-warning { background-color: #f59e0b; }
+.perf-poor { background-color: #ef4444; }
+
+.recent-activity-item {
+    border-left: 3px solid #e5e7eb;
+    padding-left: 1rem;
+    margin-bottom: 1rem;
+}
+
+.recent-activity-item:last-child {
+    margin-bottom: 0;
+}
+
+.activity-completed { border-left-color: #10b981; }
+.activity-started { border-left-color: #3b82f6; }
+.activity-rolled_back { border-left-color: #ef4444; }
+
+.form-range {
+    margin-bottom: 0.5rem;
+}
+
+#advancedSettings {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 300px;
+    }
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+</style>

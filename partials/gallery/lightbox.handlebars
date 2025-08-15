@@ -1,0 +1,266 @@
+{{!-- 
+  Universal Gallery Lightbox Partial
+  
+  Accessible lightbox modal for gallery images with keyboard navigation,
+  touch gestures, and full screen support. Maintains focus management
+  and provides comprehensive metadata display.
+  
+  Context:
+  - galleryData: Gallery data with items and settings
+  - themeConfig: Theme configuration with CSS classes and icons
+  
+  Accessibility: Full WCAG 2.1 AA compliance with focus trap and screen reader support
+--}}
+
+<div id="gallery-lightbox" 
+     class="{{themeConfig.cssClasses.lightbox}} gallery-lightbox"
+     role="dialog" 
+     aria-modal="true"
+     aria-labelledby="lightbox-title"
+     aria-describedby="lightbox-description"
+     aria-hidden="true"
+     data-lightbox-modal>
+
+  {{!-- Backdrop --}}
+  <div class="lightbox-backdrop" 
+       data-lightbox-close
+       aria-hidden="true"></div>
+
+  {{!-- Modal Content --}}
+  <div class="lightbox-content" role="document">
+    
+    {{!-- Header --}}
+    <header class="lightbox-header">
+      <h2 id="lightbox-title" class="lightbox-title">
+        Image Viewer
+      </h2>
+      
+      <div class="lightbox-controls">
+        {{!-- Fullscreen Toggle --}}
+        {{#if galleryData.settings.fullscreen}}
+          <button type="button" 
+                  class="{{themeConfig.cssClasses.button}} lightbox-control fullscreen-btn"
+                  data-lightbox-fullscreen
+                  aria-label="Toggle fullscreen mode"
+                  title="Fullscreen (F)">
+            {{#if themeConfig.icons.fullscreen}}
+              {{themeConfig.icons.fullscreen}}
+            {{else}}
+              ⤢
+            {{/if}}
+          </button>
+        {{/if}}
+
+        {{!-- Close Button --}}
+        <button type="button" 
+                class="{{themeConfig.cssClasses.button}} lightbox-control close-btn"
+                data-lightbox-close
+                aria-label="Close image viewer"
+                title="Close (Esc)">
+          {{#if themeConfig.icons.close}}
+            {{themeConfig.icons.close}}
+          {{else}}
+            ✕
+          {{/if}}
+        </button>
+      </div>
+    </header>
+
+    {{!-- Main Content Area --}}
+    <main class="lightbox-main">
+      
+      {{!-- Navigation Controls --}}
+      <button type="button" 
+              class="{{themeConfig.cssClasses.button}} lightbox-nav lightbox-nav-prev"
+              data-lightbox-prev
+              aria-label="Previous image"
+              title="Previous image (Left arrow)"
+              disabled>
+        {{#if themeConfig.icons.prev}}
+          {{themeConfig.icons.prev}}
+        {{else}}
+          ‹
+        {{/if}}
+      </button>
+
+      <button type="button" 
+              class="{{themeConfig.cssClasses.button}} lightbox-nav lightbox-nav-next"
+              data-lightbox-next
+              aria-label="Next image"
+              title="Next image (Right arrow)"
+              disabled>
+        {{#if themeConfig.icons.next}}
+          {{themeConfig.icons.next}}
+        {{else}}
+          ›
+        {{/if}}
+      </button>
+
+      {{!-- Image Container --}}
+      <div class="lightbox-image-container" 
+           role="img" 
+           aria-labelledby="lightbox-image-alt">
+        
+        {{!-- Main Image --}}
+        <img id="lightbox-image" 
+             class="lightbox-image"
+             alt=""
+             aria-describedby="lightbox-image-caption"
+             data-lightbox-image>
+
+        {{!-- Loading Spinner --}}
+        <div class="lightbox-loading" 
+             role="status" 
+             aria-label="Loading image"
+             data-lightbox-loading>
+          <div class="loading-spinner" aria-hidden="true"></div>
+          <span class="sr-only">Loading full resolution image...</span>
+        </div>
+
+        {{!-- Error State --}}
+        <div class="lightbox-error" 
+             role="alert" 
+             style="display: none;"
+             data-lightbox-error>
+          <div class="error-content">
+            <div class="error-icon" aria-hidden="true">⚠</div>
+            <h3 class="error-title">Failed to load image</h3>
+            <p class="error-message">Please try again or select a different image.</p>
+            <button type="button" 
+                    class="{{themeConfig.cssClasses.button}} error-retry"
+                    data-lightbox-retry>
+              Retry
+            </button>
+          </div>
+        </div>
+
+        {{!-- Zoom Controls (if enabled) --}}
+        {{#if themeConfig.customizations.enableZoom}}
+          <div class="lightbox-zoom-controls" 
+               role="toolbar" 
+               aria-label="Image zoom controls">
+            <button type="button" 
+                    class="{{themeConfig.cssClasses.button}} zoom-control zoom-in"
+                    data-lightbox-zoom-in
+                    aria-label="Zoom in"
+                    title="Zoom in (+)">
+              +
+            </button>
+            <button type="button" 
+                    class="{{themeConfig.cssClasses.button}} zoom-control zoom-out"
+                    data-lightbox-zoom-out
+                    aria-label="Zoom out"
+                    title="Zoom out (-)">
+              −
+            </button>
+            <button type="button" 
+                    class="{{themeConfig.cssClasses.button}} zoom-control zoom-reset"
+                    data-lightbox-zoom-reset
+                    aria-label="Reset zoom"
+                    title="Reset zoom (0)">
+              Reset
+            </button>
+          </div>
+        {{/if}}
+      </div>
+
+    </main>
+
+    {{!-- Footer with Image Information --}}
+    <footer class="lightbox-footer">
+      
+      {{!-- Image Metadata --}}
+      <div class="lightbox-meta">
+        <div id="lightbox-image-alt" class="image-alt"></div>
+        
+        {{#if galleryData.settings.captions}}
+          <div id="lightbox-image-caption" class="image-caption"></div>
+        {{/if}}
+
+        {{#if galleryData.settings.imageInfo}}
+          <div class="image-details">
+            <div class="detail-item image-dimensions" data-lightbox-dimensions></div>
+            <div class="detail-item image-category" data-lightbox-category></div>
+            <div class="detail-item image-date" data-lightbox-date></div>
+          </div>
+        {{/if}}
+      </div>
+
+      {{!-- Counter --}}
+      <div class="lightbox-counter">
+        <span class="current-index" data-lightbox-current>1</span>
+        <span class="counter-separator"> of </span>
+        <span class="total-count" data-lightbox-total>{{galleryData.pagination.total}}</span>
+      </div>
+
+      {{!-- Keyboard Shortcuts Help --}}
+      {{#if themeConfig.customizations.showKeyboardHelp}}
+        <details class="lightbox-help">
+          <summary class="help-toggle">Keyboard shortcuts</summary>
+          <div class="help-content">
+            <dl class="shortcuts-list">
+              <dt>Left/Right arrows</dt>
+              <dd>Navigate between images</dd>
+              <dt>Escape</dt>
+              <dd>Close lightbox</dd>
+              <dt>F</dt>
+              <dd>Toggle fullscreen</dd>
+              {{#if themeConfig.customizations.enableZoom}}
+                <dt>+/-</dt>
+                <dd>Zoom in/out</dd>
+                <dt>0</dt>
+                <dd>Reset zoom</dd>
+              {{/if}}
+              <dt>Home/End</dt>
+              <dd>First/last image</dd>
+            </dl>
+          </div>
+        </details>
+      {{/if}}
+    </footer>
+
+  </div>
+
+  {{!-- Hidden Description for Screen Readers --}}
+  <div id="lightbox-description" class="sr-only">
+    Use arrow keys to navigate between images, press Escape to close the lightbox, 
+    or press F to toggle fullscreen mode.
+  </div>
+
+</div>
+
+{{!-- Lightbox JavaScript Data --}}
+<script type="application/json" id="lightbox-config">
+{
+  "enableKeyboard": {{galleryData.settings.enable_keyboard_navigation}},
+  "enableTouch": {{galleryData.settings.enable_touch_navigation}},
+  "enableFullscreen": {{galleryData.settings.fullscreen}},
+  "animation": "{{themeConfig.animations.lightboxOpen}}",
+  "closeAnimation": "{{themeConfig.animations.lightboxClose}}",
+  "respectReducedMotion": {{themeConfig.customizations.respectReducedMotion}},
+  "preloadNext": {{galleryData.settings.prefetchEnabled}},
+  "enableZoom": {{themeConfig.customizations.enableZoom}},
+  "maxZoom": 3,
+  "zoomStep": 0.5
+}
+</script>
+
+{{!-- Preload Image Data for Performance --}}
+<script type="application/json" id="lightbox-images-data">
+[
+  {{#each galleryData.items}}
+    {
+      "id": "{{id}}",
+      "alt": "{{alt}}",
+      "caption": "{{caption}}",
+      "srcFull": "{{srcFull}}",
+      "srcMed": "{{srcMed}}",
+      "width": {{#if width}}{{width}}{{else}}null{{/if}},
+      "height": {{#if height}}{{height}}{{else}}null{{/if}},
+      "category": "{{category}}",
+      "uploadDate": "{{uploadDate}}",
+      "featured": {{featured}}
+    }{{#unless @last}},{{/unless}}
+  {{/each}}
+]
+</script>

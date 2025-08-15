@@ -1,6 +1,16 @@
 /**
- * Content Moderation Service with Usage Intent & Auto-Moderation Rules
- * Handles the refined workflow for model uploads with flexible approval system
+ * Smart Content Moderation Service with ML-Based Violation Detection
+ * 
+ * Advanced content moderation system providing comprehensive automated violation detection
+ * using multiple ML models and policy-based enforcement with appeal processes.
+ * 
+ * Features:
+ * - Multi-model violation detection (NSFW, violence, toxicity, spam, copyright)
+ * - Policy-based automated moderation actions
+ * - Comprehensive appeals processing system
+ * - Real-time violation scoring and severity assessment
+ * - Advanced content classification and risk analysis
+ * - Integration with existing content moderation workflows
  */
 
 const path = require('path');
@@ -9,14 +19,122 @@ const { spawn } = require('child_process');
 const VeniceAIService = require('./VeniceAIService');
 const sharp = require('sharp');
 const crypto = require('crypto');
+const mysql = require('mysql2/promise');
+const Redis = require('redis');
+const EventEmitter = require('events');
 
-class ContentModerationService {
+class ContentModerationService extends EventEmitter {
     constructor(dbConnection) {
+        super();
         this.db = dbConnection;
         this.baseUploadPath = path.join(__dirname, '../../public/uploads');
         this.rules = new Map(); // Cache for moderation rules (legacy)
         this.analysisConfigs = new Map(); // Cache for new analysis configurations
         this.configCacheExpiry = 10 * 60 * 1000; // 10 minutes
+        
+        // ML-based violation detection configuration
+        this.violationDetectionConfig = {
+            // Detection models and their weights
+            detection_models: {
+                nsfw_classifier: {
+                    enabled: true,
+                    model_name: 'nsfw_mobilenet_v2',
+                    confidence_threshold: 0.7,
+                    weight: 0.8,
+                    violation_types: ['explicit_content', 'sexual_content']
+                },
+                violence_classifier: {
+                    enabled: true,
+                    model_name: 'violence_detector_v1',
+                    confidence_threshold: 0.6,
+                    weight: 0.9,
+                    violation_types: ['violence', 'weapons', 'gore']
+                },
+                toxicity_classifier: {
+                    enabled: true,
+                    model_name: 'toxicity_bert_v2',
+                    confidence_threshold: 0.8,
+                    weight: 0.7,
+                    violation_types: ['hate_speech', 'harassment', 'toxicity']
+                },
+                spam_classifier: {
+                    enabled: true,
+                    model_name: 'spam_detector_v1',
+                    confidence_threshold: 0.7,
+                    weight: 0.6,
+                    violation_types: ['spam', 'promotional_content']
+                },
+                copyright_classifier: {
+                    enabled: true,
+                    model_name: 'copyright_detector_v1',
+                    confidence_threshold: 0.8,
+                    weight: 1.0,
+                    violation_types: ['copyright_violation', 'trademark_violation']
+                }
+            },
+            
+            // Severity scoring configuration
+            severity_scoring: {
+                weights: {
+                    explicit_content: 0.9,
+                    violence: 1.0,
+                    hate_speech: 0.95,
+                    copyright_violation: 0.8,
+                    spam: 0.4,
+                    harassment: 0.85,
+                    toxicity: 0.7,
+                    weapons: 0.95,
+                    gore: 1.0
+                },
+                thresholds: {
+                    low: 0.3,
+                    medium: 0.6,
+                    high: 0.8,
+                    critical: 0.95
+                }
+            },
+            
+            // Automated actions configuration
+            automated_actions: {
+                low_severity: {
+                    action: 'flag_for_review',
+                    auto_execute: false,
+                    requires_approval: true
+                },
+                medium_severity: {
+                    action: 'temporary_removal',
+                    auto_execute: true,
+                    requires_approval: false,
+                    duration_hours: 24
+                },
+                high_severity: {
+                    action: 'content_removal',
+                    auto_execute: true,
+                    requires_approval: false,
+                    escalate_to_admin: true
+                },
+                critical_severity: {
+                    action: 'immediate_removal_and_user_restriction',
+                    auto_execute: true,
+                    requires_approval: false,
+                    escalate_to_admin: true,
+                    restrict_user_hours: 72
+                }
+            }
+        };
+        
+        // Performance tracking
+        this.performanceMetrics = {
+            violations_detected: 0,
+            actions_executed: 0,
+            appeals_processed: 0,
+            false_positives: 0,
+            processing_latency: [],
+            model_accuracy: new Map()
+        };
+        
+        // Initialize Redis for caching
+        this.initializeRedisConnection();
     }
 
 
@@ -124,6 +242,188 @@ class ContentModerationService {
         }
     }
 
+    /**
+     * Initialize Redis connection for caching and real-time processing
+     */
+    async initializeRedisConnection() {
+        try {
+            this.redis = Redis.createClient({
+                host: process.env.REDIS_HOST || 'localhost',
+                port: process.env.REDIS_PORT || 6379,
+                db: 7 // Use database 7 for content moderation
+            });
+            await this.redis.connect();
+            console.log('✅ Content Moderation Redis connection established');
+        } catch (error) {
+            console.error('❌ Failed to connect to Redis:', error.message);
+            this.redis = null;
+        }
+    }
+    
+    /**
+     * Comprehensive ML-based violation detection for content
+     */
+    async detectViolations(contentData, options = {}) {
+        try {
+            const startTime = Date.now();
+            console.log(`🔍 Starting comprehensive violation detection for content: ${contentData.id || 'unknown'}`);
+            
+            // Check cache first
+            const cacheKey = `violations:${contentData.hash || contentData.id}`;
+            if (this.redis && !options.forceRefresh) {
+                const cachedResult = await this.redis.get(cacheKey);
+                if (cachedResult) {
+                    console.log('📚 Returning cached violation detection result');
+                    return JSON.parse(cachedResult);
+                }
+            }
+            
+            const detectionResults = {
+                content_id: contentData.id,
+                detection_timestamp: new Date().toISOString(),
+                violations: [],
+                severity_score: 0,
+                risk_level: 'minimal',
+                recommended_action: 'approve',
+                model_results: {},
+                processing_metadata: {
+                    models_used: [],
+                    processing_time_ms: 0,
+                    cache_hit: false
+                }
+            };
+            
+            // Run all enabled violation detection models
+            const detectionPromises = [];
+            
+            for (const [modelName, modelConfig] of Object.entries(this.violationDetectionConfig.detection_models)) {
+                if (modelConfig.enabled) {
+                    detectionPromises.push(
+                        this.runViolationDetectionModel(modelName, modelConfig, contentData)
+                            .catch(error => ({ model: modelName, error: error.message }))
+                    );
+                }
+            }
+            
+            // Execute all models in parallel
+            const modelResults = await Promise.allSettled(detectionPromises);
+            
+            // Process detection results
+            for (const result of modelResults) {
+                if (result.status === 'fulfilled' && !result.value.error) {
+                    const modelResult = result.value;
+                    detectionResults.model_results[modelResult.model] = modelResult;
+                    detectionResults.processing_metadata.models_used.push(modelResult.model);
+                    
+                    // Extract violations from model results
+                    if (modelResult.violations && modelResult.violations.length > 0) {
+                        detectionResults.violations.push(...modelResult.violations);
+                    }
+                } else {
+                    console.error(`❌ Model ${result.value?.model || 'unknown'} failed:`, result.value?.error || result.reason);
+                }
+            }
+            
+            // Calculate overall severity score
+            detectionResults.severity_score = this.calculateSeverityScore(detectionResults.violations);
+            detectionResults.risk_level = this.determineRiskLevel(detectionResults.severity_score);
+            detectionResults.recommended_action = this.getRecommendedAction(detectionResults.risk_level, detectionResults.violations);
+            
+            // Add processing metadata
+            const processingTime = Date.now() - startTime;
+            detectionResults.processing_metadata.processing_time_ms = processingTime;
+            
+            // Cache results
+            if (this.redis) {
+                await this.redis.setEx(cacheKey, 3600, JSON.stringify(detectionResults)); // Cache for 1 hour
+            }
+            
+            // Update performance metrics
+            this.performanceMetrics.violations_detected += detectionResults.violations.length;
+            this.performanceMetrics.processing_latency.push(processingTime);
+            
+            console.log(`✅ Violation detection completed in ${processingTime}ms - Found ${detectionResults.violations.length} violations`);
+            console.log(`📊 Severity: ${detectionResults.risk_level} (${detectionResults.severity_score.toFixed(3)}) - Action: ${detectionResults.recommended_action}`);
+            
+            // Emit event for real-time monitoring
+            this.emit('violations-detected', {
+                contentId: contentData.id,
+                violationCount: detectionResults.violations.length,
+                severityScore: detectionResults.severity_score,
+                riskLevel: detectionResults.risk_level,
+                processingTime
+            });
+            
+            return detectionResults;
+            
+        } catch (error) {
+            console.error('❌ Violation detection error:', error);
+            return {
+                content_id: contentData.id,
+                error: true,
+                error_message: error.message,
+                detection_timestamp: new Date().toISOString(),
+                violations: [],
+                severity_score: 0.5, // Default medium risk when detection fails
+                risk_level: 'medium',
+                recommended_action: 'flag_for_review'
+            };
+        }
+    }
+    
+    /**
+     * Run individual violation detection model
+     */
+    async runViolationDetectionModel(modelName, modelConfig, contentData) {
+        const startTime = Date.now();
+        
+        try {
+            console.log(`🤖 Running ${modelName} detection model...`);
+            
+            let detectionResult;
+            
+            switch (modelName) {
+                case 'nsfw_classifier':
+                    detectionResult = await this.detectNSFWViolations(contentData, modelConfig);
+                    break;
+                case 'violence_classifier':
+                    detectionResult = await this.detectViolenceViolations(contentData, modelConfig);
+                    break;
+                case 'toxicity_classifier':
+                    detectionResult = await this.detectToxicityViolations(contentData, modelConfig);
+                    break;
+                case 'spam_classifier':
+                    detectionResult = await this.detectSpamViolations(contentData, modelConfig);
+                    break;
+                case 'copyright_classifier':
+                    detectionResult = await this.detectCopyrightViolations(contentData, modelConfig);
+                    break;
+                default:
+                    throw new Error(`Unknown detection model: ${modelName}`);
+            }
+            
+            const processingTime = Date.now() - startTime;
+            
+            return {
+                model: modelName,
+                violations: detectionResult.violations || [],
+                confidence_scores: detectionResult.confidence_scores || {},
+                model_metadata: detectionResult.metadata || {},
+                processing_time_ms: processingTime,
+                success: true
+            };
+            
+        } catch (error) {
+            console.error(`❌ ${modelName} detection failed:`, error.message);
+            return {
+                model: modelName,
+                error: error.message,
+                processing_time_ms: Date.now() - startTime,
+                success: false
+            };
+        }
+    }
+    
     /**
      * Get default rules if database rules fail
      */
@@ -1915,6 +2215,69 @@ except Exception as e:
         } catch (error) {
             console.error('Error creating blurred version:', error);
             throw error;
+        }
+    }
+    
+    /**
+     * Get service health status and performance metrics
+     */
+    async getServiceHealthStatus() {
+        try {
+            const dbConnected = this.db && await this.db.ping().then(() => true).catch(() => false);
+            const redisConnected = this.redis && this.redis.isReady;
+            
+            const avgProcessingLatency = this.performanceMetrics.processing_latency.length > 0
+                ? this.performanceMetrics.processing_latency.reduce((a, b) => a + b, 0) / this.performanceMetrics.processing_latency.length
+                : 0;
+            
+            return {
+                status: dbConnected && redisConnected ? 'healthy' : 'degraded',
+                components: {
+                    database: dbConnected,
+                    redis: redisConnected
+                },
+                detection_models: {
+                    enabled_models: Object.keys(this.violationDetectionConfig.detection_models)
+                        .filter(model => this.violationDetectionConfig.detection_models[model].enabled).length,
+                    total_models: Object.keys(this.violationDetectionConfig.detection_models).length
+                },
+                performance: {
+                    violations_detected: this.performanceMetrics.violations_detected,
+                    actions_executed: this.performanceMetrics.actions_executed,
+                    appeals_processed: this.performanceMetrics.appeals_processed,
+                    false_positives: this.performanceMetrics.false_positives,
+                    avg_processing_latency_ms: Math.round(avgProcessingLatency)
+                },
+                uptime: process.uptime(),
+                timestamp: new Date().toISOString()
+            };
+        } catch (error) {
+            return {
+                status: 'error',
+                error: error.message,
+                timestamp: new Date().toISOString()
+            };
+        }
+    }
+    
+    /**
+     * Shutdown service gracefully
+     */
+    async shutdown() {
+        try {
+            console.log('🔄 Shutting down Content Moderation Service...');
+            
+            // Disconnect Redis
+            if (this.redis) {
+                await this.redis.disconnect();
+            }
+            
+            // Remove all event listeners
+            this.removeAllListeners();
+            
+            console.log('✅ Content Moderation Service shutdown complete');
+        } catch (error) {
+            console.error('Error during service shutdown:', error);
         }
     }
 }

@@ -1,0 +1,413 @@
+<!-- Production Monitoring Dashboard Component -->
+<div class="production-monitoring-dashboard">
+    <!-- Header -->
+    <div class="dashboard-header mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="mb-1">📊 Production Monitoring</h2>
+                <p class="text-muted mb-0">Real-time system health, performance metrics, and alerting</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary" id="testAlertBtn">
+                    <i class="bi bi-bell"></i> Test Alert
+                </button>
+                <button class="btn btn-outline-secondary" id="refreshDashboardBtn">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" 
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-gear"></i> Settings
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" id="configureAlertsBtn">Configure Alerts</a></li>
+                        <li><a class="dropdown-item" href="#" id="manageBaselinesBtn">Manage Baselines</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" id="exportMetricsBtn">Export Metrics</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Health Overview -->
+    <div class="row mb-4" id="systemHealthCards">
+        <div class="col-md-2">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-server fs-1 opacity-50 mb-2"></i>
+                    <h4 id="healthyServicesCount">-</h4>
+                    <small>Healthy Services</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-exclamation-triangle fs-1 opacity-50 mb-2"></i>
+                    <h4 id="degradedServicesCount">-</h4>
+                    <small>Degraded Services</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-x-circle fs-1 opacity-50 mb-2"></i>
+                    <h4 id="unhealthyServicesCount">-</h4>
+                    <small>Unhealthy Services</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-stopwatch fs-1 opacity-50 mb-2"></i>
+                    <h4 id="avgResponseTimeDisplay">-</h4>
+                    <small>Avg Response Time</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-clock-history fs-1 opacity-50 mb-2"></i>
+                    <h4 id="systemUptimeDisplay">-</h4>
+                    <small>System Uptime</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Alerts -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">🚨 Active Alerts</h5>
+                        <div class="d-flex gap-2">
+                            <select class="form-select form-select-sm" id="alertSeverityFilter" style="width: auto;">
+                                <option value="">All Severities</option>
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                                <option value="critical">Critical</option>
+                            </select>
+                            <select class="form-select form-select-sm" id="alertSourceFilter" style="width: auto;">
+                                <option value="">All Sources</option>
+                                <option value="system">System</option>
+                                <option value="database">Database</option>
+                                <option value="gallery">Gallery</option>
+                                <option value="theme_system">Theme System</option>
+                                <option value="migration_system">Migration</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div id="activeAlertsContainer">
+                        <div class="text-center text-muted py-4">
+                            <div class="spinner-border spinner-border-sm me-2"></div>
+                            Loading active alerts...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Metrics Charts -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">📈 System Performance</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="systemPerformanceChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">🗄️ Database Performance</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="databasePerformanceChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gallery & User Experience Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">🖼️ Gallery Performance</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="galleryPerformanceChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">👤 User Experience (Core Web Vitals)</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="userExperienceChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Health Check Details -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">🔍 Service Health Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="healthCheckTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Status</th>
+                                    <th>Response Time</th>
+                                    <th>Last Check</th>
+                                    <th>Error Message</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="healthCheckTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-3">
+                                        <div class="spinner-border spinner-border-sm me-2"></div>
+                                        Loading health checks...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Statistics -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">📊 Alert Statistics (Last 7 Days)</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="alertStatisticsChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">⏱️ System Uptime</h5>
+                </div>
+                <div class="card-body">
+                    <div id="systemUptimeList">
+                        <div class="text-center text-muted py-3">
+                            <div class="spinner-border spinner-border-sm me-2"></div>
+                            Loading uptime data...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Resolution Modal -->
+<div class="modal fade" id="resolveAlertModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">🔧 Resolve Alert</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="resolveAlertForm">
+                    <div class="mb-3">
+                        <label class="form-label">Alert Details</label>
+                        <div id="alertDetailsDisplay" class="p-3 bg-light rounded">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Resolution Notes</label>
+                        <textarea class="form-control" name="resolutionNotes" rows="3" 
+                                  placeholder="Describe how this alert was resolved..."></textarea>
+                    </div>
+                    <input type="hidden" name="alertId" id="resolveAlertId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="confirmResolveAlertBtn">
+                    <i class="bi bi-check-circle"></i> Mark as Resolved
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.production-monitoring-dashboard .card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: box-shadow 0.15s ease-in-out;
+}
+
+.production-monitoring-dashboard .card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.alert-severity-critical {
+    border-left: 4px solid #dc3545;
+    background: #f8d7da;
+}
+
+.alert-severity-high {
+    border-left: 4px solid #fd7e14;
+    background: #fff3cd;
+}
+
+.alert-severity-medium {
+    border-left: 4px solid #ffc107;
+    background: #fff3cd;
+}
+
+.alert-severity-low {
+    border-left: 4px solid #6c757d;
+    background: #f8f9fa;
+}
+
+.health-status-healthy {
+    color: #198754;
+    background: #d1eddd;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.health-status-degraded {
+    color: #fd7e14;
+    background: #fff3cd;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.health-status-unhealthy {
+    color: #dc3545;
+    background: #f8d7da;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.uptime-item {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.uptime-item:last-child {
+    border-bottom: none;
+}
+
+.uptime-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.uptime-excellent {
+    background: #d1eddd;
+    color: #198754;
+}
+
+.uptime-good {
+    background: #cff4fc;
+    color: #055160;
+}
+
+.uptime-warning {
+    background: #fff3cd;
+    color: #664d03;
+}
+
+.alert-item {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid #6c757d;
+}
+
+.alert-item:last-child {
+    margin-bottom: 0;
+}
+
+.alert-meta {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.chart-container {
+    position: relative;
+    height: 200px;
+}
+
+.metric-card {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.metric-label {
+    font-size: 0.875rem;
+    opacity: 0.8;
+}
+
+.auto-refresh-indicator {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+.auto-refresh-indicator .spinner-border {
+    width: 0.75rem;
+    height: 0.75rem;
+    margin-right: 0.25rem;
+}
+</style>

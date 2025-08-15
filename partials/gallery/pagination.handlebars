@@ -1,0 +1,205 @@
+{{!-- 
+  Universal Gallery Pagination Partial
+  
+  Provides accessible pagination controls with keyboard navigation support.
+  Adapts visual styling through theme configuration while maintaining consistent functionality.
+  
+  Context:
+  - pagination: Pagination object (page, pageSize, total, totalPages, hasNext, hasPrev)
+  - themeConfig: Theme configuration with CSS classes and icons
+  
+  Accessibility: Full keyboard navigation with proper ARIA labels
+--}}
+
+{{#if (gt pagination.totalPages 1)}}
+<nav class="{{themeConfig.cssClasses.pagination}} gallery-pagination" 
+     role="navigation" 
+     aria-label="Gallery pagination">
+  
+  <div class="pagination-info">
+    <span class="pagination-summary" aria-live="polite">
+      Showing {{add (multiply (subtract pagination.page 1) pagination.pageSize) 1}} - 
+      {{min (multiply pagination.page pagination.pageSize) pagination.total}} of {{pagination.total}} images
+    </span>
+  </div>
+
+  <div class="pagination-controls">
+    
+    {{!-- Previous Page --}}
+    {{#if pagination.hasPrev}}
+      <button type="button"
+              class="{{themeConfig.cssClasses.paginationButton}} pagination-btn pagination-prev"
+              data-page="{{subtract pagination.page 1}}"
+              aria-label="Go to previous page"
+              title="Previous page">
+        {{#if themeConfig.icons.prev}}
+          <span aria-hidden="true">{{themeConfig.icons.prev}}</span>
+        {{else}}
+          <span aria-hidden="true">‹</span>
+        {{/if}}
+        <span class="btn-text">Previous</span>
+      </button>
+    {{else}}
+      <span class="{{themeConfig.cssClasses.paginationButton}} pagination-btn pagination-prev disabled" 
+            aria-disabled="true"
+            aria-label="Previous page (unavailable)">
+        {{#if themeConfig.icons.prev}}
+          <span aria-hidden="true">{{themeConfig.icons.prev}}</span>
+        {{else}}
+          <span aria-hidden="true">‹</span>
+        {{/if}}
+        <span class="btn-text">Previous</span>
+      </span>
+    {{/if}}
+
+    {{!-- Page Numbers --}}
+    <div class="pagination-pages" role="group" aria-label="Page navigation">
+      
+      {{!-- First page (if not in visible range) --}}
+      {{#if (gt (subtract pagination.page 2) 1)}}
+        <button type="button"
+                class="{{themeConfig.cssClasses.paginationButton}} pagination-btn pagination-page"
+                data-page="1"
+                aria-label="Go to page 1"
+                title="Page 1">
+          1
+        </button>
+        
+        {{#if (gt (subtract pagination.page 3) 1)}}
+          <span class="pagination-ellipsis" aria-hidden="true">…</span>
+        {{/if}}
+      {{/if}}
+
+      {{!-- Previous page --}}
+      {{#if pagination.hasPrev}}
+        <button type="button"
+                class="{{themeConfig.cssClasses.paginationButton}} pagination-btn pagination-page"
+                data-page="{{subtract pagination.page 1}}"
+                aria-label="Go to page {{subtract pagination.page 1}}"
+                title="Page {{subtract pagination.page 1}}">
+          {{subtract pagination.page 1}}
+        </button>
+      {{/if}}
+
+      {{!-- Current page --}}
+      <button type="button"
+              class="{{themeConfig.cssClasses.paginationButton}} pagination-btn pagination-page current"
+              data-page="{{pagination.page}}"
+              aria-current="page"
+              aria-label="Current page, page {{pagination.page}}"
+              title="Current page: {{pagination.page}}"
+              disabled>
+        {{pagination.page}}
+      </button>
+
+      {{!-- Next page --}}
+      {{#if pagination.hasNext}}
+        <button type="button"
+                class="{{themeConfig.cssClasses.paginationButton}} pagination-btn pagination-page"
+                data-page="{{add pagination.page 1}}"
+                aria-label="Go to page {{add pagination.page 1}}"
+                title="Page {{add pagination.page 1}}">
+          {{add pagination.page 1}}
+        </button>
+      {{/if}}
+
+      {{!-- Last page (if not in visible range) --}}
+      {{#if (lt (add pagination.page 2) pagination.totalPages)}}
+        {{#if (lt (add pagination.page 3) pagination.totalPages)}}
+          <span class="pagination-ellipsis" aria-hidden="true">…</span>
+        {{/if}}
+        
+        <button type="button"
+                class="{{themeConfig.cssClasses.paginationButton}} pagination-btn pagination-page"
+                data-page="{{pagination.totalPages}}"
+                aria-label="Go to page {{pagination.totalPages}}"
+                title="Page {{pagination.totalPages}}">
+          {{pagination.totalPages}}
+        </button>
+      {{/if}}
+    </div>
+
+    {{!-- Next Page --}}
+    {{#if pagination.hasNext}}
+      <button type="button"
+              class="{{themeConfig.cssClasses.paginationButton}} pagination-btn pagination-next"
+              data-page="{{add pagination.page 1}}"
+              aria-label="Go to next page"
+              title="Next page">
+        <span class="btn-text">Next</span>
+        {{#if themeConfig.icons.next}}
+          <span aria-hidden="true">{{themeConfig.icons.next}}</span>
+        {{else}}
+          <span aria-hidden="true">›</span>
+        {{/if}}
+      </button>
+    {{else}}
+      <span class="{{themeConfig.cssClasses.paginationButton}} pagination-btn pagination-next disabled" 
+            aria-disabled="true"
+            aria-label="Next page (unavailable)">
+        <span class="btn-text">Next</span>
+        {{#if themeConfig.icons.next}}
+          <span aria-hidden="true">{{themeConfig.icons.next}}</span>
+        {{else}}
+          <span aria-hidden="true">›</span>
+        {{/if}}
+      </span>
+    {{/if}}
+  </div>
+
+  {{!-- Page Size Selector (optional) --}}
+  {{#if themeConfig.customizations.enablePageSizeSelector}}
+    <div class="pagination-page-size">
+      <label for="page-size-select" class="page-size-label">
+        Images per page:
+      </label>
+      <select id="page-size-select" 
+              class="{{themeConfig.cssClasses.select}} page-size-select"
+              aria-label="Change number of images per page">
+        {{#each (array 12 20 24 48)}}
+          <option value="{{this}}" 
+                  {{#if (eq this ../pagination.pageSize)}}selected{{/if}}>
+            {{this}}
+          </option>
+        {{/each}}
+      </select>
+    </div>
+  {{/if}}
+
+  {{!-- Quick Jump (optional) --}}
+  {{#if (and themeConfig.customizations.enableQuickJump (gt pagination.totalPages 5))}}
+    <div class="pagination-quick-jump">
+      <label for="page-jump-input" class="quick-jump-label">
+        Go to page:
+      </label>
+      <input type="number" 
+             id="page-jump-input"
+             class="{{themeConfig.cssClasses.input}} page-jump-input"
+             min="1" 
+             max="{{pagination.totalPages}}"
+             value="{{pagination.page}}"
+             aria-label="Enter page number to jump to">
+      <button type="button" 
+              class="{{themeConfig.cssClasses.button}} page-jump-btn"
+              aria-label="Jump to entered page number">
+        Go
+      </button>
+    </div>
+  {{/if}}
+
+</nav>
+
+{{!-- Keyboard shortcuts help (hidden by default) --}}
+<div id="pagination-help" 
+     class="pagination-help sr-only" 
+     role="region" 
+     aria-label="Pagination keyboard shortcuts">
+  <p>Keyboard shortcuts:</p>
+  <ul>
+    <li>Left arrow: Previous page</li>
+    <li>Right arrow: Next page</li>
+    <li>Home: First page</li>
+    <li>End: Last page</li>
+  </ul>
+</div>
+{{/if}}

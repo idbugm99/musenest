@@ -1,0 +1,550 @@
+/**
+ * Universal Gallery Pagination Styles
+ * 
+ * Comprehensive pagination component styles with accessibility,
+ * responsive design, and keyboard navigation support.
+ */
+
+/* ===== Pagination Container ===== */
+.gallery-pagination {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gallery-spacing-md);
+  padding: var(--gallery-spacing-md);
+  background-color: var(--gallery-color-surface);
+  border: 1px solid var(--gallery-color-border);
+  border-radius: var(--gallery-item-border-radius);
+  margin-top: var(--gallery-spacing-lg);
+}
+
+@media (min-width: 768px) {
+  .gallery-pagination {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+/* ===== Pagination Info ===== */
+.pagination-info {
+  text-align: center;
+  order: 1;
+}
+
+@media (min-width: 768px) {
+  .pagination-info {
+    text-align: left;
+    order: 0;
+  }
+}
+
+.pagination-summary {
+  font-size: var(--gallery-font-size-sm);
+  color: var(--gallery-color-text-muted);
+}
+
+/* ===== Pagination Controls ===== */
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gallery-spacing-xs);
+  order: 0;
+}
+
+@media (min-width: 768px) {
+  .pagination-controls {
+    order: 1;
+  }
+}
+
+/* ===== Pagination Buttons ===== */
+.gallery-pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  padding: var(--gallery-spacing-xs) var(--gallery-spacing-sm);
+  background-color: var(--gallery-color-background);
+  color: var(--gallery-color-text);
+  border: 1px solid var(--gallery-color-border);
+  border-radius: calc(var(--gallery-item-border-radius) / 2);
+  font-size: var(--gallery-font-size-sm);
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--gallery-transition-fast);
+  user-select: none;
+}
+
+.gallery-pagination-btn:hover:not(:disabled):not(.disabled) {
+  background-color: var(--gallery-color-focus);
+  color: white;
+  border-color: var(--gallery-color-focus);
+  transform: translateY(-1px);
+  box-shadow: var(--gallery-shadow-sm);
+}
+
+.gallery-pagination-btn:focus {
+  outline: 2px solid var(--gallery-color-focus);
+  outline-offset: 2px;
+}
+
+.gallery-pagination-btn:active:not(:disabled):not(.disabled) {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.gallery-pagination-btn:disabled,
+.gallery-pagination-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  background-color: var(--gallery-color-surface);
+  color: var(--gallery-color-text-muted);
+}
+
+/* Current page button */
+.gallery-pagination-btn.current {
+  background-color: var(--gallery-color-focus);
+  color: white;
+  border-color: var(--gallery-color-focus);
+  cursor: default;
+  pointer-events: none;
+  font-weight: 600;
+}
+
+/* ===== Previous/Next Buttons ===== */
+.pagination-prev,
+.pagination-next {
+  display: flex;
+  align-items: center;
+  gap: var(--gallery-spacing-xs);
+}
+
+.pagination-prev .btn-text,
+.pagination-next .btn-text {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .pagination-prev .btn-text,
+  .pagination-next .btn-text {
+    display: inline;
+  }
+  
+  .pagination-prev,
+  .pagination-next {
+    min-width: auto;
+    padding: var(--gallery-spacing-xs) var(--gallery-spacing-md);
+  }
+}
+
+/* ===== Page Numbers ===== */
+.pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: var(--gallery-spacing-xs);
+}
+
+.pagination-page {
+  min-width: 2.5rem;
+  padding: var(--gallery-spacing-xs);
+}
+
+.pagination-ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  color: var(--gallery-color-text-muted);
+  font-size: var(--gallery-font-size-sm);
+  user-select: none;
+}
+
+/* ===== Mobile Responsive ===== */
+@media (max-width: 640px) {
+  .pagination-pages .pagination-page:not(.current) {
+    display: none;
+  }
+  
+  /* Show only a few pages on mobile */
+  .pagination-pages .pagination-page:first-child,
+  .pagination-pages .pagination-page:last-child,
+  .pagination-pages .pagination-page.current,
+  .pagination-pages .pagination-page.current + .pagination-page,
+  .pagination-pages .pagination-page.current - .pagination-page {
+    display: flex;
+  }
+  
+  .gallery-pagination {
+    padding: var(--gallery-spacing-sm);
+  }
+  
+  .pagination-controls {
+    gap: var(--gallery-spacing-xs);
+  }
+  
+  .gallery-pagination-btn {
+    min-width: 2rem;
+    min-height: 2rem;
+    font-size: var(--gallery-font-size-xs);
+  }
+}
+
+/* ===== Page Size Selector ===== */
+.pagination-page-size {
+  display: flex;
+  align-items: center;
+  gap: var(--gallery-spacing-sm);
+  order: 2;
+}
+
+@media (max-width: 768px) {
+  .pagination-page-size {
+    justify-content: center;
+  }
+}
+
+.page-size-label {
+  font-size: var(--gallery-font-size-sm);
+  color: var(--gallery-color-text);
+  white-space: nowrap;
+}
+
+.page-size-select {
+  min-width: 80px;
+  padding: var(--gallery-spacing-xs) var(--gallery-spacing-sm);
+  font-size: var(--gallery-font-size-sm);
+  border: 1px solid var(--gallery-color-border);
+  border-radius: calc(var(--gallery-item-border-radius) / 2);
+  background-color: var(--gallery-color-background);
+  color: var(--gallery-color-text);
+  cursor: pointer;
+}
+
+.page-size-select:focus {
+  outline: 2px solid var(--gallery-color-focus);
+  outline-offset: 2px;
+  border-color: var(--gallery-color-focus);
+}
+
+/* ===== Quick Jump ===== */
+.pagination-quick-jump {
+  display: flex;
+  align-items: center;
+  gap: var(--gallery-spacing-sm);
+  order: 3;
+}
+
+@media (max-width: 768px) {
+  .pagination-quick-jump {
+    flex-direction: column;
+    gap: var(--gallery-spacing-xs);
+    text-align: center;
+  }
+}
+
+.quick-jump-label {
+  font-size: var(--gallery-font-size-sm);
+  color: var(--gallery-color-text);
+  white-space: nowrap;
+}
+
+.page-jump-input {
+  width: 4rem;
+  padding: var(--gallery-spacing-xs);
+  font-size: var(--gallery-font-size-sm);
+  text-align: center;
+  border: 1px solid var(--gallery-color-border);
+  border-radius: calc(var(--gallery-item-border-radius) / 2);
+  background-color: var(--gallery-color-background);
+  color: var(--gallery-color-text);
+}
+
+.page-jump-input:focus {
+  outline: 2px solid var(--gallery-color-focus);
+  outline-offset: 2px;
+  border-color: var(--gallery-color-focus);
+}
+
+.page-jump-btn {
+  padding: var(--gallery-spacing-xs) var(--gallery-spacing-md);
+  font-size: var(--gallery-font-size-sm);
+}
+
+@media (max-width: 640px) {
+  .page-jump-input {
+    width: 3rem;
+  }
+  
+  .page-jump-btn {
+    padding: var(--gallery-spacing-xs) var(--gallery-spacing-sm);
+    font-size: var(--gallery-font-size-xs);
+  }
+}
+
+/* ===== Keyboard Help ===== */
+.pagination-help {
+  margin-top: var(--gallery-spacing-sm);
+  padding: var(--gallery-spacing-sm);
+  background-color: var(--gallery-color-background);
+  border: 1px solid var(--gallery-color-border);
+  border-radius: calc(var(--gallery-item-border-radius) / 2);
+  font-size: var(--gallery-font-size-xs);
+  color: var(--gallery-color-text-muted);
+  order: 4;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .pagination-help {
+    display: none;
+  }
+}
+
+.pagination-help p {
+  margin: 0 0 var(--gallery-spacing-xs) 0;
+  font-weight: 500;
+}
+
+.pagination-help ul {
+  margin: 0;
+  padding-left: var(--gallery-spacing-md);
+  list-style-type: disc;
+}
+
+.pagination-help li {
+  margin-bottom: var(--gallery-spacing-xs);
+  line-height: 1.4;
+}
+
+/* ===== Loading States ===== */
+.gallery-pagination.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.gallery-pagination.loading .pagination-controls::after {
+  content: "";
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--gallery-color-border);
+  border-top: 2px solid var(--gallery-color-focus);
+  border-radius: 50%;
+  animation: gallery-spin 1s linear infinite;
+  margin-left: var(--gallery-spacing-md);
+}
+
+/* ===== Error States ===== */
+.gallery-pagination.error {
+  border-color: var(--gallery-color-error);
+  background-color: color-mix(in srgb, var(--gallery-color-error) 5%, transparent);
+}
+
+.pagination-error-message {
+  width: 100%;
+  text-align: center;
+  color: var(--gallery-color-error);
+  font-size: var(--gallery-font-size-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gallery-spacing-xs);
+  order: 5;
+}
+
+.pagination-error-message::before {
+  content: "⚠";
+  font-size: var(--gallery-font-size-base);
+}
+
+/* ===== Touch Optimizations ===== */
+@media (pointer: coarse) {
+  .gallery-pagination-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  .page-jump-input {
+    min-height: 44px;
+  }
+  
+  .page-size-select {
+    min-height: 44px;
+  }
+}
+
+/* ===== Animation and Transitions ===== */
+.pagination-updating {
+  position: relative;
+}
+
+.pagination-updating::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gallery-color-focus),
+    transparent
+  );
+  animation: pagination-loading-bar 1s linear infinite;
+}
+
+@keyframes pagination-loading-bar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Page change animation */
+.pagination-changing .pagination-page {
+  animation: pagination-pulse 0.5s ease-in-out;
+}
+
+@keyframes pagination-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ===== Accessibility Enhancements ===== */
+
+/* Focus indicators */
+.pagination-controls:focus-within {
+  outline: 2px solid var(--gallery-color-focus);
+  outline-offset: 2px;
+  border-radius: var(--gallery-item-border-radius);
+}
+
+/* Screen reader improvements */
+.pagination-sr-info {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .gallery-pagination {
+    border-width: 2px;
+  }
+  
+  .gallery-pagination-btn {
+    border-width: 2px;
+  }
+  
+  .gallery-pagination-btn.current {
+    border-width: 3px;
+  }
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  .gallery-pagination-btn,
+  .page-jump-input,
+  .page-size-select {
+    transition: none !important;
+  }
+  
+  .gallery-pagination-btn:hover {
+    transform: none;
+  }
+  
+  .pagination-updating::after,
+  .pagination-changing .pagination-page {
+    animation: none !important;
+  }
+}
+
+/* ===== Print Styles ===== */
+@media print {
+  .gallery-pagination {
+    display: none !important;
+  }
+}
+
+/* ===== Compact Mode ===== */
+.gallery-pagination.compact {
+  padding: var(--gallery-spacing-sm);
+  gap: var(--gallery-spacing-sm);
+}
+
+.gallery-pagination.compact .gallery-pagination-btn {
+  min-width: 2rem;
+  min-height: 2rem;
+  font-size: var(--gallery-font-size-xs);
+}
+
+.gallery-pagination.compact .pagination-summary {
+  font-size: var(--gallery-font-size-xs);
+}
+
+.gallery-pagination.compact .pagination-page-size,
+.gallery-pagination.compact .pagination-quick-jump {
+  display: none;
+}
+
+/* ===== Infinite Scroll Mode ===== */
+.gallery-pagination.infinite-scroll {
+  justify-content: center;
+}
+
+.gallery-pagination.infinite-scroll .pagination-controls,
+.gallery-pagination.infinite-scroll .pagination-info {
+  display: none;
+}
+
+.load-more-btn {
+  padding: var(--gallery-spacing-md) var(--gallery-spacing-xl);
+  font-size: var(--gallery-font-size-base);
+  background-color: var(--gallery-color-focus);
+  color: white;
+  border: none;
+  border-radius: var(--gallery-item-border-radius);
+  cursor: pointer;
+  transition: all var(--gallery-transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--gallery-spacing-sm);
+}
+
+.load-more-btn:hover {
+  background-color: color-mix(in srgb, var(--gallery-color-focus) 90%, black);
+  transform: translateY(-2px);
+  box-shadow: var(--gallery-shadow-md);
+}
+
+.load-more-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.load-more-btn .loading-spinner {
+  width: 1rem;
+  height: 1rem;
+  border-width: 2px;
+  border-color: rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+}

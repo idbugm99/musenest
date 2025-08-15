@@ -42,6 +42,17 @@ class GalleryRenderingService {
                 lightbox_thumbnails: true
             }
         };
+        
+        // Gallery content settings from database
+        this.galleryContentSettings = {};
+    }
+
+    /**
+     * Set gallery content settings from database
+     * @param {Object} settings - Gallery content settings
+     */
+    setGalleryContentSettings(settings) {
+        this.galleryContentSettings = settings || {};
     }
 
     /**
@@ -314,6 +325,10 @@ class GalleryRenderingService {
             grid_lightbox = true,
             grid_captions = false
         } = settings;
+        
+        // Override lightbox settings with database values
+        const enableLightbox = this.galleryContentSettings.enable_lightbox ?? grid_lightbox;
+        const showCaptions = this.galleryContentSettings.show_captions ?? grid_captions;
 
         const aspectRatioStyle = grid_aspect === 'auto' ? '' : `aspect-ratio: ${grid_aspect.replace(':', '/')};`;
         
@@ -330,16 +345,16 @@ class GalleryRenderingService {
             ">
                 ${media.map((item, index) => `
                 <div class="grid-item" data-index="${index}">
-                    <div class="grid-image-wrapper" style="${aspectRatioStyle} overflow: hidden; border-radius: 8px; cursor: ${grid_lightbox ? 'pointer' : 'default'};">
+                    <div class="grid-image-wrapper" style="${aspectRatioStyle} overflow: hidden; border-radius: 8px; cursor: ${enableLightbox ? 'pointer' : 'default'};">
                         <img src="${item.thumbnail_url || item.file_url}" 
                              alt="${item.custom_caption || item.original_filename}"
                              data-full-url="${item.file_url}"
                              style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;"
-                             ${grid_lightbox ? `onclick="openLightbox('${item.file_url}', '${(item.custom_caption || '').replace(/'/g, '&apos;')}', ${index}, 'gallery-${section.id}')"` : ''}
+                             ${enableLightbox ? `onclick="openLightbox('${item.file_url}', '${(item.custom_caption || '').replace(/'/g, '&apos;')}', ${index}, 'gallery-${section.id}')"` : ''}
                              onmouseover="this.style.transform='scale(1.05)'"
                              onmouseout="this.style.transform='scale(1)'">
                     </div>
-                    ${grid_captions && (item.custom_caption || item.original_filename) ? `
+                    ${showCaptions && (item.custom_caption || item.original_filename) ? `
                     <div class="grid-caption" style="margin-top: 8px; font-size: 0.9rem; color: #666; text-align: center;">
                         ${item.custom_caption || item.original_filename}
                     </div>
@@ -365,6 +380,9 @@ class GalleryRenderingService {
             masonry_gap = 15,
             masonry_lightbox = true
         } = settings;
+        
+        // Override lightbox settings with database values
+        const enableLightbox = this.galleryContentSettings.enable_lightbox ?? masonry_lightbox;
 
         const html = `
         <div class="gallery-section gallery-masonry" data-section-id="${section.id}" data-layout="masonry">
@@ -383,12 +401,13 @@ class GalleryRenderingService {
                     margin-bottom: ${masonry_gap}px;
                     border-radius: 8px;
                     overflow: hidden;
-                    cursor: ${masonry_lightbox ? 'pointer' : 'default'};
+                    cursor: ${enableLightbox ? 'pointer' : 'default'};
                 ">
                     <img src="${item.file_url}" 
                          alt="${item.custom_caption || item.original_filename}"
+                         data-full-url="${item.file_url}"
                          style="width: 100%; height: auto; display: block; transition: transform 0.3s ease;"
-                         ${masonry_lightbox ? `onclick="openLightbox('${item.file_url}', '${(item.custom_caption || '').replace(/'/g, '&apos;')}', ${index}, 'gallery-${section.id}')"` : ''}
+                         ${enableLightbox ? `onclick="openLightbox('${item.file_url}', '${(item.custom_caption || '').replace(/'/g, '&apos;')}', ${index}, 'gallery-${section.id}')"` : ''}
                          onmouseover="this.style.transform='scale(1.02)'"
                          onmouseout="this.style.transform='scale(1)'">
                 </div>
@@ -485,6 +504,9 @@ class GalleryRenderingService {
             lightbox_captions = true,
             lightbox_thumbnails = true
         } = settings;
+        
+        // Override with database values (lightbox grid always uses lightbox)
+        const showCaptions = this.galleryContentSettings.show_captions ?? lightbox_captions;
 
         const html = `
         <div class="gallery-section gallery-lightbox-grid" data-section-id="${section.id}" data-layout="lightbox_grid">

@@ -53,7 +53,14 @@
 
         {{#if (hasGalleries modelSlug)}}
             <!-- Rose Gallery Collections -->
-            <div class="rose-gallery-collections" data-aos="fade-up">
+            <div class="rose-gallery-collections" data-aos="fade-up" 
+                 data-enable-lightbox="{{gallery_content.enable_lightbox}}"
+                 data-enable-fullscreen="{{gallery_content.enable_fullscreen}}"
+                 data-show-captions="{{gallery_content.show_captions}}"
+                 data-show-image-info="{{gallery_content.show_image_info}}"
+                 data-show-search="{{gallery_content.show_search}}"
+                 data-show-sort="{{gallery_content.show_sort_options}}"
+                 data-show-filters="{{gallery_content.show_category_filter}}">
                 {{{renderGalleries modelSlug}}}
             </div>
         {{else}}
@@ -133,12 +140,29 @@
     </div>
 </section>
 
+{{#if gallery_content.enable_lightbox}}
 <!-- Rose Gallery Lightbox -->
 <div id="rose-lightbox-modal" class="rose-lightbox-overlay">
     <div class="rose-lightbox-container">
         <!-- Rose Close Button -->
         <button onclick="closeRoseLightbox()" class="rose-lightbox-close">
             <span class="rose-close-icon">✕</span>
+        </button>
+        
+        {{#if gallery_content.enable_fullscreen}}
+        <!-- Rose Fullscreen Button -->
+        <button onclick="toggleRoseFullscreen()" class="rose-lightbox-fullscreen">
+            <span class="rose-fullscreen-icon">⤢</span>
+        </button>
+        {{/if}}
+        
+        <!-- Rose Navigation Arrows -->
+        <button onclick="navigateRoseLightbox(-1)" class="rose-lightbox-nav rose-nav-prev">
+            <span class="rose-nav-icon">‹</span>
+        </button>
+        
+        <button onclick="navigateRoseLightbox(1)" class="rose-lightbox-nav rose-nav-next">
+            <span class="rose-nav-icon">›</span>
         </button>
         
         <!-- Rose Image Container -->
@@ -154,14 +178,22 @@
             </div>
         </div>
         
+        {{#if gallery_content.show_captions}}
         <!-- Rose Caption -->
         <div class="rose-lightbox-caption">
             <div class="rose-caption-bloom">🌸</div>
             <p id="rose-lightbox-caption-text"></p>
             <div class="rose-caption-bloom">🌸</div>
+            {{#if gallery_content.show_image_info}}
+            <div class="rose-image-info" id="rose-lightbox-info">
+                <small class="rose-info-text"></small>
+            </div>
+            {{/if}}
         </div>
+        {{/if}}
     </div>
 </div>
+{{/if}}
 
 <!-- Rose Gallery Styling -->
 <style>
@@ -341,6 +373,28 @@
     gap: 24px;
     max-width: 100%;
     padding: 30px 0;
+}
+
+/* Rose Gallery Image Wrappers */
+.rose-gallery-collections .grid-image-wrapper,
+.rose-gallery-collections .masonry-item,
+.rose-gallery-collections .lightbox-thumbnail {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.rose-gallery-collections .grid-item img,
+.rose-gallery-collections .masonry-item img,
+.rose-gallery-collections .lightbox-grid-item img {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+[data-enable-lightbox="false"] .rose-gallery-collections .grid-image-wrapper,
+[data-enable-lightbox="false"] .rose-gallery-collections .masonry-item,
+[data-enable-lightbox="false"] .rose-gallery-collections .lightbox-thumbnail,
+[data-enable-lightbox="false"] .rose-gallery-collections img {
+    cursor: default !important;
 }
 
 /* Rose Masonry Grid Layout */
@@ -713,6 +767,88 @@
     box-shadow: 0 12px 32px rgba(220, 38, 38, 0.6);
 }
 
+.rose-lightbox-fullscreen {
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    background: var(--rose-gold);
+    color: var(--rose-white);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+}
+
+.rose-lightbox-fullscreen:hover {
+    background: #b8860b;
+    transform: scale(1.1);
+    box-shadow: 0 12px 32px rgba(212, 175, 55, 0.6);
+}
+
+.rose-lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(220, 38, 38, 0.9);
+    color: var(--rose-white);
+    border: none;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 24px rgba(220, 38, 38, 0.4);
+}
+
+.rose-lightbox-nav:hover {
+    background: var(--rose-deep);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 12px 32px rgba(220, 38, 38, 0.6);
+}
+
+.rose-nav-prev {
+    left: -80px;
+}
+
+.rose-nav-next {
+    right: -80px;
+}
+
+.rose-nav-icon {
+    display: inline-block;
+    font-size: 28px;
+    line-height: 1;
+}
+
+.rose-image-info {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.rose-info-text {
+    font-size: 12px;
+    font-style: normal;
+}
+
 .rose-lightbox-image-container {
     position: relative;
     border-radius: 20px;
@@ -1021,23 +1157,48 @@
 <!-- Rose Gallery JavaScript -->
 <script>
 // Rose Lightbox Functions
-function openRoseLightbox(imageUrl, caption) {
+let roseGalleryData = {};
+let currentRoseImage = { galleryId: null, index: 0 };
+
+function openRoseLightbox(imageUrl, caption, index, galleryId) {
+    // Check if lightbox is enabled
+    const galleryContainer = document.querySelector('.rose-gallery-collections');
+    if (!galleryContainer || galleryContainer.dataset.enableLightbox !== 'true') {
+        return;
+    }
+    
     const modal = document.getElementById('rose-lightbox-modal');
     const image = document.getElementById('rose-lightbox-image');
     const captionEl = document.getElementById('rose-lightbox-caption-text');
+    const infoEl = document.getElementById('rose-lightbox-info');
     
-    if (modal && image && captionEl) {
+    if (modal && image) {
         image.src = imageUrl;
-        image.alt = caption;
-        captionEl.textContent = caption || 'Beautiful rose garden moment';
+        image.alt = caption || 'Beautiful rose garden moment';
+        
+        // Update caption if captions are enabled
+        if (captionEl && galleryContainer.dataset.showCaptions === 'true') {
+            captionEl.textContent = caption || 'Beautiful rose garden moment';
+        }
+        
+        // Update image info if enabled
+        if (infoEl && galleryContainer.dataset.showImageInfo === 'true') {
+            const infoText = infoEl.querySelector('.rose-info-text');
+            if (infoText) {
+                infoText.textContent = `Image ${index + 1} of ${roseGalleryData[galleryId]?.length || 1}`;
+            }
+        }
+        
+        // Store current state
+        currentRoseImage = { galleryId, index };
         
         modal.style.display = 'flex';
         
         // Prevent body scroll
         document.body.style.overflow = 'hidden';
         
-        // Close on escape key
-        document.addEventListener('keydown', handleRoseLightboxEscape);
+        // Add event listeners
+        document.addEventListener('keydown', handleRoseLightboxKeyboard);
         
         // Close on background click
         modal.addEventListener('click', function(e) {
@@ -1058,13 +1219,110 @@ function closeRoseLightbox() {
         document.body.style.overflow = '';
         
         // Remove event listeners
-        document.removeEventListener('keydown', handleRoseLightboxEscape);
+        document.removeEventListener('keydown', handleRoseLightboxKeyboard);
     }
 }
 
-function handleRoseLightboxEscape(e) {
-    if (e.key === 'Escape') {
-        closeRoseLightbox();
+function navigateRoseLightbox(direction) {
+    if (!currentRoseImage.galleryId || !roseGalleryData[currentRoseImage.galleryId]) {
+        return;
+    }
+    
+    const gallery = roseGalleryData[currentRoseImage.galleryId];
+    const currentIndex = currentRoseImage.index;
+    let newIndex = currentIndex + direction;
+    
+    // Wrap around
+    if (newIndex < 0) {
+        newIndex = gallery.length - 1;
+    } else if (newIndex >= gallery.length) {
+        newIndex = 0;
+    }
+    
+    const newImage = gallery[newIndex];
+    if (newImage) {
+        const image = document.getElementById('rose-lightbox-image');
+        const captionEl = document.getElementById('rose-lightbox-caption-text');
+        const infoEl = document.getElementById('rose-lightbox-info');
+        const galleryContainer = document.querySelector('.rose-gallery-collections');
+        
+        if (image) {
+            image.src = newImage.url;
+            image.alt = newImage.caption;
+        }
+        
+        if (captionEl && galleryContainer.dataset.showCaptions === 'true') {
+            captionEl.textContent = newImage.caption || 'Beautiful rose garden moment';
+        }
+        
+        if (infoEl && galleryContainer.dataset.showImageInfo === 'true') {
+            const infoText = infoEl.querySelector('.rose-info-text');
+            if (infoText) {
+                infoText.textContent = `Image ${newIndex + 1} of ${gallery.length}`;
+            }
+        }
+        
+        currentRoseImage.index = newIndex;
+    }
+}
+
+function toggleRoseFullscreen() {
+    const modal = document.getElementById('rose-lightbox-modal');
+    const image = document.getElementById('rose-lightbox-image');
+    
+    if (!modal || !image) return;
+    
+    if (!document.fullscreenElement) {
+        // Enter fullscreen
+        if (modal.requestFullscreen) {
+            modal.requestFullscreen();
+        } else if (modal.webkitRequestFullscreen) {
+            modal.webkitRequestFullscreen();
+        } else if (modal.msRequestFullscreen) {
+            modal.msRequestFullscreen();
+        }
+        
+        // Update fullscreen button icon
+        const fullscreenBtn = document.querySelector('.rose-lightbox-fullscreen .rose-fullscreen-icon');
+        if (fullscreenBtn) {
+            fullscreenBtn.textContent = '⤢';
+        }
+    } else {
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+        
+        // Update fullscreen button icon
+        const fullscreenBtn = document.querySelector('.rose-lightbox-fullscreen .rose-fullscreen-icon');
+        if (fullscreenBtn) {
+            fullscreenBtn.textContent = '⤢';
+        }
+    }
+}
+
+function handleRoseLightboxKeyboard(e) {
+    switch(e.key) {
+        case 'Escape':
+            closeRoseLightbox();
+            break;
+        case 'ArrowLeft':
+            e.preventDefault();
+            navigateRoseLightbox(-1);
+            break;
+        case 'ArrowRight':
+            e.preventDefault();
+            navigateRoseLightbox(1);
+            break;
+        case 'f':
+        case 'F':
+            e.preventDefault();
+            toggleRoseFullscreen();
+            break;
     }
 }
 
@@ -1209,4 +1467,56 @@ function pauseCarouselAutoplay(sectionIndex) {
         delete window.carouselTimers[sectionIndex];
     }
 }
+
+// Rose Gallery Integration
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if lightbox is enabled
+    const galleryContainer = document.querySelector('.rose-gallery-collections');
+    if (!galleryContainer || galleryContainer.dataset.enableLightbox !== 'true') {
+        return;
+    }
+    
+    // Initialize gallery data from window.galleryData if available
+    if (window.galleryData) {
+        roseGalleryData = window.galleryData;
+    }
+    
+    // Override openLightbox function to use Rose lightbox
+    window.openLightbox = function(imageUrl, caption, index, galleryId) {
+        openRoseLightbox(imageUrl, caption, index, galleryId);
+    };
+    
+    // Add click handlers to gallery images that don't already have them
+    const galleryImages = document.querySelectorAll('.rose-gallery-collections img[data-full-url]');
+    galleryImages.forEach((img, globalIndex) => {
+        if (!img.onclick) {
+            const fullUrl = img.dataset.fullUrl || img.src;
+            const caption = img.alt;
+            const gallerySection = img.closest('.gallery-section');
+            const galleryId = gallerySection ? `gallery-${gallerySection.dataset.sectionId}` : 'default';
+            const itemIndex = Array.from(gallerySection?.querySelectorAll('img') || []).indexOf(img);
+            
+            img.onclick = function(e) {
+                e.preventDefault();
+                openRoseLightbox(fullUrl, caption, itemIndex, galleryId);
+            };
+            
+            // Ensure gallery data exists for this gallery
+            if (!roseGalleryData[galleryId]) {
+                roseGalleryData[galleryId] = [];
+            }
+            
+            // Add to gallery data if not already present
+            const existingIndex = roseGalleryData[galleryId].findIndex(item => item.url === fullUrl);
+            if (existingIndex === -1) {
+                roseGalleryData[galleryId].push({
+                    url: fullUrl,
+                    caption: caption
+                });
+            }
+        }
+    });
+    
+    console.log('🌹 Rose Gallery initialized with lightbox support:', roseGalleryData);
+});
 </script>

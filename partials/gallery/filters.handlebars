@@ -1,0 +1,275 @@
+{{!-- 
+  Universal Gallery Filters Partial
+  
+  Provides accessible filtering controls for gallery content including category filters,
+  search, and sort options. Maintains URL state and supports keyboard navigation.
+  
+  Context:
+  - galleryData: Gallery data with categories and current filter state
+  - themeConfig: Theme configuration with CSS classes and icons
+  
+  Accessibility: Screen reader friendly with proper labels and live regions
+--}}
+
+<div class="{{themeConfig.cssClasses.filters}} gallery-filters" 
+     role="region" 
+     aria-label="Gallery filters and search">
+
+  {{!-- Search --}}
+  {{#if galleryData.settings.searchEnabled}}
+    <div class="filter-group search-group">
+      <label for="gallery-search" class="filter-label search-label">
+        {{#if themeConfig.icons.search}}
+          <span class="label-icon" aria-hidden="true">{{themeConfig.icons.search}}</span>
+        {{/if}}
+        Search images
+      </label>
+      <div class="search-input-wrapper">
+        <input type="search" 
+               id="gallery-search"
+               class="{{themeConfig.cssClasses.input}} filter-input search-input"
+               placeholder="Search by caption or category..."
+               value="{{galleryData.filters.search}}"
+               autocomplete="off"
+               aria-describedby="search-help"
+               data-debounce="300">
+        
+        {{!-- Clear search button --}}
+        {{#if galleryData.filters.search}}
+          <button type="button" 
+                  class="{{themeConfig.cssClasses.button}} search-clear"
+                  aria-label="Clear search"
+                  title="Clear search">
+            {{#if themeConfig.icons.close}}
+              {{themeConfig.icons.close}}
+            {{else}}
+              ✕
+            {{/if}}
+          </button>
+        {{/if}}
+      </div>
+      <div id="search-help" class="filter-help">
+        <span class="sr-only">Search results will update as you type</span>
+      </div>
+    </div>
+  {{/if}}
+
+  {{!-- Category Filter --}}
+  {{#if galleryData.settings.categoryFilter}}
+    {{#if galleryData.categories}}
+      <div class="filter-group category-group">
+        <label for="category-filter" class="filter-label category-label">
+          {{#if themeConfig.icons.category}}
+            <span class="label-icon" aria-hidden="true">{{themeConfig.icons.category}}</span>
+          {{/if}}
+          Filter by category
+        </label>
+        <select id="category-filter" 
+                class="{{themeConfig.cssClasses.select}} filter-select category-select"
+                aria-describedby="category-help">
+          <option value="" {{#unless galleryData.filters.category}}selected{{/unless}}>
+            All categories
+          </option>
+          {{#each galleryData.categories}}
+            <option value="{{this}}" 
+                    {{#if (eq this ../galleryData.filters.category)}}selected{{/if}}>
+              {{this}} {{!-- TODO: Add count if available --}}
+            </option>
+          {{/each}}
+        </select>
+        <div id="category-help" class="filter-help">
+          <span class="sr-only">Filter images by category</span>
+        </div>
+      </div>
+    {{/if}}
+  {{/if}}
+
+  {{!-- Sort Options --}}
+  {{#if galleryData.settings.sortOptions}}
+    <div class="filter-group sort-group">
+      <label for="sort-filter" class="filter-label sort-label">
+        {{#if themeConfig.icons.sort}}
+          <span class="label-icon" aria-hidden="true">{{themeConfig.icons.sort}}</span>
+        {{/if}}
+        Sort by
+      </label>
+      <select id="sort-filter" 
+              class="{{themeConfig.cssClasses.select}} filter-select sort-select"
+              aria-describedby="sort-help">
+        <option value="recent" {{#if (eq galleryData.filters.sort "recent")}}selected{{/if}}>
+          Most recent
+        </option>
+        <option value="oldest" {{#if (eq galleryData.filters.sort "oldest")}}selected{{/if}}>
+          Oldest first
+        </option>
+        <option value="featured" {{#if (eq galleryData.filters.sort "featured")}}selected{{/if}}>
+          Featured first
+        </option>
+        <option value="popular" {{#if (eq galleryData.filters.sort "popular")}}selected{{/if}}>
+          Most popular
+        </option>
+      </select>
+      <div id="sort-help" class="filter-help">
+        <span class="sr-only">Change the order of gallery images</span>
+      </div>
+    </div>
+  {{/if}}
+
+  {{!-- Layout Toggle --}}
+  {{#if galleryData.settings.layoutToggle}}
+    <div class="filter-group layout-group">
+      <fieldset class="layout-fieldset">
+        <legend class="filter-label layout-label">Gallery layout</legend>
+        <div class="layout-options" role="radiogroup" aria-labelledby="layout-label">
+          
+          <input type="radio" 
+                 id="layout-grid" 
+                 name="gallery-layout" 
+                 value="grid"
+                 class="layout-radio sr-only"
+                 {{#if (eq galleryData.layout "grid")}}checked{{/if}}>
+          <label for="layout-grid" 
+                 class="{{themeConfig.cssClasses.button}} layout-option layout-grid"
+                 title="Grid layout"
+                 aria-describedby="grid-help">
+            {{#if themeConfig.icons.grid}}
+              {{themeConfig.icons.grid}}
+            {{else}}
+              ⊞
+            {{/if}}
+            <span class="layout-text">Grid</span>
+          </label>
+          
+          <input type="radio" 
+                 id="layout-masonry" 
+                 name="gallery-layout" 
+                 value="masonry"
+                 class="layout-radio sr-only"
+                 {{#if (eq galleryData.layout "masonry")}}checked{{/if}}>
+          <label for="layout-masonry" 
+                 class="{{themeConfig.cssClasses.button}} layout-option layout-masonry"
+                 title="Masonry layout"
+                 aria-describedby="masonry-help">
+            {{#if themeConfig.icons.masonry}}
+              {{themeConfig.icons.masonry}}
+            {{else}}
+              ⊡
+            {{/if}}
+            <span class="layout-text">Masonry</span>
+          </label>
+          
+          <input type="radio" 
+                 id="layout-carousel" 
+                 name="gallery-layout" 
+                 value="carousel"
+                 class="layout-radio sr-only"
+                 {{#if (eq galleryData.layout "carousel")}}checked{{/if}}>
+          <label for="layout-carousel" 
+                 class="{{themeConfig.cssClasses.button}} layout-option layout-carousel"
+                 title="Carousel layout"
+                 aria-describedby="carousel-help">
+            {{#if themeConfig.icons.carousel}}
+              {{themeConfig.icons.carousel}}
+            {{else}}
+              ⊲
+            {{/if}}
+            <span class="layout-text">Carousel</span>
+          </label>
+        </div>
+        
+        <div id="grid-help" class="filter-help sr-only">
+          Grid layout displays images in a uniform grid
+        </div>
+        <div id="masonry-help" class="filter-help sr-only">
+          Masonry layout displays images in a Pinterest-style layout
+        </div>
+        <div id="carousel-help" class="filter-help sr-only">
+          Carousel layout displays one image at a time with navigation
+        </div>
+      </fieldset>
+    </div>
+  {{/if}}
+
+  {{!-- Active Filters Summary --}}
+  {{#if (or galleryData.filters.search galleryData.filters.category (ne galleryData.filters.sort "recent"))}}
+    <div class="filter-group active-filters">
+      <div class="active-filters-label">
+        Active filters:
+      </div>
+      <div class="active-filters-list" aria-live="polite">
+        
+        {{#if galleryData.filters.search}}
+          <span class="active-filter search-filter">
+            <span class="filter-type">Search:</span>
+            <span class="filter-value">"{{galleryData.filters.search}}"</span>
+            <button type="button" 
+                    class="{{themeConfig.cssClasses.button}} filter-remove"
+                    data-filter-type="search"
+                    aria-label="Remove search filter">
+              {{#if themeConfig.icons.close}}
+                {{themeConfig.icons.close}}
+              {{else}}
+                ✕
+              {{/if}}
+            </button>
+          </span>
+        {{/if}}
+
+        {{#if galleryData.filters.category}}
+          <span class="active-filter category-filter">
+            <span class="filter-type">Category:</span>
+            <span class="filter-value">{{galleryData.filters.category}}</span>
+            <button type="button" 
+                    class="{{themeConfig.cssClasses.button}} filter-remove"
+                    data-filter-type="category"
+                    aria-label="Remove category filter">
+              {{#if themeConfig.icons.close}}
+                {{themeConfig.icons.close}}
+              {{else}}
+                ✕
+              {{/if}}
+            </button>
+          </span>
+        {{/if}}
+
+        {{#if (ne galleryData.filters.sort "recent")}}
+          <span class="active-filter sort-filter">
+            <span class="filter-type">Sort:</span>
+            <span class="filter-value">{{galleryData.filters.sort}}</span>
+            <button type="button" 
+                    class="{{themeConfig.cssClasses.button}} filter-remove"
+                    data-filter-type="sort"
+                    aria-label="Remove sort filter">
+              {{#if themeConfig.icons.close}}
+                {{themeConfig.icons.close}}
+              {{else}}
+                ✕
+              {{/if}}
+            </button>
+          </span>
+        {{/if}}
+
+        <button type="button" 
+                class="{{themeConfig.cssClasses.button}} clear-all-filters"
+                aria-label="Clear all filters">
+          Clear all
+        </button>
+      </div>
+    </div>
+  {{/if}}
+
+  {{!-- Results Summary --}}
+  <div class="filter-results-summary" aria-live="polite" aria-atomic="true">
+    {{#if (or galleryData.filters.search galleryData.filters.category)}}
+      Showing {{galleryData.pagination.total}} of {{galleryData.totalUnfiltered}} images
+    {{else}}
+      {{galleryData.pagination.total}} images
+    {{/if}}
+  </div>
+
+</div>
+
+{{!-- Filter state for JavaScript --}}
+<script type="application/json" id="gallery-filter-state">
+  {{{json galleryData.filters}}}
+</script>
