@@ -509,10 +509,12 @@ router.get('/:slug/:page?', async (req, res) => {
         if (page === 'home') {
             try {
                 const [images] = await db.execute(`
-                    SELECT filename, caption
-                    FROM gallery_images 
-                    WHERE model_id = ? AND is_active = 1 
-                    ORDER BY created_at DESC
+                    SELECT gi.filename, gi.caption
+                    FROM gallery_images gi
+                    LEFT JOIN content_moderation cm ON cm.model_id = gi.model_id AND cm.original_path LIKE CONCAT('%', gi.filename)
+                    WHERE gi.model_id = ? AND gi.is_active = 1 
+                    AND (cm.moderation_status = 'approved' OR cm.moderation_status IS NULL)
+                    ORDER BY gi.created_at DESC
                     LIMIT 5
                 `, [model.id]);
                 
@@ -660,8 +662,10 @@ router.get('/:slug/:page?', async (req, res) => {
                 console.log(`🔍 Found ${allImages.length} images with ID ${portraitIdKey}:`, allImages);
                 
                 const [portraitImage] = await db.execute(`
-                    SELECT filename FROM gallery_images 
-                    WHERE id = ? AND model_id = ? AND is_active = 1
+                    SELECT gi.filename FROM gallery_images gi
+                    LEFT JOIN content_moderation cm ON cm.model_id = gi.model_id AND cm.original_path LIKE CONCAT('%', gi.filename)
+                    WHERE gi.id = ? AND gi.model_id = ? AND gi.is_active = 1
+                    AND (cm.moderation_status = 'approved' OR cm.moderation_status IS NULL)
                     LIMIT 1
                 `, [portraitIdKey, model.id]);
                 
@@ -684,8 +688,10 @@ router.get('/:slug/:page?', async (req, res) => {
         if (heroIdKey) {
             try {
                 const [heroImage] = await db.execute(`
-                    SELECT filename FROM gallery_images 
-                    WHERE id = ? AND model_id = ? AND is_active = 1
+                    SELECT gi.filename FROM gallery_images gi
+                    LEFT JOIN content_moderation cm ON cm.model_id = gi.model_id AND cm.original_path LIKE CONCAT('%', gi.filename)
+                    WHERE gi.id = ? AND gi.model_id = ? AND gi.is_active = 1
+                    AND (cm.moderation_status = 'approved' OR cm.moderation_status IS NULL)
                     LIMIT 1
                 `, [heroIdKey, model.id]);
                 
@@ -705,8 +711,10 @@ router.get('/:slug/:page?', async (req, res) => {
         if (pageContent.portrait_image_id) {
             try {
                 const [portraitImage] = await db.execute(`
-                    SELECT filename FROM gallery_images 
-                    WHERE id = ? AND model_id = ? AND is_active = 1
+                    SELECT gi.filename FROM gallery_images gi
+                    LEFT JOIN content_moderation cm ON cm.model_id = gi.model_id AND cm.original_path LIKE CONCAT('%', gi.filename)
+                    WHERE gi.id = ? AND gi.model_id = ? AND gi.is_active = 1
+                    AND (cm.moderation_status = 'approved' OR cm.moderation_status IS NULL)
                     LIMIT 1
                 `, [pageContent.portrait_image_id, model.id]);
                 

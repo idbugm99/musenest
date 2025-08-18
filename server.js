@@ -505,6 +505,7 @@ app.use('/api/contact-rosemastos', require('./routes/api/model-contact-rosemasto
 
 // Universal Gallery Admin API
 app.use('/api/universal-gallery', require('./routes/api/universal-gallery'));
+app.use('/api/universal-gallery-profiles', require('./routes/api/universal-gallery-profiles'));
 
 // New Model Admin: Gallery Page Editor
 app.get('/:slug/admin/content/gallery', async (req, res) => {
@@ -3190,6 +3191,292 @@ app.get('/api/theme-management/themes', async (req, res) => {
         res.status(500).json({ success: false, error: 'Failed to fetch themes' });
     }
 });
+
+// GET /api/theme-management/gallery-assignments - Get theme gallery assignments
+app.get('/api/theme-management/gallery-assignments', async (req, res) => {
+    try {
+        const [assignments] = await db.execute(`
+            SELECT tga.theme_id, tga.gallery_profile_id, tga.is_default_profile, tga.display_order,
+                   gp.profile_name, gp.profile_display_name, gp.layout_type
+            FROM theme_gallery_assignments tga
+            JOIN gallery_profiles gp ON tga.gallery_profile_id = gp.id
+            WHERE tga.is_active = 1
+            ORDER BY tga.theme_id ASC, tga.display_order ASC
+        `);
+        
+        // Group by theme_id and return array of assignments per theme
+        const assignmentMap = {};
+        assignments.forEach(assignment => {
+            if (!assignmentMap[assignment.theme_id]) {
+                assignmentMap[assignment.theme_id] = [];
+            }
+            assignmentMap[assignment.theme_id].push({
+                gallery_profile_id: assignment.gallery_profile_id,
+                profile_name: assignment.profile_name,
+                profile_display_name: assignment.profile_display_name,
+                layout_type: assignment.layout_type,
+                is_default_profile: assignment.is_default_profile,
+                display_order: assignment.display_order
+            });
+        });
+        
+        res.json(assignmentMap);
+    } catch (error) {
+        console.error('Error fetching theme gallery assignments:', error);
+        // If table doesn't exist yet, return empty object
+        res.json({});
+    }
+});
+
+// POST /api/theme-management/gallery-assignments/add - Add gallery profiles to theme
+app.post('/api/theme-management/gallery-assignments/add', async (req, res) => {
+    try {
+        const { theme_id, gallery_profile_ids } = req.body;
+        
+        if (!theme_id || !Array.isArray(gallery_profile_ids) || gallery_profile_ids.length === 0) {
+            return res.status(400).json({
+                error: 'Invalid request',
+                message: 'Theme ID and gallery profile IDs array are required'
+            });
+        }
+        
+        // Verify all gallery profiles exist
+        const [profileCheck] = await db.execute(
+            `SELECT id FROM gallery_profiles WHERE id IN (${gallery_profile_ids.map(() => '?').join(',')})`,
+            gallery_profile_ids
+        );
+        
+        if (profileCheck.length !== gallery_profile_ids.length) {
+            return res.status(400).json({
+                error: 'Invalid gallery profiles',
+                message: 'One or more gallery profiles not found'
+            });
+        }
+        
+        // Get next display order
+        const [maxOrder] = await db.execute(
+            'SELECT COALESCE(MAX(display_order), 0) as max_order FROM theme_gallery_assignments WHERE theme_id = ? AND is_active = 1',
+            [theme_id]
+        );
+        
+        let nextOrder = (maxOrder[0].max_order || 0) + 1;
+        
+        // Add assignments
+        for (const profileId of gallery_profile_ids) {
+            await db.execute(`
+                INSERT INTO theme_gallery_assignments (theme_id, gallery_profile_id, display_order, is_active, created_at, updated_at)
+                VALUES (?, ?, ?, 1, NOW(), NOW())
+                ON DUPLICATE KEY UPDATE 
+                    is_active = 1,
+                    display_order = ?,
+                    updated_at = NOW()
+            `, [theme_id, profileId, nextOrder, nextOrder]);
+            nextOrder++;
+        }
+        
+        res.json({
+            success: true,
+            message: `Added ${gallery_profile_ids.length} gallery profile(s) to theme`,
+            theme_id: theme_id,
+            added_profiles: gallery_profile_ids
+        });
+        
+    } catch (error) {
+        console.error('Error adding gallery assignments:', error);
+        res.status(500).json({
+            error: 'Failed to add assignments',
+            message: error.message
+        });
+    }
+});
+
+// POST /api/theme-management/gallery-assignments/remove - Remove gallery profile from theme
+app.post('/api/theme-management/gallery-assignments/remove', async (req, res) => {
+    try {
+        const { theme_id, gallery_profile_id } = req.body;
+        
+        if (!theme_id || !gallery_profile_id) {
+            return res.status(400).json({
+                error: 'Missing parameters',
+                message: 'Theme ID and gallery profile ID are required'
+            });
+        }
+        
+        // Remove assignment
+        await db.execute(`
+            UPDATE theme_gallery_assignments 
+            SET is_active = 0, updated_at = NOW()
+            WHERE theme_id = ? AND gallery_profile_id = ?
+        `, [theme_id, gallery_profile_id]);
+        
+        res.json({
+            success: true,
+            message: 'Gallery profile removed from theme',
+            theme_id: theme_id,
+            gallery_profile_id: gallery_profile_id
+        });
+        
+    } catch (error) {
+        console.error('Error removing gallery assignment:', error);
+        res.status(500).json({
+            error: 'Failed to remove assignment',
+            message: error.message
+        });
+    }
+});
+
+// POST /api/theme-management/gallery-assignments/default - Set default gallery profile for theme
+app.post('/api/theme-management/gallery-assignments/default', async (req, res) => {
+    try {
+        const { theme_id, gallery_profile_id } = req.body;
+        
+        if (!theme_id || !gallery_profile_id) {
+            return res.status(400).json({
+                error: 'Missing parameters',
+                message: 'Theme ID and gallery profile ID are required'
+            });
+        }
+        
+        // Clear existing defaults for this theme
+        await db.execute(
+            'UPDATE theme_gallery_assignments SET is_default_profile = 0, updated_at = NOW() WHERE theme_id = ?',
+            [theme_id]
+        );
+        
+        // Set new default
+        await db.execute(
+            'UPDATE theme_gallery_assignments SET is_default_profile = 1, updated_at = NOW() WHERE theme_id = ? AND gallery_profile_id = ? AND is_active = 1',
+            [theme_id, gallery_profile_id]
+        );
+        
+        res.json({
+            success: true,
+            message: 'Default gallery profile updated',
+            theme_id: theme_id,
+            gallery_profile_id: gallery_profile_id
+        });
+        
+    } catch (error) {
+        console.error('Error setting default gallery:', error);
+        res.status(500).json({
+            error: 'Failed to set default',
+            message: error.message
+        });
+    }
+});
+
+// POST /api/theme-management/gallery-assignments/bulk - Save multiple assignments at once
+app.post('/api/theme-management/gallery-assignments/bulk', async (req, res) => {
+    try {
+        const { assignments } = req.body;
+        
+        if (!Array.isArray(assignments)) {
+            return res.status(400).json({
+                error: 'Invalid assignments data',
+                message: 'Assignments must be an array'
+            });
+        }
+        
+        // Begin transaction
+        await db.beginTransaction();
+        
+        try {
+            // Clear existing assignments
+            await db.execute('UPDATE theme_gallery_assignments SET is_active = 0, updated_at = NOW()');
+            
+            // Insert new assignments
+            for (const assignment of assignments) {
+                await db.execute(`
+                    INSERT INTO theme_gallery_assignments (theme_id, gallery_profile_id, is_active, created_at, updated_at)
+                    VALUES (?, ?, 1, NOW(), NOW())
+                    ON DUPLICATE KEY UPDATE 
+                        gallery_profile_id = VALUES(gallery_profile_id),
+                        is_active = 1,
+                        updated_at = NOW()
+                `, [assignment.theme_id, assignment.gallery_profile_id]);
+            }
+            
+            await db.commit();
+            
+            res.json({
+                success: true,
+                message: `Successfully saved ${assignments.length} gallery assignments`,
+                assignments_count: assignments.length
+            });
+            
+        } catch (error) {
+            await db.rollback();
+            throw error;
+        }
+        
+    } catch (error) {
+        console.error('Error saving bulk gallery assignments:', error);
+        res.status(500).json({
+            error: 'Failed to save assignments',
+            message: error.message
+        });
+    }
+});
+
+// GET /api/theme-management/themes/:id/css - Get theme-specific CSS
+app.get('/api/theme-management/themes/:id/css', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const [cssData] = await db.execute(`
+            SELECT custom_css FROM theme_customizations 
+            WHERE theme_id = ? AND is_active = 1
+        `, [id]);
+        
+        const css = cssData.length > 0 ? cssData[0].custom_css : '';
+        
+        res.json({
+            success: true,
+            theme_id: id,
+            css: css
+        });
+        
+    } catch (error) {
+        console.error('Error fetching theme CSS:', error);
+        res.json({
+            success: true,
+            theme_id: req.params.id,
+            css: '' // Return empty CSS on error
+        });
+    }
+});
+
+// PUT /api/theme-management/themes/:id/css - Save theme-specific CSS
+app.put('/api/theme-management/themes/:id/css', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { css } = req.body;
+        
+        // Create or update CSS customization
+        await db.execute(`
+            INSERT INTO theme_customizations (theme_id, custom_css, is_active, created_at, updated_at)
+            VALUES (?, ?, 1, NOW(), NOW())
+            ON DUPLICATE KEY UPDATE 
+                custom_css = VALUES(custom_css),
+                updated_at = NOW()
+        `, [id, css || '']);
+        
+        res.json({
+            success: true,
+            message: 'Theme CSS saved successfully',
+            theme_id: id
+        });
+        
+    } catch (error) {
+        console.error('Error saving theme CSS:', error);
+        res.status(500).json({
+            error: 'Failed to save CSS',
+            message: error.message
+        });
+    }
+});
+
+// Analysis Configuration API (for remote NudeNet/BLIP settings management)
 
 // Analysis Configuration API (for remote NudeNet/BLIP settings management)
 const apiKeyAuth = new ApiKeyAuth(db);

@@ -97,11 +97,6 @@ async function renderGallery(container, galleryData, galleryConfig) {
                     <div class="gallery-section" data-section-id="${section.id}" data-layout="${section.layout}">
                         <div class="section-header">
                             <h3 class="section-title">${section.name}</h3>
-                            ${section.description ? `<p class="section-description">${section.description}</p>` : ''}
-                            <div class="section-meta">
-                                <span class="item-count">${section.itemCount} items</span>
-                                <span class="layout-type">${section.layout} layout</span>
-                            </div>
                         </div>
                         <div class="section-content">
                             ${renderSectionLayout(section)}

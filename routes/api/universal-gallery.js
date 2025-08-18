@@ -1,88 +1,48 @@
 /**
- * Universal Gallery API Routes
+ * Universal Gallery API Routes - Profile Management System
  * 
- * Comprehensive API endpoints for managing gallery configurations,
- * themes, validation, and performance monitoring.
+ * API endpoints for managing gallery profiles and business type assignments
+ * Master controller for gallery functionality across all business types
  */
 
 const express = require('express');
-const mysql = require('mysql2/promise');
 const router = express.Router();
+const mysql = require('mysql2/promise');
 
-// Import services (create mock versions for now)
-// const ThemeConfigValidator = require('../../src/services/ThemeConfigValidator');
-// const UniversalGalleryService = require('../../src/services/UniversalGalleryService');
-
-// Mock services for development
-const validator = {
-    validateConfig: () => ({ isValid: true, errors: [] }),
-    validateTheme: () => ({ isValid: true, errors: [] }),
-    validateAll: () => ({ isValid: true, errors: [], validConfigs: 5, totalConfigs: 5 })
-};
-
-// Global configuration storage (in-memory for development)
-const systemConfig = {
-    defaultLayout: 'masonry',
-    imagesPerPage: 20,
-    gridColumns: 4,
-    enableLightbox: true,
-    enableFullscreen: true,
-    enableZoom: true,
-    lightboxAnimation: 'fade',
-    showCaptions: true,
-    showImageInfo: false,
-    showCategoryFilter: true,
-    enableSearch: false,
-    enableLazyLoading: true,
-    enablePrefetch: true,
-    prefetchStrategy: 'balanced',
-    respectReducedMotion: true
-};
-
-const galleryService = {
-    getSystemConfig: () => systemConfig,
-    getStats: () => ({
-        totalGalleries: 15,
-        activeThemes: 5,
-        validationIssues: 0,
-        avgPerformance: '98%'
-    })
-};
-
-// Database connection helper
-const getDbConnection = async () => {
-    return await mysql.createConnection({
-        host: process.env.DB_HOST || 'localhost',
-        user: process.env.DB_USER || 'root',
+// Database connection
+async function getDbConnection() {
+    return mysql.createConnection({
+        host: 'localhost',
+        user: 'root',
         password: process.env.DB_PASSWORD || '',
         database: process.env.DB_DATABASE || 'musenest',
-        charset: 'utf8mb4'
+        timezone: '+00:00'
     });
-};
+}
 
-// Error handling middleware
-const handleApiError = (error, res) => {
-    console.error('API Error:', error);
-    
-    if (error.code === 'ER_NO_SUCH_TABLE') {
-        return res.status(503).json({
-            error: 'Database not properly initialized',
-            message: 'Please run the universal gallery migration first'
+// GET /api/universal-gallery/profiles - Get all gallery profiles
+router.get('/profiles', async (req, res) => {
+    let db;
+    try {
+        db = await getDbConnection();
+        
+        const [profiles] = await db.execute(`
+            SELECT * FROM gallery_profiles 
+            ORDER BY is_system_default DESC, profile_display_name ASC
+        `);
+        
+        res.json(profiles);
+        
+    } catch (error) {
+        console.error('Error fetching gallery profiles:', error);
+        res.status(500).json({ 
+            error: 'Failed to fetch gallery profiles',
+            message: error.message 
         });
+    } finally {
+        if (db) await db.end();
     }
-    
-    if (error.code === 'ECONNREFUSED') {
-        return res.status(503).json({
-            error: 'Database connection failed',
-            message: 'Unable to connect to database'
-        });
-    }
-    
-    res.status(500).json({
-        error: 'Internal server error',
-        message: error.message || 'An unexpected error occurred'
-    });
-};
+});
 
 // ===== Gallery Data Loading Endpoint =====
 

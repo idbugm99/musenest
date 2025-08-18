@@ -50,55 +50,8 @@
 <!-- Rose Gallery Collections -->
 <section class="rose-gallery-main luxury-section">
     <div class="luxury-container">
-
-        {{#if (hasGalleries modelSlug)}}
-            <!-- Rose Gallery Collections -->
-            <div class="rose-gallery-collections" data-aos="fade-up" 
-                 data-enable-lightbox="{{gallery_content.enable_lightbox}}"
-                 data-enable-fullscreen="{{gallery_content.enable_fullscreen}}"
-                 data-show-captions="{{gallery_content.show_captions}}"
-                 data-show-image-info="{{gallery_content.show_image_info}}"
-                 data-show-search="{{gallery_content.show_search}}"
-                 data-show-sort="{{gallery_content.show_sort_options}}"
-                 data-show-filters="{{gallery_content.show_category_filter}}">
-                {{{renderGalleries modelSlug}}}
-            </div>
-        {{else}}
-            <!-- Rose Garden Empty State -->
-            <div class="rose-gallery-empty" data-aos="zoom-in">
-                <div class="rose-empty-garden">
-                    <!-- Rose Garden Dome -->
-                    <div class="rose-empty-dome">
-                        <div class="rose-dome-petals">
-                            <span class="rose-dome-petal">🌹</span>
-                            <span class="rose-dome-petal">🌸</span>
-                            <span class="rose-dome-petal">🌹</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Rose Empty Content -->
-                    <div class="rose-empty-content">
-                        <div class="rose-empty-icon">
-                            <div class="rose-camera-bloom">
-                                <span class="rose-icon">📸</span>
-                            </div>
-                        </div>
-                        
-                        <h3 class="rose-empty-title">Rose Gallery Blooming Soon</h3>
-                        <p class="rose-empty-description">
-                            Beautiful moments are being cultivated in this rose garden gallery. Each photograph will be a petal of perfection, captured with artistic elegance.
-                        </p>
-                        
-                        <div class="rose-empty-actions">
-                            <a href="/{{modelSlug}}/contact{{previewParam}}" class="rose-empty-btn">
-                                <span class="rose-btn-icon">🌹</span>
-                                <span class="rose-btn-text">Send Garden Message</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {{/if}}
+        <!-- Universal Gallery System for Rose Theme -->
+        {{{renderUniversalGallery modelSlug previewTheme=previewThemeId}}}
     </div>
 </section>
 
@@ -194,6 +147,39 @@
     </div>
 </div>
 {{/if}}
+
+<!-- Load Universal Gallery System CSS and JavaScript -->
+<link rel="stylesheet" href="/templates/universal/gallery-styles.css">
+<script src="/templates/universal/gallery-script.js"></script>
+
+<!-- Rose Theme Gallery CSS Variables Override -->
+<style>
+:root {
+    --gallery-primary: #dc2626;
+    --gallery-primary-hover: #b91c1c;
+    --gallery-secondary: #7f1d1d;
+    --gallery-accent: #fbbf24;
+    --gallery-background: #fef2f2;
+    --gallery-surface: #fee2e2;
+    --gallery-text: #7f1d1d;
+    --gallery-text-muted: #991b1b;
+    --gallery-border: #fecaca;
+    --gallery-shadow: rgba(220, 38, 38, 0.2);
+    --gallery-shadow-hover: rgba(220, 38, 38, 0.3);
+    
+    --gallery-border-radius: 16px;
+    --gallery-border-radius-large: 24px;
+    --gallery-grid-columns-desktop: 3;
+    --gallery-transition-duration: 0.4s;
+    --gallery-hover-lift: -8px;
+}
+
+.section-title {
+    color: var(--rose-deep, #7f1d1d);
+    font-family: var(--rose-font, inherit);
+    text-shadow: 0 0 15px rgba(185, 28, 28, 0.3);
+}
+</style>
 
 <!-- Rose Gallery Styling -->
 <style>

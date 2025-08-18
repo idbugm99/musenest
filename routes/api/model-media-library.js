@@ -83,7 +83,7 @@ router.get('/:modelSlug', async (req, res) => {
             limit = 24, 
             search = '', 
             category = '', 
-            status = '',
+            status = 'approved',  // Default to approved images only
             sort = 'newest'
         } = req.query;
 

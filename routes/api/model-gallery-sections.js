@@ -106,6 +106,8 @@ router.get('/:modelSlug', async (req, res) => {
                 COUNT(gi.id) as media_count
             FROM gallery_sections gs
             LEFT JOIN gallery_images gi ON gs.id = gi.section_id AND gi.is_active = 1
+            LEFT JOIN content_moderation cm ON cm.model_id = gi.model_id AND cm.original_path LIKE CONCAT('%', gi.filename)
+            AND cm.moderation_status = 'approved'
             WHERE ${whereClause}
             GROUP BY gs.id
             ORDER BY gs.sort_order ASC, gs.created_at DESC

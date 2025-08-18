@@ -69,7 +69,35 @@
                 </div>
             </div>
 
-            <!-- Theme Gallery -->
+            <!-- Navigation Tabs -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <ul class="nav nav-pills nav-fill bg-light rounded-3 p-2" id="themeManagementTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active rounded-3 fw-semibold" id="themes-tab" data-bs-toggle="pill" data-bs-target="#themes-pane" type="button" role="tab">
+                                <i class="fas fa-palette me-2"></i>Theme Gallery
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-3 fw-semibold" id="gallery-assignment-tab" data-bs-toggle="pill" data-bs-target="#gallery-assignment-pane" type="button" role="tab">
+                                <i class="fas fa-images me-2"></i>Gallery Assignment
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-3 fw-semibold" id="model-assignment-tab" data-bs-toggle="pill" data-bs-target="#model-assignment-pane" type="button" role="tab">
+                                <i class="fas fa-users-cog me-2"></i>Model Assignment
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="themeManagementTabContent">
+                
+                <!-- Theme Gallery Tab -->
+                <div class="tab-pane fade show active" id="themes-pane" role="tabpanel" aria-labelledby="themes-tab">
+                    <!-- Theme Gallery -->
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-light">
                     <h5 class="mb-0 fw-bold">
@@ -82,8 +110,39 @@
                     </div>
                 </div>
             </div>
+                </div>
 
-            <!-- Model Assignment Section -->
+                <!-- Gallery Assignment Tab -->
+                <div class="tab-pane fade" id="gallery-assignment-pane" role="tabpanel" aria-labelledby="gallery-assignment-tab">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0 fw-bold">
+                                <i class="fas fa-images me-2"></i>Theme Gallery Profile Assignment
+                            </h5>
+                            <p class="text-muted mb-0 mt-1">Assign gallery profiles to themes for automatic gallery behavior</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-info-circle me-2"></i>Gallery Assignment Logic</h6>
+                                <p class="mb-0">When a model uses a theme, the assigned gallery profile determines how their galleries display. This creates consistent gallery behavior across all models using the same theme.</p>
+                            </div>
+                            
+                            <div id="themeGalleryAssignmentMatrix">
+                                <!-- Gallery assignment matrix will be loaded here -->
+                                <div class="text-center py-4">
+                                    <div class="spinner-border text-primary mb-3" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="text-muted">Loading theme gallery assignments...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Model Assignment Tab -->
+                <div class="tab-pane fade" id="model-assignment-pane" role="tabpanel" aria-labelledby="model-assignment-tab">
+                    <!-- Model Assignment Section -->
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-light">
                     <h5 class="mb-0 fw-bold">
@@ -105,11 +164,7 @@
                         <div class="col-md-3">
                             <select class="form-select" id="themeFilter" onchange="filterByTheme()">
                                 <option value="">All Themes</option>
-                                <option value="basic">Basic</option>
-                                <option value="glamour">Glamour</option>
-                                <option value="luxury">Luxury</option>
-                                <option value="modern">Modern</option>
-                                <option value="dark">Dark</option>
+                                <!-- Theme options will be populated dynamically -->
                             </select>
                         </div>
                         <div class="col-md-3">
@@ -145,6 +200,8 @@
                             <!-- Pagination will be generated here -->
                         </ul>
                     </nav>
+                </div>
+            </div>
                 </div>
             </div>
         </div>
@@ -209,11 +266,7 @@
                         <label for="assignmentTheme" class="form-label fw-bold">Select Theme</label>
                         <select class="form-select" id="assignmentTheme" required>
                             <option value="">Choose a theme...</option>
-                            <option value="basic">Basic - Professional & Clean</option>
-                            <option value="glamour">Glamour - Pink & Stylish</option>
-                            <option value="luxury">Luxury - Gold & Elegant</option>
-                            <option value="modern">Modern - Contemporary & Sleek</option>
-                            <option value="dark">Dark - Cyberpunk & Edgy</option>
+                            <!-- Theme options will be populated dynamically -->
                         </select>
                     </div>
                     
@@ -251,6 +304,65 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" onclick="saveThemeAssignment()">
                     <i class="fas fa-save me-2"></i>Assign Theme
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Theme CSS Editor Modal -->
+<div class="modal fade" id="themeCSSEditorModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title fw-bold" id="themeCSSEditorTitle">
+                    <i class="fas fa-edit me-2"></i>Edit Theme CSS
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>CSS Customization Guidelines</h6>
+                            <ul class="mb-0 small">
+                                <li>Use CSS custom properties (--variable-name) for easy theming</li>
+                                <li>Focus on gallery-specific styling (colors, spacing, animations)</li>
+                                <li>Avoid breaking existing layout structure</li>
+                                <li>Test changes with the Preview button before saving</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <label for="cssEditor" class="form-label fw-bold">Theme CSS</label>
+                        <textarea id="cssEditor" class="form-control font-monospace" rows="20" 
+                                  placeholder="Enter theme-specific CSS here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-info btn-sm" onclick="themeManager.previewThemeCSS()">
+                                <i class="fas fa-eye me-1"></i>Preview Changes
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="themeManager.resetThemeCSS()">
+                                <i class="fas fa-undo me-1"></i>Reset to Default
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="themeManager.formatCSS()">
+                                <i class="fas fa-code me-1"></i>Format CSS
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" onclick="themeManager.saveThemeCSS()">
+                    <i class="fas fa-save me-2"></i>Save CSS Changes
                 </button>
             </div>
         </div>
@@ -341,58 +453,7 @@
 <script>
 class ThemeManagement {
     constructor() {
-        this.themes = [
-            {
-                id: 1,
-                slug: 'basic',
-                name: 'Basic',
-                description: 'Professional & Clean',
-                primaryColor: '#1F2937',
-                accentColor: '#10B981',
-                previewUrl: '/test-basic',
-                thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMUYyOTM3Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5CYXNpYzwvdGV4dD48L3N2Zz4='
-            },
-            {
-                id: 2,
-                slug: 'glamour',
-                name: 'Glamour',
-                description: 'Pink & Stylish',
-                primaryColor: '#EC4899',
-                accentColor: '#F97316',
-                previewUrl: '/test-glamour',
-                thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNFQzQ4OTkiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNGOTczMTYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2cpIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5HbGFtb3VyPC90ZXh0Pjwvc3ZnPg=='
-            },
-            {
-                id: 3,
-                slug: 'luxury',
-                name: 'Luxury',
-                description: 'Gold & Elegant',
-                primaryColor: '#D97706',
-                accentColor: '#92400E',
-                previewUrl: '/test-luxury',
-                thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImwiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNEOTc3MDYiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM5MjQwMEUiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2wpIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5MdXh1cnk8L3RleHQ+PC9zdmc+'
-            },
-            {
-                id: 4,
-                slug: 'modern',
-                name: 'Modern',
-                description: 'Contemporary & Sleek',
-                primaryColor: '#2563EB',
-                accentColor: '#06B6D4',
-                previewUrl: '/test-modern',
-                thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9Im0iIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMyNTYzRUIiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwNkI2RDQiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI20pIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5Nb2Rlcm48L3RleHQ+PC9zdmc+'
-            },
-            {
-                id: 5,
-                slug: 'dark',
-                name: 'Dark',
-                description: 'Cyberpunk & Edgy',
-                primaryColor: '#00ff88',
-                accentColor: '#ff0088',
-                previewUrl: '/test-dark',
-                thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMGEwYTBhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzAwZmY4OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkRhcms8L3RleHQ+PC9zdmc+'
-            }
-        ];
+        this.themes = [];
         
         this.models = [];
         this.selectedTheme = null;
@@ -403,12 +464,110 @@ class ThemeManagement {
     
     async init() {
         console.log('🚀 Initializing Theme Management...');
+        await this.loadThemes();
         await this.loadModels();
-        console.log('📊 Models loaded:', this.models);
+        console.log('📊 Themes loaded:', this.themes.length);
+        console.log('📊 Models loaded:', this.models.length);
+        this.updateStatistics();
+        this.populateThemeDropdowns();
         this.renderThemeGallery();
         this.renderModelsTable();
+        this.loadGalleryProfiles();
         this.setupEventListeners();
         console.log('✅ Theme Management initialized successfully');
+    }
+    
+    async loadThemes() {
+        try {
+            console.log('🎨 Fetching themes from database...');
+            const response = await sysFetch('/api/theme-management/themes');
+            if (response.ok) {
+                const result = await response.json();
+                const dbThemes = result.data.themes;
+                this.themes = dbThemes.map(theme => ({
+                    id: theme.id,
+                    slug: theme.name.toLowerCase().replace(/\s+/g, '_'),
+                    name: theme.name,
+                    description: theme.description || 'Theme description',
+                    primaryColor: theme.primary_color || this.getDefaultColor(theme.name),
+                    accentColor: theme.accent_color || this.getDefaultAccent(theme.name),
+                    previewUrl: `/modelexample?preview_theme=${theme.id}`,
+                    thumbnail: this.generateThumbnail(theme.name, theme.primary_color || this.getDefaultColor(theme.name))
+                }));
+                console.log('✅ Loaded', this.themes.length, 'themes from database');
+            } else {
+                throw new Error('Failed to load themes from API');
+            }
+        } catch (error) {
+            console.error('❌ Error loading themes:', error);
+            // Fallback to hardcoded themes if API fails
+            this.themes = this.getDefaultThemes();
+        }
+    }
+    
+    getDefaultColor(themeName) {
+        const colors = {
+            'basic': '#1F2937',
+            'glamour': '#EC4899', 
+            'luxury': '#D97706',
+            'modern': '#2563EB',
+            'dark': '#00ff88',
+            'rose': '#E11D48'
+        };
+        return colors[themeName] || '#6B7280';
+    }
+    
+    getDefaultAccent(themeName) {
+        const colors = {
+            'basic': '#10B981',
+            'glamour': '#F97316',
+            'luxury': '#92400E', 
+            'modern': '#06B6D4',
+            'dark': '#ff0088',
+            'rose': '#F472B6'
+        };
+        return colors[themeName] || '#9CA3AF';
+    }
+    
+    generateThumbnail(name, color) {
+        return `data:image/svg+xml;base64,${btoa(`<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="${color}"/><text x="50%" y="50%" font-family="Arial" font-size="20" fill="white" text-anchor="middle" dy=".3em">${name}</text></svg>`)}`;
+    }
+    
+    getDefaultThemes() {
+        return [
+            {id: 1, slug: 'basic', name: 'Basic', description: 'Professional & Clean', primaryColor: '#1F2937', accentColor: '#10B981', previewUrl: '/modelexample?preview_theme=1', thumbnail: this.generateThumbnail('Basic', '#1F2937')},
+            {id: 2, slug: 'glamour', name: 'Glamour', description: 'Pink & Stylish', primaryColor: '#EC4899', accentColor: '#F97316', previewUrl: '/modelexample?preview_theme=2', thumbnail: this.generateThumbnail('Glamour', '#EC4899')},
+            {id: 3, slug: 'luxury', name: 'Luxury', description: 'Gold & Elegant', primaryColor: '#D97706', accentColor: '#92400E', previewUrl: '/modelexample?preview_theme=3', thumbnail: this.generateThumbnail('Luxury', '#D97706')},
+            {id: 4, slug: 'modern', name: 'Modern', description: 'Contemporary & Sleek', primaryColor: '#2563EB', accentColor: '#06B6D4', previewUrl: '/modelexample?preview_theme=4', thumbnail: this.generateThumbnail('Modern', '#2563EB')},
+            {id: 5, slug: 'dark', name: 'Dark', description: 'Cyberpunk & Edgy', primaryColor: '#00ff88', accentColor: '#ff0088', previewUrl: '/modelexample?preview_theme=5', thumbnail: this.generateThumbnail('Dark', '#00ff88')}
+        ];
+    }
+    
+    updateStatistics() {
+        document.getElementById('totalThemes').textContent = this.themes.length;
+        document.getElementById('assignedModels').textContent = this.models.filter(m => m.theme_set_id).length;
+    }
+    
+    populateThemeDropdowns() {
+        // Populate theme filter dropdown
+        const themeFilter = document.getElementById('themeFilter');
+        const assignmentTheme = document.getElementById('assignmentTheme');
+        
+        const filterOptions = this.themes.map(theme => 
+            `<option value="${theme.slug}">${theme.name}</option>`
+        ).join('');
+        
+        const assignmentOptions = this.themes.map(theme => 
+            `<option value="${theme.slug}">${theme.name} - ${theme.description}</option>`
+        ).join('');
+        
+        if (themeFilter) {
+            themeFilter.innerHTML = '<option value="">All Themes</option>' + filterOptions;
+        }
+        
+        if (assignmentTheme) {
+            assignmentTheme.innerHTML = '<option value="">Choose a theme...</option>' + assignmentOptions;
+        }
     }
     
     async loadModels() {
@@ -448,9 +607,14 @@ class ThemeManagement {
                 <div class="theme-card" onclick="themeManager.selectTheme('${theme.slug}')">
                     <div class="theme-preview" style="background-image: url('${theme.thumbnail}')">
                         <div class="theme-overlay">
-                            <button class="btn btn-light btn-sm" onclick="event.stopPropagation(); themeManager.openPreview('${theme.slug}')">
-                                <i class="fas fa-eye me-1"></i>Preview
-                            </button>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-light btn-sm" onclick="event.stopPropagation(); themeManager.openPreview('${theme.slug}')">
+                                    <i class="fas fa-eye me-1"></i>Preview
+                                </button>
+                                <button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); themeManager.editThemeCSS(${theme.id}, '${theme.name}')">
+                                    <i class="fas fa-edit me-1"></i>Edit CSS
+                                </button>
+                            </div>
                         </div>
                         <span class="badge bg-primary theme-badge">${theme.name}</span>
                     </div>
@@ -695,6 +859,438 @@ class ThemeManagement {
         new bootstrap.Modal(document.getElementById('themePreviewModal')).show();
     }
     
+    async loadGalleryProfiles() {
+        try {
+            console.log('🖼️ Loading gallery profiles...');
+            const response = await sysFetch('/api/universal-gallery-profiles/profiles');
+            if (response.ok) {
+                this.galleryProfiles = await response.json();
+                console.log('✅ Loaded', this.galleryProfiles.length, 'gallery profiles');
+                this.renderThemeGalleryAssignmentMatrix();
+            } else {
+                throw new Error('Failed to load gallery profiles');
+            }
+        } catch (error) {
+            console.error('❌ Error loading gallery profiles:', error);
+            this.galleryProfiles = [];
+            this.renderThemeGalleryAssignmentError();
+        }
+    }
+    
+    async loadThemeGalleryAssignments() {
+        try {
+            console.log('🔗 Loading theme gallery assignments...');
+            const response = await sysFetch('/api/theme-management/gallery-assignments');
+            if (response.ok) {
+                const rawAssignments = await response.json();
+                // Convert to support multiple profiles per theme
+                this.themeGalleryAssignments = {};
+                Object.keys(rawAssignments).forEach(themeId => {
+                    if (Array.isArray(rawAssignments[themeId])) {
+                        this.themeGalleryAssignments[themeId] = rawAssignments[themeId];
+                    } else {
+                        // Convert single assignment to array format
+                        this.themeGalleryAssignments[themeId] = [rawAssignments[themeId]];
+                    }
+                });
+                console.log('✅ Loaded theme gallery assignments');
+            } else {
+                console.log('⚠️ No theme gallery assignments found, using empty');
+                this.themeGalleryAssignments = {};
+            }
+        } catch (error) {
+            console.error('❌ Error loading theme gallery assignments:', error);
+            this.themeGalleryAssignments = {};
+        }
+    }
+    
+    async renderThemeGalleryAssignmentMatrix() {
+        const container = document.getElementById('themeGalleryAssignmentMatrix');
+        if (!container) return;
+        
+        // Load assignments if not already loaded
+        if (!this.themeGalleryAssignments) {
+            await this.loadThemeGalleryAssignments();
+        }
+        
+        if (!this.galleryProfiles || this.galleryProfiles.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-exclamation-triangle fs-1 text-warning mb-3"></i>
+                    <h5 class="text-warning">No Gallery Profiles Found</h5>
+                    <p class="text-muted mb-3">You need to create gallery profiles first before assigning them to themes</p>
+                    <button class="btn btn-primary" onclick="loadSection('universal-gallery-admin')">
+                        <i class="fas fa-plus me-2"></i>Create Gallery Profiles
+                    </button>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = `
+            <div class="row mb-3">
+                <div class="col-12">
+                    <button class="btn btn-success" onclick="themeManager.saveAllGalleryAssignments()">
+                        <i class="fas fa-save me-2"></i>Save All Gallery Assignments
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Render each theme as a card with multiple gallery profile assignments
+        this.themes.forEach(theme => {
+            const assignedProfiles = this.themeGalleryAssignments[theme.id] || [];
+            
+            html += `
+                <div class="card mb-4 border-0 shadow-sm">
+                    <div class="card-header bg-light">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="d-flex align-items-center">
+                                    <div class="theme-color-preview me-3" style="background-color: ${theme.primaryColor}"></div>
+                                    <div>
+                                        <h5 class="mb-1 fw-semibold">${this.escapeHtml(theme.name)}</h5>
+                                        <p class="mb-0 text-muted">${this.escapeHtml(theme.description)}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-primary btn-sm" onclick="themeManager.addGalleryToTheme(${theme.id})">
+                                    <i class="fas fa-plus me-1"></i>Add Gallery Profile
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="themeGalleries_${theme.id}">
+                            ${assignedProfiles.length > 0 ? `
+                                <div class="row g-3">
+                                    ${assignedProfiles.map(assignment => {
+                                        const profileInfo = this.galleryProfiles.find(p => p.id === assignment.gallery_profile_id);
+                                        return profileInfo ? `
+                                            <div class="col-md-6 col-lg-4">
+                                                <div class="card border h-100">
+                                                    <div class="card-body">
+                                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                                            <h6 class="card-title mb-0">${this.escapeHtml(profileInfo.profile_display_name)}</h6>
+                                                            <button class="btn btn-outline-danger btn-sm" 
+                                                                    onclick="themeManager.removeGalleryFromTheme(${theme.id}, ${profileInfo.id})">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                        <div class="d-flex flex-wrap gap-1 mb-2">
+                                                            <span class="badge bg-primary">${profileInfo.layout_type}</span>
+                                                            <span class="badge bg-secondary">${profileInfo.grid_columns_desktop || profileInfo.carousel_visible_items || 'N/A'} items</span>
+                                                            <span class="badge bg-info">${profileInfo.images_per_page} per page</span>
+                                                        </div>
+                                                        <div class="d-flex flex-wrap gap-1 mb-3">
+                                                            ${profileInfo.lightbox_enabled ? '<span class="badge bg-success">Lightbox</span>' : ''}
+                                                            ${profileInfo.enable_search ? '<span class="badge bg-warning text-dark">Search</span>' : ''}
+                                                            ${profileInfo.enable_sorting ? '<span class="badge bg-info text-dark">Sort</span>' : ''}
+                                                        </div>
+                                                        <div class="d-flex gap-1">
+                                                            <button class="btn btn-outline-info btn-sm flex-fill" 
+                                                                    onclick="themeManager.previewThemeGallery(${theme.id}, ${profileInfo.id})">
+                                                                <i class="fas fa-eye me-1"></i>Preview
+                                                            </button>
+                                                            <div class="form-check form-switch d-flex align-items-center ms-2">
+                                                                <input class="form-check-input" type="checkbox" 
+                                                                       id="default_${theme.id}_${profileInfo.id}"
+                                                                       ${assignment.is_default ? 'checked' : ''}
+                                                                       onchange="themeManager.toggleDefaultGallery(${theme.id}, ${profileInfo.id}, this.checked)">
+                                                                <label class="form-check-label ms-1 small" for="default_${theme.id}_${profileInfo.id}">
+                                                                    Default
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ` : '';
+                                    }).join('')}
+                                </div>
+                            ` : `
+                                <div class="text-center py-4">
+                                    <i class="fas fa-images fs-2 text-muted mb-3"></i>
+                                    <p class="text-muted mb-3">No gallery profiles assigned to this theme</p>
+                                    <button class="btn btn-outline-primary" onclick="themeManager.addGalleryToTheme(${theme.id})">
+                                        <i class="fas fa-plus me-2"></i>Assign First Gallery Profile
+                                    </button>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+    
+    renderThemeGalleryAssignmentError() {
+        const container = document.getElementById('themeGalleryAssignmentMatrix');
+        if (!container) return;
+        
+        container.innerHTML = `
+            <div class="text-center py-5">
+                <i class="fas fa-exclamation-circle fs-1 text-danger mb-3"></i>
+                <h5 class="text-danger">Failed to Load Gallery Profiles</h5>
+                <p class="text-muted mb-3">There was an error loading the gallery profiles</p>
+                <button class="btn btn-outline-primary" onclick="themeManager.loadGalleryProfiles()">
+                    <i class="fas fa-refresh me-2"></i>Try Again
+                </button>
+            </div>
+        `;
+    }
+    
+    async addGalleryToTheme(themeId) {
+        // Show modal with available gallery profiles
+        const assignedProfiles = this.themeGalleryAssignments[themeId] || [];
+        const assignedIds = assignedProfiles.map(a => a.gallery_profile_id);
+        const availableProfiles = this.galleryProfiles.filter(p => !assignedIds.includes(p.id));
+        
+        if (availableProfiles.length === 0) {
+            this.showNotification('All gallery profiles are already assigned to this theme', 'warning');
+            return;
+        }
+        
+        const theme = this.themes.find(t => t.id === themeId);
+        
+        let html = `
+            <div class="modal fade" id="addGalleryModal" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Add Gallery Profile to ${this.escapeHtml(theme.name)}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="text-muted mb-4">Select gallery profiles to assign to this theme:</p>
+                            <div class="row g-3">
+                                ${availableProfiles.map(profile => `
+                                    <div class="col-md-6">
+                                        <div class="card border">
+                                            <div class="card-body">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" 
+                                                           id="addProfile_${profile.id}" 
+                                                           value="${profile.id}">
+                                                    <label class="form-check-label fw-medium" for="addProfile_${profile.id}">
+                                                        ${this.escapeHtml(profile.profile_display_name)}
+                                                    </label>
+                                                </div>
+                                                <small class="text-muted">${profile.profile_description || 'No description'}</small>
+                                                <div class="mt-2">
+                                                    <span class="badge bg-primary">${profile.layout_type}</span>
+                                                    <span class="badge bg-secondary">${profile.grid_columns_desktop || profile.carousel_visible_items || 'N/A'} items</span>
+                                                    <span class="badge bg-info">${profile.images_per_page} per page</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="themeManager.confirmAddGalleriesToTheme(${themeId})">
+                                <i class="fas fa-plus me-2"></i>Add Selected Profiles
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Remove existing modal if any
+        const existingModal = document.getElementById('addGalleryModal');
+        if (existingModal) existingModal.remove();
+        
+        // Add new modal to page
+        document.body.insertAdjacentHTML('beforeend', html);
+        
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('addGalleryModal'));
+        modal.show();
+    }
+    
+    async confirmAddGalleriesToTheme(themeId) {
+        const checkboxes = document.querySelectorAll('#addGalleryModal input[type="checkbox"]:checked');
+        const selectedProfiles = Array.from(checkboxes).map(cb => parseInt(cb.value));
+        
+        if (selectedProfiles.length === 0) {
+            this.showNotification('Please select at least one gallery profile', 'warning');
+            return;
+        }
+        
+        try {
+            // Call new API endpoint with all selected profiles
+            const response = await sysFetch('/api/theme-management/gallery-assignments/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    theme_id: themeId,
+                    gallery_profile_ids: selectedProfiles
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            // Close modal
+            bootstrap.Modal.getInstance(document.getElementById('addGalleryModal')).hide();
+            
+            // Refresh the display
+            await this.loadThemeGalleryAssignments();
+            this.renderThemeGalleryAssignmentMatrix();
+            
+            this.showNotification(`Successfully added ${selectedProfiles.length} gallery profile(s) to theme`, 'success');
+            
+        } catch (error) {
+            console.error('❌ Error adding galleries to theme:', error);
+            this.showNotification('Error adding gallery profiles', 'error');
+        }
+    }
+    
+    
+    async removeGalleryFromTheme(themeId, profileId) {
+        if (confirm('Remove this gallery profile from the theme?')) {
+            try {
+                const response = await sysFetch('/api/theme-management/gallery-assignments/remove', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        theme_id: themeId,
+                        gallery_profile_id: profileId
+                    })
+                });
+                
+                if (response.ok) {
+                    // Update local data
+                    if (this.themeGalleryAssignments[themeId]) {
+                        this.themeGalleryAssignments[themeId] = this.themeGalleryAssignments[themeId].filter(
+                            a => a.gallery_profile_id !== profileId
+                        );
+                    }
+                    
+                    // Re-render the matrix
+                    this.renderThemeGalleryAssignmentMatrix();
+                    
+                    this.showNotification('Gallery profile removed successfully!', 'success');
+                } else {
+                    throw new Error('Failed to remove gallery profile');
+                }
+            } catch (error) {
+                console.error('❌ Error removing gallery from theme:', error);
+                this.showNotification('Error removing gallery profile', 'error');
+            }
+        }
+    }
+    
+    async toggleDefaultGallery(themeId, profileId, isDefault) {
+        try {
+            const response = await sysFetch('/api/theme-management/gallery-assignments/default', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    theme_id: themeId,
+                    gallery_profile_id: profileId,
+                    is_default: isDefault
+                })
+            });
+            
+            if (response.ok) {
+                // Update local data
+                if (this.themeGalleryAssignments[themeId]) {
+                    this.themeGalleryAssignments[themeId].forEach(assignment => {
+                        if (assignment.gallery_profile_id === profileId) {
+                            assignment.is_default = isDefault;
+                        } else if (isDefault) {
+                            // Only one can be default, unset others
+                            assignment.is_default = false;
+                        }
+                    });
+                }
+                
+                // Re-render to update other checkboxes
+                this.renderThemeGalleryAssignmentMatrix();
+                
+                this.showNotification(`Gallery profile ${isDefault ? 'set as' : 'removed from'} default`, 'success');
+            } else {
+                throw new Error('Failed to update default status');
+            }
+        } catch (error) {
+            console.error('❌ Error toggling default gallery:', error);
+            this.showNotification('Error updating default status', 'error');
+            // Re-render to reset checkbox
+            this.renderThemeGalleryAssignmentMatrix();
+        }
+    }
+    
+    async resetThemeGalleryAssignment(themeId) {
+        if (confirm('Remove gallery profile assignment from this theme?')) {
+            await this.updateThemeGalleryAssignment(themeId, null);
+        }
+    }
+    
+    async previewThemeGallery(themeId) {
+        const theme = this.themes.find(t => t.id === themeId);
+        const assignment = this.themeGalleryAssignments[themeId];
+        
+        if (!theme || !assignment) {
+            this.showNotification('No gallery profile assigned to preview', 'warning');
+            return;
+        }
+        
+        const previewUrl = `${theme.previewUrl}&gallery_preview=1`;
+        window.open(previewUrl, '_blank');
+    }
+    
+    async saveAllGalleryAssignments() {
+        try {
+            console.log('💾 Saving all theme gallery assignments...');
+            
+            const assignments = [];
+            this.themes.forEach(theme => {
+                const select = document.getElementById(`gallerySelect_${theme.id}`);
+                if (select && select.value) {
+                    assignments.push({
+                        theme_id: theme.id,
+                        gallery_profile_id: parseInt(select.value)
+                    });
+                }
+            });
+            
+            const response = await sysFetch('/api/theme-management/gallery-assignments/bulk', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ assignments })
+            });
+            
+            if (response.ok) {
+                this.showNotification(`Successfully saved ${assignments.length} gallery assignments!`, 'success');
+                await this.loadThemeGalleryAssignments();
+                this.renderThemeGalleryAssignmentMatrix();
+            } else {
+                throw new Error('Failed to save assignments');
+            }
+        } catch (error) {
+            console.error('❌ Error saving all gallery assignments:', error);
+            this.showNotification('Error saving gallery assignments', 'error');
+        }
+    }
+    
+    escapeHtml(unsafe) {
+        if (typeof unsafe !== 'string') return unsafe;
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+    
     setupEventListeners() {
         // Theme selection change
         document.getElementById('assignmentTheme').addEventListener('change', (e) => {
@@ -710,6 +1306,147 @@ class ThemeManagement {
                 section.classList.add('d-none');
             }
         });
+    }
+    
+    editThemeCSS(themeId, themeName) {
+        console.log('🎨 Opening CSS editor for theme:', themeName, 'ID:', themeId);
+        
+        // Store current theme being edited
+        this.currentEditingTheme = { id: themeId, name: themeName };
+        
+        // Update modal title
+        document.getElementById('themeCSSEditorTitle').textContent = `Edit CSS: ${themeName}`;
+        
+        // Load current CSS for this theme
+        this.loadThemeCSS(themeId);
+        
+        // Show the modal
+        new bootstrap.Modal(document.getElementById('themeCSSEditorModal')).show();
+    }
+    
+    async loadThemeCSS(themeId) {
+        try {
+            // Show loading state
+            document.getElementById('cssEditor').value = '/* Loading theme CSS... */';
+            
+            const response = await sysFetch(`/api/theme-management/themes/${themeId}/css`);
+            if (response.ok) {
+                const result = await response.json();
+                document.getElementById('cssEditor').value = result.css || this.getDefaultThemeCSS();
+            } else {
+                // Fallback to default CSS template
+                document.getElementById('cssEditor').value = this.getDefaultThemeCSS();
+            }
+        } catch (error) {
+            console.error('Error loading theme CSS:', error);
+            document.getElementById('cssEditor').value = this.getDefaultThemeCSS();
+        }
+    }
+    
+    getDefaultThemeCSS() {
+        return `/* Theme-specific CSS customizations */
+
+:root {
+    /* Primary color scheme */
+    --theme-primary: #3B82F6;
+    --theme-secondary: #10B981;
+    --theme-accent: #F59E0B;
+    
+    /* Gallery-specific variables */
+    --gallery-item-border-radius: 8px;
+    --gallery-hover-transform: translateY(-2px);
+    --gallery-transition: all 0.3s ease;
+    
+    /* Layout spacing */
+    --gallery-gap: 1.5rem;
+    --gallery-item-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Gallery container styles */
+.gallery-container {
+    /* Theme-specific gallery container styles */
+}
+
+/* Gallery item styles */
+.gallery-item {
+    border-radius: var(--gallery-item-border-radius);
+    transition: var(--gallery-transition);
+    box-shadow: var(--gallery-item-shadow);
+}
+
+.gallery-item:hover {
+    transform: var(--gallery-hover-transform);
+}
+
+/* Lightbox customizations */
+.lightbox-overlay {
+    /* Theme-specific lightbox styles */
+}
+
+/* Carousel customizations */
+.carousel-container {
+    /* Theme-specific carousel styles */
+}`;
+    }
+    
+    async saveThemeCSS() {
+        const css = document.getElementById('cssEditor').value;
+        const themeId = this.currentEditingTheme.id;
+        
+        try {
+            const response = await sysFetch(`/api/theme-management/themes/${themeId}/css`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ css })
+            });
+            
+            if (response.ok) {
+                this.showNotification('Theme CSS saved successfully!', 'success');
+                bootstrap.Modal.getInstance(document.getElementById('themeCSSEditorModal')).hide();
+            } else {
+                throw new Error('Failed to save CSS');
+            }
+        } catch (error) {
+            console.error('Error saving theme CSS:', error);
+            this.showNotification('Error saving theme CSS', 'error');
+        }
+    }
+    
+    previewThemeCSS() {
+        const css = document.getElementById('cssEditor').value;
+        console.log('👁️ Previewing CSS changes...');
+        
+        // Create a temporary style element for preview
+        let previewStyle = document.getElementById('cssPreviewStyle');
+        if (!previewStyle) {
+            previewStyle = document.createElement('style');
+            previewStyle.id = 'cssPreviewStyle';
+            document.head.appendChild(previewStyle);
+        }
+        
+        previewStyle.textContent = css;
+        this.showNotification('CSS preview applied! Check the page styling.', 'info');
+    }
+    
+    resetThemeCSS() {
+        if (confirm('Reset CSS to default template? This will lose current changes.')) {
+            document.getElementById('cssEditor').value = this.getDefaultThemeCSS();
+            this.showNotification('CSS reset to default template', 'info');
+        }
+    }
+    
+    formatCSS() {
+        const css = document.getElementById('cssEditor').value;
+        // Basic CSS formatting - add proper indentation and spacing
+        const formatted = css
+            .replace(/\{/g, ' {\n    ')
+            .replace(/\}/g, '\n}\n')
+            .replace(/;/g, ';\n    ')
+            .replace(/\n\s*\n/g, '\n')
+            .replace(/\n    \}/g, '\n}');
+        
+        document.getElementById('cssEditor').value = formatted;
+        this.showNotification('CSS formatted', 'success');
     }
     
     showNotification(message, type = 'info') {

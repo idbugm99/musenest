@@ -1,15 +1,14 @@
 <!--
-Universal Gallery Admin Interface - Redesigned
-Modern Bootstrap-based dashboard for managing gallery configurations, themes, and performance monitoring.
-Redesigned: August 2025
+Universal Gallery Admin Interface - Refactored for Profile Management
+Master controller for gallery functionality across all business types
+Refactored: August 2025
 -->
 
-<!-- Include Bootstrap 5.3 and FontAwesome -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<!-- FontAwesome already included in main layout, Bootstrap included in main layout -->
+<!-- No additional CSS includes needed -->
 
 <div class="container-fluid p-0" id="universalGalleryAdmin">
-    <!-- Modern Header Section -->
+    <!-- Header Section -->
     <div class="bg-primary text-white shadow-sm mb-4">
         <div class="container-fluid py-4">
             <div class="row align-items-center">
@@ -20,61 +19,69 @@ Redesigned: August 2025
                         </div>
                         <div>
                             <h1 class="h2 mb-1 fw-bold">Universal Gallery System</h1>
-                            <p class="mb-0 opacity-75">Centralized gallery configuration and performance management</p>
+                            <p class="mb-0 opacity-75">Master Controller • System Admin Level • Full Gallery Control</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                    <button class="btn btn-light me-2" id="validateAllConfigs">
+                    <button class="btn btn-light me-2" id="validateAllProfiles">
                         <i class="fas fa-check-circle me-2"></i>
                         Validate All
                     </button>
-                    <button class="btn btn-outline-light" id="exportConfigs">
+                    <button class="btn btn-outline-light" id="exportProfiles">
                         <i class="fas fa-download me-2"></i>
-                        Export Config
+                        Export Profiles
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modern Navigation Tabs -->
+    <!-- Control Hierarchy Explanation -->
+    <div class="container-fluid mb-4">
+        <div class="row">
+            <div class="col-xl-10 mx-auto">
+                <div class="alert alert-primary border-0" role="alert">
+                    <div class="row align-items-center">
+                        <div class="col-md-1 text-center">
+                            <i class="fas fa-crown fs-2"></i>
+                        </div>
+                        <div class="col-md-11">
+                            <h5 class="alert-heading mb-2">Gallery Control Hierarchy</h5>
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <strong>🔒 System Admin (You):</strong><br>
+                                    <small>Complete control over functionality, image sizing, layouts, fine-tuning, masks, and backwards compatibility</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>🎨 Themes:</strong><br>
+                                    <small>Visual styling only - CSS variables, colors, icons, buttons, typography</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>👤 Models:</strong><br>
+                                    <small>Limited customization - carousel timing, visible items, basic preferences</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
     <div class="container-fluid mb-4">
         <ul class="nav nav-pills nav-fill bg-light rounded-3 p-2" id="galleryAdminTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active rounded-3 fw-semibold" id="dashboard-tab" data-bs-toggle="pill" data-bs-target="#dashboard-pane" type="button" role="tab">
-                    <i class="fas fa-tachometer-alt me-2"></i>
-                    Dashboard
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link rounded-3 fw-semibold" id="system-config-tab" data-bs-toggle="pill" data-bs-target="#system-config-pane" type="button" role="tab">
+                <button class="nav-link active rounded-3 fw-semibold" id="profiles-tab" data-bs-toggle="pill" data-bs-target="#profiles-pane" type="button" role="tab">
                     <i class="fas fa-cog me-2"></i>
-                    System Config
+                    Gallery Profiles
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link rounded-3 fw-semibold" id="theme-config-tab" data-bs-toggle="pill" data-bs-target="#theme-config-pane" type="button" role="tab">
-                    <i class="fas fa-palette me-2"></i>
-                    Theme Config
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link rounded-3 fw-semibold" id="model-overrides-tab" data-bs-toggle="pill" data-bs-target="#model-overrides-pane" type="button" role="tab">
-                    <i class="fas fa-user-cog me-2"></i>
-                    Model Overrides
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link rounded-3 fw-semibold" id="performance-tab" data-bs-toggle="pill" data-bs-target="#performance-pane" type="button" role="tab">
-                    <i class="fas fa-chart-line me-2"></i>
-                    Performance
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link rounded-3 fw-semibold" id="validation-tab" data-bs-toggle="pill" data-bs-target="#validation-pane" type="button" role="tab">
-                    <i class="fas fa-shield-alt me-2"></i>
-                    Validation
+                <button class="nav-link rounded-3 fw-semibold" id="assignment-tab" data-bs-toggle="pill" data-bs-target="#assignment-pane" type="button" role="tab">
+                    <i class="fas fa-sitemap me-2"></i>
+                    Business Assignment
                 </button>
             </li>
         </ul>
@@ -84,201 +91,202 @@ Redesigned: August 2025
     <div class="container-fluid">
         <div class="tab-content" id="galleryAdminTabContent">
             
-            <!-- Dashboard Tab -->
-            <div class="tab-pane fade show active" id="dashboard-pane" role="tabpanel" aria-labelledby="dashboard-tab">
+            <!-- Gallery Profiles Tab -->
+            <div class="tab-pane fade show active" id="profiles-pane" role="tabpanel" aria-labelledby="profiles-tab">
                 
-                <!-- System Overview Cards -->
+                <!-- Profile Management Header -->
                 <div class="row mb-4">
-                    <div class="col-xl-3 col-md-6 mb-3">
-                        <div class="card border-0 bg-primary bg-opacity-10 h-100">
-                            <div class="card-body text-center">
-                                <div class="bg-primary bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                                    <i class="fas fa-images text-primary fs-3"></i>
-                                </div>
-                                <h3 class="h2 mb-1 text-primary fw-bold" id="totalGalleries">--</h3>
-                                <p class="text-muted small mb-0">Total Galleries</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-3 col-md-6 mb-3">
-                        <div class="card border-0 bg-success bg-opacity-10 h-100">
-                            <div class="card-body text-center">
-                                <div class="bg-success bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                                    <i class="fas fa-palette text-success fs-3"></i>
-                                </div>
-                                <h3 class="h2 mb-1 text-success fw-bold" id="activeThemes">--</h3>
-                                <p class="text-muted small mb-0">Active Themes</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-3 col-md-6 mb-3">
-                        <div class="card border-0 bg-warning bg-opacity-10 h-100">
-                            <div class="card-body text-center">
-                                <div class="bg-warning bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                                    <i class="fas fa-exclamation-triangle text-warning fs-3"></i>
-                                </div>
-                                <h3 class="h2 mb-1 text-warning fw-bold" id="validationIssues">--</h3>
-                                <p class="text-muted small mb-0">Validation Issues</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-3 col-md-6 mb-3">
-                        <div class="card border-0 bg-info bg-opacity-10 h-100">
-                            <div class="card-body text-center">
-                                <div class="bg-info bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                                    <i class="fas fa-tachometer-alt text-info fs-3"></i>
-                                </div>
-                                <h3 class="h2 mb-1 text-info fw-bold" id="avgPerformance">--</h3>
-                                <p class="text-muted small mb-0">Avg Performance</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Activity -->
-                <div class="row mb-4">
-                    <div class="col-xl-8 mb-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-header bg-transparent border-bottom-0 d-flex justify-content-between align-items-center py-3">
-                                <h5 class="mb-0 fw-semibold">Recent Configuration Changes</h5>
-                                <button class="btn btn-sm btn-outline-primary" id="refreshActivity">
-                                    <i class="fas fa-sync-alt me-1"></i>
-                                    Refresh
-                                </button>
-                            </div>
-                            <div class="card-body pt-2">
-                                <div id="activityList">
-                                    <!-- Activity items will be dynamically loaded -->
-                                    <div class="d-flex align-items-center py-3 border-bottom">
-                                        <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                                            <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <p class="mb-0 text-muted small">Loading recent activities...</p>
-                                        </div>
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-light border-bottom-0 py-4">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <h3 class="mb-1 fw-bold">Gallery Profiles Management</h3>
+                                        <p class="text-muted mb-0">Create and manage named gallery profiles with core functionality settings</p>
+                                    </div>
+                                    <div class="col-auto">
+                                        <button class="btn btn-primary" id="createNewProfile">
+                                            <i class="fas fa-plus me-2"></i>Create New Profile
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Quick Actions -->
-                    <div class="col-xl-4 mb-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-header bg-transparent border-bottom-0 py-3">
-                                <h5 class="mb-0 fw-semibold">Quick Actions</h5>
+                <!-- Existing Profiles List -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-bottom-0 py-3">
+                                <h5 class="mb-0 fw-semibold">
+                                    <i class="fas fa-list me-2"></i>Existing Gallery Profiles
+                                </h5>
                             </div>
-                            <div class="card-body pt-2">
-                                <div class="d-grid gap-3">
-                                    <button class="btn btn-outline-primary d-flex align-items-center justify-content-start" id="createThemeConfig">
-                                        <i class="fas fa-plus-circle me-3"></i>
-                                        <span>Create Theme Config</span>
-                                    </button>
-                                    <button class="btn btn-outline-info d-flex align-items-center justify-content-start" id="runPerformanceAudit">
-                                        <i class="fas fa-search me-3"></i>
-                                        <span>Performance Audit</span>
-                                    </button>
-                                    <button class="btn btn-outline-success d-flex align-items-center justify-content-start" id="validateAllThemes">
-                                        <i class="fas fa-check-double me-3"></i>
-                                        <span>Validate All Themes</span>
-                                    </button>
-                                    <button class="btn btn-outline-secondary d-flex align-items-center justify-content-start" id="exportSystemConfig">
-                                        <i class="fas fa-file-export me-3"></i>
-                                        <span>Export System Config</span>
-                                    </button>
+                            <div class="card-body">
+                                <div id="profilesList">
+                                    <!-- Profiles will be loaded here -->
+                                    <div class="text-center py-4">
+                                        <div class="spinner-border text-primary mb-3" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="text-muted">Loading gallery profiles...</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- System Configuration Tab -->
-            <div class="tab-pane fade" id="system-config-pane" role="tabpanel" aria-labelledby="system-config-tab">
-                
-                <div class="row">
-                    <div class="col-xl-10 mx-auto">
+                <!-- Profile Editor (Hidden by default) -->
+                <div class="row" id="profileEditor" style="display: none;">
+                    <div class="col-12">
                         <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-light border-bottom-0 py-4">
-                                <div class="text-center">
-                                    <h3 class="mb-2 fw-bold">System-Wide Gallery Configuration</h3>
-                                    <p class="text-muted mb-0">Default settings applied to all new galleries and themes</p>
+                            <div class="card-header bg-primary text-white py-4">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <h4 class="mb-1 fw-bold" id="profileEditorTitle">Create New Gallery Profile</h4>
+                                        <p class="mb-0 opacity-75">Configure all core functionality settings for this profile</p>
+                                    </div>
+                                    <div class="col-auto">
+                                        <button class="btn btn-light" id="cancelProfileEdit">
+                                            <i class="fas fa-times me-2"></i>Cancel
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-body p-4">
-                                <form id="systemConfigForm">
-                                    <!-- Gallery Behavior -->
+                                <form id="profileForm">
+                                    <input type="hidden" id="profileId" name="profileId">
+                                    
+                                    <!-- Basic Profile Info -->
+                                    <div class="row g-4 mb-5">
+                                        <div class="col-md-4">
+                                            <label for="profileName" class="form-label fw-medium">Profile Name</label>
+                                            <input type="text" id="profileName" name="profile_name" class="form-control" 
+                                                   placeholder="e.g., standard_grid" required>
+                                            <div class="form-text">Lowercase, underscores only</div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="profileDisplayName" class="form-label fw-medium">Display Name</label>
+                                            <input type="text" id="profileDisplayName" name="profile_display_name" class="form-control" 
+                                                   placeholder="e.g., Standard Grid" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="profileDescription" class="form-label fw-medium">Description</label>
+                                            <input type="text" id="profileDescription" name="profile_description" class="form-control" 
+                                                   placeholder="Brief description of profile">
+                                        </div>
+                                    </div>
+
+                                    <!-- Layout Configuration -->
                                     <div class="mb-5">
                                         <div class="d-flex align-items-center mb-4">
                                             <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
-                                                <i class="fas fa-images text-primary"></i>
+                                                <i class="fas fa-layout text-primary"></i>
                                             </div>
-                                            <h4 class="mb-0 fw-semibold">Gallery Behavior</h4>
+                                            <h4 class="mb-0 fw-semibold">Layout Configuration</h4>
                                         </div>
                                         <div class="row g-4">
-                                            <div class="col-md-4">
-                                                <label for="defaultLayout" class="form-label fw-medium">Default Layout</label>
-                                                <select id="defaultLayout" name="defaultLayout" class="form-select">
-                                                    <option value="masonry">Masonry</option>
+                                            <div class="col-md-3">
+                                                <label for="layoutType" class="form-label fw-medium">Layout Type</label>
+                                                <select id="layoutType" name="layout_type" class="form-select" required>
+                                                    <option value="">Choose layout...</option>
                                                     <option value="grid">Grid</option>
+                                                    <option value="masonry">Masonry</option>
                                                     <option value="carousel">Carousel</option>
                                                     <option value="lightbox_grid">Lightbox Grid</option>
                                                 </select>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 <label for="imagesPerPage" class="form-label fw-medium">Images Per Page</label>
-                                                <input type="number" id="imagesPerPage" name="imagesPerPage" 
-                                                       class="form-control" min="1" max="100" value="20">
+                                                <input type="number" id="imagesPerPage" name="images_per_page" 
+                                                       class="form-control" min="1" max="100" value="20" required>
                                             </div>
-                                            <div class="col-md-4">
-                                                <label for="gridColumns" class="form-label fw-medium">Grid Columns (Desktop)</label>
-                                                <input type="number" id="gridColumns" name="gridColumns" 
-                                                       class="form-control" min="1" max="10" value="4">
+                                            <div class="col-md-3 grid-field masonry-field lightbox-field">
+                                                <label for="gridColumnsDesktop" class="form-label fw-medium">Desktop Columns</label>
+                                                <input type="number" id="gridColumnsDesktop" name="grid_columns_desktop" 
+                                                       class="form-control" min="1" max="10" value="4" required>
+                                            </div>
+                                            <div class="col-md-3 grid-field masonry-field lightbox-field">
+                                                <label for="gridColumnsTablet" class="form-label fw-medium">Tablet Columns</label>
+                                                <input type="number" id="gridColumnsTablet" name="grid_columns_tablet" 
+                                                       class="form-control" min="1" max="8" value="3" required>
+                                            </div>
+                                            <div class="col-md-3 grid-field masonry-field lightbox-field">
+                                                <label for="gridColumnsMobile" class="form-label fw-medium">Mobile Columns</label>
+                                                <input type="number" id="gridColumnsMobile" name="grid_columns_mobile" 
+                                                       class="form-control" min="1" max="4" value="2" required>
+                                            </div>
+                                            <div class="col-md-3 carousel-field">
+                                                <label for="carouselVisibleItems" class="form-label fw-medium">Visible Items</label>
+                                                <input type="number" id="carouselVisibleItems" name="carousel_visible_items" 
+                                                       class="form-control" min="1" max="8" value="3" required>
+                                            </div>
+                                            <div class="col-md-3 grid-field masonry-field lightbox-field">
+                                                <label for="aspectRatio" class="form-label fw-medium">Aspect Ratio</label>
+                                                <select id="aspectRatio" name="aspect_ratio" class="form-select">
+                                                    <option value="1/1">Square (1:1)</option>
+                                                    <option value="4/3" selected>Standard (4:3)</option>
+                                                    <option value="16/9">Widescreen (16:9)</option>
+                                                    <option value="3/2">Photography (3:2)</option>
+                                                    <option value="auto">Auto (preserve original)</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3 carousel-field">
+                                                <label for="carouselAutoplay" class="form-label fw-medium">Autoplay</label>
+                                                <div class="form-check form-switch mt-2">
+                                                    <input class="form-check-input" type="checkbox" id="carouselAutoplay" name="carousel_autoplay_enabled" checked>
+                                                    <label class="form-check-label fw-medium" for="carouselAutoplay">
+                                                        Enable Autoplay
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 carousel-field">
+                                                <label for="carouselSpeed" class="form-label fw-medium">Autoplay Speed (ms)</label>
+                                                <input type="number" id="carouselSpeed" name="carousel_autoplay_speed" 
+                                                       class="form-control" min="1000" max="10000" value="5000">
                                             </div>
                                         </div>
                                     </div>
 
                                     <!-- Lightbox Configuration -->
-                                    <div class="mb-5">
+                                    <div class="mb-5 grid-field masonry-field lightbox-field">
                                         <div class="d-flex align-items-center mb-4">
                                             <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
                                                 <i class="fas fa-expand text-success"></i>
                                             </div>
-                                            <h4 class="mb-0 fw-semibold">Lightbox Configuration</h4>
+                                            <h4 class="mb-0 fw-semibold">Lightbox Behavior</h4>
                                         </div>
                                         <div class="row g-4">
                                             <div class="col-md-3">
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="enableLightbox" name="enableLightbox" checked>
-                                                    <label class="form-check-label fw-medium" for="enableLightbox">
+                                                    <input class="form-check-input" type="checkbox" id="lightboxEnabled" name="lightbox_enabled" checked>
+                                                    <label class="form-check-label fw-medium" for="lightboxEnabled">
                                                         Enable Lightbox
                                                     </label>
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="enableFullscreen" name="enableFullscreen" checked>
-                                                    <label class="form-check-label fw-medium" for="enableFullscreen">
-                                                        Enable Fullscreen
+                                                    <input class="form-check-input" type="checkbox" id="lightboxFullscreen" name="lightbox_fullscreen" checked>
+                                                    <label class="form-check-label fw-medium" for="lightboxFullscreen">
+                                                        Fullscreen Mode
                                                     </label>
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="enableZoom" name="enableZoom" checked>
-                                                    <label class="form-check-label fw-medium" for="enableZoom">
-                                                        Enable Zoom
+                                                    <input class="form-check-input" type="checkbox" id="lightboxZoom" name="lightbox_zoom" checked>
+                                                    <label class="form-check-label fw-medium" for="lightboxZoom">
+                                                        Zoom Feature
                                                     </label>
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
                                                 <label for="lightboxAnimation" class="form-label fw-medium">Animation</label>
-                                                <select id="lightboxAnimation" name="lightboxAnimation" class="form-select">
+                                                <select id="lightboxAnimation" name="lightbox_animation" class="form-select">
                                                     <option value="fade">Fade</option>
                                                     <option value="slide">Slide</option>
                                                     <option value="zoom">Zoom</option>
@@ -288,18 +296,62 @@ Redesigned: August 2025
                                         </div>
                                     </div>
 
-                                    <!-- Display Options -->
-                                    <div class="mb-5">
+                                    <!-- Navigation & Interaction -->
+                                    <div class="mb-5 grid-field masonry-field carousel-field lightbox-field">
                                         <div class="d-flex align-items-center mb-4">
                                             <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
-                                                <i class="fas fa-eye text-info"></i>
+                                                <i class="fas fa-mouse-pointer text-info"></i>
                                             </div>
-                                            <h4 class="mb-0 fw-semibold">Display Options</h4>
+                                            <h4 class="mb-0 fw-semibold">Navigation & Interaction</h4>
+                                        </div>
+                                        <div class="row g-4">
+                                            <div class="col-md-3">
+                                                <label for="paginationType" class="form-label fw-medium">Pagination Type</label>
+                                                <select id="paginationType" name="pagination_type" class="form-select">
+                                                    <option value="pagination">Standard Pagination</option>
+                                                    <option value="infinite_scroll">Infinite Scroll</option>
+                                                    <option value="load_more">Load More Button</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check form-switch mt-4">
+                                                    <input class="form-check-input" type="checkbox" id="enableSearch" name="enable_search">
+                                                    <label class="form-check-label fw-medium" for="enableSearch">
+                                                        Enable Search
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check form-switch mt-4">
+                                                    <input class="form-check-input" type="checkbox" id="enableSorting" name="enable_sorting">
+                                                    <label class="form-check-label fw-medium" for="enableSorting">
+                                                        Enable Sorting
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check form-switch mt-4">
+                                                    <input class="form-check-input" type="checkbox" id="enableFiltering" name="enable_filtering" checked>
+                                                    <label class="form-check-label fw-medium" for="enableFiltering">
+                                                        Enable Filtering
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Display Features -->
+                                    <div class="mb-5 grid-field masonry-field carousel-field lightbox-field">
+                                        <div class="d-flex align-items-center mb-4">
+                                            <div class="bg-warning bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="fas fa-eye text-warning"></i>
+                                            </div>
+                                            <h4 class="mb-0 fw-semibold">Display Features</h4>
                                         </div>
                                         <div class="row g-4">
                                             <div class="col-md-3">
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="showCaptions" name="showCaptions" checked>
+                                                    <input class="form-check-input" type="checkbox" id="showCaptions" name="show_captions" checked>
                                                     <label class="form-check-label fw-medium" for="showCaptions">
                                                         Show Captions
                                                     </label>
@@ -307,7 +359,7 @@ Redesigned: August 2025
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="showImageInfo" name="showImageInfo">
+                                                    <input class="form-check-input" type="checkbox" id="showImageInfo" name="show_image_info">
                                                     <label class="form-check-label fw-medium" for="showImageInfo">
                                                         Show Image Info
                                                     </label>
@@ -315,17 +367,25 @@ Redesigned: August 2025
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="showCategoryFilter" name="showCategoryFilter" checked>
-                                                    <label class="form-check-label fw-medium" for="showCategoryFilter">
-                                                        Category Filter
+                                                    <input class="form-check-input" type="checkbox" id="keyboardNavigation" name="keyboard_navigation" checked>
+                                                    <label class="form-check-label fw-medium" for="keyboardNavigation">
+                                                        Keyboard Navigation
                                                     </label>
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="enableSearch" name="enableSearch">
-                                                    <label class="form-check-label fw-medium" for="enableSearch">
-                                                        Enable Search
+                                                    <input class="form-check-input" type="checkbox" id="screenReaderSupport" name="screen_reader_support" checked>
+                                                    <label class="form-check-label fw-medium" for="screenReaderSupport">
+                                                        Screen Reader Support
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="ariaLabels" name="aria_labels" checked>
+                                                    <label class="form-check-label fw-medium" for="ariaLabels">
+                                                        ARIA Labels
                                                     </label>
                                                 </div>
                                             </div>
@@ -333,41 +393,41 @@ Redesigned: August 2025
                                     </div>
 
                                     <!-- Performance Settings -->
-                                    <div class="mb-5">
+                                    <div class="mb-5 grid-field masonry-field carousel-field lightbox-field">
                                         <div class="d-flex align-items-center mb-4">
-                                            <div class="bg-warning bg-opacity-10 rounded-circle p-2 me-3">
-                                                <i class="fas fa-bolt text-warning"></i>
+                                            <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="fas fa-bolt text-success"></i>
                                             </div>
                                             <h4 class="mb-0 fw-semibold">Performance Settings</h4>
                                         </div>
                                         <div class="row g-4">
                                             <div class="col-md-3">
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="enableLazyLoading" name="enableLazyLoading" checked>
-                                                    <label class="form-check-label fw-medium" for="enableLazyLoading">
+                                                    <input class="form-check-input" type="checkbox" id="lazyLoadingEnabled" name="lazy_loading_enabled" checked>
+                                                    <label class="form-check-label fw-medium" for="lazyLoadingEnabled">
                                                         Lazy Loading
                                                     </label>
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="enablePrefetch" name="enablePrefetch" checked>
-                                                    <label class="form-check-label fw-medium" for="enablePrefetch">
+                                                    <input class="form-check-input" type="checkbox" id="prefetchEnabled" name="prefetch_enabled" checked>
+                                                    <label class="form-check-label fw-medium" for="prefetchEnabled">
                                                         Image Prefetch
                                                     </label>
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
                                                 <label for="prefetchStrategy" class="form-label fw-medium">Prefetch Strategy</label>
-                                                <select id="prefetchStrategy" name="prefetchStrategy" class="form-select">
+                                                <select id="prefetchStrategy" name="prefetch_strategy" class="form-select">
                                                     <option value="conservative">Conservative</option>
-                                                    <option value="balanced">Balanced</option>
+                                                    <option value="balanced" selected>Balanced</option>
                                                     <option value="aggressive">Aggressive</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-check form-switch mt-4">
-                                                    <input class="form-check-input" type="checkbox" id="respectReducedMotion" name="respectReducedMotion" checked>
+                                                    <input class="form-check-input" type="checkbox" id="respectReducedMotion" name="respect_reduced_motion" checked>
                                                     <label class="form-check-label fw-medium" for="respectReducedMotion">
                                                         Reduced Motion
                                                     </label>
@@ -376,16 +436,65 @@ Redesigned: August 2025
                                         </div>
                                     </div>
 
+                                    <!-- Model Customization Limits -->
+                                    <div class="mb-5 carousel-field">
+                                        <div class="d-flex align-items-center mb-4">
+                                            <div class="bg-secondary bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="fas fa-user-cog text-secondary"></i>
+                                            </div>
+                                            <h4 class="mb-0 fw-semibold">Model Customization Permissions</h4>
+                                        </div>
+                                        <div class="row g-4">
+                                            <div class="col-md-3">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="allowCarouselTimingOverride" name="allow_carousel_timing_override" checked>
+                                                    <label class="form-check-label fw-medium" for="allowCarouselTimingOverride">
+                                                        Carousel Timing
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="allowVisibleItemsOverride" name="allow_visible_items_override" checked>
+                                                    <label class="form-check-label fw-medium" for="allowVisibleItemsOverride">
+                                                        Visible Items
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="allowSectionVisibilityOverride" name="allow_section_visibility_override" checked>
+                                                    <label class="form-check-label fw-medium" for="allowSectionVisibilityOverride">
+                                                        Section Visibility
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="allowCaptionOverride" name="allow_caption_override" checked>
+                                                    <label class="form-check-label fw-medium" for="allowCaptionOverride">
+                                                        Caption Preferences
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <!-- Form Actions -->
                                     <div class="d-flex justify-content-between pt-4 border-top">
-                                        <button type="button" class="btn btn-outline-secondary px-4" id="resetSystemConfig">
-                                            <i class="fas fa-undo me-2"></i>
-                                            Reset to Defaults
-                                        </button>
-                                        <button type="submit" class="btn btn-primary px-5">
-                                            <i class="fas fa-save me-2"></i>
-                                            Save Configuration
-                                        </button>
+                                        <div>
+                                            <button type="button" class="btn btn-outline-danger" id="deleteProfile" style="display: none;">
+                                                <i class="fas fa-trash me-2"></i>Delete Profile
+                                            </button>
+                                        </div>
+                                        <div>
+                                            <button type="button" class="btn btn-outline-secondary me-2" id="resetProfileForm">
+                                                <i class="fas fa-undo me-2"></i>Reset
+                                            </button>
+                                            <button type="submit" class="btn btn-primary px-5">
+                                                <i class="fas fa-save me-2"></i>Save Profile
+                                            </button>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -394,146 +503,73 @@ Redesigned: August 2025
                 </div>
             </div>
 
-            <!-- Theme Configuration Tab -->
-            <div class="tab-pane fade" id="theme-config-pane" role="tabpanel" aria-labelledby="theme-config-tab">
+            <!-- Business Assignment Tab -->
+            <div class="tab-pane fade" id="assignment-pane" role="tabpanel" aria-labelledby="assignment-tab">
                 
-                <div class="row">
-                    <div class="col-xl-10 mx-auto">
+                <!-- Assignment Header -->
+                <div class="row mb-4">
+                    <div class="col-12">
                         <div class="card border-0 shadow-sm">
                             <div class="card-header bg-light border-bottom-0 py-4">
                                 <div class="text-center">
-                                    <h3 class="mb-2 fw-bold">Theme-Specific Gallery Configurations</h3>
-                                    <p class="text-muted mb-0">Customize gallery behavior for individual themes</p>
+                                    <h3 class="mb-2 fw-bold">Business Type Gallery Assignment</h3>
+                                    <p class="text-muted mb-0">Assign gallery profiles to business types (escort, camgirl, etc.)</p>
                                 </div>
                             </div>
-                            <div class="card-body p-4">
-                                
-                                <!-- Theme Selector -->
-                                <div class="mb-4">
-                                    <div class="row g-3 align-items-end">
-                                        <div class="col-md-8">
-                                            <label for="themeSelector" class="form-label fw-medium">Select Theme</label>
-                                            <select id="themeSelector" class="form-select">
-                                                <option value="">Choose a theme to configure...</option>
-                                                <option value="basic">Template 1 - Basic</option>
-                                                <option value="glamour">Template 2 - Glamour</option>
-                                                <option value="luxury">Template 3 - Luxury</option>
-                                                <option value="modern">Template 4 - Modern</option>
-                                                <option value="dark">Template 5 - Dark</option>
-                                                <!-- Options populated dynamically -->
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <button class="btn btn-primary w-100" id="createNewThemeConfig">
-                                                <i class="fas fa-plus me-2"></i>
-                                                New Theme Config
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                        </div>
+                    </div>
+                </div>
 
-                                <!-- Theme Configuration Editor -->
-                                <div id="themeConfigEditor" style="display: none;">
-                                    <div class="alert alert-info" role="alert">
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        Theme configuration form will be loaded here dynamically based on your selection.
+                <!-- Assignment Matrix -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-bottom-0 py-3">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <h5 class="mb-0 fw-semibold">
+                                            <i class="fas fa-sitemap me-2"></i>Profile Assignment Matrix
+                                        </h5>
+                                    </div>
+                                    <div class="col-auto">
+                                        <button class="btn btn-success" id="saveAllAssignments">
+                                            <i class="fas fa-save me-2"></i>Save All Assignments
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Model Overrides Tab -->
-            <div class="tab-pane fade" id="model-overrides-pane" role="tabpanel" aria-labelledby="model-overrides-tab">
-                
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-light border-bottom-0 py-4">
-                        <div class="text-center">
-                            <h3 class="mb-2 fw-bold">Model-Specific Gallery Overrides</h3>
-                            <p class="text-muted mb-0">Override gallery settings for specific models</p>
-                        </div>
-                    </div>
-                    <div class="card-body p-4">
-                        
-                        <!-- Search and Filter Controls -->
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-6">
-                                <div class="position-relative">
-                                    <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                                    <input type="text" id="modelSearch" class="form-control ps-5" placeholder="Search models...">
+                            <div class="card-body">
+                                <div id="assignmentMatrix">
+                                    <!-- Assignment matrix will be loaded here -->
+                                    <div class="text-center py-4">
+                                        <div class="spinner-border text-primary mb-3" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="text-muted">Loading assignment matrix...</p>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <select id="modelFilter" class="form-select">
-                                    <option value="all">All Models</option>
-                                    <option value="with-overrides">With Overrides</option>
-                                    <option value="using-defaults">Using Defaults</option>
-                                    <option value="validation-issues">Validation Issues</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <!-- Models Grid -->
-                        <div class="row" id="modelsGrid">
-                            <!-- Model cards will be loaded here -->
-                            <div class="col-12 text-center py-5">
-                                <div class="spinner-border text-primary mb-3" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <p class="text-muted">Loading model configurations...</p>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-        <!-- Performance Tab -->
-        <section class="tab-content" id="tab-performance">
-            <div class="performance-section">
-                <div class="section-header">
-                    <h2>Gallery Performance Monitoring</h2>
-                    <p>Monitor and optimize gallery performance across all themes and models</p>
-                </div>
-
-                <!-- Performance Metrics Dashboard -->
-                <div class="performance-dashboard">
-                    <!-- Performance charts and metrics will be loaded here -->
-                </div>
-            </div>
-        </section>
-
-        <!-- Validation Tab -->
-        <section class="tab-content" id="tab-validation">
-            <div class="validation-section">
-                <div class="section-header">
-                    <h2>Configuration Validation</h2>
-                    <p>Validate and troubleshoot gallery configurations</p>
-                </div>
-
-                <!-- Validation Dashboard -->
-                <div class="validation-dashboard">
-                    <!-- Validation results will be loaded here -->
-                </div>
-            </div>
-        </section>
-
-    </main>
+        </div>
+    </div>
 </div>
 
 <!-- Loading Overlay -->
 <div class="loading-overlay" id="loadingOverlay" style="display: none;">
     <div class="loading-content">
-        <div class="spinner-large"></div>
-        <p class="loading-text">Loading configuration...</p>
+        <div class="spinner-border spinner-border-lg text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="loading-text mt-3">Loading configuration...</p>
     </div>
 </div>
 
-<!-- Success/Error Toast -->
-<div class="toast-container" id="toastContainer">
+<!-- Toast Container -->
+<div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer">
     <!-- Toast messages will be added here dynamically -->
 </div>
 
 <script src="/admin/js/universal-gallery-admin.js"></script>
-<!-- CSS is now inline in the component -->

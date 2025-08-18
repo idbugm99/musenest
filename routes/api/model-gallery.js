@@ -98,31 +98,22 @@ router.get('/:modelSlug/sections/:id/images', async (req, res) => {
     const model = await getModelBySlug(modelSlug);
     if (!model) return res.fail(404, 'Model not found');
     const countRows = await db.query(
-      'SELECT COUNT(*) as total FROM gallery_images WHERE model_id = ? AND section_id = ?',
+      `SELECT COUNT(*) as total FROM gallery_images gi 
+       LEFT JOIN content_moderation cm ON cm.model_id = gi.model_id AND cm.original_path LIKE CONCAT('%', gi.filename)
+       WHERE gi.model_id = ? AND gi.section_id = ? AND gi.is_active = 1 
+       AND (cm.moderation_status = 'approved' OR cm.moderation_status IS NULL)`,
       [model.id, parseInt(id)]
     );
     const total = countRows[0]?.total || 0;
     const images = await db.query(
       `SELECT 
          gi.id, gi.section_id, gi.model_id, gi.filename, gi.caption, gi.tags, gi.is_active, gi.order_index, gi.created_at, gi.updated_at,
-         (
-           SELECT cm.moderation_status 
-           FROM content_moderation cm 
-           WHERE cm.model_id = gi.model_id 
-             AND cm.original_path LIKE CONCAT('%', gi.filename)
-           ORDER BY cm.created_at DESC 
-           LIMIT 1
-         ) AS moderation_status,
-         (
-           SELECT cm.blurred_path
-           FROM content_moderation cm 
-           WHERE cm.model_id = gi.model_id 
-             AND cm.original_path LIKE CONCAT('%', gi.filename)
-           ORDER BY cm.created_at DESC 
-           LIMIT 1
-         ) AS blurred_path
+         cm.moderation_status,
+         cm.blurred_path
        FROM gallery_images gi 
-       WHERE gi.model_id = ? AND gi.section_id = ? 
+       LEFT JOIN content_moderation cm ON cm.model_id = gi.model_id AND cm.original_path LIKE CONCAT('%', gi.filename)
+       WHERE gi.model_id = ? AND gi.section_id = ? AND gi.is_active = 1
+       AND (cm.moderation_status = 'approved' OR cm.moderation_status IS NULL)
        ORDER BY gi.order_index ASC, gi.id ASC
        LIMIT ${perPage} OFFSET ${offset}`,
       [model.id, parseInt(id)]

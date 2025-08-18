@@ -239,7 +239,8 @@ window.dashboardLoadSection = function loadSection(sectionName) {
         'escort-sites': 'Escort Sites',
         'camgirl-sites': 'Camgirl Sites',
         'blurred-approved': 'Blurred & Approved Images',
-        'rejected-removed': 'Rejected & Removed Images'
+        'rejected-removed': 'Rejected & Removed Images',
+        'universal-gallery-admin': 'Universal Gallery System'
     };
     
     document.querySelector('.page-title').textContent = titles[sectionName] || 'MuseNest Business Manager';
@@ -279,6 +280,9 @@ window.dashboardLoadSection = function loadSection(sectionName) {
             break;
         case 'rejected-removed':
             loadRejectedRemoved();
+            break;
+        case 'universal-gallery-admin':
+            loadUniversalGalleryAdmin();
             break;
         default:
             dynamicContent.innerHTML = '<div class="alert alert-info">This section is coming soon!</div>';
@@ -1219,6 +1223,57 @@ function getPriorityColor(priority) {
         case 'medium': return 'info';
         case 'low': return 'secondary';
         default: return 'secondary';
+    }
+}
+
+async function loadUniversalGalleryAdmin() {
+    try {
+        console.log('🎨 Loading Universal Gallery Admin...');
+        const response = await fetch('/admin/components/universal-gallery-admin.html');
+        if (!response.ok) {
+            throw new Error(`Failed to fetch component: ${response.status}`);
+        }
+        
+        const componentHTML = await response.text();
+        console.log('📄 Universal Gallery Admin component loaded successfully');
+        
+        // Insert the component HTML
+        document.getElementById('dynamicContent').innerHTML = componentHTML;
+        
+        // Execute any embedded scripts
+        const scriptTags = document.getElementById('dynamicContent').querySelectorAll('script');
+        console.log('🔧 Found', scriptTags.length, 'script tags to execute');
+        
+        scriptTags.forEach((script, index) => {
+            console.log(`🔧 Executing Universal Gallery Admin script ${index + 1}...`);
+            const newScript = document.createElement('script');
+            
+            if (script.src) {
+                newScript.src = script.src;
+            } else {
+                newScript.textContent = script.textContent;
+            }
+            
+            document.head.appendChild(newScript);
+            console.log(`✅ Universal Gallery Admin script ${index + 1} executed`);
+        });
+        
+        // Initialize the component after scripts are executed
+        setTimeout(() => {
+            if (typeof window.initializeUniversalGalleryAdmin === 'function') {
+                console.log('🚀 Initializing Universal Gallery Admin...');
+                window.initializeUniversalGalleryAdmin();
+            } else {
+                console.log('ℹ️ Universal Gallery Admin uses Bootstrap tabs - no custom initialization needed');
+            }
+        }, 200);
+        
+        console.log('✅ Universal Gallery Admin loaded successfully');
+        
+    } catch (error) {
+        console.error('❌ Error loading Universal Gallery Admin:', error);
+        document.getElementById('dynamicContent').innerHTML = 
+            `<div class="alert alert-danger">Error loading Universal Gallery Admin: ${error.message}</div>`;
     }
 }
 

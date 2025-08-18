@@ -70,11 +70,15 @@ router.get('/images', auth, async (req, res) => {
         }
 
         const [rows] = await db.execute(`
-            SELECT gi.*, gs.title as section_title, m.slug as model_slug
+            SELECT DISTINCT gi.*, gs.title as section_title, m.slug as model_slug,
+                   cm.moderation_status
             FROM gallery_images gi
             LEFT JOIN gallery_sections gs ON gi.section_id = gs.id
             LEFT JOIN models m ON gi.model_id = m.id
+            LEFT JOIN content_moderation cm ON cm.model_id = gi.model_id AND cm.original_path LIKE CONCAT('%', gi.filename)
             WHERE gi.model_id = ? 
+            AND (cm.moderation_status = 'approved' OR cm.moderation_status IS NULL)
+            AND gi.is_active = 1
             ORDER BY gi.section_id, gi.sort_order
         `, [modelId]);
 
