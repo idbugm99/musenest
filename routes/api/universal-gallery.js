@@ -103,54 +103,52 @@ router.get('/config', async (req, res) => {
 
         const model = modelData[0];
         
-        // Get gallery sections
+        // Get gallery sections from the same table that admin interface uses
         const [sections] = await db.execute(`
             SELECT 
                 id,
-                section_name,
-                section_slug,
-                section_description,
+                title as section_name,
+                slug as section_slug,
+                description as section_description,
                 layout_type,
                 layout_settings,
-                section_order,
-                is_published,
+                sort_order as section_order,
+                is_visible as is_published,
                 is_featured
-            FROM model_gallery_sections
-            WHERE model_slug = ? 
-            AND is_published = 1
-            ORDER BY section_order ASC, id ASC
-        `, [modelSlug]);
+            FROM gallery_sections
+            WHERE model_id = ? 
+            AND is_visible = 1
+            ORDER BY sort_order ASC, id ASC
+        `, [model.id]);
         
         // Get gallery items organized by sections
         const gallerySections = [];
         if (sections && sections.length > 0) {
             
-            // Process each section separately
+            // Process each section separately using gallery_images table
             for (const section of sections) {
                 const [items] = await db.execute(`
                     SELECT 
-                        mml.id,
-                        mml.filename,
-                        mml.original_filename,
-                        mml.file_path,
-                        mml.permanent_path as file_url,
-                        mml.thumbnail_path as thumbnail_url,
-                        mml.medium_path as medium_url,
-                        mml.image_width,
-                        mml.image_height,
-                        mml.upload_date,
-                        mml.moderation_status,
-                        mml.usage_intent as visibility_status,
-                        mgsm.custom_caption,
-                        mgsm.display_order,
-                        mgsm.is_featured
-                    FROM model_media_library mml
-                    INNER JOIN model_gallery_section_media mgsm ON mgsm.media_id = mml.id
-                    WHERE mgsm.section_id = ?
-                    AND mml.moderation_status = 'approved'
-                    AND mml.usage_intent != 'private'
-                    ORDER BY mgsm.display_order ASC, mml.upload_date DESC
-                `, [section.id]);
+                        gi.id,
+                        gi.filename,
+                        gi.original_filename,
+                        CONCAT('/uploads/', ?, '/public/gallery/', gi.filename) as file_url,
+                        CONCAT('/uploads/', ?, '/public/gallery/thumbs/', gi.filename) as thumbnail_url,
+                        CONCAT('/uploads/', ?, '/public/gallery/medium/', gi.filename) as medium_url,
+                        gi.width as image_width,
+                        gi.height as image_height,
+                        gi.created_at as upload_date,
+                        'approved' as moderation_status,
+                        'public' as visibility_status,
+                        gi.caption as custom_caption,
+                        gi.order_index as display_order,
+                        gi.is_featured
+                    FROM gallery_images gi
+                    WHERE gi.section_id = ?
+                    AND gi.model_id = ?
+                    AND gi.is_active = 1
+                    ORDER BY gi.order_index ASC, gi.created_at DESC
+                `, [modelSlug, modelSlug, modelSlug, section.id, model.id]);
                 
                 // Process items for this section with model slug prefix for proper routing
                 const sectionItems = items.map(item => {
