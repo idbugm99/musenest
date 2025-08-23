@@ -384,7 +384,8 @@ router.get('/:slug/:page?', async (req, res) => {
             'luxury': 'luxury',
             'modern': 'modern',
             'dark': 'dark',
-            'rose': 'rose'
+            'rose': 'rose',
+            'bdsm': 'bdsm'
         };
         
         // Use preview theme if available, otherwise use model's assigned theme
@@ -648,8 +649,6 @@ router.get('/:slug/:page?', async (req, res) => {
             });
         }
         
-
-
         // Load actual image URLs if IDs are provided (after field name transformation)
         const portraitIdKey = pageContent.portrait_image_id || pageContent.portraitImageId;
         if (portraitIdKey) {
@@ -704,6 +703,32 @@ router.get('/:slug/:page?', async (req, res) => {
                 }
             } catch (error) {
                 console.error('Error loading hero background image:', error);
+            }
+        }
+
+        // Fallback: Use home page hero background for all pages if no specific background is set
+        if (!pageContent.heroBackgroundImageUrl) {
+            try {
+                const [homeContent] = await db.execute(`
+                    SELECT hero_background_image_id FROM model_home_page_content WHERE model_id = ?
+                `, [model.id]);
+                
+                if (homeContent.length > 0 && homeContent[0].hero_background_image_id) {
+                    const [heroImage] = await db.execute(`
+                        SELECT gi.filename FROM gallery_images gi
+                        WHERE gi.id = ? AND gi.model_id = ? AND gi.is_active = 1
+                        LIMIT 1
+                    `, [homeContent[0].hero_background_image_id, model.id]);
+                    
+                    if (heroImage.length > 0) {
+                        const imageUrl = `/uploads/${model.slug}/public/gallery/${heroImage[0].filename}`;
+                        pageContent.hero_background_image_url = imageUrl;
+                        pageContent.heroBackgroundImageUrl = imageUrl;
+                        console.log(`🖼️ Loaded fallback hero background image: ${imageUrl}`);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading fallback hero background image:', error);
             }
         }
 
@@ -1071,6 +1096,8 @@ router.get('/:slug/:page?', async (req, res) => {
         
         themeEngine(viewPath, {
             ...templateData,
+            // Add heroBackgroundImageUrl at top level for BDSM theme compatibility
+            heroBackgroundImageUrl: pageContent.heroBackgroundImageUrl,
             layout: layoutPath
         }, (err, html) => {
             if (err) {

@@ -1,0 +1,1331 @@
+<!-- Dashboard Content -->
+<div id="dashboardContent">
+<div class="row mb-4">
+    <!-- Quick Stats -->
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                            <i class="fas fa-users text-primary fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="fw-bold fs-4" id="totalClients">{{#if stats.totalClients}}{{stats.totalClients}}{{else}}0{{/if}}</div>
+                        <div class="text-muted small">Total Clients</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                            <i class="fas fa-check-circle text-success fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="fw-bold fs-4" id="activeClients">{{#if stats.activeClients}}{{stats.activeClients}}{{else}}0{{/if}}</div>
+                        <div class="text-muted small">Active Clients</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="bg-info bg-opacity-10 rounded-circle p-3">
+                            <i class="fas fa-palette text-info fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="fw-bold fs-4" id="assignedThemes">{{#if stats.assignedThemes}}{{stats.assignedThemes}}{{else}}0{{/if}}</div>
+                        <div class="text-muted small">Assigned Themes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                            <i class="fas fa-file-alt text-warning fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="fw-bold fs-4" id="contentPages">{{#if stats.contentPages}}{{stats.contentPages}}{{else}}0{{/if}}</div>
+                        <div class="text-muted small">Content Pages</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold">
+                    <i class="fas fa-clock me-2"></i>Recent Activity
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="recentActivity">
+                    {{#if recentActivity}}
+                    {{#each recentActivity}}
+                    <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                        <div class="flex-shrink-0">
+                            <div class="bg-{{this.type}} bg-opacity-10 rounded-circle p-2">
+                                <i class="fas fa-{{this.icon}} text-{{this.type}} fs-6"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="fw-semibold">{{this.title}}</div>
+                            <div class="text-muted small">{{this.description}}</div>
+                            <div class="text-muted small">{{this.timestamp}}</div>
+                        </div>
+                    </div>
+                    {{/each}}
+                    {{else}}
+                    <div class="text-center py-4">
+                        <i class="fas fa-history fs-1 text-muted mb-3"></i>
+                        <p class="text-muted">No recent activity</p>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold">
+                    <i class="fas fa-tasks me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary" onclick="loadSection('onboard-client')">
+                        <i class="fas fa-user-plus me-2"></i>Onboard New Client
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="loadSection('theme-management')">
+                        <i class="fas fa-palette me-2"></i>Manage Themes
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="loadSection('content-management')">
+                        <i class="fas fa-edit me-2"></i>Edit Content
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="loadSection('clients-list')">
+                        <i class="fas fa-users me-2"></i>View All Clients
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- System Status -->
+        <div class="card border-0 shadow-sm mt-3">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold">
+                    <i class="fas fa-server me-2"></i>System Status
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small">Database</span>
+                    <span id="statusDb" class="badge bg-secondary">Checking...</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small">MySQL Version</span>
+                    <span id="statusMysql" class="badge bg-light text-muted">-</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small">Models</span>
+                    <span id="countModels" class="badge bg-light text-muted">-</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small">Content Templates</span>
+                    <span id="countContent" class="badge bg-light text-muted">-</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small">Theme Sets</span>
+                    <span id="countThemes" class="badge bg-light text-muted">-</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted small">Media Review Queue</span>
+                    <span id="countQueue" class="badge bg-light text-muted">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic Component Loading Container -->
+<div id="dynamicContent" class="mt-4" style="display: none;">
+    <!-- Components will be loaded here -->
+</div>
+
+<script>
+// Track if section has already been checked to prevent multiple loads
+let sectionAlreadyChecked = false;
+
+// Check for section parameter on page load
+function checkURLSection() {
+    console.log('🔍 Checking for initial section...');
+    
+    // Prevent multiple executions
+    if (sectionAlreadyChecked) {
+        console.log('🔄 Section already checked, skipping duplicate call');
+        return;
+    }
+    
+    // First check server-side passed section
+    const serverSection = '{{initialSection}}';
+    console.log('🔍 Server section:', serverSection);
+    
+    // Also check URL parameters as fallback
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlSection = urlParams.get('section');
+    console.log('🔍 URL section:', urlSection);
+    
+    const section = serverSection && serverSection !== 'undefined' ? serverSection : urlSection;
+    
+    if (section) {
+        console.log('🔍 Loading section:', section);
+        sectionAlreadyChecked = true; // Mark as checked before calling
+        setTimeout(() => {
+            if (typeof window.dashboardLoadSection === 'function') {
+                console.log('🔍 Calling dashboardLoadSection with:', section);
+                window.dashboardLoadSection(section);
+            } else {
+                console.log('❌ dashboardLoadSection not available yet');
+                sectionAlreadyChecked = false; // Reset if function not available
+            }
+        }, 100);
+    } else {
+        console.log('ℹ️ No section to load');
+        sectionAlreadyChecked = true; // Mark as checked even if no section
+    }
+}
+
+// Try immediately if DOM is already loaded, otherwise wait for DOMContentLoaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkURLSection);
+} else {
+    checkURLSection();
+}
+
+// Dashboard functionality - Register with global navigation system
+window.dashboardLoadSection = function loadSection(sectionName) {
+    console.log('🔍 Dashboard loading section:', sectionName);
+    
+    // Hide only the dashboard content container (avoid hiding rows inside dynamic content)
+    const dashboardContent = document.getElementById('dashboardContent');
+    if (dashboardContent) {
+        dashboardContent.style.display = 'none';
+    }
+    
+    // Show dynamic content container
+    const dynamicContent = document.getElementById('dynamicContent');
+    dynamicContent.style.display = 'block';
+    dynamicContent.innerHTML = '<div class="loading-spinner"><div class="spinner-border text-primary" role="status"></div></div>';
+    
+    // Update page title
+    const titles = {
+        'clients-list': 'Client Management',
+        'onboard-client': 'Onboard New Client', 
+        'theme-management': 'Theme Management',
+        'content-management': 'Content Management',
+        'escort-sites': 'Escort Sites',
+        'camgirl-sites': 'Camgirl Sites',
+        'blurred-approved': 'Blurred & Approved Images',
+        'rejected-removed': 'Rejected & Removed Images',
+        'universal-gallery-admin': 'Universal Gallery System'
+    };
+    
+    document.querySelector('.page-title').textContent = titles[sectionName] || 'MuseNest Business Manager';
+    
+    // Update active nav item in sidebar only
+    document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+        link.classList.remove('active');
+    });
+    
+    const activeLink = document.querySelector(`.sidebar [data-section="${sectionName}"]`);
+    if (activeLink) {
+        activeLink.classList.add('active');
+    }
+    
+    // Load component based on section
+    switch (sectionName) {
+        case 'clients-list':
+            loadClientManagement();
+            break;
+        case 'theme-management':
+            loadThemeManagement();
+            break;
+        case 'content-management':
+            loadContentManagement();
+            break;
+        case 'onboard-client':
+            loadOnboardClient();
+            break;
+        case 'image-moderation':
+            loadImageModeration();
+            break;
+        case 'media-queue':
+            loadMediaQueue();
+            break;
+        case 'blurred-approved':
+            loadBlurredApproved();
+            break;
+        case 'rejected-removed':
+            loadRejectedRemoved();
+            break;
+        case 'universal-gallery-admin':
+            loadUniversalGalleryAdmin();
+            break;
+        default:
+            dynamicContent.innerHTML = '<div class="alert alert-info">This section is coming soon!</div>';
+    }
+}
+async function loadOnboardClient() {
+    try {
+        console.log('📦 Loading onboarding wizard...');
+        const response = await fetch('/admin/components/client-onboarding-wizard.html');
+        if (!response.ok) throw new Error('Failed to load onboarding component');
+        const html = await response.text();
+        const container = document.getElementById('dynamicContent');
+        container.innerHTML = html;
+
+        // Execute embedded scripts
+        const scripts = container.querySelectorAll('script');
+        scripts.forEach((script, i) => {
+            const s = document.createElement('script');
+            if (script.src) s.src = script.src; else s.textContent = script.textContent;
+            document.head.appendChild(s);
+            console.log(`✅ Onboarding script ${i + 1} executed`);
+        });
+
+        // Initialize if class is exposed
+        setTimeout(() => {
+            if (window.ClientOnboarding) {
+                window.clientOnboarding = new ClientOnboarding();
+            }
+        }, 0);
+    } catch (e) {
+        console.error('❌ Error loading onboarding wizard:', e);
+        document.getElementById('dynamicContent').innerHTML = '<div class="alert alert-danger">Failed to load onboarding wizard</div>';
+    }
+}
+
+// Go back to dashboard - Register with global navigation system  
+window.dashboardShowDashboard = function showDashboard() {
+    const dynamicContent = document.getElementById('dynamicContent');
+    if (dynamicContent) dynamicContent.style.display = 'none';
+    const dashboardContent = document.getElementById('dashboardContent');
+    if (dashboardContent) dashboardContent.style.display = 'block';
+    document.querySelector('.page-title').textContent = 'System Administration';
+    
+    // Clear active nav items in sidebar only
+    document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+        link.classList.remove('active');
+    });
+}
+
+// Load existing component functions (to be moved here)
+async function loadClientManagement() {
+    try {
+        console.log('📡 Fetching client management component...');
+        const response = await fetch('/admin/components/client-management.html');
+        if (response.ok) {
+            const html = await response.text();
+            document.getElementById('dynamicContent').innerHTML = html;
+            console.log('✅ Client management component loaded successfully');
+
+            // Execute any <script> tags within the loaded component (they don't run via innerHTML)
+            const scriptTags = document.getElementById('dynamicContent').querySelectorAll('script');
+            console.log('🔧 Found', scriptTags.length, 'client management script tags to execute');
+            scriptTags.forEach((script, index) => {
+                console.log(`🔧 Executing client management script ${index + 1}...`);
+                // Heuristic: avoid redefining ClientManagement if it already exists
+                const text = script.textContent || '';
+                if (window.ClientManagement && /class\s+ClientManagement\b/.test(text)) {
+                    console.log(`⏭️  Skipping script ${index + 1} to avoid duplicate ClientManagement definition`);
+                    return;
+                }
+                const newScript = document.createElement('script');
+                if (script.src) {
+                    newScript.src = script.src;
+                } else {
+                    newScript.textContent = text;
+                }
+                document.head.appendChild(newScript);
+                console.log(`✅ Client management script ${index + 1} executed`);
+            });
+
+            // Initialize the component after scripts are executed
+            setTimeout(() => {
+                if (window.ClientManagement) {
+                    console.log('🚀 Initializing ClientManagement class');
+                    window.clientManager = new ClientManagement();
+                } else if (typeof window.initializeClientManagement === 'function') {
+                    console.log('🚀 Calling initializeClientManagement()');
+                    window.initializeClientManagement();
+                } else if (window.clientManager && typeof window.clientManager.loadClientData === 'function') {
+                    console.log('🔁 Refreshing existing clientManager instance');
+                    window.clientManager.loadClientData();
+                } else {
+                    console.warn('⚠️ No client management initializer found');
+                }
+            }, 0);
+        } else {
+            throw new Error('Failed to load component');
+        }
+    } catch (error) {
+        console.error('❌ Error loading client management:', error);
+        document.getElementById('dynamicContent').innerHTML = 
+            '<div class="alert alert-danger">Error loading client management component</div>';
+    }
+}
+
+async function loadThemeManagement() {
+    try {
+        console.log('🎨 Loading theme management...');
+        const response = await fetch('/admin/components/theme-management.html');
+        if (response.ok) {
+            const html = await response.text();
+            document.getElementById('dynamicContent').innerHTML = html;
+            console.log('🎨 Theme management component loaded successfully');
+
+            // Execute embedded scripts so the component initializes
+            const scripts = document.getElementById('dynamicContent').querySelectorAll('script');
+            scripts.forEach((script, i) => {
+                const s = document.createElement('script');
+                if (script.src) s.src = script.src; else s.textContent = script.textContent;
+                document.head.appendChild(s);
+                console.log(`✅ Theme management script ${i + 1} executed`);
+            });
+
+            // Initialize component if global initializer is present
+            setTimeout(() => {
+                if (typeof window.initializeThemeManagement === 'function') {
+                    window.initializeThemeManagement();
+                }
+            }, 0);
+        } else {
+            throw new Error('Failed to load theme management');
+        }
+    } catch (error) {
+        console.error('❌ Error loading theme management:', error);
+        document.getElementById('dynamicContent').innerHTML = 
+            '<div class="alert alert-danger">Error loading theme management component</div>';
+    }
+}
+
+async function loadImageModeration() {
+    try {
+        console.log('👁️ Loading image moderation...');
+        const response = await fetch('/admin/components/image-moderation-content-only.html');
+        if (response.ok) {
+            const html = await response.text();
+            document.getElementById('dynamicContent').innerHTML = html;
+            console.log('👁️ Image moderation component loaded successfully');
+            
+            // Ensure the main layout stays intact
+            protectMainLayout();
+            
+            // Extract and execute scripts from the loaded HTML
+            const scriptTags = document.getElementById('dynamicContent').querySelectorAll('script');
+            console.log('🔧 Found', scriptTags.length, 'image moderation script tags to execute');
+            
+            scriptTags.forEach((script, index) => {
+                console.log(`🔧 Executing image moderation script ${index + 1}...`);
+                const newScript = document.createElement('script');
+                
+                if (script.src) {
+                    newScript.src = script.src;
+                } else {
+                    newScript.textContent = script.textContent;
+                }
+                
+                document.head.appendChild(newScript);
+                console.log(`✅ Image moderation script ${index + 1} executed`);
+            });
+            
+            // Initialize image moderation after scripts execute
+            setTimeout(() => {
+                console.log('🔧 Initializing image moderation after script execution...');
+                
+                if (typeof ImageModerationManager === 'function') {
+                    console.log('✅ ImageModerationManager class found after script execution');
+                    if (!window.imageModeration) {
+                        console.log('🚀 Creating ImageModerationManager instance...');
+                        window.imageModeration = new ImageModerationManager();
+                    }
+                } else if (typeof initializeImageModeration === 'function') {
+                    console.log('✅ initializeImageModeration function found');
+                    initializeImageModeration();
+                } else {
+                    console.log('❌ Neither ImageModerationManager class nor initializeImageModeration function found');
+                    console.log('Available image functions:', Object.keys(window).filter(k => k.includes('image')));
+                }
+            }, 500);
+            
+        } else {
+            throw new Error('Failed to load image moderation');
+        }
+    } catch (error) {
+        console.error('❌ Error loading image moderation:', error);
+        document.getElementById('dynamicContent').innerHTML = 
+            '<div class="alert alert-danger">Error loading image moderation component</div>';
+    }
+}
+
+async function loadContentManagement() {
+    try {
+        console.log('📝 Loading content management...');
+        const response = await fetch('/admin/components/content-management-content-only.html');
+        if (response.ok) {
+            const html = await response.text();
+            document.getElementById('dynamicContent').innerHTML = html;
+            console.log('📝 Content management component loaded successfully');
+            
+            // Ensure the main layout stays intact
+            protectMainLayout();
+            
+            // Extract and execute scripts from the loaded HTML
+            const scriptTags = document.getElementById('dynamicContent').querySelectorAll('script');
+            console.log('🔧 Found', scriptTags.length, 'script tags to execute');
+            
+            scriptTags.forEach((script, index) => {
+                console.log(`🔧 Executing script ${index + 1}...`);
+                const newScript = document.createElement('script');
+                
+                if (script.src) {
+                    newScript.src = script.src;
+                } else {
+                    newScript.textContent = script.textContent;
+                }
+                
+                document.head.appendChild(newScript);
+                console.log(`✅ Script ${index + 1} executed`);
+            });
+            
+            // Wait for scripts to execute, then initialize
+            setTimeout(() => {
+                console.log('🔧 Initializing content management after script execution...');
+                
+                if (typeof ContentManager === 'function') {
+                    console.log('✅ ContentManager class found after script execution');
+                    if (!window.contentManager) {
+                        console.log('🚀 Creating ContentManager instance...');
+                        window.contentManager = new ContentManager();
+                        
+                        // Add nuclear fallback for dropdown visibility
+                        setTimeout(() => {
+                            console.log('🚨 NUCLEAR OPTION: Forcing dropdown recreation...');
+                            forceRecreateDropdowns();
+                        }, 2000);
+                    }
+                } else if (typeof initializeContentManagement === 'function') {
+                    console.log('✅ initializeContentManagement function found');
+                    initializeContentManagement();
+                } else {
+                    console.log('❌ Neither ContentManager class nor initializeContentManagement function found');
+                    console.log('🚨 Falling back to manual initialization...');
+                    
+                    // Manual fallback implementation
+                    loadContentManagementDataDirectly();
+                }
+            }, 500);
+            
+            // Nuclear option is no longer needed since we use search interface
+            function forceRecreateDropdowns() {
+                console.log('💥 Nuclear option deprecated - using search interface now');
+            }
+            
+            // Direct data loading fallback
+            async function loadContentManagementDataDirectly() {
+                try {
+                    console.log('📡 Manual fallback: Loading models and page types...');
+                    const [modelsResponse, pageTypesResponse] = await Promise.all([
+                        sysFetch('/api/content-management/models'),
+                        fetch('/api/page-types')
+                    ]);
+                    
+                    const models = await modelsResponse.json();
+                    const pageTypes = await pageTypesResponse.json();
+                    
+                    console.log('✅ Fallback data loaded:', { models: models.length, pageTypes: pageTypes.length });
+                    
+                    // Setup search interface manually
+                    setTimeout(() => {
+                        const modelSearch = document.getElementById('modelSearch');
+                        const pageSelect = document.getElementById('pageSelect');
+                        
+                        if (modelSearch) {
+                            console.log('✅ Fallback: Model search interface found');
+                            // Create a simple fallback content manager
+                            window.fallbackContentManager = {
+                                models: models,
+                                pageTypes: pageTypes,
+                                filteredModels: models,
+                                selectedModel: null,
+                                filterModels: function() {
+                                    const query = modelSearch.value.toLowerCase().trim();
+                                    this.filteredModels = query === '' ? 
+                                        [...this.models] : 
+                                        this.models.filter(model => 
+                                            model.name.toLowerCase().includes(query) || 
+                                            model.slug.toLowerCase().includes(query)
+                                        );
+                                    console.log('🔍 Fallback filtered to', this.filteredModels.length, 'models');
+                                }
+                            };
+                            
+                            // Assign the fallback as contentManager if it doesn't exist
+                            if (!window.contentManager) {
+                                window.contentManager = window.fallbackContentManager;
+                            }
+                        }
+                        
+                        if (pageSelect) {
+                            populatePageTypeDropdown(pageTypes);
+                            console.log('✅ Fallback page dropdown populated');
+                        }
+                    }, 200);
+                    
+                } catch (error) {
+                    console.error('❌ Fallback loading failed:', error);
+                }
+            }
+            
+            // Helper functions for dropdown population (used by fallback)
+            function populateModelDropdown(models) {
+                const select = document.getElementById('modelSelect');
+                console.log('🔍 PopulateModelDropdown called with', models.length, 'models');
+                
+                if (select) {
+                    // Clear existing options using DOM methods
+                    while (select.firstChild) {
+                        select.removeChild(select.firstChild);
+                    }
+                    
+                    // Add default option
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Select a model...';
+                    select.appendChild(defaultOption);
+                    
+                    // Add model options using DOM methods
+                    models.forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = model.id;
+                        option.textContent = model.name;
+                        select.appendChild(option);
+                    });
+                    
+                    console.log('✅ Model dropdown populated with', models.length, 'models');
+                    console.log('🔍 Select options:', Array.from(select.options).map(o => o.textContent));
+                    
+                    // Force browser to re-render the select
+                    select.style.display = 'none';
+                    select.offsetHeight; // Trigger reflow
+                    select.style.display = '';
+                } else {
+                    console.log('❌ modelSelect element not found');
+                }
+            }
+            
+            function populatePageTypeDropdown(pageTypes) {
+                const select = document.getElementById('pageSelect');
+                console.log('🔍 PopulatePageTypeDropdown called with', pageTypes.length, 'page types');
+                
+                if (select) {
+                    // Clear existing options using DOM methods
+                    while (select.firstChild) {
+                        select.removeChild(select.firstChild);
+                    }
+                    
+                    // Add default option
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Select a page type...';
+                    select.appendChild(defaultOption);
+                    
+                    // Add page type options using DOM methods
+                    pageTypes.forEach(type => {
+                        const option = document.createElement('option');
+                        option.value = type.id;
+                        option.textContent = type.display_name;
+                        select.appendChild(option);
+                    });
+                    
+                    console.log('✅ Page type dropdown populated with', pageTypes.length, 'page types');
+                    console.log('🔍 Select options:', Array.from(select.options).map(o => o.textContent));
+                    
+                    // Force browser to re-render the select
+                    select.style.display = 'none';
+                    select.offsetHeight; // Trigger reflow
+                    select.style.display = '';
+                } else {
+                    console.log('❌ pageSelect element not found');
+                }
+            }
+        } else {
+            throw new Error('Failed to load content management');
+        }
+    } catch (error) {
+        console.error('❌ Error loading content management:', error);
+        document.getElementById('dynamicContent').innerHTML = 
+            '<div class="alert alert-danger">Error loading content management component</div>';
+    }
+}
+
+// Function to protect the main layout from being overridden
+function protectMainLayout() {
+    // Ensure sidebar stays in place
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) {
+        sidebar.style.position = 'fixed';
+        sidebar.style.zIndex = '1000';
+    }
+    
+    // Ensure main content area layout is preserved
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+        mainContent.style.marginLeft = 'var(--sidebar-width)';
+    }
+    
+    console.log('🛡️ Main layout protected');
+}
+
+// Media Queue Functions
+async function loadMediaQueue() {
+    try {
+        console.log('📋 Loading media queue...');
+        const response = await fetch('/api/media-review-queue/queue?status=pending&page=1&limit=24');
+        if (response.ok) {
+            const result = await response.json();
+            
+            if (result.success && result.queue) {
+                const items = result.queue || [];
+                renderMediaQueue(items);
+                console.log('✅ Loaded', items.length, 'items from media queue');
+            } else {
+                document.getElementById('dynamicContent').innerHTML = 
+                    '<div class="alert alert-warning">No items in moderation queue</div>';
+            }
+        } else {
+            throw new Error('Failed to load media queue');
+        }
+    } catch (error) {
+        console.error('❌ Error loading media queue:', error);
+        document.getElementById('dynamicContent').innerHTML = 
+            '<div class="alert alert-danger">Error loading media queue: ' + error.message + '</div>';
+    }
+}
+
+// Listen for messages from media review windows
+window.addEventListener('message', function(event) {
+    // Verify the message is from the same origin for security
+    if (event.origin !== window.location.origin) {
+        return;
+    }
+    
+    console.log('📨 Received message from child window:', event.data);
+    
+    if (event.data.type === 'BLUR_APPROVAL_COMPLETE') {
+        console.log('✅ Media approval complete, refreshing queue...');
+        
+        // Remove the specific item from the queue display without full reload
+        const queueItem = document.querySelector(`.queue-item[data-id="${event.data.mediaId}"]`);
+        if (queueItem) {
+            // Get the parent column div
+            const columnDiv = queueItem.closest('.col-lg-6.col-xl-4, .col-12');
+            
+            if (columnDiv) {
+                // Add animation before removing
+                columnDiv.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                columnDiv.style.opacity = '0';
+                columnDiv.style.transform = 'scale(0.8)';
+                
+                // Remove after animation
+                setTimeout(() => {
+                    columnDiv.remove();
+                    
+                    // Check if queue is now empty and update display
+                    const remainingItems = document.querySelectorAll('.queue-item');
+                    if (remainingItems.length === 0) {
+                        document.getElementById('dynamicContent').innerHTML = `
+                            <div class="container-fluid py-4">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="text-center py-5">
+                                            <i class="fas fa-inbox fs-1 text-muted mb-3"></i>
+                                            <h4>Queue is Empty</h4>
+                                            <p class="text-muted">No flagged images require review</p>
+                                            <button class="btn btn-primary" onclick="loadMediaQueue()">
+                                                <i class="fas fa-refresh me-2"></i>Refresh Queue
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // Trigger a reflow by forcing Bootstrap grid recalculation
+                        const remainingQueueItems = document.querySelectorAll('.queue-item');
+                        if (remainingQueueItems.length > 0) {
+                            // Find the row containing queue items
+                            const queueRow = remainingQueueItems[0].closest('.row');
+                            if (queueRow) {
+                                // Force layout recalculation
+                                queueRow.style.display = 'none';
+                                queueRow.offsetHeight; // Trigger reflow
+                                queueRow.style.display = '';
+                                
+                                // Additional force reflow on container
+                                const container = queueRow.parentElement;
+                                if (container) {
+                                    container.style.width = container.offsetWidth + 'px';
+                                    setTimeout(() => {
+                                        container.style.width = '';
+                                    }, 0);
+                                }
+                            }
+                        }
+                    }
+                }, 500);
+                
+                console.log(`✅ Removed item ${event.data.mediaId} from queue display`);
+            }
+        }
+    }
+});
+
+function renderMediaQueue(queueItems) {
+    const content = `
+        <div class="container-fluid py-4">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h2 class="mb-1 fw-bold text-primary">
+                                        <i class="fas fa-images me-3"></i>Media Review Queue
+                                    </h2>
+                                    <p class="mb-0 text-muted">Review flagged images from AI moderation system (${queueItems.length} items)</p>
+                                </div>
+                                <div class="col-auto">
+                                    <button class="btn btn-primary" onclick="loadMediaQueue()">
+                                        <i class="fas fa-refresh me-2"></i>Refresh Queue
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                ${queueItems.length === 0 ? `
+                    <div class="col-12">
+                        <div class="text-center py-5">
+                            <i class="fas fa-inbox fs-1 text-muted mb-3"></i>
+                            <h4>Queue is Empty</h4>
+                            <p class="text-muted">No flagged images require review</p>
+                        </div>
+                    </div>
+                ` : queueItems.map(item => `
+                    <div class="col-lg-6 col-xl-4 mb-4">
+                        <div class="card shadow-sm ${item.child_detected ? 'border-danger border-2' : 'border-0'} queue-item" data-id="${item.id}" ${item.child_detected ? 'style="box-shadow: 0 0 20px rgba(220, 53, 69, 0.3) !important;"' : ''}>
+                            ${item.child_detected ? '<div class="alert alert-danger alert-sm mb-0 text-center"><i class="fas fa-exclamation-triangle me-1"></i><strong>CHILD CONTENT DETECTED</strong></div>' : ''}
+                            <div class="card-header ${item.child_detected ? 'bg-danger text-white' : 'bg-light'} d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>${item.model_name}</strong>
+                                    <br><small class="${item.child_detected ? 'text-white-50' : 'text-muted'}">${item.usage_intent}</small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-${getPriorityColor(item.priority)}">${item.priority.toUpperCase()}</span>
+                                    ${item.child_detected ? '<br><span class="badge bg-warning text-dark"><i class="fas fa-child me-1"></i>CHILD</span>' : ''}
+                                    <br><small class="${item.child_detected ? 'text-white-50' : 'text-muted'}">${parseFloat(item.nudity_score || 0).toFixed(1)}% nudity</small>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <img src="${item.thumbnail_path || item.image_path || item.original_path?.replace(/^\/Users\/[^/]+\/Projects\/musenest\/public/, '') || '/uploads/default.jpg'}" alt="Flagged content" class="img-fluid rounded" style="max-height: 120px; object-fit: cover;" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00NS4wMDU5IDUwLjAwMUM0NS4wMDU5IDQ4Ljg5NTQgNDUuODk1NCA0OC4wMDU5IDQ3LjAwMTEgNDguMDA1OUg3My4wMDExQzc0LjEwNjcgNDguMDA1OSA3NS4wMDExIDQ4Ljg5NTQgNzUuMDAxMSA1MC4wMDFWNzAuMDAxQzc1LjAwMTEgNzEuMTA2NiA3NC4xMDY3IDcyLjAwMSA3My4wMDExIDcyLjAwMUg0Ny4wMDExQzQ1Ljg5NTQgNzIuMDAxIDQ1LjAwNTkgNzEuMTA2NiA0NS4wMDU5IDcwLjAwMVY1MC4wMDFaIiBmaWxsPSIjRDFENU0iLz4KPC9zdmc+'">
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="mb-2">
+                                            <strong>Detected Issues:</strong><br>
+                                            ${Object.entries(item.detected_parts || {}).map(([part, confidence]) => 
+                                                `<span class="badge bg-danger me-1">${part}: ${confidence.toFixed(1)}%</span>`
+                                            ).join('')}
+                                        </div>
+                                        
+                                        <div class="mb-2">
+                                            <strong>Queue Type:</strong> 
+                                            <span class="badge bg-info">${item.queue_type}</span>
+                                        </div>
+                                        
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock"></i> Flagged: ${new Date(item.created_at).toLocaleString()}
+                                        </small>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-3 d-grid gap-2 d-md-flex">
+                                    <button class="btn btn-success btn-sm" onclick="approveImage(${item.id})">
+                                        <i class="fas fa-check me-1"></i>Approve Clean
+                                    </button>
+                                    <button class="btn btn-warning btn-sm" onclick="openBlurEditor(${item.id})">
+                                        <i class="fas fa-edit me-1"></i>Edit & Blur
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="rejectImage(${item.id})">
+                                        <i class="fas fa-times me-1"></i>Reject
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('dynamicContent').innerHTML = content;
+}
+
+function getPriorityColor(priority) {
+    const colors = { urgent: 'danger', high: 'warning', medium: 'info', low: 'secondary' };
+    return colors[priority] || 'secondary';
+}
+
+async function approveImage(itemId) {
+    try {
+        // Use the dedicated media-review-queue endpoint for clean approval
+        const response = await fetch(`/api/media-review-queue/approve/${itemId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                admin_notes: 'Approved clean via sysadmin interface',
+                reviewed_by: 1,
+                final_location: 'public'
+            })
+        });
+        const result = await response.json();
+        if (result && result.success) {
+            // Remove the specific item from the UI with animation
+            const queueItem = document.querySelector(`.queue-item[data-id="${itemId}"]`);
+            if (queueItem) {
+                const columnDiv = queueItem.closest('.col-lg-6.col-xl-4, .col-12');
+                if (columnDiv) {
+                    // Add fade-out animation
+                    columnDiv.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    columnDiv.style.opacity = '0';
+                    columnDiv.style.transform = 'scale(0.8)';
+                    
+                    // Remove after animation completes
+                    setTimeout(() => {
+                        columnDiv.remove();
+                        
+                        // Check if queue is now empty
+                        const remainingItems = document.querySelectorAll('.queue-item');
+                        if (remainingItems.length === 0) {
+                            document.getElementById('dynamicContent').innerHTML = `
+                                <div class="container-fluid py-4">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="text-center py-5">
+                                                <i class="fas fa-inbox fs-1 text-success mb-3"></i>
+                                                <h4>All Clear!</h4>
+                                                <p class="text-muted">No flagged images require review</p>
+                                                <button class="btn btn-primary" onclick="loadMediaQueue()">
+                                                    <i class="fas fa-refresh me-2"></i>Check for New Items
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            // Update the item count in the header
+                            const headerText = document.querySelector('h2 .text-muted, p.text-muted');
+                            if (headerText) {
+                                const currentCount = remainingItems.length;
+                                headerText.textContent = `Review flagged images from AI moderation system (${currentCount} items)`;
+                            }
+                        }
+                    }, 500);
+                }
+            }
+            
+            // Show success feedback
+            showToast('✅ Image approved successfully!', 'success');
+        } else {
+            const msg = (result && (result.message || result.error)) || 'Unknown error';
+            showToast('❌ Error approving image: ' + msg, 'error');
+        }
+    } catch (error) {
+        alert('❌ Error: ' + error.message);
+    }
+}
+
+function openBlurEditor(itemId) {
+    const url = `/admin/media-queue-review.html?mediaId=${itemId}`;
+    window.open(url, '_blank', 'width=1400,height=900,scrollbars=yes,resizable=yes');
+}
+
+async function rejectImage(itemId) {
+    const reason = prompt('Please provide a reason for rejection:');
+    if (!reason || !reason.trim()) return;
+    
+    try {
+        const response = await fetch(`/api/media-review-queue/reject/${itemId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                admin_notes: reason.trim(),
+                reviewed_by: 1
+            })
+        });
+        
+        const result = await response.json();
+        if (result && result.success) {
+            // Remove the specific item from the UI with animation
+            const queueItem = document.querySelector(`.queue-item[data-id="${itemId}"]`);
+            if (queueItem) {
+                const columnDiv = queueItem.closest('.col-lg-6.col-xl-4, .col-12');
+                if (columnDiv) {
+                    // Add fade-out animation with red tint
+                    columnDiv.style.transition = 'opacity 0.5s ease, transform 0.5s ease, filter 0.5s ease';
+                    columnDiv.style.opacity = '0';
+                    columnDiv.style.transform = 'scale(0.8)';
+                    columnDiv.style.filter = 'hue-rotate(0deg) brightness(0.7)';
+                    
+                    // Remove after animation completes
+                    setTimeout(() => {
+                        columnDiv.remove();
+                        
+                        // Check if queue is now empty
+                        const remainingItems = document.querySelectorAll('.queue-item');
+                        if (remainingItems.length === 0) {
+                            document.getElementById('dynamicContent').innerHTML = `
+                                <div class="container-fluid py-4">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="text-center py-5">
+                                                <i class="fas fa-inbox fs-1 text-success mb-3"></i>
+                                                <h4>All Clear!</h4>
+                                                <p class="text-muted">No flagged images require review</p>
+                                                <button class="btn btn-primary" onclick="loadMediaQueue()">
+                                                    <i class="fas fa-refresh me-2"></i>Check for New Items
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            // Update the item count in the header
+                            const headerText = document.querySelector('h2 .text-muted, p.text-muted');
+                            if (headerText) {
+                                const currentCount = remainingItems.length;
+                                headerText.textContent = `Review flagged images from AI moderation system (${currentCount} items)`;
+                            }
+                        }
+                    }, 500);
+                }
+            }
+            
+            // Show success feedback
+            showToast('❌ Image rejected and moved to rejected folder', 'error');
+        } else {
+            const msg = (result && (result.message || result.error)) || 'Unknown error';
+            showToast('❌ Error rejecting image: ' + msg, 'error');
+        }
+    } catch (error) {
+        showToast('❌ Error: ' + error.message, 'error');
+    }
+}
+
+// Utility function to load scripts dynamically
+function loadScript(src) {
+    return new Promise((resolve, reject) => {
+        // Check if script is already loaded
+        if (document.querySelector(`script[src="${src}"]`)) {
+            resolve();
+            return;
+        }
+        
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = true;
+        script.onload = resolve;
+        script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+        document.head.appendChild(script);
+    });
+}
+
+async function loadBlurredApproved() {
+    try {
+        console.log('🚀 Loading Model Dashboard for Blurred/Approved...');
+        
+        // Load the model dashboard component
+        const response = await fetch('/admin/components/model-dashboard.html');
+        if (!response.ok) {
+            throw new Error(`Failed to fetch component: ${response.status}`);
+        }
+        
+        const componentHTML = await response.text();
+        console.log('📄 Model dashboard component loaded successfully');
+        
+        // Load the dashboard JavaScript if not already loaded
+        if (!window.ModelDashboard) {
+            console.log('📜 Loading ModelDashboard JavaScript...');
+            await loadScript('/admin/js/model-dashboard.js');
+            console.log('✅ ModelDashboard JavaScript loaded');
+        }
+        
+        // Insert the component HTML
+        document.getElementById('dynamicContent').innerHTML = componentHTML;
+        
+        // Initialize the ModelDashboard
+        setTimeout(() => {
+            if (window.ModelDashboard && !window.modelDashboard) {
+                console.log('🎯 Initializing ModelDashboard...');
+                window.modelDashboard = new ModelDashboard();
+                console.log('✅ Model Dashboard initialized successfully');
+            } else if (window.modelDashboard) {
+                console.log('♻️ Reloading existing ModelDashboard...');
+                window.modelDashboard.loadModels();
+            }
+        }, 200);
+        
+    } catch (error) {
+        console.error('❌ Error loading model dashboard:', error);
+        document.getElementById('dynamicContent').innerHTML = 
+            `<div class="alert alert-danger">Error loading model dashboard: ${error.message}</div>`;
+    }
+}
+
+function renderBlurredApproved(items) {
+    const content = `
+        <div class="container-fluid py-4">
+            <h2 class="mb-4"><i class="fas fa-eye-slash me-2"></i>Blurred & Approved Images (${items.length})</h2>
+            ${items.length === 0 ? 
+                '<div class="text-center py-5"><p class="text-muted">No blurred/approved images found</p></div>' :
+                '<div class="row">' + items.map(item => `
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h6 class="card-title">${item.model_name}</h6>
+                                <p class="card-text">
+                                    <small class="text-muted">Nudity: ${parseFloat(item.nudity_score || 0).toFixed(1)}% | Approved: ${new Date(item.reviewed_at).toLocaleDateString()}</small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('') + '</div>'
+            }
+        </div>
+    `;
+    document.getElementById('dynamicContent').innerHTML = content;
+}
+
+async function loadRejectedRemoved() {
+    try {
+        const response = await fetch('/api/enhanced-content-moderation/admin/queue?status=rejected');
+        if (response.ok) {
+            const result = await response.json();
+            renderRejectedRemoved(result.queue || []);
+        }
+    } catch (error) {
+        document.getElementById('dynamicContent').innerHTML = 
+            '<div class="alert alert-danger">Error loading rejected images</div>';
+    }
+}
+
+function renderRejectedRemoved(items) {
+    const content = `
+        <div class="container-fluid py-4">
+            <h2 class="mb-4"><i class="fas fa-trash-alt me-2"></i>Rejected & Removed Images (${items.length})</h2>
+            ${items.length === 0 ? 
+                '<div class="text-center py-5"><p class="text-muted">No rejected images found</p></div>' :
+                '<div class="row">' + items.map(item => `
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card shadow-sm border-danger">
+                            <div class="card-body">
+                                <h6 class="card-title">${item.model_name}</h6>
+                                <p class="card-text">
+                                    <strong>Reason:</strong> ${item.admin_notes}<br>
+                                    <small class="text-muted">Nudity: ${parseFloat(item.nudity_score || 0).toFixed(1)}% | Rejected: ${new Date(item.reviewed_at).toLocaleDateString()}</small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('') + '</div>'
+            }
+        </div>
+    `;
+    document.getElementById('dynamicContent').innerHTML = content;
+}
+
+// Toast notification system
+function showToast(message, type = 'info') {
+    // Remove existing toast if any
+    const existingToast = document.getElementById('dynamicToast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
+    const toastColors = {
+        success: 'bg-success text-white',
+        error: 'bg-danger text-white',
+        info: 'bg-info text-white',
+        warning: 'bg-warning text-dark'
+    };
+    
+    const toast = document.createElement('div');
+    toast.id = 'dynamicToast';
+    toast.className = `position-fixed top-0 end-0 m-3 px-4 py-3 rounded shadow ${toastColors[type] || toastColors.info}`;
+    toast.style.zIndex = '9999';
+    toast.innerHTML = message;
+    
+    document.body.appendChild(toast);
+    
+    // Fade in
+    setTimeout(() => {
+        toast.style.opacity = '1';
+        toast.style.transition = 'opacity 0.3s ease';
+    }, 10);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+        }, 300);
+    }, 3000);
+}
+
+// Utility function for priority badge colors
+function getPriorityColor(priority) {
+    switch (priority?.toLowerCase()) {
+        case 'critical': return 'danger';
+        case 'urgent': return 'warning';
+        case 'high': return 'warning';
+        case 'medium': return 'info';
+        case 'low': return 'secondary';
+        default: return 'secondary';
+    }
+}
+
+async function loadUniversalGalleryAdmin() {
+    try {
+        console.log('🎨 Loading Universal Gallery Admin...');
+        const response = await fetch('/admin/components/universal-gallery-admin.html');
+        if (!response.ok) {
+            throw new Error(`Failed to fetch component: ${response.status}`);
+        }
+        
+        const componentHTML = await response.text();
+        console.log('📄 Universal Gallery Admin component loaded successfully');
+        
+        // Insert the component HTML
+        document.getElementById('dynamicContent').innerHTML = componentHTML;
+        
+        // Execute any embedded scripts
+        const scriptTags = document.getElementById('dynamicContent').querySelectorAll('script');
+        console.log('🔧 Found', scriptTags.length, 'script tags to execute');
+        
+        scriptTags.forEach((script, index) => {
+            console.log(`🔧 Executing Universal Gallery Admin script ${index + 1}...`);
+            const newScript = document.createElement('script');
+            
+            if (script.src) {
+                newScript.src = script.src;
+            } else {
+                newScript.textContent = script.textContent;
+            }
+            
+            document.head.appendChild(newScript);
+            console.log(`✅ Universal Gallery Admin script ${index + 1} executed`);
+        });
+        
+        // Initialize the component after scripts are executed
+        setTimeout(() => {
+            if (typeof window.initializeUniversalGalleryAdmin === 'function') {
+                console.log('🚀 Initializing Universal Gallery Admin...');
+                window.initializeUniversalGalleryAdmin();
+            } else {
+                console.log('ℹ️ Universal Gallery Admin uses Bootstrap tabs - no custom initialization needed');
+            }
+        }, 200);
+        
+        console.log('✅ Universal Gallery Admin loaded successfully');
+        
+    } catch (error) {
+        console.error('❌ Error loading Universal Gallery Admin:', error);
+        document.getElementById('dynamicContent').innerHTML = 
+            `<div class="alert alert-danger">Error loading Universal Gallery Admin: ${error.message}</div>`;
+    }
+}
+
+// Check URL section again after all functions are defined
+setTimeout(() => {
+    console.log('🔍 Final URL section check after all functions loaded...');
+    console.log('Available functions:', {
+        dashboardLoadSection: typeof window.dashboardLoadSection,
+        loadSection: typeof window.loadSection
+    });
+    checkURLSection();
+}, 500);
+
+// Also add a backup check with longer delay
+setTimeout(() => {
+    console.log('🔍 Backup URL section check...');
+    checkURLSection();
+}, 1000);
+
+// Fetch system health and update status badges
+(function fetchSystemHealth(){
+    fetch('/health').then(r => r.json()).then(h => {
+        const ok = h.database === 'Connected';
+        const db = document.getElementById('statusDb');
+        if (db) {
+            db.className = 'badge ' + (ok ? 'bg-success' : 'bg-danger');
+            db.textContent = ok ? 'Online' : 'Offline';
+        }
+        const map = h.tableCounts || {};
+        const setText = (id, val) => { const el = document.getElementById(id); if (el) { el.className = 'badge bg-secondary'; el.textContent = String(val ?? '-'); }};
+        setText('statusMysql', h.mysqlVersion || '-');
+        setText('countModels', map.models);
+        setText('countContent', map.content_templates);
+        setText('countThemes', map.theme_sets);
+        setText('countQueue', map.media_review_queue);
+    }).catch(() => {
+        const db = document.getElementById('statusDb');
+        if (db) { db.className = 'badge bg-danger'; db.textContent = 'Offline'; }
+    });
+})();
+</script>

@@ -1,0 +1,64 @@
+<nav class="luxury-nav fixed w-full top-0 z-50 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-20">
+            <div class="flex items-center">
+                <a href="/{{modelSlug}}" class="luxury-brand">
+                    {{siteName}}
+                </a>
+            </div>
+            
+            <!-- Desktop Navigation -->
+            <div class="hidden md:block">
+                <div class="ml-10 flex items-baseline space-x-8">
+                    {{#each navigation}}
+                    <a href="{{this.url}}" 
+                       class="nav-link px-3 py-2 text-sm {{#if this.active}}active{{/if}}">
+                        {{this.name}}
+                    </a>
+                    {{/each}}
+                </div>
+            </div>
+            
+            <!-- Mobile menu button -->
+            <div class="md:hidden">
+                <button type="button" 
+                        class="bg-transparent inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-luxury-primary hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-luxury-primary"
+                        aria-controls="mobile-menu" 
+                        aria-expanded="false"
+                        onclick="toggleMobileMenu()">
+                    <span class="sr-only">Open main menu</span>
+                    <i class="fas fa-bars text-xl" id="menu-icon"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Navigation Menu -->
+    <div class="md:hidden hidden" id="mobile-menu">
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
+            {{#each navigation}}
+            <a href="{{this.url}}" 
+               class="nav-link block px-3 py-2 text-base {{#if this.active}}active{{/if}}">
+                {{this.name}}
+            </a>
+            {{/each}}
+        </div>
+    </div>
+</nav>
+
+<script>
+function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+    
+    if (mobileMenu.classList.contains('hidden')) {
+        mobileMenu.classList.remove('hidden');
+        menuIcon.classList.remove('fa-bars');
+        menuIcon.classList.add('fa-times');
+    } else {
+        mobileMenu.classList.add('hidden');
+        menuIcon.classList.remove('fa-times');
+        menuIcon.classList.add('fa-bars');
+    }
+}
+</script>

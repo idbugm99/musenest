@@ -9,6 +9,12 @@
   --shadow: 0 8px 24px rgba(0,0,0,.08);
 }
 
+/* Icon utilities for Rose theme */
+.rose-icon { display:inline-block; vertical-align:middle; color: var(--rose); }
+.icon-xs{ width:12px; height:12px; } .icon-sm{ width:16px; height:16px; } .icon-md{ width:20px; height:20px; } .icon-lg{ width:24px; height:24px; } .icon-xl{ width:32px; height:32px; }
+.icon-accent{ color: var(--rose); } .icon-muted{ color: #9ca3af; }
+
+
 /* Reduce motion for users with preference */
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -69,4 +75,174 @@ body.theme-rose {
     animation: petalShimmer 20s linear infinite;
     pointer-events: none;
   }
+}
+
+/* Rose decorative flower (avoid blotchy blob) */
+.rose-flower {
+  width: 56px;
+  height: 56px;
+  background: url('/public/themes/rose/roses.svg') center/contain no-repeat;
+  opacity: 0.35;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.12));
+  pointer-events: none;
+}
+
+/* Soft scattered petals container */
+.rose-petals { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.rose-petal {
+  position: absolute;
+  width: 120px; height: 120px;
+  background: url('/public/themes/rose/petals.svg') center/contain no-repeat;
+  opacity: .18;
+  animation: petalsFloat 28s linear infinite;
+}
+.rose-petal:nth-child(1){ left: 8%; top: 60%; animation-delay: 0s; }
+.rose-petal:nth-child(2){ left: 20%; top: 20%; animation-delay: 4s; }
+.rose-petal:nth-child(3){ left: 45%; top: 70%; animation-delay: 8s; }
+.rose-petal:nth-child(4){ left: 65%; top: 25%; animation-delay: 12s; }
+.rose-petal:nth-child(5){ left: 80%; top: 55%; animation-delay: 16s; }
+.rose-petal:nth-child(6){ left: 35%; top: 10%; animation-delay: 20s; }
+
+@keyframes petalsFloat {
+  0% { transform: translateY(0) translateX(0) rotate(0deg); }
+  50% { transform: translateY(-12vh) translateX(2vw) rotate(10deg); }
+  100% { transform: translateY(-24vh) translateX(-2vw) rotate(20deg); }
+}
+
+/* Hero parallax background for Rose */
+/* Provide the image via CSS variable: --rose-hero-url: url('...') */
+.rose-garden-bg {
+  background-image: linear-gradient(180deg, rgba(184,15,46,0.55), rgba(43,10,14,0.55)), var(--rose-hero-url);
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+  background-attachment: fixed; /* parallax effect */
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .rose-petal { animation: none !important; }
+  .rose-garden-bg { background-attachment: scroll; }
+}
+
+/* Mobile fallback: disable fixed background on small screens for performance */
+@media (max-width: 768px) {
+  .rose-garden-bg { background-attachment: scroll; }
+}
+
+/* Optional utility to force fixed bg when needed */
+.rose-bg-fixed { background-attachment: fixed !important; }
+
+/* Rose theme token mappings (scoped for rose pages) */
+:root {
+  --theme-accent: var(--rose);
+  --theme-accent-hover: color-mix(in srgb, var(--rose), black 10%);
+  --theme-bg-primary: var(--porcelain);
+  --theme-bg-secondary: #FFFFFF;
+  --theme-bg-light: #FFFFFF;
+  --theme-text-primary: var(--charcoal);
+  --theme-text-secondary: #4B5563;
+  --theme-text-muted: #6B7280;
+  --theme-text-inverted: #FFFFFF;
+  --theme-border-primary: rgba(0,0,0,0.08);
+  --theme-border-light: rgba(0,0,0,0.06);
+  --theme-header-color: var(--merlot);
+  --theme-card-bg: #FFFFFF;
+  --theme-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  --theme-shadow-hover: 0 12px 28px rgba(0,0,0,0.12);
+}
+
+/* Components */
+.theme-card {
+  background: var(--theme-card-bg);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+
+.theme-card:hover {
+  box-shadow: var(--theme-shadow-hover);
+}
+
+.rose-enhanced {
+  position: relative;
+  isolation: isolate;
+}
+
+.rose-enhanced::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--rose), transparent 70%), color-mix(in srgb, var(--gold), transparent 75%));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  z-index: -1;
+}
+
+.rose-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  box-shadow: 0 6px 14px color-mix(in srgb, var(--rose), transparent 80%);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.rose-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--rose), transparent 70%);
+}
+
+.rose-button:active {
+  transform: translateY(0);
+}
+
+.rose-section-header {
+  position: relative;
+  text-align: center;
+}
+
+.rose-section-header .header-text {
+  color: var(--theme-header-color);
+  position: relative;
+}
+
+.rose-section-header .header-text::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -0.5rem;
+  transform: translateX(-50%);
+  width: 72px;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--rose), transparent 20%), color-mix(in srgb, var(--gold), transparent 30%));
+}
+
+.rose-vine-border {
+  border: 2px solid color-mix(in srgb, var(--theme-text-inverted), transparent 70%);
+  border-radius: calc(var(--radius) + 4px);
+  position: relative;
+}
+
+.rose-vine-border::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: inherit;
+  border: 1px dashed color-mix(in srgb, var(--theme-text-inverted), transparent 70%);
+  pointer-events: none;
+}
+
+/* Focus visibility for a11y */
+:where(a, button, .rose-button):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--rose), white 40%);
+  outline-offset: 3px;
+  border-radius: 8px;
 }

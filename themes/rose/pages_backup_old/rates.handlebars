@@ -1,0 +1,1460 @@
+{{#> layouts/main pageTitle="Rates & Services" metaDescription="View my exclusive rates and services for unforgettable experiences. Professional companionship with transparent pricing."}}
+
+<!-- Rose Elegance Rates Page - Sophisticated Professional Companion -->
+
+<!-- Rose Elegance Header -->
+{{#if rates_content.rates_header_visible}}
+<section class="rose-elegant-header" data-aos="fade-in">
+    <!-- Subtle Rose Watermark -->
+    <div class="rose-watermark-bg"></div>
+    
+    <div class="max-w-4xl mx-auto text-center px-6">
+        <!-- Elegant Rose Divider -->
+        <div class="rose-header-ornament" data-aos="fade-down" data-aos-delay="200">
+            <div class="rose-ornament-line"></div>
+            <div class="rose-ornament-center">🌹</div>
+            <div class="rose-ornament-line"></div>
+        </div>
+        
+        <!-- Professional Title -->
+        <h1 class="rose-elegant-title" data-aos="fade-up" data-aos-delay="400">
+            {{#if rates_content.page_title}}{{rates_content.page_title}}{{else}}Investment & Services{{/if}}
+        </h1>
+        
+        
+        <!-- Professional Subtitle -->
+        <p class="rose-elegant-subtitle" data-aos="fade-up" data-aos-delay="600"
+           style="{{#if rates_content.hero_subtitle_color}}color: {{rates_content.hero_subtitle_color}};{{/if}}">
+            {{#if rates_content.page_subtitle}}{{rates_content.page_subtitle}}{{else}}Exclusive companionship with sophistication and discretion. All arrangements are for companionship and social time only.{{/if}}
+        </p>
+        
+        <!-- Bottom Rose Accent -->
+        <div class="rose-header-accent" data-aos="fade-up" data-aos-delay="800"></div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Elegant Navigation -->
+<nav class="rose-elegant-nav" id="rose-nav" data-aos="fade-in">
+    <div class="max-w-5xl mx-auto px-6">
+        <div class="rose-nav-container">
+            {{#if rates_content.rates_table_visible}}
+            <a href="#rates-section" class="rose-nav-link">
+                <span>{{#if rates_content.nav_rates_label}}{{rates_content.nav_rates_label}}{{else}}Investment{{/if}}</span>
+            </a>
+            {{/if}}
+            {{#if rates.extended.length}}
+            <a href="#extended-section" class="rose-nav-link">
+                <span>{{#if rates_content.nav_extended_label}}{{rates_content.nav_extended_label}}{{else}}Extended{{/if}}</span>
+            </a>
+            {{/if}}
+            {{#if rates_content.rates_additional_visible}}
+            <a href="#services-section" class="rose-nav-link">
+                <span>{{#if rates_content.nav_services_label}}{{rates_content.nav_services_label}}{{else}}Services{{/if}}</span>
+            </a>
+            {{/if}}
+            <a href="#policies-section" class="rose-nav-link">
+                <span>{{#if rates_content.nav_policies_label}}{{rates_content.nav_policies_label}}{{else}}Policies{{/if}}</span>
+            </a>
+            {{#if rates_content.rates_payment_visible}}
+            <a href="#payment-section" class="rose-nav-link">
+                <span>{{#if rates_content.nav_payment_label}}{{rates_content.nav_payment_label}}{{else}}Payment{{/if}}</span>
+            </a>
+            {{/if}}
+            {{#if rates_content.cta_visible}}
+            <a href="#contact-section" class="rose-nav-link">
+                <span>{{#if rates_content.nav_contact_label}}{{rates_content.nav_contact_label}}{{else}}Contact{{/if}}</span>
+            </a>
+            {{/if}}
+        </div>
+    </div>
+</nav>
+
+<!-- Professional Rates Section -->
+{{#if rates_content.rates_table_visible}}
+<section id="rates-section" class="rose-rates-section" data-aos="fade-in">
+    <div class="max-w-5xl mx-auto px-6">
+        
+        <!-- Section Header -->
+        {{#if rates_content.table_title}}
+        <div class="rose-section-header text-center mb-16" data-aos="fade-up">
+            <h2 class="rose-section-title">{{rates_content.table_title}}</h2>
+            {{#if rates_content.table_description}}
+            <p class="rose-section-description">{{rates_content.table_description}}</p>
+            {{/if}}
+            <div class="rose-title-accent"></div>
+        </div>
+        {{/if}}
+        <div class="grid lg:grid-cols-2 gap-8">
+            
+            <!-- Incall Services -->
+            {{#if rates_content.rates_incall_visible}}
+            <div class="rose-service-card rose-incall-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="rose-card-header">
+                    <h3 class="rose-service-title">Incall Services</h3>
+                    <div class="rose-service-accent"></div>
+                </div>
+                
+                <div class="rose-service-content">
+                    {{#each rates.incall}}
+                    <div class="rose-rate-row">
+                        <div class="rose-rate-info">
+                            <div class="rose-service-name">{{#if this.serviceName}}{{this.serviceName}}{{else}}{{this.duration}}{{/if}}</div>
+                            {{#if this.serviceName}}
+                            <div class="rose-service-duration">{{this.duration}}</div>
+                            {{/if}}
+                            <!-- Popular Badge -->
+                            {{#if ../rates_content.rates_highlight_badge_visible}}
+                            {{#if this.highlightBadge}}
+                            <span class="rose-popular-badge">{{#if this.highlightBadgeText}}{{this.highlightBadgeText}}{{else}}{{#if ../rates_content.rates_highlight_badge_text}}{{../rates_content.rates_highlight_badge_text}}{{else}}Popular{{/if}}{{/if}}</span>
+                            {{else}}{{#if this.isMostPopular}}
+                            <span class="rose-popular-badge">{{#if ../rates_content.rates_highlight_badge_text}}{{../rates_content.rates_highlight_badge_text}}{{else}}Popular{{/if}}</span>
+                            {{/if}}{{/if}}
+                            {{/if}}
+                        </div>
+                        <div class="rose-rate-price">${{this.price}}</div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Outcall Services -->
+            {{#if rates_content.rates_outcall_visible}}
+            <div class="rose-service-card rose-outcall-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="rose-card-header">
+                    <h3 class="rose-service-title">Outcall Services</h3>
+                    <div class="rose-service-accent"></div>
+                </div>
+                
+                <div class="rose-service-content">
+                    {{#each rates.outcall}}
+                    <div class="rose-rate-row">
+                        <div class="rose-rate-info">
+                            <div class="rose-service-name">{{#if this.serviceName}}{{this.serviceName}}{{else}}{{this.duration}}{{/if}}</div>
+                            {{#if this.serviceName}}
+                            <div class="rose-service-duration">{{this.duration}}</div>
+                            {{/if}}
+                            <!-- Popular Badge -->
+                            {{#if ../rates_content.rates_highlight_badge_visible}}
+                            {{#if this.highlightBadge}}
+                            <span class="rose-popular-badge">{{#if this.highlightBadgeText}}{{this.highlightBadgeText}}{{else}}{{#if ../rates_content.rates_highlight_badge_text}}{{../rates_content.rates_highlight_badge_text}}{{else}}Popular{{/if}}{{/if}}</span>
+                            {{else}}{{#if this.isMostPopular}}
+                            <span class="rose-popular-badge">{{#if ../rates_content.rates_highlight_badge_text}}{{../rates_content.rates_highlight_badge_text}}{{else}}Popular{{/if}}</span>
+                            {{/if}}{{/if}}
+                            {{/if}}
+                        </div>
+                        <div class="rose-rate-price">${{this.price}}</div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+        </div>
+        
+        <!-- CTA Buttons -->
+        <div class="rose-rates-cta" data-aos="fade-up" data-aos-delay="400">
+            <div class="rose-cta-buttons">
+                <a href="/{{model.slug}}/contact" class="rose-btn rose-btn-primary">
+                    Contact Me
+                </a>
+                <a href="/{{model.slug}}/calendar" class="rose-btn rose-btn-secondary">
+                    View Calendar
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Extended Engagements -->
+{{#if rates_content.rates_extended_visible}}
+{{#if rates.extended.length}}
+<section id="extended-section" class="rose-extended-section" data-aos="fade-in">
+    <div class="max-w-5xl mx-auto px-6">
+        <!-- Section Header -->
+        <div class="rose-section-header text-center mb-16">
+            <h2 class="rose-section-title">
+                {{#if rates_content.extended_title}}{{rates_content.extended_title}}{{else}}Extended Engagements{{/if}}
+            </h2>
+            {{#if rates_content.extended_description}}
+            <p class="rose-section-description">{{rates_content.extended_description}}</p>
+            {{/if}}
+            <div class="rose-title-accent"></div>
+        </div>
+        
+        <!-- Extended Rate Cards -->
+        <div class="grid md:grid-cols-3 gap-6">
+            {{#each rates.extended}}
+            <div class="rose-extended-card" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
+                {{#if ../rates_content.extended_show_service_name}}
+                <h3 class="rose-extended-title">{{this.serviceName}}</h3>
+                {{/if}}
+                
+                <div class="rose-extended-content">
+                    {{#if ../rates_content.extended_show_duration}}
+                    <div class="rose-extended-duration">{{this.duration}}</div>
+                    {{/if}}
+                    
+                    {{#if ../rates_content.extended_show_price}}
+                    <div class="rose-extended-price">${{this.price}}</div>
+                    {{/if}}
+                    
+                    {{#if ../rates_content.extended_description_visible}}
+                    {{#if this.rateDescription}}
+                    <p class="rose-extended-description">{{this.rateDescription}}</p>
+                    {{/if}}
+                    {{/if}}
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+{{/if}}
+{{/if}}
+
+<!-- Services & Policies Section -->
+<section id="services-section" class="rose-policies-section" data-aos="fade-in">
+    <div class="max-w-4xl mx-auto px-6">
+        
+        <!-- Elegant Accordions -->
+        <div class="rose-accordion-container">
+            
+            <!-- Additional Services -->
+            {{#if rates_content.rates_additional_visible}}
+            <div class="rose-accordion-item" data-aos="fade-up" data-aos-delay="100">
+                <button class="rose-accordion-header" onclick="toggleRoseAccordion(this)">
+                    <h3 class="rose-accordion-title">Additional Services</h3>
+                    <span class="rose-accordion-icon">+</span>
+                </button>
+                <div class="rose-accordion-content">
+                    <div class="rose-services-list">
+                        {{#if rates_content.additional_services}}
+                        {{#each (split rates_content.additional_services " • ")}}
+                        <div class="rose-service-item">{{this}}</div>
+                        {{/each}}
+                        {{else}}
+                        <div class="rose-service-item">Dinner dates: +$100 (restaurant cost separate)</div>
+                        <div class="rose-service-item">Travel outside city: +$500/day + expenses</div>
+                        <div class="rose-service-item">Special occasions and events welcomed</div>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Booking Policies -->
+            <div id="policies-section" class="rose-accordion-item" data-aos="fade-up" data-aos-delay="200">
+                <button class="rose-accordion-header" onclick="toggleRoseAccordion(this)">
+                    <h3 class="rose-accordion-title">Booking Policies</h3>
+                    <span class="rose-accordion-icon">+</span>
+                </button>
+                <div class="rose-accordion-content">
+                    <div class="rose-policies-list">
+                        {{#if rates_content.booking_policies}}
+                        {{#each (split rates_content.booking_policies " • ")}}
+                        <div class="rose-policy-item">{{this}}</div>
+                        {{/each}}
+                        {{else}}
+                        <div class="rose-policy-item">Advance booking recommended</div>
+                        <div class="rose-policy-item">Same day booking: +$100</div>
+                        <div class="rose-policy-item">Screening process required for all new clients</div>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Additional Accordion Items -->
+        <div class="rose-accordion-container mt-4">
+            <!-- Payment Terms -->
+            {{#if rates_content.rates_payment_visible}}
+            <div id="payment-section" class="rose-accordion-item" data-aos="fade-up" data-aos-delay="300">
+                <button class="rose-accordion-header" onclick="toggleRoseAccordion(this)">
+                    <h3 class="rose-accordion-title">Payment Terms</h3>
+                    <span class="rose-accordion-icon">+</span>
+                </button>
+                <div class="rose-accordion-content">
+                    <div class="rose-payment-list">
+                        {{#if rates_content.payment_terms}}
+                        {{#each (split rates_content.payment_terms " • ")}}
+                        <div class="rose-payment-item">{{this}}</div>
+                        {{/each}}
+                        {{else}}
+                        <div class="rose-payment-item">Cash or discrete payment methods accepted</div>
+                        <div class="rose-payment-item">Payment required at the beginning of our time together</div>
+                        <div class="rose-payment-item">All transactions are handled with complete discretion</div>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Terms & Conditions -->
+            {{#if rates_content.terms_visible}}
+            <div class="rose-accordion-item" data-aos="fade-up" data-aos-delay="400">
+                <button class="rose-accordion-header" onclick="toggleRoseAccordion(this)">
+                    <h3 class="rose-accordion-title">
+                        {{#if rates_content.terms_title}}{{rates_content.terms_title}}{{else}}Terms & Conditions{{/if}}
+                    </h3>
+                    <span class="rose-accordion-icon">+</span>
+                </button>
+                <div class="rose-accordion-content">
+                    <div class="rose-terms-list">
+                        {{#if rates_content.terms_content}}
+                        {{#each (split rates_content.terms_content " • ")}}
+                        <div class="rose-terms-item">{{this}}</div>
+                        {{/each}}
+                        {{else}}
+                        <div class="rose-terms-item">All arrangements are for companionship and social time only</div>
+                        <div class="rose-terms-item">Mutual respect and professionalism expected at all times</div>
+                        <div class="rose-terms-item">Confidentiality and discretion are paramount</div>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</section>
+
+<!-- Donations Section -->
+{{#if rates_content.donations_visible}}
+<section class="rose-donations-section" data-aos="fade-in">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+        <div class="rose-donation-card">
+            <div class="rose-donation-accent"></div>
+            
+            <h2 class="rose-donation-title">
+                {{#if rates_content.donation_title}}{{rates_content.donation_title}}{{else}}Rates & Considerations{{/if}}
+            </h2>
+            
+            <p class="rose-donation-description">
+                {{#if rates_content.donation_description}}{{rates_content.donation_description}}{{else}}Considerations for time spent together are appreciated and help maintain the highest standards of service.{{/if}}
+            </p>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Contact CTA Section -->
+{{#if rates_content.cta_visible}}
+<section id="contact-section" class="rose-cta-section" data-aos="fade-in">
+    <div class="rose-cta-watermark"></div>
+    
+    <div class="max-w-4xl mx-auto text-center px-6">
+        <div class="rose-cta-ornament" data-aos="fade-down">
+            <div class="rose-ornament-line"></div>
+            <div class="rose-ornament-center">🌹</div>
+            <div class="rose-ornament-line"></div>
+        </div>
+        
+        <h2 class="rose-cta-title" data-aos="fade-up" data-aos-delay="200">
+            {{#if rates_content.cta_title}}{{rates_content.cta_title}}{{else}}Ready to Arrange Our Time?{{/if}}
+        </h2>
+        
+        <p class="rose-cta-description" data-aos="fade-up" data-aos-delay="400">
+            {{#if rates_content.cta_description}}{{rates_content.cta_description}}{{else}}Contact me to discuss your preferences and arrange our sophisticated time together.{{/if}}
+        </p>
+        
+        {{#if rates_content.cta_secondary_text}}
+        <p class="rose-cta-secondary" data-aos="fade-up" data-aos-delay="500">
+            {{rates_content.cta_secondary_text}}
+        </p>
+        {{/if}}
+        
+        <div class="rose-cta-buttons" data-aos="fade-up" data-aos-delay="600">
+            {{#if rates_content.cta_button_1_text}}
+            <a href="/{{model.slug}}/{{#if rates_content.cta_button_1_link}}{{rates_content.cta_button_1_link}}{{else}}contact{{/if}}" 
+               class="rose-btn rose-btn-primary">
+                {{rates_content.cta_button_1_text}}
+            </a>
+            {{else}}
+            <a href="/{{model.slug}}/contact" class="rose-btn rose-btn-primary">
+                Contact Me
+            </a>
+            {{/if}}
+            
+            {{#if rates_content.cta_button_2_text}}
+            <a href="/{{model.slug}}/{{#if rates_content.cta_button_2_link}}{{rates_content.cta_button_2_link}}{{else}}about{{/if}}" 
+               class="rose-btn rose-btn-secondary">
+                {{rates_content.cta_button_2_text}}
+            </a>
+            {{else}}
+            <a href="/{{model.slug}}/about" class="rose-btn rose-btn-secondary">
+                Learn More
+            </a>
+            {{/if}}
+        </div>
+        
+        <div class="rose-cta-note">
+            <a href="/{{model.slug}}/contact">Questions? Contact first</a>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Footer -->
+<footer class="rose-footer {{#if rates_content.footer_border_visible}}rose-footer-border{{/if}} {{#if rates_content.footer_padding_enhanced}}rose-footer-enhanced{{/if}}" data-aos="fade-in">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+        <div class="rose-footer-accent"></div>
+        
+        <h3 class="rose-footer-title">
+            {{#if rates_content.footer_title}}{{rates_content.footer_title}}{{else}}{{model.name}}{{/if}}
+        </h3>
+        
+        <p class="rose-footer-description">
+            {{#if rates_content.footer_description}}{{rates_content.footer_description}}{{else}}Professional companionship services with the highest standards of discretion and elegance.{{/if}}
+        </p>
+        
+        <div class="rose-footer-navigation">
+            <a href="/{{model.slug}}/about" class="rose-footer-link">About</a>
+            <a href="/{{model.slug}}/gallery" class="rose-footer-link">Gallery</a>
+            <a href="/{{model.slug}}/rates" class="rose-footer-link">Rates</a>
+            <a href="/{{model.slug}}/contact" class="rose-footer-link">Contact</a>
+        </div>
+        
+        <div class="rose-footer-bottom">
+            <p class="rose-footer-copyright">
+                {{#if rates_content.footer_copyright}}{{rates_content.footer_copyright}}{{else}}&copy; {{currentYear}} {{model.name}}. All rights reserved.{{/if}}
+            </p>
+            <p class="rose-footer-disclaimer">
+                All arrangements are for companionship and social time only.
+            </p>
+        </div>
+    </div>
+</footer>
+
+<!-- Rose Elegance Rates Page Custom Styles -->
+<style>
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600&display=swap');
+
+/* Rose Elegance Refined Color Palette */
+:root {
+    /* Rose palette tokens */
+    --rose-100: #fdecef;
+    --rose-200: #f9d4db;
+    --rose-300: #e9a8b5;
+    --rose-500: #b23a50;  /* primary rose */
+    --rose-600: #8f2e40;  /* headings, strong accents */
+    
+    /* Gold accents */
+    --gold-400: #d9b36c;  /* price highlights, dividers */
+    
+    /* Neutral ink colors */
+    --ink-900: #1d1a1b;   /* body text */
+    --ink-700: #3b3336;   /* secondary text */
+    
+    /* Background colors */
+    --card-bg: #ffffff;   
+    --panel-bg: #f7f3f4; 
+    --page-bg: #fff9fb;
+    
+    /* Legacy compatibility */
+    --rose-deep-crimson: var(--rose-600);
+    --rose-gold: var(--gold-400);
+    --rose-blush: var(--rose-200);
+    --rose-cream: var(--rose-100);
+    --rose-charcoal: var(--ink-900);
+    --rose-elegant-gray: var(--ink-700);
+}
+
+/* Rose Elegance Typography */
+.rose-elegant-title,
+.rose-section-title,
+.rose-service-title,
+.rose-cta-title,
+.rose-footer-title,
+.rose-accordion-title,
+.rose-extended-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: var(--rose-deep-crimson);
+}
+
+.rose-elegant-subtitle,
+.rose-section-description,
+.rose-service-duration,
+.rose-cta-description,
+.rose-footer-description {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--rose-elegant-gray);
+}
+
+/* Refined Elegant Header */
+.rose-elegant-header {
+    position: relative;
+    padding: 6rem 0 4rem;
+    background: linear-gradient(135deg, var(--page-bg) 0%, var(--rose-100) 100%);
+    overflow: hidden;
+}
+
+.rose-elegant-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    background: linear-gradient(transparent, var(--page-bg) 60%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.rose-watermark-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.03"><text x="50" y="50" font-family="serif" font-size="60" text-anchor="middle" dominant-baseline="middle" fill="%238f2e40">🌹</text></svg>') repeat;
+    background-size: 300px 300px;
+    pointer-events: none;
+}
+
+.rose-header-ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.rose-ornament-line {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rose-gold), transparent);
+}
+
+.rose-ornament-center {
+    font-size: 1.5rem;
+    filter: grayscale(50%) opacity(80%);
+}
+
+.rose-elegant-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.5px;
+    line-height: 1.25;
+    position: relative;
+    z-index: 2;
+}
+
+.rose-elegant-subtitle {
+    font-size: 1.2rem;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+    font-style: italic;
+    color: var(--ink-700) !important;
+    position: relative;
+    z-index: 2;
+}
+
+.rose-header-accent {
+    width: 100px;
+    height: 2px;
+    background: var(--rose-gold);
+    margin: 2rem auto 0;
+    border-radius: 1px;
+}
+
+/* Navigation - Force visibility */
+nav.rose-elegant-nav,
+.rose-elegant-nav {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50 !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(15px) !important;
+    border-bottom: 1px solid rgba(178, 58, 80, 0.15) !important;
+    padding: 1rem 0 !important;
+    box-shadow: 0 2px 10px rgba(178, 58, 80, 0.05) !important;
+}
+
+.rose-nav-container {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 2.5rem !important;
+    flex-wrap: wrap !important;
+}
+
+.rose-nav-link {
+    font-family: 'Montserrat', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 0.9rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    color: var(--ink-900) !important;
+    text-decoration: none !important;
+    padding: 8px 16px !important;
+    border-radius: 20px !important;
+    border: 1px solid transparent !important;
+    transition: all 0.3s ease !important;
+    position: relative !important;
+    display: inline-block !important;
+}
+
+/* Navigation link overrides - ensure visibility */
+nav .rose-nav-link,
+nav.rose-elegant-nav .rose-nav-link,
+.rose-elegant-nav .rose-nav-link {
+    color: #1d1a1b !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.rose-nav-link:hover {
+    color: var(--rose-600) !important;
+    background: var(--rose-100);
+    border-color: var(--rose-500);
+}
+
+.rose-nav-link.active {
+    color: var(--rose-600) !important;
+    background: var(--rose-100);
+    border-color: var(--rose-500);
+}
+
+.rose-nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: var(--gold-400);
+    transition: width 0.3s ease;
+}
+
+.rose-nav-link:hover::after,
+.rose-nav-link.active::after {
+    width: 20px;
+}
+
+/* Main Rates Section */
+.rose-rates-section {
+    padding: 5rem 0;
+    background: var(--rose-soft-white);
+}
+
+.rose-section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.rose-section-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.rose-section-description {
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+}
+
+.rose-title-accent {
+    width: 80px;
+    height: 2px;
+    background: var(--rose-gold);
+    margin: 0 auto;
+    border-radius: 1px;
+}
+
+/* Professional Service Cards */
+.rose-service-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 6px 24px rgba(178, 58, 80, 0.08);
+    border: 1px solid rgba(178, 58, 80, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.rose-service-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(178, 58, 80, 0.12);
+}
+
+.rose-card-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(139, 21, 56, 0.1);
+}
+
+.rose-service-title {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.rose-service-accent {
+    width: 50px;
+    height: 2px;
+    background: var(--rose-gold);
+    margin: 0 auto;
+    border-radius: 1px;
+}
+
+.rose-service-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.rose-rate-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 56px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.rose-rate-row:last-child {
+    border-bottom: none;
+}
+
+.rose-rate-info {
+    flex: 1;
+}
+
+.rose-service-name {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--ink-900);
+    margin-bottom: 0.25rem;
+}
+
+.rose-service-duration {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-variant: small-caps;
+    letter-spacing: 0.4px;
+    color: var(--ink-700);
+    font-weight: 500;
+}
+
+.rose-popular-badge {
+    display: inline-block;
+    background: var(--rose-100);
+    color: var(--rose-600);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    margin-top: 0.25rem;
+}
+
+.rose-rate-price {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--rose-600);
+    text-align: right;
+    min-width: 80px;
+}
+
+/* CTA Buttons After Rates */
+.rose-rates-cta {
+    text-align: center;
+    margin-top: 3rem;
+    padding: 2rem 0;
+}
+
+.rose-cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.rose-btn {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 12px 32px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rose-btn-primary {
+    background: var(--rose-600);
+    color: white;
+    border: 1px solid var(--rose-600);
+}
+
+.rose-btn-primary:hover {
+    background: var(--rose-500);
+    border-color: var(--rose-500);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(178, 58, 80, 0.3);
+}
+
+.rose-btn-secondary {
+    background: transparent;
+    color: var(--rose-600);
+    border: 1px solid var(--rose-600);
+}
+
+.rose-btn-secondary:hover {
+    background: var(--rose-100);
+    color: var(--rose-600);
+    transform: translateY(-1px);
+}
+
+/* Extended Services */
+.rose-extended-section {
+    padding: 5rem 0;
+    background: var(--rose-blush);
+}
+
+.rose-extended-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(139, 21, 56, 0.08);
+    border: 1px solid rgba(139, 21, 56, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.rose-extended-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(139, 21, 56, 0.12);
+}
+
+.rose-extended-title {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    color: var(--rose-deep-crimson);
+}
+
+.rose-extended-duration {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--rose-elegant-gray);
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.rose-extended-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--rose-gold);
+    margin-bottom: 1rem;
+}
+
+.rose-extended-description {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    color: var(--rose-elegant-gray);
+    line-height: 1.5;
+}
+
+/* Policies Section */
+.rose-policies-section {
+    padding: 5rem 0;
+    background: var(--rose-soft-white);
+}
+
+.rose-accordion-container {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.rose-accordion-item {
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid rgba(178, 58, 80, 0.1);
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(178, 58, 80, 0.05);
+}
+
+.rose-accordion-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    min-height: 44px;
+}
+
+.rose-accordion-header:hover {
+    background: var(--panel-bg);
+}
+
+.rose-accordion-title {
+    font-size: 1.3rem;
+    margin: 0;
+    text-align: left;
+}
+
+.rose-accordion-icon {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2rem;
+    color: var(--gold-400);
+    font-weight: bold;
+    transition: transform 0.3s ease;
+}
+
+.rose-accordion-item.active .rose-accordion-icon {
+    transform: rotate(45deg);
+}
+
+.rose-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: var(--panel-bg);
+    border-radius: 12px;
+    margin: 0 1rem 1rem;
+}
+
+.rose-accordion-item.active .rose-accordion-content {
+    max-height: 500px;
+}
+
+.rose-services-list,
+.rose-policies-list,
+.rose-payment-list,
+.rose-terms-list {
+    padding: 16px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.rose-service-item,
+.rose-policy-item,
+.rose-payment-item,
+.rose-terms-item {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    color: var(--ink-900);
+    line-height: 1.6;
+    padding: 0.75rem 1rem;
+    background: var(--card-bg);
+    border-radius: 6px;
+    border-left: 3px solid var(--gold-400);
+    max-width: 75ch;
+}
+
+/* Donations Section */
+.rose-donations-section {
+    padding: 4rem 0;
+    background: var(--rose-blush);
+}
+
+.rose-donation-card {
+    background: white;
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    box-shadow: 0 4px 20px rgba(139, 21, 56, 0.08);
+    border: 1px solid rgba(139, 21, 56, 0.1);
+    position: relative;
+}
+
+.rose-donation-accent {
+    width: 60px;
+    height: 3px;
+    background: var(--rose-gold);
+    margin: 0 auto 2rem;
+    border-radius: 2px;
+}
+
+.rose-donation-title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.rose-donation-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* CTA Section */
+.rose-cta-section {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, var(--rose-deep-crimson) 0%, var(--rose-burgundy) 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.rose-cta-watermark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.03"><text x="50" y="50" font-family="serif" font-size="60" text-anchor="middle" dominant-baseline="middle" fill="white">🌹</text></svg>') repeat;
+    background-size: 400px 400px;
+    pointer-events: none;
+}
+
+.rose-cta-ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.rose-cta-ornament .rose-ornament-line {
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+}
+
+.rose-cta-title {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    color: white;
+}
+
+.rose-cta-description {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: 0 auto 1rem;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+.rose-cta-secondary {
+    font-size: 1rem;
+    max-width: 500px;
+    margin: 0 auto 2.5rem;
+    opacity: 0.8;
+    font-style: italic;
+}
+
+.rose-cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.rose-btn {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 1rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+    min-width: 160px;
+    text-align: center;
+}
+
+.rose-btn-primary {
+    background: var(--rose-gold);
+    color: white;
+    border: 2px solid var(--rose-gold);
+}
+
+.rose-btn-primary:hover {
+    background: var(--rose-rose-gold);
+    border-color: var(--rose-rose-gold);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(212, 168, 83, 0.3);
+}
+
+.rose-btn-secondary {
+    background: transparent;
+    color: white;
+    border: 2px solid rgba(255,255,255,0.3);
+}
+
+.rose-btn-secondary:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: white;
+    transform: translateY(-2px);
+}
+
+.rose-cta-note {
+    text-align: center;
+    opacity: 0.7;
+}
+
+.rose-cta-note a {
+    color: white;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.rose-cta-note a:hover {
+    opacity: 1;
+}
+
+/* Footer */
+.rose-footer {
+    padding: 4rem 0 2rem;
+    background: var(--ink-900) !important;
+    color: white !important;
+}
+
+.rose-footer-border {
+    border-top: 3px solid var(--rose-gold);
+}
+
+.rose-footer-enhanced {
+    padding: 5rem 0 3rem;
+}
+
+.rose-footer-accent {
+    width: 80px;
+    height: 2px;
+    background: var(--rose-gold);
+    margin: 0 auto 2rem;
+    border-radius: 1px;
+}
+
+.rose-footer-title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.rose-footer-description {
+    font-size: 1rem;
+    max-width: 600px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.6;
+    opacity: 0.8;
+}
+
+.rose-footer-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.rose-footer-link {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    color: white !important;
+    text-decoration: none;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.rose-footer-link:hover {
+    opacity: 1;
+    color: var(--gold-400) !important;
+}
+
+.rose-footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 2rem;
+    margin-top: 2rem;
+}
+
+.rose-footer-copyright {
+    font-size: 0.9rem;
+    opacity: 0.6;
+    margin-bottom: 0.5rem;
+}
+
+.rose-footer-disclaimer {
+    font-size: 0.85rem;
+    opacity: 0.5;
+    font-style: italic;
+    color: white !important;
+}
+
+/* Rose Navigation Override - Rose theme only */
+nav.rose-elegant-nav,
+.rose-elegant-nav {
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(15px) !important;
+    border-bottom: 1px solid rgba(178, 58, 80, 0.15) !important;
+}
+
+/* Rose navigation text styling */
+nav.rose-elegant-nav *,
+.rose-elegant-nav * {
+    color: #1d1a1b !important;
+    text-shadow: none !important;
+}
+
+nav.rose-elegant-nav a,
+.rose-elegant-nav a,
+.rose-elegant-nav .rose-nav-link {
+    color: #1d1a1b !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    text-shadow: none !important;
+}
+
+nav.rose-elegant-nav a:hover,
+.rose-elegant-nav a:hover,
+.rose-elegant-nav .rose-nav-link:hover {
+    color: #8f2e40 !important;
+    background: rgba(178, 58, 80, 0.1) !important;
+    text-shadow: none !important;
+}
+
+/* Footer Override - Prevent theme conflicts */
+footer.rose-footer {
+    background: #1d1a1b !important;
+}
+
+footer.rose-footer * {
+    color: white !important;
+}
+
+footer.rose-footer .rose-footer-link:hover {
+    color: #d9b36c !important;
+}
+
+/* Utility Classes */
+.rose-rule {
+    width: 24px;
+    height: 2px;
+    background: var(--gold-400);
+    margin: 12px auto;
+    border-radius: 2px;
+}
+
+.price {
+    font-weight: 700;
+    color: var(--rose-600);
+}
+
+.badge-soft {
+    font-size: 11px;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    background: var(--rose-100);
+    color: var(--rose-600);
+}
+
+.card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0 6px 24px rgba(178, 58, 80, 0.08);
+}
+
+.accordion-body {
+    background: var(--panel-bg);
+    border-radius: 12px;
+}
+
+/* Typography Refinements */
+h2 {
+    font-size: 28px;
+}
+
+h3 {
+    font-size: 20px;
+}
+
+body {
+    color: var(--ink-900);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .rose-elegant-title {
+        font-size: 2.5rem;
+    }
+    
+    .rose-section-title {
+        font-size: 2rem;
+    }
+    
+    .rose-cta-title {
+        font-size: 2.2rem;
+    }
+    
+    .rose-nav-container {
+        gap: 1rem;
+    }
+    
+    .rose-service-card {
+        padding: 1.5rem;
+    }
+    
+    .rose-rate-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        text-align: left;
+    }
+    
+    .rose-rate-price {
+        font-size: 1.3rem;
+    }
+    
+    .rose-extended-price {
+        font-size: 1.8rem;
+    }
+    
+    .rose-cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .rose-btn {
+        width: 250px;
+    }
+    
+    .rose-footer-navigation {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .rose-accordion-header {
+        padding: 1rem 1.5rem;
+    }
+    
+    .rose-services-list,
+    .rose-policies-list,
+    .rose-payment-list,
+    .rose-terms-list {
+        padding: 0 1.5rem 1.5rem;
+    }
+}
+</style>
+
+<!-- JavaScript for Accordion Functionality and Navigation -->
+<script>
+// Accordion functionality
+function toggleRoseAccordion(header) {
+    const accordionItem = header.parentElement;
+    const content = accordionItem.querySelector('.rose-accordion-content');
+    const icon = header.querySelector('.rose-accordion-icon');
+    
+    // Toggle active state
+    accordionItem.classList.toggle('active');
+    
+    // Update icon
+    if (accordionItem.classList.contains('active')) {
+        icon.textContent = '×';
+        content.style.maxHeight = content.scrollHeight + 'px';
+    } else {
+        icon.textContent = '+';
+        content.style.maxHeight = '0';
+    }
+}
+
+// Navigation and smooth scrolling
+document.addEventListener('DOMContentLoaded', function() {
+    const nav = document.getElementById('rose-nav');
+    const navLinks = document.querySelectorAll('.rose-nav-link');
+    const sections = document.querySelectorAll('section[id]');
+    
+    // Smooth scrolling for navigation links
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const targetId = this.getAttribute('href').substring(1);
+            const targetSection = document.getElementById(targetId);
+            
+            if (targetSection) {
+                const navHeight = nav.offsetHeight;
+                const targetPosition = targetSection.offsetTop - navHeight - 20;
+                
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+                
+                // Update active nav link
+                navLinks.forEach(nl => nl.classList.remove('active'));
+                this.classList.add('active');
+            }
+        });
+    });
+    
+    // Update active nav link on scroll
+    const scrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const targetId = entry.target.id;
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${targetId}`) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        });
+    }, {
+        rootMargin: '-20% 0px -70% 0px'
+    });
+    
+    // Observe all sections for active nav highlighting
+    sections.forEach(section => {
+        scrollObserver.observe(section);
+    });
+    
+    // Rose theme specific: Prevent main layout scroll handler from affecting rose navigation
+    // Only apply this fix when rose navigation is present
+    const roseNav = document.querySelector('.rose-elegant-nav');
+    if (roseNav) {
+        // Override the main layout's scroll handler by removing existing listeners
+        // and adding our own that preserves rose navigation styling
+        const roseScrollHandler = function() {
+            // Only apply styles to rose navigation, leave other navs alone
+            if (roseNav) {
+                roseNav.style.background = 'rgba(255, 255, 255, 0.98)';
+                roseNav.style.backdropFilter = 'blur(15px)';
+                roseNav.style.borderBottom = '1px solid rgba(178, 58, 80, 0.15)';
+                
+                // Keep rose nav links dark
+                const roseNavLinks = roseNav.querySelectorAll('.rose-nav-link');
+                roseNavLinks.forEach(link => {
+                    link.style.color = '#1d1a1b';
+                    link.style.opacity = '1';
+                    link.style.visibility = 'visible';
+                });
+            }
+        };
+        
+        // Apply rose navigation styling immediately
+        roseScrollHandler();
+        
+        // Add rose-specific scroll handler
+        window.addEventListener('scroll', roseScrollHandler, { passive: true });
+    }
+});
+</script>
+
+{{/layouts/main}}

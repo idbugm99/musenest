@@ -1,10 +1,12 @@
 <!-- Luxury Theme Home Page - Opulent Regal Design -->
 
-<!-- Hero Section with Marble Background and Gold Accents -->
+<!-- Hero Section with Dynamic/Marble Background and Gold Accents -->
 {{#if content.hero_section_visible}}
-<section class="luxury-hero" data-aos="fade-in">
-    <!-- Marble Texture Background -->
+<section class="luxury-hero {{#if content.heroBackgroundImageUrl}}luxury-hero-custom-bg bg-cover bg-center bg-fixed{{/if}}" data-aos="fade-in" {{#if content.heroBackgroundImageUrl}}style="background-image: url('{{content.heroBackgroundImageUrl}}')"{{/if}}>
+    {{#unless content.heroBackgroundImageUrl}}
+    <!-- Marble Texture Background (only if no custom image) -->
     <div class="luxury-marble-bg"></div>
+    {{/unless}}
     
     <!-- Gold Leaf Accent Elements -->
     <div class="luxury-gold-accents">
@@ -14,7 +16,7 @@
     </div>
     
     <!-- Hero Overlay for Better Text Readability -->
-    <div class="luxury-hero-overlay"></div>
+    <div class="luxury-hero-overlay {{#if content.heroBackgroundImageUrl}}luxury-hero-overlay-custom{{/if}}"></div>
     
     <!-- Hero Content with Royal Treatment -->
     <div class="luxury-hero-content">

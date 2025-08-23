@@ -1,349 +1,289 @@
-<!-- Rose Garden About Page - Romantic Rose-Inspired Biography -->
+<!-- Enhanced Rose Theme About Page with Custom Decorative Elements -->
+<!-- Universal template foundation with Rose theme enhancements -->
+<link rel="stylesheet" href="/themes/rose/assets/rose-enhancements.css">
+<script src="/themes/rose/assets/rose-interactions.js"></script>
 
-<!-- Rose Garden Header -->
+<!-- Enhanced Page Header Section with Rose Garden -->
 {{#if about_content.page_title_visible}}
-<section class="rose-about-header" data-aos="fade-in">
-    <!-- Rose Petals Background -->
-    <div class="rose-petals-bg">
-        <div class="rose-petal-float rose-petal-1">🌹</div>
-        <div class="rose-petal-float rose-petal-2">🌹</div>
-        <div class="rose-petal-float rose-petal-3">🌿</div>
-        <div class="rose-petal-float rose-petal-4">🌹</div>
-        <div class="rose-petal-float rose-petal-5">🌿</div>
-    </div>
+<section class="py-20 theme-section rose-garden-bg relative overflow-hidden" {{#if about_content.headerBackgroundImageUrl}}style="background-image: url('{{about_content.headerBackgroundImageUrl}}')"{{/if}} data-aos="fade-in">
+    {{#if about_content.headerBackgroundImageUrl}}
+    <div class="absolute inset-0 bg-black" style="opacity: {{#if about_content.hero_background_opacity}}{{about_content.hero_background_opacity}}{{else}}{{#if hero_background_opacity}}{{hero_background_opacity}}{{else}}0.6{{/if}}{{/if}};"></div>
+    {{/if}}
+    <!-- Sprite-based subtle divider -->
+    <!-- Removed sprite divider -->
     
-    <!-- Rose Garden Pattern -->
-    <div class="rose-garden-header-pattern"></div>
-    
-    <div class="max-w-6xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-        <!-- Rose Bloom Title -->
-        <h1 class="rose-about-title" data-aos="fade-up" data-aos-delay="200">
-            {{#if about_content.page_title}}{{about_content.page_title}}{{else}}Rose Biography{{/if}}
-        </h1>
-        
-        <!-- Romantic Subtitle -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <!-- Rose Section Header -->
+        <div class="rose-section-header mb-6">
+            <span class="header-text text-4xl md:text-6xl font-bold theme-header" data-aos="fade-up">
+                {{#if about_content.page_title}}{{about_content.page_title}}{{else}}About {{siteName}}{{/if}}
+            </span>
+        </div>
         {{#if about_content.page_subtitle}}
-        <p class="rose-about-subtitle" data-aos="fade-up" data-aos-delay="400">
+        <p class="text-xl theme-body-text max-w-3xl mx-auto mb-8" data-aos="fade-up" data-aos-delay="200">
             {{about_content.page_subtitle}}
         </p>
         {{/if}}
-        
-        <!-- Rose Separator -->
-        <div class="rose-title-separator" data-aos="fade-up" data-aos-delay="600">
-            <div class="rose-separator-line"></div>
-            <div class="rose-separator-bloom">🌹</div>
-            <div class="rose-separator-line"></div>
-        </div>
-    </div>
-    
-    <!-- Floating Rose Elements -->
-    <div class="rose-header-ornaments" aria-hidden="true">
-        <div class="rose-ornament rose-ornament-1">💎</div>
-        <div class="rose-ornament rose-ornament-2">🌹</div>
-        <div class="rose-ornament rose-ornament-3">💎</div>
+        <div class="w-24 h-1 theme-accent-bg mx-auto rounded-full" data-aos="fade-up" data-aos-delay="400"></div>
     </div>
 </section>
 {{/if}}
 
-<!-- Main Rose Biography Section -->
-{{#if about_content.main_content_visible}}
-<section class="rose-main-biography" data-aos="fade-in">
+<!-- Main Content Section -->
+<section class="py-16 theme-section-alt">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid lg:grid-cols-2 gap-16 items-start">
-            
-            <!-- Rose Portrait Garden -->
-            {{#if about_content.portrait_visible}}
-            <div class="rose-portrait-chamber" data-aos="fade-right">
-                <div class="rose-portrait-frame">
-                    {{#if about_content.portrait_image_url}}
-                    <img src="{{about_content.portrait_image_url}}" 
-                         alt="{{#if about_content.portrait_alt}}{{about_content.portrait_alt}}{{else}}Rose Portrait{{/if}}"
-                         class="rose-portrait-image"
-                         onclick="openPortraitPreview('{{about_content.portrait_image_url}}', '{{#if about_content.portrait_alt}}{{about_content.portrait_alt}}{{else}}Rose Portrait{{/if}}')">
-                    {{else}}
-                    <div class="rose-portrait-placeholder">
-                        <div class="rose-placeholder-bloom">🌹</div>
-                        <p class="rose-placeholder-text">Rose Portrait</p>
-                    </div>
-                    {{/if}}
-                    
-                    <!-- Rose Frame Blooms -->
-                    <div class="rose-portrait-frame-blooms">
-                        <div class="rose-frame-bloom rose-bloom-tl">🌹</div>
-                        <div class="rose-frame-bloom rose-bloom-tr">🌹</div>
-                        <div class="rose-frame-bloom rose-bloom-bl">🌹</div>
-                        <div class="rose-frame-bloom rose-bloom-br">🌹</div>
-                    </div>
-                    
-                    <!-- Rose Aura -->
-                    <div class="rose-portrait-aura"></div>
-                </div>
-                
-                <!-- Rose Garden Base -->
-                <div class="rose-portrait-garden-base"></div>
-            </div>
-            {{/if}}
-            
-            <!-- Rose Biography Content -->
-            <div class="rose-biography-garden" data-aos="fade-left">
-                
-                <!-- Main Biography Chamber -->
-                <div class="rose-content-chamber">
-                    <!-- Rose Header -->
-                    <div class="rose-biography-header">
-                        <div class="rose-monogram">
-                            🌹
-                        </div>
-                        <h2 class="rose-biography-title">Rose Elegance</h2>
-                    </div>
-                    
-                    <!-- Biography Text -->
-                    <div class="rose-biography-text">
+            <!-- Left Column: Content & Services -->
+            <div class="space-y-12">
+                {{#if about_content.main_content_visible}}
+                <div data-aos="fade-right">
+                    <div class="space-y-6 text-lg leading-relaxed">
                         {{#if about_content.main_paragraph_1}}
-                        <p class="rose-lead-paragraph">{{about_content.main_paragraph_1}}</p>
-                        {{else}}
-                        <p class="rose-lead-paragraph">Welcome to my enchanting rose garden of elegance and sophistication. I am a graceful companion who embodies the beauty, romance, and timeless allure of the finest roses.</p>
+                        <p class="text-xl theme-text-primary">{{about_content.main_paragraph_1}}</p>
                         {{/if}}
                         
                         {{#if about_content.main_paragraph_2}}
-                        <p class="rose-content-paragraph">{{about_content.main_paragraph_2}}</p>
-                        {{else}}
-                        <p class="rose-content-paragraph">Like a perfect rose in full bloom, I offer experiences that are both beautiful and memorable. Every moment we share is carefully cultivated with the same attention and care given to the most exquisite garden.</p>
+                        <p class="theme-text-secondary">{{about_content.main_paragraph_2}}</p>
                         {{/if}}
                         
                         {{#if about_content.main_paragraph_3}}
-                        <p class="rose-content-paragraph">{{about_content.main_paragraph_3}}</p>
+                        <p class="theme-text-secondary">{{about_content.main_paragraph_3}}</p>
                         {{/if}}
                         
                         {{#if about_content.main_paragraph_4}}
-                        <p class="rose-content-paragraph">{{about_content.main_paragraph_4}}</p>
+                        <p class="theme-text-secondary">{{about_content.main_paragraph_4}}</p>
                         {{/if}}
                         
                         {{#unless about_content.main_paragraph_1}}
-                        <p class="rose-lead-paragraph">Welcome to my enchanting rose garden of elegance and sophistication. I am a graceful companion who embodies the beauty, romance, and timeless allure of the finest roses.</p>
-                        <p class="rose-content-paragraph">Like a perfect rose in full bloom, I offer experiences that are both beautiful and memorable. Every moment we share is carefully cultivated with the same attention and care given to the most exquisite garden.</p>
+                        <p class="text-xl theme-text-primary">Welcome to my world of elegance and sophistication. I am a professional companion who values discretion, intelligence, and genuine connection.</p>
+                        <p class="theme-text-secondary">With years of experience in providing exceptional companionship services, I pride myself on creating memorable experiences tailored to each client's unique needs.</p>
                         {{/unless}}
-                    </div>
-                </div>
-                
-                <!-- Rose Services Garden -->
-                {{#if about_content.services_visible}}
-                <div class="rose-services-garden">
-                    <div class="rose-services-header">
-                        <h3 class="rose-services-title">
-                            {{#if about_content.services_title}}{{about_content.services_title}}{{else}}Rose Services{{/if}}
-                        </h3>
-                        <div class="rose-services-bloom">
-                            🌹
-                        </div>
-                    </div>
-                    
-                    <div class="rose-services-list">
-                        {{#if about_content.service_1}}
-                        <div class="rose-service-item">
-                            <div class="rose-service-bloom">🌹</div>
-                            <span class="rose-service-text">{{about_content.service_1}}</span>
-                        </div>
-                        {{/if}}
-                        {{#if about_content.service_2}}
-                        <div class="rose-service-item">
-                            <div class="rose-service-bloom">🌹</div>
-                            <span class="rose-service-text">{{about_content.service_2}}</span>
-                        </div>
-                        {{/if}}
-                        {{#if about_content.service_3}}
-                        <div class="rose-service-item">
-                            <div class="rose-service-bloom">🌹</div>
-                            <span class="rose-service-text">{{about_content.service_3}}</span>
-                        </div>
-                        {{/if}}
-                        {{#if about_content.service_4}}
-                        <div class="rose-service-item">
-                            <div class="rose-service-bloom">🌹</div>
-                            <span class="rose-service-text">{{about_content.service_4}}</span>
-                        </div>
-                        {{/if}}
-                        {{#if about_content.service_5}}
-                        <div class="rose-service-item">
-                            <div class="rose-service-bloom">🌹</div>
-                            <span class="rose-service-text">{{about_content.service_5}}</span>
-                        </div>
-                        {{/if}}
-                        {{#if about_content.service_6}}
-                        <div class="rose-service-item">
-                            <div class="rose-service-bloom">🌹</div>
-                            <span class="rose-service-text">{{about_content.service_6}}</span>
-                        </div>
-                        {{/if}}
                     </div>
                 </div>
                 {{/if}}
                 
-                <!-- Rose Interests Garden -->
+                {{#if about_content.services_visible}}
+                <div class="theme-card rose-enhanced p-8 hover:shadow-lg transition-shadow" data-aos="fade-right" data-aos-delay="200">
+                    <h2 class="rose-section-header text-3xl font-bold mb-6 theme-header">
+                        <span class="header-text">{{#if about_content.services_title}}{{about_content.services_title}}{{else}}🌹 My Services{{/if}}</span>
+                    </h2>
+                    <ul class="space-y-4">
+                        {{#if about_content.service_1}}
+                        <li class="flex items-start">
+                            <div class="theme-accent-bg w-2 h-2 rounded-full mt-3 mr-4 flex-shrink-0"></div>
+                            <span class="text-lg theme-text-primary">{{about_content.service_1}}</span>
+                        </li>
+                        {{/if}}
+                        {{#if about_content.service_2}}
+                        <li class="flex items-start">
+                            <div class="theme-accent-bg w-2 h-2 rounded-full mt-3 mr-4 flex-shrink-0"></div>
+                            <span class="text-lg theme-text-primary">{{about_content.service_2}}</span>
+                        </li>
+                        {{/if}}
+                        {{#if about_content.service_3}}
+                        <li class="flex items-start">
+                            <div class="theme-accent-bg w-2 h-2 rounded-full mt-3 mr-4 flex-shrink-0"></div>
+                            <span class="text-lg theme-text-primary">{{about_content.service_3}}</span>
+                        </li>
+                        {{/if}}
+                        {{#if about_content.service_4}}
+                        <li class="flex items-start">
+                            <div class="theme-accent-bg w-2 h-2 rounded-full mt-3 mr-4 flex-shrink-0"></div>
+                            <span class="text-lg theme-text-primary">{{about_content.service_4}}</span>
+                        </li>
+                        {{/if}}
+                        {{#if about_content.service_5}}
+                        <li class="flex items-start">
+                            <div class="theme-accent-bg w-2 h-2 rounded-full mt-3 mr-4 flex-shrink-0"></div>
+                            <span class="text-lg theme-text-primary">{{about_content.service_5}}</span>
+                        </li>
+                        {{/if}}
+                        {{#if about_content.service_6}}
+                        <li class="flex items-start">
+                            <div class="theme-accent-bg w-2 h-2 rounded-full mt-3 mr-4 flex-shrink-0"></div>
+                            <span class="text-lg theme-text-primary">{{about_content.service_6}}</span>
+                        </li>
+                        {{/if}}
+                    </ul>
+                </div>
+                {{/if}}
+                
                 {{#if about_content.interests_visible}}
                 {{#if about_content.interests}}
-                <div class="rose-interests-garden">
-                    <h3 class="rose-interests-title">
-                        {{#if about_content.interests_title}}{{about_content.interests_title}}{{else}}Rose Passions{{/if}}
-                    </h3>
-                    <div class="rose-interests-collection">
+                <div class="theme-card rose-enhanced p-8 hover:shadow-lg transition-shadow" data-aos="fade-right" data-aos-delay="400">
+                    <h2 class="rose-section-header text-3xl font-bold mb-6 theme-header">
+                        <span class="header-text">{{#if about_content.interests_title}}{{about_content.interests_title}}{{else}}🌸 My Interests{{/if}}</span>
+                    </h2>
+                    <div class="flex flex-wrap gap-3">
                         {{#each (split about_content.interests ',')}}
-                        <div class="rose-interest-petal">
-                            <span>{{trim this}}</span>
-                            <div class="rose-petal-glow"></div>
-                        </div>
+                        <span class="theme-accent-bg theme-text-inverted px-4 py-2 rounded-full text-sm font-medium transition-transform hover:scale-105">
+                            {{trim this}}
+                        </span>
                         {{/each}}
                     </div>
                 </div>
                 {{/if}}
                 {{/if}}
             </div>
-        </div>
-    </div>
-</section>
-{{/if}}
-
-<!-- Rose Quick Facts Garden -->
-{{#if about_content.quick_facts_visible}}
-<section class="rose-quick-facts-section" data-aos="fade-in">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Section Header with Rose Treatment -->
-        <div class="rose-facts-header text-center mb-12">
-            <div class="rose-facts-bloom">
-                🌹
-            </div>
-            <h2 class="rose-facts-title">
-                {{#if about_content.quick_facts_title}}{{about_content.quick_facts_title}}{{else}}Rose Profile{{/if}}
-            </h2>
-            <div class="rose-facts-ornament">
-                <div class="rose-ornament-line"></div>
-                <div class="rose-ornament-center">🌹</div>
-                <div class="rose-ornament-line"></div>
-            </div>
-        </div>
-        
-        <!-- Rose Facts Garden Cards -->
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {{#if about_content.quickFacts}}
-            {{#each about_content.quickFacts}}
-            <div class="rose-fact-garden" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
-                <div class="rose-fact-bloom">🌹</div>
-                <div class="rose-fact-content">
-                    <div class="rose-fact-label">{{this.question}}</div>
-                    <div class="rose-fact-answer">{{this.answer}}</div>
-                </div>
-                <div class="rose-fact-stem"></div>
-            </div>
-            {{/each}}
-            {{else}}
-            <!-- Individual Quick Facts Fields -->
-            {{#if about_content.qf_location}}
-            <div class="rose-fact-garden" data-aos="fade-up" data-aos-delay="100">
-                <div class="rose-fact-bloom">🌹</div>
-                <div class="rose-fact-content">
-                    <div class="rose-fact-label">Location</div>
-                    <div class="rose-fact-answer">{{about_content.qf_location}}</div>
-                </div>
-                <div class="rose-fact-stem"></div>
-            </div>
-            {{/if}}
-            {{#if about_content.qf_languages}}
-            <div class="rose-fact-garden" data-aos="fade-up" data-aos-delay="200">
-                <div class="rose-fact-bloom">🌹</div>
-                <div class="rose-fact-content">
-                    <div class="rose-fact-label">Languages</div>
-                    <div class="rose-fact-answer">{{about_content.qf_languages}}</div>
-                </div>
-                <div class="rose-fact-stem"></div>
-            </div>
-            {{/if}}
-            {{#if about_content.qf_education}}
-            <div class="rose-fact-garden" data-aos="fade-up" data-aos-delay="300">
-                <div class="rose-fact-bloom">🌹</div>
-                <div class="rose-fact-content">
-                    <div class="rose-fact-label">Education</div>
-                    <div class="rose-fact-answer">{{about_content.qf_education}}</div>
-                </div>
-                <div class="rose-fact-stem"></div>
-            </div>
-            {{/if}}
-            {{#if about_content.qf_specialties}}
-            <div class="rose-fact-garden" data-aos="fade-up" data-aos-delay="400">
-                <div class="rose-fact-bloom">🌹</div>
-                <div class="rose-fact-content">
-                    <div class="rose-fact-label">Specialties</div>
-                    <div class="rose-fact-answer">{{about_content.qf_specialties}}</div>
-                </div>
-                <div class="rose-fact-stem"></div>
-            </div>
-            {{/if}}
-            {{/if}}
-        </div>
-    </div>
-</section>
-{{/if}}
-
-<!-- Rose Garden CTA Section -->
-{{#if about_content.about_cta_visible}}
-<section class="rose-about-cta-section" data-aos="fade-in">
-    <!-- Rose Garden Background -->
-    <div class="rose-cta-garden-bg">
-        <div class="rose-garden-pattern"></div>
-        <div class="rose-floating-petals">
-            <div class="rose-float-petal rose-float-1">🌹</div>
-            <div class="rose-float-petal rose-float-2">🌿</div>
-            <div class="rose-float-petal rose-float-3">🌹</div>
-            <div class="rose-float-petal rose-float-4">💎</div>
-        </div>
-    </div>
-    
-    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-        <!-- Rose Bloom -->
-        <div class="rose-cta-bloom" data-aos="fade-down">
-            🌹
-        </div>
-        
-        <h2 class="rose-cta-title" data-aos="fade-up" data-aos-delay="200">
-            {{#if about_content.cta_title}}{{about_content.cta_title}}{{else}}Ready for Rose Experience?{{/if}}
-        </h2>
-        
-        <p class="rose-cta-subtitle" data-aos="fade-up" data-aos-delay="400">
-            {{#if about_content.cta_description}}{{about_content.cta_description}}{{else}}Allow me to create an extraordinary experience as beautiful and unforgettable as a perfect rose garden in full bloom.{{/if}}
-        </p>
-        
-        <div class="rose-cta-buttons" data-aos="fade-up" data-aos-delay="600">
-            {{#if about_content.cta_button_1_text}}
-            <a href="/{{modelSlug}}/{{#if about_content.cta_button_1_link}}{{about_content.cta_button_1_link}}{{else}}calendar{{/if}}{{previewParam}}" 
-               class="rose-btn rose-btn-bloom rose-bloom-effect">
-                <span>{{about_content.cta_button_1_text}}</span>
-                <div class="rose-btn-glow"></div>
-            </a>
-            {{/if}}
             
-            {{#if about_content.cta_button_2_text}}
-            <a href="/{{modelSlug}}/{{#if about_content.cta_button_2_link}}{{about_content.cta_button_2_link}}{{else}}contact{{/if}}{{previewParam}}" 
-               class="rose-btn rose-btn-garden rose-garden-border">
-                <span>{{about_content.cta_button_2_text}}</span>
-            </a>
-            {{/if}}
+            <!-- Right Column: Portrait, Facts, CTA -->
+            <div class="space-y-8">
+                <!-- Portrait Image -->
+                {{#if about_content.portrait_visible}}
+                <div class="theme-card overflow-hidden cursor-pointer group hover:shadow-lg transition-shadow" 
+                     data-aos="fade-left"
+                     onclick="openPortraitPreview('{{about_content.portrait_image_url}}', '{{#if about_content.portrait_alt}}{{about_content.portrait_alt}}{{else}}Professional Portrait{{/if}}')"
+                     style="aspect-ratio: 4/3;">
+                    <div class="relative w-full h-full">
+                        <img src="{{about_content.portrait_image_url}}" 
+                             alt="{{#if about_content.portrait_alt}}{{about_content.portrait_alt}}{{else}}Professional Portrait{{/if}}"
+                             loading="lazy"
+                             class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700">
+                        
+                        <!-- Hover overlay -->
+                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                            <div class="theme-accent-bg rounded-full p-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100">
+                                <svg class="w-6 h-6 theme-text-inverted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <!-- Click hint -->
+                        <div class="absolute bottom-3 left-3 theme-accent-bg theme-text-inverted rounded px-2 py-1 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            Click to preview
+                        </div>
+                    </div>
+                </div>
+                {{else}}
+                <div class="theme-card flex items-center justify-center p-8 hover:shadow-lg transition-shadow" 
+                     data-aos="fade-left"
+                     style="aspect-ratio: 4/3;">
+                    <div class="text-center">
+                        <div class="theme-accent w-16 h-16 mx-auto mb-4 rounded-full theme-border-primary border-2 flex items-center justify-center">
+                            <svg class="w-8 h-8 theme-accent" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                        </div>
+                        <p class="theme-text-muted text-lg">Professional portrait coming soon</p>
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Quick Facts -->
+                {{#if about_content.quick_facts_visible}}
+                <div class="theme-card rose-enhanced p-8 hover:shadow-lg transition-shadow" data-aos="fade-left" data-aos-delay="200">
+                    <div class="mb-6">
+                        <div class="theme-accent text-xs uppercase tracking-widest mb-2 font-medium">🌹 Personal Details</div>
+                        <h3 class="text-2xl font-bold theme-header">
+                            {{#if about_content.quick_facts_title}}{{about_content.quick_facts_title}}{{else}}Quick Facts{{/if}}
+                        </h3>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        {{#if about_content.quickFacts}}
+                        {{#each about_content.quickFacts}}
+                        <div class="flex items-start py-3 theme-border-light border-b last:border-b-0">
+                            <div class="theme-accent w-1.5 h-1.5 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs uppercase tracking-wider theme-text-muted font-medium mb-1">{{this.question}}</div>
+                                <div class="text-base font-medium theme-text-primary">{{this.answer}}</div>
+                            </div>
+                        </div>
+                        {{/each}}
+                        {{else}}
+                        {{#if about_content.qf_location}}
+                        <div class="flex items-start py-3 theme-border-light border-b">
+                            <div class="theme-accent w-1.5 h-1.5 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs uppercase tracking-wider theme-text-muted font-medium mb-1">Location</div>
+                                <div class="text-base font-medium theme-text-primary">{{about_content.qf_location}}</div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        {{#if about_content.qf_languages}}
+                        <div class="flex items-start py-3 theme-border-light border-b">
+                            <div class="theme-accent w-1.5 h-1.5 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs uppercase tracking-wider theme-text-muted font-medium mb-1">Languages</div>
+                                <div class="text-base font-medium theme-text-primary">{{about_content.qf_languages}}</div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        {{#if about_content.qf_education}}
+                        <div class="flex items-start py-3 theme-border-light border-b">
+                            <div class="theme-accent w-1.5 h-1.5 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs uppercase tracking-wider theme-text-muted font-medium mb-1">Education</div>
+                                <div class="text-base font-medium theme-text-primary">{{about_content.qf_education}}</div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        {{#if about_content.qf_specialties}}
+                        <div class="flex items-start py-3">
+                            <div class="theme-accent w-1.5 h-1.5 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs uppercase tracking-wider theme-text-muted font-medium mb-1">Specialties</div>
+                                <div class="text-base font-medium theme-text-primary">{{about_content.qf_specialties}}</div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        {{/if}}
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Call to Action -->
+                {{#if about_content.about_cta_visible}}
+                <div class="theme-card rose-enhanced p-8 hover:shadow-lg transition-shadow" data-aos="fade-left" data-aos-delay="400">
+                    <div class="mb-6">
+                        <div class="theme-accent text-xs uppercase tracking-widest mb-2 font-medium">🌹 Ready to Begin</div>
+                        <h3 class="text-2xl font-bold theme-header">
+                            {{#if about_content.cta_title}}{{about_content.cta_title}}{{else}}Ready to Connect?{{/if}}
+                        </h3>
+                    </div>
+                    
+                    <p class="mb-6 theme-text-secondary text-lg leading-relaxed">
+                        {{#if about_content.cta_description}}{{about_content.cta_description}}{{else}}I would love to hear from you and discuss how we can create an unforgettable experience together.{{/if}}
+                    </p>
+                    
+                    <div class="space-y-3">
+                        {{#if about_content.cta_button_1_text}}
+                        <a href="/{{modelSlug}}/{{#if about_content.cta_button_1_link}}{{about_content.cta_button_1_link}}{{else}}calendar{{/if}}{{previewParam}}" 
+                           class="rose-button block w-full theme-accent-bg theme-text-inverted px-6 py-3 rounded-lg text-center font-semibold hover:opacity-90 transition-opacity duration-200">
+                           {{about_content.cta_button_1_text}}
+                        </a>
+                        {{/if}}
+                        {{#if about_content.cta_button_2_text}}
+                        <a href="/{{modelSlug}}/{{#if about_content.cta_button_2_link}}{{about_content.cta_button_2_link}}{{else}}contact{{/if}}{{previewParam}}" 
+                           class="rose-button block w-full theme-accent-border theme-accent border-2 px-6 py-3 rounded-lg text-center font-semibold hover:theme-accent-bg hover:theme-text-inverted transition-colors duration-200">
+                           {{about_content.cta_button_2_text}}
+                        </a>
+                        {{/if}}
+                    </div>
+                </div>
+                {{/if}}
+            </div>
         </div>
     </div>
 </section>
-{{/if}}
 
-<!-- Additional Rose Content Section -->
+<!-- Additional Content Section -->
 {{#if about_content.additional_content_visible}}
-<section class="rose-additional-content-section" data-aos="fade-in">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div class="rose-additional-content-garden">
-            <div class="rose-content-bloom">
-                🌹
-            </div>
+<section class="py-16 theme-section rose-garden-bg relative overflow-hidden" {{#if about_content.additionalBackgroundImageUrl}}style="background-image: url('{{about_content.additionalBackgroundImageUrl}}')"{{/if}}>
+    {{#if about_content.additionalBackgroundImageUrl}}
+    <div class="absolute inset-0 bg-black" style="opacity: {{#if about_content.hero_background_opacity}}{{about_content.hero_background_opacity}}{{else}}{{#if hero_background_opacity}}{{hero_background_opacity}}{{else}}0.6{{/if}}{{/if}};"></div>
+    {{/if}}
+    <!-- Sprite divider -->
+    <!-- Removed sprite divider -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="theme-card rose-enhanced p-8 text-center hover:shadow-lg transition-shadow" data-aos="fade-up">
+            
             {{#if about_content.additional_title}}
-            <h3 class="rose-additional-title">{{about_content.additional_title}}</h3>
+            <h3 class="text-3xl font-bold mb-6 theme-header">{{about_content.additional_title}}</h3>
             {{/if}}
             {{#if about_content.additional_description}}
-            <div class="rose-additional-text">
+            <div class="theme-text-secondary text-lg leading-relaxed max-w-2xl mx-auto">
                 <p>{{about_content.additional_description}}</p>
             </div>
             {{/if}}
@@ -352,1142 +292,46 @@
 </section>
 {{/if}}
 
-<!-- Rose Portrait Preview Modal -->
-<div id="portrait-preview-modal" class="rose-portrait-modal">
-    <div class="rose-modal-garden">
-        <!-- Rose Close Button -->
-        <button onclick="closePortraitPreview()" class="rose-modal-close">
-            ✕
+<!-- Portrait Preview Modal -->
+<div id="portrait-preview-modal" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center p-4">
+    <div class="relative max-w-4xl max-h-full">
+        <!-- Close button -->
+        <button onclick="closePortraitPreview()" 
+                class="absolute -top-12 right-0 theme-accent hover:opacity-70 transition-opacity duration-200 z-10">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
         </button>
         
-        <!-- Rose Portrait Frame -->
-        <div class="rose-modal-frame">
-            <img id="portrait-preview-image" src="" alt="" class="rose-modal-portrait">
-            <div class="rose-modal-frame-blooms">
-                <div class="rose-modal-bloom rose-modal-bloom-tl">🌹</div>
-                <div class="rose-modal-bloom rose-modal-bloom-tr">🌹</div>
-                <div class="rose-modal-bloom rose-modal-bloom-bl">🌹</div>
-                <div class="rose-modal-bloom rose-modal-bloom-br">🌹</div>
-            </div>
+        <!-- Image container -->
+        <div class="relative">
+            <img id="portrait-preview-image" 
+                 src="" 
+                 alt="" 
+                 class="max-w-full max-h-full object-contain rounded-lg shadow-2xl">
         </div>
         
-        <!-- Rose Caption -->
-        <div class="rose-modal-caption">
-            <p id="portrait-preview-caption"></p>
+        <!-- Image caption -->
+        <div class="absolute bottom-4 left-4 right-4 theme-accent-bg theme-text-inverted p-3 rounded-lg">
+            <p id="portrait-preview-caption" class="text-center text-sm font-medium"></p>
         </div>
     </div>
 </div>
 
-<!-- Rose About Page Custom Styles -->
-<style>
-/* Rose Garden About Page Variables */
-:root {
-    --rose-primary: #dc2626; /* Deep rose */
-    --rose-secondary: #be185d; /* Rich rose */
-    --rose-accent: #d4af37; /* Gold accent */
-    --rose-light: #fecaca; /* Soft blush */
-    --rose-lightest: #fef2f2; /* Palest rose */
-    --rose-white: #fefefe; /* Pure white */
-    --rose-text: #881337; /* Deep rose text */
-    --rose-muted: #9f1239; /* Muted rose */
-}
-
-/* Rose About Header Styling */
-.rose-about-header {
-    position: relative;
-    padding: 8rem 0 6rem;
-    background: linear-gradient(135deg, var(--rose-lightest) 0%, var(--rose-light) 50%, #f9a8d4 100%);
-    overflow: hidden;
-}
-
-.rose-petals-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.rose-petal-float {
-    position: absolute;
-    font-size: 3rem;
-    opacity: 0.4;
-    animation: rosePetalHeaderFloat 15s infinite ease-in-out;
-}
-
-.rose-petal-1 {
-    top: 20%;
-    left: 15%;
-    animation-delay: 0s;
-}
-
-.rose-petal-2 {
-    top: 60%;
-    right: 20%;
-    animation-delay: 3s;
-}
-
-.rose-petal-3 {
-    top: 30%;
-    left: 70%;
-    animation-delay: 6s;
-}
-
-.rose-petal-4 {
-    bottom: 30%;
-    left: 25%;
-    animation-delay: 9s;
-}
-
-.rose-petal-5 {
-    top: 70%;
-    right: 60%;
-    animation-delay: 12s;
-}
-
-@keyframes rosePetalHeaderFloat {
-    0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
-    33% { transform: translateY(-20px) rotate(120deg) scale(1.1); }
-    66% { transform: translateY(-5px) rotate(240deg) scale(0.9); }
-}
-
-.rose-garden-header-pattern {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23dc2626' fill-opacity='0.04'%3E%3Cpath d='M30 20c5.5 0 10 4.5 10 10s-4.5 10-10 10-10-4.5-10-10 4.5-10 10-10zm0 16c3.3 0 6-2.7 6-6s-2.7-6-6-6-6 2.7-6 6 2.7 6 6 6z'/%3E%3C/g%3E%3C/svg%3E");
-}
-
-.rose-about-title {
-    font-size: 5rem;
-    font-weight: 900;
-    text-align: center;
-    margin-bottom: 2rem;
-    background: linear-gradient(45deg, var(--rose-primary) 0%, var(--rose-secondary) 50%, var(--rose-accent) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 2px 2px 8px rgba(220, 38, 38, 0.3);
-    letter-spacing: 3px;
-    font-family: 'Playfair Display', serif;
-    position: relative;
-}
-
-.rose-about-title::before {
-    content: '';
-    position: absolute;
-    top: -20px;
-    left: -20px;
-    right: -20px;
-    bottom: -20px;
-    background: radial-gradient(ellipse, rgba(220, 38, 38, 0.1) 0%, transparent 70%);
-    z-index: -1;
-    border-radius: 20px;
-}
-
-.rose-about-subtitle {
-    font-size: 1.6rem;
-    color: var(--rose-text);
-    text-align: center;
-    margin-bottom: 3rem;
-    font-weight: 400;
-    font-style: italic;
-    letter-spacing: 1px;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.rose-title-separator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 2rem;
-    margin: 3rem 0;
-}
-
-.rose-separator-line {
-    width: 100px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--rose-primary), transparent);
-}
-
-.rose-separator-bloom {
-    font-size: 2rem;
-    animation: roseBloomPulse 4s infinite ease-in-out;
-    filter: drop-shadow(0 2px 4px rgba(220, 38, 38, 0.3));
-}
-
-@keyframes roseBloomPulse {
-    0%, 100% { transform: scale(1); opacity: 0.8; }
-    50% { transform: scale(1.2); opacity: 1; }
-}
-
-/* Header Rose Ornaments */
-.rose-header-ornaments {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.rose-ornament {
-    position: absolute;
-    font-size: 2.5rem;
-    opacity: 0.4;
-    animation: roseOrnamentFloat 12s infinite ease-in-out;
-}
-
-.rose-ornament-1 {
-    top: 25%;
-    left: 25%;
-    animation-delay: 0s;
-}
-
-.rose-ornament-2 {
-    top: 70%;
-    right: 30%;
-    animation-delay: 4s;
-}
-
-.rose-ornament-3 {
-    bottom: 20%;
-    left: 60%;
-    animation-delay: 8s;
-}
-
-@keyframes roseOrnamentFloat {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-15px) rotate(180deg); }
-}
-
-/* Main Rose Biography Section */
-.rose-main-biography {
-    padding: 8rem 0;
-    background: linear-gradient(180deg, var(--rose-white) 0%, var(--rose-lightest) 100%);
-}
-
-/* Rose Portrait Chamber */
-.rose-portrait-chamber {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.rose-portrait-frame {
-    position: relative;
-    padding: 25px;
-    background: linear-gradient(45deg, var(--rose-primary) 0%, var(--rose-secondary) 50%, var(--rose-accent) 100%);
-    border-radius: 35px;
-    box-shadow: 0 40px 80px rgba(220, 38, 38, 0.3);
-}
-
-.rose-portrait-image {
-    width: 100%;
-    max-width: 500px;
-    height: 650px;
-    object-fit: cover;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: transform 0.5s ease;
-}
-
-.rose-portrait-image:hover {
-    transform: scale(1.02);
-}
-
-.rose-portrait-placeholder {
-    width: 100%;
-    max-width: 500px;
-    height: 650px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: var(--rose-lightest);
-    border-radius: 20px;
-    color: var(--rose-text);
-}
-
-.rose-placeholder-bloom {
-    font-size: 6rem;
-    margin-bottom: 2rem;
-    animation: roseBloomFloat 4s infinite ease-in-out;
-    filter: drop-shadow(0 4px 8px rgba(220, 38, 38, 0.3));
-}
-
-.rose-placeholder-text {
-    font-size: 1.5rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-family: 'Playfair Display', serif;
-}
-
-/* Rose Portrait Frame Blooms */
-.rose-portrait-frame-blooms {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.rose-frame-bloom {
-    position: absolute;
-    font-size: 1.8rem;
-    animation: roseFrameBloom 6s infinite ease-in-out;
-    filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.5));
-}
-
-.rose-bloom-tl {
-    top: 15px;
-    left: 15px;
-    animation-delay: 0s;
-}
-
-.rose-bloom-tr {
-    top: 15px;
-    right: 15px;
-    animation-delay: 1.5s;
-}
-
-.rose-bloom-bl {
-    bottom: 15px;
-    left: 15px;
-    animation-delay: 3s;
-}
-
-.rose-bloom-br {
-    bottom: 15px;
-    right: 15px;
-    animation-delay: 4.5s;
-}
-
-@keyframes roseFrameBloom {
-    0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
-    50% { transform: scale(1.3) rotate(15deg); opacity: 1; }
-}
-
-.rose-portrait-aura {
-    position: absolute;
-    top: -20px;
-    left: -20px;
-    right: -20px;
-    bottom: -20px;
-    background: linear-gradient(45deg, var(--rose-primary), transparent, var(--rose-accent));
-    border-radius: 45px;
-    z-index: -1;
-    opacity: 0.3;
-    filter: blur(30px);
-    animation: roseAuraPulse 8s infinite ease-in-out;
-}
-
-@keyframes roseAuraPulse {
-    0%, 100% { opacity: 0.3; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.1); }
-}
-
-.rose-portrait-garden-base {
-    width: 80%;
-    height: 30px;
-    background: linear-gradient(45deg, var(--rose-accent) 0%, var(--rose-primary) 100%);
-    border-radius: 15px;
-    margin-top: -15px;
-    box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4);
-}
-
-/* Rose Biography Garden */
-.rose-biography-garden {
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-}
-
-.rose-content-chamber {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(254, 242, 242, 0.95) 100%);
-    border: 2px solid var(--rose-light);
-    border-radius: 25px;
-    padding: 3rem;
-    box-shadow: 0 20px 40px rgba(220, 38, 38, 0.1);
-}
-
-.rose-biography-header {
-    text-align: center;
-    margin-bottom: 1.5rem;
-}
-
-.rose-monogram {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-    animation: roseMonogramGlow 6s infinite ease-in-out;
-    filter: drop-shadow(0 4px 8px rgba(220, 38, 38, 0.3));
-}
-
-@keyframes roseMonogramGlow {
-    0%, 100% { transform: scale(1) rotate(0deg); }
-    50% { transform: scale(1.1) rotate(5deg); }
-}
-
-.rose-biography-title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    background: linear-gradient(45deg, var(--rose-primary) 0%, var(--rose-accent) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-family: 'Playfair Display', serif;
-}
-
-.rose-biography-text {
-    line-height: 1.9;
-}
-
-.rose-lead-paragraph {
-    font-size: 1.4rem;
-    font-weight: 500;
-    color: var(--rose-text);
-    margin-bottom: 2rem;
-    font-style: italic;
-    text-align: center;
-    line-height: 1.7;
-}
-
-.rose-content-paragraph {
-    font-size: 1.2rem;
-    color: var(--rose-text);
-    margin-bottom: 1.5rem;
-    line-height: 1.8;
-    opacity: 0.9;
-}
-
-/* Rose Services Garden */
-.rose-services-garden {
-    background: linear-gradient(145deg, rgba(220, 38, 38, 0.05) 0%, rgba(254, 202, 202, 0.1) 100%);
-    border: 2px solid var(--rose-light);
-    border-radius: 25px;
-    padding: 3rem;
-}
-
-.rose-services-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 2.5rem;
-}
-
-.rose-services-title {
-    font-size: 2.2rem;
-    font-weight: 700;
-    background: linear-gradient(45deg, var(--rose-primary) 0%, var(--rose-accent) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-family: 'Playfair Display', serif;
-}
-
-.rose-services-bloom {
-    font-size: 2.5rem;
-    animation: roseServicesBloom 8s infinite linear;
-    filter: drop-shadow(0 2px 4px rgba(220, 38, 38, 0.3));
-}
-
-@keyframes roseServicesBloom {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-.rose-services-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.rose-service-item {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    padding: 1.5rem;
-    background: rgba(255, 255, 255, 0.6);
-    border-radius: 20px;
-    border: 2px solid rgba(220, 38, 38, 0.1);
-    transition: all 0.4s ease;
-}
-
-.rose-service-item:hover {
-    transform: translateX(10px) scale(1.02);
-    box-shadow: 0 10px 25px rgba(220, 38, 38, 0.2);
-    border-color: var(--rose-primary);
-}
-
-.rose-service-bloom {
-    font-size: 1.8rem;
-    animation: roseServiceBloomSparkle 3s infinite ease-in-out;
-    filter: drop-shadow(0 2px 4px rgba(220, 38, 38, 0.3));
-}
-
-@keyframes roseServiceBloomSparkle {
-    0%, 100% { opacity: 0.7; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.3); }
-}
-
-.rose-service-text {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: var(--rose-text);
-}
-
-/* Rose Interests Garden */
-.rose-interests-garden {
-    background: linear-gradient(145deg, rgba(190, 24, 93, 0.05) 0%, rgba(220, 38, 38, 0.05) 100%);
-    border: 2px solid rgba(190, 24, 93, 0.2);
-    border-radius: 25px;
-    padding: 3rem;
-}
-
-.rose-interests-title {
-    font-size: 2.2rem;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 2.5rem;
-    background: linear-gradient(45deg, var(--rose-secondary) 0%, var(--rose-accent) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-family: 'Playfair Display', serif;
-}
-
-.rose-interests-collection {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem 1rem;
-    justify-content: center;
-    align-items: center;
-}
-
-.rose-interest-petal {
-    position: relative;
-    background: linear-gradient(45deg, var(--rose-primary) 0%, var(--rose-secondary) 100%);
-    color: var(--rose-white);
-    padding: 14px 28px;
-    border-radius: 50px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 0.9rem;
-    box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.4s ease;
-    overflow: hidden;
-}
-
-.rose-interest-petal:hover {
-    transform: translateY(-5px) scale(1.05);
-}
-
-.rose-petal-glow {
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    transition: left 0.6s ease;
-}
-
-.rose-interest-petal:hover .rose-petal-glow {
-    left: 100%;
-}
-
-/* Rose Quick Facts Section */
-.rose-quick-facts-section {
-    padding: 8rem 0;
-    background: linear-gradient(135deg, var(--rose-white) 0%, var(--rose-lightest) 100%);
-}
-
-.rose-facts-header {
-    text-align: center;
-}
-
-.rose-facts-bloom {
-    font-size: 4rem;
-    margin-bottom: 2rem;
-    filter: drop-shadow(0 5px 15px rgba(220, 38, 38, 0.4));
-    animation: roseFactsBloomFloat 6s infinite ease-in-out;
-}
-
-@keyframes roseFactsBloomFloat {
-    0%, 100% { transform: translateY(0px) scale(1); }
-    50% { transform: translateY(-10px) scale(1.1); }
-}
-
-.rose-facts-title {
-    font-size: 3.5rem;
-    font-weight: 800;
-    margin-bottom: 2rem;
-    background: linear-gradient(45deg, var(--rose-primary) 0%, var(--rose-accent) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-family: 'Playfair Display', serif;
-}
-
-.rose-facts-ornament {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1.5rem;
-    margin: 2rem 0;
-}
-
-.rose-ornament-line {
-    width: 80px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--rose-primary), transparent);
-}
-
-.rose-ornament-center {
-    font-size: 1.8rem;
-    animation: roseOrnamentCenterFloat 4s infinite ease-in-out;
-    filter: drop-shadow(0 2px 4px rgba(220, 38, 38, 0.3));
-}
-
-@keyframes roseOrnamentCenterFloat {
-    0%, 100% { transform: scale(1) rotate(0deg); }
-    50% { transform: scale(1.2) rotate(10deg); }
-}
-
-/* Rose Fact Garden Cards */
-.rose-fact-garden {
-    position: relative;
-    background: linear-gradient(145deg, var(--rose-white) 0%, var(--rose-lightest) 100%);
-    border-radius: 25px;
-    padding: 3rem 2.5rem 2rem;
-    text-align: center;
-    transition: all 0.4s ease;
-    border: 2px solid var(--rose-light);
-    box-shadow: 0 15px 35px rgba(220, 38, 38, 0.15);
-    height: 100%;
-    min-height: 200px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.rose-fact-garden:hover {
-    transform: translateY(-10px) scale(1.02);
-    box-shadow: 0 25px 50px rgba(220, 38, 38, 0.25);
-    border-color: var(--rose-primary);
-}
-
-.rose-fact-bloom {
-    position: absolute;
-    top: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 2.5rem;
-    background: var(--rose-white);
-    border-radius: 50%;
-    padding: 10px;
-    box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
-    animation: roseFactBloomFloat 5s infinite ease-in-out;
-}
-
-@keyframes roseFactBloomFloat {
-    0%, 100% { transform: translateX(-50%) scale(1) rotate(0deg); }
-    50% { transform: translateX(-50%) scale(1.1) rotate(10deg); }
-}
-
-.rose-fact-content {
-    margin-top: 1rem;
-}
-
-.rose-fact-label {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--rose-primary);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 1rem;
-}
-
-.rose-fact-answer {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--rose-text);
-    line-height: 1.4;
-    font-family: 'Playfair Display', serif;
-}
-
-.rose-fact-stem {
-    position: absolute;
-    bottom: -15px;
-    left: 25px;
-    right: 25px;
-    height: 30px;
-    background: linear-gradient(90deg, transparent, var(--rose-primary), transparent);
-    border-radius: 0 0 25px 25px;
-    opacity: 0.3;
-}
-
-/* Rose About CTA Section */
-.rose-about-cta-section {
-    position: relative;
-    padding: 8rem 0;
-    background: linear-gradient(135deg, var(--rose-primary) 0%, var(--rose-secondary) 50%, #7c2d12 100%);
-    color: var(--rose-white);
-    overflow: hidden;
-}
-
-.rose-cta-garden-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.rose-garden-pattern {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M40 30c5.5 0 10 4.5 10 10s-4.5 10-10 10-10-4.5-10-10 4.5-10 10-10zm0 16c3.3 0 6-2.7 6-6s-2.7-6-6-6-6 2.7-6 6 2.7 6 6 6z'/%3E%3C/g%3E%3C/svg%3E");
-}
-
-.rose-floating-petals {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-
-.rose-float-petal {
-    position: absolute;
-    font-size: 2.5rem;
-    opacity: 0.4;
-    animation: roseFloatPetal 18s infinite ease-in-out;
-}
-
-.rose-float-1 {
-    top: 20%;
-    left: 20%;
-    animation-delay: 0s;
-}
-
-.rose-float-2 {
-    top: 70%;
-    right: 25%;
-    animation-delay: 4s;
-}
-
-.rose-float-3 {
-    bottom: 25%;
-    left: 70%;
-    animation-delay: 8s;
-}
-
-.rose-float-4 {
-    top: 40%;
-    right: 15%;
-    animation-delay: 12s;
-}
-
-@keyframes roseFloatPetal {
-    0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.4; }
-    25% { transform: translateY(-25px) rotate(90deg); opacity: 0.8; }
-    50% { transform: translateY(-15px) rotate(180deg); opacity: 0.6; }
-    75% { transform: translateY(-30px) rotate(270deg); opacity: 1; }
-}
-
-.rose-cta-bloom {
-    font-size: 5rem;
-    margin-bottom: 2rem;
-    animation: roseCTABloomPulse 5s infinite ease-in-out;
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
-}
-
-@keyframes roseCTABloomPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.2) rotate(10deg); }
-}
-
-.rose-cta-title {
-    font-size: 4rem;
-    font-weight: 900;
-    text-align: center;
-    margin-bottom: 2rem;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
-    letter-spacing: 2px;
-    font-family: 'Playfair Display', serif;
-}
-
-.rose-cta-subtitle {
-    font-size: 1.4rem;
-    text-align: center;
-    margin-bottom: 3rem;
-    opacity: 0.95;
-    font-style: italic;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.7;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
-}
-
-.rose-cta-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    flex-wrap: wrap;
-}
-
-.rose-btn {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 40px;
-    font-weight: 700;
-    text-decoration: none;
-    border-radius: 60px;
-    transition: all 0.4s ease;
-    overflow: hidden;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 14px;
-    border: 2px solid transparent;
-}
-
-.rose-btn-bloom {
-    background: linear-gradient(45deg, var(--rose-accent) 0%, var(--rose-primary) 100%);
-    color: var(--rose-white);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.rose-btn-bloom:hover {
-    transform: translateY(-8px) scale(1.08);
-    box-shadow: 0 20px 45px rgba(212, 175, 55, 0.6);
-}
-
-.rose-btn-glow {
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    transition: left 0.6s ease;
-}
-
-.rose-btn-bloom:hover .rose-btn-glow {
-    left: 100%;
-}
-
-.rose-btn-garden {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--rose-white);
-    border: 2px solid var(--rose-accent);
-    backdrop-filter: blur(15px);
-}
-
-.rose-btn-garden:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-5px) scale(1.05);
-}
-
-/* Additional Rose Content Section */
-.rose-additional-content-section {
-    padding: 6rem 0;
-    background: linear-gradient(135deg, var(--rose-white) 0%, var(--rose-lightest) 100%);
-}
-
-.rose-additional-content-garden {
-    background: linear-gradient(145deg, var(--rose-lightest) 0%, var(--rose-white) 100%);
-    border: 2px solid var(--rose-light);
-    border-radius: 25px;
-    padding: 4rem 3rem;
-    text-align: center;
-    position: relative;
-    box-shadow: 0 20px 40px rgba(220, 38, 38, 0.15);
-}
-
-.rose-content-bloom {
-    font-size: 3.5rem;
-    margin-bottom: 2rem;
-    filter: drop-shadow(0 5px 15px rgba(220, 38, 38, 0.4));
-    animation: roseContentBloom 7s infinite ease-in-out;
-}
-
-@keyframes roseContentBloom {
-    0%, 100% { transform: scale(1) rotate(0deg); }
-    50% { transform: scale(1.15) rotate(8deg); }
-}
-
-.rose-additional-title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    margin-bottom: 2rem;
-    background: linear-gradient(45deg, var(--rose-primary) 0%, var(--rose-accent) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-family: 'Playfair Display', serif;
-}
-
-.rose-additional-text {
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.rose-additional-text p {
-    font-size: 1.3rem;
-    color: var(--rose-text);
-    line-height: 1.8;
-    font-style: italic;
-    margin: 0;
-}
-
-/* Rose Portrait Modal Styling */
-.rose-portrait-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.95);
-    z-index: 1000;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-}
-
-.rose-modal-garden {
-    position: relative;
-    max-width: 90vw;
-    max-height: 90vh;
-}
-
-.rose-modal-close {
-    position: absolute;
-    top: -60px;
-    right: 0;
-    color: var(--rose-accent);
-    background: none;
-    border: none;
-    font-size: 2rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 10;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.rose-modal-close:hover {
-    color: var(--rose-white);
-    background: rgba(220, 38, 38, 0.2);
-    transform: scale(1.1);
-}
-
-.rose-modal-frame {
-    position: relative;
-    padding: 20px;
-    background: linear-gradient(45deg, var(--rose-primary) 0%, var(--rose-secondary) 50%, var(--rose-accent) 100%);
-    border-radius: 25px;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-}
-
-.rose-modal-portrait {
-    max-width: 100%;
-    max-height: 80vh;
-    object-fit: contain;
-    border-radius: 15px;
-}
-
-.rose-modal-frame-blooms {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.rose-modal-bloom {
-    position: absolute;
-    font-size: 1.5rem;
-    animation: roseModalBloom 4s infinite ease-in-out;
-    filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.5));
-}
-
-.rose-modal-bloom-tl {
-    top: 10px;
-    left: 10px;
-    animation-delay: 0s;
-}
-
-.rose-modal-bloom-tr {
-    top: 10px;
-    right: 10px;
-    animation-delay: 1s;
-}
-
-.rose-modal-bloom-bl {
-    bottom: 10px;
-    left: 10px;
-    animation-delay: 2s;
-}
-
-.rose-modal-bloom-br {
-    bottom: 10px;
-    right: 10px;
-    animation-delay: 3s;
-}
-
-@keyframes roseModalBloom {
-    0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
-    50% { transform: scale(1.2) rotate(10deg); opacity: 1; }
-}
-
-.rose-modal-caption {
-    position: absolute;
-    bottom: -50px;
-    left: 0;
-    right: 0;
-    background: linear-gradient(45deg, var(--rose-primary), var(--rose-accent));
-    color: var(--rose-white);
-    padding: 15px;
-    border-radius: 15px;
-    text-align: center;
-    font-weight: 600;
-    font-family: 'Playfair Display', serif;
-    box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .rose-about-title {
-        font-size: 3.5rem;
-    }
-    
-    .rose-about-subtitle {
-        font-size: 1.3rem;
-    }
-    
-    .rose-facts-title {
-        font-size: 2.5rem;
-    }
-    
-    .rose-cta-title {
-        font-size: 2.8rem;
-    }
-    
-    .rose-portrait-image,
-    .rose-portrait-placeholder {
-        height: 500px;
-    }
-    
-    .rose-cta-buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .rose-btn {
-        width: 300px;
-        margin: 10px 0;
-    }
-    
-    .rose-content-chamber,
-    .rose-services-garden,
-    .rose-interests-garden {
-        padding: 2rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .rose-about-header {
-        padding: 6rem 0 4rem;
-    }
-    
-    .rose-about-title {
-        font-size: 2.8rem;
-        letter-spacing: 1px;
-    }
-    
-    .rose-about-subtitle {
-        font-size: 1.1rem;
-    }
-    
-    .rose-facts-title {
-        font-size: 2rem;
-    }
-    
-    .rose-cta-title {
-        font-size: 2.2rem;
-    }
-    
-    .rose-portrait-image,
-    .rose-portrait-placeholder {
-        height: 400px;
-    }
-    
-    .rose-content-chamber,
-    .rose-services-garden,
-    .rose-interests-garden {
-        padding: 1.5rem;
-    }
-    
-    .rose-fact-garden {
-        padding: 2rem 1.5rem 1.5rem;
-    }
-}
-</style>
-
-<!-- Rose Portrait Preview JavaScript -->
+<!-- Portrait Preview JavaScript -->
 <script>
 function openPortraitPreview(imageUrl, altText) {
-    const modal = document.querySelector('.rose-portrait-modal');
+    const modal = document.getElementById('portrait-preview-modal');
     const image = document.getElementById('portrait-preview-image');
     const caption = document.getElementById('portrait-preview-caption');
     
-    if (modal && image && caption) {
+    if (modal && image && caption && imageUrl) {
         image.src = imageUrl;
         image.alt = altText;
         caption.textContent = altText;
         
-        modal.style.display = 'flex';
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
         
         // Prevent body scroll
         document.body.style.overflow = 'hidden';
@@ -1505,10 +349,11 @@ function openPortraitPreview(imageUrl, altText) {
 }
 
 function closePortraitPreview() {
-    const modal = document.querySelector('.rose-portrait-modal');
+    const modal = document.getElementById('portrait-preview-modal');
     
     if (modal) {
-        modal.style.display = 'none';
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
         
         // Restore body scroll
         document.body.style.overflow = '';

@@ -1,0 +1,354 @@
+<!-- About Page - Universal Template with Theme Classes -->
+<!-- This template works across all themes using universal CSS variables -->
+
+<!-- Page Header Section -->
+{{#if about_content.page_title_visible}}
+<section class="py-20 theme-section relative overflow-hidden" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <h1 class="text-4xl md:text-6xl font-bold mb-6 theme-header" data-aos="fade-up">
+            {{#if about_content.page_title}}{{about_content.page_title}}{{else}}About {{siteName}}{{/if}}
+        </h1>
+        {{#if about_content.page_subtitle}}
+        <p class="text-xl theme-body-text max-w-3xl mx-auto mb-8" data-aos="fade-up" data-aos-delay="200">
+            {{about_content.page_subtitle}}
+        </p>
+        {{/if}}
+        <div class="w-24 h-1 theme-accent-bg mx-auto rounded-full" data-aos="fade-up" data-aos-delay="400"></div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Main Content Section -->
+<section class="py-16 theme-section-alt">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-16 items-start">
+            <!-- Left Column: Content & Services -->
+            <div class="space-y-12">
+                {{#if about_content.main_content_visible}}
+                <div data-aos="fade-right">
+                    <div class="space-y-6 text-lg leading-relaxed">
+                        {{#if about_content.main_paragraph_1}}
+                        <p class="text-xl theme-text-primary">{{about_content.main_paragraph_1}}</p>
+                        {{/if}}
+                        
+                        {{#if about_content.main_paragraph_2}}
+                        <p class="theme-text-secondary">{{about_content.main_paragraph_2}}</p>
+                        {{/if}}
+                        
+                        {{#if about_content.main_paragraph_3}}
+                        <p class="theme-text-secondary">{{about_content.main_paragraph_3}}</p>
+                        {{/if}}
+                        
+                        {{#if about_content.main_paragraph_4}}
+                        <p class="theme-text-secondary">{{about_content.main_paragraph_4}}</p>
+                        {{/if}}
+                        
+                        {{#unless about_content.main_paragraph_1}}
+                        <p class="text-xl theme-text-primary">Welcome to my world of elegance and sophistication. I am a professional companion who values discretion, intelligence, and genuine connection.</p>
+                        <p class="theme-text-secondary">With years of experience in providing exceptional companionship services, I pride myself on creating memorable experiences tailored to each client's unique needs.</p>
+                        {{/unless}}
+                    </div>
+                </div>
+                {{/if}}
+                
+                {{#if about_content.services_visible}}
+                <div class="theme-card p-8 hover:shadow-lg transition-shadow" data-aos="fade-right" data-aos-delay="200">
+                    <h2 class="text-3xl font-bold mb-6 theme-header">
+                        {{#if about_content.services_title}}{{about_content.services_title}}{{else}}My Services{{/if}}
+                    </h2>
+                    <ul class="space-y-4">
+                        {{#if about_content.service_1}}
+                        <li class="flex items-start">
+                            <div class="theme-accent-bg w-2 h-2 rounded-full mt-3 mr-4 flex-shrink-0"></div>
+                            <span class="text-lg theme-text-primary">{{about_content.service_1}}</span>
+                        </li>
+                        {{/if}}
+                        {{#if about_content.service_2}}
+                        <li class="flex items-start">
+                            <div class="theme-accent-bg w-2 h-2 rounded-full mt-3 mr-4 flex-shrink-0"></div>
+                            <span class="text-lg theme-text-primary">{{about_content.service_2}}</span>
+                        </li>
+                        {{/if}}
+                        {{#if about_content.service_3}}
+                        <li class="flex items-start">
+                            <div class="theme-accent-bg w-2 h-2 rounded-full mt-3 mr-4 flex-shrink-0"></div>
+                            <span class="text-lg theme-text-primary">{{about_content.service_3}}</span>
+                        </li>
+                        {{/if}}
+                        {{#if about_content.service_4}}
+                        <li class="flex items-start">
+                            <div class="theme-accent-bg w-2 h-2 rounded-full mt-3 mr-4 flex-shrink-0"></div>
+                            <span class="text-lg theme-text-primary">{{about_content.service_4}}</span>
+                        </li>
+                        {{/if}}
+                        {{#if about_content.service_5}}
+                        <li class="flex items-start">
+                            <div class="theme-accent-bg w-2 h-2 rounded-full mt-3 mr-4 flex-shrink-0"></div>
+                            <span class="text-lg theme-text-primary">{{about_content.service_5}}</span>
+                        </li>
+                        {{/if}}
+                        {{#if about_content.service_6}}
+                        <li class="flex items-start">
+                            <div class="theme-accent-bg w-2 h-2 rounded-full mt-3 mr-4 flex-shrink-0"></div>
+                            <span class="text-lg theme-text-primary">{{about_content.service_6}}</span>
+                        </li>
+                        {{/if}}
+                    </ul>
+                </div>
+                {{/if}}
+                
+                {{#if about_content.interests_visible}}
+                {{#if about_content.interests}}
+                <div class="theme-card p-8 hover:shadow-lg transition-shadow" data-aos="fade-right" data-aos-delay="400">
+                    <h2 class="text-3xl font-bold mb-6 theme-header">
+                        {{#if about_content.interests_title}}{{about_content.interests_title}}{{else}}My Interests{{/if}}
+                    </h2>
+                    <div class="flex flex-wrap gap-3">
+                        {{#each (split about_content.interests ',')}}
+                        <span class="theme-accent-bg theme-text-inverted px-4 py-2 rounded-full text-sm font-medium transition-transform hover:scale-105">
+                            {{trim this}}
+                        </span>
+                        {{/each}}
+                    </div>
+                </div>
+                {{/if}}
+                {{/if}}
+            </div>
+            
+            <!-- Right Column: Portrait, Facts, CTA -->
+            <div class="space-y-8">
+                <!-- Portrait Image -->
+                {{#if about_content.portrait_visible}}
+                <div class="theme-card overflow-hidden cursor-pointer group hover:shadow-lg transition-shadow" 
+                     data-aos="fade-left"
+                     onclick="openPortraitPreview('{{about_content.portrait_image_url}}', '{{#if about_content.portrait_alt}}{{about_content.portrait_alt}}{{else}}Professional Portrait{{/if}}')"
+                     style="aspect-ratio: 4/3;">
+                    <div class="relative w-full h-full">
+                        <img src="{{about_content.portrait_image_url}}" 
+                             alt="{{#if about_content.portrait_alt}}{{about_content.portrait_alt}}{{else}}Professional Portrait{{/if}}"
+                             loading="lazy"
+                             class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700">
+                        
+                        <!-- Hover overlay -->
+                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                            <div class="theme-accent-bg rounded-full p-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100">
+                                <svg class="w-6 h-6 theme-text-inverted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <!-- Click hint -->
+                        <div class="absolute bottom-3 left-3 theme-accent-bg theme-text-inverted rounded px-2 py-1 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            Click to preview
+                        </div>
+                    </div>
+                </div>
+                {{else}}
+                <div class="theme-card flex items-center justify-center p-8 hover:shadow-lg transition-shadow" 
+                     data-aos="fade-left"
+                     style="aspect-ratio: 4/3;">
+                    <div class="text-center">
+                        <div class="theme-accent w-16 h-16 mx-auto mb-4 rounded-full theme-border-primary border-2 flex items-center justify-center">
+                            <svg class="w-8 h-8 theme-accent" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                        </div>
+                        <p class="theme-text-muted text-lg">Professional portrait coming soon</p>
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Quick Facts -->
+                {{#if about_content.quick_facts_visible}}
+                <div class="theme-card p-8 hover:shadow-lg transition-shadow" data-aos="fade-left" data-aos-delay="200">
+                    <div class="mb-6">
+                        <div class="theme-accent text-xs uppercase tracking-widest mb-2 font-medium">Personal Details</div>
+                        <h3 class="text-2xl font-bold theme-header">
+                            {{#if about_content.quick_facts_title}}{{about_content.quick_facts_title}}{{else}}Quick Facts{{/if}}
+                        </h3>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        {{#if about_content.quickFacts}}
+                        {{#each about_content.quickFacts}}
+                        <div class="flex items-start py-3 theme-border-light border-b last:border-b-0">
+                            <div class="theme-accent w-1.5 h-1.5 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs uppercase tracking-wider theme-text-muted font-medium mb-1">{{this.question}}</div>
+                                <div class="text-base font-medium theme-text-primary">{{this.answer}}</div>
+                            </div>
+                        </div>
+                        {{/each}}
+                        {{else}}
+                        {{#if about_content.qf_location}}
+                        <div class="flex items-start py-3 theme-border-light border-b">
+                            <div class="theme-accent w-1.5 h-1.5 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs uppercase tracking-wider theme-text-muted font-medium mb-1">Location</div>
+                                <div class="text-base font-medium theme-text-primary">{{about_content.qf_location}}</div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        {{#if about_content.qf_languages}}
+                        <div class="flex items-start py-3 theme-border-light border-b">
+                            <div class="theme-accent w-1.5 h-1.5 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs uppercase tracking-wider theme-text-muted font-medium mb-1">Languages</div>
+                                <div class="text-base font-medium theme-text-primary">{{about_content.qf_languages}}</div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        {{#if about_content.qf_education}}
+                        <div class="flex items-start py-3 theme-border-light border-b">
+                            <div class="theme-accent w-1.5 h-1.5 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs uppercase tracking-wider theme-text-muted font-medium mb-1">Education</div>
+                                <div class="text-base font-medium theme-text-primary">{{about_content.qf_education}}</div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        {{#if about_content.qf_specialties}}
+                        <div class="flex items-start py-3">
+                            <div class="theme-accent w-1.5 h-1.5 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs uppercase tracking-wider theme-text-muted font-medium mb-1">Specialties</div>
+                                <div class="text-base font-medium theme-text-primary">{{about_content.qf_specialties}}</div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        {{/if}}
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Call to Action -->
+                {{#if about_content.about_cta_visible}}
+                <div class="theme-card p-8 hover:shadow-lg transition-shadow" data-aos="fade-left" data-aos-delay="400">
+                    <div class="mb-6">
+                        <div class="theme-accent text-xs uppercase tracking-widest mb-2 font-medium">Ready to Begin</div>
+                        <h3 class="text-2xl font-bold theme-header">
+                            {{#if about_content.cta_title}}{{about_content.cta_title}}{{else}}Ready to Connect?{{/if}}
+                        </h3>
+                    </div>
+                    
+                    <p class="mb-6 theme-text-secondary text-lg leading-relaxed">
+                        {{#if about_content.cta_description}}{{about_content.cta_description}}{{else}}I would love to hear from you and discuss how we can create an unforgettable experience together.{{/if}}
+                    </p>
+                    
+                    <div class="space-y-3">
+                        {{#if about_content.cta_button_1_text}}
+                        <a href="/{{modelSlug}}/{{#if about_content.cta_button_1_link}}{{about_content.cta_button_1_link}}{{else}}calendar{{/if}}{{previewParam}}" 
+                           class="block w-full theme-accent-bg theme-text-inverted px-6 py-3 rounded-lg text-center font-semibold hover:opacity-90 transition-opacity duration-200">
+                           {{about_content.cta_button_1_text}}
+                        </a>
+                        {{/if}}
+                        {{#if about_content.cta_button_2_text}}
+                        <a href="/{{modelSlug}}/{{#if about_content.cta_button_2_link}}{{about_content.cta_button_2_link}}{{else}}contact{{/if}}{{previewParam}}" 
+                           class="block w-full theme-accent-border theme-accent border-2 px-6 py-3 rounded-lg text-center font-semibold hover:theme-accent-bg hover:theme-text-inverted transition-colors duration-200">
+                           {{about_content.cta_button_2_text}}
+                        </a>
+                        {{/if}}
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Additional Content Section -->
+{{#if about_content.additional_content_visible}}
+<section class="py-16 theme-section">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="theme-card p-8 text-center hover:shadow-lg transition-shadow" data-aos="fade-up">
+            {{#if about_content.additional_title}}
+            <h3 class="text-3xl font-bold mb-6 theme-header">{{about_content.additional_title}}</h3>
+            {{/if}}
+            {{#if about_content.additional_description}}
+            <div class="theme-text-secondary text-lg leading-relaxed max-w-2xl mx-auto">
+                <p>{{about_content.additional_description}}</p>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Portrait Preview Modal -->
+<div id="portrait-preview-modal" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center p-4">
+    <div class="relative max-w-4xl max-h-full">
+        <!-- Close button -->
+        <button onclick="closePortraitPreview()" 
+                class="absolute -top-12 right-0 theme-accent hover:opacity-70 transition-opacity duration-200 z-10">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+        
+        <!-- Image container -->
+        <div class="relative">
+            <img id="portrait-preview-image" 
+                 src="" 
+                 alt="" 
+                 class="max-w-full max-h-full object-contain rounded-lg shadow-2xl">
+        </div>
+        
+        <!-- Image caption -->
+        <div class="absolute bottom-4 left-4 right-4 theme-accent-bg theme-text-inverted p-3 rounded-lg">
+            <p id="portrait-preview-caption" class="text-center text-sm font-medium"></p>
+        </div>
+    </div>
+</div>
+
+<!-- Portrait Preview JavaScript -->
+<script>
+function openPortraitPreview(imageUrl, altText) {
+    const modal = document.getElementById('portrait-preview-modal');
+    const image = document.getElementById('portrait-preview-image');
+    const caption = document.getElementById('portrait-preview-caption');
+    
+    if (modal && image && caption && imageUrl) {
+        image.src = imageUrl;
+        image.alt = altText;
+        caption.textContent = altText;
+        
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+        
+        // Close on escape key
+        document.addEventListener('keydown', handleEscapeKey);
+        
+        // Close on background click
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closePortraitPreview();
+            }
+        });
+    }
+}
+
+function closePortraitPreview() {
+    const modal = document.getElementById('portrait-preview-modal');
+    
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
+        
+        // Remove event listeners
+        document.removeEventListener('keydown', handleEscapeKey);
+    }
+}
+
+function handleEscapeKey(e) {
+    if (e.key === 'Escape') {
+        closePortraitPreview();
+    }
+}
+</script>

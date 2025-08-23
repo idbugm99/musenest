@@ -1,5 +1,5 @@
 <!-- Theme Management Component -->
-<div id="theme-management-section" class="container-fluid">
+<div id="theme-management-section" class="container-fluid" data-loaded="false">
     <div class="row">
         <div class="col-12">
             <!-- Header Section -->
@@ -346,13 +346,13 @@
                 <div class="row mt-3">
                     <div class="col-12">
                         <div class="d-flex gap-2">
-                            <button class="btn btn-info btn-sm" onclick="themeManager.previewThemeCSS()">
+                            <button class="btn btn-info btn-sm" onclick="window.themeManager.previewThemeCSS()">
                                 <i class="fas fa-eye me-1"></i>Preview Changes
                             </button>
-                            <button class="btn btn-secondary btn-sm" onclick="themeManager.resetThemeCSS()">
+                            <button class="btn btn-secondary btn-sm" onclick="window.themeManager.resetThemeCSS()">
                                 <i class="fas fa-undo me-1"></i>Reset to Default
                             </button>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="themeManager.formatCSS()">
+                            <button class="btn btn-outline-secondary btn-sm" onclick="window.themeManager.formatCSS()">
                                 <i class="fas fa-code me-1"></i>Format CSS
                             </button>
                         </div>
@@ -361,7 +361,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-warning" onclick="themeManager.saveThemeCSS()">
+                <button type="button" class="btn btn-warning" onclick="window.themeManager.saveThemeCSS()">
                     <i class="fas fa-save me-2"></i>Save CSS Changes
                 </button>
             </div>
@@ -451,7 +451,8 @@
 </style>
 
 <script>
-class ThemeManagement {
+if (typeof window.ThemeManagement === 'undefined') {
+window.ThemeManagement = class ThemeManagement {
     constructor() {
         this.themes = [];
         
@@ -495,6 +496,7 @@ class ThemeManagement {
                     thumbnail: this.generateThumbnail(theme.name, theme.primary_color || this.getDefaultColor(theme.name))
                 }));
                 console.log('✅ Loaded', this.themes.length, 'themes from database');
+                console.log('Themes:', this.themes);
             } else {
                 throw new Error('Failed to load themes from API');
             }
@@ -601,17 +603,40 @@ class ThemeManagement {
     }
     
     renderThemeGallery() {
+        console.log('🎨 Rendering theme gallery with', this.themes.length, 'themes');
         const gallery = document.getElementById('themeGallery');
-        gallery.innerHTML = this.themes.map(theme => `
+        if (!gallery) {
+            console.error('❌ Theme gallery container not found');
+            return;
+        }
+        
+        // Debug: Check visibility of gallery and parent tab pane
+        let debugTabPane = gallery.closest('.tab-pane');
+        if (debugTabPane) {
+            console.log('🔍 Tab pane visibility:', {
+                id: debugTabPane.id,
+                classList: Array.from(debugTabPane.classList),
+                display: getComputedStyle(debugTabPane).display,
+                opacity: getComputedStyle(debugTabPane).opacity,
+                visibility: getComputedStyle(debugTabPane).visibility
+            });
+        }
+        
+        // Check if gallery is already populated to avoid unnecessary re-renders
+        if (gallery.children.length > 0 && gallery.innerHTML.includes('theme-card')) {
+            console.log('🔄 Gallery already populated, skipping re-render');
+            return;
+        }
+        const themesHtml = this.themes.map(theme => `
             <div class="col-md-4 col-lg-3 mb-4">
-                <div class="theme-card" onclick="themeManager.selectTheme('${theme.slug}')">
+                <div class="theme-card" onclick="window.themeManager.selectTheme('${theme.slug}')">
                     <div class="theme-preview" style="background-image: url('${theme.thumbnail}')">
                         <div class="theme-overlay">
                             <div class="d-flex gap-2">
-                                <button class="btn btn-light btn-sm" onclick="event.stopPropagation(); themeManager.openPreview('${theme.slug}')">
+                                <button class="btn btn-light btn-sm" onclick="event.stopPropagation(); window.themeManager.openPreview('${theme.slug}')">
                                     <i class="fas fa-eye me-1"></i>Preview
                                 </button>
-                                <button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); themeManager.editThemeCSS(${theme.id}, '${theme.name}')">
+                                <button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); window.themeManager.editThemeCSS(${theme.id}, '${theme.name}')">
                                     <i class="fas fa-edit me-1"></i>Edit CSS
                                 </button>
                             </div>
@@ -632,6 +657,66 @@ class ThemeManagement {
                 </div>
             </div>
         `).join('');
+        
+        console.log('🖼️ Setting gallery innerHTML with', themesHtml.length, 'characters of HTML');
+        gallery.innerHTML = themesHtml;
+        console.log('✅ Theme gallery rendered successfully');
+        
+        // Force tab pane visibility debugging
+        let forceTabPane = gallery.closest('.tab-pane');
+        if (forceTabPane) {
+            // Force visibility
+            forceTabPane.style.display = 'block';
+            forceTabPane.style.opacity = '1';
+            forceTabPane.style.visibility = 'visible';
+            
+            console.log('🔧 Forced tab pane visibility:', {
+                id: forceTabPane.id,
+                display: forceTabPane.style.display,
+                opacity: forceTabPane.style.opacity,
+                visibility: forceTabPane.style.visibility
+            });
+            
+            // Also ensure the tab is properly activated
+            let fixTabButton = document.getElementById('themes-tab');
+            if (fixTabButton) {
+                fixTabButton.classList.add('active');
+                forceTabPane.classList.add('show', 'active');
+                console.log('🔧 Ensured tab and pane are active');
+            }
+            
+            // Check Bootstrap availability
+            if (typeof bootstrap !== 'undefined') {
+                console.log('✅ Bootstrap JavaScript is available');
+            } else {
+                console.log('⚠️ Bootstrap JavaScript not available - may cause tab issues');
+            }
+        }
+        
+        // Debug: Set up MutationObserver to track changes
+        if (!gallery.hasAttribute('data-observer-set')) {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList' && gallery.innerHTML.trim() === '') {
+                        console.error('🚨 GALLERY CLEARED! Something removed all content');
+                        console.trace('Stack trace for gallery clearing:');
+                    }
+                });
+            });
+            observer.observe(gallery, { childList: true, subtree: true });
+            gallery.setAttribute('data-observer-set', 'true');
+            console.log('🔍 MutationObserver set up for gallery monitoring');
+        }
+        
+        // Debug: Monitor if gallery gets cleared/overwritten
+        setTimeout(() => {
+            const checkGallery = document.getElementById('themeGallery');
+            if (checkGallery && checkGallery.innerHTML.trim() === '') {
+                console.error('🚨 Gallery was cleared after rendering!');
+            } else if (checkGallery) {
+                console.log('✅ Gallery still has content after 1 second');
+            }
+        }, 1000);
     }
     
     renderModelsTable() {
@@ -677,11 +762,11 @@ class ThemeManagement {
                     </td>
                     <td>
                         <div class="btn-group btn-group-sm">
-                            <button class="btn btn-outline-primary" onclick="themeManager.assignTheme(${model.id})">
+                            <button class="btn btn-outline-primary" onclick="window.themeManager.assignTheme(${model.id})">
                                 <i class="fas fa-palette"></i>
                             </button>
                             ${theme ? `
-                                <button class="btn btn-outline-info" onclick="themeManager.previewModelTheme(${model.id})">
+                                <button class="btn btn-outline-info" onclick="window.themeManager.previewModelTheme(${model.id})">
                                     <i class="fas fa-eye"></i>
                                 </button>
                             ` : ''}
@@ -806,7 +891,7 @@ class ThemeManagement {
         const previewList = document.getElementById('themePreviewList');
         previewList.innerHTML = this.themes.map(theme => `
             <a href="#" class="list-group-item list-group-item-action" 
-               onclick="themeManager.loadThemePreview('${theme.previewUrl}', '${theme.name}')">
+               onclick="window.themeManager.loadThemePreview('${theme.previewUrl}', '${theme.name}')">
                 <div class="d-flex align-items-center">
                     <div class="theme-color-preview" style="background-color: ${theme.primaryColor}"></div>
                     <div>
@@ -930,7 +1015,7 @@ class ThemeManagement {
         let html = `
             <div class="row mb-3">
                 <div class="col-12">
-                    <button class="btn btn-success" onclick="themeManager.saveAllGalleryAssignments()">
+                    <button class="btn btn-success" onclick="window.themeManager.saveAllGalleryAssignments()">
                         <i class="fas fa-save me-2"></i>Save All Gallery Assignments
                     </button>
                 </div>
@@ -955,7 +1040,7 @@ class ThemeManagement {
                                 </div>
                             </div>
                             <div class="col-auto">
-                                <button class="btn btn-primary btn-sm" onclick="themeManager.addGalleryToTheme(${theme.id})">
+                                <button class="btn btn-primary btn-sm" onclick="window.themeManager.addGalleryToTheme(${theme.id})">
                                     <i class="fas fa-plus me-1"></i>Add Gallery Profile
                                 </button>
                             </div>
@@ -974,7 +1059,7 @@ class ThemeManagement {
                                                         <div class="d-flex justify-content-between align-items-start mb-2">
                                                             <h6 class="card-title mb-0">${this.escapeHtml(profileInfo.profile_display_name)}</h6>
                                                             <button class="btn btn-outline-danger btn-sm" 
-                                                                    onclick="themeManager.removeGalleryFromTheme(${theme.id}, ${profileInfo.id})">
+                                                                    onclick="window.themeManager.removeGalleryFromTheme(${theme.id}, ${profileInfo.id})">
                                                                 <i class="fas fa-times"></i>
                                                             </button>
                                                         </div>
@@ -990,14 +1075,14 @@ class ThemeManagement {
                                                         </div>
                                                         <div class="d-flex gap-1">
                                                             <button class="btn btn-outline-info btn-sm flex-fill" 
-                                                                    onclick="themeManager.previewThemeGallery(${theme.id}, ${profileInfo.id})">
+                                                                    onclick="window.themeManager.previewThemeGallery(${theme.id}, ${profileInfo.id})">
                                                                 <i class="fas fa-eye me-1"></i>Preview
                                                             </button>
                                                             <div class="form-check form-switch d-flex align-items-center ms-2">
                                                                 <input class="form-check-input" type="checkbox" 
                                                                        id="default_${theme.id}_${profileInfo.id}"
                                                                        ${assignment.is_default ? 'checked' : ''}
-                                                                       onchange="themeManager.toggleDefaultGallery(${theme.id}, ${profileInfo.id}, this.checked)">
+                                                                       onchange="window.themeManager.toggleDefaultGallery(${theme.id}, ${profileInfo.id}, this.checked)">
                                                                 <label class="form-check-label ms-1 small" for="default_${theme.id}_${profileInfo.id}">
                                                                     Default
                                                                 </label>
@@ -1013,7 +1098,7 @@ class ThemeManagement {
                                 <div class="text-center py-4">
                                     <i class="fas fa-images fs-2 text-muted mb-3"></i>
                                     <p class="text-muted mb-3">No gallery profiles assigned to this theme</p>
-                                    <button class="btn btn-outline-primary" onclick="themeManager.addGalleryToTheme(${theme.id})">
+                                    <button class="btn btn-outline-primary" onclick="window.themeManager.addGalleryToTheme(${theme.id})">
                                         <i class="fas fa-plus me-2"></i>Assign First Gallery Profile
                                     </button>
                                 </div>
@@ -1036,7 +1121,7 @@ class ThemeManagement {
                 <i class="fas fa-exclamation-circle fs-1 text-danger mb-3"></i>
                 <h5 class="text-danger">Failed to Load Gallery Profiles</h5>
                 <p class="text-muted mb-3">There was an error loading the gallery profiles</p>
-                <button class="btn btn-outline-primary" onclick="themeManager.loadGalleryProfiles()">
+                <button class="btn btn-outline-primary" onclick="window.themeManager.loadGalleryProfiles()">
                     <i class="fas fa-refresh me-2"></i>Try Again
                 </button>
             </div>
@@ -1093,7 +1178,7 @@ class ThemeManagement {
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary" onclick="themeManager.confirmAddGalleriesToTheme(${themeId})">
+                            <button type="button" class="btn btn-primary" onclick="window.themeManager.confirmAddGalleriesToTheme(${themeId})">
                                 <i class="fas fa-plus me-2"></i>Add Selected Profiles
                             </button>
                         </div>
@@ -1474,7 +1559,7 @@ class ThemeManagement {
 
 // Global functions for onclick handlers
 function showThemePreview() {
-    themeManager.showThemePreview();
+    window.themeManager.showThemePreview();
 }
 
 function assignPreviewTheme() {
@@ -1491,6 +1576,7 @@ function filterByTheme() {
     // Implementation for theme filter
     console.log('Filter by theme');
 }
+} // End ThemeManagement class definition conditional
 
 function filterByStatus() {
     // Implementation for status filter
@@ -1498,30 +1584,106 @@ function filterByStatus() {
 }
 
 function saveThemeAssignment() {
-    themeManager.saveThemeAssignment();
+    window.themeManager.saveThemeAssignment();
 }
 
 // Initialize when component loads
-let themeManager;
+if (typeof window.themeManager === 'undefined') {
+    window.themeManager = null;
+}
+
+// Prevent multiple initialization attempts
+let themeManagementInitialized = false;
 
 // Function to initialize theme management
 function initializeThemeManagement() {
-    if (document.getElementById('theme-management-section') || document.getElementById('themeGallery')) {
-        if (!themeManager) {
-            console.log('🎨 Initializing Theme Management...');
-            themeManager = new ThemeManagement();
-        }
+    console.log('🎨 Theme management initialization attempt...');
+    
+    // Check if already initialized
+    if (themeManagementInitialized) {
+        console.log('🔄 Theme Management already initialized, skipping...');
+        return;
+    }
+    
+    // Check if required DOM elements exist
+    const themeSection = document.getElementById('theme-management-section');
+    const themeGallery = document.getElementById('themeGallery');
+    
+    if (!themeSection && !themeGallery) {
+        console.log('⏳ Theme management DOM elements not ready yet, skipping...');
+        return;
+    }
+    
+    if (!window.themeManager) {
+        console.log('🎨 Initializing Theme Management...');
+        themeManagementInitialized = true;
+        window.themeManager = new window.ThemeManagement();
+        
+        // Activate the themes tab programmatically using Bootstrap's Tab API
+        setTimeout(() => {
+            const themesTab = document.querySelector('#themes-tab');
+            if (themesTab) {
+                // Use Bootstrap's Tab API to properly activate the tab
+                const tab = new bootstrap.Tab(themesTab);
+                tab.show();
+                console.log('🔧 Activated themes tab using Bootstrap API');
+                
+                // Also force the pane to be visible as fallback
+                const themesPane = document.getElementById('themes-pane');
+                if (themesPane) {
+                    themesPane.style.display = 'block';
+                    themesPane.style.opacity = '1';
+                    themesPane.style.visibility = 'visible';
+                    console.log('🔧 Forced themes pane visibility as fallback');
+                }
+            }
+        }, 100);
+    } else {
+        console.log('🔄 Theme manager instance already exists, skipping...');
+        themeManagementInitialized = true;
     }
 }
 
-// Try to initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', initializeThemeManagement);
+// Debug function to manually re-render themes
+window.debugRenderThemes = function() {
+    if (window.themeManager && window.themeManager.themes) {
+        console.log('🔧 Manual theme gallery render triggered');
+        window.themeManager.renderThemeGallery();
+    } else {
+        console.log('❌ Theme manager not initialized or no themes loaded');
+    }
+};
 
-// Also try to initialize immediately (in case DOM is already loaded)
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeThemeManagement);
-} else {
-    // DOM is already loaded
+// Debug function to check gallery state
+window.debugGalleryState = function() {
+    const gallery = document.getElementById('themeGallery');
+    if (gallery) {
+        console.log('Gallery innerHTML length:', gallery.innerHTML.length);
+        console.log('Gallery children count:', gallery.children.length);
+        console.log('Gallery content preview:', gallery.innerHTML.substring(0, 200) + '...');
+    } else {
+        console.log('❌ Gallery element not found');
+    }
+};
+
+// Reset function for debugging
+window.resetThemeManagement = function() {
+    console.log('🔄 Resetting theme management...');
+    themeManagementInitialized = false;
+    window.themeManager = null;
     setTimeout(initializeThemeManagement, 100);
+};
+
+// Single initialization attempt - only when this script loads  
+// The main dashboard will call initializeThemeManagement when needed
+// Updated: Fixed multiple loading issue v2.1
+if (typeof window !== 'undefined') {
+    // Only set up a single initialization attempt
+    setTimeout(() => {
+        if (!themeManagementInitialized) {
+            console.log('🎨 Theme management component self-initialization attempt...');
+            initializeThemeManagement();
+        }
+    }, 150);
 }
 </script>

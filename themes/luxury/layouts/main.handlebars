@@ -41,6 +41,30 @@
             /* Back-compat variables (used by some existing rules) */
             --luxury-primary: var(--luxury-accent);
             --luxury-secondary: {{#if theme.colors.secondary}}{{theme.colors.secondary}}{{else}}#b8860b{{/if}};
+            
+            /* Universal Theme Variables - Luxury Theme */
+            --theme-bg-primary: #0b0b15;          /* Dark luxury background */
+            --theme-bg-secondary: #131327;        /* Medium luxury background */
+            --theme-bg-tertiary: #1a1a2e;         /* Card backgrounds */
+            --theme-bg-light: #222244;            /* Lighter elements */
+            --theme-bg-surface: #131327;          /* Surface elements */
+            
+            --theme-text-primary: #e9e7f1;        /* Primary text (light) */
+            --theme-text-secondary: #d1cde4;      /* Secondary text */
+            --theme-text-muted: #b9b5c8;          /* Muted text */
+            --theme-text-subtle: #9b97ac;         /* Subtle text */
+            --theme-text-inverted: #0b0b15;       /* Inverted text (on light backgrounds) */
+            
+            --theme-border-primary: #333366;      /* Primary borders */
+            --theme-border-light: #444477;        /* Light borders */
+            --theme-border-subtle: #555588;       /* Subtle borders */
+            
+            --theme-accent: #E0B84E;              /* Gold accent */
+            --theme-accent-hover: #d4af37;        /* Gold hover */
+            --theme-accent-light: #f3d078;        /* Light accent */
+            --theme-success: #22c55e;             /* Success green */
+            --theme-warning: #f59e0b;             /* Warning amber */
+            --theme-error: #ef4444;               /* Error red */
         }
         
         /* Luxury Typography System */
@@ -318,6 +342,18 @@
             animation: luxuryFloat 6s ease-in-out infinite;
         }
         
+        /* Custom Hero Background Support */
+        .luxury-hero-custom-bg {
+            background-size: cover !important;
+            background-position: center center !important;
+            background-attachment: fixed !important;
+            background-repeat: no-repeat !important;
+        }
+        
+        .luxury-hero-overlay-custom {
+            background: rgba(0, 0, 0, 0.6) !important;
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             .luxury-heading {
@@ -380,6 +416,70 @@
   .luxury-gallery-grid { grid-template-columns: repeat(2, 1fr); }
   .luxury-travel-grid, .luxury-testimonials-grid { grid-template-columns: 1fr; }
 }
+
+        /* Universal Theme Utility Classes */
+        /* Background Classes */
+        .theme-bg-primary { background-color: var(--theme-bg-primary) !important; }
+        .theme-bg-secondary { background-color: var(--theme-bg-secondary) !important; }
+        .theme-bg-tertiary { background-color: var(--theme-bg-tertiary) !important; }
+        .theme-bg-light { background-color: var(--theme-bg-light) !important; }
+        
+        /* Text Color Classes */
+        .theme-text-primary { color: var(--theme-text-primary) !important; }
+        .theme-text-secondary { color: var(--theme-text-secondary) !important; }
+        .theme-text-muted { color: var(--theme-text-muted) !important; }
+        .theme-text-subtle { color: var(--theme-text-subtle) !important; }
+        
+        /* Border Classes */
+        .theme-border-primary { border-color: var(--theme-border-primary) !important; }
+        .theme-border-light { border-color: var(--theme-border-light) !important; }
+        
+        /* Accent Classes */
+        .theme-accent { color: var(--theme-accent) !important; }
+        .theme-accent-bg { background-color: var(--theme-accent) !important; }
+        .theme-accent-border { border-color: var(--theme-accent) !important; }
+        
+        /* Semantic Component Classes */
+        .theme-card {
+            background-color: var(--theme-bg-tertiary);
+            color: var(--theme-text-primary);
+            border: 1px solid var(--theme-border-light);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .theme-card:hover {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .theme-section {
+            background-color: var(--theme-bg-primary);
+            color: var(--theme-text-primary);
+        }
+        
+        .theme-section-alt {
+            background-color: var(--theme-bg-secondary);
+            color: var(--theme-text-primary);
+        }
+        
+        .theme-header {
+            color: var(--theme-text-primary);
+            font-weight: bold;
+        }
+        
+        .theme-body-text {
+            color: var(--theme-text-secondary);
+        }
+        
+        .theme-muted-text {
+            color: var(--theme-text-muted);
+        }
+        
+        .theme-subtle-text {
+            color: var(--theme-text-subtle);
+        }
     </style>
 </head>
 <body>

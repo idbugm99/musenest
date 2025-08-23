@@ -1,282 +1,259 @@
-<!-- Rose Garden Home Page - Romantic Rose-Inspired Design -->
+<!-- Load Rose Theme Enhancements -->
+<link rel="stylesheet" href="/themes/rose/assets/rose-enhancements.css">
+<script src="/themes/rose/assets/rose-interactions.js"></script>
 
-<!-- Rose Garden Hero Section -->
+<!-- Enhanced Hero Section with Rose Garden -->
 {{#if content.hero_section_visible}}
-<section class="rose-hero" data-aos="fade-in">
-    <!-- Floating Rose Petals -->
-    <div class="rose-petals-container">
-        <div class="rose-petal rose-petal-1"></div>
-        <div class="rose-petal rose-petal-2"></div>
-        <div class="rose-petal rose-petal-3"></div>
-        <div class="rose-petal rose-petal-4"></div>
-        <div class="rose-petal rose-petal-5"></div>
-        <div class="rose-petal rose-petal-6"></div>
-    </div>
+<section class="relative {{#if content.heroBackgroundImageUrl}}bg-cover bg-center bg-fixed{{else}}theme-accent-bg theme-text-inverted{{/if}} rose-garden-bg py-20 overflow-hidden" 
+         {{#if content.heroBackgroundImageUrl}}style="background-image: url('{{content.heroBackgroundImageUrl}}')"{{/if}}>
+    <!-- Sprite-based subtle icon row -->
+    <!-- Removed auto sprite row -->
     
-    <!-- Rose Garden Background Pattern -->
-    <div class="rose-garden-pattern"></div>
-    
-    <!-- Hero Content -->
-    <div class="rose-hero-content">
-        <div class="max-w-5xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-            <!-- Rose Icon -->
-            <div class="rose-icon" data-aos="fade-down" data-aos-delay="100">
-                🌹
+    {{#if content.heroBackgroundImageUrl}}
+    <!-- Dynamic overlay for better text contrast (DB-driven) -->
+    <div class="absolute inset-0 bg-black" style="opacity: {{#if content.hero_background_opacity}}{{content.hero_background_opacity}}{{else}}{{#if hero_background_opacity}}{{hero_background_opacity}}{{else}}0.6{{/if}}{{/if}};"></div>
+    {{/if}}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 {{#if content.heroBackgroundImageUrl}}relative z-10{{/if}}">
+        <div class="text-center">
+            <!-- Rose Section Header -->
+            <div class="rose-section-header mb-8">
+                <span class="header-text text-5xl font-bold leading-tight {{#unless content.heroBackgroundImageUrl}}theme-text-inverted{{/unless}}">
+                    {{#if content.hero_title}}{{content.hero_title}}{{else}}{{siteName}}{{/if}}
+                </span>
             </div>
-            
-            <!-- Elegant Title -->
-            <h1 class="rose-hero-title" data-aos="fade-up" data-aos-delay="300">
-                {{#if content.hero_title}}{{content.hero_title}}{{else}}{{siteName}}{{/if}}
-            </h1>
-            
-            <!-- Romantic Subtitle -->
-            {{#if content.hero_subtitle}}
-            <p class="rose-hero-subtitle" data-aos="fade-up" data-aos-delay="500">
-                {{content.hero_subtitle}}
+            <p class="text-lg mb-8 max-w-3xl mx-auto leading-relaxed {{#if content.heroBackgroundImageUrl}}text-white opacity-80{{else}}theme-text-inverted opacity-90{{/if}}">
+                {{#if content.hero_subtitle}}{{content.hero_subtitle}}{{else}}{{#if content.tagline}}{{content.tagline}}{{else}}Elegance and sophistication with discretion{{/if}}{{/if}}
             </p>
-            {{/if}}
-            
-            <!-- Rose CTA Buttons -->
-            <div class="rose-cta-container" data-aos="fade-up" data-aos-delay="700">
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <!-- Enhanced Primary Button -->
                 {{#if content.hero_button_1_text}}
                     {{#if (eq content.hero_button_1_link 'calendar')}}
-                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="rose-btn rose-btn-primary">
+                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}bg-white text-gray-900 hover:bg-gray-100{{else}}theme-bg-tertiary theme-text-primary hover:opacity-90{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12 shadow-lg">{{content.hero_button_1_text}}</a>
                     {{else if (eq content.hero_button_1_link 'contact')}}
-                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="rose-btn rose-btn-primary">
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}bg-white text-gray-900 hover:bg-gray-100{{else}}theme-bg-tertiary theme-text-primary hover:opacity-90{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12 shadow-lg">{{content.hero_button_1_text}}</a>
                     {{else if (eq content.hero_button_1_link 'about')}}
-                        <a href="/{{modelSlug}}/about{{previewParam}}" class="rose-btn rose-btn-primary">
+                        <a href="/{{modelSlug}}/about{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}bg-white text-gray-900 hover:bg-gray-100{{else}}theme-bg-tertiary theme-text-primary hover:opacity-90{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12 shadow-lg">{{content.hero_button_1_text}}</a>
                     {{else if (eq content.hero_button_1_link 'rates')}}
-                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="rose-btn rose-btn-primary">
+                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}bg-white text-gray-900 hover:bg-gray-100{{else}}theme-bg-tertiary theme-text-primary hover:opacity-90{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12 shadow-lg">{{content.hero_button_1_text}}</a>
                     {{else if (eq content.hero_button_1_link 'gallery')}}
-                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="rose-btn rose-btn-primary">
+                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}bg-white text-gray-900 hover:bg-gray-100{{else}}theme-bg-tertiary theme-text-primary hover:opacity-90{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12 shadow-lg">{{content.hero_button_1_text}}</a>
                     {{else}}
-                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="rose-btn rose-btn-primary">
+                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}theme-accent-bg text-white hover:opacity-90{{else}}theme-bg-tertiary theme-text-primary hover:opacity-90{{/if}} px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_1_text}}</a>
                     {{/if}}
-                        <span>{{content.hero_button_1_text}}</span>
-                    </a>
                 {{else}}
-                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="rose-btn rose-btn-primary">
-                        <span>Contact Me</span>
-                    </a>
+                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}bg-white text-gray-900 hover:bg-gray-100{{else}}theme-bg-tertiary theme-text-primary hover:opacity-90{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12 shadow-lg">View Calendar</a>
                 {{/if}}
-
+                
+                <!-- Secondary Outline Button -->
                 {{#if content.hero_button_2_text}}
                     {{#if (eq content.hero_button_2_link 'calendar')}}
-                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="rose-btn rose-btn-secondary">
+                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-white text-white hover:bg-white hover:text-gray-900{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_2_text}}</a>
                     {{else if (eq content.hero_button_2_link 'contact')}}
-                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="rose-btn rose-btn-secondary">
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-white text-white hover:bg-white hover:text-gray-900{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_2_text}}</a>
                     {{else if (eq content.hero_button_2_link 'about')}}
-                        <a href="/{{modelSlug}}/about{{previewParam}}" class="rose-btn rose-btn-secondary">
+                        <a href="/{{modelSlug}}/about{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-white text-white hover:bg-white hover:text-gray-900{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_2_text}}</a>
                     {{else if (eq content.hero_button_2_link 'rates')}}
-                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="rose-btn rose-btn-secondary">
+                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-white text-white hover:bg-white hover:text-gray-900{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_2_text}}</a>
                     {{else if (eq content.hero_button_2_link 'gallery')}}
-                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="rose-btn rose-btn-secondary">
+                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-white text-white hover:bg-white hover:text-gray-900{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_2_text}}</a>
                     {{else}}
-                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="rose-btn rose-btn-secondary">
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-white text-white hover:bg-white hover:text-gray-900{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_2_text}}</a>
                     {{/if}}
-                        <span>{{content.hero_button_2_text}}</span>
-                    </a>
                 {{else}}
-                    <a href="/{{modelSlug}}/gallery{{previewParam}}" class="rose-btn rose-btn-secondary">
-                        <span>View Gallery</span>
-                    </a>
+                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-white text-white hover:bg-white hover:text-gray-900{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">Contact Me</a>
                 {{/if}}
             </div>
         </div>
     </div>
+    
+    <!-- Decorative roses removed in favor of sprite icons -->
 </section>
 {{/if}}
 
-<!-- Rose About Section -->
+<!-- Enhanced About Preview -->
 {{#if content.about_section_visible}}
-<section class="rose-about-section" data-aos="fade-in">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-2 gap-16 items-center">
-            
-            <!-- Portrait with Rose Frame -->
-            {{#if content.portrait_section_visible}}
-            <div class="rose-portrait-garden" data-aos="fade-right">
-                <div class="rose-frame">
-                    {{#if content.portrait_image_url}}
-                    <img src="{{content.portrait_image_url}}" 
-                         alt="{{#if content.portrait_alt}}{{content.portrait_alt}}{{else}}Rose Portrait{{/if}}"
-                         class="rose-portrait-image">
-                    {{else}}
-                    <div class="rose-portrait-placeholder">
-                        <div class="rose-placeholder-icon">🌹</div>
-                        <p>Rose Portrait</p>
-                    </div>
-                    {{/if}}
-                    
-                    <!-- Rose Border Effects -->
-                    <div class="rose-border-roses">
-                        <div class="rose-corner rose-corner-tl">🌹</div>
-                        <div class="rose-corner rose-corner-tr">🌹</div>
-                        <div class="rose-corner rose-corner-bl">🌹</div>
-                        <div class="rose-corner rose-corner-br">🌹</div>
-                    </div>
-                </div>
-                
-                <!-- Rose Glow Effect -->
-                <div class="rose-glow"></div>
-            </div>
-            {{/if}}
-            
-            <!-- About Content with Rose Typography -->
-            <div class="rose-about-content" data-aos="fade-left">
-                <div class="rose-section-header">
-                    <div class="rose-divider">
-                        <span class="rose-divider-rose">🌹</span>
-                    </div>
-                    <h2 class="rose-section-title">
+<section class="py-16 theme-section-alt rose-garden-bg relative overflow-hidden">
+    <!-- Sprite divider on CTA band -->
+    <!-- Removed CTA sprite divider -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {{#if content.portrait_section_visible}}
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <div class="max-w-xl">
+                <!-- Rose Section Header -->
+                <div class="rose-section-header text-left mb-6">
+                    <span class="header-text text-3xl font-bold theme-header">
                         {{#if content.about_title}}{{content.about_title}}{{else}}About {{siteName}}{{/if}}
-                    </h2>
-                    <div class="rose-divider">
-                        <span class="rose-divider-rose">🌹</span>
-                    </div>
+                    </span>
                 </div>
-                
                 {{#if content.about_paragraph_1}}
-                <div class="rose-text-content">
-                    <p class="rose-lead-text">{{content.about_paragraph_1}}</p>
-                </div>
+                <p class="text-base leading-relaxed mb-6 theme-muted-text">{{content.about_paragraph_1}}</p>
                 {{/if}}
                 {{#if content.about_paragraph_2}}
-                <div class="rose-text-content">
-                    <p class="rose-lead-text">{{content.about_paragraph_2}}</p>
-                </div>
+                <p class="text-base leading-relaxed mb-6 theme-muted-text">{{content.about_paragraph_2}}</p>
                 {{/if}}
-                
+                {{#unless content.about_paragraph_1}}
+                <p class="text-base leading-relaxed mb-6 theme-muted-text">Welcome to my world of elegance and sophistication. I am a professional companion who values discretion, intelligence, and genuine connection.</p>
+                <p class="text-base leading-relaxed mb-6 theme-muted-text">With years of experience in providing exceptional companionship services, I pride myself on creating memorable experiences tailored to each client's unique needs.</p>
+                {{/unless}}
                 {{#if content.about_link_text}}
-                <div class="rose-about-cta">
                     {{#eq content.about_link_destination 'about'}}
-                        <a href="/{{modelSlug}}/about{{previewParam}}" class="rose-link">
+                        <a href="/{{modelSlug}}/about{{previewParam}}" class="rose-button theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.about_link_text}}</a>
                     {{/eq}}
                     {{#eq content.about_link_destination 'contact'}}
-                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="rose-link">
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="rose-button theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.about_link_text}}</a>
                     {{/eq}}
                     {{#eq content.about_link_destination 'gallery'}}
-                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="rose-link">
+                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="rose-button theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.about_link_text}}</a>
                     {{/eq}}
                     {{#eq content.about_link_destination 'rates'}}
-                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="rose-link">
+                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="rose-button theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.about_link_text}}</a>
                     {{/eq}}
                     {{#eq content.about_link_destination 'calendar'}}
-                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="rose-link">
+                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="rose-button theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.about_link_text}}</a>
                     {{/eq}}
-                        {{content.about_link_text}} <span class="rose-arrow">→</span>
-                    </a>
-                </div>
                 {{else}}
-                <div class="rose-about-cta">
-                    <a href="/{{modelSlug}}/about{{previewParam}}" class="rose-link">Learn More <span class="rose-arrow">→</span></a>
-                </div>
+                    <a href="/{{modelSlug}}/about{{previewParam}}" class="rose-button theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">Learn More</a>
+                {{/if}}
+            </div>
+            <div class="theme-bg-light rose-enhanced rounded-lg flex items-center justify-center overflow-hidden min-h-96 relative">
+                {{#if content.portrait_image_url}}
+                    <img src="{{content.portrait_image_url}}" 
+                         alt="{{#if content.portrait_alt}}{{content.portrait_alt}}{{else}}Professional Portrait{{/if}}"
+                         class="w-full h-full object-cover object-center">
+                {{else}}
+                    <p class="theme-text-subtle">{{#if content.portrait_alt}}{{content.portrait_alt}}{{else}}Professional portrait coming soon{{/if}}</p>
                 {{/if}}
             </div>
         </div>
+        {{else}}
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-6 theme-header">
+                {{#if content.about_title}}{{content.about_title}}{{else}}About {{siteName}}{{/if}}
+            </h2>
+            {{#if content.about_paragraph_1}}
+            <p class="text-lg mb-6 theme-muted-text">{{content.about_paragraph_1}}</p>
+            {{/if}}
+            {{#if content.about_paragraph_2}}
+            <p class="text-lg mb-6 theme-muted-text">{{content.about_paragraph_2}}</p>
+            {{/if}}
+            {{#unless content.about_paragraph_1}}
+            <p class="text-lg mb-6 theme-muted-text">Welcome to my world of elegance and sophistication. I am a professional companion who values discretion, intelligence, and genuine connection.</p>
+            <p class="text-lg mb-6 theme-muted-text">With years of experience in providing exceptional companionship services, I pride myself on creating memorable experiences tailored to each client's unique needs.</p>
+            {{/unless}}
+            {{#if content.about_link_text}}
+                {{#eq content.about_link_destination 'about'}}
+                    <a href="/{{modelSlug}}/about{{previewParam}}" class="theme-accent font-semibold hover:opacity-80 transition-opacity">{{content.about_link_text}}</a>
+                {{/eq}}
+                {{#eq content.about_link_destination 'contact'}}
+                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="theme-accent font-semibold hover:opacity-80 transition-opacity">{{content.about_link_text}}</a>
+                {{/eq}}
+                {{#eq content.about_link_destination 'gallery'}}
+                    <a href="/{{modelSlug}}/gallery{{previewParam}}" class="theme-accent font-semibold hover:opacity-80 transition-opacity">{{content.about_link_text}}</a>
+                {{/eq}}
+                {{#eq content.about_link_destination 'rates'}}
+                    <a href="/{{modelSlug}}/rates{{previewParam}}" class="theme-accent font-semibold hover:opacity-80 transition-opacity">{{content.about_link_text}}</a>
+                {{/eq}}
+                {{#eq content.about_link_destination 'calendar'}}
+                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="theme-accent font-semibold hover:opacity-80 transition-opacity">{{content.about_link_text}}</a>
+                {{/eq}}
+            {{else}}
+                <a href="/{{modelSlug}}/about{{previewParam}}" class="theme-accent font-semibold hover:opacity-80 transition-opacity">Learn More About Me →</a>
+            {{/if}}
+        </div>
+        {{/if}}
     </div>
 </section>
 {{/if}}
 
-<!-- Rose Gallery Section -->
+<!-- Gallery Preview -->
 {{#if content.gallery_section_visible}}
-<section class="rose-gallery-section" data-aos="fade-in">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="rose-section-header text-center">
-            <h2 class="rose-section-title">
-                {{#if content.gallery_section_title}}{{content.gallery_section_title}}{{else}}Rose Gallery{{/if}}
-            </h2>
-            <div class="rose-ornate-separator">
-                <span class="rose-separator-bloom">🌹</span>
-                <span class="rose-separator-line"></span>
-                <span class="rose-separator-bloom">🌹</span>
-            </div>
+<section class="py-16 theme-section rose-garden-bg relative overflow-hidden">
+    <!-- Sprite-based divider -->
+    <!-- Removed gallery sprite divider -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="rose-section-header text-center mb-12">
+            <span class="header-text text-3xl font-bold theme-header">
+                {{#if content.gallery_section_title}}{{content.gallery_section_title}}{{else}}🌹 Gallery{{/if}}
+            </span>
         </div>
-
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {{#each galleryImages}}
-            <div class="rose-gallery-item" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
+            <div class="aspect-square overflow-hidden theme-bg-light rounded-xl">
                 <img src="/uploads/{{../modelSlug}}/public/gallery/{{this.filename}}" 
-                     alt="{{#if this.caption}}{{this.caption}}{{else}}Rose Gallery{{/if}}" 
-                     class="rose-gallery-image" loading="lazy">
-                <div class="rose-image-overlay">
-                    <div class="rose-overlay-icon">🌹</div>
-                </div>
+                     alt="{{#if this.caption}}{{this.caption}}{{else}}Gallery image{{/if}}" 
+                     class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
             </div>
             {{else}}
             {{#times 5}}
-            <div class="rose-gallery-placeholder" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
-                <div class="rose-placeholder-icon">🌹</div>
-                <p>Rose Gallery</p>
+            <div class="theme-bg-light aspect-square flex items-center justify-center rounded-xl">
+                <p class="theme-text-subtle text-sm">Photo</p>
             </div>
             {{/times}}
             {{/each}}
         </div>
-
-        <div class="text-center mt-12">
-            <a href="/{{modelSlug}}/gallery{{previewParam}}" class="rose-btn rose-btn-garden">
-                <span>{{#if content.gallery_button_text}}{{content.gallery_button_text}}{{else}}View Rose Garden{{/if}}</span>
+        <div class="text-center mt-8">
+            <a href="/{{modelSlug}}/gallery{{previewParam}}" class="rose-button theme-accent-bg theme-text-inverted px-6 py-3 rounded-full font-semibold hover:opacity-90 transition-all duration-300 inline-flex items-center justify-center min-h-12">
+                {{#if content.gallery_button_text}}{{content.gallery_button_text}}{{else}}View Full Gallery{{/if}}
             </a>
         </div>
     </div>
 </section>
 {{/if}}
 
-<!-- Rose Travel Section -->
+<!-- Location Availability -->
 {{#if content.travel_section_visible}}
-<section class="rose-travel-section" data-aos="fade-in">
+<section class="py-16 theme-section-alt">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="rose-section-header text-center">
-            <h2 class="rose-section-title">
-                {{#if content.travel_section_title}}{{content.travel_section_title}}{{else}}Rose Garden Tour{{/if}}
-            </h2>
-            <div class="rose-ornate-separator">
-                <span class="rose-separator-bloom">🌹</span>
-                <span class="rose-separator-line"></span>
-                <span class="rose-separator-bloom">🌹</span>
-            </div>
-        </div>
-        
+        <h2 class="text-3xl font-bold text-center mb-12 theme-header">
+            {{#if content.travel_section_title}}{{content.travel_section_title}}{{else}}Location Availability{{/if}}
+        </h2>
         {{#if upcomingEvents}}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {{#each upcomingEvents}}
-            <div class="rose-travel-card" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
-                <div class="rose-card-header">
-                    <div class="rose-location-icon">📍</div>
-                    <h3 class="rose-card-title">{{this.location}}</h3>
-                    <div class="rose-date-badge">
-                        {{#if this.dateRange}}{{this.dateRange}}{{else}}{{formatDate this.date}}{{/if}}
+            <div class="theme-card p-6 hover:shadow-lg transition-shadow">
+                <div class="text-center mb-4">
+                    <div class="inline-flex items-center justify-center theme-accent rounded-full mb-3 w-10 h-10 theme-bg-secondary">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 theme-text-primary">{{this.location}}</h3>
+                    <div class="text-base font-medium mb-3 theme-text-muted">
+                        {{#if this.dateRange}}
+                            {{this.dateRange}}
+                        {{else}}
+                            {{formatDate this.date}}
+                        {{/if}}
                     </div>
                 </div>
-                <div class="rose-card-content">
-                    <span class="rose-available-badge">Available</span>
+                <div class="text-center">
+                    <span class="text-white px-3 py-1 rounded-full text-sm font-bold theme-success bg-green-500">Available</span>
                     {{#if this.notes}}
-                    <p class="rose-travel-notes">{{this.notes}}</p>
+                    <p class="text-xs leading-relaxed mt-2 theme-text-subtle">{{this.notes}}</p>
                     {{/if}}
                 </div>
             </div>
             {{/each}}
         </div>
-        
-        <div class="text-center mt-12">
-            <a href="/{{modelSlug}}/{{#if content.travel_cta_link}}{{content.travel_cta_link}}{{else}}calendar{{/if}}{{previewParam}}" 
-               class="rose-btn rose-btn-garden">
-                <span>{{#if content.travel_cta_text}}{{content.travel_cta_text}}{{else}}View Full Calendar{{/if}}</span>
+        <div class="text-center mt-8">
+            <a href="/{{modelSlug}}/{{#if content.travel_cta_link}}{{content.travel_cta_link}}{{else}}calendar{{/if}}{{previewParam}}" class="theme-accent-bg theme-text-inverted px-6 py-3 rounded-full font-semibold hover:opacity-90 transition-all duration-300 inline-flex items-center justify-center min-h-12">
+                {{#if content.travel_cta_text}}{{content.travel_cta_text}}{{else}}View Full Calendar{{/if}}
             </a>
         </div>
         {{else}}
         <div class="text-center">
-            <div class="rose-travel-card max-w-md mx-auto">
-                <div class="rose-card-header">
-                    <div class="rose-location-icon">📅</div>
-                    <h3 class="rose-card-title">Check My Calendar</h3>
-                    <p class="rose-travel-notes">View available dates and book your appointment</p>
+            <div class="theme-card p-12 max-w-lg mx-auto">
+                <div class="w-16 h-16 mx-auto mb-6 theme-accent-bg flex items-center justify-center rounded-xl">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
                 </div>
-                <div class="rose-card-content">
-                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="rose-btn rose-btn-primary">
-                        <span>View Calendar</span>
-                    </a>
-                </div>
+                <h3 class="text-xl font-semibold mb-4 theme-text-primary">Check My Calendar</h3>
+                <p class="mb-6 theme-text-muted">View available dates and book your appointment</p>
+                <a href="/{{modelSlug}}/calendar{{previewParam}}" class="theme-accent-bg theme-text-inverted px-6 py-3 rounded-full font-semibold hover:opacity-90 transition-all duration-300 inline-flex items-center justify-center min-h-12">
+                    View Calendar
+                </a>
             </div>
         </div>
         {{/if}}
@@ -284,897 +261,205 @@
 </section>
 {{/if}}
 
-<!-- Rose Testimonials Section -->
+<!-- Testimonials -->
 {{#if content.testimonials_section_visible}}
-<section class="rose-testimonials-section" data-aos="fade-in">
+<section class="py-16 theme-section">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="rose-section-header text-center">
-            <h2 class="rose-section-title">
-                {{#if content.testimonials_section_title}}{{content.testimonials_section_title}}{{else}}Rose Garden Reviews{{/if}}
-            </h2>
-            <div class="rose-ornate-separator">
-                <span class="rose-separator-bloom">🌹</span>
-                <span class="rose-separator-line"></span>
-                <span class="rose-separator-bloom">🌹</span>
-            </div>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <h2 class="text-3xl font-bold text-center mb-12 theme-header">
+            {{#if content.testimonials_section_title}}{{content.testimonials_section_title}}{{else}}What Clients Say{{/if}}
+        </h2>
+        <div class="grid md:grid-cols-3 gap-6 mb-6">
             {{#each testimonials}}
-            {{#if (lt @index (or content.testimonials_display_count 3))}}
-            <div class="rose-testimonial-card" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
-                <div class="rose-stars">
-                    {{#times this.rating}}🌹{{/times}}
+            {{#if (lt @index (or ../content.testimonials_display_count 3))}}
+            <div class="theme-card p-6 shadow">
+                <div class="flex mb-4 text-yellow-400">
+                    {{#times this.rating}}
+                    <svg class="fill-current w-4 h-4" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    {{/times}}
                 </div>
-                <blockquote class="rose-testimonial-text">"{{this.text}}"</blockquote>
-                <cite class="rose-testimonial-author">{{this.name}}</cite>
+                <p class="text-base leading-relaxed mb-4 theme-body-text">"{{this.text}}"</p>
+                <p class="text-xs font-bold uppercase tracking-wide theme-text-subtle">{{this.name}}</p>
             </div>
             {{/if}}
             {{else}}
-            <div class="rose-testimonial-card">
-                <div class="rose-stars">
-                    🌹🌹🌹🌹🌹
+            <!-- Default testimonials if none provided -->
+            {{#times (or content.testimonials_display_count 3)}}
+            {{#if (eq this 1)}}
+            <div class="theme-card p-6 shadow">
+                <div class="flex mb-4 text-yellow-400">
+                    {{#times 5}}
+                    <svg class="fill-current w-4 h-4" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    {{/times}}
                 </div>
-                <blockquote class="rose-testimonial-text">"Elegant, sophisticated, and truly enchanting. An absolutely magical experience."</blockquote>
-                <cite class="rose-testimonial-author">Michael D.</cite>
+                <p class="text-base leading-relaxed mb-4 theme-body-text">"She is absolutely wonderful. Professional, elegant, and truly caring. An unforgettable experience."</p>
+                <p class="text-xs font-bold uppercase tracking-wide theme-text-subtle">MICHAEL D.</p>
             </div>
+            {{else if (eq this 2)}}
+            <div class="theme-card p-6 shadow">
+                <div class="flex mb-4 text-yellow-400">
+                    {{#times 5}}
+                    <svg class="fill-current w-4 h-4" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    {{/times}}
+                </div>
+                <p class="text-base leading-relaxed mb-4 theme-body-text">"She is intelligent, sophisticated, and absolutely captivating. A truly remarkable companion."</p>
+                <p class="text-xs font-bold uppercase tracking-wide theme-text-subtle">DAVID L.</p>
+            </div>
+            {{else if (eq this 3)}}
+            <div class="theme-card p-6 shadow">
+                <div class="flex mb-4 text-yellow-400">
+                    {{#times 5}}
+                    <svg class="fill-current w-4 h-4" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    {{/times}}
+                </div>
+                <p class="text-base leading-relaxed mb-4 theme-body-text">"Exceptional service and genuine warmth. Highly recommended for discerning clients."</p>
+                <p class="text-xs font-bold uppercase tracking-wide theme-text-subtle">ROBERT T.</p>
+            </div>
+            {{/if}}
+            {{/times}}
             {{/each}}
         </div>
     </div>
 </section>
 {{/if}}
 
-<!-- Rose Services Section -->
-{{#if content.services_section_visible}}
-<section class="rose-services-section" data-aos="fade-in">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="rose-section-header text-center">
-            <div class="rose-service-bloom">🌹</div>
-            <h2 class="rose-section-title">
-                {{#if content.services_title}}{{content.services_title}}{{else}}Rose Services{{/if}}
-            </h2>
-            <div class="rose-ornate-separator">
-                <span class="rose-separator-bloom">🌹</span>
-                <span class="rose-separator-line"></span>
-                <span class="rose-separator-bloom">🌹</span>
-            </div>
-            {{#if home_content.services_subtitle}}
-            <p class="rose-section-subtitle">{{home_content.services_subtitle}}</p>
-            {{/if}}
-        </div>
-        
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {{#if content.service_1_visible}}
-            <div class="rose-service-card" data-aos="fade-up" data-aos-delay="100">
-                <div class="rose-service-bloom">🌹</div>
-                <div class="rose-service-content">
-                    <div class="rose-service-icon">
-                        {{#if content.service_1_icon}}{{content.service_1_icon}}{{else}}💎{{/if}}
-                    </div>
-                    <h3 class="rose-service-title">
-                        {{#if content.service_1_title}}{{content.service_1_title}}{{else}}Premium Experience{{/if}}
-                    </h3>
-                    {{#if content.service_1_description}}
-                    <p class="rose-service-description">{{content.service_1_description}}</p>
-                    {{/if}}
-                </div>
-            </div>
-            {{/if}}
-            
-            {{#if content.service_2_visible}}
-            <div class="rose-service-card" data-aos="fade-up" data-aos-delay="200">
-                <div class="rose-service-bloom">🌹</div>
-                <div class="rose-service-content">
-                    <div class="rose-service-icon">
-                        {{#if content.service_2_icon}}{{content.service_2_icon}}{{else}}👑{{/if}}
-                    </div>
-                    <h3 class="rose-service-title">
-                        {{#if content.service_2_title}}{{content.service_2_title}}{{else}}Elite Companionship{{/if}}
-                    </h3>
-                    {{#if content.service_2_description}}
-                    <p class="rose-service-description">{{content.service_2_description}}</p>
-                    {{/if}}
-                </div>
-            </div>
-            {{/if}}
-            
-            {{#if content.service_3_visible}}
-            <div class="rose-service-card" data-aos="fade-up" data-aos-delay="300">
-                <div class="rose-service-bloom">🌹</div>
-                <div class="rose-service-content">
-                    <div class="rose-service-icon">
-                        {{#if content.service_3_icon}}{{content.service_3_icon}}{{else}}✨{{/if}}
-                    </div>
-                    <h3 class="rose-service-title">
-                        {{#if content.service_3_title}}{{content.service_3_title}}{{else}}Exclusive Access{{/if}}
-                    </h3>
-                    {{#if content.service_3_description}}
-                    <p class="rose-service-description">{{content.service_3_description}}</p>
-                    {{/if}}
-                </div>
-            </div>
-            {{/if}}
-        </div>
-        
-        {{#if content.services_cta_text}}
-        <div class="text-center mt-16" data-aos="fade-up" data-aos-delay="400">
-            <a href="{{#if content.services_cta_link}}{{content.services_cta_link}}{{else}}/{{modelSlug}}/rates{{/if}}" 
-               class="rose-btn rose-btn-garden">
-                <span>{{#if content.services_cta_text}}{{content.services_cta_text}}{{else}}View Rose Services{{/if}}</span>
-            </a>
-        </div>
-        {{/if}}
-    </div>
-</section>
-{{/if}}
-
-<!-- Rose CTA Section -->
+<!-- Bottom CTA Band -->
 {{#if content.cta_section_visible}}
-<section class="rose-cta-section" data-aos="fade-in">
-    <!-- Rose Garden Background -->
-    <div class="rose-garden-bg">
-        <div class="rose-bg-pattern"></div>
+<section class="py-16 theme-accent-bg theme-text-inverted rose-garden-bg-inverted relative overflow-hidden">
+    <!-- Floating Rose Petals -->
+    <div class="rose-petals">
+        <div class="rose-petal"></div>
+        <div class="rose-petal"></div>
     </div>
-    
-    <div class="max-w-5xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-        <!-- Rose Bloom -->
-        <div class="rose-cta-bloom" data-aos="fade-down">
-            🌹
-        </div>
-        
-        <h2 class="rose-cta-title" data-aos="fade-up" data-aos-delay="200">
-            {{#if content.cta_section_title}}{{content.cta_section_title}}{{else}}Ready to Bloom Together?{{/if}}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold mb-6">
+            {{#if content.cta_section_title}}{{content.cta_section_title}}{{else}}Ready to Meet?{{/if}}
         </h2>
-        
-        {{#if content.cta_section_subtitle}}
-        <p class="rose-cta-subtitle" data-aos="fade-up" data-aos-delay="400">
-            {{content.cta_section_subtitle}}
+        <p class="text-xl mb-8 opacity-90">
+            {{#if content.cta_section_subtitle}}{{content.cta_section_subtitle}}{{else}}Experience elegance and sophistication with professional companionship services{{/if}}
         </p>
-        {{/if}}
-        
-        <div class="rose-cta-buttons" data-aos="fade-up" data-aos-delay="600">
-            <a href="{{#if content.cta_button_1_link}}{{content.cta_button_1_link}}{{else}}/{{modelSlug}}/contact{{/if}}" 
-               class="rose-btn rose-btn-bloom">
-                <span>{{#if content.cta_button_1_text}}{{content.cta_button_1_text}}{{else}}Book Rose Experience{{/if}}</span>
-            </a>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <!-- Primary Button (Calendar) -->
+            {{#if content.cta_button_1_text}}
+                {{#if (eq content.cta_button_1_link 'calendar')}}
+                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="theme-bg-tertiary theme-text-primary px-6 py-3 rounded-full font-semibold hover:opacity-90 transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.cta_button_1_text}}</a>
+                {{else if (eq content.cta_button_1_link 'contact')}}
+                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="theme-bg-tertiary theme-text-primary px-6 py-3 rounded-full font-semibold hover:opacity-90 transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.cta_button_1_text}}</a>
+                {{else if (eq content.cta_button_1_link 'gallery')}}
+                    <a href="/{{modelSlug}}/gallery{{previewParam}}" class="theme-bg-tertiary theme-text-primary px-6 py-3 rounded-full font-semibold hover:opacity-90 transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.cta_button_1_text}}</a>
+                {{else if (eq content.cta_button_1_link 'rates')}}
+                    <a href="/{{modelSlug}}/rates{{previewParam}}" class="theme-bg-tertiary theme-text-primary px-6 py-3 rounded-full font-semibold hover:opacity-90 transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.cta_button_1_text}}</a>
+                {{else if (eq content.cta_button_1_link 'about')}}
+                    <a href="/{{modelSlug}}/about{{previewParam}}" class="theme-bg-tertiary theme-text-primary px-6 py-3 rounded-full font-semibold hover:opacity-90 transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.cta_button_1_text}}</a>
+                {{else}}
+                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="theme-bg-tertiary theme-text-primary px-6 py-3 rounded-full font-semibold hover:opacity-90 transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.cta_button_1_text}}</a>
+                {{/if}}
+            {{else}}
+                <a href="/{{modelSlug}}/calendar{{previewParam}}" class="theme-bg-tertiary theme-text-primary px-6 py-3 rounded-full font-semibold hover:opacity-90 transition-all duration-300 inline-flex items-center justify-center min-h-12">Calendar</a>
+            {{/if}}
             
-            <a href="{{#if content.cta_button_2_link}}{{content.cta_button_2_link}}{{else}}/{{modelSlug}}/rates{{/if}}" 
-               class="rose-btn rose-btn-garden-outline">
-                <span>{{#if content.cta_button_2_text}}{{content.cta_button_2_text}}{{else}}View Rose Rates{{/if}}</span>
-            </a>
+            <!-- Secondary Outline Button (Contact) -->
+            {{#if content.cta_button_2_text}}
+                {{#if (eq content.cta_button_2_link 'calendar')}}
+                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-gray-900 transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.cta_button_2_text}}</a>
+                {{else if (eq content.cta_button_2_link 'contact')}}
+                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-gray-900 transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.cta_button_2_text}}</a>
+                {{else if (eq content.cta_button_2_link 'gallery')}}
+                    <a href="/{{modelSlug}}/gallery{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-gray-900 transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.cta_button_2_text}}</a>
+                {{else if (eq content.cta_button_2_link 'rates')}}
+                    <a href="/{{modelSlug}}/rates{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-gray-900 transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.cta_button_2_text}}</a>
+                {{else if (eq content.cta_button_2_link 'about')}}
+                    <a href="/{{modelSlug}}/about{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-gray-900 transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.cta_button_2_text}}</a>
+                {{else}}
+                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-gray-900 transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.cta_button_2_text}}</a>
+                {{/if}}
+            {{else}}
+                <a href="/{{modelSlug}}/contact{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-gray-900 transition-all duration-300 inline-flex items-center justify-center min-h-12">Contact</a>
+            {{/if}}
         </div>
-    </div>
-    
-    <!-- Floating Rose Elements -->
-    <div class="rose-floating-elements" aria-hidden="true">
-        <div class="rose-float rose-float-1">🌹</div>
-        <div class="rose-float rose-float-2">🌿</div>
-        <div class="rose-float rose-float-3">🌹</div>
-        <div class="rose-float rose-float-4">💎</div>
-        <div class="rose-float rose-float-5">🌹</div>
     </div>
 </section>
 {{/if}}
 
-<!-- Rose Theme Custom Styles -->
+<!-- Mobile Sticky CTA -->
+<div id="mobile-sticky-cta" class="fixed bottom-0 left-0 right-0 theme-accent-bg theme-text-inverted p-4 z-50 hidden sm:hidden shadow-lg">
+    <div class="max-w-sm mx-auto">
+        <a href="/{{modelSlug}}/contact{{previewParam}}" class="block w-full theme-bg-tertiary theme-text-primary px-4 py-3 rounded-full font-semibold text-center hover:opacity-90 transition-all duration-300">
+            Contact Me
+        </a>
+    </div>
+</div>
+
+<script>
+// Mobile sticky CTA logic
+document.addEventListener('DOMContentLoaded', function() {
+    const hero = document.querySelector('[class*="theme-accent-bg"]');
+    const stickyCTA = document.getElementById('mobile-sticky-cta');
+    
+    if (hero && stickyCTA && window.innerWidth < 640) {
+        const observer = new IntersectionObserver(
+            function(entries) {
+                entries.forEach(function(entry) {
+                    if (!entry.isIntersecting) {
+                        stickyCTA.classList.remove('hidden');
+                    } else {
+                        stickyCTA.classList.add('hidden');
+                    }
+                });
+            },
+            { threshold: 0 }
+        );
+        
+        observer.observe(hero);
+    }
+});
+</script>
+
 <style>
-/* Rose Garden Color Palette & Variables */
-:root {
-    --rose-primary: #dc2626; /* Deep rose */
-    --rose-secondary: #be185d; /* Rich rose */
-    --rose-accent: #d4af37; /* Gold accent */
-    --rose-light: #fecaca; /* Soft blush */
-    --rose-lightest: #fef2f2; /* Palest rose */
-    --rose-white: #fefefe; /* Pure white */
-    --rose-text: #881337; /* Deep rose text */
-    --rose-muted: #9f1239; /* Muted rose */
-}
-
-/* Hero Section */
-.rose-hero {
-    position: relative;
-    min-height: 100vh;
-    background: linear-gradient(135deg, var(--rose-lightest) 0%, var(--rose-light) 50%, #f9a8d4 100%);
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-}
-
-.rose-petals-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    overflow: hidden;
-}
-
-.rose-petal {
-    position: absolute;
-    font-size: 2rem;
-    animation: rosePetalFloat 20s infinite linear;
-    opacity: 0.7;
-}
-
-.rose-petal-1 { top: 10%; left: 10%; animation-delay: 0s; }
-.rose-petal-2 { top: 20%; left: 80%; animation-delay: 3s; }
-.rose-petal-3 { top: 60%; left: 15%; animation-delay: 6s; }
-.rose-petal-4 { top: 70%; left: 70%; animation-delay: 9s; }
-.rose-petal-5 { top: 30%; left: 50%; animation-delay: 12s; }
-.rose-petal-6 { top: 80%; left: 30%; animation-delay: 15s; }
-
-@keyframes rosePetalFloat {
-    0% { transform: translateY(0px) rotate(0deg) scale(1); opacity: 0.7; }
-    25% { transform: translateY(-30px) rotate(90deg) scale(1.1); opacity: 1; }
-    50% { transform: translateY(-20px) rotate(180deg) scale(0.9); opacity: 0.8; }
-    75% { transform: translateY(-35px) rotate(270deg) scale(1.2); opacity: 1; }
-    100% { transform: translateY(0px) rotate(360deg) scale(1); opacity: 0.7; }
-}
-
-.rose-garden-pattern {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23dc2626' fill-opacity='0.05'%3E%3Cpath d='M20 10c5.5 0 10 4.5 10 10s-4.5 10-10 10-10-4.5-10-10 4.5-10 10-10zm0 16c3.3 0 6-2.7 6-6s-2.7-6-6-6-6 2.7-6 6 2.7 6 6 6z'/%3E%3C/g%3E%3C/svg%3E");
-    opacity: 0.3;
-}
-
-.rose-hero-content {
-    position: relative;
-    z-index: 10;
-    width: 100%;
-}
-
-.rose-icon {
-    font-size: 6rem;
-    margin-bottom: 2rem;
-    animation: roseBloom 4s infinite ease-in-out;
-    filter: drop-shadow(0 4px 12px rgba(220, 38, 38, 0.3));
-}
-
-@keyframes roseBloom {
-    0%, 100% { transform: scale(1) rotate(0deg); }
-    50% { transform: scale(1.15) rotate(5deg); }
-}
-
-.rose-hero-title {
-    font-size: 5rem;
-    font-weight: 900;
-    text-align: center;
-    margin-bottom: 2rem;
-    background: linear-gradient(45deg, var(--rose-primary) 0%, var(--rose-secondary) 50%, var(--rose-accent) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 2px 2px 4px rgba(220, 38, 38, 0.2);
-    letter-spacing: 2px;
-    font-family: 'Playfair Display', serif;
-}
-
-.rose-hero-subtitle {
-    font-size: 1.6rem;
-    color: var(--rose-text);
-    text-align: center;
-    margin-bottom: 3rem;
-    font-weight: 400;
-    letter-spacing: 1px;
-    font-style: italic;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.rose-cta-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 2rem;
-    flex-wrap: wrap;
-}
-
-/* Rose Buttons */
-.rose-btn {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 40px;
-    font-weight: 700;
-    text-decoration: none;
-    border-radius: 60px;
-    transition: all 0.4s ease;
-    overflow: hidden;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 14px;
-    border: 2px solid transparent;
-    box-shadow: 0 8px 25px rgba(220, 38, 38, 0.2);
-}
-
-.rose-btn-primary {
-    background: linear-gradient(135deg, var(--rose-primary) 0%, var(--rose-secondary) 100%);
-    color: var(--rose-white);
-    box-shadow: 0 10px 30px rgba(220, 38, 38, 0.4);
-}
-
-.rose-btn-primary:hover {
-    transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 15px 40px rgba(220, 38, 38, 0.5);
-    background: linear-gradient(135deg, var(--rose-secondary) 0%, var(--rose-primary) 100%);
-}
-
-.rose-btn-secondary {
-    background: rgba(255, 255, 255, 0.95);
-    color: var(--rose-primary);
-    border: 2px solid var(--rose-primary);
-    backdrop-filter: blur(10px);
-}
-
-.rose-btn-secondary:hover {
-    background: var(--rose-primary);
-    color: var(--rose-white);
-    transform: translateY(-5px);
-}
-
-.rose-btn-garden {
-    background: linear-gradient(135deg, var(--rose-accent) 0%, var(--rose-primary) 100%);
-    color: var(--rose-white);
-}
-
-.rose-btn-garden:hover {
-    transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
-}
-
-.rose-btn-bloom {
-    background: linear-gradient(135deg, var(--rose-primary) 0%, var(--rose-accent) 100%);
-    color: var(--rose-white);
-    box-shadow: 0 12px 35px rgba(220, 38, 38, 0.4);
-}
-
-.rose-btn-bloom:hover {
-    transform: translateY(-7px) scale(1.08);
-    box-shadow: 0 20px 50px rgba(220, 38, 38, 0.6);
-}
-
-.rose-btn-garden-outline {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--rose-white);
-    border: 2px solid var(--rose-accent);
-    backdrop-filter: blur(15px);
-}
-
-.rose-btn-garden-outline:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-5px);
-}
-
-/* About Section */
-.rose-about-section {
-    padding: 8rem 0;
-    background: linear-gradient(180deg, var(--rose-lightest) 0%, var(--rose-white) 100%);
-}
-
-.rose-portrait-garden {
-    position: relative;
-}
-
-.rose-frame {
-    position: relative;
-    padding: 25px;
-    background: linear-gradient(45deg, var(--rose-primary) 0%, var(--rose-secondary) 50%, var(--rose-accent) 100%);
-    border-radius: 30px;
-    box-shadow: 0 30px 60px rgba(220, 38, 38, 0.3);
-}
-
-.rose-portrait-image {
-    width: 100%;
-    height: 600px;
-    object-fit: cover;
-    object-position: center 20%;
-    border-radius: 15px;
-    transition: transform 0.5s ease;
-}
-
-.rose-frame:hover .rose-portrait-image {
-    transform: scale(1.02);
-}
-
-.rose-portrait-placeholder {
-    height: 600px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: var(--rose-lightest);
-    border-radius: 15px;
-    color: var(--rose-text);
-}
-
-.rose-placeholder-icon {
-    font-size: 5rem;
-    margin-bottom: 1rem;
-}
-
-.rose-border-roses {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.rose-corner {
-    position: absolute;
-    font-size: 1.5rem;
-    animation: roseCornerFloat 6s infinite ease-in-out;
-}
-
-.rose-corner-tl { top: 15px; left: 15px; animation-delay: 0s; }
-.rose-corner-tr { top: 15px; right: 15px; animation-delay: 1.5s; }
-.rose-corner-bl { bottom: 15px; left: 15px; animation-delay: 3s; }
-.rose-corner-br { bottom: 15px; right: 15px; animation-delay: 4.5s; }
-
-@keyframes roseCornerFloat {
-    0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
-    50% { transform: scale(1.2) rotate(10deg); opacity: 1; }
-}
-
-.rose-glow {
-    position: absolute;
-    top: -20px;
-    left: -20px;
-    right: -20px;
-    bottom: -20px;
-    background: linear-gradient(45deg, var(--rose-primary), transparent, var(--rose-accent));
-    border-radius: 40px;
-    z-index: -1;
-    opacity: 0.3;
-    filter: blur(30px);
-    animation: roseGlowPulse 8s infinite ease-in-out;
-}
-
-@keyframes roseGlowPulse {
-    0%, 100% { opacity: 0.3; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.1); }
-}
-
-/* Section Headers */
-.rose-section-title {
-    font-size: 3.5rem;
-    font-weight: 800;
-    text-align: center;
-    margin: 2rem 0;
-    background: linear-gradient(45deg, var(--rose-primary) 0%, var(--rose-accent) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-family: 'Playfair Display', serif;
-}
-
-.rose-divider {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 1rem 0;
-}
-
-.rose-divider-rose {
-    font-size: 2rem;
-    margin: 0 1rem;
-    animation: roseDividerFloat 4s infinite ease-in-out;
-}
-
-@keyframes roseDividerFloat {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-5px) rotate(10deg); }
-}
-
-.rose-ornate-separator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 2rem auto;
-    max-width: 300px;
-}
-
-.rose-separator-bloom {
-    font-size: 1.5rem;
-    margin: 0 1rem;
-    animation: roseBloomFloat 5s infinite ease-in-out;
-}
-
-.rose-separator-line {
-    flex: 1;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--rose-primary), var(--rose-accent), var(--rose-primary), transparent);
-}
-
-@keyframes roseBloomFloat {
-    0%, 100% { transform: scale(1) rotate(0deg); }
-    50% { transform: scale(1.2) rotate(15deg); }
-}
-
-.rose-lead-text {
-    font-size: 1.3rem;
-    line-height: 1.9;
-    color: var(--rose-text);
-    margin: 2rem 0;
-    font-weight: 400;
-    text-align: center;
-}
-
-.rose-link {
-    color: var(--rose-primary);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.rose-link:hover {
-    color: var(--rose-secondary);
-    transform: translateX(5px);
-}
-
-.rose-arrow {
-    transition: transform 0.3s ease;
-}
-
-.rose-link:hover .rose-arrow {
-    transform: translateX(5px);
-}
-
-/* Gallery Section */
-.rose-gallery-section {
-    padding: 8rem 0;
-    background: linear-gradient(135deg, var(--rose-white) 0%, var(--rose-lightest) 100%);
-}
-
-.rose-gallery-item {
-    position: relative;
-    aspect-ratio: 3/4;
-    border-radius: 20px;
-    overflow: hidden;
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
-    box-shadow: 0 10px 30px rgba(220, 38, 38, 0.15);
-}
-
-.rose-gallery-item:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 50px rgba(220, 38, 38, 0.25);
-}
-
-.rose-gallery-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s ease;
-}
-
-.rose-gallery-item:hover .rose-gallery-image {
-    transform: scale(1.1);
-}
-
-.rose-image-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg, rgba(220, 38, 38, 0.8), rgba(190, 24, 93, 0.8));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-}
-
-.rose-gallery-item:hover .rose-image-overlay {
-    opacity: 1;
-}
-
-.rose-overlay-icon {
-    font-size: 3rem;
-    animation: roseOverlayFloat 2s infinite ease-in-out;
-}
-
-@keyframes roseOverlayFloat {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-}
-
-.rose-gallery-placeholder {
-    aspect-ratio: 3/4;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: var(--rose-lightest);
-    border-radius: 20px;
-    border: 2px dashed var(--rose-light);
-    color: var(--rose-muted);
-    transition: all 0.3s ease;
-}
-
-.rose-gallery-placeholder:hover {
-    background: var(--rose-light);
-    border-color: var(--rose-primary);
-    transform: translateY(-4px);
-}
-
-/* Travel & Services Cards */
-.rose-travel-section,
-.rose-services-section,
-.rose-testimonials-section {
-    padding: 8rem 0;
-    background: linear-gradient(180deg, var(--rose-lightest) 0%, var(--rose-white) 100%);
-}
-
-.rose-travel-card,
-.rose-service-card,
-.rose-testimonial-card {
-    background: var(--rose-white);
-    border-radius: 25px;
-    padding: 2.5rem;
-    text-align: center;
-    transition: all 0.4s ease;
-    border: 2px solid var(--rose-light);
-    box-shadow: 0 15px 35px rgba(220, 38, 38, 0.1);
-    position: relative;
-    overflow: hidden;
-}
-
-.rose-travel-card:hover,
-.rose-service-card:hover,
-.rose-testimonial-card:hover {
-    transform: translateY(-10px) scale(1.02);
-    box-shadow: 0 25px 50px rgba(220, 38, 38, 0.2);
-    border-color: var(--rose-primary);
-}
-
-.rose-service-bloom {
-    position: absolute;
-    top: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 2.5rem;
-    background: var(--rose-white);
-    border-radius: 50%;
-    padding: 10px;
-    box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
-}
-
-.rose-service-icon,
-.rose-location-icon {
-    font-size: 3rem;
-    margin: 1rem 0;
-    filter: drop-shadow(0 4px 8px rgba(220, 38, 38, 0.2));
-}
-
-.rose-card-title,
-.rose-service-title {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--rose-text);
-    margin-bottom: 1rem;
-    font-family: 'Playfair Display', serif;
-}
-
-.rose-service-description,
-.rose-travel-notes {
-    color: var(--rose-text);
-    line-height: 1.7;
-    opacity: 0.8;
-}
-
-.rose-date-badge,
-.rose-available-badge {
-    background: linear-gradient(135deg, var(--rose-primary), var(--rose-secondary));
-    color: var(--rose-white);
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    display: inline-block;
-    margin: 1rem 0;
-}
-
-/* Testimonials */
-.rose-stars {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    display: flex;
-    justify-content: center;
-    gap: 0.25rem;
-}
-
-.rose-testimonial-text {
-    font-style: italic;
-    color: var(--rose-text);
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-    font-size: 1.1rem;
-}
-
-.rose-testimonial-author {
-    color: var(--rose-primary);
-    font-weight: 600;
-    font-size: 1rem;
-}
-
-/* CTA Section */
-.rose-cta-section {
-    position: relative;
-    padding: 8rem 0;
-    background: linear-gradient(135deg, var(--rose-primary) 0%, var(--rose-secondary) 50%, #7c2d12 100%);
-    color: var(--rose-white);
-    overflow: hidden;
-}
-
-.rose-garden-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.rose-bg-pattern {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M30 20c5.5 0 10 4.5 10 10s-4.5 10-10 10-10-4.5-10-10 4.5-10 10-10zm0 16c3.3 0 6-2.7 6-6s-2.7-6-6-6-6 2.7-6 6 2.7 6 6 6z'/%3E%3C/g%3E%3C/svg%3E");
-    opacity: 0.3;
-}
-
-.rose-cta-bloom {
-    font-size: 6rem;
-    margin-bottom: 2rem;
-    animation: roseCTABloom 4s infinite ease-in-out;
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
-}
-
-@keyframes roseCTABloom {
-    0%, 100% { transform: scale(1) rotate(0deg); }
-    50% { transform: scale(1.2) rotate(10deg); }
-}
-
-.rose-cta-title {
-    font-size: 4rem;
-    font-weight: 900;
-    text-align: center;
-    margin-bottom: 2rem;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
-    font-family: 'Playfair Display', serif;
-}
-
-.rose-cta-subtitle {
-    font-size: 1.4rem;
-    text-align: center;
-    margin-bottom: 3rem;
-    opacity: 0.9;
-    font-style: italic;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
-}
-
-.rose-cta-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    flex-wrap: wrap;
-}
-
-/* Floating Elements */
-.rose-floating-elements {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.rose-float {
-    position: absolute;
-    font-size: 2rem;
-    animation: roseFloatUpDown 15s infinite ease-in-out;
-    opacity: 0.6;
-}
-
-.rose-float-1 { top: 15%; left: 10%; animation-delay: 0s; }
-.rose-float-2 { top: 25%; right: 15%; animation-delay: 3s; }
-.rose-float-3 { top: 65%; left: 20%; animation-delay: 6s; }
-.rose-float-4 { top: 70%; right: 25%; animation-delay: 9s; }
-.rose-float-5 { top: 40%; left: 70%; animation-delay: 12s; }
-
-@keyframes roseFloatUpDown {
-    0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.6; }
-    25% { transform: translateY(-25px) rotate(90deg); opacity: 1; }
-    50% { transform: translateY(-15px) rotate(180deg); opacity: 0.8; }
-    75% { transform: translateY(-30px) rotate(270deg); opacity: 1; }
-}
-
-/* Responsive Design */
+/* Enhanced Parallax Background Fix */
+.bg-fixed {
+    background-attachment: fixed !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+}
+
+/* Mobile parallax fallback */
 @media (max-width: 768px) {
-    .rose-hero-title {
-        font-size: 3rem;
-    }
-    
-    .rose-hero-subtitle {
-        font-size: 1.3rem;
-    }
-    
-    .rose-section-title {
-        font-size: 2.5rem;
-    }
-    
-    .rose-cta-title {
-        font-size: 2.8rem;
-    }
-    
-    .rose-portrait-image,
-    .rose-portrait-placeholder {
-        height: 400px;
-    }
-    
-    .rose-cta-buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .rose-btn {
-        width: 300px;
-        margin: 10px 0;
-    }
-    
-    .rose-cta-container {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .grid {
-        gap: 1.5rem;
+    .bg-fixed {
+        background-attachment: scroll !important;
     }
 }
 
-@media (max-width: 480px) {
-    .rose-hero {
-        padding: 2rem 0;
+/* iOS Safari parallax fallback */
+@supports (-webkit-overflow-scrolling: touch) {
+    .bg-fixed {
+        background-attachment: scroll !important;
     }
-    
-    .rose-icon {
-        font-size: 4rem;
-    }
-    
-    .rose-hero-title {
-        font-size: 2.2rem;
-        letter-spacing: 1px;
-    }
-    
-    .rose-hero-subtitle {
-        font-size: 1.1rem;
-    }
-    
-    .rose-section-title {
-        font-size: 2rem;
-    }
-    
-    .rose-travel-card,
-    .rose-service-card,
-    .rose-testimonial-card {
-        padding: 1.5rem;
-    }
+}
+
+/* Ensure minimum height for hero section */
+section.bg-fixed {
+    min-height: 70vh;
+}
+
+/* Force background image display with higher specificity */
+section[style*="background-image"] {
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+}
+
+/* Debug: Show background color when no image */
+section.bg-fixed:not([style*="background-image"]) {
+    background-color: #dc2626 !important;
 }
 </style>

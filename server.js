@@ -130,6 +130,9 @@ app.use('/admin/js', express.static(path.join(__dirname, 'admin/js')));
 // Templates static files (for universal gallery system)
 app.use('/templates', express.static(path.join(__dirname, 'templates')));
 
+// Themes static files (for theme-specific assets like CSS and JS)
+app.use('/themes', express.static(path.join(__dirname, 'themes')));
+
 // Normalize API paths: collapse multiple slashes and strip trailing slashes (except root)
 app.use('/api', (req, _res, next) => {
     const original = req.url;
@@ -2805,6 +2808,7 @@ app.use('/api/clients', require('./routes/api/clients'));
 // Model Dashboard APIs (Phase 2 - Backend Infrastructure)
 app.use('/api/model-dashboard', require('./routes/api/sysadmin'));
 app.use('/api/media-preview', require('./routes/api/media-preview'));
+app.use('/api/theme-colors', require('./routes/api/theme-colors'));
 
 // Consolidated sysadmin API namespace (keeps legacy mounts above for back-compat)
 app.use('/api/sysadmin', require('./routes/api/sysadmin'));

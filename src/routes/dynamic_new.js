@@ -292,7 +292,9 @@ router.get('/:slug/:page?', optionalAuth, async (req, res) => {
         const templateName = requestedPage.name === 'home' ? 'index' : requestedPage.name;
 
         // Render template with theme
+        console.log(`🔍 ROUTE DEBUG: About to call templateEngine.renderWithTheme("${themeSet.name}", "${templateName}")`);
         const html = await templateEngine.renderWithTheme(themeSet.name, templateName, templateData);
+        console.log(`✅ ROUTE DEBUG: templateEngine.renderWithTheme succeeded`);
         res.send(html);
 
     } catch (error) {

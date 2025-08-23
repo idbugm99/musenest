@@ -2,11 +2,18 @@
 
 <!-- Modern Hero Section -->
 {{#if content.hero_section_visible}}
-<section class="modern-hero-canvas min-h-screen flex items-center justify-center text-white relative overflow-hidden" data-aos="fade-in">
-    <!-- Dynamic Background Gradients -->
+<section class="modern-hero-canvas {{#if content.heroBackgroundImageUrl}}modern-hero-custom-bg bg-cover bg-center bg-fixed{{/if}} min-h-screen flex items-center justify-center text-white relative overflow-hidden" data-aos="fade-in" {{#if content.heroBackgroundImageUrl}}style="background-image: url('{{content.heroBackgroundImageUrl}}')"{{/if}}>
+    {{#unless content.heroBackgroundImageUrl}}
+    <!-- Dynamic Background Gradients (only if no custom image) -->
     <div class="modern-gradient-layer-1"></div>
     <div class="modern-gradient-layer-2"></div>
     <div class="modern-gradient-layer-3"></div>
+    {{/unless}}
+    
+    {{#if content.heroBackgroundImageUrl}}
+    <!-- Custom background overlay for better text contrast -->
+    <div class="absolute inset-0 bg-black opacity-60"></div>
+    {{/if}}
     
     <!-- Modern Floating Elements -->
     <div class="modern-floating-elements">
@@ -604,19 +611,19 @@
 
 <!-- Modern Template Styling -->
 <style>
-/* Modern Color Palette */
+/* Modern Contemporary Color Palette */
 :root {
-    --modern-primary: #6366f1;
-    --modern-secondary: #8b5cf6;
-    --modern-accent: #06b6d4;
-    --modern-gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    --modern-gradient-2: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
-    --modern-gradient-3: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+    --modern-primary: #1f2937;
+    --modern-secondary: #4b5563;
+    --modern-accent: #3b82f6;
+    --modern-gradient-1: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+    --modern-gradient-2: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    --modern-gradient-3: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
 }
 
 /* Modern Hero Section */
 .modern-hero-canvas {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    background: linear-gradient(135deg, #111827 0%, #1f2937 50%, #374151 100%);
     position: relative;
     overflow: hidden;
 }
@@ -627,7 +634,7 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 50%);
     animation: modern-rotate 20s linear infinite;
 }
 
@@ -637,7 +644,7 @@
     right: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+    background: radial-gradient(circle, rgba(75, 85, 99, 0.06) 0%, transparent 50%);
     animation: modern-rotate 25s linear infinite reverse;
 }
 
@@ -648,7 +655,7 @@
     transform: translateX(-50%);
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+    background: radial-gradient(circle, rgba(31, 41, 55, 0.1) 0%, transparent 50%);
     animation: modern-pulse 15s ease-in-out infinite;
 }
 
@@ -669,7 +676,7 @@
     width: 100px;
     height: 100px;
     border-radius: 50%;
-    border: 2px solid rgba(99, 102, 241, 0.3);
+    border: 2px solid rgba(59, 130, 246, 0.2);
     animation: modern-float-slow 8s ease-in-out infinite;
 }
 
@@ -680,7 +687,7 @@
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    border: 1px solid rgba(139, 92, 246, 0.4);
+    border: 1px solid rgba(75, 85, 99, 0.3);
     animation: modern-float-slow 6s ease-in-out infinite reverse;
 }
 
@@ -690,7 +697,7 @@
     right: 10%;
     width: 80px;
     height: 2px;
-    background: linear-gradient(90deg, rgba(6, 182, 212, 0.5), transparent);
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.4), transparent);
     animation: modern-slide 12s ease-in-out infinite;
 }
 
@@ -700,7 +707,7 @@
     left: 10%;
     width: 120px;
     height: 1px;
-    background: linear-gradient(90deg, rgba(99, 102, 241, 0.4), transparent);
+    background: linear-gradient(90deg, rgba(31, 41, 55, 0.3), transparent);
     animation: modern-slide 10s ease-in-out infinite reverse;
 }
 
@@ -711,7 +718,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: rgba(139, 92, 246, 0.6);
+    background: rgba(75, 85, 99, 0.5);
     animation: modern-blink 4s ease-in-out infinite;
 }
 
@@ -722,7 +729,7 @@
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: rgba(6, 182, 212, 0.5);
+    background: rgba(59, 130, 246, 0.4);
     animation: modern-blink 5s ease-in-out infinite reverse;
 }
 
@@ -735,7 +742,7 @@
 }
 
 .modern-text-glow {
-    text-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+    text-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
 }
 
 .modern-subtitle {
@@ -753,19 +760,19 @@
     background: var(--modern-gradient-1);
     color: white;
     padding: 1rem 2rem;
-    border-radius: 12px;
+    border-radius: 8px;
     font-weight: 600;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 15px rgba(31, 41, 55, 0.2);
 }
 
 .modern-btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 8px 25px rgba(31, 41, 55, 0.3);
     color: white;
 }
 
@@ -774,7 +781,7 @@
     color: white;
     background: rgba(255, 255, 255, 0.1);
     padding: 1rem 2rem;
-    border-radius: 12px;
+    border-radius: 8px;
     font-weight: 600;
     text-decoration: none;
     display: inline-flex;
@@ -792,10 +799,10 @@
 }
 
 .modern-btn-cta-primary {
-    background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
-    color: #1e293b;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    color: #1f2937;
     padding: 1rem 2rem;
-    border-radius: 12px;
+    border-radius: 8px;
     font-weight: 600;
     text-decoration: none;
     display: inline-flex;
@@ -808,7 +815,7 @@
 .modern-btn-cta-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
-    color: #1e293b;
+    color: #1f2937;
 }
 
 .modern-btn-cta-outline {
@@ -816,7 +823,7 @@
     color: white;
     background: rgba(255, 255, 255, 0.1);
     padding: 1rem 2rem;
-    border-radius: 12px;
+    border-radius: 8px;
     font-weight: 600;
     text-decoration: none;
     display: inline-flex;
@@ -834,7 +841,7 @@
 }
 
 .modern-link-primary {
-    color: #6366f1;
+    color: #3b82f6;
     font-weight: 600;
     text-decoration: none;
     display: inline-flex;
@@ -843,7 +850,7 @@
 }
 
 .modern-link-primary:hover {
-    color: #4f46e5;
+    color: #2563eb;
     transform: translateX(5px);
 }
 
@@ -893,9 +900,9 @@
 /* Modern Portrait Card */
 .modern-portrait-card {
     position: relative;
-    border-radius: 20px;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
 .modern-portrait-gradient {
@@ -943,16 +950,16 @@
 
 .modern-gallery-card {
     position: relative;
-    border-radius: 16px;
+    border-radius: 12px;
     overflow: hidden;
     transition: all 0.3s ease;
     background: white;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .modern-gallery-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
 .modern-gallery-image-container {
@@ -1007,15 +1014,15 @@
 .modern-travel-card {
     position: relative;
     background: white;
-    border-radius: 20px;
+    border-radius: 12px;
     overflow: hidden;
     transition: all 0.3s ease;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .modern-travel-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
 }
 
 .modern-travel-gradient {
@@ -1056,10 +1063,10 @@
 
 .modern-empty-state {
     background: white;
-    border-radius: 20px;
+    border-radius: 12px;
     padding: 3rem;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     max-width: 500px;
     margin: 0 auto;
 }
@@ -1085,10 +1092,10 @@
 .modern-service-card {
     position: relative;
     background: white;
-    border-radius: 20px;
+    border-radius: 12px;
     overflow: hidden;
     transition: all 0.3s ease;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     height: 100%;
     min-height: 280px;
     display: flex;
@@ -1096,8 +1103,8 @@
 }
 
 .modern-service-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 25px 50px rgba(99, 102, 241, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 25px rgba(31, 41, 55, 0.12);
 }
 
 .modern-service-gradient {
@@ -1129,7 +1136,7 @@
     border-radius: 50%;
     margin: 0 auto 1.5rem auto;
     font-size: 1.75rem;
-    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 12px rgba(31, 41, 55, 0.2);
 }
 
 .modern-service-title {
@@ -1159,15 +1166,15 @@
 .modern-testimonial-card {
     position: relative;
     background: white;
-    border-radius: 20px;
+    border-radius: 12px;
     overflow: hidden;
     transition: all 0.3s ease;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .modern-testimonial-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .modern-testimonial-gradient {
@@ -1215,7 +1222,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e293b 100%);
+    background: linear-gradient(135deg, #1f2937 0%, #111827 50%, #1f2937 100%);
 }
 
 .modern-cta-background::before {
@@ -1225,7 +1232,7 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 50%);
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 50%);
     animation: modern-rotate 30s linear infinite;
 }
 

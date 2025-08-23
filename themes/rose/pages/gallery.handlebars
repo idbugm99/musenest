@@ -1,1508 +1,547 @@
-<!-- Rose Garden Gallery Page -->
+<!-- Enhanced Rose Theme Gallery Page with Custom Decorative Elements -->
+<!-- Universal template foundation with Rose theme enhancements -->
+<link rel="stylesheet" href="/themes/rose/assets/rose-enhancements.css">
+<script src="/themes/rose/assets/rose-interactions.js"></script>
 
-<!-- Rose Garden Gallery Hero -->
-{{#if gallery_content.gallery_header_visible}}
-<section class="rose-gallery-hero" data-aos="fade-in">
-    <!-- Rose Petals Background -->
-    <div class="rose-petals-bg">
-        <div class="rose-petal-float rose-petal-1">🌹</div>
-        <div class="rose-petal-float rose-petal-2">🌹</div>
-        <div class="rose-petal-float rose-petal-3">🌹</div>
-        <div class="rose-petal-float rose-petal-4">🌹</div>
-        <div class="rose-petal-float rose-petal-5">🌹</div>
-        <div class="rose-petal-float rose-petal-6">🌹</div>
-    </div>
-    
-    <!-- Rose Garden Trellis -->
-    <div class="rose-trellis-pattern"></div>
-    
-    <!-- Floating Rose Garden Elements -->
-    <div class="rose-floating-elements">
-        <div class="rose-floating-frame rose-frame-1">🖼️</div>
-        <div class="rose-floating-camera rose-camera-1">📷</div>
-        <div class="rose-floating-bloom rose-bloom-1">🌸</div>
-        <div class="rose-floating-frame rose-frame-2">🖼️</div>
-        <div class="rose-floating-camera rose-camera-2">📷</div>
-        <div class="rose-floating-bloom rose-bloom-2">🌺</div>
-    </div>
-    
-    <div class="luxury-container">
-        <div class="rose-gallery-header-content" data-aos="fade-down">
-            <!-- Rose Gallery Crown -->
-            <div class="rose-gallery-crown">
-                <span class="rose-icon">🌹</span>
-            </div>
-            
-            <h1 class="luxury-heading rose-text-deep">
-                {{#if gallery_content.page_title}}{{gallery_content.page_title}}{{else}}Rose Gallery Garden{{/if}}
-            </h1>
-            
-            {{#if gallery_content.page_subtitle}}
-            <p class="rose-gallery-subtitle">{{gallery_content.page_subtitle}}</p>
-            {{else}}
-            <p class="rose-gallery-subtitle">A blooming collection of moments captured in time</p>
-            {{/if}}
-        </div>
-    </div>
-</section>
-{{/if}}
-
-<!-- Rose Gallery Collections -->
-<section class="rose-gallery-main luxury-section">
-    <div class="luxury-container">
-        <!-- Universal Gallery System for Rose Theme -->
-        {{{renderUniversalGallery modelSlug previewTheme=previewThemeId}}}
-    </div>
-</section>
-
-<!-- Rose Gallery CTA Garden -->
-<section class="rose-gallery-cta luxury-section" style="background: var(--rose-dark-gradient); color: var(--rose-white);">
-    <div class="luxury-container">
-        
-        <!-- Rose CTA Header -->
-        <div class="rose-cta-header" data-aos="fade-down">
-            <div class="rose-cta-crown">
-                <span class="rose-icon">💎</span>
-                <span class="rose-icon">🌹</span>
-                <span class="rose-icon">💎</span>
-            </div>
-            <h2 class="luxury-h2" style="color: var(--rose-white);">Inspired by Rose Garden Beauty?</h2>
-            <p class="rose-cta-subtitle">Ready to experience the elegance and artistry of our rose garden? Let's create something beautiful together in this blooming paradise.</p>
-        </div>
-        
-        <!-- Rose CTA Actions -->
-        <div class="rose-cta-actions" data-aos="fade-up" data-aos-delay="200">
-            <a href="/{{modelSlug}}/contact{{previewParam}}" class="rose-cta-btn-primary">
-                <span class="rose-btn-content">
-                    <span class="rose-btn-icon">💌</span>
-                    <span class="rose-btn-text">Send Garden Message</span>
-                </span>
-                <div class="rose-btn-petals">
-                    <div class="rose-btn-petal rose-btn-petal-1"></div>
-                    <div class="rose-btn-petal rose-btn-petal-2"></div>
-                    <div class="rose-btn-petal rose-btn-petal-3"></div>
-                </div>
-            </a>
-            
-            <a href="/{{modelSlug}}/rates{{previewParam}}" class="rose-cta-btn-secondary">
-                <span class="rose-btn-icon">🌹</span>
-                <span class="rose-btn-text">View Rose Services</span>
-            </a>
-        </div>
-        
-    </div>
-</section>
-
-{{#if gallery_content.enable_lightbox}}
-<!-- Rose Gallery Lightbox -->
-<div id="rose-lightbox-modal" class="rose-lightbox-overlay">
-    <div class="rose-lightbox-container">
-        <!-- Rose Close Button -->
-        <button onclick="closeRoseLightbox()" class="rose-lightbox-close">
-            <span class="rose-close-icon">✕</span>
-        </button>
-        
-        {{#if gallery_content.enable_fullscreen}}
-        <!-- Rose Fullscreen Button -->
-        <button onclick="toggleRoseFullscreen()" class="rose-lightbox-fullscreen">
-            <span class="rose-fullscreen-icon">⤢</span>
-        </button>
-        {{/if}}
-        
-        <!-- Rose Navigation Arrows -->
-        <button onclick="navigateRoseLightbox(-1)" class="rose-lightbox-nav rose-nav-prev">
-            <span class="rose-nav-icon">‹</span>
-        </button>
-        
-        <button onclick="navigateRoseLightbox(1)" class="rose-lightbox-nav rose-nav-next">
-            <span class="rose-nav-icon">›</span>
-        </button>
-        
-        <!-- Rose Image Container -->
-        <div class="rose-lightbox-image-container">
-            <img id="rose-lightbox-image" src="" alt="" class="rose-lightbox-image">
-            
-            <!-- Rose Image Frame -->
-            <div class="rose-image-frame">
-                <div class="rose-frame-corner rose-frame-tl">🌹</div>
-                <div class="rose-frame-corner rose-frame-tr">🌹</div>
-                <div class="rose-frame-corner rose-frame-bl">🌹</div>
-                <div class="rose-frame-corner rose-frame-br">🌹</div>
-            </div>
-        </div>
-        
-        {{#if gallery_content.show_captions}}
-        <!-- Rose Caption -->
-        <div class="rose-lightbox-caption">
-            <div class="rose-caption-bloom">🌸</div>
-            <p id="rose-lightbox-caption-text"></p>
-            <div class="rose-caption-bloom">🌸</div>
-            {{#if gallery_content.show_image_info}}
-            <div class="rose-image-info" id="rose-lightbox-info">
-                <small class="rose-info-text"></small>
-            </div>
-            {{/if}}
-        </div>
-        {{/if}}
-    </div>
-</div>
-{{/if}}
+<!-- Load Universal Gallery System -->
+{{{renderUniversalGallery modelSlug previewTheme=previewThemeId}}}
 
 <!-- Load Universal Gallery System CSS and JavaScript -->
 <link rel="stylesheet" href="/templates/universal/gallery-styles.css">
 <script src="/templates/universal/gallery-script.js"></script>
 
-<!-- Rose Theme Gallery CSS Variables Override -->
+<!-- Shared Theme Gallery CSS Variables Override -->
 <style>
 :root {
-    --gallery-primary: #dc2626;
-    --gallery-primary-hover: #b91c1c;
-    --gallery-secondary: #7f1d1d;
-    --gallery-accent: #fbbf24;
-    --gallery-background: #fef2f2;
-    --gallery-surface: #fee2e2;
-    --gallery-text: #7f1d1d;
-    --gallery-text-muted: #991b1b;
-    --gallery-border: #fecaca;
-    --gallery-shadow: rgba(220, 38, 38, 0.2);
-    --gallery-shadow-hover: rgba(220, 38, 38, 0.3);
+    /* Map universal theme variables to gallery variables */
+    --gallery-primary: var(--theme-accent);
+    --gallery-primary-hover: var(--theme-accent-hover, var(--theme-accent));
+    --gallery-secondary: var(--theme-secondary, var(--theme-accent));
+    --gallery-accent: var(--theme-accent);
+    --gallery-background: var(--theme-bg-primary);
+    --gallery-surface: var(--theme-card-bg, var(--theme-bg-primary));
+    --gallery-text: var(--theme-text-primary);
+    --gallery-text-muted: var(--theme-text-secondary);
+    --gallery-border: var(--theme-border-primary);
+    --gallery-shadow: var(--theme-shadow, rgba(0, 0, 0, 0.1));
+    --gallery-shadow-hover: var(--theme-shadow-hover, rgba(0, 0, 0, 0.2));
     
-    --gallery-border-radius: 16px;
-    --gallery-border-radius-large: 24px;
+    /* Gallery-specific settings using theme values */
+    --gallery-border-radius: 12px;
+    --gallery-border-radius-large: 16px;
     --gallery-grid-columns-desktop: 3;
-    --gallery-transition-duration: 0.4s;
-    --gallery-hover-lift: -8px;
-}
-
-.section-title {
-    color: var(--rose-deep, #7f1d1d);
-    font-family: var(--rose-font, inherit);
-    text-shadow: 0 0 15px rgba(185, 28, 28, 0.3);
+    --gallery-transition-duration: 0.3s;
+    --gallery-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+    --gallery-hover-lift: -4px;
+    --gallery-hover-scale: 1.03;
 }
 </style>
 
-<!-- Rose Gallery Styling -->
+<!-- Shared Gallery Theme Customization -->
 <style>
-/* Rose Gallery Hero */
-.rose-gallery-hero {
-    background: linear-gradient(135deg, var(--rose-blush) 0%, var(--rose-light) 50%, #f9a8d4 100%);
+/* Universal Gallery Theme Integration */
+.universal-gallery {
+    /* Use theme background */
+    background: var(--theme-bg-primary);
+    color: var(--theme-text-primary);
+}
+
+/* Gallery Hero Section */
+.universal-gallery .gallery-hero {
+    background: var(--theme-section-bg, var(--theme-bg-primary));
+    color: var(--theme-text-primary);
     position: relative;
     overflow: hidden;
-    padding: 120px 0 80px;
-    border-bottom: 4px solid var(--rose-gold);
+    padding: 5rem 0;
 }
 
-.rose-petals-bg {
+.universal-gallery .gallery-hero::before {
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
+    background: var(--theme-bg-overlay, rgba(0, 0, 0, 0.05));
     pointer-events: none;
-    z-index: 1;
 }
 
-.rose-petal-float {
-    position: absolute;
-    font-size: 20px;
-    opacity: 0.3;
-    animation: roseGalleryFloat 12s ease-in-out infinite;
-}
-
-.rose-petal-1 { top: 15%; left: 8%; animation-delay: 0s; }
-.rose-petal-2 { top: 25%; right: 12%; animation-delay: 2s; }
-.rose-petal-3 { top: 45%; left: 15%; animation-delay: 4s; }
-.rose-petal-4 { top: 65%; right: 20%; animation-delay: 6s; }
-.rose-petal-5 { top: 85%; left: 25%; animation-delay: 8s; }
-.rose-petal-6 { top: 35%; left: 45%; animation-delay: 10s; }
-
-.rose-trellis-pattern {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-        radial-gradient(circle at 20% 30%, rgba(185, 28, 28, 0.05) 2px, transparent 2px),
-        radial-gradient(circle at 60% 70%, rgba(185, 28, 28, 0.05) 2px, transparent 2px),
-        radial-gradient(circle at 80% 20%, rgba(185, 28, 28, 0.05) 2px, transparent 2px);
-    background-size: 80px 80px;
-    opacity: 0.6;
-}
-
-.rose-floating-elements {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none;
-    z-index: 1;
-}
-
-.rose-floating-frame {
-    position: absolute;
-    font-size: 28px;
-    opacity: 0.4;
-    filter: sepia(1) hue-rotate(320deg) brightness(1.2);
-    animation: roseFrameFloat 8s ease-in-out infinite;
-}
-
-.rose-frame-1 { top: 20%; left: 12%; animation-delay: 0s; }
-.rose-frame-2 { bottom: 25%; right: 18%; animation-delay: 4s; }
-
-.rose-floating-camera {
-    position: absolute;
-    font-size: 24px;
-    opacity: 0.4;
-    filter: sepia(1) hue-rotate(330deg) brightness(1.1);
-    animation: roseCameraFloat 6s ease-in-out infinite;
-}
-
-.rose-camera-1 { top: 35%; right: 15%; animation-delay: 1s; }
-.rose-camera-2 { bottom: 40%; left: 20%; animation-delay: 5s; }
-
-.rose-floating-bloom {
-    position: absolute;
-    font-size: 22px;
-    opacity: 0.5;
-    animation: roseBloomFloat 10s ease-in-out infinite;
-}
-
-.rose-bloom-1 { top: 50%; left: 18%; animation-delay: 2s; }
-.rose-bloom-2 { top: 70%; right: 22%; animation-delay: 6s; }
-
-.rose-gallery-header-content {
-    position: relative;
-    z-index: 10;
-    text-align: center;
-}
-
-.rose-gallery-crown {
-    margin-bottom: 24px;
-}
-
-.rose-gallery-crown .rose-icon {
-    font-size: 52px;
+.universal-gallery .gallery-hero .hero-badge {
     display: inline-block;
-    animation: roseGalleryCrownSpin 12s linear infinite;
+    width: 80px;
+    height: 80px;
+    background: var(--theme-accent);
+    color: var(--theme-text-inverted);
+    border-radius: 50%;
+    margin: 0 auto 2rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow: 0 0 30px color-mix(in srgb, var(--theme-accent), transparent 50%);
+    transition: all 0.4s ease;
 }
 
-.rose-gallery-subtitle {
-    font-size: 22px;
-    color: var(--rose-muted);
-    margin-top: 20px;
-    font-style: italic;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.6;
+.universal-gallery .gallery-hero .hero-badge:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 40px color-mix(in srgb, var(--theme-accent), transparent 30%);
 }
 
-/* Rose Gallery Main */
-.rose-gallery-main {
-    background: var(--rose-white);
+/* Gallery Section Titles */
+.universal-gallery .gallery-section {
     position: relative;
+    margin-bottom: 3rem;
 }
 
-/* Rose Gallery Collections Styling */
-.rose-gallery-collections .gallery-section {
-    margin-bottom: 60px;
-    padding: 40px 0;
-    border-bottom: 2px solid var(--rose-light);
-    position: relative;
-}
-
-.rose-gallery-collections .gallery-section:last-child {
-    border-bottom: none;
-}
-
-.rose-gallery-collections .gallery-section::before {
+.universal-gallery .gallery-section::before {
     content: '';
     position: absolute;
     top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 120px;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, var(--rose-primary), transparent);
-    box-shadow: 0 0 12px rgba(220, 38, 38, 0.4);
-}
-
-.rose-gallery-collections .gallery-title {
-    font-size: 2.8rem;
-    font-weight: 700;
-    color: var(--rose-deep);
-    margin-bottom: 30px;
-    text-align: center;
-    position: relative;
-    text-shadow: 0 0 15px rgba(185, 28, 28, 0.3);
-}
-
-.rose-gallery-collections .gallery-title::after {
-    content: '';
-    position: absolute;
-    bottom: -15px;
     left: 50%;
     transform: translateX(-50%);
     width: 100px;
-    height: 4px;
-    background: linear-gradient(90deg, var(--rose-primary), var(--rose-gold), var(--rose-primary));
-    border-radius: 2px;
-    box-shadow: 0 0 15px rgba(220, 38, 38, 0.4);
+    height: 2px;
+    background: var(--theme-accent);
+    opacity: 0.3;
 }
 
-/* Enhanced Rose Gallery Items */
-.rose-gallery-collections .grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 24px;
-    max-width: 100%;
-    padding: 30px 0;
-}
-
-/* Rose Gallery Image Wrappers */
-.rose-gallery-collections .grid-image-wrapper,
-.rose-gallery-collections .masonry-item,
-.rose-gallery-collections .lightbox-thumbnail {
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.rose-gallery-collections .grid-item img,
-.rose-gallery-collections .masonry-item img,
-.rose-gallery-collections .lightbox-grid-item img {
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-[data-enable-lightbox="false"] .rose-gallery-collections .grid-image-wrapper,
-[data-enable-lightbox="false"] .rose-gallery-collections .masonry-item,
-[data-enable-lightbox="false"] .rose-gallery-collections .lightbox-thumbnail,
-[data-enable-lightbox="false"] .rose-gallery-collections img {
-    cursor: default !important;
-}
-
-/* Rose Masonry Grid Layout */
-.rose-gallery-collections .masonry-grid {
-    column-count: 3;
-    column-gap: 24px;
-    padding: 30px 0;
-    max-width: 100%;
-}
-
-.rose-gallery-collections .masonry-grid .gallery-item {
-    break-inside: avoid;
-    margin-bottom: 24px;
-    display: inline-block;
-    width: 100%;
-}
-
-/* Rose Slideshow Layout - Responsive Carousel */
-.gallery-section[data-layout="slideshow"] .grid-container,
-.gallery-section:has(.text-sm:contains("slideshow layout")) .grid-container {
-    display: flex;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    gap: 24px;
-    padding: 30px 0;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* Internet Explorer 10+ */
-}
-
-.gallery-section[data-layout="slideshow"] .grid-container::-webkit-scrollbar,
-.gallery-section:has(.text-sm:contains("slideshow layout")) .grid-container::-webkit-scrollbar {
-    display: none; /* WebKit */
-}
-
-.gallery-section[data-layout="slideshow"] .gallery-item,
-.gallery-section:has(.text-sm:contains("slideshow layout")) .gallery-item {
-    flex: 0 0 auto;
-    min-width: 280px;
-    max-width: 320px;
-    transition: transform 0.3s ease;
-}
-
-.gallery-section[data-layout="slideshow"] .gallery-item:hover,
-.gallery-section:has(.text-sm:contains("slideshow layout")) .gallery-item:hover {
-    transform: translateY(-8px) scale(1.02);
-}
-
-.rose-gallery-collections .grid-item {
-    border-radius: 16px;
-    overflow: hidden;
-    transition: all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
-    box-shadow: 0 8px 32px var(--rose-shadow);
+.universal-gallery .gallery-section-title {
+    color: var(--theme-header-color, var(--theme-text-primary));
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: bold;
+    font-size: 2rem;
     position: relative;
-    cursor: pointer;
 }
 
-.rose-gallery-collections .grid-item::before {
+.universal-gallery .gallery-section-title::after {
     content: '';
     position: absolute;
-    top: -3px;
-    left: -3px;
-    right: -3px;
-    bottom: -3px;
-    background: linear-gradient(45deg, var(--rose-primary), var(--rose-gold), var(--rose-primary));
-    border-radius: 20px;
-    z-index: -1;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-}
-
-.rose-gallery-collections .grid-item::after {
-    content: '🌹';
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    font-size: 24px;
-    opacity: 0;
-    transform: scale(0) rotate(0deg);
-    transition: all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
-    z-index: 10;
-}
-
-.rose-gallery-collections .grid-item:hover {
-    transform: translateY(-12px) scale(1.03);
-    box-shadow: 0 20px 60px rgba(220, 38, 38, 0.35);
-}
-
-.rose-gallery-collections .grid-item:hover::before {
-    opacity: 1;
-}
-
-.rose-gallery-collections .grid-item:hover::after {
-    opacity: 1;
-    transform: scale(1) rotate(360deg);
-}
-
-/* Rose Gallery Empty State */
-.rose-gallery-empty {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 500px;
-    padding: 60px 20px;
-}
-
-.rose-empty-garden {
-    background: var(--rose-gradient);
-    border-radius: 24px;
-    padding: 50px 40px;
-    max-width: 600px;
-    width: 100%;
-    text-align: center;
-    position: relative;
-    box-shadow: 0 20px 60px var(--rose-shadow);
-    border: 3px solid var(--rose-primary);
-}
-
-.rose-empty-dome {
-    position: absolute;
-    top: -40px;
+    bottom: -1rem;
     left: 50%;
     transform: translateX(-50%);
-    width: 200px;
-    height: 80px;
-    background: linear-gradient(180deg, var(--rose-primary), var(--rose-deep));
+    width: 60px;
+    height: 3px;
+    background: var(--theme-accent);
+    border-radius: 2px;
+}
+
+/* Gallery Grid Items */
+.universal-gallery .gallery-grid-item {
+    background: var(--theme-card-bg, var(--theme-bg-primary));
+    border: 1px solid var(--theme-border-light, var(--theme-border-primary));
+    border-radius: var(--gallery-border-radius);
+    overflow: hidden;
+    transition: all var(--gallery-transition-duration) var(--gallery-transition-easing);
+    position: relative;
+}
+
+.universal-gallery .gallery-grid-item::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: var(--theme-accent);
+    border-radius: calc(var(--gallery-border-radius) + 2px);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.universal-gallery .gallery-grid-item:hover {
+    transform: translateY(var(--gallery-hover-lift)) scale(var(--gallery-hover-scale));
+    box-shadow: 0 8px 25px color-mix(in srgb, var(--theme-accent), transparent 70%);
+}
+
+.universal-gallery .gallery-grid-item:hover::before {
+    opacity: 0.3;
+}
+
+/* Gallery Images */
+.universal-gallery .gallery-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    object-position: center;
+    transition: all var(--gallery-transition-duration) ease;
+}
+
+/* Carousel Image Override */
+.universal-gallery .gallery-carousel-item .gallery-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: var(--gallery-border-radius);
+}
+
+.universal-gallery .gallery-grid-item:hover .gallery-image {
+    transform: scale(1.05);
+}
+
+/* Gallery Captions */
+.universal-gallery .gallery-caption {
+    padding: 1rem;
+    background: var(--theme-card-bg, var(--theme-bg-primary));
+    color: var(--theme-text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-top: 1px solid var(--theme-border-light, var(--theme-border-primary));
+}
+
+/* Carousel Styling */
+.universal-gallery .gallery-carousel-container {
+    background: var(--theme-card-bg, var(--theme-bg-primary));
+    border: 1px solid var(--theme-border-light, var(--theme-border-primary));
+    border-radius: var(--gallery-border-radius-large);
+    padding: 2rem;
+    margin: 2rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.universal-gallery .gallery-carousel-nav {
+    background: var(--theme-accent);
+    color: var(--theme-text-inverted);
+    border: none;
     border-radius: 50%;
-    box-shadow: 0 0 30px rgba(220, 38, 38, 0.4);
+    width: 50px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    box-shadow: 0 4px 15px color-mix(in srgb, var(--theme-accent), transparent 70%);
 }
 
-.rose-dome-petal {
-    font-size: 20px;
-    animation: roseDomePetal 4s ease-in-out infinite;
+.universal-gallery .gallery-carousel-nav:hover {
+    background: var(--theme-accent-hover, var(--theme-accent));
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 8px 25px color-mix(in srgb, var(--theme-accent), transparent 60%);
 }
 
-.rose-dome-petal:nth-child(2) { animation-delay: 1.3s; }
-.rose-dome-petal:nth-child(3) { animation-delay: 2.6s; }
+.universal-gallery .gallery-carousel-nav.prev {
+    left: 1rem;
+}
 
-.rose-empty-content {
+.universal-gallery .gallery-carousel-nav.next {
+    right: 1rem;
+}
+
+.universal-gallery .gallery-carousel-nav:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: translateY(-50%) scale(1);
+}
+
+.universal-gallery .gallery-carousel-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--theme-accent), transparent 60%);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    margin: 0 4px;
+}
+
+.universal-gallery .gallery-carousel-dot.active {
+    background: var(--theme-accent);
+    transform: scale(1.3);
+}
+
+.universal-gallery .gallery-carousel-dot:hover {
+    background: color-mix(in srgb, var(--theme-accent), transparent 30%);
+}
+
+/* Empty State */
+.universal-gallery .gallery-empty-state {
+    background: var(--theme-card-bg, var(--theme-bg-primary));
+    border: 1px solid var(--theme-border-light, var(--theme-border-primary));
+    border-radius: var(--gallery-border-radius-large);
+    padding: 4rem 2rem;
+    text-align: center;
+    color: var(--theme-text-secondary);
     position: relative;
-    z-index: 2;
-    margin-top: 20px;
 }
 
-.rose-empty-icon {
-    margin-bottom: 30px;
-}
-
-.rose-camera-bloom {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+.universal-gallery .gallery-empty-icon {
     width: 80px;
     height: 80px;
-    background: var(--rose-white);
+    background: var(--theme-accent);
+    color: var(--theme-text-inverted);
     border-radius: 50%;
-    border: 4px solid var(--rose-deep);
-    animation: roseCameraBloom 5s ease-in-out infinite;
-    box-shadow: 0 0 25px rgba(185, 28, 28, 0.3);
-}
-
-.rose-camera-bloom .rose-icon {
-    font-size: 32px;
-}
-
-.rose-empty-title {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--rose-deep);
-    margin-bottom: 20px;
-}
-
-.rose-empty-description {
-    font-size: 18px;
-    color: var(--rose-text);
-    line-height: 1.6;
-    margin-bottom: 35px;
-    font-style: italic;
-}
-
-.rose-empty-actions {
     display: flex;
-    justify-content: center;
-}
-
-.rose-empty-btn {
-    background: linear-gradient(135deg, var(--rose-deep) 0%, var(--rose-primary) 100%);
-    color: var(--rose-white);
-    padding: 16px 32px;
-    border-radius: 50px;
-    text-decoration: none;
-    display: inline-flex;
     align-items: center;
-    gap: 12px;
-    font-weight: 600;
-    font-size: 16px;
-    transition: all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
-    box-shadow: 0 8px 32px var(--rose-shadow);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto 2rem auto;
+    box-shadow: 0 8px 25px color-mix(in srgb, var(--theme-accent), transparent 70%);
 }
 
-.rose-empty-btn:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow: 0 16px 48px rgba(185, 28, 28, 0.4);
-    background: linear-gradient(135deg, var(--rose-primary) 0%, var(--rose-deep) 100%);
-    color: var(--rose-white);
-    text-decoration: none;
+.universal-gallery .gallery-empty-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--theme-header-color, var(--theme-text-primary));
+    margin-bottom: 1rem;
 }
 
-/* Rose Gallery CTA */
-.rose-gallery-cta {
-    position: relative;
-    overflow: hidden;
+.universal-gallery .gallery-empty-description {
+    color: var(--theme-text-secondary);
+    line-height: 1.6;
+    max-width: 400px;
+    margin: 0 auto;
 }
 
-.rose-cta-header {
+/* CTA Section */
+.universal-gallery .gallery-cta {
+    background: var(--theme-accent);
+    color: var(--theme-text-inverted);
+    padding: 4rem 2rem;
     text-align: center;
-    margin-bottom: 50px;
-}
-
-.rose-cta-crown {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-.rose-cta-crown .rose-icon {
-    font-size: 40px;
-    animation: roseCTACrown 6s ease-in-out infinite;
-}
-
-.rose-cta-crown .rose-icon:nth-child(2) {
-    animation-delay: 2s;
-}
-
-.rose-cta-crown .rose-icon:nth-child(3) {
-    animation-delay: 4s;
-}
-
-.rose-cta-subtitle {
-    font-size: 20px;
-    opacity: 0.9;
-    margin-top: 20px;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.6;
-    font-style: italic;
-}
-
-.rose-cta-actions {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    flex-wrap: wrap;
-}
-
-.rose-cta-btn-primary {
-    background: var(--rose-white);
-    color: var(--rose-deep);
-    padding: 18px 36px;
-    border-radius: 50px;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    font-weight: 700;
-    font-size: 16px;
-    transition: all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
-    box-shadow: 0 8px 32px rgba(255, 255, 255, 0.2);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    border-radius: var(--gallery-border-radius-large);
+    margin: 3rem 0;
     position: relative;
     overflow: hidden;
 }
 
-.rose-cta-btn-primary:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow: 0 16px 48px rgba(255, 255, 255, 0.3);
-    color: var(--rose-deep);
-    text-decoration: none;
+.universal-gallery .gallery-cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, 
+        color-mix(in srgb, var(--theme-accent), transparent 90%) 0%, 
+        color-mix(in srgb, var(--theme-accent), white 10%) 50%, 
+        color-mix(in srgb, var(--theme-accent), transparent 90%) 100%);
+    opacity: 0.3;
+    animation: gallery-cta-shimmer 3s ease-in-out infinite;
 }
 
-.rose-cta-btn-primary .rose-btn-content {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+@keyframes gallery-cta-shimmer {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.4; }
+}
+
+.universal-gallery .gallery-cta-badge {
+    background: color-mix(in srgb, var(--theme-text-inverted), transparent 80%);
+    color: var(--theme-text-inverted);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+}
+
+.universal-gallery .gallery-cta-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
     position: relative;
     z-index: 2;
 }
 
-.rose-cta-btn-secondary {
-    background: transparent;
-    color: var(--rose-white);
-    border: 2px solid var(--rose-white);
-    padding: 16px 34px;
-    border-radius: 50px;
+.universal-gallery .gallery-cta-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    z-index: 2;
+}
+
+.universal-gallery .gallery-cta-primary {
+    background: var(--theme-text-inverted);
+    color: var(--theme-accent);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
+    transition: all 0.3s ease;
+    margin: 0 0.5rem;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 4px 15px color-mix(in srgb, var(--theme-text-inverted), transparent 70%);
+}
+
+.universal-gallery .gallery-cta-primary:hover {
+    background: color-mix(in srgb, var(--theme-text-inverted), var(--theme-accent) 10%);
+    color: var(--theme-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px color-mix(in srgb, var(--theme-text-inverted), transparent 60%);
+}
+
+.universal-gallery .gallery-cta-secondary {
+    border: 2px solid var(--theme-text-inverted);
+    background: color-mix(in srgb, var(--theme-text-inverted), transparent 90%);
+    color: var(--theme-text-inverted);
+    padding: 1rem 2rem;
+    border-radius: 12px;
     font-weight: 600;
-    font-size: 16px;
-    transition: all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.rose-cta-btn-secondary:hover {
-    background: var(--rose-white);
-    color: var(--rose-deep);
-    transform: translateY(-4px) scale(1.05);
-    box-shadow: 0 16px 48px rgba(255, 255, 255, 0.2);
     text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    margin: 0 0.5rem;
+    position: relative;
+    z-index: 2;
 }
 
-/* Rose Lightbox */
-.rose-lightbox-overlay {
+.universal-gallery .gallery-cta-secondary:hover {
+    background: color-mix(in srgb, var(--theme-text-inverted), transparent 80%);
+    color: var(--theme-text-inverted);
+    transform: translateY(-2px);
+}
+
+/* Lightbox Modal */
+.universal-gallery .gallery-lightbox-modal {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.95);
-    z-index: 10000;
-    display: none;
+    z-index: 1000;
+    display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    backdrop-filter: blur(10px);
+    padding: 2rem;
 }
 
-.rose-lightbox-container {
-    position: relative;
+.universal-gallery .gallery-lightbox-close {
+    position: absolute;
+    top: -3rem;
+    right: 0;
+    background: color-mix(in srgb, var(--theme-text-inverted), transparent 80%);
+    color: var(--theme-text-inverted);
+    border: 2px solid color-mix(in srgb, var(--theme-text-inverted), transparent 60%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.universal-gallery .gallery-lightbox-close:hover {
+    background: color-mix(in srgb, var(--theme-text-inverted), transparent 70%);
+    border-color: var(--theme-text-inverted);
+    transform: scale(1.1);
+}
+
+.universal-gallery .gallery-lightbox-image {
     max-width: 90vw;
     max-height: 90vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.rose-lightbox-close {
-    position: absolute;
-    top: -60px;
-    right: 0;
-    background: var(--rose-primary);
-    color: var(--rose-white);
-    border: none;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 10001;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    font-weight: bold;
-    box-shadow: 0 8px 24px rgba(220, 38, 38, 0.4);
-}
-
-.rose-lightbox-close:hover {
-    background: var(--rose-deep);
-    transform: scale(1.1);
-    box-shadow: 0 12px 32px rgba(220, 38, 38, 0.6);
-}
-
-.rose-lightbox-fullscreen {
-    position: absolute;
-    top: -60px;
-    right: -60px;
-    background: var(--rose-gold);
-    color: var(--rose-white);
-    border: none;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 10001;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    font-weight: bold;
-    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
-}
-
-.rose-lightbox-fullscreen:hover {
-    background: #b8860b;
-    transform: scale(1.1);
-    box-shadow: 0 12px 32px rgba(212, 175, 55, 0.6);
-}
-
-.rose-lightbox-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(220, 38, 38, 0.9);
-    color: var(--rose-white);
-    border: none;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 10001;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    font-weight: bold;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 24px rgba(220, 38, 38, 0.4);
-}
-
-.rose-lightbox-nav:hover {
-    background: var(--rose-deep);
-    transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 12px 32px rgba(220, 38, 38, 0.6);
-}
-
-.rose-nav-prev {
-    left: -80px;
-}
-
-.rose-nav-next {
-    right: -80px;
-}
-
-.rose-nav-icon {
-    display: inline-block;
-    font-size: 28px;
-    line-height: 1;
-}
-
-.rose-image-info {
-    margin-top: 8px;
-    padding: 8px 12px;
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 8px;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-.rose-info-text {
-    font-size: 12px;
-    font-style: normal;
-}
-
-.rose-lightbox-image-container {
-    position: relative;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(220, 38, 38, 0.3);
-}
-
-.rose-lightbox-image {
-    max-width: 100%;
-    max-height: 80vh;
     object-fit: contain;
-    display: block;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
-.rose-image-frame {
+.universal-gallery .gallery-lightbox-caption {
     position: absolute;
-    top: 0;
+    bottom: -4rem;
     left: 0;
     right: 0;
-    bottom: 0;
-    pointer-events: none;
-}
-
-.rose-frame-corner {
-    position: absolute;
-    font-size: 24px;
-    color: var(--rose-gold);
-    opacity: 0.8;
-    animation: roseFrameCorner 3s ease-in-out infinite;
-}
-
-.rose-frame-tl { top: 15px; left: 15px; }
-.rose-frame-tr { top: 15px; right: 15px; animation-delay: 0.5s; }
-.rose-frame-bl { bottom: 15px; left: 15px; animation-delay: 1s; }
-.rose-frame-br { bottom: 15px; right: 15px; animation-delay: 1.5s; }
-
-.rose-lightbox-caption {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-top: 20px;
-    padding: 16px 24px;
-    background: rgba(220, 38, 38, 0.9);
-    color: var(--rose-white);
+    background: var(--theme-accent);
+    color: var(--theme-text-inverted);
+    padding: 1rem;
     border-radius: 12px;
-    font-style: italic;
-    font-size: 16px;
-    backdrop-filter: blur(20px);
-}
-
-.rose-caption-bloom {
-    font-size: 18px;
-    animation: roseCaptionBloom 2s ease-in-out infinite;
-}
-
-.rose-caption-bloom:nth-child(3) {
-    animation-delay: 1s;
-}
-
-/* Rose Carousel Styling */
-.carousel-container {
-    position: relative;
-    overflow: hidden;
-    padding: 30px;
-    background: var(--rose-gradient);
-    border-radius: 24px;
-    margin: 30px 0;
-    border: 2px solid var(--rose-light);
-}
-
-.carousel-track {
-    display: flex;
-    gap: 24px;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.carousel-item {
-    flex: 0 0 320px;
-    max-width: 320px;
-}
-
-.carousel-item .gallery-image {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    border-radius: 16px;
-    box-shadow: 0 12px 32px var(--rose-shadow);
-    transition: all 0.4s ease;
-    border: 3px solid var(--rose-light);
-}
-
-.carousel-item:hover .gallery-image {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 48px rgba(220, 38, 38, 0.4);
-    border-color: var(--rose-primary);
-}
-
-.carousel-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: var(--rose-primary);
-    color: var(--rose-white);
-    border: none;
-    border-radius: 50%;
-    width: 55px;
-    height: 55px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 10;
-    box-shadow: 0 8px 24px var(--rose-shadow);
-    font-size: 18px;
-}
-
-.carousel-nav:hover {
-    background: var(--rose-deep);
-    transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 12px 36px rgba(220, 38, 38, 0.5);
-}
-
-.carousel-nav.prev { left: 15px; }
-.carousel-nav.next { right: 15px; }
-
-.carousel-nav:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.carousel-dots {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 25px;
-}
-
-.carousel-dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: rgba(220, 38, 38, 0.3);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-}
-
-.carousel-dot.active {
-    background: var(--rose-primary);
-    transform: scale(1.2);
-    border-color: var(--rose-white);
-}
-
-.carousel-dot:hover {
-    background: rgba(220, 38, 38, 0.6);
-}
-
-/* Animations */
-@keyframes roseGalleryFloat {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    25% { transform: translateY(-20px) rotate(5deg); }
-    50% { transform: translateY(-10px) rotate(0deg); }
-    75% { transform: translateY(-25px) rotate(-5deg); }
-}
-
-@keyframes roseFrameFloat {
-    0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
-    50% { transform: translateY(-25px) rotate(5deg) scale(1.1); }
-}
-
-@keyframes roseCameraFloat {
-    0%, 100% { transform: translateY(0px) scale(1); }
-    50% { transform: translateY(-20px) scale(1.1); }
-}
-
-@keyframes roseBloomFloat {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    33% { transform: translateY(-15px) rotate(120deg); }
-    66% { transform: translateY(-30px) rotate(240deg); }
-}
-
-@keyframes roseGalleryCrownSpin {
-    0% { transform: rotate(0deg) scale(1); }
-    25% { transform: rotate(90deg) scale(1.1); }
-    50% { transform: rotate(180deg) scale(1); }
-    75% { transform: rotate(270deg) scale(1.1); }
-    100% { transform: rotate(360deg) scale(1); }
-}
-
-@keyframes roseDomePetal {
-    0%, 100% { transform: scale(1) rotate(0deg); }
-    50% { transform: scale(1.2) rotate(180deg); }
-}
-
-@keyframes roseCameraBloom {
-    0%, 100% { transform: scale(1) rotate(0deg); box-shadow: 0 0 25px rgba(185, 28, 28, 0.3); }
-    50% { transform: scale(1.1) rotate(180deg); box-shadow: 0 0 40px rgba(185, 28, 28, 0.6); }
-}
-
-@keyframes roseCTACrown {
-    0%, 100% { transform: translateY(0px) scale(1); opacity: 0.8; }
-    50% { transform: translateY(-12px) scale(1.1); opacity: 1; }
-}
-
-@keyframes roseFrameCorner {
-    0%, 100% { transform: scale(1) rotate(0deg); }
-    50% { transform: scale(1.2) rotate(15deg); }
-}
-
-@keyframes roseCaptionBloom {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.2); }
+    text-align: center;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
-    .rose-gallery-collections .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-    }
-    
-    .rose-gallery-collections .masonry-grid {
-        column-count: 2;
-        column-gap: 20px;
-    }
-    
-    .carousel-item {
-        flex: 0 0 280px;
-    }
-    
-    .rose-cta-actions {
-        flex-direction: column;
-        align-items: center;
-    }
-}
-
 @media (max-width: 768px) {
-    .rose-gallery-hero {
-        padding: 80px 0 60px;
+    .universal-gallery .gallery-hero {
+        padding: 3rem 0;
     }
     
-    .rose-gallery-crown .rose-icon {
-        font-size: 40px;
+    .universal-gallery .gallery-hero .hero-badge {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
     }
     
-    .rose-gallery-subtitle {
-        font-size: 18px;
+    .universal-gallery .gallery-section-title {
+        font-size: 1.5rem;
     }
     
-    .rose-floating-elements > * {
-        display: none;
+    .universal-gallery .gallery-carousel-nav {
+        width: 40px;
+        height: 40px;
     }
     
-    .rose-gallery-collections .gallery-title {
-        font-size: 2rem;
+    .universal-gallery .gallery-cta {
+        padding: 3rem 1.5rem;
     }
     
-    .rose-empty-garden {
-        padding: 40px 24px;
+    .universal-gallery .gallery-cta-title {
+        font-size: 1.5rem;
     }
     
-    .carousel-item {
-        flex: 0 0 250px;
-    }
-    
-    .carousel-container {
-        padding: 20px;
+    .universal-gallery .gallery-cta-primary,
+    .universal-gallery .gallery-cta-secondary {
+        display: block;
+        margin: 0.5rem 0;
+        width: 100%;
+        max-width: 280px;
     }
 }
 
 @media (max-width: 480px) {
-    .rose-gallery-hero {
-        padding: 60px 0 40px;
+    .universal-gallery .gallery-hero {
+        padding: 2rem 0;
     }
     
-    .rose-gallery-collections .grid-container {
-        grid-template-columns: 1fr;
-        gap: 16px;
+    .universal-gallery .gallery-hero .hero-badge {
+        width: 50px;
+        height: 50px;
+        font-size: 1.25rem;
     }
     
-    .rose-gallery-collections .masonry-grid {
-        column-count: 1;
-        column-gap: 0;
+    .universal-gallery .gallery-section-title {
+        font-size: 1.25rem;
     }
     
-    .rose-empty-garden {
-        padding: 30px 20px;
-        margin: 0 10px;
+    .universal-gallery .gallery-empty-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
     }
     
-    .rose-empty-title {
-        font-size: 24px;
+    .universal-gallery .gallery-cta {
+        padding: 2rem 1rem;
     }
     
-    .rose-empty-description {
-        font-size: 16px;
+    .universal-gallery .gallery-cta-title {
+        font-size: 1.25rem;
     }
     
-    .carousel-item {
-        flex: 0 0 220px;
+    .universal-gallery .gallery-lightbox-modal {
+        padding: 1rem;
     }
 }
 </style>
-
-<!-- Rose Gallery JavaScript -->
-<script>
-// Rose Lightbox Functions
-let roseGalleryData = {};
-let currentRoseImage = { galleryId: null, index: 0 };
-
-function openRoseLightbox(imageUrl, caption, index, galleryId) {
-    // Check if lightbox is enabled
-    const galleryContainer = document.querySelector('.rose-gallery-collections');
-    if (!galleryContainer || galleryContainer.dataset.enableLightbox !== 'true') {
-        return;
-    }
-    
-    const modal = document.getElementById('rose-lightbox-modal');
-    const image = document.getElementById('rose-lightbox-image');
-    const captionEl = document.getElementById('rose-lightbox-caption-text');
-    const infoEl = document.getElementById('rose-lightbox-info');
-    
-    if (modal && image) {
-        image.src = imageUrl;
-        image.alt = caption || 'Beautiful rose garden moment';
-        
-        // Update caption if captions are enabled
-        if (captionEl && galleryContainer.dataset.showCaptions === 'true') {
-            captionEl.textContent = caption || 'Beautiful rose garden moment';
-        }
-        
-        // Update image info if enabled
-        if (infoEl && galleryContainer.dataset.showImageInfo === 'true') {
-            const infoText = infoEl.querySelector('.rose-info-text');
-            if (infoText) {
-                infoText.textContent = `Image ${index + 1} of ${roseGalleryData[galleryId]?.length || 1}`;
-            }
-        }
-        
-        // Store current state
-        currentRoseImage = { galleryId, index };
-        
-        modal.style.display = 'flex';
-        
-        // Prevent body scroll
-        document.body.style.overflow = 'hidden';
-        
-        // Add event listeners
-        document.addEventListener('keydown', handleRoseLightboxKeyboard);
-        
-        // Close on background click
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                closeRoseLightbox();
-            }
-        });
-    }
-}
-
-function closeRoseLightbox() {
-    const modal = document.getElementById('rose-lightbox-modal');
-    
-    if (modal) {
-        modal.style.display = 'none';
-        
-        // Restore body scroll
-        document.body.style.overflow = '';
-        
-        // Remove event listeners
-        document.removeEventListener('keydown', handleRoseLightboxKeyboard);
-    }
-}
-
-function navigateRoseLightbox(direction) {
-    if (!currentRoseImage.galleryId || !roseGalleryData[currentRoseImage.galleryId]) {
-        return;
-    }
-    
-    const gallery = roseGalleryData[currentRoseImage.galleryId];
-    const currentIndex = currentRoseImage.index;
-    let newIndex = currentIndex + direction;
-    
-    // Wrap around
-    if (newIndex < 0) {
-        newIndex = gallery.length - 1;
-    } else if (newIndex >= gallery.length) {
-        newIndex = 0;
-    }
-    
-    const newImage = gallery[newIndex];
-    if (newImage) {
-        const image = document.getElementById('rose-lightbox-image');
-        const captionEl = document.getElementById('rose-lightbox-caption-text');
-        const infoEl = document.getElementById('rose-lightbox-info');
-        const galleryContainer = document.querySelector('.rose-gallery-collections');
-        
-        if (image) {
-            image.src = newImage.url;
-            image.alt = newImage.caption;
-        }
-        
-        if (captionEl && galleryContainer.dataset.showCaptions === 'true') {
-            captionEl.textContent = newImage.caption || 'Beautiful rose garden moment';
-        }
-        
-        if (infoEl && galleryContainer.dataset.showImageInfo === 'true') {
-            const infoText = infoEl.querySelector('.rose-info-text');
-            if (infoText) {
-                infoText.textContent = `Image ${newIndex + 1} of ${gallery.length}`;
-            }
-        }
-        
-        currentRoseImage.index = newIndex;
-    }
-}
-
-function toggleRoseFullscreen() {
-    const modal = document.getElementById('rose-lightbox-modal');
-    const image = document.getElementById('rose-lightbox-image');
-    
-    if (!modal || !image) return;
-    
-    if (!document.fullscreenElement) {
-        // Enter fullscreen
-        if (modal.requestFullscreen) {
-            modal.requestFullscreen();
-        } else if (modal.webkitRequestFullscreen) {
-            modal.webkitRequestFullscreen();
-        } else if (modal.msRequestFullscreen) {
-            modal.msRequestFullscreen();
-        }
-        
-        // Update fullscreen button icon
-        const fullscreenBtn = document.querySelector('.rose-lightbox-fullscreen .rose-fullscreen-icon');
-        if (fullscreenBtn) {
-            fullscreenBtn.textContent = '⤢';
-        }
-    } else {
-        // Exit fullscreen
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        }
-        
-        // Update fullscreen button icon
-        const fullscreenBtn = document.querySelector('.rose-lightbox-fullscreen .rose-fullscreen-icon');
-        if (fullscreenBtn) {
-            fullscreenBtn.textContent = '⤢';
-        }
-    }
-}
-
-function handleRoseLightboxKeyboard(e) {
-    switch(e.key) {
-        case 'Escape':
-            closeRoseLightbox();
-            break;
-        case 'ArrowLeft':
-            e.preventDefault();
-            navigateRoseLightbox(-1);
-            break;
-        case 'ArrowRight':
-            e.preventDefault();
-            navigateRoseLightbox(1);
-            break;
-        case 'f':
-        case 'F':
-            e.preventDefault();
-            toggleRoseFullscreen();
-            break;
-    }
-}
-
-// Rose Carousel Functions
-function moveCarousel(sectionIndex, direction) {
-    const carousel = document.getElementById(`carousel-${sectionIndex}`);
-    if (!carousel) return;
-    
-    const items = carousel.querySelectorAll('.carousel-item');
-    const currentIndex = parseInt(carousel.dataset.currentIndex || 0);
-    const totalItems = items.length;
-    
-    const visibleItems = parseInt(carousel.dataset.visibleItems || 1);
-    const itemWidth = parseInt(carousel.dataset.itemWidth || 320);
-    const itemGap = parseInt(carousel.dataset.itemGap || 24);
-    
-    let newIndex = currentIndex + (direction * visibleItems);
-    
-    if (newIndex < 0) {
-        newIndex = Math.max(0, totalItems - visibleItems);
-    } else if (newIndex + visibleItems > totalItems) {
-        newIndex = 0;
-    }
-    
-    const totalItemWidth = itemWidth + itemGap;
-    const translateX = -(newIndex * totalItemWidth);
-    carousel.style.transform = `translateX(${translateX}px)`;
-    carousel.dataset.currentIndex = newIndex;
-    
-    updateCarouselDots(sectionIndex, newIndex);
-    updateCarouselNav(sectionIndex, newIndex, totalItems);
-    
-    const container = carousel.closest('.carousel-container');
-    if (container) {
-        const autoplaySpeed = container.dataset.autoplay;
-        if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
-            startCarouselAutoplay(sectionIndex, parseInt(autoplaySpeed));
-        }
-    }
-}
-
-function goToCarouselSlide(sectionIndex, slideIndex) {
-    const carousel = document.getElementById(`carousel-${sectionIndex}`);
-    if (!carousel) return;
-    
-    const items = carousel.querySelectorAll('.carousel-item');
-    const totalItems = items.length;
-    
-    const visibleItems = parseInt(carousel.dataset.visibleItems || 1);
-    const itemWidth = parseInt(carousel.dataset.itemWidth || 320);
-    const itemGap = parseInt(carousel.dataset.itemGap || 24);
-    
-    if (slideIndex < 0 || slideIndex + visibleItems > totalItems) return;
-    
-    const totalItemWidth = itemWidth + itemGap;
-    const translateX = -(slideIndex * totalItemWidth);
-    carousel.style.transform = `translateX(${translateX}px)`;
-    carousel.dataset.currentIndex = slideIndex;
-    
-    updateCarouselDots(sectionIndex, slideIndex);
-    updateCarouselNav(sectionIndex, slideIndex, totalItems);
-    
-    const container = carousel.closest('.carousel-container');
-    if (container) {
-        const autoplaySpeed = container.dataset.autoplay;
-        if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
-            startCarouselAutoplay(sectionIndex, parseInt(autoplaySpeed));
-        }
-    }
-}
-
-function updateCarouselDots(sectionIndex, activeIndex) {
-    const carousel = document.querySelector(`#carousel-${sectionIndex}`);
-    if (!carousel) return;
-    
-    const container = carousel.closest('.carousel-container');
-    if (!container) return;
-    
-    const visibleItems = parseInt(carousel.dataset.visibleItems || 1);
-    const activePage = Math.floor(activeIndex / visibleItems);
-    
-    const dots = container.querySelectorAll('.carousel-dot');
-    dots.forEach((dot, dotIndex) => {
-        dot.classList.toggle('active', dotIndex === activePage);
-    });
-}
-
-function updateCarouselNav(sectionIndex, currentIndex, totalItems) {
-    const carousel = document.querySelector(`#carousel-${sectionIndex}`);
-    if (!carousel) return;
-    
-    const container = carousel.closest('.carousel-container');
-    if (!container) return;
-    
-    const prevBtn = container.querySelector('.carousel-nav.prev');
-    const nextBtn = container.querySelector('.carousel-nav.next');
-    
-    if (prevBtn) prevBtn.disabled = false;
-    if (nextBtn) nextBtn.disabled = false;
-}
-
-// Rose Carousel autoplay
-window.carouselTimers = {};
-
-document.addEventListener('DOMContentLoaded', function() {
-    const carousels = document.querySelectorAll('.carousel-track');
-    
-    carousels.forEach((carousel, index) => {
-        carousel.dataset.currentIndex = '0';
-        carousel.style.transform = 'translateX(0px)';
-        
-        const container = carousel.closest('.carousel-container');
-        if (container) {
-            const autoplaySpeed = container.dataset.autoplay;
-            if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
-                startCarouselAutoplay(index, parseInt(autoplaySpeed));
-            }
-        }
-    });
-    
-    document.querySelectorAll('.carousel-container').forEach((container, index) => {
-        container.addEventListener('mouseenter', () => pauseCarouselAutoplay(index));
-        container.addEventListener('mouseleave', () => {
-            const autoplaySpeed = container.dataset.autoplay;
-            if (autoplaySpeed && parseInt(autoplaySpeed) > 0) {
-                startCarouselAutoplay(index, parseInt(autoplaySpeed));
-            }
-        });
-    });
-});
-
-function startCarouselAutoplay(sectionIndex, speed) {
-    pauseCarouselAutoplay(sectionIndex);
-    window.carouselTimers[sectionIndex] = setInterval(() => {
-        moveCarousel(sectionIndex, 1);
-    }, speed);
-}
-
-function pauseCarouselAutoplay(sectionIndex) {
-    if (window.carouselTimers[sectionIndex]) {
-        clearInterval(window.carouselTimers[sectionIndex]);
-        delete window.carouselTimers[sectionIndex];
-    }
-}
-
-// Rose Gallery Integration
-document.addEventListener('DOMContentLoaded', function() {
-    // Check if lightbox is enabled
-    const galleryContainer = document.querySelector('.rose-gallery-collections');
-    if (!galleryContainer || galleryContainer.dataset.enableLightbox !== 'true') {
-        return;
-    }
-    
-    // Initialize gallery data from window.galleryData if available
-    if (window.galleryData) {
-        roseGalleryData = window.galleryData;
-    }
-    
-    // Override openLightbox function to use Rose lightbox
-    window.openLightbox = function(imageUrl, caption, index, galleryId) {
-        openRoseLightbox(imageUrl, caption, index, galleryId);
-    };
-    
-    // Add click handlers to gallery images that don't already have them
-    const galleryImages = document.querySelectorAll('.rose-gallery-collections img[data-full-url]');
-    galleryImages.forEach((img, globalIndex) => {
-        if (!img.onclick) {
-            const fullUrl = img.dataset.fullUrl || img.src;
-            const caption = img.alt;
-            const gallerySection = img.closest('.gallery-section');
-            const galleryId = gallerySection ? `gallery-${gallerySection.dataset.sectionId}` : 'default';
-            const itemIndex = Array.from(gallerySection?.querySelectorAll('img') || []).indexOf(img);
-            
-            img.onclick = function(e) {
-                e.preventDefault();
-                openRoseLightbox(fullUrl, caption, itemIndex, galleryId);
-            };
-            
-            // Ensure gallery data exists for this gallery
-            if (!roseGalleryData[galleryId]) {
-                roseGalleryData[galleryId] = [];
-            }
-            
-            // Add to gallery data if not already present
-            const existingIndex = roseGalleryData[galleryId].findIndex(item => item.url === fullUrl);
-            if (existingIndex === -1) {
-                roseGalleryData[galleryId].push({
-                    url: fullUrl,
-                    caption: caption
-                });
-            }
-        }
-    });
-    
-    console.log('🌹 Rose Gallery initialized with lightbox support:', roseGalleryData);
-});
-</script>

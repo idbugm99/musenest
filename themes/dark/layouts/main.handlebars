@@ -25,17 +25,60 @@
     
     <!-- Dark Theme Styles -->
     <style>
-        /* Dark Theme Colors - keeping basic- classes for gallery compatibility */
+        /* Import Google Fonts for Boudoir Typography */
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Dancing+Script:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+        
+        /* Boudoir Dark Theme Colors - keeping basic- classes for gallery compatibility */
         :root {
-            --basic-primary: #a855f7;  /* Purple for dark theme */
-            --basic-secondary: #8b5cf6;
-            --basic-accent: #c084fc;
-            --basic-text: #f3f4f6;     /* Light text */
-            --basic-background: #0f172a; /* Dark background */
+            --basic-primary: #b8860b;  /* Victorian antique gold */
+            --basic-secondary: #9a7209;  /* Victorian deep gold */
+            --basic-accent: #f8f6f0;   /* Victorian pearl */
+            --basic-text: #f8f4f0;     /* Warm light text */
+            --basic-background: #1a1a1a; /* Deep charcoal */
             
-            /* New color system - dark theme palette */
-            --primary: #a855f7;        /* Purple */
-            --primary-700: #7c3aed;    /* Darker purple */
+            /* New color system - boudoir theme palette */
+            --primary: #b8860b;        /* Victorian antique gold */
+            --primary-700: #9a7209;    /* Victorian deep gold */
+            
+            /* Universal Boudoir Theme Variables */
+            --theme-bg-primary: #1a1a1a;      /* Deep charcoal */
+            --theme-bg-secondary: #2d2625;    /* Warm dark brown */
+            --theme-bg-tertiary: #3d3532;     /* Card backgrounds with warmth */
+            --theme-bg-light: #4a453f;        /* Lighter warm elements */
+            --theme-bg-surface: #2d2625;      /* Surface elements */
+            
+            --theme-text-primary: #f8f4f0;    /* Warm white for headers */
+            --theme-text-secondary: #e8ddd4;  /* Warm cream for body text */
+            --theme-text-muted: #d4c4b0;      /* Warm muted text */
+            --theme-text-subtle: #b8a690;     /* Subtle warm text */
+            --theme-text-inverted: #1a1a1a;   /* Dark text on light backgrounds */
+            
+            --theme-border-primary: #4a453f;  /* Warm borders */
+            --theme-border-light: #5d5449;    /* Light warm borders */
+            --theme-border-subtle: #3d3532;   /* Subtle warm borders */
+            --theme-border-metallic: #b8860b; /* Victorian antique gold borders */
+            
+            /* Boudoir Color Palette */
+            --boudoir-blush: #f4c2c2;         /* Soft blush pink */
+            --boudoir-dusty-rose: #d4a5a5;    /* Dusty rose */
+            --boudoir-mauve: #c49a9a;         /* Mauve */
+            --boudoir-rose-gold: #b8860b;     /* Victorian antique gold */
+            --boudoir-champagne: #f7e7ce;     /* Champagne */
+            --boudoir-burgundy: #8b3a3a;      /* Deep burgundy */
+            --boudoir-deep-burgundy: #6b2c2c; /* Deeper burgundy */
+            
+            --theme-accent: #b8860b;          /* Victorian antique gold accent */
+            --theme-accent-hover: #9a7209;    /* Victorian deep gold hover */
+            --theme-accent-light: #f4c2c2;    /* Light blush accent */
+            --theme-accent-burgundy: #8b3a3a; /* Burgundy accent */
+            --theme-success: #6b8b3a;         /* Warm success green */
+            --theme-warning: #b8860b;         /* Victorian gold warning */\n            \n            /* Victorian Override Variables */\n            --blue-600: #b8860b;\n            --blue-500: #b8860b;\n            --green-400: #b8860b;\n            --green-600: #b8860b;\n            --purple-600: #b8860b;
+            --theme-error: #8b3a3a;           /* Burgundy error */
+            
+            /* Typography Variables */
+            --font-serif: 'Playfair Display', Georgia, serif;
+            --font-script: 'Dancing Script', cursive;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
         
         .text-basic-primary { color: var(--basic-primary); }
@@ -57,64 +100,107 @@
         .bg-basic-accent { background-color: var(--basic-accent); }
         .border-basic-accent { border-color: var(--basic-accent); }
         
-        /* Basic Theme Typography */
+        /* Boudoir Theme Typography */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--basic-background);
-            color: var(--basic-text);
+            font-family: var(--font-sans);
+            background: linear-gradient(135deg, var(--theme-bg-primary) 0%, var(--theme-bg-secondary) 100%);
+            color: var(--theme-text-secondary);
+            line-height: 1.6;
+            letter-spacing: 0.02em;
         }
         
-        .basic-heading {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-weight: 700;
-            color: var(--basic-text);
-        }
-        
-        /* Basic Button Styles */
-        .basic-btn {
-            background-color: var(--basic-primary);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 6px;
+        /* Elegant Serif Headers */
+        h1, h2, h3, .boudoir-heading, .theme-header, .basic-heading {
+            font-family: var(--font-serif);
             font-weight: 600;
+            color: var(--theme-text-primary);
+            letter-spacing: 0.02em;
+            line-height: 1.2;
+        }
+        
+        /* Script Font for Accents */
+        .boudoir-script, .accent-script {
+            font-family: var(--font-script);
+            font-weight: 500;
+            color: var(--boudoir-rose-gold);
+        }
+        
+        /* Elegant subheadings */
+        h4, h5, h6 {
+            font-family: var(--font-serif);
+            font-weight: 500;
+            color: var(--theme-text-primary);
+        }
+        
+        /* Boudoir Button Styles */
+        .basic-btn, .boudoir-btn {
+            background: linear-gradient(135deg, var(--boudoir-rose-gold) 0%, var(--primary-700) 100%);
+            color: var(--theme-text-inverted);
+            padding: 14px 28px;
+            border-radius: 25px;
+            font-family: var(--font-serif);
+            font-weight: 500;
             text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
-            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25), 0 0 20px rgba(212, 175, 55, 0.1);
         }
         
-        .basic-btn:hover {
-            background-color: var(--basic-secondary);
-            transform: translateY(-1px);
-            color: white;
-            text-decoration: none;
-        }
-        
-        .basic-btn-outline {
-            background-color: transparent;
-            color: var(--basic-primary);
-            border: 2px solid var(--basic-primary);
-            padding: 10px 22px;
-        }
-        
-        .basic-btn-outline:hover {
-            background-color: var(--basic-primary);
-            color: white;
-        }
-        
-        /* Basic Cards */
-        .basic-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .basic-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        .basic-btn:hover, .boudoir-btn:hover {
+            background: linear-gradient(135deg, var(--primary-700) 0%, var(--boudoir-burgundy) 100%);
             transform: translateY(-2px);
+            color: var(--theme-text-primary);
+            text-decoration: none;
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4), 0 0 30px rgba(212, 175, 55, 0.2);
+        }
+        
+        .basic-btn-outline, .boudoir-btn-outline {
+            background: linear-gradient(135deg, transparent, rgba(212, 175, 55, 0.1));
+            color: var(--boudoir-rose-gold);
+            border: 2px solid var(--boudoir-rose-gold);
+            padding: 12px 26px;
+            border-radius: 25px;
+        }
+        
+        .basic-btn-outline:hover, .boudoir-btn-outline:hover {
+            background: linear-gradient(135deg, var(--boudoir-rose-gold) 0%, var(--primary-700) 100%);
+            color: var(--theme-text-inverted);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+        }
+        
+        /* Boudoir Cards with Lace-inspired Styling */
+        .basic-card, .boudoir-card {
+            background: linear-gradient(135deg, var(--theme-bg-tertiary) 0%, var(--theme-bg-surface) 100%);
+            border: 1px solid var(--theme-border-metallic);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 20px rgba(212, 175, 55, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .basic-card::before, .boudoir-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, var(--boudoir-rose-gold) 20%, var(--boudoir-champagne) 50%, var(--boudoir-rose-gold) 80%, transparent 100%);
+            opacity: 0.6;
+        }
+        
+        .basic-card:hover, .boudoir-card:hover {
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), 0 0 40px rgba(212, 175, 55, 0.2);
+            transform: translateY(-4px) scale(1.02);
+            border-color: var(--boudoir-champagne);
         }
         
         /* Basic Navigation */
@@ -151,8 +237,519 @@
         body {
             padding-top: 64px; /* Height of navigation (h-16 = 64px) */
         }
+        
+        /* Universal Theme Utility Classes */
+        /* Background Classes */
+        .theme-bg-primary { background-color: var(--theme-bg-primary) !important; }
+        .theme-bg-secondary { background-color: var(--theme-bg-secondary) !important; }
+        .theme-bg-tertiary { background-color: var(--theme-bg-tertiary) !important; }
+        .theme-bg-light { background-color: var(--theme-bg-light) !important; }
+        
+        /* Text Color Classes */
+        .theme-text-primary { color: var(--theme-text-primary) !important; }
+        .theme-text-secondary { color: var(--theme-text-secondary) !important; }
+        .theme-text-muted { color: var(--theme-text-muted) !important; }
+        .theme-text-subtle { color: var(--theme-text-subtle) !important; }
+        
+        /* Border Classes */
+        .theme-border-primary { border-color: var(--theme-border-primary) !important; }
+        .theme-border-light { border-color: var(--theme-border-light) !important; }
+        
+        /* Accent Classes */
+        .theme-accent { color: var(--theme-accent) !important; }
+        .theme-accent-bg { background-color: var(--theme-accent) !important; }
+        .theme-accent-border { border-color: var(--theme-accent) !important; }
+        
+        /* Semantic Component Classes with Boudoir Styling */
+        .theme-card {
+            background: linear-gradient(135deg, var(--theme-bg-tertiary) 0%, var(--theme-bg-surface) 100%);
+            color: var(--theme-text-primary);
+            border: 1px solid var(--theme-border-metallic);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 20px rgba(212, 175, 55, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .theme-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, var(--boudoir-rose-gold) 20%, var(--boudoir-champagne) 50%, var(--boudoir-rose-gold) 80%, transparent 100%);
+            opacity: 0.6;
+        }
+        
+        .theme-card:hover {
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), 0 0 40px rgba(212, 175, 55, 0.2);
+            transform: translateY(-4px) scale(1.02);
+            border-color: var(--boudoir-champagne);
+        }
+        
+        .theme-section {
+            background: linear-gradient(135deg, var(--theme-bg-primary) 0%, var(--theme-bg-secondary) 100%);
+            color: var(--theme-text-primary);
+            position: relative;
+        }
+        
+        .theme-section-alt {
+            background: linear-gradient(135deg, var(--theme-bg-secondary) 0%, var(--theme-bg-tertiary) 100%);
+            color: var(--theme-text-primary);
+        }
+        
+        .theme-header {
+            color: var(--theme-text-primary);
+            font-family: var(--font-serif);
+            font-weight: 600;
+        }
+        
+        .theme-body-text {
+            color: var(--theme-text-secondary);
+            font-family: var(--font-sans);
+        }
+        
+        .theme-muted-text {
+            color: var(--theme-text-muted);
+        }
+        
+        .theme-subtle-text {
+            color: var(--theme-text-subtle);
+            font-family: var(--font-script);
+        }
     </style>
     
+    <!-- Victorian Theme CSS (Always loaded for Template 5 compatibility) -->
+    <style id="victorian-theme-enhancement">
+        /* 🎨 Victorian Boudoir Theme Colors (URL parameter based) */
+        body[data-preview-theme="5"] :root, 
+        body[data-theme="5"] :root {
+            --basic-primary: #b8860b !important;
+            --basic-secondary: #9a7209 !important;
+            --basic-accent: #f8f6f0 !important;
+            --primary: #b8860b !important;
+            --primary-700: #9a7209 !important;
+            --theme-accent: #b8860b !important;
+            --theme-accent-hover: #9a7209 !important;
+            --theme-accent-light: #f4c2c2 !important;
+            --theme-accent-burgundy: #8b3a3a !important;
+            --theme-bg-primary: #1a1a1a !important;
+            --theme-bg-secondary: #2d2625 !important;
+            --theme-bg-tertiary: #3d3532 !important;
+            --theme-bg-light: #4a453f !important;
+            --theme-bg-surface: #2d2625 !important;
+            --theme-text-primary: #f8f4f0 !important;
+            --theme-text-secondary: #e8ddd4 !important;
+            --theme-text-muted: #d4c4b0 !important;
+            --theme-text-subtle: #b8a690 !important;
+            --theme-text-inverted: #1a1a1a !important;
+            --theme-border-primary: #4a453f !important;
+            --theme-border-light: #5d5449 !important;
+            --theme-border-subtle: #3d3532 !important;
+            --theme-border-metallic: #b8860b !important;
+            --boudoir-blush: #f4c2c2 !important;
+            --boudoir-dusty-rose: #d4a5a5 !important;
+            --boudoir-mauve: #c49a9a !important;
+            --boudoir-rose-gold: #b8860b !important;
+            --boudoir-champagne: #f7e7ce !important;
+            --boudoir-burgundy: #8b3a3a !important;
+            --boudoir-deep-burgundy: #6b2c2c !important;
+            --victorian-antique-gold: #b8860b !important;
+            --victorian-deep-gold: #9a7209 !important;
+            --victorian-pearl: #f8f6f0 !important;
+            --victorian-velvet: #722f37 !important;
+            --victorian-burgundy: #800020 !important;
+            --victorian-ivory: #fffff0 !important;
+            --victorian-amber: #ffbf00 !important;
+            --blue-600: #b8860b !important;
+            --blue-500: #b8860b !important;
+            --green-400: #b8860b !important;
+            --green-600: #b8860b !important;
+            --purple-600: #b8860b !important;
+            --theme-success: #6b8b3a !important;
+            --theme-warning: #b8860b !important;
+            --theme-error: #8b3a3a !important;
+        }
+
+        /* 🏛️ ENHANCED PARALLAX HERO SECTION FOR VICTORIAN THEME - TARGETED APPROACH */
+
+        /* Apply only to the first section (hero) */
+        body[data-preview-theme="5"] section:first-of-type,
+        body[data-theme="5"] section:first-of-type {
+            background-image: url('/uploads/modelexample/public/gallery/Bikini_Model_1754767723164.jpg') !important;
+            background-attachment: fixed !important;
+            background-size: cover !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+            background-color: transparent !important;
+        }
+
+        /* Override any other background properties */
+        body[data-preview-theme="5"] section.bg-primary,
+        body[data-preview-theme="5"] section.relative,
+        body[data-preview-theme="5"] section.py-20,
+        body[data-theme="5"] section.bg-primary,
+        body[data-theme="5"] section.relative,
+        body[data-theme="5"] section.py-20 {
+            background-color: transparent !important;
+            background-image: url('/uploads/modelexample/public/gallery/Bikini_Model_1754767723164.jpg') !important;
+            background-attachment: fixed !important;
+            background-size: cover !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+        }
+
+        /* Victorian Ornate Overlay for Hero Section */
+        body[data-preview-theme="5"] section:first-of-type:before,
+        body[data-theme="5"] section:first-of-type:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(139, 69, 19, 0.3) 0%, 
+                rgba(0, 0, 0, 0.6) 50%, 
+                rgba(75, 0, 130, 0.2) 100%);
+            z-index: 1;
+        }
+
+        /* Ornate Victorian border frame for hero section */
+        body[data-preview-theme="5"] section:first-of-type:after,
+        body[data-theme="5"] section:first-of-type:after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 3px solid var(--victorian-antique-gold);
+            border-image: linear-gradient(45deg, 
+                var(--victorian-antique-gold), 
+                var(--victorian-cream), 
+                var(--victorian-antique-gold)) 1;
+            border-radius: 8px;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        /* Enhanced typography for hero content over parallax */
+        body[data-preview-theme="5"] section:first-of-type h1,
+        body[data-theme="5"] section:first-of-type h1 {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            color: var(--victorian-cream) !important;
+            font-family: 'Playfair Display', Georgia, serif !important;
+            font-weight: 700 !important;
+            z-index: 10;
+            position: relative;
+        }
+
+        body[data-preview-theme="5"] section:first-of-type p,
+        body[data-theme="5"] section:first-of-type p {
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+            color: var(--victorian-cream) !important;
+            font-size: 1.2rem !important;
+            z-index: 10;
+            position: relative;
+            opacity: 0.95;
+        }
+
+        /* Victorian-styled hero buttons over parallax */
+        body[data-preview-theme="5"] section:first-of-type a,
+        body[data-theme="5"] section:first-of-type a {
+            z-index: 10;
+            position: relative;
+            background: var(--victorian-antique-gold) !important;
+            color: var(--theme-bg-primary) !important;
+            border: 2px solid var(--victorian-antique-gold) !important;
+            text-shadow: none !important;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        body[data-preview-theme="5"] section:first-of-type a:hover,
+        body[data-theme="5"] section:first-of-type a:hover {
+            background: var(--victorian-cream) !important;
+            color: var(--theme-bg-primary) !important;
+            border-color: var(--victorian-cream) !important;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Ensure hero content container has proper positioning */
+        body[data-preview-theme="5"] section:first-of-type .max-w-7xl,
+        body[data-theme="5"] section:first-of-type .max-w-7xl {
+            z-index: 10;
+            position: relative;
+        }
+
+        /* Victorian Lace Border Patterns */
+        body[data-preview-theme="5"] .victorian-lace-border,
+        body[data-preview-theme="5"] .theme-card,
+        body[data-theme="5"] .victorian-lace-border,
+        body[data-theme="5"] .theme-card {
+            border: 2px solid var(--victorian-antique-gold) !important;
+            position: relative;
+            border-radius: 25px;
+            background: linear-gradient(135deg, var(--theme-bg-tertiary) 0%, var(--theme-bg-surface) 100%) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 20px rgba(184, 134, 11, 0.1) !important;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+        }
+
+        /* Removed problematic lace pattern that blocks text */
+
+        /* Victorian Filigree Scrollwork for Headers */
+        body[data-preview-theme="5"] .rates-header,
+        body[data-preview-theme="5"] .etiquette-header,
+        body[data-preview-theme="5"] h1,
+        body[data-preview-theme="5"] h2,
+        body[data-theme="5"] .rates-header,
+        body[data-theme="5"] .etiquette-header,
+        body[data-theme="5"] h1,
+        body[data-theme="5"] h2 {
+            position: relative;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        /* Removed decorative text elements that interfere with readability */
+
+        /* Fix Text Visibility Issues - Clean Victorian Styling */
+        body[data-preview-theme="5"] .rates-table .theme-text-secondary,
+        body[data-preview-theme="5"] .rates-table .theme-text-muted,
+        body[data-preview-theme="5"] .theme-card .theme-text-secondary,
+        body[data-preview-theme="5"] .theme-card .theme-text-muted,
+        body[data-theme="5"] .rates-table .theme-text-secondary,
+        body[data-theme="5"] .rates-table .theme-text-muted,
+        body[data-theme="5"] .theme-card .theme-text-secondary,
+        body[data-theme="5"] .theme-card .theme-text-muted {
+            color: var(--theme-text-primary) !important;
+        }
+
+        body[data-preview-theme="5"] .rates-table .font-semibold,
+        body[data-preview-theme="5"] .rates-table .font-bold,
+        body[data-preview-theme="5"] .theme-card .font-semibold,
+        body[data-preview-theme="5"] .theme-card .font-bold,
+        body[data-theme="5"] .rates-table .font-semibold,
+        body[data-theme="5"] .rates-table .font-bold,
+        body[data-theme="5"] .theme-card .font-semibold,
+        body[data-theme="5"] .theme-card .font-bold {
+            color: var(--theme-text-primary) !important;
+            font-weight: 600 !important;
+        }
+
+        /* Rate amount text visibility - Victorian gold for prices */
+        body[data-preview-theme="5"] .rates-table .text-right,
+        body[data-preview-theme="5"] .rates-table .font-bold.text-right,
+        body[data-preview-theme="5"] .theme-card .text-right,
+        body[data-theme="5"] .rates-table .text-right,
+        body[data-theme="5"] .rates-table .font-bold.text-right,
+        body[data-theme="5"] .theme-card .text-right {
+            color: var(--victorian-antique-gold) !important;
+            font-weight: bold !important;
+        }
+
+        /* Clean Typography - Elegant serif fonts */
+        body[data-preview-theme="5"] h1,
+        body[data-preview-theme="5"] h2,
+        body[data-preview-theme="5"] h3,
+        body[data-theme="5"] h1,
+        body[data-theme="5"] h2,
+        body[data-theme="5"] h3 {
+            font-family: 'Playfair Display', Georgia, serif !important;
+            font-weight: 600 !important;
+            color: var(--theme-text-primary) !important;
+        }
+
+        /* Fix Contact Page Text Visibility Issues */
+        body[data-preview-theme="5"] p,
+        body[data-preview-theme="5"] .text-base,
+        body[data-preview-theme="5"] .text-sm,
+        body[data-preview-theme="5"] .text-lg,
+        body[data-preview-theme="5"] .text-xl,
+        body[data-preview-theme="5"] label,
+        body[data-preview-theme="5"] .form-label,
+        body[data-theme="5"] p,
+        body[data-theme="5"] .text-base,
+        body[data-theme="5"] .text-sm,
+        body[data-theme="5"] .text-lg,
+        body[data-theme="5"] .text-xl,
+        body[data-theme="5"] label,
+        body[data-theme="5"] .form-label {
+            color: var(--theme-text-primary) !important;
+            opacity: 1 !important;
+        }
+
+        /* Contact Page Specific Fixes */
+        body[data-preview-theme="5"] .contact-section p,
+        body[data-preview-theme="5"] .contact-info,
+        body[data-preview-theme="5"] .contact-guidelines,
+        body[data-preview-theme="5"] .privacy-section,
+        body[data-theme="5"] .contact-section p,
+        body[data-theme="5"] .contact-info,
+        body[data-theme="5"] .contact-guidelines,
+        body[data-theme="5"] .privacy-section {
+            color: var(--theme-text-primary) !important;
+        }
+
+        /* Override light/muted text colors globally - NUCLEAR OPTION */
+        body[data-preview-theme="5"] .text-gray-600,
+        body[data-preview-theme="5"] .text-gray-500,
+        body[data-preview-theme="5"] .text-gray-400,
+        body[data-preview-theme="5"] .text-gray-300,
+        body[data-preview-theme="5"] .text-gray-700,
+        body[data-preview-theme="5"] .text-gray-800,
+        body[data-preview-theme="5"] .text-muted,
+        body[data-preview-theme="5"] .opacity-75,
+        body[data-preview-theme="5"] .opacity-50,
+        body[data-preview-theme="5"] .text-xl.text-gray-600,
+        body[data-preview-theme="5"] p.text-xl.text-gray-600,
+        body[data-preview-theme="5"] p.text-xl.text-gray-600.max-w-3xl.mx-auto,
+        body[data-theme="5"] .text-gray-600,
+        body[data-theme="5"] .text-gray-500,
+        body[data-theme="5"] .text-gray-400,
+        body[data-theme="5"] .text-gray-300,
+        body[data-theme="5"] .text-gray-700,
+        body[data-theme="5"] .text-gray-800,
+        body[data-theme="5"] .text-muted,
+        body[data-theme="5"] .opacity-75,
+        body[data-theme="5"] .opacity-50,
+        body[data-theme="5"] .text-xl.text-gray-600,
+        body[data-theme="5"] p.text-xl.text-gray-600,
+        body[data-theme="5"] p.text-xl.text-gray-600.max-w-3xl.mx-auto {
+            color: var(--victorian-antique-gold) !important;
+            opacity: 1 !important;
+        }
+
+        /* EXTREMELY AGGRESSIVE FIX - Target the exact element structure */
+        body[data-preview-theme="5"] .text-center p.text-xl,
+        body[data-preview-theme="5"] .text-center .text-xl,
+        body[data-preview-theme="5"] div.text-center p,
+        body[data-theme="5"] .text-center p.text-xl,
+        body[data-theme="5"] .text-center .text-xl,
+        body[data-theme="5"] div.text-center p {
+            color: var(--victorian-antique-gold) !important;
+            opacity: 1 !important;
+        }
+
+        /* Ensure all text in theme cards is visible */
+        body[data-preview-theme="5"] .theme-card *,
+        body[data-theme="5"] .theme-card * {
+            color: var(--theme-text-primary) !important;
+        }
+
+        /* Contact form styling */
+        body[data-preview-theme="5"] input,
+        body[data-preview-theme="5"] textarea,
+        body[data-preview-theme="5"] select,
+        body[data-theme="5"] input,
+        body[data-theme="5"] textarea,
+        body[data-theme="5"] select {
+            background-color: var(--theme-bg-light) !important;
+            color: var(--theme-text-primary) !important;
+            border: 1px solid var(--victorian-antique-gold) !important;
+        }
+
+        /* Targeted text visibility fixes - preserve headers */
+        body[data-preview-theme="5"] p,
+        body[data-preview-theme="5"] span,
+        body[data-preview-theme="5"] div:not(.theme-accent):not(.bg-primary):not(.bg-yellow-600),
+        body[data-preview-theme="5"] li,
+        body[data-preview-theme="5"] label,
+        body[data-preview-theme="5"] .text-sm,
+        body[data-preview-theme="5"] .text-base,
+        body[data-preview-theme="5"] .text-lg,
+        body[data-preview-theme="5"] .text-xl,
+        body[data-preview-theme="5"] .subtitle,
+        body[data-preview-theme="5"] .subheader,
+        body[data-theme="5"] p,
+        body[data-theme="5"] span,
+        body[data-theme="5"] div:not(.theme-accent):not(.bg-primary):not(.bg-yellow-600),
+        body[data-theme="5"] li,
+        body[data-theme="5"] label,
+        body[data-theme="5"] .text-sm,
+        body[data-theme="5"] .text-base,
+        body[data-theme="5"] .text-lg,
+        body[data-theme="5"] .text-xl,
+        body[data-theme="5"] .subtitle,
+        body[data-theme="5"] .subheader {
+            color: var(--theme-text-primary) !important;
+            opacity: 1 !important;
+        }
+
+        /* Fix specifically for subtitle/subheader text that appears under main headers */
+        body[data-preview-theme="5"] .text-center p,
+        body[data-preview-theme="5"] h1 + p,
+        body[data-preview-theme="5"] h2 + p,
+        body[data-preview-theme="5"] .header-subtitle,
+        body[data-preview-theme="5"] .text-center .text-lg,
+        body[data-preview-theme="5"] .text-blue-600,
+        body[data-preview-theme="5"] .text-blue-500,
+        body[data-theme="5"] .text-center p,
+        body[data-theme="5"] h1 + p,
+        body[data-theme="5"] h2 + p,
+        body[data-theme="5"] .header-subtitle,
+        body[data-theme="5"] .text-center .text-lg,
+        body[data-theme="5"] .text-blue-600,
+        body[data-theme="5"] .text-blue-500 {
+            color: var(--theme-text-primary) !important;
+            opacity: 1 !important;
+        }
+
+        /* Price/amount elements should be gold */
+        body[data-preview-theme="5"] .text-right,
+        body[data-preview-theme="5"] .font-bold.text-right,
+        body[data-preview-theme="5"] .price,
+        body[data-preview-theme="5"] .amount,
+        body[data-theme="5"] .text-right,
+        body[data-theme="5"] .font-bold.text-right,
+        body[data-theme="5"] .price,
+        body[data-theme="5"] .amount {
+            color: var(--victorian-antique-gold) !important;
+        }
+
+        /* Headers should keep their proper styling */
+        body[data-preview-theme="5"] h1,
+        body[data-preview-theme="5"] h2,
+        body[data-preview-theme="5"] h3,
+        body[data-preview-theme="5"] .theme-accent,
+        body[data-theme="5"] h1,
+        body[data-theme="5"] h2,
+        body[data-theme="5"] h3,
+        body[data-theme="5"] .theme-accent {
+            color: var(--theme-accent) !important;
+        }
+
+        /* Email and phone links should be gold */
+        body[data-preview-theme="5"] a[href^="mailto"],
+        body[data-preview-theme="5"] a[href^="tel"],
+        body[data-theme="5"] a[href^="mailto"],
+        body[data-theme="5"] a[href^="tel"] {
+            color: var(--victorian-antique-gold) !important;
+        }
+
+        /* Navigation links should stay readable */
+        body[data-preview-theme="5"] .nav a,
+        body[data-preview-theme="5"] nav a,
+        body[data-theme="5"] .nav a,
+        body[data-theme="5"] nav a {
+            color: var(--theme-text-primary) !important;
+        }
+    </style>
+    <script>
+        // Close style tag if Victorian theme is active
+        if (previewTheme === '5') {
+            document.write('</style>');
+        }
+    </script>
+    <noscript></style></noscript>
+
     <!-- Additional page-specific styles -->
     {{#if additionalCSS}}
     <style>
@@ -188,6 +785,27 @@
             once: true,
             offset: 50
         });
+
+        // Set Victorian theme data attribute based on URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const previewTheme = urlParams.get('preview_theme');
+        if (previewTheme) {
+            document.body.setAttribute('data-preview-theme', previewTheme);
+        }
+    </script>
+    
+    <!-- Theme Color Loader for Database-driven colors -->
+    <script src="/public/js/theme-color-loader.js"></script>
+    
+    <!-- Initialize Theme with Current Theme ID -->
+    <script>
+        // Pass theme information to theme loader
+        document.body.setAttribute('data-theme-id', '{{theme.setId}}');
+        
+        // Handle preview mode
+        {{#if theme.isPreview}}
+        document.body.setAttribute('data-theme-preview', '{{theme.previewThemeId}}');
+        {{/if}}
     </script>
     
     <!-- Additional page-specific scripts -->

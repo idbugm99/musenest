@@ -143,7 +143,13 @@ class MuseNestGallerySections {
         
         if (empty) empty.classList.add('d-none');
         
-        container.innerHTML = this.sections.map(section => this.renderSection(section)).join('');
+        // Sort sections by section_order
+        const sortedSections = this.sections.sort((a, b) => (a.section_order || 0) - (b.section_order || 0));
+        
+        container.innerHTML = sortedSections.map(section => this.renderSection(section)).join('');
+        
+        // Initialize drag and drop
+        this.initializeDragAndDrop();
     }
     
     /**
@@ -157,13 +163,13 @@ class MuseNestGallerySections {
             lightbox_grid: 'th-list'
         };
         
-        const statusColor = section.is_published ? 'success' : 'warning';
-        const statusText = section.is_published ? 'Published' : 'Draft';
-        
         return `
-            <div class="section-item" data-section-id="${section.id}">
+            <div class="section-item" data-section-id="${section.id}" data-section-order="${section.section_order || 0}">
                 <div class="section-header">
                     <div class="d-flex align-items-center gap-3">
+                        <div class="drag-handle me-2" title="Drag to reorder">
+                            <i class="fas fa-grip-vertical text-muted"></i>
+                        </div>
                         <h5 class="section-title">${section.section_name}</h5>
                         <span class="section-layout-type ${section.layout_type}">
                             <i class="fas fa-${layoutIcons[section.layout_type] || 'th'}"></i>
@@ -171,6 +177,9 @@ class MuseNestGallerySections {
                         </span>
                     </div>
                     <div class="section-actions">
+                        <button class="btn btn-sm ${section.is_published ? 'btn-success' : 'btn-danger'}" onclick="gallerySections.toggleVisibility(${section.id}, ${!section.is_published})" title="Click to ${section.is_published ? 'hide' : 'show'}">
+                            <i class="fas fa-${section.is_published ? 'eye' : 'eye-slash'} me-1"></i>${section.is_published ? 'Visible' : 'Hidden'}
+                        </button>
                         <button class="btn btn-sm btn-outline-primary" onclick="gallerySections.editSection(${section.id})">
                             <i class="fas fa-edit me-1"></i>Edit
                         </button>
@@ -191,9 +200,9 @@ class MuseNestGallerySections {
                         <i class="fas fa-images text-primary"></i>
                         <span>${section.media_count || 0} images</span>
                     </div>
-                    <div class="section-stat section-status status-${section.is_published ? 'published' : 'draft'}">
-                        <i class="fas fa-${section.is_published ? 'check-circle' : 'clock'}"></i>
-                        <span>${statusText}</span>
+                    <div class="section-stat">
+                        <i class="fas fa-sort text-muted"></i>
+                        <span>Order: ${section.section_order || 0}</span>
                     </div>
                     <div class="section-stat">
                         <i class="fas fa-calendar text-muted"></i>
@@ -935,10 +944,175 @@ class MuseNestGallerySections {
     }
     
     /**
-     * Enable reorder mode (placeholder)
+     * Toggle section visibility
+     */
+    async toggleVisibility(sectionId, newVisibility) {
+        try {
+            const response = await fetch(`/api/model-gallery-sections/${this.modelSlug}/${sectionId}/toggle-visibility`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    is_published: newVisibility
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                this.showNotification(`Section ${newVisibility ? 'published' : 'hidden'} successfully!`, 'success');
+                // Update the local section data
+                const section = this.sections.find(s => s.id === sectionId);
+                if (section) {
+                    section.is_published = newVisibility;
+                }
+                // Re-render sections
+                this.renderSections();
+            } else {
+                this.showNotification('Failed to update section visibility', 'error');
+            }
+            
+        } catch (error) {
+            console.error('👁️ Visibility toggle error:', error);
+            this.showNotification('Failed to update section visibility', 'error');
+        }
+    }
+    
+    /**
+     * Initialize drag and drop functionality
+     */
+    initializeDragAndDrop() {
+        const container = document.getElementById('sections-list');
+        if (!container) return;
+        
+        // Check if SortableJS is loaded
+        if (typeof Sortable === 'undefined') {
+            // Load SortableJS dynamically if not available
+            this.loadSortableJS().then(() => {
+                this.createSortable(container);
+            });
+        } else {
+            this.createSortable(container);
+        }
+    }
+    
+    /**
+     * Create sortable instance
+     */
+    createSortable(container) {
+        if (this.sortableInstance) {
+            this.sortableInstance.destroy();
+        }
+        
+        this.sortableInstance = Sortable.create(container, {
+            handle: '.drag-handle',
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            onEnd: (event) => {
+                this.handleSectionReorder(event);
+            }
+        });
+    }
+    
+    /**
+     * Handle section reorder
+     */
+    async handleSectionReorder(event) {
+        const { oldIndex, newIndex } = event;
+        
+        if (oldIndex === newIndex) return;
+        
+        // Reorder sections array
+        const movedSection = this.sections.splice(oldIndex, 1)[0];
+        this.sections.splice(newIndex, 0, movedSection);
+        
+        // Update section orders
+        const reorderData = this.sections.map((section, index) => ({
+            id: section.id,
+            section_order: index + 1
+        }));
+        
+        try {
+            const response = await fetch(`/api/model-gallery-sections/${this.modelSlug}/reorder`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    sections: reorderData
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                this.showNotification('Section order updated successfully!', 'success');
+                // Update local section orders
+                reorderData.forEach(item => {
+                    const section = this.sections.find(s => s.id === item.id);
+                    if (section) {
+                        section.section_order = item.section_order;
+                    }
+                });
+            } else {
+                this.showNotification('Failed to update section order', 'error');
+                // Reload sections to restore original order
+                this.loadSections();
+            }
+            
+        } catch (error) {
+            console.error('🔄 Reorder error:', error);
+            this.showNotification('Failed to update section order', 'error');
+            // Reload sections to restore original order
+            this.loadSections();
+        }
+    }
+    
+    /**
+     * Load SortableJS library dynamically
+     */
+    async loadSortableJS() {
+        return new Promise((resolve, reject) => {
+            if (typeof Sortable !== 'undefined') {
+                resolve();
+                return;
+            }
+            
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    }
+    
+    /**
+     * Enable reorder mode (now functional)
      */
     enableReorderMode() {
-        this.showNotification('Section reordering functionality coming soon!', 'info');
+        const container = document.getElementById('sections-list');
+        const reorderBtn = document.getElementById('reorder-sections');
+        
+        if (!container || !reorderBtn) return;
+        
+        // Toggle reorder mode
+        if (container.classList.contains('reorder-mode')) {
+            // Disable reorder mode
+            container.classList.remove('reorder-mode');
+            reorderBtn.innerHTML = '<i class="fas fa-arrows-alt me-1"></i>Reorder';
+            reorderBtn.classList.remove('btn-warning');
+            reorderBtn.classList.add('btn-outline-secondary');
+            this.showNotification('Reorder mode disabled', 'info');
+        } else {
+            // Enable reorder mode
+            container.classList.add('reorder-mode');
+            reorderBtn.innerHTML = '<i class="fas fa-check me-1"></i>Done Reordering';
+            reorderBtn.classList.remove('btn-outline-secondary');
+            reorderBtn.classList.add('btn-warning');
+            this.showNotification('Reorder mode enabled - drag sections to reorder', 'info');
+        }
     }
     
     /**

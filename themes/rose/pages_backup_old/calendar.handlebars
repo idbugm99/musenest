@@ -1,0 +1,884 @@
+{{#> layouts/main pageTitle="Calendar - Book Appointment" metaDescription="Book your exclusive appointment with {{model.name}}. Select your preferred date and time for an unforgettable experience."}}
+
+<!-- Rose Garden Calendar Header -->
+<section class="rose-calendar-header" data-aos="fade-in">
+    <!-- Floating Rose Garden Elements -->
+    <div class="rose-calendar-decorations" aria-hidden="true">
+        <div class="rose-floating-element rose-calendar-element-1">🌹</div>
+        <div class="rose-floating-element rose-calendar-element-2">🌿</div>
+        <div class="rose-floating-element rose-calendar-element-3">✨</div>
+        <div class="rose-floating-element rose-calendar-element-4">🌸</div>
+        <div class="rose-floating-element rose-calendar-element-5">🌺</div>
+        <div class="rose-floating-element rose-calendar-element-6">🌷</div>
+        <div class="rose-floating-element rose-calendar-element-7">💎</div>
+    </div>
+    
+    <div class="rose-calendar-emblem-container" data-aos="zoom-in">
+        <div class="rose-garden-emblem">
+            <div class="rose-emblem-center">📅</div>
+            <div class="rose-emblem-petals">
+                <div class="rose-emblem-petal rose-emblem-petal-1">🌹</div>
+                <div class="rose-emblem-petal rose-emblem-petal-2">🌸</div>
+                <div class="rose-emblem-petal rose-emblem-petal-3">🌺</div>
+                <div class="rose-emblem-petal rose-emblem-petal-4">🌷</div>
+                <div class="rose-emblem-petal rose-emblem-petal-5">💮</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="luxury-container">
+        <div class="rose-calendar-content">
+            <div class="rose-calendar-title-section" data-aos="fade-up" data-aos-delay="100">
+                <h1 class="rose-calendar-title luxury-heading">
+                    {{#if calendar_content.page_title}}{{calendar_content.page_title}}{{else}}Rose Garden Calendar{{/if}}
+                </h1>
+                {{#if calendar_content.page_subtitle}}
+                <p class="rose-calendar-subtitle">
+                    {{calendar_content.page_subtitle}}
+                </p>
+                {{else}}
+                <p class="rose-calendar-subtitle">
+                    View my current location and availability. Check where I am traveling and when I am available for exclusive appointments.
+                </p>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Rose Garden Calendar Palace Section -->
+<section class="rose-calendar-palace luxury-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Rose Calendar Navigation -->
+        <div class="rose-calendar-navigation" data-aos="fade-up">
+            <button id="prev-month" class="rose-nav-btn rose-nav-prev">
+                <i class="fas fa-chevron-left"></i>
+                <span>Previous</span>
+            </button>
+            
+            <h2 id="month-title" class="rose-month-title"></h2>
+            
+            <button id="next-month" class="rose-nav-btn rose-nav-next">
+                <span>Next</span>
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- Rose Calendar Chamber -->
+        <div class="rose-calendar-chamber" data-aos="fade-up" data-aos-delay="200">
+            <!-- Calendar Days Header -->
+            <div class="rose-calendar-header-row">
+                <div class="rose-calendar-day-header">Sun</div>
+                <div class="rose-calendar-day-header">Mon</div>
+                <div class="rose-calendar-day-header">Tue</div>
+                <div class="rose-calendar-day-header">Wed</div>
+                <div class="rose-calendar-day-header">Thu</div>
+                <div class="rose-calendar-day-header">Fri</div>
+                <div class="rose-calendar-day-header">Sat</div>
+            </div>
+            
+            <!-- Calendar Grid -->
+            <div id="calendar-grid" class="rose-calendar-grid">
+                <div class="rose-calendar-loading">
+                    <div class="rose-loading-icon">
+                        <i class="fas fa-rose"></i>
+                    </div>
+                    <p class="rose-loading-text">Loading Rose Garden Schedule...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rose Garden Legend -->
+        <div class="rose-calendar-legend" data-aos="fade-up" data-aos-delay="400">
+            <div class="rose-legend-item">
+                <div class="rose-legend-indicator rose-available"></div>
+                <span class="rose-legend-label">Available</span>
+            </div>
+            <div class="rose-legend-item">
+                <div class="rose-legend-indicator rose-travel"></div>
+                <span class="rose-legend-label">Travel</span>
+            </div>
+            <div class="rose-legend-item">
+                <div class="rose-legend-indicator rose-vacation"></div>
+                <span class="rose-legend-label">Vacation</span>
+            </div>
+            <div class="rose-legend-item">
+                <div class="rose-legend-indicator rose-unavailable"></div>
+                <span class="rose-legend-label">Unavailable</span>
+            </div>
+        </div>
+
+        <!-- Rose Garden CTA -->
+        <div class="rose-calendar-cta" data-aos="fade-up" data-aos-delay="600">
+            <div class="rose-cta-ornament">
+                <i class="fas fa-gem"></i>
+            </div>
+            <h3 class="rose-cta-title">
+                {{#if calendar_content.cta_title}}{{calendar_content.cta_title}}{{else}}Schedule a Rose Garden Visit{{/if}}
+            </h3>
+            <p class="rose-cta-description">
+                {{#if calendar_content.cta_text}}{{calendar_content.cta_text}}{{else}}Contact me to schedule an exclusive appointment when I am in your area.{{/if}}
+            </p>
+            <div class="rose-cta-buttons">
+                <a href="/{{modelSlug}}/contact{{previewParam}}" class="rose-btn rose-btn-primary">
+                    <i class="fas fa-envelope mr-2"></i>
+                    <span>{{#if calendar_content.cta_button_text}}{{calendar_content.cta_button_text}}{{else}}Contact Me{{/if}}</span>
+                    <div class="rose-btn-glow"></div>
+                </a>
+                <a href="/{{modelSlug}}/rates{{previewParam}}" class="rose-btn rose-btn-secondary">
+                    <i class="fas fa-rose mr-2"></i>
+                    <span>View Garden Services</span>
+                    <div class="rose-btn-shine"></div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{!-- Rose Calendar JavaScript --}}
+<script>
+(function() {
+    const slug = {{{json modelSlug}}};
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth() + 1;
+    
+    const calendarGrid = document.getElementById('calendar-grid');
+    const monthTitle = document.getElementById('month-title');
+    const prevButton = document.getElementById('prev-month');
+    const nextButton = document.getElementById('next-month');
+    
+    async function loadCalendar(year = currentYear, month = currentMonth) {
+        try {
+            const response = await fetch(`/api/model-calendar/${slug}?year=${year}&month=${month}`);
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to load calendar');
+            }
+            
+            const calendar = data.data.calendar;
+            currentYear = year;
+            currentMonth = month;
+            
+            // Update month title
+            monthTitle.textContent = `${calendar.monthName} ${calendar.year}`;
+            
+            // Generate calendar grid
+            let gridHtml = '';
+            
+            calendar.weeks.forEach((week, weekIndex) => {
+                gridHtml += `<div class="grid grid-cols-7 border-t border-rose-200 border-opacity-20 relative" style="min-height: ${96 + (week.spans.length * 28)}px;">`;
+                
+                // Day cells
+                week.days.forEach((day, dayIndex) => {
+                    const isToday = day === new Date().getDate() && 
+                                  currentMonth === (new Date().getMonth() + 1) && 
+                                  currentYear === new Date().getFullYear();
+                    
+                    gridHtml += `
+                        <div class="p-3 border-r border-rose-200 border-opacity-20 ${day === 0 ? 'bg-rose-100 bg-opacity-30' : ''} relative min-h-24 hover:bg-rose-50 transition-all duration-300">
+                            ${day > 0 ? `
+                                <div class="text-sm font-medium mb-2 ${isToday ? 'text-rose-600 font-bold' : 'text-rose-700'} relative z-10">
+                                    ${day}
+                                    ${isToday ? '<div class="rose-today-indicator"></div>' : ''}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+                
+                // Add availability spans positioned absolutely over the week
+                week.spans.forEach((span, spanIndex) => {
+                    // Rose-themed colors for different statuses
+                    let roseColor = span.color;
+                    if (span.status === 'available') roseColor = '#be185d'; // Rose-600
+                    if (span.status === 'travel') roseColor = '#db2777'; // Pink-600
+                    if (span.status === 'vacation') roseColor = '#e11d48'; // Rose-500
+                    if (span.status === 'unavailable') roseColor = '#9f1239'; // Rose-800
+                    
+                    gridHtml += `
+                        <div class="absolute text-xs rounded-lg px-2 py-1 z-10 flex items-center justify-center font-medium shadow-lg text-white rose-calendar-span"
+                             style="background: linear-gradient(135deg, ${roseColor}, ${roseColor}dd); 
+                                    left: ${span.start_pos * 14.285714}%; 
+                                    width: ${span.width * 14.285714}%;
+                                    top: ${36 + (spanIndex * 28)}px; 
+                                    height: 24px;
+                                    margin-left: 1px;
+                                    margin-right: 1px;
+                                    backdrop-filter: blur(4px);
+                                    border: 1px solid rgba(255, 255, 255, 0.2);">
+                            <span class="truncate text-xs font-medium tracking-wide flex items-center gap-1">
+                                ${span.status === 'available' ? '🌹' : ''}
+                                ${span.status === 'travel' ? '✈️' : ''}
+                                ${span.status === 'vacation' ? '🌴' : ''}
+                                ${span.status === 'unavailable' ? '🚫' : ''}
+                                ${span.location}
+                                ${span.status === 'vacation' ? ' - Vacation' : ''}
+                            </span>
+                        </div>
+                    `;
+                });
+                
+                gridHtml += '</div>';
+            });
+            
+            calendarGrid.innerHTML = gridHtml;
+            
+            // Add hover effects to spans
+            setTimeout(() => {
+                const spans = document.querySelectorAll('.rose-calendar-span');
+                spans.forEach(span => {
+                    span.addEventListener('mouseenter', function() {
+                        this.style.transform = 'scale(1.05)';
+                        this.style.zIndex = '20';
+                        this.style.boxShadow = '0 8px 32px rgba(185, 28, 28, 0.3)';
+                    });
+                    
+                    span.addEventListener('mouseleave', function() {
+                        this.style.transform = 'scale(1)';
+                        this.style.zIndex = '10';
+                        this.style.boxShadow = '';
+                    });
+                });
+            }, 100);
+            
+        } catch (error) {
+            console.error('Error loading calendar:', error);
+            calendarGrid.innerHTML = `
+                <div class="text-center py-20">
+                    <div class="rose-calendar-error">
+                        <div class="text-6xl mb-8 opacity-60">🌹</div>
+                        <h3 class="text-2xl font-semibold mb-4 text-rose-700">Rose Garden Calendar Unavailable</h3>
+                        <p class="text-lg text-rose-600">Please contact me directly for scheduling your garden visit.</p>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    // Navigation event listeners
+    prevButton.addEventListener('click', () => {
+        prevButton.style.transform = 'scale(0.95)';
+        setTimeout(() => { prevButton.style.transform = ''; }, 150);
+        
+        if (currentMonth === 1) {
+            currentMonth = 12;
+            currentYear--;
+        } else {
+            currentMonth--;
+        }
+        loadCalendar(currentYear, currentMonth);
+    });
+    
+    nextButton.addEventListener('click', () => {
+        nextButton.style.transform = 'scale(0.95)';
+        setTimeout(() => { nextButton.style.transform = ''; }, 150);
+        
+        if (currentMonth === 12) {
+            currentMonth = 1;
+            currentYear++;
+        } else {
+            currentMonth++;
+        }
+        loadCalendar(currentYear, currentMonth);
+    });
+    
+    // Load initial calendar
+    loadCalendar();
+    
+    // Add floating rose petals effect
+    function createFloatingPetal() {
+        const petal = document.createElement('div');
+        petal.className = 'rose-floating-petal';
+        petal.innerHTML = '🌸';
+        petal.style.left = Math.random() * 100 + '%';
+        petal.style.animationDuration = (Math.random() * 8 + 6) + 's';
+        petal.style.animationDelay = Math.random() * 2 + 's';
+        
+        document.querySelector('.rose-calendar-palace').appendChild(petal);
+        
+        setTimeout(() => {
+            if (petal.parentNode) {
+                petal.parentNode.removeChild(petal);
+            }
+        }, 15000);
+    }
+    
+    // Create floating petals periodically
+    setInterval(createFloatingPetal, 3000);
+    
+})();
+</script>
+
+<!-- Rose Garden Calendar Styling -->
+<style>
+/* Rose Calendar Header */
+.rose-calendar-header {
+    background: 
+        radial-gradient(ellipse 800px 600px at 30% -10%, rgba(185, 28, 28, 0.15), transparent 60%),
+        radial-gradient(ellipse 600px 400px at 70% 110%, rgba(190, 24, 93, 0.12), transparent 60%),
+        linear-gradient(135deg, var(--rose-blush) 0%, var(--rose-light) 40%, #fbb6ce 100%);
+    padding: 6rem 0 4rem 0;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 3px solid var(--rose-gold);
+}
+
+.rose-calendar-decorations {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.rose-calendar-element-1 { 
+    position: absolute; 
+    top: 20%; 
+    left: 15%; 
+    font-size: 2.5rem; 
+    animation: roseFloat 8s ease-in-out infinite;
+    animation-delay: 0s;
+}
+.rose-calendar-element-2 { 
+    position: absolute; 
+    top: 30%; 
+    right: 20%; 
+    font-size: 2rem; 
+    animation: roseFloat 7s ease-in-out infinite;
+    animation-delay: 1s;
+}
+.rose-calendar-element-3 { 
+    position: absolute; 
+    top: 60%; 
+    left: 10%; 
+    font-size: 1.5rem; 
+    animation: roseFloat 9s ease-in-out infinite;
+    animation-delay: 2s;
+}
+.rose-calendar-element-4 { 
+    position: absolute; 
+    top: 70%; 
+    right: 15%; 
+    font-size: 2rem; 
+    animation: roseFloat 6s ease-in-out infinite;
+    animation-delay: 3s;
+}
+.rose-calendar-element-5 { 
+    position: absolute; 
+    top: 45%; 
+    left: 50%; 
+    font-size: 1.8rem; 
+    animation: roseFloat 8.5s ease-in-out infinite;
+    animation-delay: 1.5s;
+}
+.rose-calendar-element-6 { 
+    position: absolute; 
+    top: 25%; 
+    right: 45%; 
+    font-size: 2.2rem; 
+    animation: roseFloat 7.5s ease-in-out infinite;
+    animation-delay: 2.5s;
+}
+.rose-calendar-element-7 { 
+    position: absolute; 
+    top: 55%; 
+    right: 40%; 
+    font-size: 1.2rem; 
+    animation: roseFloat 8.8s ease-in-out infinite;
+    animation-delay: 4s;
+}
+
+.rose-calendar-emblem-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+.rose-garden-emblem {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 120px;
+}
+
+.rose-emblem-center {
+    font-size: 3rem;
+    z-index: 3;
+    background: linear-gradient(135deg, var(--rose-white) 0%, var(--rose-light) 100%);
+    border: 3px solid var(--rose-gold);
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba(185, 28, 28, 0.2);
+    animation: roseEmblemGlow 3s ease-in-out infinite;
+}
+
+.rose-emblem-petals {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    animation: roseEmblemRotate 20s linear infinite;
+}
+
+.rose-emblem-petal {
+    position: absolute;
+    font-size: 1.5rem;
+    animation: rosePetalFloat 4s ease-in-out infinite;
+}
+
+.rose-emblem-petal-1 { top: 0; left: 50%; transform: translateX(-50%); animation-delay: 0s; }
+.rose-emblem-petal-2 { top: 25%; right: 0; animation-delay: 0.8s; }
+.rose-emblem-petal-3 { bottom: 25%; right: 0; animation-delay: 1.6s; }
+.rose-emblem-petal-4 { bottom: 0; left: 50%; transform: translateX(-50%); animation-delay: 2.4s; }
+.rose-emblem-petal-5 { top: 25%; left: 0; animation-delay: 3.2s; }
+
+.rose-calendar-content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    padding-top: 8rem;
+}
+
+.rose-calendar-title {
+    font-size: 4rem;
+    background: linear-gradient(135deg, var(--rose-deep) 0%, var(--rose-primary) 50%, var(--rose-gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(185, 28, 28, 0.1);
+}
+
+.rose-calendar-subtitle {
+    font-size: 1.25rem;
+    color: var(--rose-muted);
+    font-weight: 500;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Rose Calendar Palace */
+.rose-calendar-palace {
+    background: linear-gradient(135deg, var(--rose-white) 0%, var(--rose-blush) 100%);
+    position: relative;
+}
+
+/* Rose Calendar Navigation */
+.rose-calendar-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4rem;
+    padding: 0 2rem;
+}
+
+.rose-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--rose-primary) 0%, var(--rose-deep) 100%);
+    color: var(--rose-white);
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 8px 25px rgba(185, 28, 28, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.rose-nav-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 35px rgba(185, 28, 28, 0.5);
+}
+
+.rose-month-title {
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, var(--rose-deep) 0%, var(--rose-primary) 50%, var(--rose-gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 2px 8px rgba(185, 28, 28, 0.3);
+    font-family: 'Playfair Display', serif;
+    letter-spacing: 1px;
+}
+
+/* Rose Calendar Chamber */
+.rose-calendar-chamber {
+    background: linear-gradient(145deg, var(--rose-white) 0%, rgba(254, 242, 242, 0.9) 100%);
+    border-radius: 25px;
+    box-shadow: 0 25px 60px rgba(185, 28, 28, 0.1);
+    border: 2px solid var(--rose-light);
+    overflow: hidden;
+    margin-bottom: 4rem;
+}
+
+.rose-calendar-header-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: linear-gradient(135deg, var(--rose-primary) 0%, var(--rose-deep) 100%);
+    border-bottom: 2px solid rgba(185, 28, 28, 0.3);
+}
+
+.rose-calendar-day-header {
+    padding: 1.5rem;
+    text-align: center;
+    font-weight: 700;
+    color: var(--rose-white);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.95rem;
+}
+
+.rose-calendar-day-header:last-child {
+    border-right: none;
+}
+
+.rose-calendar-grid {
+    padding: 2rem;
+    min-height: 400px;
+}
+
+/* Calendar Loading State */
+.rose-calendar-loading {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.rose-loading-icon {
+    font-size: 3rem;
+    color: var(--rose-primary);
+    margin-bottom: 1.5rem;
+    animation: roseLoadingSpin 2s linear infinite;
+}
+
+@keyframes roseLoadingSpin {
+    from { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.1); }
+    to { transform: rotate(360deg) scale(1); }
+}
+
+.rose-loading-text {
+    font-size: 1.2rem;
+    color: var(--rose-deep);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* Rose Calendar Legend */
+.rose-calendar-legend {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-bottom: 4rem;
+    flex-wrap: wrap;
+}
+
+.rose-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: var(--rose-white);
+    border-radius: 50px;
+    border: 2px solid var(--rose-light);
+    box-shadow: 0 4px 15px rgba(185, 28, 28, 0.1);
+    transition: all 0.3s ease;
+}
+
+.rose-legend-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(185, 28, 28, 0.2);
+}
+
+.rose-legend-indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.rose-available { background: linear-gradient(135deg, var(--rose-primary), var(--rose-deep)); }
+.rose-travel { background: linear-gradient(135deg, #db2777, #be185d); }
+.rose-vacation { background: linear-gradient(135deg, #e11d48, #dc2626); }
+.rose-unavailable { background: linear-gradient(135deg, #9f1239, #7f1d1d); }
+
+.rose-legend-label {
+    font-weight: 600;
+    color: var(--rose-deep);
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+}
+
+/* Rose Calendar CTA */
+.rose-calendar-cta {
+    background: linear-gradient(145deg, rgba(185, 28, 28, 0.05) 0%, rgba(190, 24, 93, 0.05) 100%);
+    border: 2px solid var(--rose-light);
+    border-radius: 30px;
+    padding: 4rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.rose-cta-ornament {
+    font-size: 3rem;
+    color: var(--rose-gold);
+    margin-bottom: 2rem;
+    animation: roseCTAOrnamentGlow 4s infinite ease-in-out;
+}
+
+@keyframes roseCTAOrnamentGlow {
+    0%, 100% { opacity: 0.8; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+}
+
+.rose-cta-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, var(--rose-deep) 0%, var(--rose-primary) 50%, var(--rose-gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1.5rem;
+    font-family: 'Playfair Display', serif;
+    letter-spacing: 1px;
+}
+
+.rose-cta-description {
+    font-size: 1.2rem;
+    color: var(--rose-muted);
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+    font-weight: 400;
+}
+
+.rose-cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.rose-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: all 0.4s ease;
+    cursor: pointer;
+    border: none;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.rose-btn-primary {
+    background: linear-gradient(135deg, var(--rose-primary) 0%, var(--rose-deep) 100%);
+    color: var(--rose-white);
+    box-shadow: 0 8px 25px rgba(185, 28, 28, 0.4);
+}
+
+.rose-btn-primary:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 15px 40px rgba(185, 28, 28, 0.6);
+    color: var(--rose-white);
+}
+
+.rose-btn-secondary {
+    background: transparent;
+    color: var(--rose-primary);
+    border: 2px solid var(--rose-primary);
+    box-shadow: 0 8px 25px rgba(185, 28, 28, 0.2);
+}
+
+.rose-btn-secondary:hover {
+    background: var(--rose-primary);
+    color: var(--rose-white);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 15px 40px rgba(185, 28, 28, 0.4);
+}
+
+.rose-btn-glow,
+.rose-btn-shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s;
+}
+
+.rose-btn:hover .rose-btn-glow,
+.rose-btn:hover .rose-btn-shine {
+    left: 100%;
+}
+
+/* Today indicator */
+.rose-today-indicator {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background: var(--rose-primary);
+    border-radius: 50%;
+    animation: roseTodayPulse 2s ease-in-out infinite;
+}
+
+@keyframes roseTodayPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.2); }
+}
+
+/* Floating petals */
+.rose-floating-petal {
+    position: absolute;
+    top: -20px;
+    font-size: 1rem;
+    pointer-events: none;
+    animation: roseFloatingPetal 12s linear infinite;
+    z-index: 1;
+}
+
+@keyframes roseFloatingPetal {
+    0% {
+        transform: translateY(-20px) translateX(0) rotate(0deg);
+        opacity: 0.8;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(calc(100vh + 50px)) translateX(-50px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Animations */
+@keyframes roseFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-15px) rotate(2deg); }
+    66% { transform: translateY(-5px) rotate(-1deg); }
+}
+
+@keyframes roseEmblemGlow {
+    0%, 100% { box-shadow: 0 8px 32px rgba(185, 28, 28, 0.2); }
+    50% { box-shadow: 0 8px 32px rgba(185, 28, 28, 0.4), 0 0 20px rgba(212, 175, 55, 0.3); }
+}
+
+@keyframes roseEmblemRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes rosePetalFloat {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-10px) scale(1.1); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .rose-calendar-header {
+        padding: 4rem 0 3rem 0;
+    }
+    
+    .rose-calendar-title {
+        font-size: 2.5rem;
+    }
+    
+    .rose-calendar-subtitle {
+        font-size: 1.1rem;
+        padding: 0 1rem;
+    }
+    
+    .rose-calendar-navigation {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 0 1rem;
+    }
+    
+    .rose-nav-btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .rose-month-title {
+        font-size: 2rem;
+    }
+    
+    .rose-calendar-legend {
+        gap: 1.5rem;
+        padding: 0 1rem;
+    }
+    
+    .rose-cta-title {
+        font-size: 2rem;
+    }
+    
+    .rose-cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .rose-btn {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .rose-calendar-title {
+        font-size: 2rem;
+    }
+    
+    .rose-calendar-subtitle {
+        font-size: 1rem;
+        padding: 0 1.5rem;
+    }
+    
+    .rose-calendar-legend {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .rose-calendar-cta {
+        padding: 3rem 1.5rem;
+        margin: 0 1rem;
+    }
+}
+</style>
+
+{{/layouts/main}}

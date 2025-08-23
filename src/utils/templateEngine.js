@@ -447,60 +447,102 @@ class TemplateEngine {
         return processed;
     }
 
-    // Get theme template path
+    // Get theme template path with shared template support
     getThemeTemplatePath(theme, templateName) {
         const templatesDir = path.join(__dirname, '../../templates');
-        return path.join(templatesDir, theme, `${templateName}.html`);
-    }
-
-    // Render with theme
-    async renderWithTheme(theme, templateName, context = {}) {
-        const templatePath = this.getThemeTemplatePath(theme, templateName);
+        const themesDir = path.join(__dirname, '../../themes');
         
-        try {
-            await fs.access(templatePath);
-            return await this.renderFile(templatePath, context);
-        } catch (error) {
-            // Fallback to basic theme if theme template doesn't exist
-            if (theme !== 'basic') {
-                console.warn(`Template ${templateName} not found for theme ${theme}, falling back to basic theme`);
-                return await this.renderWithTheme('basic', templateName, context);
-            }
-            
-            throw new Error(`Template ${templateName} not found in basic theme`);
-        }
+        return {
+            // Priority 1: Shared template (universal)
+            sharedPath: path.join(themesDir, 'shared', 'pages', `${templateName}.handlebars`),
+            // Priority 2: Theme-specific template
+            themePath: path.join(templatesDir, theme, `${templateName}.html`),
+            // Priority 3: Legacy theme directory (if exists)
+            legacyThemePath: path.join(themesDir, theme, 'pages', `${templateName}.handlebars`),
+            // Priority 4: Fallback to basic theme
+            basicPath: path.join(templatesDir, 'basic', `${templateName}.html`)
+        };
     }
 
-    // Get component template path
+    // Render with theme (with shared template support)
+    async renderWithTheme(theme, templateName, context = {}) {
+        console.log(`🔍 DEBUG: renderWithTheme called with theme="${theme}", templateName="${templateName}"`);
+        const templatePaths = this.getThemeTemplatePath(theme, templateName);
+        console.log('🔍 DEBUG: Template paths:', templatePaths);
+        
+        // Try templates in priority order
+        const pathsToTry = [
+            { path: templatePaths.sharedPath, type: 'shared' },
+            { path: templatePaths.themePath, type: 'theme-specific' },
+            { path: templatePaths.legacyThemePath, type: 'legacy-theme' },
+            { path: templatePaths.basicPath, type: 'basic-fallback' }
+        ];
+        
+        for (const { path: templatePath, type } of pathsToTry) {
+            try {
+                console.log(`🔍 DEBUG: Trying ${type} template: ${templatePath}`);
+                await fs.access(templatePath);
+                console.log(`✅ DEBUG: Found ${type} template: ${templatePath}`);
+                if (process.env.NODE_ENV === 'development') {
+                    console.log(`Using ${type} template: ${templatePath}`);
+                }
+                return await this.renderFile(templatePath, context);
+            } catch (error) {
+                console.log(`❌ DEBUG: ${type} template not found: ${templatePath}`);
+                // Continue to next template path
+                continue;
+            }
+        }
+        
+        // If we get here, no template was found
+        throw new Error(`Template ${templateName} not found in any location for theme ${theme}`);
+    }
+
+    // Get component template path with shared support
     getComponentPath(theme, componentName) {
         const templatesDir = path.join(__dirname, '../../templates');
+        const themesDir = path.join(__dirname, '../../themes');
         
-        // First try theme-specific component
-        const themeComponentPath = path.join(templatesDir, theme, 'components', `${componentName}.html`);
-        // Fallback to base component
-        const baseComponentPath = path.join(templatesDir, 'components', `${componentName}.html`);
-        
-        return { themeComponentPath, baseComponentPath };
+        return {
+            // Priority 1: Shared component
+            sharedComponentPath: path.join(themesDir, 'shared', 'components', `${componentName}.handlebars`),
+            // Priority 2: Theme-specific component
+            themeComponentPath: path.join(templatesDir, theme, 'components', `${componentName}.html`),
+            // Priority 3: Legacy theme component
+            legacyThemeComponentPath: path.join(themesDir, theme, 'components', `${componentName}.handlebars`),
+            // Priority 4: Base component fallback
+            baseComponentPath: path.join(templatesDir, 'components', `${componentName}.html`)
+        };
     }
 
-    // Render component
+    // Render component with shared support
     async renderComponent(componentName, context = {}, theme = 'basic') {
-        const { themeComponentPath, baseComponentPath } = this.getComponentPath(theme, componentName);
+        const componentPaths = this.getComponentPath(theme, componentName);
         
-        try {
-            // Try theme-specific component first
+        // Try components in priority order
+        const pathsToTry = [
+            { path: componentPaths.sharedComponentPath, type: 'shared' },
+            { path: componentPaths.themeComponentPath, type: 'theme-specific' },
+            { path: componentPaths.legacyThemeComponentPath, type: 'legacy-theme' },
+            { path: componentPaths.baseComponentPath, type: 'base-fallback' }
+        ];
+        
+        for (const { path: componentPath, type } of pathsToTry) {
             try {
-                await fs.access(themeComponentPath);
-                return await this.renderFile(themeComponentPath, context);
+                await fs.access(componentPath);
+                if (process.env.NODE_ENV === 'development') {
+                    console.log(`Using ${type} component: ${componentPath}`);
+                }
+                return await this.renderFile(componentPath, context);
             } catch (error) {
-                // Fallback to base component
-                await fs.access(baseComponentPath);
-                return await this.renderFile(baseComponentPath, context);
+                // Continue to next component path
+                continue;
             }
-        } catch (error) {
-            console.error(`Component ${componentName} not found in theme ${theme} or base components`);
-            return `<!-- Component ${componentName} not found -->`;
         }
+        
+        // If we get here, no component was found
+        console.error(`Component ${componentName} not found in any location for theme ${theme}`);
+        return `<!-- Component ${componentName} not found -->`;
     }
 
     // Build navigation context (utility method)

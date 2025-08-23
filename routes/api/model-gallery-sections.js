@@ -77,40 +77,39 @@ router.get('/:modelSlug', async (req, res) => {
         const currentPage = Math.max(1, parseInt(page));
         const offset = (currentPage - 1) * perPage;
 
-        // Build query conditions - use gallery_sections table instead
-        const conditions = ['gs.model_id = (SELECT id FROM models WHERE slug = ?)'];
+        // Build query conditions - use model_gallery_sections table
+        const conditions = ['mgs.model_slug = ?'];
         const params = [modelSlug];
 
         if (search) {
-            conditions.push('(gs.title LIKE ? OR gs.description LIKE ?)');
+            conditions.push('(mgs.section_name LIKE ? OR mgs.section_description LIKE ?)');
             params.push(`%${search}%`, `%${search}%`);
         }
 
         const whereClause = conditions.join(' AND ');
 
         // Get total count
-        const countQuery = `SELECT COUNT(*) as total FROM gallery_sections gs WHERE ${whereClause}`;
+        const countQuery = `SELECT COUNT(*) as total FROM model_gallery_sections mgs WHERE ${whereClause}`;
         const countResult = await db.query(countQuery, params);
         const total = countResult[0]?.total || 0;
 
         // Get sections with image count
         const query = `
             SELECT 
-                gs.id,
-                gs.title as section_name,
-                gs.description as section_description,
-                gs.layout_type,
-                gs.sort_order as section_order,
-                gs.is_visible as is_published,
-                gs.created_at as created_date,
-                COUNT(gi.id) as media_count
-            FROM gallery_sections gs
-            LEFT JOIN gallery_images gi ON gs.id = gi.section_id AND gi.is_active = 1
-            LEFT JOIN content_moderation cm ON cm.model_id = gi.model_id AND cm.original_path LIKE CONCAT('%', gi.filename)
-            AND cm.moderation_status = 'approved'
+                mgs.id,
+                mgs.section_name,
+                mgs.section_description,
+                mgs.layout_type,
+                mgs.section_order,
+                mgs.is_published,
+                mgs.created_date,
+                COUNT(mgsm.media_id) as media_count
+            FROM model_gallery_sections mgs
+            LEFT JOIN model_gallery_section_media mgsm ON mgs.id = mgsm.section_id
+            LEFT JOIN model_media_library mml ON mgsm.media_id = mml.id AND mml.is_deleted = 0 AND mml.moderation_status = 'approved'
             WHERE ${whereClause}
-            GROUP BY gs.id
-            ORDER BY gs.sort_order ASC, gs.created_at DESC
+            GROUP BY mgs.id, mgs.section_name, mgs.section_description, mgs.layout_type, mgs.section_order, mgs.is_published, mgs.created_date
+            ORDER BY mgs.section_order ASC, mgs.created_date DESC
             LIMIT ? OFFSET ?
         `;
 
@@ -120,13 +119,13 @@ router.get('/:modelSlug', async (req, res) => {
         // Format sections to match frontend expectations
         const formattedSections = sections.map(section => ({
             id: section.id,
-            title: section.section_name,
-            description: section.section_description,
+            section_name: section.section_name,
+            section_description: section.section_description,
             layout_type: section.layout_type,
-            sort_order: section.section_order,
-            is_visible: section.is_published,
-            created_at: section.created_date,
-            image_count: section.media_count,
+            section_order: section.section_order,
+            is_published: section.is_published,
+            created_date: section.created_date,
+            media_count: section.media_count,
             // Add layout settings if needed
             layout_settings: defaultLayoutSettings[section.layout_type] || {}
         }));
@@ -476,6 +475,66 @@ router.delete('/:modelSlug/:sectionId', async (req, res) => {
 // SECTION MEDIA MANAGEMENT
 // ===================================
 
+// GET /api/model-gallery-sections/:modelSlug/:sectionId/media
+// Get media assigned to a gallery section
+router.get('/:modelSlug/:sectionId/media', async (req, res) => {
+    try {
+        const { modelSlug, sectionId } = req.params;
+
+        const model = await getModelBySlug(modelSlug);
+        if (!model) return res.status(404).json({ success: false, message: 'Model not found' });
+
+        // Check if section exists
+        const sectionCheck = await db.query(
+            'SELECT id FROM model_gallery_sections WHERE id = ? AND model_slug = ?',
+            [sectionId, modelSlug]
+        );
+
+        if (!sectionCheck || sectionCheck.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Gallery section not found'
+            });
+        }
+
+        // Get media assigned to this section
+        const mediaQuery = `
+            SELECT 
+                mml.id,
+                mml.filename,
+                mml.original_filename,
+                mml.image_width,
+                mml.image_height,
+                mml.moderation_status,
+                mgsm.display_order,
+                mgsm.custom_caption,
+                mgsm.custom_alt_text,
+                mgsm.is_featured as section_featured,
+                mgsm.is_cover_image,
+                CONCAT('/uploads/', mml.model_slug, '/media/', mml.filename) as file_url,
+                CONCAT('/uploads/', mml.model_slug, '/media/thumbs/', mml.filename) as thumbnail_url
+            FROM model_gallery_section_media mgsm
+            JOIN model_media_library mml ON mgsm.media_id = mml.id
+            WHERE mgsm.section_id = ? AND mml.is_deleted = 0 AND mml.moderation_status = 'approved'
+            ORDER BY mgsm.display_order ASC
+        `;
+
+        const media = await db.query(mediaQuery, [sectionId]);
+
+        res.json({
+            success: true,
+            media
+        });
+
+    } catch (error) {
+        logger.error('Error fetching section media:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch section media'
+        });
+    }
+});
+
 // POST /api/model-gallery-sections/:modelSlug/:sectionId/media
 // Add media to gallery section
 router.post('/:modelSlug/:sectionId/media', async (req, res) => {
@@ -614,6 +673,103 @@ router.delete('/:modelSlug/:sectionId/media/:mediaId', async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to remove media from section'
+        });
+    }
+});
+
+// PUT /api/model-gallery-sections/:modelSlug/:sectionId/toggle-visibility
+// Toggle section visibility
+router.put('/:modelSlug/:sectionId/toggle-visibility', async (req, res) => {
+    try {
+        const { modelSlug, sectionId } = req.params;
+        const { is_published } = req.body;
+
+        if (typeof is_published !== 'boolean') {
+            return res.status(400).json({
+                success: false,
+                message: 'is_published must be a boolean value'
+            });
+        }
+
+        const model = await getModelBySlug(modelSlug);
+        if (!model) return res.status(404).json({ success: false, message: 'Model not found' });
+
+        // Check if section exists
+        const checkQuery = 'SELECT id FROM model_gallery_sections WHERE id = ? AND model_slug = ?';
+        const existing = await db.query(checkQuery, [sectionId, modelSlug]);
+
+        if (!existing || existing.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Gallery section not found'
+            });
+        }
+
+        // Update visibility
+        const updateQuery = `
+            UPDATE model_gallery_sections 
+            SET is_published = ?, modified_date = CURRENT_TIMESTAMP 
+            WHERE id = ? AND model_slug = ?
+        `;
+
+        await db.query(updateQuery, [is_published ? 1 : 0, sectionId, modelSlug]);
+
+        res.json({
+            success: true,
+            message: `Section ${is_published ? 'published' : 'hidden'} successfully`
+        });
+
+    } catch (error) {
+        logger.error('Error toggling section visibility:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to toggle section visibility'
+        });
+    }
+});
+
+// PUT /api/model-gallery-sections/:modelSlug/reorder
+// Reorder gallery sections
+router.put('/:modelSlug/reorder', async (req, res) => {
+    try {
+        const { modelSlug } = req.params;
+        const { sections = [] } = req.body; // Array of {id, section_order} objects
+
+        if (!Array.isArray(sections) || sections.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Sections array is required'
+            });
+        }
+
+        const model = await getModelBySlug(modelSlug);
+        if (!model) return res.status(404).json({ success: false, message: 'Model not found' });
+
+        // Update section orders
+        for (const item of sections) {
+            const { id, section_order } = item;
+            
+            if (!id || section_order === undefined) continue;
+
+            const updateQuery = `
+                UPDATE model_gallery_sections 
+                SET section_order = ?, modified_date = CURRENT_TIMESTAMP
+                WHERE id = ? AND model_slug = ?
+            `;
+
+            await db.query(updateQuery, [section_order, id, modelSlug]);
+        }
+
+        res.json({
+            success: true,
+            message: 'Section order updated successfully'
+        });
+
+    } catch (error) {
+        logger.error('Error reordering sections:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to reorder sections'
         });
     }
 });

@@ -1,0 +1,499 @@
+<!-- Calendar Page - Universal Template with Theme Classes -->
+<!-- This template works across all themes using universal CSS variables -->
+
+<!-- Page Header Section -->
+<section class="py-20 theme-section relative overflow-hidden" data-aos="fade-in">
+    <div class="max-w-6xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative z-20">
+        <!-- Calendar Icon -->
+        <div class="text-6xl mb-8 theme-accent" data-aos="fade-down" data-aos-delay="200">
+            <i class="fas fa-calendar-alt"></i>
+        </div>
+        
+        <!-- Page Title -->
+        <h1 class="text-4xl md:text-6xl font-bold mb-6 theme-header" data-aos="fade-up" data-aos-delay="400">
+            {{#if calendar_content.page_title}}{{calendar_content.page_title}}{{else}}My Calendar{{/if}}
+        </h1>
+        
+        <!-- Page Subtitle -->
+        {{#if calendar_content.page_subtitle}}
+        <p class="text-xl theme-text-secondary max-w-3xl mx-auto mb-8" data-aos="fade-up" data-aos-delay="600">
+            {{calendar_content.page_subtitle}}
+        </p>
+        {{else}}
+        <p class="text-xl theme-text-secondary max-w-3xl mx-auto mb-8" data-aos="fade-up" data-aos-delay="600">
+            View my current location and availability. Check where I am traveling and when I am available for exclusive appointments.
+        </p>
+        {{/if}}
+        
+        <!-- Decorative Divider -->
+        <div class="w-24 h-1 theme-accent-bg mx-auto rounded-full" data-aos="fade-up" data-aos-delay="800"></div>
+    </div>
+</section>
+
+<!-- Main Calendar Section -->
+<section class="py-16 theme-section-alt">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- View Toggle (Mobile First) -->
+        <div class="flex justify-center mb-6 md:hidden">
+            <div class="theme-card rounded-lg p-1 shadow-sm">
+                <button id="list-view-btn" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors active theme-accent theme-text-inverted">
+                    List
+                </button>
+                <button id="month-view-btn" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors theme-text-secondary">
+                    Month
+                </button>
+            </div>
+        </div>
+        
+        <!-- Calendar Navigation -->
+        {{#if calendar_content.calendar_navigation_visible}}
+        <div class="flex justify-between items-center mb-8" data-aos="fade-up">
+            <button id="prev-month" class="px-6 py-3 border-2 theme-border-accent theme-accent rounded-lg font-semibold transition-colors hover:theme-accent-bg hover:theme-text-inverted">
+                <i class="fas fa-chevron-left mr-2"></i>
+                <span>Previous</span>
+            </button>
+            
+            <h2 id="month-title" class="text-3xl font-bold theme-header text-center"></h2>
+            
+            <button id="next-month" class="px-6 py-3 border-2 theme-border-accent theme-accent rounded-lg font-semibold transition-colors hover:theme-accent-bg hover:theme-text-inverted">
+                <span>Next</span>
+                <i class="fas fa-chevron-right ml-2"></i>
+            </button>
+        </div>
+        {{/if}}
+
+        <!-- Calendar Container -->
+        <div id="calendar-container" class="theme-card rounded-lg shadow-lg overflow-hidden mb-8">
+            <!-- Calendar Header -->
+            <div class="grid grid-cols-7 theme-bg-secondary">
+                <div class="p-4 text-center font-semibold theme-text-primary border-r theme-border-light">Sun</div>
+                <div class="p-4 text-center font-semibold theme-text-primary border-r theme-border-light">Mon</div>
+                <div class="p-4 text-center font-semibold theme-text-primary border-r theme-border-light">Tue</div>
+                <div class="p-4 text-center font-semibold theme-text-primary border-r theme-border-light">Wed</div>
+                <div class="p-4 text-center font-semibold theme-text-primary border-r theme-border-light">Thu</div>
+                <div class="p-4 text-center font-semibold theme-text-primary border-r theme-border-light">Fri</div>
+                <div class="p-4 text-center font-semibold theme-text-primary">Sat</div>
+            </div>
+            
+            <!-- Calendar Body -->
+            <div id="calendar-grid">
+                <div class="text-center py-12 theme-text-secondary">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 theme-border-accent mx-auto mb-4"></div>
+                    Loading calendar...
+                </div>
+            </div>
+        </div>
+        
+        <!-- List View -->
+        <div id="list-container" class="theme-card rounded-lg shadow-lg p-6 mb-8 hidden">
+            <div id="list-view">
+                <div class="text-center py-12 theme-text-secondary">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 theme-border-accent mx-auto mb-4"></div>
+                    Loading events...
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar Legend -->
+        <div class="flex flex-wrap justify-center gap-6 mb-8" data-aos="fade-up" data-aos-delay="400">
+            <div class="flex items-center theme-card px-4 py-2 rounded-full">
+                <div class="w-4 h-4 rounded-full mr-3 bg-green-500"></div>
+                <span class="text-sm font-medium theme-text-primary">Available</span>
+            </div>
+            <div class="flex items-center theme-card px-4 py-2 rounded-full">
+                <div class="w-4 h-4 rounded-full mr-3 bg-blue-500"></div>
+                <span class="text-sm font-medium theme-text-primary">Travel</span>
+            </div>
+            <div class="flex items-center theme-card px-4 py-2 rounded-full">
+                <div class="w-4 h-4 rounded-full mr-3 bg-yellow-500"></div>
+                <span class="text-sm font-medium theme-text-primary">Vacation</span>
+            </div>
+            <div class="flex items-center theme-card px-4 py-2 rounded-full">
+                <div class="w-4 h-4 rounded-full mr-3 bg-gray-500"></div>
+                <span class="text-sm font-medium theme-text-primary">Unavailable</span>
+            </div>
+        </div>
+
+        <!-- Contact Call-to-Action -->
+        {{#if calendar_content.cta_visible}}
+        <div class="theme-card p-8 text-center hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="600">
+            <div class="theme-accent w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center">
+                <i class="fas fa-calendar-check text-2xl theme-text-inverted"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-4 theme-header">
+                {{#if calendar_content.cta_title}}{{calendar_content.cta_title}}{{else}}Schedule an Appointment{{/if}}
+            </h3>
+            <p class="theme-text-secondary mb-8 max-w-2xl mx-auto leading-relaxed">
+                {{#if calendar_content.cta_text}}{{calendar_content.cta_text}}{{else}}Contact me to schedule an exclusive appointment when I am in your area.{{/if}}
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto">
+                <a href="/{{modelSlug}}/contact{{previewParam}}" 
+                   class="flex-1 theme-accent-bg theme-text-inverted py-3 px-6 rounded-lg font-semibold transition-all hover:shadow-lg hover:-translate-y-0.5 inline-flex items-center justify-center">
+                    <i class="fas fa-envelope mr-2"></i>
+                    {{#if calendar_content.cta_button_text}}{{calendar_content.cta_button_text}}{{else}}Contact Me{{/if}}
+                </a>
+                <a href="/{{modelSlug}}/rates{{previewParam}}" 
+                   class="flex-1 border-2 theme-border-accent theme-accent py-3 px-6 rounded-lg font-semibold transition-all hover:theme-accent-bg hover:theme-text-inverted inline-flex items-center justify-center">
+                    <i class="fas fa-star mr-2"></i>
+                    View Services
+                </a>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+</section>
+
+<!-- Calendar JavaScript -->
+<script>
+(function() {
+    const slug = {{{json modelSlug}}};
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth() + 1;
+    
+    const calendarGrid = document.getElementById('calendar-grid');
+    const monthTitle = document.getElementById('month-title');
+    const prevButton = document.getElementById('prev-month');
+    const nextButton = document.getElementById('next-month');
+    
+    async function loadCalendar(year = currentYear, month = currentMonth) {
+        try {
+            const response = await fetch(`/api/model-calendar/${slug}?year=${year}&month=${month}`);
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to load calendar');
+            }
+            
+            const calendar = data.data.calendar;
+            currentYear = year;
+            currentMonth = month;
+            
+            // Update month title
+            monthTitle.textContent = `${calendar.monthName} ${calendar.year}`;
+            
+            // Generate calendar grid
+            let gridHtml = '';
+            
+            const cellHeights = {
+                desktop: 92,
+                tablet: 64,
+                mobile: 56
+            };
+            
+            const screenWidth = window.innerWidth;
+            const cellHeight = screenWidth >= 1024 ? cellHeights.desktop : 
+                             screenWidth >= 768 ? cellHeights.tablet : cellHeights.mobile;
+            
+            calendar.weeks.forEach((week, weekIndex) => {
+                gridHtml += `<div class="grid grid-cols-7 border-t border-theme-border-light relative" style="min-height: ${cellHeight + (week.spans?.length * 28 || 0)}px;">`;
+                
+                // Day cells
+                week.days.forEach((day, dayIndex) => {
+                    const isToday = day === new Date().getDate() && 
+                                  currentMonth === (new Date().getMonth() + 1) && 
+                                  currentYear === new Date().getFullYear();
+                    
+                    gridHtml += `
+                        <div class="p-2 border-r border-theme-border-light ${day === 0 ? 'theme-bg-muted' : ''} relative" style="min-height: ${cellHeight}px;">
+                            ${day > 0 ? `
+                                <div class="text-sm font-semibold mb-2 ${isToday ? 'theme-accent' : 'theme-text-primary'} relative z-10">
+                                    ${day}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+                
+                // Add availability spans positioned absolutely over the week
+                if (week.spans) {
+                    week.spans.forEach((span, spanIndex) => {
+                        const eventColors = {
+                            'available': '#22C55E',
+                            'travel': '#3B82F6',
+                            'vacation': '#F59E0B', 
+                            'unavailable': '#94A3B8'
+                        };
+                        
+                        const textColors = {
+                            'available': 'white',
+                            'travel': 'white',
+                            'vacation': '#1F2937',
+                            'unavailable': 'white'
+                        };
+                        
+                        const bgColor = eventColors[span.status] || span.color;
+                        const textColor = textColors[span.status] || 'white';
+                        
+                        gridHtml += `
+                            <div class="absolute text-xs px-2 py-1 z-10 flex items-center justify-center font-medium shadow-sm rounded"
+                                 style="background-color: ${bgColor};
+                                        color: ${textColor};
+                                        left: ${span.start_pos * 14.285714}%; 
+                                        width: ${span.width * 14.285714}%;
+                                        top: ${32 + (spanIndex * 28)}px; 
+                                        height: 24px;
+                                        margin-left: 1px;
+                                        margin-right: 1px;">
+                                <span class="truncate text-xs overflow-hidden text-ellipsis whitespace-nowrap">
+                                    ${span.location}
+                                    ${span.status === 'vacation' ? ' - Vacation' : ''}
+                                </span>
+                            </div>
+                        `;
+                    });
+                }
+                
+                gridHtml += '</div>';
+            });
+            
+            // Generate list view
+            generateListView(calendar);
+            
+            calendarGrid.innerHTML = gridHtml;
+            
+        } catch (error) {
+            console.error('Error loading calendar:', error);
+            calendarGrid.innerHTML = `
+                <div class="text-center py-12 text-red-500">
+                    <div class="text-4xl mb-4">⚠️</div>
+                    <h3 class="text-lg font-semibold mb-2">Unable to Load Calendar</h3>
+                    <p>Please contact me directly for availability information.</p>
+                </div>
+            `;
+            document.getElementById('list-view').innerHTML = calendarGrid.innerHTML;
+        }
+    }
+    
+    function generateListView(calendar) {
+        const listView = document.getElementById('list-view');
+        if (!listView) return;
+        
+        let listHtml = '';
+        const events = [];
+        
+        // Collect all events from calendar data
+        calendar.weeks.forEach(week => {
+            if (week.spans) {
+                week.spans.forEach(span => {
+                    const startDate = new Date(calendar.year, calendar.month - 1, span.start_day);
+                    events.push({
+                        date: startDate,
+                        status: span.status,
+                        location: span.location,
+                        duration: span.duration || 1
+                    });
+                });
+            }
+        });
+        
+        // Sort events by date
+        events.sort((a, b) => a.date - b.date);
+        
+        const eventColors = {
+            'available': '#22C55E',
+            'travel': '#3B82F6',
+            'vacation': '#F59E0B',
+            'unavailable': '#94A3B8'
+        };
+        
+        // Generate list items
+        if (events.length === 0) {
+            listHtml = '<div class="text-center py-8 theme-text-secondary">No events this month</div>';
+        } else {
+            events.forEach(event => {
+                const dateStr = event.date.toLocaleDateString('en-US', { 
+                    weekday: 'short', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                listHtml += `
+                    <div class="flex items-center justify-between py-3 border-b theme-border-light last:border-b-0">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 rounded-full mr-3" style="background-color: ${eventColors[event.status]}"></div>
+                            <div>
+                                <div class="font-medium theme-text-primary">${dateStr}</div>
+                                <div class="text-sm theme-text-secondary">${event.status.charAt(0).toUpperCase() + event.status.slice(1)}</div>
+                            </div>
+                        </div>
+                        <div class="text-sm font-medium theme-text-secondary">
+                            ${event.location}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        listView.innerHTML = listHtml;
+    }
+    
+    // Navigation event listeners
+    if (prevButton) {
+        prevButton.addEventListener('click', () => {
+            if (currentMonth === 1) {
+                currentMonth = 12;
+                currentYear--;
+            } else {
+                currentMonth--;
+            }
+            loadCalendar(currentYear, currentMonth);
+        });
+    }
+    
+    if (nextButton) {
+        nextButton.addEventListener('click', () => {
+            if (currentMonth === 12) {
+                currentMonth = 1;
+                currentYear++;
+            } else {
+                currentMonth++;
+            }
+            loadCalendar(currentYear, currentMonth);
+        });
+    }
+    
+    // Keyboard support
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            prevButton?.click();
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            nextButton?.click();
+        }
+    });
+    
+    // View toggle functionality
+    const listViewBtn = document.getElementById('list-view-btn');
+    const monthViewBtn = document.getElementById('month-view-btn');
+    const calendarContainer = document.getElementById('calendar-container');
+    const listContainer = document.getElementById('list-container');
+    
+    let currentView = window.innerWidth <= 640 ? 'list' : 'month';
+    
+    function switchView(view) {
+        currentView = view;
+        
+        if (view === 'list') {
+            calendarContainer.classList.add('hidden');
+            listContainer.classList.remove('hidden');
+            if (listViewBtn) {
+                listViewBtn.classList.add('active', 'theme-accent-bg', 'theme-text-inverted');
+                listViewBtn.classList.remove('theme-text-secondary');
+            }
+            if (monthViewBtn) {
+                monthViewBtn.classList.remove('active', 'theme-accent-bg', 'theme-text-inverted');
+                monthViewBtn.classList.add('theme-text-secondary');
+            }
+        } else {
+            calendarContainer.classList.remove('hidden');
+            listContainer.classList.add('hidden');
+            if (monthViewBtn) {
+                monthViewBtn.classList.add('active', 'theme-accent-bg', 'theme-text-inverted');
+                monthViewBtn.classList.remove('theme-text-secondary');
+            }
+            if (listViewBtn) {
+                listViewBtn.classList.remove('active', 'theme-accent-bg', 'theme-text-inverted');
+                listViewBtn.classList.add('theme-text-secondary');
+            }
+        }
+    }
+    
+    if (listViewBtn && monthViewBtn) {
+        listViewBtn.addEventListener('click', () => switchView('list'));
+        monthViewBtn.addEventListener('click', () => switchView('month'));
+    }
+    
+    // Set initial view
+    switchView(currentView);
+    
+    // Load initial calendar
+    loadCalendar();
+})();
+</script>
+
+<style>
+/* Calendar view toggle styles */
+#list-view-btn.active,
+#month-view-btn.active {
+    /* Styling handled by theme classes in JavaScript */
+}
+
+#list-view-btn,
+#month-view-btn {
+    /* Base styling handled by theme classes */
+}
+
+#list-view-btn:hover,
+#month-view-btn:hover {
+    opacity: 0.8;
+}
+
+/* Responsive behavior */
+@media (min-width: 641px) {
+    #list-container {
+        display: none !important;
+    }
+}
+
+@media (max-width: 640px) {
+    #calendar-container {
+        display: none !important;
+    }
+    #list-container {
+        display: block !important;
+    }
+}
+
+/* Calendar cell hover effects */
+.calendar-day-cell:hover {
+    background-color: rgba(var(--theme-accent-rgb), 0.1);
+    transform: scale(1.02);
+    transition: all 0.2s ease;
+}
+
+/* Loading animation */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Calendar responsiveness */
+@media (max-width: 768px) {
+    .grid.grid-cols-7 {
+        font-size: 0.875rem;
+    }
+    
+    #month-title {
+        font-size: 1.5rem;
+    }
+    
+    #prev-month, #next-month {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    #prev-month span, #next-month span {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .p-4 {
+        padding: 0.75rem;
+    }
+    
+    .p-2 {
+        padding: 0.5rem;
+    }
+    
+    #month-title {
+        font-size: 1.25rem;
+    }
+}
+</style>
