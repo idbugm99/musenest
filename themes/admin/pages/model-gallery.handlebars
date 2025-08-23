@@ -159,14 +159,14 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="col-md-6 text-end">
               <div class="btn-group btn-group-sm" role="group">
+                <button class="btn ${section.is_visible ? 'btn-success' : 'btn-danger'} btn-toggle-visibility" data-id="${section.id}" data-visible="${section.is_visible ? 1 : 0}" title="Click to ${section.is_visible ? 'hide' : 'show'}">
+                  <i class="fas fa-${section.is_visible ? 'eye' : 'eye-slash'} me-1"></i>${section.is_visible ? 'Visible' : 'Hidden'}
+                </button>
                 <a href="/${encodeURIComponent(modelSlug)}/admin/gallery/${section.id}" class="btn btn-outline-primary">
                   <i class="fas fa-images me-1"></i>Manage Images
                 </a>
                 <button class="btn btn-outline-secondary btn-edit" data-id="${section.id}" data-title="${section.title}" data-layout="${section.layout_type}">
                   <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn btn-outline-${section.members_only ? 'warning' : 'info'} btn-toggle-paywall" data-id="${section.id}" data-paywall="${section.members_only ? 1 : 0}" title="${section.members_only ? 'Remove from paywall' : 'Add to paywall'}">
-                  <i class="fas fa-${section.members_only ? 'unlock' : 'lock'}"></i>
                 </button>
                 <button class="btn btn-outline-danger btn-delete" data-id="${section.id}" data-title="${section.title}">
                   <i class="fas fa-trash"></i>
@@ -193,10 +193,9 @@ document.addEventListener('DOMContentLoaded', function() {
       btn.addEventListener('click', handleEditSection);
     });
 
-
-    // Toggle paywall
-    document.querySelectorAll('.btn-toggle-paywall').forEach(btn => {
-      btn.addEventListener('click', handleTogglePaywall);
+    // Toggle visibility
+    document.querySelectorAll('.btn-toggle-visibility').forEach(btn => {
+      btn.addEventListener('click', handleToggleVisibility);
     });
 
     // Delete section
@@ -269,11 +268,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
 
-  async function handleTogglePaywall(e) {
+  async function handleToggleVisibility(e) {
     e.preventDefault();
     const btn = e.currentTarget;
     const id = btn.getAttribute('data-id');
-    const currentPaywall = btn.getAttribute('data-paywall') === '1';
+    const currentVisible = btn.getAttribute('data-visible') === '1';
     
     if (!id || id === 'null') {
       showError('Invalid section ID');
@@ -281,32 +280,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     try {
-      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/sections/${id}/paywall`, {
+      const response = await fetch(`/api/model-gallery/${encodeURIComponent(modelSlug)}/sections/${id}/visibility`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ members_only: !currentPaywall })
+        body: JSON.stringify({ is_visible: !currentVisible })
       });
 
       const data = await response.json();
       
       if (data.success) {
-        const newPaywall = !currentPaywall;
-        showSuccess(`Section ${newPaywall ? 'added to' : 'removed from'} paywall successfully`);
+        const newVisible = !currentVisible;
+        showSuccess(`Section ${newVisible ? 'published' : 'hidden'} successfully`);
         
         // Update button immediately
-        btn.setAttribute('data-paywall', newPaywall ? '1' : '0');
-        btn.className = `btn btn-outline-${newPaywall ? 'warning' : 'info'} btn-toggle-paywall`;
-        btn.title = newPaywall ? 'Remove from paywall' : 'Add to paywall';
-        btn.innerHTML = `<i class="fas fa-${newPaywall ? 'unlock' : 'lock'}"></i>`;
-        
-        // Refresh sections to update privacy badges
-        loadSections();
+        btn.setAttribute('data-visible', newVisible ? '1' : '0');
+        btn.className = `btn ${newVisible ? 'btn-success' : 'btn-danger'} btn-toggle-visibility`;
+        btn.title = `Click to ${newVisible ? 'hide' : 'show'}`;
+        btn.innerHTML = `<i class="fas fa-${newVisible ? 'eye' : 'eye-slash'} me-1"></i>${newVisible ? 'Visible' : 'Hidden'}`;
       } else {
-        showError('Failed to update section: ' + (data.message || 'Unknown error'));
+        showError('Failed to update section visibility: ' + (data.message || 'Unknown error'));
       }
     } catch (error) {
-      console.error('Error updating section paywall status:', error);
-      showError('Failed to update section');
+      console.error('Error updating section visibility:', error);
+      showError('Failed to update section visibility');
     }
   }
 
@@ -340,16 +336,63 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Utility functions for notifications
   function showSuccess(message) {
-    console.log('Success:', message);
-    // You can implement your preferred notification system here
+    console.log('✅ Success:', message);
+    // Create a simple success notification
+    const notification = document.createElement('div');
+    notification.className = 'alert alert-success alert-dismissible fade show position-fixed';
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+      <i class="fas fa-check-circle me-2"></i>${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.remove();
+      }
+    }, 3000);
   }
 
   function showError(message) {
-    console.error('Error:', message);
+    console.error('❌ Error:', message);
+    // Create a simple error notification
+    const notification = document.createElement('div');
+    notification.className = 'alert alert-danger alert-dismissible fade show position-fixed';
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+      <i class="fas fa-exclamation-triangle me-2"></i>${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.remove();
+      }
+    }, 5000);
   }
 
   function showWarning(message) {
-    console.warn('Warning:', message);
+    console.warn('⚠️ Warning:', message);
+    // Create a simple warning notification
+    const notification = document.createElement('div');
+    notification.className = 'alert alert-warning alert-dismissible fade show position-fixed';
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+      <i class="fas fa-exclamation-triangle me-2"></i>${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.remove();
+      }
+    }, 4000);
   }
 });
 </script>
