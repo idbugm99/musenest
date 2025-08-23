@@ -1,0 +1,177 @@
+{{!-- BDSM Gallery Page --}}
+<!-- Load BDSM Icons Sprite -->
+<script>
+// Preload BDSM SVG sprite for better performance
+(function() {
+    const spriteUrl = '/themes/bdsm/assets/bdsm-icons.svg';
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', spriteUrl, true);
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const div = document.createElement('div');
+            div.style.display = 'none';
+            div.innerHTML = xhr.responseText;
+            document.body.insertBefore(div, document.body.firstChild);
+        }
+    };
+    xhr.send();
+})();
+</script>
+
+<!-- Parallax Hero Section -->
+<section class="relative overflow-hidden h-96 flex items-center justify-center">
+    <!-- Parallax Background Image -->
+    {{#if heroBackgroundImageUrl}}
+    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+         style="background-image: url('{{heroBackgroundImageUrl}}'); background-size: cover;">
+    </div>
+    {{else}}
+    <!-- Fallback gradient background -->
+    <div class="absolute inset-0 theme-accent-bg"></div>
+    {{/if}}
+    
+    <!-- Dark overlay for text contrast -->
+    <div class="absolute inset-0 bg-gradient-to-br from-black/80 via-red-950/30 to-black/70"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <!-- BDSM Gallery Decorative Elements -->
+        <div class="bdsm-decoration bdsm-decoration--top-left bdsm-decoration--mobile-hidden">
+            <svg class="bdsm-icon bdsm-icon--lg bdsm-icon--contrast bdsm-icon--medium bdsm-float">
+                <use href="#flogger"></use>
+            </svg>
+        </div>
+        <div class="bdsm-decoration bdsm-decoration--top-right bdsm-decoration--mobile-hidden">
+            <svg class="bdsm-icon bdsm-icon--lg bdsm-icon--contrast bdsm-icon--medium bdsm-pulse">
+                <use href="#candles"></use>
+            </svg>
+        </div>
+        
+        <!-- Hero Heading -->
+        <h1 class="text-5xl md:text-6xl font-bold mb-4 text-white leading-tight" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+            Gallery
+        </h1>
+        
+        <!-- Hero Subtitle -->
+        <p class="text-lg md:text-xl text-white opacity-90 max-w-3xl mx-auto">
+            Explore my visual collection
+        </p>
+    </div>
+</section>
+
+<!-- BDSM Gallery Divider -->
+<div class="bdsm-divider">
+    <svg class="bdsm-divider__icon bdsm-icon bdsm-icon--lg">
+        <use href="#handcuffs"></use>
+    </svg>
+</div>
+
+{{{renderUniversalGallery modelSlug previewTheme=previewThemeId}}}
+<link rel="stylesheet" href="/templates/universal/gallery-styles.css">
+<script src="/templates/universal/gallery-script.js"></script>
+<style>
+/* BDSM Gallery Theme Variables */
+:root {
+    --gallery-primary: #8b0000;
+    --gallery-primary-hover: #b91c1c;
+    --gallery-secondary: #dc2626;
+    --gallery-accent: #ef4444;
+    --gallery-background: #0b0b0b;
+    --gallery-surface: #1a1a1a;
+    --gallery-text: #f5f5f5;
+    --gallery-text-muted: #d1d5db;
+    --gallery-border: #374151;
+}
+
+/* BDSM Gallery Enhancements */
+.gallery-container {
+    position: relative;
+    z-index: 10;
+}
+
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(139, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.gallery-item:hover {
+    border-color: rgba(139, 0, 0, 0.5);
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(139, 0, 0, 0.3);
+}
+
+.gallery-item::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent, rgba(139, 0, 0, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.gallery-item:hover::after {
+    opacity: 1;
+}
+
+/* Gallery header styling */
+.gallery-header h1 {
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 10px rgba(139,0,0,0.5);
+    position: relative;
+}
+
+.gallery-header h1::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, #8b0000, #dc2626, #8b0000);
+    border-radius: 2px;
+}
+
+/* Filter buttons with BDSM styling */
+.gallery-filters button {
+    border: 1px solid rgba(139, 0, 0, 0.3);
+    background: rgba(139, 0, 0, 0.1);
+    color: #d1d5db;
+    transition: all 0.3s ease;
+}
+
+.gallery-filters button:hover,
+.gallery-filters button.active {
+    background: #8b0000;
+    border-color: #dc2626;
+    color: white;
+    box-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+}
+
+/* Lightbox enhancements */
+.lightbox-overlay {
+    background: rgba(0, 0, 0, 0.95);
+}
+
+.lightbox-content {
+    border: 2px solid rgba(139, 0, 0, 0.3);
+    box-shadow: 0 0 50px rgba(139, 0, 0, 0.5);
+}
+
+/* Section dividers with BDSM iconography */
+.gallery-section-divider::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6,4 Q3,4 3,7 Q3,13 6,13 Q9,13 9,7 Q9,4 6,4 Z' stroke='%23dc2626' stroke-width='1' fill='none'/%3E%3Cellipse cx='12' cy='8' rx='2' ry='3' stroke='%23dc2626' stroke-width='1' fill='none'/%3E%3Cpath d='M14,4 Q11,4 11,7 Q11,13 14,13 Q17,13 17,7 Q17,4 14,4 Z' stroke='%23dc2626' stroke-width='1' fill='none'/%3E%3C/svg%3E") no-repeat center;
+    margin: 0 10px;
+    opacity: 0.6;
+}
+</style>
+

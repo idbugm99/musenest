@@ -1,0 +1,557 @@
+<!-- BDSM Rates Page - Enhanced with Dark Visual Elements -->
+
+<!-- Load BDSM Icons Sprite -->
+<script>
+// Preload BDSM SVG sprite for better performance
+(function() {
+    const spriteUrl = '/themes/bdsm/assets/bdsm-icons.svg';
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', spriteUrl, true);
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const div = document.createElement('div');
+            div.style.display = 'none';
+            div.innerHTML = xhr.responseText;
+            document.body.insertBefore(div, document.body.firstChild);
+        }
+    };
+    xhr.send();
+})();
+</script>
+
+<!-- Parallax Hero Section -->
+<section class="relative overflow-hidden h-96 flex items-center justify-center">
+    <!-- Parallax Background Image -->
+    {{#if heroBackgroundImageUrl}}
+    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+         style="background-image: url('{{heroBackgroundImageUrl}}'); background-size: cover;">
+    </div>
+    {{else}}
+    <!-- Fallback gradient background -->
+    <div class="absolute inset-0 theme-accent-bg"></div>
+    {{/if}}
+    
+    <!-- Dark overlay for text contrast -->
+    <div class="absolute inset-0 bg-gradient-to-br from-black/80 via-red-950/30 to-black/70"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <!-- BDSM Rates Decorative Elements -->
+        <div class="bdsm-decoration bdsm-decoration--top-left bdsm-decoration--mobile-hidden">
+            <svg class="bdsm-icon bdsm-icon--lg bdsm-icon--contrast bdsm-icon--medium bdsm-pulse">
+                <use href="#whip"></use>
+            </svg>
+        </div>
+        <div class="bdsm-decoration bdsm-decoration--top-right bdsm-decoration--mobile-hidden">
+            <svg class="bdsm-icon bdsm-icon--lg bdsm-icon--contrast bdsm-icon--medium bdsm-float">
+                <use href="#chains"></use>
+            </svg>
+        </div>
+        
+        <!-- Hero Heading -->
+        <h1 class="text-5xl md:text-6xl font-bold mb-4 text-white leading-tight" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+            {{#if rates_content.page_title}}{{rates_content.page_title}}{{else}}Services & Rates{{/if}}
+        </h1>
+        
+        <!-- Hero Subtitle -->
+        <p class="text-lg md:text-xl text-white opacity-90 max-w-3xl mx-auto">
+            Professional experiences with transparent pricing
+        </p>
+    </div>
+</section>
+
+<!-- BDSM Rates Divider -->
+<div class="bdsm-divider">
+    <svg class="bdsm-divider__icon bdsm-icon bdsm-icon--lg">
+        <use href="#flogger"></use>
+    </svg>
+</div>
+
+<!-- Content Section -->
+{{#if rates_content.rates_header_visible}}
+<section class="py-16 theme-section relative overflow-hidden" data-aos="fade-in">
+    <!-- BDSM Content Floating Elements -->
+    <div class="bdsm-decoration bdsm-decoration--bottom-left bdsm-decoration--mobile-hidden">
+        <svg class="bdsm-icon bdsm-icon--md bdsm-icon--primary bdsm-icon--medium bdsm-rotate">
+            <use href="#mask"></use>
+        </svg>
+    </div>
+    <div class="bdsm-decoration bdsm-decoration--bottom-right bdsm-decoration--mobile-hidden">
+        <svg class="bdsm-icon bdsm-icon--md bdsm-icon--primary bdsm-icon--medium bdsm-pulse">
+            <use href="#rope"></use>
+        </svg>
+    </div>
+        
+        {{#if rates_content.page_subtitle}}
+        <p class="text-xl theme-body-text max-w-3xl mx-auto mb-8 border-l-2 border-red-600/50 pl-6 ml-6" data-aos="fade-up" data-aos-delay="200">
+            {{rates_content.page_subtitle}}
+        </p>
+        {{else}}
+        <p class="text-xl theme-body-text max-w-3xl mx-auto mb-8 border-l-2 border-red-600/50 pl-6 ml-6" data-aos="fade-up" data-aos-delay="200">
+            Professional BDSM experiences with transparent pricing and exceptional discretion.
+        </p>
+        {{/if}}
+        
+        <!-- Divider -->
+        <div class="flex items-center justify-center" data-aos="fade-up" data-aos-delay="400">
+            <div class="w-24 h-px bg-gradient-to-r from-transparent via-current to-transparent opacity-30"></div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Rates Tables Section -->
+{{#if rates_content.rates_table_visible}}
+<section class="py-16 theme-section-alt">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{#if rates_content.table_title}}
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-6 theme-header">
+                {{rates_content.table_title}}
+            </h2>
+            {{#if rates_content.table_description}}
+            <p class="text-lg leading-relaxed max-w-3xl mx-auto theme-text-secondary">
+                {{rates_content.table_description}}
+            </p>
+            {{/if}}
+        </div>
+        {{/if}}
+        
+        <!-- Rate Cards -->
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Incall Rates -->
+            {{#if rates_content.rates_incall_visible}}
+            <div class="theme-card p-8 hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="100">
+                <div class="text-center mb-8">
+                    <div class="theme-accent-bg w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-content-center theme-text-inverted">
+                        <i class="fas fa-home text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold theme-header">Incall</h3>
+                </div>
+                
+                <div class="space-y-4">
+                    {{#each rates.incall}}
+                    <div class="flex justify-between items-center p-4 theme-bg-light rounded-lg border theme-border-light hover:shadow-md transition-shadow">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3">
+                                <span class="text-lg font-semibold theme-text-primary">
+                                    {{#if this.serviceName}}{{this.serviceName}}{{else}}{{this.duration}}{{/if}}
+                                </span>
+                                {{#if ../rates_content.rates_highlight_badge_visible}}
+                                {{#if this.highlightBadge}}
+                                <span class="bg-amber-500 text-white px-2 py-1 text-xs font-bold rounded-full uppercase tracking-wide">
+                                    {{#if this.highlightBadgeText}}{{this.highlightBadgeText}}{{else}}Popular{{/if}}
+                                </span>
+                                {{/if}}
+                                {{/if}}
+                            </div>
+                            {{#if this.serviceName}}
+                            <div class="text-sm theme-text-muted mt-1">{{this.duration}}</div>
+                            {{/if}}
+                        </div>
+                        <div class="text-xl font-bold theme-accent">${{this.price}}</div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Outcall Rates -->
+            {{#if rates_content.rates_outcall_visible}}
+            <div class="theme-card p-8 hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="200">
+                <div class="text-center mb-8">
+                    <div class="theme-accent-bg w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center theme-text-inverted">
+                        <i class="fas fa-map-marker-alt text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold theme-header">Outcall</h3>
+                </div>
+                
+                <div class="space-y-4">
+                    {{#each rates.outcall}}
+                    <div class="flex justify-between items-center p-4 theme-bg-light rounded-lg border theme-border-light hover:shadow-md transition-shadow">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3">
+                                <span class="text-lg font-semibold theme-text-primary">
+                                    {{#if this.serviceName}}{{this.serviceName}}{{else}}{{this.duration}}{{/if}}
+                                </span>
+                                {{#if ../rates_content.rates_highlight_badge_visible}}
+                                {{#if this.highlightBadge}}
+                                <span class="bg-amber-500 text-white px-2 py-1 text-xs font-bold rounded-full uppercase tracking-wide">
+                                    {{#if this.highlightBadgeText}}{{this.highlightBadgeText}}{{else}}Popular{{/if}}
+                                </span>
+                                {{/if}}
+                                {{/if}}
+                            </div>
+                            {{#if this.serviceName}}
+                            <div class="text-sm theme-text-muted mt-1">{{this.duration}}</div>
+                            {{/if}}
+                        </div>
+                        <div class="text-xl font-bold theme-accent">${{this.price}}</div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Extended Engagements -->
+{{#if rates_content.rates_extended_visible}}
+{{#if rates.extended.length}}
+<section class="py-16 theme-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-6 theme-header">
+                {{#if rates_content.extended_title}}{{rates_content.extended_title}}{{else}}Extended Engagements{{/if}}
+            </h2>
+            {{#if rates_content.extended_description}}
+            <p class="text-lg leading-relaxed max-w-3xl mx-auto theme-text-secondary">
+                {{rates_content.extended_description}}
+            </p>
+            {{/if}}
+        </div>
+        
+        <!-- Extended Service Cards -->
+        <div class="grid md:grid-cols-3 gap-8">
+            {{#each rates.extended}}
+            <div class="theme-card p-8 text-center hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
+                {{#if ../rates_content.extended_icon_visible}}
+                <div class="theme-accent-bg w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center theme-text-inverted">
+                    <i class="{{#if this.rateIcon}}{{this.rateIcon}}{{else}}fas fa-clock{{/if}} text-2xl"></i>
+                </div>
+                {{/if}}
+                
+                {{#if ../rates_content.extended_show_service_name}}
+                <h3 class="text-xl font-bold mb-4 theme-header">{{this.serviceName}}</h3>
+                {{/if}}
+                
+                {{#if ../rates_content.extended_show_price}}
+                {{#if (eq this.serviceName "Custom")}}
+                <div class="text-lg theme-text-muted italic mb-4">Contact for pricing</div>
+                {{else}}
+                <div class="text-3xl font-bold theme-accent mb-2">${{this.price}}</div>
+                {{/if}}
+                {{/if}}
+                
+                {{#if ../rates_content.extended_show_duration}}
+                <div class="text-sm theme-text-muted mb-4">{{this.duration}}</div>
+                {{/if}}
+                
+                {{#if ../rates_content.extended_description_visible}}
+                {{#if this.rateDescription}}
+                <p class="theme-text-secondary text-sm leading-relaxed">{{this.rateDescription}}</p>
+                {{/if}}
+                {{/if}}
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+{{/if}}
+{{/if}}
+
+<!-- Additional Services -->
+{{#if rates_content.rates_additional_visible}}
+<section class="py-16 theme-section-alt">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <span class="theme-accent-bg theme-text-inverted px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider mb-6 inline-block">
+                Additional Services
+            </span>
+            <h2 class="text-3xl font-bold mb-6 theme-header">Service Information</h2>
+        </div>
+        
+        <!-- Service Info Cards -->
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Booking Card -->
+            <div class="theme-card p-8 hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="0">
+                <div class="theme-accent-bg w-16 h-16 mb-6 rounded-full flex items-center justify-center theme-text-inverted">
+                    <i class="fas fa-calendar-check text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-6 theme-header">Booking</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start">
+                        <div class="theme-accent-bg w-6 h-6 rounded-full flex items-center justify-center theme-text-inverted mr-3 mt-0.5 flex-shrink-0">
+                            <i class="fas fa-check text-sm"></i>
+                        </div>
+                        <span class="theme-text-secondary">Advance booking recommended</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="theme-accent-bg w-6 h-6 rounded-full flex items-center justify-center theme-text-inverted mr-3 mt-0.5 flex-shrink-0">
+                            <i class="fas fa-check text-sm"></i>
+                        </div>
+                        <span class="theme-text-secondary">Same-day: additional fee applies</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="theme-accent-bg w-6 h-6 rounded-full flex items-center justify-center theme-text-inverted mr-3 mt-0.5 flex-shrink-0">
+                            <i class="fas fa-check text-sm"></i>
+                        </div>
+                        <span class="theme-text-secondary">Screening required for new clients</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Payment Card -->
+            <div class="theme-card p-8 hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="100">
+                <div class="theme-accent-bg w-16 h-16 mb-6 rounded-full flex items-center justify-center theme-text-inverted">
+                    <i class="fas fa-credit-card text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-6 theme-header">Payment</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start">
+                        <div class="theme-accent-bg w-6 h-6 rounded-full flex items-center justify-center theme-text-inverted mr-3 mt-0.5 flex-shrink-0">
+                            <i class="fas fa-check text-sm"></i>
+                        </div>
+                        <span class="theme-text-secondary">Secure and discrete processing</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="theme-accent-bg w-6 h-6 rounded-full flex items-center justify-center theme-text-inverted mr-3 mt-0.5 flex-shrink-0">
+                            <i class="fas fa-check text-sm"></i>
+                        </div>
+                        <span class="theme-text-secondary">Payment at time of meeting</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="theme-accent-bg w-6 h-6 rounded-full flex items-center justify-center theme-text-inverted mr-3 mt-0.5 flex-shrink-0">
+                            <i class="fas fa-check text-sm"></i>
+                        </div>
+                        <span class="theme-text-secondary">Multiple payment methods accepted</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Policies Card -->
+            <div class="theme-card p-8 hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="200">
+                <div class="theme-accent-bg w-16 h-16 mb-6 rounded-full flex items-center justify-center theme-text-inverted">
+                    <i class="fas fa-shield-alt text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-6 theme-header">Policies</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start">
+                        <div class="theme-accent-bg w-6 h-6 rounded-full flex items-center justify-center theme-text-inverted mr-3 mt-0.5 flex-shrink-0">
+                            <i class="fas fa-check text-sm"></i>
+                        </div>
+                        <span class="theme-text-secondary">Discretion and confidentiality</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="theme-accent-bg w-6 h-6 rounded-full flex items-center justify-center theme-text-inverted mr-3 mt-0.5 flex-shrink-0">
+                            <i class="fas fa-check text-sm"></i>
+                        </div>
+                        <span class="theme-text-secondary">Professional standards maintained</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="theme-accent-bg w-6 h-6 rounded-full flex items-center justify-center theme-text-inverted mr-3 mt-0.5 flex-shrink-0">
+                            <i class="fas fa-check text-sm"></i>
+                        </div>
+                        <span class="theme-text-secondary">Cancellation policy applies</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Additional Services Custom Content -->
+        {{#if rates_content.additional_services}}
+        <div class="mt-16" data-aos="fade-up">
+            <div class="theme-card p-8 text-center hover:shadow-lg transition-shadow">
+                <h3 class="text-2xl font-bold mb-6 theme-header">Additional Services</h3>
+                <div class="theme-text-secondary text-lg leading-relaxed max-w-3xl mx-auto">
+                    {{{rates_content.additional_services}}}
+                </div>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+</section>
+{{/if}}
+
+<!-- Terms & Conditions -->
+{{#if rates_content.terms_visible}}
+<section class="py-16 theme-section">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="theme-card p-8 hover:shadow-lg transition-shadow" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-6 theme-header text-center">
+                {{#if rates_content.terms_title}}{{rates_content.terms_title}}{{else}}Terms & Conditions{{/if}}
+            </h2>
+            {{#if rates_content.terms_content}}
+            <div class="theme-text-secondary leading-relaxed prose max-w-none">
+                {{{rates_content.terms_content}}}
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- How It Works / Process Section -->
+{{#if rates_content.process_visible}}
+<section class="py-20 theme-accent-bg theme-text-inverted relative overflow-hidden" data-aos="fade-up">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold mb-6">
+                {{#if rates_content.process_title}}{{rates_content.process_title}}{{else}}How It Works{{/if}}
+            </h2>
+            <p class="text-xl leading-relaxed opacity-90 max-w-3xl mx-auto">
+                {{#if rates_content.process_subtitle}}{{rates_content.process_subtitle}}{{else}}Simple, straightforward process{{/if}}
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="text-center" data-aos="fade-up" data-aos-delay="0">
+                <div class="w-20 h-20 mx-auto mb-6 rounded-full border-3 border-current flex items-center justify-center bg-white bg-opacity-20 backdrop-blur">
+                    <span class="text-2xl font-bold">1</span>
+                </div>
+                <h3 class="text-xl font-bold mb-4">
+                    {{#if rates_content.process_step_1_title}}{{rates_content.process_step_1_title}}{{else}}Contact{{/if}}
+                </h3>
+                <p class="text-sm opacity-90 leading-relaxed">
+                    {{#if rates_content.process_step_1_description}}{{rates_content.process_step_1_description}}{{else}}Reach out via email or phone{{/if}}
+                </p>
+            </div>
+            
+            <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+                <div class="w-20 h-20 mx-auto mb-6 rounded-full border-3 border-current flex items-center justify-center bg-white bg-opacity-20 backdrop-blur">
+                    <span class="text-2xl font-bold">2</span>
+                </div>
+                <h3 class="text-xl font-bold mb-4">
+                    {{#if rates_content.process_step_2_title}}{{rates_content.process_step_2_title}}{{else}}Discuss{{/if}}
+                </h3>
+                <p class="text-sm opacity-90 leading-relaxed">
+                    {{#if rates_content.process_step_2_description}}{{rates_content.process_step_2_description}}{{else}}We discuss your preferences{{/if}}
+                </p>
+            </div>
+            
+            <div class="text-center" data-aos="fade-up" data-aos-delay="200">
+                <div class="w-20 h-20 mx-auto mb-6 rounded-full border-3 border-current flex items-center justify-center bg-white bg-opacity-20 backdrop-blur">
+                    <span class="text-2xl font-bold">3</span>
+                </div>
+                <h3 class="text-xl font-bold mb-4">
+                    {{#if rates_content.process_step_3_title}}{{rates_content.process_step_3_title}}{{else}}Schedule{{/if}}
+                </h3>
+                <p class="text-sm opacity-90 leading-relaxed">
+                    {{#if rates_content.process_step_3_description}}{{rates_content.process_step_3_description}}{{else}}Book your preferred time{{/if}}
+                </p>
+            </div>
+            
+            <div class="text-center" data-aos="fade-up" data-aos-delay="300">
+                <div class="w-20 h-20 mx-auto mb-6 rounded-full border-3 border-current flex items-center justify-center bg-white bg-opacity-20 backdrop-blur">
+                    <span class="text-2xl font-bold">4</span>
+                </div>
+                <h3 class="text-xl font-bold mb-4">
+                    {{#if rates_content.process_step_4_title}}{{rates_content.process_step_4_title}}{{else}}Experience{{/if}}
+                </h3>
+                <p class="text-sm opacity-90 leading-relaxed">
+                    {{#if rates_content.process_step_4_description}}{{rates_content.process_step_4_description}}{{else}}Enjoy professional service{{/if}}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Donations Section -->
+{{#if rates_content.donations_visible}}
+<section class="py-16 theme-section-alt">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <div class="theme-card p-8 hover:shadow-lg transition-shadow">
+            <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-red-500 text-white flex items-center justify-center">
+                <i class="fas fa-heart text-2xl"></i>
+            </div>
+            <p class="theme-text-secondary text-lg leading-relaxed">
+                {{#if rates_content.donation_description}}{{rates_content.donation_description}}{{else}}Donations are appreciated and help support my work.{{/if}}
+            </p>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Package Deals -->
+{{#if packages}}
+<section class="py-16 theme-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <span class="theme-accent-bg theme-text-inverted px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider mb-6 inline-block">
+                Packages
+            </span>
+            <h2 class="text-3xl font-bold mb-6 theme-header">
+                {{#if rates_content.packages_title}}{{rates_content.packages_title}}{{else}}Service Packages{{/if}}
+            </h2>
+            <p class="text-lg leading-relaxed max-w-3xl mx-auto theme-text-secondary">
+                {{#if rates_content.packages_subtitle}}{{rates_content.packages_subtitle}}{{else}}Comprehensive packages for better value{{/if}}
+            </p>
+        </div>
+        
+        <div class="grid lg:grid-cols-2 gap-8">
+            {{#each packages}}
+            <div class="theme-card p-8 relative hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
+                {{#if this.popular}}
+                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-amber-500 text-white px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide">
+                    Most Popular
+                </div>
+                {{/if}}
+                
+                <div class="text-center mb-8">
+                    <h3 class="text-2xl font-bold mb-4 theme-header">{{this.name}}</h3>
+                    <div class="text-4xl font-bold theme-accent mb-2">
+                        {{formatCurrency this.price}}
+                    </div>
+                    {{#if this.originalPrice}}
+                    <div class="text-lg theme-text-muted line-through">
+                        Was {{formatCurrency this.originalPrice}}
+                    </div>
+                    {{/if}}
+                </div>
+                
+                <p class="theme-text-secondary text-center mb-6 leading-relaxed">{{this.description}}</p>
+                
+                <ul class="space-y-3 mb-8">
+                    {{#each this.includes}}
+                    <li class="flex items-start">
+                        <div class="theme-accent-bg w-6 h-6 rounded-full flex items-center justify-center theme-text-inverted mr-3 mt-0.5 flex-shrink-0">
+                            <i class="fas fa-check text-sm"></i>
+                        </div>
+                        <span class="theme-text-secondary">{{this}}</span>
+                    </li>
+                    {{/each}}
+                </ul>
+                
+                <a href="/{{../modelSlug}}/contact?package={{this.slug}}{{../previewParam}}" 
+                   class="block w-full theme-accent-bg theme-text-inverted py-4 px-6 rounded-lg text-center font-semibold hover:opacity-90 transition-opacity">
+                    Book {{this.name}}
+                </a>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Bottom CTA -->
+{{#if rates_content.cta_visible}}
+<section class="py-20 theme-accent-bg theme-text-inverted" data-aos="fade-up">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold mb-6">
+            {{#if rates_content.cta_title}}{{rates_content.cta_title}}{{else}}Ready to Get Started?{{/if}}
+        </h2>
+        
+        <p class="text-xl leading-relaxed mb-12 opacity-90 max-w-3xl mx-auto">
+            {{#if rates_content.cta_description}}{{rates_content.cta_description}}{{else}}Contact me to discuss your needs and schedule your service.{{/if}}
+        </p>
+        
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto">
+            <a href="/{{modelSlug}}/{{#if rates_content.cta_button_1_link}}{{rates_content.cta_button_1_link}}{{else}}contact{{/if}}{{previewParam}}" 
+               class="flex-1 bg-white text-current py-4 px-6 rounded-lg font-semibold hover:bg-opacity-90 transition-opacity inline-flex items-center justify-center">
+               <i class="fas fa-envelope mr-3"></i>
+               {{#if rates_content.cta_button_1_text}}{{rates_content.cta_button_1_text}}{{else}}Contact{{/if}}
+            </a>
+            
+            <a href="/{{modelSlug}}/{{#if rates_content.cta_button_2_link}}{{rates_content.cta_button_2_link}}{{else}}calendar{{/if}}{{previewParam}}" 
+               class="flex-1 border-2 border-white bg-white bg-opacity-10 backdrop-blur py-4 px-6 rounded-lg font-semibold hover:bg-opacity-20 transition-opacity inline-flex items-center justify-center">
+               <i class="fas fa-calendar-alt mr-3"></i>
+               {{#if rates_content.cta_button_2_text}}{{rates_content.cta_button_2_text}}{{else}}View Calendar{{/if}}
+            </a>
+        </div>
+    </div>
+</section>
+{{/if}}

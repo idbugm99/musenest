@@ -1,0 +1,684 @@
+{{!-- BDSM About Page - Rebuilt using proper Theme 17 structure --}}
+<!-- Load BDSM Icons Sprite -->
+<script>
+// Preload BDSM SVG sprite for better performance
+(function() {
+    const spriteUrl = '/themes/bdsm/assets/bdsm-icons.svg';
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', spriteUrl, true);
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const div = document.createElement('div');
+            div.style.display = 'none';
+            div.innerHTML = xhr.responseText;
+            document.body.insertBefore(div, document.body.firstChild);
+        }
+    };
+    xhr.send();
+})();
+</script>
+
+
+<!-- Parallax Hero Section -->
+<section class="relative overflow-hidden h-96 flex items-center justify-center">
+    <!-- Parallax Background Image -->
+    {{#if heroBackgroundImageUrl}}
+    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+         style="background-image: url('{{heroBackgroundImageUrl}}'); background-size: cover;">
+    </div>
+    {{else}}
+    <!-- Fallback gradient background -->
+    <div class="absolute inset-0 theme-accent-bg"></div>
+    {{/if}}
+    
+    <!-- Dark overlay for text contrast -->
+    <div class="absolute inset-0 bg-gradient-to-br from-black/80 via-red-950/30 to-black/70"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <!-- BDSM Decorative Elements -->
+        <div class="bdsm-decoration bdsm-decoration--top-left bdsm-decoration--mobile-hidden">
+            <svg class="bdsm-icon bdsm-icon--lg bdsm-icon--contrast bdsm-icon--medium bdsm-pulse">
+                <use href="#mask"></use>
+            </svg>
+        </div>
+        <div class="bdsm-decoration bdsm-decoration--top-right bdsm-decoration--mobile-hidden">
+            <svg class="bdsm-icon bdsm-icon--lg bdsm-icon--contrast bdsm-icon--medium bdsm-float">
+                <use href="#paddle"></use>
+            </svg>
+        </div>
+        
+        <!-- Hero Heading -->
+        <h1 class="text-5xl md:text-6xl font-bold mb-4 text-white leading-tight" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+            About Me
+        </h1>
+        
+        <!-- Hero Subtitle -->
+        <p class="text-lg md:text-xl text-white opacity-90 max-w-3xl mx-auto">
+            Discover my world of sophisticated experiences
+        </p>
+    </div>
+</section>
+
+<!-- BDSM Section Divider -->
+<div class="bdsm-divider">
+    <svg class="bdsm-divider__icon bdsm-icon bdsm-icon--lg">
+        <use href="#chains"></use>
+    </svg>
+</div>
+
+<!-- Content Section -->
+{{#if about_content.page_title_visible}}
+<section class="py-16 theme-section relative overflow-hidden" data-aos="fade-in">
+    <!-- BDSM Content Decorative Elements -->
+    <div class="bdsm-decoration bdsm-decoration--bottom-left bdsm-decoration--mobile-hidden">
+        <svg class="bdsm-icon bdsm-icon--md bdsm-icon--primary bdsm-icon--medium bdsm-rotate">
+            <use href="#rope"></use>
+        </svg>
+    </div>
+    <div class="bdsm-decoration bdsm-decoration--bottom-right bdsm-decoration--mobile-hidden">
+        <svg class="bdsm-icon bdsm-icon--md bdsm-icon--primary bdsm-icon--medium bdsm-pulse">
+            <use href="#ball_gag"></use>
+        </svg>
+    </div>
+        
+        <!-- Texture overlay -->
+        <div class="absolute inset-0 opacity-5" style="background-image: radial-gradient(circle at 20% 80%, rgba(139, 0, 0, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(139, 0, 0, 0.2) 0%, transparent 50%);"></div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <!-- Decorative accent above title -->
+        <div class="flex items-center justify-center mb-8" data-aos="fade-down">
+            <div class="flex-grow h-px bg-gradient-to-r from-transparent via-red-600/40 to-transparent"></div>
+            <div class="mx-6 flex space-x-2">
+                <div class="w-2 h-2 bg-red-600 transform rotate-45"></div>
+                <div class="w-3 h-3 bg-red-500 transform rotate-45"></div>
+                <div class="w-2 h-2 bg-red-400 transform rotate-45"></div>
+            </div>
+            <div class="flex-grow h-px bg-gradient-to-r from-transparent via-red-600/40 to-transparent"></div>
+        </div>
+        
+        <h1 class="text-4xl md:text-6xl font-bold mb-6 theme-header relative" data-aos="fade-up" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 10px rgba(139,0,0,0.5); filter: contrast(1.2) brightness(1.1);">
+            {{#if about_content.page_title}}{{about_content.page_title}}{{else}}About {{siteName}}{{/if}}
+        </h1>
+        
+        {{#if about_content.page_subtitle}}
+        <p class="text-xl theme-body-text max-w-3xl mx-auto mb-8 border-l-2 border-red-600/50 pl-6 ml-6" data-aos="fade-up" data-aos-delay="200">
+            {{about_content.page_subtitle}}
+        </p>
+        {{/if}}
+        
+        <!-- Enhanced decorative divider -->
+        <div class="flex items-center justify-center" data-aos="fade-up" data-aos-delay="400">
+            <div class="w-8 h-px bg-gradient-to-r from-transparent to-red-600/50"></div>
+            <div class="w-6 h-px theme-accent-bg mx-2"></div>
+            <div class="w-2 h-2 bg-red-600 transform rotate-45"></div>
+            <div class="w-6 h-px theme-accent-bg mx-2"></div>
+            <div class="w-8 h-px bg-gradient-to-l from-transparent to-red-600/50"></div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Main Content Section -->
+<section class="py-16 theme-section-alt">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid lg:grid-cols-2 gap-16 items-start">
+            <!-- Left Column: Content & Services -->
+            <div class="space-y-12">
+                {{#if about_content.main_content_visible}}
+                <div data-aos="fade-right">
+                    <div class="space-y-6 text-lg leading-relaxed">
+                        {{#if about_content.main_paragraph_1}}
+                        <p class="text-xl theme-text-primary">{{about_content.main_paragraph_1}}</p>
+                        {{/if}}
+                        
+                        {{#if about_content.main_paragraph_2}}
+                        <p class="theme-text-secondary">{{about_content.main_paragraph_2}}</p>
+                        {{/if}}
+                        
+                        {{#if about_content.main_paragraph_3}}
+                        <p class="theme-text-secondary">{{about_content.main_paragraph_3}}</p>
+                        {{/if}}
+                        
+                        {{#if about_content.main_paragraph_4}}
+                        <p class="theme-text-secondary">{{about_content.main_paragraph_4}}</p>
+                        {{/if}}
+                        
+                        {{#unless about_content.main_paragraph_1}}
+                        <p class="text-xl theme-text-primary">Welcome to my world of elegance and sophistication. I am a professional companion who values discretion, intelligence, and genuine connection.</p>
+                        <p class="theme-text-secondary">With years of experience in providing exceptional companionship services, I pride myself on creating memorable experiences tailored to each client's unique needs.</p>
+                        {{/unless}}
+                    </div>
+                </div>
+                {{/if}}
+                
+                {{#if about_content.services_visible}}
+                <div class="theme-card bdsm-enhanced p-8 hover:shadow-lg transition-shadow relative" data-aos="fade-right" data-aos-delay="200">
+                    
+                    <h2 class="text-3xl font-bold mb-6 theme-header relative">
+                        {{#if about_content.services_title}}{{about_content.services_title}}{{else}}My Services{{/if}}
+                        <div class="absolute -bottom-1 left-0 w-20 h-0.5 bg-gradient-to-r from-red-600 to-transparent"></div>
+                    </h2>
+                    <ul class="space-y-4">
+                        {{#if about_content.service_1}}
+                        <li class="flex items-start">
+                            <div class="bdsm-bullet bg-gradient-to-r from-red-600 to-red-500 w-3 h-3 transform rotate-45 mt-2.5 mr-4 flex-shrink-0"></div>
+                            <span class="text-lg theme-text-primary">{{about_content.service_1}}</span>
+                        </li>
+                        {{/if}}
+                        {{#if about_content.service_2}}
+                        <li class="flex items-start">
+                            <div class="bdsm-bullet bg-gradient-to-r from-red-600 to-red-500 w-3 h-3 transform rotate-45 mt-2.5 mr-4 flex-shrink-0"></div>
+                            <span class="text-lg theme-text-primary">{{about_content.service_2}}</span>
+                        </li>
+                        {{/if}}
+                        {{#if about_content.service_3}}
+                        <li class="flex items-start">
+                            <div class="bdsm-bullet bg-gradient-to-r from-red-600 to-red-500 w-3 h-3 transform rotate-45 mt-2.5 mr-4 flex-shrink-0"></div>
+                            <span class="text-lg theme-text-primary">{{about_content.service_3}}</span>
+                        </li>
+                        {{/if}}
+                        {{#if about_content.service_4}}
+                        <li class="flex items-start">
+                            <div class="bdsm-bullet bg-gradient-to-r from-red-600 to-red-500 w-3 h-3 transform rotate-45 mt-2.5 mr-4 flex-shrink-0"></div>
+                            <span class="text-lg theme-text-primary">{{about_content.service_4}}</span>
+                        </li>
+                        {{/if}}
+                        {{#if about_content.service_5}}
+                        <li class="flex items-start">
+                            <div class="bdsm-bullet bg-gradient-to-r from-red-600 to-red-500 w-3 h-3 transform rotate-45 mt-2.5 mr-4 flex-shrink-0"></div>
+                            <span class="text-lg theme-text-primary">{{about_content.service_5}}</span>
+                        </li>
+                        {{/if}}
+                        {{#if about_content.service_6}}
+                        <li class="flex items-start">
+                            <div class="bdsm-bullet bg-gradient-to-r from-red-600 to-red-500 w-3 h-3 transform rotate-45 mt-2.5 mr-4 flex-shrink-0"></div>
+                            <span class="text-lg theme-text-primary">{{about_content.service_6}}</span>
+                        </li>
+                        {{/if}}
+                    </ul>
+                </div>
+                {{/if}}
+                
+                {{#if about_content.interests_visible}}
+                {{#if about_content.interests}}
+                <div class="theme-card bdsm-enhanced p-8 hover:shadow-lg transition-shadow relative" data-aos="fade-right" data-aos-delay="400">
+                    
+                    <h2 class="text-3xl font-bold mb-6 theme-header">
+                        {{#if about_content.interests_title}}{{about_content.interests_title}}{{else}}My Interests{{/if}}
+                    </h2>
+                    <div class="flex flex-wrap gap-3">
+                        {{#each (split about_content.interests ',')}}
+                        <span class="theme-accent-bg theme-text-inverted px-4 py-2 rounded-full text-sm font-medium transition-transform hover:scale-105">
+                            {{trim this}}
+                        </span>
+                        {{/each}}
+                    </div>
+                </div>
+                {{/if}}
+                {{/if}}
+            </div>
+            
+            <!-- Right Column: Portrait, Facts, CTA -->
+            <div class="space-y-8">
+                <!-- Portrait Image -->
+                {{#if about_content.portrait_visible}}
+                <div class="theme-card bdsm-enhanced overflow-hidden cursor-pointer group hover:shadow-lg transition-shadow relative" 
+                     data-aos="fade-left"
+                     onclick="openPortraitPreview('{{about_content.portrait_image_url}}', '{{#if about_content.portrait_alt}}{{about_content.portrait_alt}}{{else}}Professional Portrait{{/if}}')"
+                     style="aspect-ratio: 4/3;">
+                    <div class="relative w-full h-full">
+                        <img src="{{about_content.portrait_image_url}}" 
+                             alt="{{#if about_content.portrait_alt}}{{about_content.portrait_alt}}{{else}}Professional Portrait{{/if}}"
+                             loading="lazy"
+                             class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700">
+                        
+                        <!-- Hover overlay -->
+                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                            <div class="theme-accent-bg rounded-full p-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100">
+                                <svg class="w-6 h-6 theme-text-inverted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <!-- Click hint -->
+                        <div class="absolute bottom-3 left-3 theme-accent-bg theme-text-inverted rounded px-2 py-1 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            Click to preview
+                        </div>
+                    </div>
+                </div>
+                {{else}}
+                <div class="theme-card flex items-center justify-center p-8 hover:shadow-lg transition-shadow" 
+                     data-aos="fade-left"
+                     style="aspect-ratio: 4/3;">
+                    <div class="text-center">
+                        <div class="theme-accent w-16 h-16 mx-auto mb-4 rounded-full theme-border-primary border-2 flex items-center justify-center">
+                            <svg class="w-8 h-8 theme-accent" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                        </div>
+                        <p class="theme-text-muted text-lg">Professional portrait coming soon</p>
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Quick Facts -->
+                {{#if about_content.quick_facts_visible}}
+                <div class="theme-card bdsm-enhanced p-8 hover:shadow-lg transition-shadow relative" data-aos="fade-left" data-aos-delay="200">
+                    
+                    <div class="mb-6">
+                        <div class="theme-accent text-xs uppercase tracking-widest mb-2 font-medium">Personal Details</div>
+                        <h3 class="text-2xl font-bold theme-header">
+                            {{#if about_content.quick_facts_title}}{{about_content.quick_facts_title}}{{else}}Quick Facts{{/if}}
+                        </h3>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        {{#if about_content.quickFacts}}
+                        {{#each about_content.quickFacts}}
+                        <div class="flex items-start py-3 theme-border-light border-b last:border-b-0">
+                            <div class="theme-accent w-1.5 h-1.5 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs uppercase tracking-wider theme-text-muted font-medium mb-1">{{this.question}}</div>
+                                <div class="text-base font-medium theme-text-primary">{{this.answer}}</div>
+                            </div>
+                        </div>
+                        {{/each}}
+                        {{else}}
+                        {{#if about_content.qf_location}}
+                        <div class="flex items-start py-3 theme-border-light border-b">
+                            <div class="theme-accent w-1.5 h-1.5 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs uppercase tracking-wider theme-text-muted font-medium mb-1">Location</div>
+                                <div class="text-base font-medium theme-text-primary">{{about_content.qf_location}}</div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        {{#if about_content.qf_languages}}
+                        <div class="flex items-start py-3 theme-border-light border-b">
+                            <div class="theme-accent w-1.5 h-1.5 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs uppercase tracking-wider theme-text-muted font-medium mb-1">Languages</div>
+                                <div class="text-base font-medium theme-text-primary">{{about_content.qf_languages}}</div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        {{#if about_content.qf_education}}
+                        <div class="flex items-start py-3 theme-border-light border-b">
+                            <div class="theme-accent w-1.5 h-1.5 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs uppercase tracking-wider theme-text-muted font-medium mb-1">Education</div>
+                                <div class="text-base font-medium theme-text-primary">{{about_content.qf_education}}</div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        {{#if about_content.qf_specialties}}
+                        <div class="flex items-start py-3">
+                            <div class="theme-accent w-1.5 h-1.5 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs uppercase tracking-wider theme-text-muted font-medium mb-1">Specialties</div>
+                                <div class="text-base font-medium theme-text-primary">{{about_content.qf_specialties}}</div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        {{/if}}
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Call to Action -->
+                {{#if about_content.about_cta_visible}}
+                <div class="theme-card bdsm-enhanced p-8 hover:shadow-lg transition-shadow relative" data-aos="fade-left" data-aos-delay="400">
+                    
+                    <div class="mb-6">
+                        <div class="theme-accent text-xs uppercase tracking-widest mb-2 font-medium">Ready to Begin</div>
+                        <h3 class="text-2xl font-bold theme-header">
+                            {{#if about_content.cta_title}}{{about_content.cta_title}}{{else}}Ready to Connect?{{/if}}
+                        </h3>
+                    </div>
+                    
+                    <p class="mb-6 theme-text-secondary text-lg leading-relaxed">
+                        {{#if about_content.cta_description}}{{about_content.cta_description}}{{else}}I would love to hear from you and discuss how we can create an unforgettable experience together.{{/if}}
+                    </p>
+                    
+                    <div class="space-y-3">
+                        {{#if about_content.cta_button_1_text}}
+                        <a href="/{{modelSlug}}/{{#if about_content.cta_button_1_link}}{{about_content.cta_button_1_link}}{{else}}calendar{{/if}}{{previewParam}}" 
+                           class="block w-full theme-accent-bg theme-text-inverted px-6 py-3 rounded-lg text-center font-semibold hover:opacity-90 transition-opacity duration-200">
+                           {{about_content.cta_button_1_text}}
+                        </a>
+                        {{/if}}
+                        {{#if about_content.cta_button_2_text}}
+                        <a href="/{{modelSlug}}/{{#if about_content.cta_button_2_link}}{{about_content.cta_button_2_link}}{{else}}contact{{/if}}{{previewParam}}" 
+                           class="block w-full theme-accent-border theme-accent border-2 px-6 py-3 rounded-lg text-center font-semibold hover:theme-accent-bg hover:theme-text-inverted transition-colors duration-200">
+                           {{about_content.cta_button_2_text}}
+                        </a>
+                        {{/if}}
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Additional Content Section -->
+{{#if about_content.additional_content_visible}}
+<section class="py-16 theme-section relative overflow-hidden">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="theme-card bdsm-enhanced p-8 text-center hover:shadow-lg transition-shadow" data-aos="fade-up">
+            {{#if about_content.additional_title}}
+            <h3 class="text-3xl font-bold mb-6 theme-header">{{about_content.additional_title}}</h3>
+            {{/if}}
+            {{#if about_content.additional_description}}
+            <div class="theme-text-secondary text-lg leading-relaxed max-w-2xl mx-auto">
+                <p>{{about_content.additional_description}}</p>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Portrait Preview Modal -->
+<div id="portrait-preview-modal" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center p-4">
+    <div class="relative max-w-4xl max-h-full">
+        <!-- Close button -->
+        <button onclick="closePortraitPreview()" 
+                class="absolute -top-12 right-0 theme-accent hover:opacity-70 transition-opacity duration-200 z-10">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+        
+        <!-- Image container -->
+        <div class="relative">
+            <img id="portrait-preview-image" 
+                 src="" 
+                 alt="" 
+                 class="max-w-full max-h-full object-contain rounded-lg shadow-2xl">
+        </div>
+        
+        <!-- Image caption -->
+        <div class="absolute bottom-4 left-4 right-4 theme-accent-bg theme-text-inverted p-3 rounded-lg">
+            <p id="portrait-preview-caption" class="text-center text-sm font-medium"></p>
+        </div>
+    </div>
+</div>
+
+<!-- BDSM About Page Styles -->
+<style>
+/* BDSM About Theme Variables */
+:root {
+    --bdsm-primary: #8b0000;
+    --bdsm-primary-hover: #b91c1c;
+    --bdsm-secondary: #dc2626;
+    --bdsm-accent: #ef4444;
+    --bdsm-background: #0b0b0b;
+    --bdsm-surface: #1a1a1a;
+    --bdsm-text: #f5f5f5;
+    --bdsm-text-muted: #d1d5db;
+    --bdsm-border: #374151;
+}
+
+/* BDSM container positioning */
+.theme-section,
+.theme-section-alt {
+    position: relative;
+    z-index: 10;
+}
+
+/* Enhanced card styling with BDSM aesthetic */
+.theme-card.bdsm-enhanced {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(139, 0, 0, 0.2);
+    background: rgba(139, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.theme-card.bdsm-enhanced:hover {
+    border-color: rgba(139, 0, 0, 0.5);
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 8px 25px rgba(139, 0, 0, 0.3);
+}
+
+.theme-card.bdsm-enhanced::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent, rgba(139, 0, 0, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.theme-card.bdsm-enhanced:hover::after {
+    opacity: 1;
+}
+
+/* BDSM service bullets with enhanced handcuff styling */
+.bdsm-bullet {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.bdsm-bullet:hover {
+    transform: scale(1.15) rotate(5deg);
+}
+
+.bdsm-bullet::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: url("data:image/svg+xml,%3Csvg width='8' height='8' viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.5,1.5 Q0.5,1.5 0.5,2.5 Q0.5,4.5 1.5,4.5 Q2.5,4.5 2.5,2.5 Q2.5,1.5 1.5,1.5 Z' stroke='%23ffffff' stroke-width='0.4' fill='none'/%3E%3Cellipse cx='4' cy='3' rx='1' ry='1.5' stroke='%23ffffff' stroke-width='0.3' fill='none'/%3E%3Cpath d='M6.5,1.5 Q5.5,1.5 5.5,2.5 Q5.5,4.5 6.5,4.5 Q7.5,4.5 7.5,2.5 Q7.5,1.5 6.5,1.5 Z' stroke='%23ffffff' stroke-width='0.4' fill='none'/%3E%3C/svg%3E") no-repeat center;
+    transition: all 0.3s ease;
+}
+
+.bdsm-bullet:hover::before {
+    transform: translate(-50%, -50%) scale(1.2);
+    filter: brightness(1.3);
+}
+
+/* Additional BDSM bullet variations */
+.bdsm-bullet:nth-child(2n)::before {
+    background: url("data:image/svg+xml,%3Csvg width='8' height='8' viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='4' cy='4' r='2.5' stroke='%23ffffff' stroke-width='0.5' fill='%23dc2626' opacity='0.3'/%3E%3Cpath d='M4,1.5 Q2,2.5 1.5,4 Q2,5.5 4,4 Q6,2.5 4,1.5' stroke='%23ffffff' stroke-width='0.4' fill='none'/%3E%3C/svg%3E") no-repeat center;
+}
+
+.bdsm-bullet:nth-child(3n)::before {
+    background: url("data:image/svg+xml,%3Csvg width='8' height='8' viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='2' y='1' width='2' height='4' rx='1' stroke='%23ffffff' stroke-width='0.4' fill='%23dc2626' opacity='0.3'/%3E%3Crect x='1' y='5' width='4' height='2' rx='1' stroke='%23ffffff' stroke-width='0.4' fill='none'/%3E%3C/svg%3E") no-repeat center;
+}
+
+/* Header styling with BDSM elements */
+.theme-header {
+    position: relative;
+    filter: contrast(1.1) brightness(1.05);
+}
+
+/* CTA buttons with BDSM enhancements */
+.theme-accent-bg {
+    background: linear-gradient(135deg, #8b0000, #dc2626);
+    border: 2px solid rgba(139, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.theme-accent-bg:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(139, 0, 0, 0.4);
+}
+
+/* Interest tags with BDSM styling */
+.theme-accent-bg.theme-text-inverted {
+    background: linear-gradient(135deg, #8b0000, #a91c1c);
+    border: 1px solid rgba(139, 0, 0, 0.3);
+}
+
+.theme-accent-bg.theme-text-inverted:hover {
+    background: linear-gradient(135deg, #a91c1c, #dc2626);
+    box-shadow: 0 4px 15px rgba(139, 0, 0, 0.4);
+}
+
+/* Portrait preview enhancements */
+#portrait-preview-modal {
+    backdrop-filter: blur(5px);
+}
+
+/* Floating BDSM elements animation */
+@keyframes bdsmFloat {
+    0%, 100% { 
+        transform: translateY(0px) rotate(0deg); 
+        opacity: 0.8;
+    }
+    25% { 
+        transform: translateY(-5px) rotate(1deg); 
+        opacity: 1;
+    }
+    50% { 
+        transform: translateY(-3px) rotate(-1deg); 
+        opacity: 0.9;
+    }
+    75% { 
+        transform: translateY(-7px) rotate(0.5deg); 
+        opacity: 1;
+    }
+}
+
+@keyframes bdsmPulse {
+    0%, 100% { 
+        opacity: 0.6; 
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 1; 
+        transform: scale(1.05);
+    }
+}
+
+/* Apply animations to decorative elements */
+.fixed .absolute:nth-child(1) { animation: bdsmFloat 6s ease-in-out infinite; }
+.fixed .absolute:nth-child(2) { animation: bdsmFloat 7s ease-in-out infinite 1s; }
+.fixed .absolute:nth-child(3) { animation: bdsmFloat 8s ease-in-out infinite 2s; }
+.fixed .absolute:nth-child(4) { animation: bdsmFloat 9s ease-in-out infinite 3s; }
+.fixed .absolute:nth-child(5) { animation: bdsmPulse 4s ease-in-out infinite; }
+.fixed .absolute:nth-child(6) { animation: bdsmPulse 5s ease-in-out infinite 1s; }
+
+/* Enhanced card interactions */
+.theme-card.bdsm-enhanced:hover {
+    border-color: rgba(139, 0, 0, 0.7);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 35px rgba(139, 0, 0, 0.4), 0 0 20px rgba(139, 0, 0, 0.2);
+}
+
+/* Enhanced CTA button with BDSM theming */
+.theme-accent-bg {
+    position: relative;
+    overflow: hidden;
+}
+
+.theme-accent-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.theme-accent-bg:hover::before {
+    left: 100%;
+}
+
+/* Portrait frame enhancements */
+.theme-card img {
+    position: relative;
+}
+
+.theme-card:hover img {
+    filter: contrast(1.1) brightness(1.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    /* Hide some decorative elements on mobile for performance */
+    .absolute.top-1/2,
+    .absolute.bottom-40,
+    .absolute.top-60 {
+        display: none;
+    }
+    
+    /* Reduce animations on mobile */
+    .fixed .absolute {
+        animation: none !important;
+    }
+    
+    /* Simplify hover effects on mobile */
+    .theme-card.bdsm-enhanced:hover {
+        transform: translateY(-1px) scale(1.01);
+        box-shadow: 0 8px 25px rgba(139, 0, 0, 0.3);
+    }
+}
+</style>
+
+<!-- Portrait Preview JavaScript -->
+<script>
+function openPortraitPreview(imageUrl, altText) {
+    const modal = document.getElementById('portrait-preview-modal');
+    const image = document.getElementById('portrait-preview-image');
+    const caption = document.getElementById('portrait-preview-caption');
+    
+    if (modal && image && caption && imageUrl) {
+        image.src = imageUrl;
+        image.alt = altText;
+        caption.textContent = altText;
+        
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+        
+        // Close on escape key
+        document.addEventListener('keydown', handleEscapeKey);
+        
+        // Close on background click
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closePortraitPreview();
+            }
+        });
+    }
+}
+
+function closePortraitPreview() {
+    const modal = document.getElementById('portrait-preview-modal');
+    
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
+        
+        // Remove event listeners
+        document.removeEventListener('keydown', handleEscapeKey);
+    }
+}
+
+function handleEscapeKey(e) {
+    if (e.key === 'Escape') {
+        closePortraitPreview();
+    }
+}
+</script>

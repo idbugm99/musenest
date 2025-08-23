@@ -1,0 +1,559 @@
+<!-- BDSM Theme Home - Enhanced with Dark Visual Elements -->
+{{!-- Enhanced BDSM version with creative visual elements --}}
+
+<!-- Load BDSM Icons Sprite -->
+<script>
+// Preload BDSM SVG sprite for better performance
+(function() {
+    const spriteUrl = '/themes/bdsm/assets/icons/sprite.svg';
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', spriteUrl, true);
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const div = document.createElement('div');
+            div.style.display = 'none';
+            div.innerHTML = xhr.responseText;
+            document.body.insertBefore(div, document.body.firstChild);
+        }
+    };
+    xhr.send();
+})();
+</script>
+
+<!-- Parallax Hero Section -->
+{{#if content.hero_section_visible}}
+<section class="relative overflow-hidden h-screen min-h-[600px] flex items-center justify-center">
+    
+    <!-- Parallax Background Image -->
+    {{#if heroBackgroundImageUrl}}
+    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat bdsm-bg-fixed" 
+         style="background-image: url('{{heroBackgroundImageUrl}}');">
+    </div>
+    {{else}}
+    <!-- Fallback gradient background -->
+    <div class="absolute inset-0 theme-accent-bg"></div>
+    {{/if}}
+    
+    <!-- Dark overlay for text contrast -->
+    <div class="absolute inset-0 bg-gradient-to-br from-black/80 via-red-950/30 to-black/70"></div>
+    <div class="absolute inset-0 bg-black" style="opacity: {{#if content.hero_background_opacity}}{{content.hero_background_opacity}}{{else}}{{#if hero_background_opacity}}{{hero_background_opacity}}{{else}}0.6{{/if}}{{/if}};"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+    <div class="bdsm-texture absolute inset-0 opacity-20"></div>
+
+    <!-- Triskele watermark -->
+    <div class="bdsm-triskele">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 12a4 4 0 118-2"/>
+            <path d="M12 8a4 4 0 11-2 8"/>
+            <path d="M16 12a4 4 0 11-8 2"/>
+        </svg>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        
+        <!-- Hero Heading -->
+        <h1 class="text-5xl md:text-7xl font-bold mb-6 text-white leading-tight bdsm-strap-title" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+            {{#if content.hero_title}}{{content.hero_title}}{{else}}Welcome{{/if}}
+        </h1>
+        
+        <!-- Hero Subtitle -->
+        {{#if content.hero_subtitle}}
+        <p class="text-xl md:text-2xl mb-8 text-white opacity-90 max-w-4xl mx-auto leading-relaxed">
+            {{content.hero_subtitle}}
+        </p>
+        {{/if}}
+        
+        <!-- Hero Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+            {{#if content.hero_button_1_text}}
+            <a href="/{{modelSlug}}/{{#if content.hero_button_1_link}}{{content.hero_button_1_link}}{{else}}contact{{/if}}{{previewParam}}" 
+               class="bdsm-metal-btn px-8 py-4 font-bold text-lg transition-base inline-flex items-center justify-center">
+                {{content.hero_button_1_text}}
+            </a>
+            {{/if}}
+            
+            {{#if content.hero_button_2_text}}
+            <a href="/{{modelSlug}}/{{#if content.hero_button_2_link}}{{content.hero_button_2_link}}{{else}}gallery{{/if}}{{previewParam}}" 
+               class="border-2 border-white text-black bg-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-transparent hover:text-white transition-all duration-300 inline-flex items-center justify-center">
+                {{content.hero_button_2_text}}
+            </a>
+            {{/if}}
+        </div>
+
+        <!-- Decorative icon row -->
+        <div class="mt-8 flex items-center justify-center gap-4 opacity-80">
+            <svg class="bdsm-icon icon-md icon-accent"><use href="/themes/bdsm/assets/icons/sprite.svg#handcuffs"></use></svg>
+            <svg class="bdsm-icon icon-md icon-accent"><use href="/themes/bdsm/assets/icons/sprite.svg#whip"></use></svg>
+            <svg class="bdsm-icon icon-lg icon-accent"><use href="/themes/bdsm/assets/icons/sprite.svg#bdsm-mark"></use></svg>
+            <svg class="bdsm-icon icon-md icon-accent"><use href="/themes/bdsm/assets/icons/sprite.svg#paddle"></use></svg>
+            <svg class="bdsm-icon icon-md icon-accent"><use href="/themes/bdsm/assets/icons/sprite.svg#mask"></use></svg>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- BDSM Section Divider -->
+<div class="bdsm-divider">
+    <svg class="bdsm-divider__icon bdsm-icon icon-lg">
+        <use href="/themes/bdsm/assets/icons/sprite.svg#choker"></use>
+    </svg>
+    
+</div>
+
+<!-- About Preview with BDSM Sophistication -->
+{{#if content.about_section_visible}}
+<section class="py-16 theme-section-alt relative overflow-hidden">
+    
+    <!-- Decorative background elements -->
+    <div class="absolute inset-0 opacity-5">
+        <div class="absolute top-20 right-10 w-64 h-64 border border-red-600/20 transform rotate-12"></div>
+        <div class="absolute bottom-10 left-20 w-48 h-48 border border-red-500/15 transform -rotate-6"></div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        {{#if content.portrait_section_visible}}
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <div class="max-w-xl relative">
+                <!-- Decorative accent -->
+                <div class="absolute -left-4 top-0 w-1 h-24 bg-gradient-to-b from-red-600 to-red-800 rounded-full"></div>
+                
+                <h2 class="text-3xl font-bold mb-6 theme-header bdsm-header-decoration">
+                    {{#if content.about_title}}{{content.about_title}}{{else}}About {{siteName}}{{/if}}
+                    <!-- BDSM Icon accent -->
+                    <svg class="inline-block ml-3 bdsm-icon icon-sm">
+                        <use href="/themes/bdsm/assets/icons/sprite.svg#paddle"></use>
+                    </svg>
+                </h2>
+                {{#if content.about_paragraph_1}}
+                <p class="text-base leading-relaxed mb-6 theme-text-muted">{{content.about_paragraph_1}}</p>
+                {{/if}}
+                {{#if content.about_paragraph_2}}
+                <p class="text-base leading-relaxed mb-6 theme-text-muted">{{content.about_paragraph_2}}</p>
+                {{/if}}
+                {{#unless content.about_paragraph_1}}
+                <p class="text-base leading-relaxed mb-6 theme-text-muted">Welcome to my world of elegance and sophistication. I am a professional companion who values discretion, intelligence, and genuine connection.</p>
+                <p class="text-base leading-relaxed mb-6 theme-text-muted">With years of experience in providing exceptional companionship services, I pride myself on creating memorable experiences tailored to each client's unique needs.</p>
+                {{/unless}}
+                {{#if content.about_link_text}}
+                    {{#eq content.about_link_destination 'about'}}
+                        <a href="/{{modelSlug}}/about{{previewParam}}" class="theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.about_link_text}}</a>
+                    {{/eq}}
+                    {{#eq content.about_link_destination 'contact'}}
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.about_link_text}}</a>
+                    {{/eq}}
+                    {{#eq content.about_link_destination 'gallery'}}
+                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.about_link_text}}</a>
+                    {{/eq}}
+                    {{#eq content.about_link_destination 'rates'}}
+                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.about_link_text}}</a>
+                    {{/eq}}
+                    {{#eq content.about_link_destination 'calendar'}}
+                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.about_link_text}}</a>
+                    {{/eq}}
+                {{else}}
+                    <a href="/{{modelSlug}}/about{{previewParam}}" class="theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">Learn More</a>
+                {{/if}}
+            </div>
+            <div class="relative theme-bg-light rounded-lg flex items-center justify-center overflow-hidden min-h-96">
+                <!-- Decorative frame overlay -->
+                <div class="absolute inset-0 border-2 border-red-600/20 rounded-lg pointer-events-none z-10"></div>
+                <div class="absolute top-2 left-2 right-2 bottom-2 border border-red-500/10 rounded pointer-events-none z-10"></div>
+                
+                {{#if content.portrait_image_url}}
+                    <img src="{{content.portrait_image_url}}" 
+                         alt="{{#if content.portrait_alt}}{{content.portrait_alt}}{{else}}Professional Portrait{{/if}}"
+                         class="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-700">
+                {{else}}
+                    <p class="theme-text-subtle">{{#if content.portrait_alt}}{{content.portrait_alt}}{{else}}Professional portrait coming soon{{/if}}</p>
+                {{/if}}
+                
+                <!-- Corner decorative elements -->
+                <div class="absolute top-0 left-0 w-6 h-6 border-l-2 border-t-2 border-red-600/40"></div>
+                <div class="absolute top-0 right-0 w-6 h-6 border-r-2 border-t-2 border-red-600/40"></div>
+                <div class="absolute bottom-0 left-0 w-6 h-6 border-l-2 border-b-2 border-red-600/40"></div>
+                <div class="absolute bottom-0 right-0 w-6 h-6 border-r-2 border-b-2 border-red-600/40"></div>
+            </div>
+        </div>
+        {{else}}
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-6 theme-header">
+                {{#if content.about_title}}{{content.about_title}}{{else}}About {{siteName}}{{/if}}
+            </h2>
+            {{#if content.about_paragraph_1}}
+            <p class="text-lg mb-6 theme-text-muted">{{content.about_paragraph_1}}</p>
+            {{/if}}
+            {{#if content.about_paragraph_2}}
+            <p class="text-lg mb-6 theme-text-muted">{{content.about_paragraph_2}}</p>
+            {{/if}}
+            {{#unless content.about_paragraph_1}}
+            <p class="text-lg mb-6 theme-text-muted">Welcome to my world of elegance and sophistication. I am a professional companion who values discretion, intelligence, and genuine connection.</p>
+            <p class="text-lg mb-6 theme-text-muted">With years of experience in providing exceptional companionship services, I pride myself on creating memorable experiences tailored to each client's unique needs.</p>
+            {{/unless}}
+            {{#if content.about_link_text}}
+                {{#eq content.about_link_destination 'about'}}
+                    <a href="/{{modelSlug}}/about{{previewParam}}" class="theme-accent font-semibold hover:opacity-80 transition-opacity">{{content.about_link_text}}</a>
+                {{/eq}}
+                {{#eq content.about_link_destination 'contact'}}
+                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="theme-accent font-semibold hover:opacity-80 transition-opacity">{{content.about_link_text}}</a>
+                {{/eq}}
+                {{#eq content.about_link_destination 'gallery'}}
+                    <a href="/{{modelSlug}}/gallery{{previewParam}}" class="theme-accent font-semibold hover:opacity-80 transition-opacity">{{content.about_link_text}}</a>
+                {{/eq}}
+                {{#eq content.about_link_destination 'rates'}}
+                    <a href="/{{modelSlug}}/rates{{previewParam}}" class="theme-accent font-semibold hover:opacity-80 transition-opacity">{{content.about_link_text}}</a>
+                {{/eq}}
+                {{#eq content.about_link_destination 'calendar'}}
+                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="theme-accent font-semibold hover:opacity-80 transition-opacity">{{content.about_link_text}}</a>
+                {{/eq}}
+            {{else}}
+                <a href="/{{modelSlug}}/about{{previewParam}}" class="theme-accent font-semibold hover:opacity-80 transition-opacity">Learn More About Me </a>
+            {{/if}}
+        </div>
+        {{/if}}
+    </div>
+</section>
+{{/if}}
+
+<!-- Gallery Preview with Dark Elegance -->
+{{#if content.gallery_section_visible}}
+<section class="py-16 theme-section relative overflow-hidden">
+    <!-- Decorative background pattern -->
+    <div class="absolute inset-0 opacity-5">
+        <div class="absolute inset-0" style="background-image: radial-gradient(circle at 25% 25%, rgba(139, 0, 0, 0.1) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(139, 0, 0, 0.05) 0%, transparent 50%);"></div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <!-- Enhanced title with decorative elements -->
+        <div class="text-center mb-12">
+            <div class="flex items-center justify-center mb-4">
+                <div class="flex-grow h-px bg-gradient-to-r from-transparent via-red-600/30 to-transparent"></div>
+                <div class="mx-6 flex space-x-3">
+                    <!-- Small BDSM icons as decorative elements -->
+                    <svg width="14" height="14" viewBox="0 0 14 14" class="text-red-600">
+                        <!-- Mini handcuff -->
+                        <path d="M4,3 Q2,3 2,5 Q2,9 4,9 Q6,9 6,5 Q6,3 4,3 Z" stroke="currentColor" stroke-width="1" fill="none"/>
+                        <ellipse cx="8" cy="6" rx="1.5" ry="2" stroke="currentColor" stroke-width="1" fill="none"/>
+                        <path d="M10,3 Q8,3 8,5 Q8,9 10,9 Q12,9 12,5 Q12,3 10,3 Z" stroke="currentColor" stroke-width="1" fill="none"/>
+                    </svg>
+                    <svg width="14" height="14" viewBox="0 0 14 14" class="text-red-500">
+                        <!-- Mini mask -->
+                        <path d="M2,7 Q3,4 5,4 Q7,3 9,4 Q11,4 12,7 Q11,10 9,8 Q7,9 5,8 Q3,10 2,7 Z" stroke="currentColor" stroke-width="1" fill="currentColor" opacity="0.3"/>
+                        <ellipse cx="5" cy="7" rx="1.5" ry="1" stroke="currentColor" stroke-width="1" fill="none"/>
+                        <ellipse cx="9" cy="7" rx="1.5" ry="1" stroke="currentColor" stroke-width="1" fill="none"/>
+                    </svg>
+                    <svg width="14" height="14" viewBox="0 0 14 14" class="text-red-400">
+                        <!-- Mini collar -->
+                        <path d="M2,7 Q7,5 12,7 Q7,9 2,7 Z" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <circle cx="7" cy="7" r="1.5" stroke="currentColor" stroke-width="1" fill="none"/>
+                        <circle cx="4" cy="7" r="0.5" fill="currentColor"/>
+                        <circle cx="10" cy="7" r="0.5" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="flex-grow h-px bg-gradient-to-r from-transparent via-red-600/30 to-transparent"></div>
+            </div>
+            <h2 class="text-3xl font-bold theme-header relative inline-block">
+                {{#if content.gallery_section_title}}{{content.gallery_section_title}}{{else}}Gallery{{/if}}
+                <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-12 h-0.5 bg-gradient-to-r from-red-600 to-red-400"></div>
+            </h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {{#each galleryImages}}
+            <div class="aspect-square overflow-hidden theme-bg-light rounded-xl relative group bdsm-strap-card">
+                <!-- Decorative overlay -->
+                <div class="absolute inset-0 border border-red-600/20 rounded-xl pointer-events-none z-10 group-hover:border-red-500/40 transition-colors duration-300"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-red-950/10 via-transparent to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
+                
+                <img src="/uploads/{{../modelSlug}}/public/gallery/{{this.filename}}" 
+                     alt="{{#if this.caption}}{{this.caption}}{{else}}Gallery image{{/if}}" 
+                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                     
+                <!-- Corner accents -->
+                <div class="absolute top-1 left-1 w-3 h-3 border-l border-t border-red-600/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute top-1 right-1 w-3 h-3 border-r border-t border-red-600/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute bottom-1 left-1 w-3 h-3 border-l border-b border-red-600/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute bottom-1 right-1 w-3 h-3 border-r border-b border-red-600/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+            {{else}}
+            {{#times 5}}
+            <div class="theme-bg-light aspect-square flex items-center justify-center rounded-xl relative group border border-red-600/10 bdsm-strap-card">
+                <p class="theme-text-subtle text-sm">Photo</p>
+                <!-- Corner accents for placeholder -->
+                <div class="absolute top-1 left-1 w-3 h-3 border-l border-t border-red-600/20"></div>
+                <div class="absolute top-1 right-1 w-3 h-3 border-r border-t border-red-600/20"></div>
+                <div class="absolute bottom-1 left-1 w-3 h-3 border-l border-b border-red-600/20"></div>
+                <div class="absolute bottom-1 right-1 w-3 h-3 border-r border-b border-red-600/20"></div>
+            </div>
+            {{/times}}
+            {{/each}}
+        </div>
+        <div class="text-center mt-8">
+            <a href="/{{modelSlug}}/gallery{{previewParam}}" class="theme-accent-bg theme-text-inverted px-6 py-3 rounded-full font-semibold hover:opacity-90 transition-all duration-300 inline-flex items-center justify-center min-h-12">
+                {{#if content.gallery_button_text}}{{content.gallery_button_text}}{{else}}View Full Gallery{{/if}}
+            </a>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Location Availability -->
+{{#if content.travel_section_visible}}
+<section class="py-16 theme-section-alt">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-center mb-12 theme-header">
+            {{#if content.travel_section_title}}{{content.travel_section_title}}{{else}}Location Availability{{/if}}
+        </h2>
+        {{#if upcomingEvents}}
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {{#each upcomingEvents}}
+            <div class="theme-card p-6 hover:shadow-lg transition-shadow">
+                <div class="text-center mb-4">
+                    <div class="inline-flex items-center justify-center theme-accent rounded-full mb-3 w-10 h-10 theme-bg-secondary">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 theme-text-primary">{{this.location}}</h3>
+                    <div class="text-base font-medium mb-3 theme-text-muted">
+                        {{#if this.dateRange}}
+                            {{this.dateRange}}
+                        {{else}}
+                            {{formatDate this.date}}
+                        {{/if}}
+                    </div>
+                </div>
+                <div class="text-center">
+                    <span class="text-white px-3 py-1 rounded-full text-sm font-bold theme-success" style="background-color: #22C55E;">Available</span>
+                    {{#if this.notes}}
+                    <p class="text-xs leading-relaxed mt-2 theme-text-subtle">{{this.notes}}</p>
+                    {{/if}}
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        <div class="text-center mt-8">
+            <a href="/{{modelSlug}}/{{#if content.travel_cta_link}}{{content.travel_cta_link}}{{else}}calendar{{/if}}{{previewParam}}" class="theme-accent-bg theme-text-inverted px-6 py-3 rounded-full font-semibold hover:opacity-90 transition-all duration-300 inline-flex items-center justify-center min-h-12">
+                {{#if content.travel_cta_text}}{{content.travel_cta_text}}{{else}}View Full Calendar{{/if}}
+            </a>
+        </div>
+        {{else}}
+        <div class="text-center">
+            <div class="theme-card p-12 max-w-lg mx-auto">
+                <div class="w-16 h-16 mx-auto mb-6 theme-accent-bg flex items-center justify-center rounded-xl">
+                    <i class="fas fa-calendar"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-4 theme-text-primary">Check My Calendar</h3>
+                <p class="mb-6 theme-text-muted">View available dates and book your appointment</p>
+                <a href="/{{modelSlug}}/calendar{{previewParam}}" class="theme-accent-bg theme-text-inverted px-6 py-3 rounded-full font-semibold hover:opacity-90 transition-all duration-300 inline-flex items-center justify-center min-h-12">
+                    View Calendar
+                </a>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+</section>
+{{/if}}
+
+<!-- Testimonials -->
+{{#if content.testimonials_section_visible}}
+<section class="py-16 theme-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-center mb-12 theme-header">
+            {{#if content.testimonials_section_title}}{{content.testimonials_section_title}}{{else}}What Clients Say{{/if}}
+        </h2>
+        <div class="grid md:grid-cols-3 gap-6 mb-6">
+            {{#each testimonials}}
+            {{#if (lt @index (or ../content.testimonials_display_count 3))}}
+            <div class="theme-card bdsm-strap-card p-6 shadow">
+                <div class="flex mb-4" style="color: #b0b0b0;">
+                    {{#times this.rating}}
+                    <i class="fas fa-star text-sm"></i>
+                    {{/times}}
+                </div>
+                <p class="text-base leading-relaxed mb-4 theme-text-secondary">"{{this.text}}"</p>
+                <p class="text-xs font-bold uppercase tracking-wide theme-text-subtle">{{this.name}}</p>
+            </div>
+            {{/if}}
+            {{else}}
+            {{#times (or content.testimonials_display_count 3)}}
+            <div class="theme-card bdsm-strap-card p-6 shadow">
+                <div class="flex mb-4" style="color: #b0b0b0;">
+                    {{#times 5}}<i class="fas fa-star text-sm"></i>{{/times}}
+                </div>
+                <p class="text-base leading-relaxed mb-4 theme-text-secondary">"She is absolutely wonderful. Professional, elegant, and truly caring. An unforgettable experience."</p>
+                <p class="text-xs font-bold uppercase tracking-wide theme-text-subtle">CLIENT</p>
+            </div>
+            {{/times}}
+            {{/each}}
+        </div>
+    </div>
+    
+</section>
+{{/if}}
+
+<!-- Bottom CTA Band -->
+{{#if content.cta_section_visible}}
+<section class="py-16 bdsm-cta-band theme-text-inverted relative">
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <h2 class="text-3xl font-bold mb-6">
+            {{#if content.cta_section_title}}{{content.cta_section_title}}{{else}}Ready to Meet?{{/if}}
+        </h2>
+        <p class="text-xl mb-8 opacity-90">
+            {{#if content.cta_section_subtitle}}{{content.cta_section_subtitle}}{{else}}Experience elegance and sophistication with professional companionship services{{/if}}
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            {{#if content.cta_button_1_text}}
+                <a href="/{{modelSlug}}/{{#if content.cta_button_1_link}}{{content.cta_button_1_link}}{{else}}calendar{{/if}}{{previewParam}}" class="bdsm-metal-btn px-6 py-3 font-semibold inline-flex items-center justify-center min-h-12">
+                    <svg class="bdsm-icon icon-sm mr-2">
+                        <use href="/themes/bdsm/assets/icons/sprite.svg#handcuffs"></use>
+                    </svg>
+                    {{content.cta_button_1_text}}
+                </a>
+            {{else}}
+                <a href="/{{modelSlug}}/calendar{{previewParam}}" class="bdsm-metal-btn px-6 py-3 font-semibold inline-flex items-center justify-center min-h-12">Calendar</a>
+            {{/if}}
+            {{#if content.cta_button_2_text}}
+                <a href="/{{modelSlug}}/{{#if content.cta_button_2_link}}{{content.cta_button_2_link}}{{else}}contact{{/if}}{{previewParam}}" class="bdsm-metal-btn px-6 py-3 font-semibold inline-flex items-center justify-center min-h-12">
+                    <svg class="bdsm-icon icon-sm mr-2">
+                        <use href="/themes/bdsm/assets/icons/sprite.svg#choker"></use>
+                    </svg>
+                    {{content.cta_button_2_text}}
+                </a>
+            {{else}}
+                <a href="/{{modelSlug}}/contact{{previewParam}}" class="bdsm-metal-btn px-6 py-3 font-semibold inline-flex items-center justify-center min-h-12">Contact</a>
+            {{/if}}
+        </div>
+        <div class="bdsm-cta-studs">
+            <span class="bdsm-stud"></span>
+            <span class="bdsm-stud"></span>
+            <span class="bdsm-stud"></span>
+            <span class="bdsm-stud"></span>
+            <span class="bdsm-stud"></span>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Mobile Sticky CTA -->
+<div id="mobile-sticky-cta" class="fixed bottom-0 left-0 right-0 theme-accent-bg theme-text-inverted p-4 z-50 hidden sm:hidden shadow-lg">
+    <div class="max-w-sm mx-auto">
+        <a href="/{{modelSlug}}/contact{{previewParam}}" class="block w-full theme-bg-tertiary theme-text-primary px-4 py-3 rounded-full font-semibold text-center hover:opacity-90 transition-all duration-300">
+            Contact Me
+        </a>
+    </div>
+</div>
+
+<!-- BDSM Theme Custom Styles -->
+<style>
+/* Custom BDSM animations and effects */
+@keyframes subtlePulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+}
+
+@keyframes floatSlow {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(1deg); }
+}
+
+@keyframes shadowGlow {
+    0%, 100% { box-shadow: 0 0 5px rgba(139, 0, 0, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(139, 0, 0, 0.6), 0 0 30px rgba(139, 0, 0, 0.3); }
+}
+
+.bdsm-geometric {
+    animation: floatSlow 6s ease-in-out infinite;
+}
+
+.bdsm-glow:hover {
+    animation: shadowGlow 2s ease-in-out infinite;
+}
+
+/* Enhanced button styling for BDSM theme */
+.theme-accent-bg {
+    position: relative;
+    overflow: hidden;
+}
+
+.theme-accent-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.theme-accent-bg:hover::before {
+    left: 100%;
+}
+
+/* Decorative text shadows */
+.theme-header {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Enhanced card hover effects */
+.theme-card {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.theme-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent, rgba(139, 0, 0, 0.05), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.theme-card:hover::after {
+    opacity: 1;
+}
+
+/* Sophisticated border effects */
+.bdsm-border-accent {
+    border-image: linear-gradient(45deg, #8b0000, #ff0000, #8b0000) 1;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const hero = document.querySelector('[class*="theme-accent-bg"]');
+    const stickyCTA = document.getElementById('mobile-sticky-cta');
+    if (hero && stickyCTA && window.innerWidth < 640) {
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (!entry.isIntersecting) stickyCTA.classList.remove('hidden');
+                else stickyCTA.classList.add('hidden');
+            });
+        }, { threshold: 0 });
+        observer.observe(hero);
+    }
+    
+    // Add BDSM-specific interactive effects
+    const geometricElements = document.querySelectorAll('[class*="border-red"]');
+    geometricElements.forEach(el => {
+        el.classList.add('bdsm-geometric');
+    });
+    
+    // Enhanced hover effects for gallery items
+    const galleryItems = document.querySelectorAll('.aspect-square');
+    galleryItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.02)';
+            this.style.transition = 'transform 0.3s ease';
+        });
+        item.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+    });
+});
+</script>
+

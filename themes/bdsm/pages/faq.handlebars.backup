@@ -1,0 +1,164 @@
+{{!-- BDSM FAQ Page --}}
+<!-- Load BDSM Icons Sprite -->
+<script>
+// Preload BDSM SVG sprite for better performance
+(function() {
+    const spriteUrl = '/themes/bdsm/assets/bdsm-icons.svg';
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', spriteUrl, true);
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const div = document.createElement('div');
+            div.style.display = 'none';
+            div.innerHTML = xhr.responseText;
+            document.body.insertBefore(div, document.body.firstChild);
+        }
+    };
+    xhr.send();
+})();
+</script>
+
+<!-- Parallax Hero Section -->
+<section class="relative overflow-hidden h-96 flex items-center justify-center">
+    <!-- Parallax Background Image -->
+    {{#if heroBackgroundImageUrl}}
+    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+         style="background-image: url('{{heroBackgroundImageUrl}}'); background-size: cover;">
+    </div>
+    {{else}}
+    <!-- Fallback gradient background -->
+    <div class="absolute inset-0 theme-accent-bg"></div>
+    {{/if}}
+    
+    <!-- Dark overlay for text contrast -->
+    <div class="absolute inset-0 bg-gradient-to-br from-black/80 via-red-950/30 to-black/70"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <!-- Hero Heading -->
+        <h1 class="text-5xl md:text-6xl font-bold mb-4 text-white leading-tight" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+            Frequently Asked Questions
+        </h1>
+        
+        <!-- Hero Subtitle -->
+        <p class="text-lg md:text-xl text-white opacity-90 max-w-3xl mx-auto">
+            Find answers to common questions about my services
+        </p>
+    </div>
+</section>
+
+<!-- FAQ Content Section -->
+<section class="theme-section py-16" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{#if content.faqIntro}}
+        <div class="text-center mb-8">
+            <p class="text-xl theme-text-secondary max-w-3xl mx-auto">{{content.faqIntro}}</p>
+        </div>
+        {{/if}}
+    </div>
+</section>
+
+{{#if faqCategories}}
+<section class="py-8 theme-section-alt">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <div class="inline-flex theme-card rounded-lg p-1">
+                <button class="faq-category-filter active px-6 py-2 rounded-md text-sm font-medium transition-colors theme-text-primary" data-category="all">All Questions</button>
+                {{#each faqCategories}}
+                <button class="faq-category-filter px-6 py-2 rounded-md text-sm font-medium transition-colors theme-text-primary" data-category="{{this.slug}}">{{this.name}}</button>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<section class="py-16 theme-section">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{#if faqs}}
+        <div class="space-y-4" id="faqContainer">
+            {{#each faqs}}
+            <div class="faq-item theme-card" data-category="{{this.category}}" data-aos="fade-up" data-aos-delay="{{@index}}0">
+                <button class="faq-question w-full text-left p-6 flex items-center justify-between focus:outline-none focus:theme-accent rounded-lg" onclick="toggleFaq({{@index}})">
+                    <h3 class="text-lg font-semibold theme-text-primary pr-4">{{this.question}}</h3>
+                    <div class="faq-icon flex-shrink-0"><i class="fas fa-plus theme-accent"></i></div>
+                </button>
+                <div class="faq-answer hidden px-6 pb-6">
+                    <div class="theme-text-secondary leading-relaxed">{{{this.answer}}}</div>
+                    {{#if this.relatedLinks}}
+                    <div class="mt-4 pt-4 theme-border-light border-t">
+                        <p class="text-sm font-medium theme-text-primary mb-2">Related Information:</p>
+                        <div class="space-y-1">
+                            {{#each this.relatedLinks}}
+                            <a href="{{this.url}}" class="theme-accent text-sm block hover:opacity-90">{{this.title}}</a>
+                            {{/each}}
+                        </div>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        {{/if}}
+    </div>
+</section>
+
+<section class="py-16 theme-section-alt">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <div class="theme-card p-12">
+            <div class="w-16 h-16 mx-auto mb-6 theme-accent-bg rounded-lg flex items-center justify-center theme-text-inverted">
+                <i class="fas fa-question"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-4 theme-header">Still Have Questions?</h2>
+            <p class="theme-text-secondary mb-8 max-w-2xl mx-auto">I'm happy to provide more information and answer any specific questions you may have.</p>
+            <a href="/{{modelSlug}}/contact" class="theme-accent-bg theme-text-inverted py-3 px-8 rounded-lg font-semibold hover:opacity-90 transition-opacity inline-flex items-center justify-center">
+                <i class="fas fa-envelope mr-2"></i> Contact Me
+            </a>
+        </div>
+    </div>
+</section>
+
+<script>
+function toggleFaq(index) {
+    const faqItems = document.querySelectorAll('.faq-item');
+    const currentItem = faqItems[index];
+    const answer = currentItem.querySelector('.faq-answer');
+    const icon = currentItem.querySelector('.faq-icon i');
+    faqItems.forEach((item, i) => {
+        if (i !== index) {
+            const otherAnswer = item.querySelector('.faq-answer');
+            const otherIcon = item.querySelector('.faq-icon i');
+            otherAnswer.classList.add('hidden');
+            otherIcon.classList.remove('fa-minus');
+            otherIcon.classList.add('fa-plus');
+        }
+    });
+    if (answer.classList.contains('hidden')) {
+        answer.classList.remove('hidden');
+        icon.classList.remove('fa-plus');
+        icon.classList.add('fa-minus');
+    } else {
+        answer.classList.add('hidden');
+        icon.classList.remove('fa-minus');
+        icon.classList.add('fa-plus');
+    }
+}
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryFilters = document.querySelectorAll('.faq-category-filter');
+    const faqItems = document.querySelectorAll('.faq-item');
+    categoryFilters.forEach(filter => {
+        filter.addEventListener('click', function() {
+            const category = this.dataset.category;
+            categoryFilters.forEach(f => f.classList.remove('theme-accent-bg','theme-text-inverted'));
+            this.classList.add('theme-accent-bg','theme-text-inverted');
+            faqItems.forEach(item => {
+                if (category === 'all' || item.dataset.category === category) item.style.display = 'block';
+                else item.style.display = 'none';
+            });
+            document.querySelectorAll('.faq-answer').forEach(a => a.classList.add('hidden'));
+            document.querySelectorAll('.faq-icon i').forEach(i => { i.classList.remove('fa-minus'); i.classList.add('fa-plus'); });
+        });
+    });
+});
+</script>
+

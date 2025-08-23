@@ -1,0 +1,258 @@
+{{!-- BDSM Etiquette Page --}}
+<!-- Load BDSM Icons Sprite -->
+<script>
+// Preload BDSM SVG sprite for better performance
+(function() {
+    const spriteUrl = '/themes/bdsm/assets/bdsm-icons.svg';
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', spriteUrl, true);
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const div = document.createElement('div');
+            div.style.display = 'none';
+            div.innerHTML = xhr.responseText;
+            document.body.insertBefore(div, document.body.firstChild);
+        }
+    };
+    xhr.send();
+})();
+</script>
+
+<!-- Parallax Hero Section -->
+<section class="relative overflow-hidden h-96 flex items-center justify-center">
+    <!-- Parallax Background Image -->
+    {{#if heroBackgroundImageUrl}}
+    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+         style="background-image: url('{{heroBackgroundImageUrl}}'); background-size: cover;">
+    </div>
+    {{else}}
+    <!-- Fallback gradient background -->
+    <div class="absolute inset-0 theme-accent-bg"></div>
+    {{/if}}
+    
+    <!-- Dark overlay for text contrast -->
+    <div class="absolute inset-0 bg-gradient-to-br from-black/80 via-red-950/30 to-black/70"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <!-- Subtle Floating BDSM Elements -->
+        <div class="bdsm-decoration bdsm-decoration--mobile-hidden" style="top: 10%; right: 15%; opacity: 0.15;">
+            <svg class="bdsm-icon bdsm-icon--sm bdsm-icon--contrast bdsm-float">
+                <use href="#collar"></use>
+            </svg>
+        </div>
+        <div class="bdsm-decoration bdsm-decoration--mobile-hidden" style="top: 15%; left: 10%; opacity: 0.12;">
+            <svg class="bdsm-icon bdsm-icon--sm bdsm-icon--contrast bdsm-pulse">
+                <use href="#handcuffs"></use>
+            </svg>
+        </div>
+        
+        <!-- Hero Heading -->
+        <h1 class="text-5xl md:text-6xl font-bold mb-4 text-white leading-tight" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+            {{#if etiquette_content.page_title}}{{etiquette_content.page_title}}{{else}}Etiquette & Guidelines{{/if}}
+        </h1>
+        
+        <!-- Hero Subtitle -->
+        {{#if etiquette_content.page_subtitle}}
+        <p class="text-lg md:text-xl text-white opacity-90 max-w-3xl mx-auto">
+            {{etiquette_content.page_subtitle}}
+        </p>
+        {{else}}
+        <p class="text-lg md:text-xl text-white opacity-90 max-w-3xl mx-auto">
+            Guidelines for respectful and professional interactions
+        </p>
+        {{/if}}
+    </div>
+</section>
+
+<!-- BDSM Etiquette Divider -->
+<div class="bdsm-divider">
+    <svg class="bdsm-divider__icon bdsm-icon bdsm-icon--lg">
+        <use href="#ball_gag"></use>
+    </svg>
+</div>
+
+<section class="py-16 theme-section relative overflow-hidden">
+    <!-- Subtle Background Floating Elements -->
+    <div class="bdsm-decoration bdsm-decoration--mobile-hidden" style="top: 25%; right: 5%; opacity: 0.08;">
+        <svg class="bdsm-icon bdsm-icon--sm bdsm-icon--contrast bdsm-float" style="animation-delay: 2s;">
+            <use href="#whip"></use>
+        </svg>
+    </div>
+    <div class="bdsm-decoration bdsm-decoration--mobile-hidden" style="top: 70%; left: 8%; opacity: 0.10;">
+        <svg class="bdsm-icon bdsm-icon--sm bdsm-icon--contrast bdsm-pulse" style="animation-delay: 4s;">
+            <use href="#paddle"></use>
+        </svg>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        
+        <div class="grid md:grid-cols-2 gap-12">
+            <!-- Booking & Screening -->
+            {{#if etiquette_content.etiquette_booking_visible}}
+            <div class="theme-card p-8 hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="100">
+                <h2 class="text-2xl font-bold mb-6 theme-header">
+                    {{#if etiquette_content.booking_title}}{{etiquette_content.booking_title}}{{else}}Booking & Screening{{/if}}
+                </h2>
+                <div class="space-y-6">
+                    {{#if etiquette_content.booking_initial_contact_title}}
+                    <div>
+                        <h3 class="font-semibold theme-accent mb-2">{{etiquette_content.booking_initial_contact_title}}</h3>
+                        <p class="theme-text-secondary">{{etiquette_content.booking_initial_contact_text}}</p>
+                    </div>
+                    {{/if}}
+                    {{#if etiquette_content.booking_screening_title}}
+                    <div>
+                        <h3 class="font-semibold theme-accent mb-2">{{etiquette_content.booking_screening_title}}</h3>
+                        <p class="theme-text-secondary">{{etiquette_content.booking_screening_text}}</p>
+                    </div>
+                    {{/if}}
+                    {{#if etiquette_content.booking_advance_title}}
+                    <div>
+                        <h3 class="font-semibold theme-accent mb-2">{{etiquette_content.booking_advance_title}}</h3>
+                        <p class="theme-text-secondary">{{etiquette_content.booking_advance_text}}</p>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Respect & Boundaries -->
+            {{#if etiquette_content.etiquette_respect_visible}}
+            <div class="theme-card p-8 hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="200">
+                <h2 class="text-2xl font-bold mb-6 theme-header">
+                    {{#if etiquette_content.respect_title}}{{etiquette_content.respect_title}}{{else}}Respect & Boundaries{{/if}}
+                </h2>
+                <div class="space-y-6">
+                    {{#if etiquette_content.respect_mutual_title}}
+                    <div>
+                        <h3 class="font-semibold theme-accent mb-2">{{etiquette_content.respect_mutual_title}}</h3>
+                        <p class="theme-text-secondary">{{etiquette_content.respect_mutual_text}}</p>
+                    </div>
+                    {{/if}}
+                    {{#if etiquette_content.respect_boundaries_title}}
+                    <div>
+                        <h3 class="font-semibold theme-accent mb-2">{{etiquette_content.respect_boundaries_title}}</h3>
+                        <p class="theme-text-secondary">{{etiquette_content.respect_boundaries_text}}</p>
+                    </div>
+                    {{/if}}
+                    {{#if etiquette_content.respect_personal_title}}
+                    <div>
+                        <h3 class="font-semibold theme-accent mb-2">{{etiquette_content.respect_personal_title}}</h3>
+                        <p class="theme-text-secondary">{{etiquette_content.respect_personal_text}}</p>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Hygiene & Presentation -->
+            {{#if etiquette_content.etiquette_hygiene_visible}}
+            <div class="theme-card p-8 hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="300">
+                <h2 class="text-2xl font-bold mb-6 theme-header">
+                    {{#if etiquette_content.hygiene_title}}{{etiquette_content.hygiene_title}}{{else}}Hygiene & Presentation{{/if}}
+                </h2>
+                <div class="space-y-6">
+                    {{#if etiquette_content.hygiene_personal_title}}
+                    <div>
+                        <h3 class="font-semibold theme-accent mb-2">{{etiquette_content.hygiene_personal_title}}</h3>
+                        <p class="theme-text-secondary">{{etiquette_content.hygiene_personal_text}}</p>
+                    </div>
+                    {{/if}}
+                    {{#if etiquette_content.hygiene_attire_title}}
+                    <div>
+                        <h3 class="font-semibold theme-accent mb-2">{{etiquette_content.hygiene_attire_title}}</h3>
+                        <p class="theme-text-secondary">{{etiquette_content.hygiene_attire_text}}</p>
+                    </div>
+                    {{/if}}
+                    {{#if etiquette_content.hygiene_substances_title}}
+                    <div>
+                        <h3 class="font-semibold theme-accent mb-2">{{etiquette_content.hygiene_substances_title}}</h3>
+                        <p class="theme-text-secondary">{{etiquette_content.hygiene_substances_text}}</p>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Cancellation Policy -->
+            {{#if etiquette_content.etiquette_cancellation_visible}}
+            <div class="theme-card p-8 hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="400">
+                <h2 class="text-2xl font-bold mb-6 theme-header">
+                    {{#if etiquette_content.cancellation_title}}{{etiquette_content.cancellation_title}}{{else}}Cancellation Policy{{/if}}
+                </h2>
+                <div class="space-y-6">
+                    {{#if etiquette_content.cancellation_advance_title}}
+                    <div>
+                        <h3 class="font-semibold theme-accent mb-2">{{etiquette_content.cancellation_advance_title}}</h3>
+                        <p class="theme-text-secondary">{{etiquette_content.cancellation_advance_text}}</p>
+                    </div>
+                    {{/if}}
+                    {{#if etiquette_content.cancellation_noshow_title}}
+                    <div>
+                        <h3 class="font-semibold theme-accent mb-2">{{etiquette_content.cancellation_noshow_title}}</h3>
+                        <p class="theme-text-secondary">{{etiquette_content.cancellation_noshow_text}}</p>
+                    </div>
+                    {{/if}}
+                    {{#if etiquette_content.cancellation_my_title}}
+                    <div>
+                        <h3 class="font-semibold theme-accent mb-2">{{etiquette_content.cancellation_my_title}}</h3>
+                        <p class="theme-text-secondary">{{etiquette_content.cancellation_my_text}}</p>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+            {{/if}}
+        </div>
+        
+        <!-- Safety & Privacy Section (Full Width) -->
+        {{#if etiquette_content.etiquette_safety_visible}}
+        <div class="mt-12">
+            <div class="theme-accent-bg theme-text-inverted p-8 rounded-2xl shadow-lg" data-aos="fade-up" data-aos-delay="500">
+                <h2 class="text-2xl font-bold mb-6 text-center">
+                    {{#if etiquette_content.safety_title}}{{etiquette_content.safety_title}}{{else}}Safety & Privacy{{/if}}
+                </h2>
+                <div class="grid md:grid-cols-3 gap-6">
+                    {{#if etiquette_content.safety_confidentiality_title}}
+                    <div>
+                        <h3 class="font-semibold mb-2 opacity-90">{{etiquette_content.safety_confidentiality_title}}</h3>
+                        <p class="opacity-80 text-sm">{{etiquette_content.safety_confidentiality_text}}</p>
+                    </div>
+                    {{/if}}
+                    {{#if etiquette_content.safety_environment_title}}
+                    <div>
+                        <h3 class="font-semibold mb-2 opacity-90">{{etiquette_content.safety_environment_title}}</h3>
+                        <p class="opacity-80 text-sm">{{etiquette_content.safety_environment_text}}</p>
+                    </div>
+                    {{/if}}
+                    {{#if etiquette_content.safety_communication_title}}
+                    <div>
+                        <h3 class="font-semibold mb-2 opacity-90">{{etiquette_content.safety_communication_title}}</h3>
+                        <p class="opacity-80 text-sm">{{etiquette_content.safety_communication_text}}</p>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+        {{/if}}
+        
+        <!-- Questions CTA -->
+        {{#if etiquette_content.etiquette_questions_visible}}
+        <div class="text-center mt-16" data-aos="fade-up" data-aos-delay="600">
+            <div class="theme-card p-8 max-w-2xl mx-auto">
+                <h3 class="text-2xl font-bold mb-4 theme-header">
+                    {{#if etiquette_content.questions_title}}{{etiquette_content.questions_title}}{{else}}Questions?{{/if}}
+                </h3>
+                <p class="theme-text-secondary mb-6">
+                    {{#if etiquette_content.questions_text}}{{etiquette_content.questions_text}}{{else}}I look forward to meeting respectful, courteous individuals who appreciate quality time together.{{/if}}
+                </p>
+                <a href="{{#if etiquette_content.questions_button_link}}{{etiquette_content.questions_button_link}}{{else}}/{{modelSlug}}/contact{{previewParam}}{{/if}}" 
+                   class="inline-block theme-accent-bg theme-text-inverted py-3 px-8 rounded-lg font-semibold hover:opacity-90 transition-opacity">
+                    {{#if etiquette_content.questions_button_text}}{{etiquette_content.questions_button_text}}{{else}}Get In Touch{{/if}}
+                </a>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+</section>
+
+
