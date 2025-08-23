@@ -108,13 +108,13 @@ router.get('/config', async (req, res) => {
             SELECT 
                 id,
                 title as section_name,
-                slug as section_slug,
+                LOWER(REPLACE(title, ' ', '-')) as section_slug,
                 description as section_description,
                 layout_type,
                 layout_settings,
                 sort_order as section_order,
                 is_visible as is_published,
-                is_featured
+                0 as is_featured
             FROM gallery_sections
             WHERE model_id = ? 
             AND is_visible = 1
