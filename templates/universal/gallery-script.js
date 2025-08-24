@@ -88,7 +88,21 @@ async function renderGallery(container, galleryData, galleryConfig) {
             return;
         }
         
-        let galleryHtml = '<div class="universal-gallery-sections">';
+        let galleryHtml = '';
+        
+        // Add hero section if enabled
+        if (galleryConfig.hero && galleryConfig.hero.enabled) {
+            galleryHtml += `
+                <div class="gallery-hero">
+                    <div class="hero-content">
+                        <h1 class="hero-title">${escapeHtml(galleryConfig.hero.title)}</h1>
+                        ${galleryConfig.hero.subtitle ? `<p class="hero-subtitle">${escapeHtml(galleryConfig.hero.subtitle)}</p>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        galleryHtml += '<div class="universal-gallery-sections">';
         
         // Render each section separately
         galleryData.sections.forEach((section, index) => {
@@ -128,6 +142,8 @@ function renderSectionLayout(section) {
             return renderGridLayout(section.items, section.layoutSettings);
         case 'carousel':
             return renderCarouselLayout(section.items, section.layoutSettings);
+        case 'slideshow':
+            return renderSlideshowLayout(section.items, section.layoutSettings);
         case 'lightbox_grid':
             return renderLightboxGridLayout(section.items, section.layoutSettings);
         default:
@@ -144,6 +160,12 @@ function initializeGallerySections(container, sections, config) {
             switch (section.layout) {
                 case 'carousel':
                     initializeCarousel(sectionElement, section);
+                    break;
+                case 'slideshow':
+                    const slideshowContainer = sectionElement.querySelector('.gallery-slideshow-container');
+                    if (slideshowContainer) {
+                        initializeSlideshow(slideshowContainer);
+                    }
                     break;
                 case 'masonry':
                     initializeMasonry(sectionElement, section);
@@ -179,8 +201,10 @@ function renderMasonryLayout(items, layoutSettings = {}) {
         return renderEmptyState();
     }
     
-    const columns = layoutSettings.columns || 3;
-    const gap = layoutSettings.gap || '1.5rem';
+    const columnsRaw = (layoutSettings.columns ?? layoutSettings.masonryColumns ?? 3);
+    const columns = parseInt(columnsRaw, 10) || 3;
+    const gapRaw = (layoutSettings.gap ?? layoutSettings.masonryGap ?? '1.5rem');
+    const gap = typeof gapRaw === 'number' ? `${gapRaw}px` : gapRaw;
     
     const itemsHtml = items.map(item => `
         <div class="gallery-grid-item masonry-item" data-id="${item.id}">
@@ -196,7 +220,7 @@ function renderMasonryLayout(items, layoutSettings = {}) {
     
     return `
         <div class="universal-gallery">
-            <div class="gallery-grid masonry-grid" style="--gallery-grid-columns-desktop: ${columns}; --gallery-grid-gap: ${gap};">
+            <div class="gallery-grid masonry-grid" style="display: grid !important; grid-template-columns: repeat(${columns}, 1fr); gap: ${gap};">
                 ${itemsHtml}
             </div>
         </div>
@@ -227,7 +251,7 @@ function renderGridLayout(items, layoutSettings = {}) {
     
     return `
         <div class="universal-gallery">
-            <div class="gallery-grid-container" style="--gallery-grid-columns-desktop: ${columns}; --gallery-grid-gap: ${gap};">
+            <div class="gallery-grid-container" style="--gallery-grid-columns-desktop: ${columns}; --gallery-grid-gap: ${gap}; grid-template-columns: repeat(${columns}, 1fr); gap: ${gap};">
                 ${itemsHtml}
             </div>
         </div>
@@ -282,6 +306,70 @@ function renderCarouselLayout(items, layoutSettings = {}) {
                 
                 ${showDots ? `
                 <div class="gallery-carousel-dots">
+                    ${dots}
+                </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
+}
+
+// Render slideshow layout - single image display with navigation
+function renderSlideshowLayout(items, layoutSettings = {}) {
+    if (!items || items.length === 0) {
+        return renderEmptyState();
+    }
+    
+    const autoplay = layoutSettings.slideshow_autoplay !== false;
+    const autoplaySpeed = layoutSettings.slideshow_speed || 5000;
+    const showDots = layoutSettings.show_dots !== false;
+    const showArrows = layoutSettings.show_arrows !== false;
+    const showCaption = layoutSettings.show_captions !== false;
+    
+    const slidesHtml = items.map((item, index) => `
+        <div class="gallery-slideshow-slide ${index === 0 ? 'active' : ''}" data-id="${item.id}" data-index="${index}">
+            <div class="gallery-slideshow-image-container">
+                <img src="${item.srcMed || item.srcThumb}" 
+                     alt="${escapeHtml(item.alt)}" 
+                     class="gallery-slideshow-image"
+                     onclick="openLightbox('${item.id}')">
+            </div>
+            ${showCaption && item.caption ? `<div class="gallery-slideshow-caption">${escapeHtml(item.caption)}</div>` : ''}
+        </div>
+    `).join('');
+    
+    const dots = items.map((_, index) => `
+        <button class="gallery-slideshow-dot ${index === 0 ? 'active' : ''}" 
+                onclick="goToSlideshowSlide(${index})" aria-label="Go to slide ${index + 1}"></button>
+    `).join('');
+    
+    return `
+        <div class="universal-gallery">
+            <div class="gallery-slideshow-container" 
+                 data-autoplay="${autoplay}" 
+                 data-autoplay-speed="${autoplaySpeed}"
+                 data-slides-count="${items.length}">
+                <div class="gallery-slideshow-viewport">
+                    <div class="gallery-slideshow-slides">
+                        ${slidesHtml}
+                    </div>
+                </div>
+                
+                ${showArrows && items.length > 1 ? `
+                <button class="gallery-slideshow-nav prev" onclick="previousSlideshowSlide()" aria-label="Previous slide">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                    </svg>
+                </button>
+                <button class="gallery-slideshow-nav next" onclick="nextSlideshowSlide()" aria-label="Next slide">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                    </svg>
+                </button>
+                ` : ''}
+                
+                ${showDots && items.length > 1 ? `
+                <div class="gallery-slideshow-dots">
                     ${dots}
                 </div>
                 ` : ''}
@@ -349,21 +437,26 @@ async function initializeLayoutSpecific(container, layout, config) {
 }
 
 // Initialize masonry layout
-async function initializeMasonry(container) {
-    // Simple CSS-based masonry fallback
+async function initializeMasonry(container, section) {
+    // Enforce CSS Grid for masonry to guarantee columns across themes
     const masonryGrid = container.querySelector('.masonry-grid');
     if (masonryGrid) {
-        masonryGrid.style.columnCount = 'var(--gallery-grid-columns-desktop, 3)';
-        masonryGrid.style.columnGap = 'var(--gallery-grid-gap, 1.5rem)';
-        masonryGrid.style.columnFill = 'balance';
+        const settings = section?.layoutSettings || {};
+        const columnsRaw = (settings.columns ?? settings.masonryColumns ?? 3);
+        const columns = parseInt(columnsRaw, 10) || 3;
+        const gapRaw = (settings.gap ?? settings.masonryGap ?? '1.5rem');
+        const gap = typeof gapRaw === 'number' ? `${gapRaw}px` : gapRaw;
+        masonryGrid.style.setProperty('display', 'grid', 'important');
+        masonryGrid.style.setProperty('grid-template-columns', `repeat(${columns}, 1fr)`);
+        masonryGrid.style.setProperty('gap', gap);
         
-        // Apply masonry item styles
+        // Ensure items behave as grid children
         const items = masonryGrid.querySelectorAll('.masonry-item');
         items.forEach(item => {
-            item.style.breakInside = 'avoid';
-            item.style.marginBottom = 'var(--gallery-grid-gap, 1.5rem)';
-            item.style.display = 'inline-block';
-            item.style.width = '100%';
+            item.style.removeProperty('display');
+            item.style.removeProperty('width');
+            item.style.removeProperty('margin-bottom');
+            item.style.removeProperty('break-inside');
         });
     }
 }
@@ -573,6 +666,93 @@ function initializeGalleryInteractions(container, config) {
             }
         });
     }
+}
+
+// Global slideshow navigation variables and functions
+let currentSlideshowSlide = 0;
+let currentSlideshowContainer = null;
+let slideshowAutoplayTimer = null;
+
+// Global slideshow navigation functions
+function goToSlideshowSlide(index) {
+    const container = document.querySelector('.gallery-slideshow-container');
+    if (!container) return;
+    
+    const slides = container.querySelectorAll('.gallery-slideshow-slide');
+    const dots = container.querySelectorAll('.gallery-slideshow-dot');
+    
+    if (!slides.length) return;
+    
+    // Clamp index to valid range
+    currentSlideshowSlide = Math.max(0, Math.min(index, slides.length - 1));
+    
+    // Update slide visibility
+    slides.forEach((slide, idx) => {
+        slide.classList.toggle('active', idx === currentSlideshowSlide);
+    });
+    
+    // Update dots
+    dots.forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === currentSlideshowSlide);
+    });
+    
+    // Reset autoplay timer if active
+    resetSlideshowAutoplay(container);
+}
+
+function nextSlideshowSlide() {
+    const container = document.querySelector('.gallery-slideshow-container');
+    if (!container) return;
+    
+    const slides = container.querySelectorAll('.gallery-slideshow-slide');
+    const nextIndex = (currentSlideshowSlide + 1) % slides.length;
+    goToSlideshowSlide(nextIndex);
+}
+
+function previousSlideshowSlide() {
+    const container = document.querySelector('.gallery-slideshow-container');
+    if (!container) return;
+    
+    const slides = container.querySelectorAll('.gallery-slideshow-slide');
+    const prevIndex = currentSlideshowSlide === 0 ? slides.length - 1 : currentSlideshowSlide - 1;
+    goToSlideshowSlide(prevIndex);
+}
+
+function startSlideshowAutoplay(container) {
+    const autoplay = container.dataset.autoplay === 'true';
+    const autoplaySpeed = parseInt(container.dataset.autoplaySpeed) || 5000;
+    const slidesCount = parseInt(container.dataset.slidesCount) || 1;
+    
+    if (!autoplay || slidesCount <= 1) return;
+    
+    slideshowAutoplayTimer = setInterval(() => {
+        nextSlideshowSlide();
+    }, autoplaySpeed);
+}
+
+function stopSlideshowAutoplay() {
+    if (slideshowAutoplayTimer) {
+        clearInterval(slideshowAutoplayTimer);
+        slideshowAutoplayTimer = null;
+    }
+}
+
+function resetSlideshowAutoplay(container) {
+    stopSlideshowAutoplay();
+    startSlideshowAutoplay(container);
+}
+
+// Initialize slideshow when container is found
+function initializeSlideshow(container) {
+    currentSlideshowSlide = 0;
+    currentSlideshowContainer = container;
+    
+    // Start autoplay if enabled
+    startSlideshowAutoplay(container);
+    
+    // Pause autoplay on hover
+    container.addEventListener('mouseenter', stopSlideshowAutoplay);
+    container.addEventListener('mouseleave', () => startSlideshowAutoplay(container));
 }
 
 // Utility functions

@@ -1865,37 +1865,50 @@ router.put('/:modelSlug/sections/:id/settings', async (req, res) => {
       
       // Layout-specific settings as JSON with enhanced validation
       layout_settings: (value) => {
+        let parsed;
+        let originalValue;
+        
         if (typeof value === 'string') {
           try {
-            const parsed = JSON.parse(value);
-            
-            // Validate that it's an object
-            if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
-              logger.warn('layout_settings validation failed: not an object', { value });
-              return null;
-            }
-            
-            // Basic validation for common settings patterns
-            for (const [key, val] of Object.entries(parsed)) {
-              // Ensure keys follow expected naming patterns
-              if (!key.match(/^(grid|masonry|carousel|lightbox)[A-Z][a-zA-Z]*$/)) {
-                logger.warn('layout_settings validation warning: unexpected key pattern', { key, value: val });
-              }
-              
-              // Ensure values are reasonable types
-              if (typeof val !== 'string' && typeof val !== 'number' && typeof val !== 'boolean') {
-                logger.warn('layout_settings validation failed: invalid value type', { key, value: val, type: typeof val });
-                return null;
-              }
-            }
-            
-            return value; // Return original string for database storage
+            parsed = JSON.parse(value);
+            originalValue = value;
           } catch (e) {
-            logger.warn('layout_settings validation failed: invalid JSON', { value, error: e.message });
+            logger.warn('layout_settings validation failed: invalid JSON string', { value, error: e.message });
+            return null;
+          }
+        } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+          // Already an object (from frontend or previous processing)
+          parsed = value;
+          originalValue = JSON.stringify(value);
+        } else {
+          logger.warn('layout_settings validation failed: invalid type', { value, type: typeof value });
+          return null;
+        }
+        
+        // Validate that parsed result is an object
+        if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+          logger.warn('layout_settings validation failed: not an object after parsing', { value, parsed });
+          return null;
+        }
+        
+        // Basic validation for common settings patterns
+        for (const [key, val] of Object.entries(parsed)) {
+          // Allow general settings keys as well as layout-specific ones
+          const isValidKey = key.match(/^(grid|masonry|carousel|lightbox)[A-Z][a-zA-Z]*$/) || 
+                           ['isVisible', 'showInNav', 'lazyLoading', 'showCaptions', 'enableDownload'].includes(key);
+          
+          if (!isValidKey) {
+            logger.warn('layout_settings validation warning: unexpected key pattern', { key, value: val });
+          }
+          
+          // Ensure values are reasonable types
+          if (typeof val !== 'string' && typeof val !== 'number' && typeof val !== 'boolean') {
+            logger.warn('layout_settings validation failed: invalid value type', { key, value: val, type: typeof val });
             return null;
           }
         }
-        return null;
+        
+        return originalValue; // Return as JSON string for database storage
       }
     };
 
@@ -1927,17 +1940,29 @@ router.put('/:modelSlug/sections/:id/settings', async (req, res) => {
       [model.id, parseInt(id)]
     );
 
-    // Parse layout_settings JSON for the response
+    // Handle layout_settings JSON for the response
     if (updatedRows[0] && updatedRows[0].layout_settings) {
-      try {
-        updatedRows[0].layout_settings = JSON.parse(updatedRows[0].layout_settings);
-      } catch (e) {
-        // If parsing fails, keep as string but log warning
-        logger.warn('Failed to parse layout_settings JSON in response', {
-          section_id: parseInt(id),
-          layout_settings: updatedRows[0].layout_settings,
-          error: e.message
-        });
+      // If layout_settings is already an object (MySQL JSON field), leave it as is
+      if (typeof updatedRows[0].layout_settings === 'object') {
+        // Already parsed by MySQL, no action needed
+      } else if (typeof updatedRows[0].layout_settings === 'string') {
+        // String - needs parsing
+        try {
+          updatedRows[0].layout_settings = JSON.parse(updatedRows[0].layout_settings);
+        } catch (e) {
+          logger.warn('Failed to parse layout_settings JSON string in response', {
+            section_id: parseInt(id),
+            layout_settings: updatedRows[0].layout_settings,
+            error: e.message
+          });
+          // Set to empty object if parsing fails
+          updatedRows[0].layout_settings = {};
+        }
+      }
+    } else {
+      // Ensure layout_settings is always an object for consistency
+      if (updatedRows[0]) {
+        updatedRows[0].layout_settings = {};
       }
     }
 
@@ -2049,13 +2074,17 @@ router.patch('/:modelSlug/sections/reorder', async (req, res) => {
     const model = await getModelBySlug(modelSlug);
     if (!model) return res.fail(404, 'Model not found');
     if (!Array.isArray(items) || !items.length) return res.fail(400, 'items[] required');
+    
+    // Update the correct table: model_gallery_sections (not gallery_sections)
     for (const it of items) {
       if (typeof it?.id === 'undefined' || typeof it?.sort_order === 'undefined') continue;
-      await db.query('UPDATE gallery_sections SET sort_order = ? WHERE id = ? AND model_id = ?', [
-        parseInt(it.sort_order), parseInt(it.id), model.id
+      await db.query('UPDATE model_gallery_sections SET section_order = ? WHERE id = ? AND model_slug = ?', [
+        parseInt(it.sort_order), parseInt(it.id), modelSlug
       ]);
     }
-    const rows = await db.query('SELECT * FROM gallery_sections WHERE model_id = ? ORDER BY sort_order ASC, created_at DESC', [model.id]);
+    
+    // Return updated sections from correct table
+    const rows = await db.query('SELECT * FROM model_gallery_sections WHERE model_slug = ? ORDER BY section_order ASC, created_at DESC', [modelSlug]);
     return res.success({ sections: rows });
   } catch (error) {
     logger.error('model-gallery.sections-reorder error', { error: error.message });

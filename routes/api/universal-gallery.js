@@ -103,76 +103,198 @@ router.get('/config', async (req, res) => {
 
         const model = modelData[0];
         
-        // Get gallery sections from the same table that admin interface uses
-        const [sections] = await db.execute(`
+        // Get gallery page configuration including selected sections and hero settings
+        const [galleryPageData] = await db.execute(`
             SELECT 
-                id,
-                title as section_name,
-                LOWER(REPLACE(title, ' ', '-')) as section_slug,
-                description as section_description,
-                layout_type,
-                layout_settings,
-                sort_order as section_order,
-                is_visible as is_published,
-                0 as is_featured
-            FROM gallery_sections
-            WHERE model_id = ? 
-            AND is_visible = 1
-            ORDER BY sort_order ASC, id ASC
+                page_title,
+                page_subtitle,
+                gallery_header_visible,
+                selected_sections,
+                enable_lightbox,
+                show_captions,
+                images_per_page,
+                default_layout
+            FROM model_gallery_page_content 
+            WHERE model_id = ?
         `, [model.id]);
+
+        const galleryConfig = galleryPageData[0] || {};
+        let selectedSectionIds = [];
         
+        // Safely parse selected_sections JSON
+        if (galleryConfig.selected_sections) {
+            try {
+                const sectionsData = galleryConfig.selected_sections;
+                console.log('🔍 Raw selected_sections data:', JSON.stringify(sectionsData));
+                
+                if (typeof sectionsData === 'string') {
+                    selectedSectionIds = JSON.parse(sectionsData);
+                } else if (Array.isArray(sectionsData)) {
+                    selectedSectionIds = sectionsData;
+                } else {
+                    console.warn('⚠️ selected_sections is neither string nor array:', typeof sectionsData);
+                    selectedSectionIds = [];
+                }
+            } catch (parseError) {
+                console.error('❌ Failed to parse selected_sections JSON:', parseError.message);
+                console.error('Raw data:', galleryConfig.selected_sections);
+                selectedSectionIds = [];
+            }
+        }
+        
+        // Get gallery sections from the new table structure, filtering by selected sections
+        let sectionsQuery, sectionsParams;
+        if (selectedSectionIds.length > 0) {
+            const placeholders = selectedSectionIds.map(() => '?').join(',');
+            sectionsQuery = `
+                SELECT 
+                    id,
+                    section_name,
+                    section_slug,
+                    section_description,
+                    layout_type,
+                    layout_settings,
+                    section_order,
+                    is_published,
+                    is_featured
+                FROM model_gallery_sections
+                WHERE model_slug = ? 
+                AND is_published = 1
+                AND id IN (${placeholders})
+                ORDER BY FIELD(id, ${placeholders})
+            `;
+            sectionsParams = [modelSlug, ...selectedSectionIds, ...selectedSectionIds];
+        } else {
+            // If no selected sections, show all published sections (default behavior)
+            sectionsQuery = `
+                SELECT 
+                    id,
+                    section_name,
+                    section_slug,
+                    section_description,
+                    layout_type,
+                    layout_settings,
+                    section_order,
+                    is_published,
+                    is_featured
+                FROM model_gallery_sections
+                WHERE model_slug = ? 
+                AND is_published = 1
+                ORDER BY section_order ASC, id ASC
+            `;
+            sectionsParams = [modelSlug];
+        }
+        
+        const [sections] = await db.execute(sectionsQuery, sectionsParams);
+        
+        // Helper: normalize layout_settings from admin to renderer format
+        function normalizeLayoutSettings(layoutType, settingsRaw) {
+            try {
+                let settings = settingsRaw;
+                if (!settings) return {};
+                if (typeof settings === 'string') {
+                    try { settings = JSON.parse(settings); } catch { settings = {}; }
+                }
+                if (typeof settings !== 'object' || settings === null) return {};
+
+                const out = {};
+                const numPx = (val, fallback) => {
+                    if (val === undefined || val === null || val === '') return fallback;
+                    const n = Number(val);
+                    if (!Number.isFinite(n)) return fallback;
+                    return `${n}px`;
+                };
+
+                switch (layoutType) {
+                    case 'grid':
+                        out.columns = settings.gridColumns ?? settings.columns ?? 4;
+                        out.gap = numPx(settings.gridGap ?? settings.gap, '1.5rem');
+                        // extras are ignored by renderer but keep for future
+                        break;
+                    case 'masonry':
+                        out.columns = settings.masonryColumns ?? settings.columns ?? 3;
+                        out.gap = numPx(settings.masonryGap ?? settings.gap, '1.5rem');
+                        break;
+                    case 'carousel':
+                        out.visible_items = settings.carouselItemsVisible ?? settings.visible_items ?? 1;
+                        out.show_dots = settings.carouselDots ?? settings.show_dots ?? true;
+                        out.show_arrows = settings.carouselArrows ?? settings.show_arrows ?? true;
+                        out.auto_play = settings.carouselAutoplay ?? settings.auto_play ?? false;
+                        out.auto_play_speed = settings.carouselSpeed ?? settings.auto_play_speed ?? 3000;
+                        break;
+                    case 'slideshow':
+                        out.slideshow_autoplay = settings.slideshowAutoplay ?? settings.slideshow_autoplay ?? true;
+                        out.slideshow_speed = settings.slideshowSpeed ?? settings.slideshow_speed ?? 5000;
+                        out.show_dots = settings.slideshowDots ?? settings.show_dots ?? true;
+                        out.show_arrows = settings.slideshowArrows ?? settings.show_arrows ?? true;
+                        out.show_captions = settings.show_captions ?? true;
+                        break;
+                    case 'lightbox_grid':
+                        out.columns = settings.lightboxColumns ?? settings.columns ?? 6;
+                        break;
+                    default:
+                        // fallback passthrough
+                        Object.assign(out, settings);
+                }
+                return out;
+            } catch (e) {
+                return {};
+            }
+        }
+
         // Get gallery items organized by sections
         const gallerySections = [];
         if (sections && sections.length > 0) {
             
-            // Process each section separately using gallery_images table
+            // Process each section separately using new model_gallery_section_media table
             for (const section of sections) {
                 const [items] = await db.execute(`
                     SELECT 
-                        gi.id,
-                        gi.filename,
-                        gi.original_filename,
-                        CONCAT('/uploads/', ?, '/public/gallery/', gi.filename) as file_url,
-                        CONCAT('/uploads/', ?, '/public/gallery/thumbs/', gi.filename) as thumbnail_url,
-                        CONCAT('/uploads/', ?, '/public/gallery/medium/', gi.filename) as medium_url,
-                        gi.width as image_width,
-                        gi.height as image_height,
-                        gi.created_at as upload_date,
+                        ml.id,
+                        ml.filename,
+                        ml.original_filename,
+                        ml.permanent_path as file_url,
+                        ml.thumbnail_path,
+                        ml.medium_path,
+                        ml.image_width,
+                        ml.image_height,
+                        ml.upload_date,
                         'approved' as moderation_status,
                         'public' as visibility_status,
-                        gi.caption as custom_caption,
-                        gi.order_index as display_order,
-                        gi.is_featured
-                    FROM gallery_images gi
-                    WHERE gi.section_id = ?
-                    AND gi.model_id = ?
-                    AND gi.is_active = 1
-                    ORDER BY gi.order_index ASC, gi.created_at DESC
-                `, [modelSlug, modelSlug, modelSlug, section.id, model.id]);
+                        mgsm.custom_caption,
+                        mgsm.display_order,
+                        mgsm.is_featured
+                    FROM model_gallery_section_media mgsm
+                    JOIN model_media_library ml ON mgsm.media_id = ml.id
+                    WHERE mgsm.section_id = ?
+                    AND ml.model_slug = ?
+                    AND ml.processing_status = 'completed'
+                    AND ml.moderation_status IN ('approved', 'pending')
+                    AND ml.is_deleted = 0
+                    ORDER BY mgsm.display_order ASC, ml.upload_date DESC
+                `, [section.id, modelSlug]);
                 
                 // Process items for this section with model slug prefix for proper routing
                 const sectionItems = items.map(item => {
-                    // Helper function to ensure model slug prefix in URLs with proper directory structure
-                    const ensureModelSlugPrefix = (path, pathType = 'main') => {
-                        // For modelexample, we know the actual file structure, so map directly
-                        switch (pathType) {
-                            case 'thumb':
-                                return `/${modelSlug}/uploads/thumbs/${item.filename}`;
-                            case 'med':
-                                return `/${modelSlug}/uploads/public/gallery/${item.filename}`;
-                            case 'main':
-                            default:
-                                return `/${modelSlug}/uploads/originals/${item.filename}`;
-                        }
-                    };
-
+                    // Build correct URLs with model slug
+                    const baseUrl = `/uploads/${modelSlug}`;
+                    const originalFilename = item.original_filename || item.filename;
+                    
+                    // Construct proper URLs based on the actual file structure
+                    const fullUrl = `${baseUrl}/originals/${item.filename}`;
+                    const mediumUrl = `${baseUrl}/public/gallery/${item.filename}`;
+                    const thumbUrl = `${baseUrl}/thumbs/${item.filename}`;
+                    
+                    // Fallback to full image if others don't exist
+                    // (In production, you'd check file existence, but for now we assume the structure)
+                    
                     return {
                         id: item.id.toString(),
-                        alt: item.custom_caption || item.original_filename || 'Gallery image',
+                        alt: item.custom_caption || originalFilename || 'Gallery image',
                         caption: item.custom_caption || null,
-                        srcThumb: ensureModelSlugPrefix(item.thumbnail_url || item.file_url, 'thumb'),
-                        srcMed: ensureModelSlugPrefix(item.medium_url || item.file_url, 'med'),
-                        srcFull: ensureModelSlugPrefix(item.file_url, 'main'),
+                        srcThumb: thumbUrl,
+                        srcMed: mediumUrl,
+                        srcFull: fullUrl,
                         aspect: item.image_width && item.image_height ? 
                             item.image_width / item.image_height : 1,
                         width: item.image_width,
@@ -183,6 +305,9 @@ router.get('/config', async (req, res) => {
                     };
                 });
 
+                // Normalize layout settings per layout type
+                const normalizedSettings = normalizeLayoutSettings(section.layout_type, section.layout_settings);
+
                 // Add this section to the gallery sections array
                 gallerySections.push({
                     id: section.id,
@@ -190,7 +315,7 @@ router.get('/config', async (req, res) => {
                     slug: section.section_slug,
                     description: section.section_description,
                     layout: section.layout_type,
-                    layoutSettings: section.layout_settings || {},
+                    layoutSettings: normalizedSettings,
                     order: section.section_order,
                     featured: Boolean(section.is_featured),
                     items: sectionItems,
@@ -219,6 +344,13 @@ router.get('/config', async (req, res) => {
                     theme_set_id: model.theme_set_id,
                     effective_theme_id: model.effective_theme_id,
                     generated_at: new Date().toISOString()
+                },
+
+                // Hero section configuration
+                hero: {
+                    enabled: Boolean(galleryConfig.gallery_header_visible),
+                    title: galleryConfig.page_title || model.name + " Gallery",
+                    subtitle: galleryConfig.page_subtitle || null
                 },
                 
                 // Mock CSS variables based on theme
