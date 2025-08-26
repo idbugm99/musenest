@@ -84,7 +84,8 @@ router.put('/:modelSlug/home', async (req, res) => {
             'gallery_section_title', 'gallery_button_text', 'gallery_button_link',
             'testimonials_section_visible', 'testimonials_section_title', 'testimonials_display_count',
             'cta_section_visible', 'cta_section_title', 'cta_section_subtitle',
-            'cta_button_1_text', 'cta_button_1_link', 'cta_button_2_text', 'cta_button_2_link'
+            'cta_button_1_text', 'cta_button_1_link', 'cta_button_2_text', 'cta_button_2_link',
+            'page_published'
         ];
         
         const updateFields = [];
@@ -208,7 +209,8 @@ router.put('/:modelSlug/about', async (req, res) => {
             'interests_visible', 'interests_title', 'interests', 'quick_facts_visible',
             'quick_facts_title', 'qf_location', 'qf_languages', 'qf_education', 'qf_specialties',
             'about_cta_visible', 'cta_title', 'cta_description', 'cta_button_1_text',
-            'cta_button_1_link', 'cta_button_2_text', 'cta_button_2_link'
+            'cta_button_1_link', 'cta_button_2_text', 'cta_button_2_link',
+            'page_published'
         ];
         
         const updateFields = [];
@@ -329,7 +331,8 @@ router.put('/:modelSlug/contact', async (req, res) => {
             'direct_email_label', 'direct_phone_label', 'direct_response_label', 'direct_response_text',
             'guidelines_title', 'guideline_1', 'guideline_2', 'guideline_3', 'guideline_4', 'guideline_5',
             'privacy_title', 'privacy_text', 
-            'location_title', 'location_area_text', 'location_services_text', 'location_travel_text'
+            'location_title', 'location_area_text', 'location_services_text', 'location_travel_text',
+            'page_published'
         ];
         
         const updateFields = [];
@@ -463,7 +466,9 @@ router.put('/:modelSlug/gallery', async (req, res) => {
         } else {
             // Update existing content
             const allowedFields = [
-                'selected_sections', 'gallery_page_title', 'gallery_page_subtitle', 
+                'selected_sections', 'page_title', 'page_subtitle', 'page_description',
+                'gallery_header_visible', 'page_published', 'hero_background_image_id', 'hero_background_opacity',
+                'gallery_page_title', 'gallery_page_subtitle', 
                 'default_grid_columns', 'image_quality', 'enable_lightbox', 'show_image_info',
                 'show_category_filter', 'default_category', 'default_sort_order', 'allow_sort_change',
                 'images_per_page', 'show_image_count'

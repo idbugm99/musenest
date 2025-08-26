@@ -1,0 +1,251 @@
+# Machine Map for MuseNest
+# Purpose: Document canonical color tokens, alias mapping, and per-theme wiring
+# to ensure templates use DB-driven colors consistently (no hard-coded colors).
+
+version: 1
+project: musenest
+
+schema:
+  colors:
+    canonical_tokens:
+      - primary
+      - secondary
+      - accent
+      - bg
+      - bg-light
+      - bg-dark
+      - surface
+      - overlay
+      - text
+      - text-light
+      - text-dark
+      - text-muted
+      - text-subtle
+      - border
+      - border-light
+      - border-subtle
+      - card-bg
+      - card-text
+      - card-border
+      - card-shadow
+      - btn-bg
+      - btn-bg-hover
+      - btn-text
+      - btn-text-hover
+      - btn-border
+      - focus-ring
+      - success
+      - warning
+      - error
+
+  css_variables:
+    # Canonical CSS variables themes should expose
+    canonical:
+      - --theme-bg-primary
+      - --theme-bg-secondary
+      - --theme-bg-tertiary
+      - --theme-bg-light
+      - --theme-bg-surface
+      - --theme-text-primary
+      - --theme-text-secondary
+      - --theme-text-muted
+      - --theme-text-subtle
+      - --theme-text-inverted
+      - --theme-border-primary
+      - --theme-border-light
+      - --theme-border-subtle
+      - --theme-accent
+      - --theme-accent-hover
+      - --theme-accent-light
+      - --theme-success
+      - --theme-warning
+      - --theme-error
+      - --theme-gradient
+      - --theme-shadow
+      - --theme-shadow-hover
+      - --theme-shadow-strong
+      - --theme-backdrop
+      - --theme-bg-overlay
+      - --theme-hero-overlay
+      - --theme-black-rgb
+      - --theme-white-rgb
+
+  alias_map:
+    # Legacy/variant token names mapped to canonical DB tokens
+    theme-primary: primary
+    brand-primary: primary
+    theme-secondary: secondary
+    theme-accent: accent
+    highlight: accent
+    background: bg
+    theme-background: bg
+    surface: surface
+    card-background: surface
+    theme-surface: surface
+    bg-primary: bg
+    bg-secondary: bg-light
+    bg-tertiary: surface
+    hero-overlay: overlay
+    backdrop: overlay
+    theme-overlay: overlay
+    theme-text: text
+    body-text: text
+    theme-text-light: text-light
+    light-text: text-light
+    theme-text-dark: text-dark
+    dark-text: text-dark
+    text-default: text
+    theme-border: border
+    border-default: border
+    theme-border-light: border-light
+    card-bg: card-bg
+    card-text: card-text
+    card-border: card-border
+    card-shadow: card-shadow
+    nav-bg: nav-bg
+    nav-text: nav-text
+    nav-border: nav-border
+    footer-bg: footer-bg
+    footer-text: footer-text
+    footer-border: footer-border
+    btn-bg: btn-bg
+    btn-text: btn-text
+    btn-border: btn-border
+    btn-bg-hover: btn-bg-hover
+    btn-text-hover: btn-text-hover
+    btn-disabled-bg: btn-disabled-bg
+    btn-disabled-text: btn-disabled-text
+    input-bg: input-bg
+    input-text: input-text
+    input-border: input-border
+    input-placeholder: input-placeholder
+    input-focus-ring: input-focus-ring
+    hero-bg: hero-bg
+    hero-text: hero-text
+    focus-ring: focus-ring
+    info: info
+    success: success
+    warning: warning
+    danger: error
+
+# Theme-specific wiring
+themes:
+  rose:
+    id: 17
+    path: musenest/themes/rose
+    layout: musenest/themes/rose/layouts/main.handlebars
+    assets:
+      css:
+        - musenest/themes/rose/assets/rose-enhancements.css
+      js:
+        - musenest/themes/rose/assets/rose-interactions.js
+    pages:
+      - about
+      - calendar
+      - contact
+      - etiquette
+      - gallery
+      - home
+      - home-enhanced
+      - rates
+    db_color_tokens:
+      # DB tokens this theme expects and maps into theme vars
+      # These are read via {{theme.colors.*}} in layout and mapped to CSS vars
+      expects:
+        - rose_deep
+        - rose_primary
+        - rose_light
+        - rose_blush
+        - rose_white
+        - rose_gold
+        - rose_bronze
+        - rose_text
+        - rose_muted
+        - bg
+        - bg_light
+        - surface
+        - text
+        - text_secondary
+        - text_muted
+        - text_subtle
+        - text_inverted
+        - border
+        - border_light
+        - border_subtle
+        - accent
+        - accent_hover
+        - accent_light
+        - success
+        - warning
+        - error
+
+    css_variable_mapping:
+      # Layout maps DB tokens to CSS variables in :root
+      # Example (from layout): --rose-primary <- theme.colors.rose_primary
+      custom_palette:
+        --rose-deep: rose_deep
+        --rose-primary: rose_primary
+        --rose-light: rose_light
+        --rose-blush: rose_blush
+        --rose-white: rose_white
+        --rose-gold: rose_gold
+        --rose-bronze: rose_bronze
+        --rose-text: rose_text
+        --rose-muted: rose_muted
+      canonical:
+        --theme-bg-primary: bg | fallback: --rose-blush
+        --theme-bg-secondary: bg_light | fallback: --rose-light
+        --theme-bg-tertiary: surface | fallback: --rose-white
+        --theme-bg-light: bg_light | fallback: '#f9fafb'
+        --theme-bg-surface: surface | fallback: --rose-light
+        --theme-text-primary: text | fallback: --rose-text
+        --theme-text-secondary: text_secondary | fallback: --rose-muted
+        --theme-text-muted: text_muted | fallback: '#6b7280'
+        --theme-text-subtle: text_subtle | fallback: '#9ca3af'
+        --theme-text-inverted: text_inverted | fallback: --rose-white
+        --theme-border-primary: border | fallback: --rose-light
+        --theme-border-light: border_light | fallback: '#fee2e2'
+        --theme-border-subtle: border_subtle | fallback: '#f3f4f6'
+        --theme-accent: accent | fallback: --rose-primary
+        --theme-accent-hover: accent_hover | fallback: --rose-deep
+        --theme-accent-light: accent_light | fallback: '#f87171'
+        --theme-success: success | fallback: '#22c55e'
+        --theme-warning: warning | fallback: '#f59e0b'
+        --theme-error: error | fallback: '#ef4444'
+        --theme-gradient: computed (layout)
+        --theme-shadow: computed (layout)
+        --theme-shadow-hover: computed (layout)
+        --theme-shadow-strong: computed (layout)
+        --theme-backdrop: computed (layout)
+        --theme-bg-overlay: computed (layout)
+        --theme-hero-overlay: computed (layout)
+        --theme-black-rgb: computed (layout)
+        --theme-white-rgb: computed (layout)
+
+    component_notes:
+      overlays:
+        hero_overlay_enabled: false
+      gallery:
+        uses_universal_system: true
+        api: musenest/routes/api/universal-gallery.js
+        frontend_script: musenest/templates/universal/gallery-script.js
+
+# Key APIs referenced by theming and admin UI
+apis:
+  model_theme_settings:
+    file: musenest/routes/api/model-theme-settings.js
+    endpoints:
+      - GET /api/model-theme-settings/:slug/active
+      - GET /api/model-theme-settings/:slug
+      - POST /api/model-theme-settings/:slug
+      - POST /api/model-theme-settings/:slug/activate
+  universal_gallery:
+    file: musenest/routes/api/universal-gallery.js
+    endpoints:
+      - GET /api/universal-gallery/config
+
+# Migrations and tooling notes
+tooling:
+  migrate:
+    script: musenest/scripts/migrate.js
+    notes: ignores duplicate index creation errors (e.g., Duplicate key name)

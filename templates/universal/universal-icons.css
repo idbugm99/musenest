@@ -1,0 +1,148 @@
+/* Universal Icon System - CSS Classes */
+
+/* Base universal icon styles */
+.universal-icon {
+    display: inline-block;
+    fill: currentColor;
+    color: currentColor;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+/* Icon size presets */
+.icon-xs, .icon-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+.icon-md {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.icon-lg {
+    width: 2rem;
+    height: 2rem;
+}
+
+.icon-xl {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.icon-2xl {
+    width: 3rem;
+    height: 3rem;
+}
+
+.icon-3xl {
+    width: 4rem;
+    height: 4rem;
+}
+
+/* Theme-specific icon styling */
+
+/* Royal Gem Theme Icons */
+.royal-gem-theme .universal-icon {
+    transition: all 0.3s ease;
+}
+
+.royal-gem-theme .universal-icon:hover {
+    transform: scale(1.1);
+}
+
+/* BDSM Theme Icons */
+.bdsm-theme .universal-icon {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+/* Rose Theme Icons */
+.rose-theme .universal-icon {
+    transition: all 0.3s ease;
+}
+
+.rose-theme .universal-icon:hover {
+    transform: rotate(5deg) scale(1.05);
+}
+
+/* Luxury Theme Icons */
+.luxury-theme .universal-icon {
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.luxury-theme .universal-icon:hover {
+    transform: translateY(-2px);
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+}
+
+/* Icon color utilities */
+.icon-primary { color: var(--theme-accent, #d4af37) !important; }
+.icon-secondary { color: var(--theme-secondary, #8b1538) !important; }
+.icon-muted { color: var(--theme-text-muted, #666) !important; }
+.icon-white { color: white !important; }
+.icon-black { color: black !important; }
+
+/* Icon animation utilities */
+.icon-spin {
+    animation: icon-spin 2s linear infinite;
+}
+
+.icon-pulse {
+    animation: icon-pulse 2s ease-in-out infinite;
+}
+
+.icon-float {
+    animation: icon-float 3s ease-in-out infinite;
+}
+
+/* Icon animations */
+@keyframes icon-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes icon-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+@keyframes icon-float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+}
+
+/* Responsive icon sizing */
+@media (max-width: 768px) {
+    .icon-responsive-sm {
+        width: 1rem;
+        height: 1rem;
+    }
+    
+    .icon-responsive-md {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+    
+    .icon-responsive-lg {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+}
+
+/* Accessibility */
+.universal-icon[aria-hidden="false"] + .sr-only {
+    /* Make screen reader text available when icon is not decorative */
+    position: static;
+    width: auto;
+    height: auto;
+    clip: auto;
+    overflow: visible;
+}
+
+/* Icon positioning utilities */
+.icon-inline { vertical-align: baseline; }
+.icon-top { vertical-align: top; }
+.icon-middle { vertical-align: middle; }
+.icon-bottom { vertical-align: bottom; }
+.icon-text-top { vertical-align: text-top; }
+.icon-text-bottom { vertical-align: text-bottom; }

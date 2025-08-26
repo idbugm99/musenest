@@ -1,0 +1,392 @@
+<!-- Royal Gem Home Page -->
+<section class="royal-section" style="background: linear-gradient(135deg, var(--theme-bg) 0%, var(--theme-bg-alt) 50%, var(--theme-surface) 100%); min-height: 80vh; position: relative;">
+    <!-- Royal Background Decorations -->
+    <div style="position: absolute; top: 15%; left: 8%; opacity: 0.4; z-index: 1;">
+        <svg class="royal-icon-lg" viewBox="0 0 64 64" style="animation: float 8s ease-in-out infinite; width: 4rem; height: 4rem;">
+            <use href="/assets/sprites/royal-icons.ddf91c.svg#crown"></use>
+        </svg>
+    </div>
+    <div style="position: absolute; top: 25%; right: 12%; opacity: 0.3; z-index: 1;">
+        <svg class="royal-icon-lg" viewBox="0 0 64 64" style="animation: float 10s ease-in-out infinite; animation-delay: 3s; width: 3rem; height: 3rem;">
+            <use href="/assets/sprites/royal-icons.ddf91c.svg#diamond"></use>
+        </svg>
+    </div>
+    <div style="position: absolute; bottom: 30%; left: 75%; opacity: 0.5; z-index: 1;">
+        <svg class="royal-icon" viewBox="0 0 64 64" style="animation: float 12s ease-in-out infinite; animation-delay: 6s;">
+            <use href="/assets/sprites/royal-icons.ddf91c.svg#ruby"></use>
+        </svg>
+    </div>
+
+    <!-- Load luxury parallax background if specified -->
+    {{#if content.heroBackgroundImageUrl}}
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('{{content.heroBackgroundImageUrl}}'); background-size: cover; background-position: center; background-attachment: fixed; opacity: 0.3; z-index: 0;"></div>
+    {{/if}}
+
+    <div class="royal-container" style="position: relative; z-index: 2; padding-top: 6rem; padding-bottom: 6rem;">
+        <!-- Hero Section -->
+        <div style="text-align: center; margin-bottom: 6rem;">
+            <div style="margin-bottom: 3rem;">
+                <svg class="royal-icon-lg" viewBox="0 0 64 64" style="width: 5rem; height: 5rem; color: var(--theme-accent); animation: pulse 4s ease-in-out infinite;">
+                    <use href="/assets/sprites/royal-icons.ddf91c.svg#crown-royal"></use>
+                </svg>
+            </div>
+            
+            <h1 style="font-size: clamp(3rem, 8vw, 6rem); background: linear-gradient(45deg, var(--theme-accent), var(--theme-text), var(--theme-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 2rem;">
+                {{#if content.hero_title}}{{content.hero_title}}{{else}}{{#if model.name}}{{model.name}}{{else}}{{modelName}}{{/if}}{{/if}}
+            </h1>
+            
+            {{#if content.hero_subtitle}}
+            <p style="font-size: 1.5rem; color: var(--theme-text-subtle); max-width: 800px; margin: 0 auto 1.5rem; line-height: 1.6;">
+                {{content.hero_subtitle}}
+            </p>
+            {{else}}
+            <p style="font-size: 1.5rem; color: var(--theme-text-subtle); max-width: 800px; margin: 0 auto 1.5rem; line-height: 1.6;">
+                {{#if tagline}}{{tagline}}{{else}}Exclusive companionship for discerning individuals who appreciate elegance, sophistication, and discretion.{{/if}}
+            </p>
+            {{/if}}
+            
+            {{#if content.hero_description}}
+            <div style="font-size: 1.1rem; color: var(--theme-text); max-width: 700px; margin: 0 auto 3rem; line-height: 1.6;">
+                {{{content.hero_description}}}
+            </div>
+            {{else}}
+            <div style="margin-bottom: 3rem;"></div>
+            {{/if}}
+            
+            <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
+                {{#if content.hero_button_1_text}}
+                <a href="{{#if content.hero_button_1_link}}/{{modelSlug}}/{{content.hero_button_1_link}}{{previewParam}}{{else}}/{{modelSlug}}/contact{{previewParam}}{{/if}}" class="royal-btn" style="font-size: 1.2rem; padding: 1.2rem 2.5rem;">
+                    <svg class="royal-icon" viewBox="0 0 64 64" style="margin-right: 0.8rem;">
+                        <use href="/assets/sprites/royal-icons.ddf91c.svg#royal"></use>
+                    </svg>
+                    {{content.hero_button_1_text}}
+                </a>
+                {{else}}
+                <a href="/{{modelSlug}}/contact{{previewParam}}" class="royal-btn" style="font-size: 1.2rem; padding: 1.2rem 2.5rem;">
+                    <svg class="royal-icon" viewBox="0 0 64 64" style="margin-right: 0.8rem;">
+                        <use href="/assets/sprites/royal-icons.ddf91c.svg#royal"></use>
+                    </svg>
+                    Get In Touch
+                </a>
+                {{/if}}
+                
+                {{#if content.hero_button_2_text}}
+                <a href="{{#if content.hero_button_2_link}}/{{modelSlug}}/{{content.hero_button_2_link}}{{previewParam}}{{else}}/{{modelSlug}}/about{{previewParam}}{{/if}}" class="royal-btn" style="background: linear-gradient(45deg, var(--theme-secondary), var(--theme-primary)); font-size: 1.2rem; padding: 1.2rem 2.5rem;">
+                    <svg class="royal-icon" viewBox="0 0 64 64" style="margin-right: 0.8rem;">
+                        <use href="/assets/sprites/royal-icons.ddf91c.svg#insignia"></use>
+                    </svg>
+                    {{content.hero_button_2_text}}
+                </a>
+                {{else}}
+                <a href="/{{modelSlug}}/about{{previewParam}}" class="royal-btn" style="background: linear-gradient(45deg, var(--theme-secondary), var(--theme-primary)); font-size: 1.2rem; padding: 1.2rem 2.5rem;">
+                    <svg class="royal-icon" viewBox="0 0 64 64" style="margin-right: 0.8rem;">
+                        <use href="/assets/sprites/royal-icons.ddf91c.svg#insignia"></use>
+                    </svg>
+                    Learn More About Me
+                </a>
+                {{/if}}
+            </div>
+        </div>
+
+        <!-- About Preview Section -->
+        {{#if content.about_section_visible}}
+        <div class="royal-card" style="margin-bottom: 4rem;">
+            {{#if content.portrait_section_visible}}
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;">
+                <div>
+                    <h2 style="color: var(--theme-accent); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.8rem;">
+                        <svg class="royal-icon" viewBox="0 0 64 64">
+                            <use href="/assets/sprites/royal-icons.ddf91c.svg#crown"></use>
+                        </svg>
+                        {{#if content.about_title}}{{content.about_title}}{{else}}About {{siteName}}{{/if}}
+                    </h2>
+                    {{#if content.about_paragraph_1}}
+                    <p style="color: var(--theme-text-subtle); line-height: 1.6; margin-bottom: 1.5rem;">{{content.about_paragraph_1}}</p>
+                    {{/if}}
+                    {{#if content.about_paragraph_2}}
+                    <p style="color: var(--theme-text-subtle); line-height: 1.6; margin-bottom: 2rem;">{{content.about_paragraph_2}}</p>
+                    {{/if}}
+                    {{#unless content.about_paragraph_1}}
+                    <p style="color: var(--theme-text-subtle); line-height: 1.6; margin-bottom: 1.5rem;">Welcome to my world of elegance and sophistication. I am a professional companion who values discretion, intelligence, and genuine connection.</p>
+                    <p style="color: var(--theme-text-subtle); line-height: 1.6; margin-bottom: 2rem;">With years of experience in providing exceptional companionship services, I pride myself on creating memorable experiences tailored to each client's unique needs.</p>
+                    {{/unless}}
+                    {{#if content.about_link_text}}
+                        {{#eq content.about_link_destination 'about'}}
+                            <a href="/{{modelSlug}}/about{{previewParam}}" class="royal-btn">
+                                <svg class="royal-icon" viewBox="0 0 64 64" style="margin-right: 0.5rem;">
+                                    <use href="/assets/sprites/royal-icons.ddf91c.svg#insignia"></use>
+                                </svg>
+                                {{content.about_link_text}}
+                            </a>
+                        {{/eq}}
+                        {{#eq content.about_link_destination 'contact'}}
+                            <a href="/{{modelSlug}}/contact{{previewParam}}" class="royal-btn">
+                                <svg class="royal-icon" viewBox="0 0 64 64" style="margin-right: 0.5rem;">
+                                    <use href="/assets/sprites/royal-icons.ddf91c.svg#royal"></use>
+                                </svg>
+                                {{content.about_link_text}}
+                            </a>
+                        {{/eq}}
+                    {{else}}
+                        <a href="/{{modelSlug}}/about{{previewParam}}" class="royal-btn">
+                            <svg class="royal-icon" viewBox="0 0 64 64" style="margin-right: 0.5rem;">
+                                <use href="/assets/sprites/royal-icons.ddf91c.svg#insignia"></use>
+                            </svg>
+                            Learn More About Me
+                        </a>
+                    {{/if}}
+                </div>
+                <div style="border-radius: var(--radius-lg); overflow: hidden; aspect-ratio: 4/5; background: var(--theme-surface);">
+                    {{#if content.portrait_image_url}}
+                        <img src="{{content.portrait_image_url}}" 
+                             alt="{{#if content.portrait_alt}}{{content.portrait_alt}}{{else}}Professional Portrait{{/if}}"
+                             style="width: 100%; height: 100%; object-fit: cover;">
+                    {{else}}
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--theme-text-subtle);">
+                            {{#if content.portrait_alt}}{{content.portrait_alt}}{{else}}Professional portrait coming soon{{/if}}
+                        </div>
+                    {{/if}}
+                </div>
+            </div>
+            {{else}}
+            <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+                <h2 style="color: var(--theme-accent); margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem;">
+                    <svg class="royal-icon" viewBox="0 0 64 64">
+                        <use href="/assets/sprites/royal-icons.ddf91c.svg#crown"></use>
+                    </svg>
+                    {{#if content.about_title}}{{content.about_title}}{{else}}About {{siteName}}{{/if}}
+                </h2>
+                {{#if content.about_paragraph_1}}
+                <p style="color: var(--theme-text-subtle); line-height: 1.6; margin-bottom: 1.5rem;">{{content.about_paragraph_1}}</p>
+                {{/if}}
+                {{#if content.about_paragraph_2}}
+                <p style="color: var(--theme-text-subtle); line-height: 1.6; margin-bottom: 2rem;">{{content.about_paragraph_2}}</p>
+                {{/if}}
+                {{#if content.about_link_text}}
+                    <a href="/{{modelSlug}}/about{{previewParam}}" style="color: var(--theme-accent); font-weight: 600;">{{content.about_link_text}} →</a>
+                {{else}}
+                    <a href="/{{modelSlug}}/about{{previewParam}}" style="color: var(--theme-accent); font-weight: 600;">Learn More About Me →</a>
+                {{/if}}
+            </div>
+            {{/if}}
+        </div>
+        {{/if}}
+
+        <!-- Gallery Preview -->
+        {{#if content.gallery_section_visible}}
+        {{#if galleryImages}}
+        <div class="royal-card" style="margin-bottom: 4rem;">
+            <h2 style="text-align: center; color: var(--theme-accent); margin-bottom: 3rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem;">
+                <svg class="royal-icon" viewBox="0 0 64 64">
+                    <use href="/assets/sprites/royal-icons.ddf91c.svg#jewelry"></use>
+                </svg>
+                {{#if content.gallery_section_title}}{{content.gallery_section_title}}{{else}}Gallery Preview{{/if}}
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                {{#each galleryImages}}
+                <div style="position: relative; aspect-ratio: 1; border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-md);">
+                    <img src="/uploads/{{../modelSlug}}/public/gallery/{{this.filename}}" alt="{{#if this.caption}}{{this.caption}}{{else}}Gallery image{{/if}}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="position: absolute; inset: 0; background: var(--theme-overlay); opacity: 0; transition: opacity 0.3s ease; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
+                        <svg class="royal-icon-lg" viewBox="0 0 64 64" style="color: var(--theme-text);">
+                            <use href="/assets/sprites/royal-icons.ddf91c.svg#gem-alt"></use>
+                        </svg>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+            <div style="text-align: center;">
+                <a href="/{{modelSlug}}/gallery{{previewParam}}" class="royal-btn">
+                    <svg class="royal-icon" viewBox="0 0 64 64" style="margin-right: 0.5rem;">
+                        <use href="/assets/sprites/royal-icons.ddf91c.svg#sapphire"></use>
+                    </svg>
+                    View Complete Gallery
+                </a>
+            </div>
+        </div>
+        {{/if}}
+        {{/if}}
+
+        <!-- Location Availability -->
+        {{#if content.travel_section_visible}}
+        <div class="royal-card" style="margin-bottom: 4rem;">
+            <h2 style="text-align: center; color: var(--theme-accent); margin-bottom: 3rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem;">
+                <svg class="royal-icon" viewBox="0 0 64 64">
+                    <use href="/assets/sprites/royal-icons.ddf91c.svg#diamond"></use>
+                </svg>
+                {{#if content.travel_section_title}}{{content.travel_section_title}}{{else}}Location Availability{{/if}}
+            </h2>
+            {{#if upcomingEvents}}
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+                {{#each upcomingEvents}}
+                <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, var(--theme-surface), var(--theme-bg-alt)); border: 1px solid var(--theme-border); border-radius: var(--radius-lg); transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+                    <div style="margin-bottom: 1.5rem;">
+                        <svg class="royal-icon-lg" viewBox="0 0 64 64" style="color: var(--theme-accent);">
+                            <use href="/assets/sprites/royal-icons.ddf91c.svg#ruby"></use>
+                        </svg>
+                    </div>
+                    <h3 style="color: var(--theme-text); font-size: 1.25rem; margin-bottom: 1rem;">{{this.location}}</h3>
+                    <div style="color: var(--theme-text-subtle); margin-bottom: 1.5rem; font-weight: 500;">
+                        {{#if this.dateRange}}
+                            {{this.dateRange}}
+                        {{else}}
+                            {{formatDate this.date}}
+                        {{/if}}
+                    </div>
+                    <span style="background: linear-gradient(45deg, var(--theme-success), #27AE60); color: white; padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 600;">Available</span>
+                    {{#if this.notes}}
+                    <p style="color: var(--theme-text-subtle); font-size: 0.875rem; margin-top: 1rem; line-height: 1.4;">{{this.notes}}</p>
+                    {{/if}}
+                </div>
+                {{/each}}
+            </div>
+            <div style="text-align: center;">
+                <a href="/{{modelSlug}}/{{#if content.travel_cta_link}}{{content.travel_cta_link}}{{else}}calendar{{/if}}{{previewParam}}" class="royal-btn">
+                    <svg class="royal-icon" viewBox="0 0 64 64" style="margin-right: 0.5rem;">
+                        <use href="/assets/sprites/royal-icons.ddf91c.svg#scepter"></use>
+                    </svg>
+                    {{#if content.travel_cta_text}}{{content.travel_cta_text}}{{else}}View Full Calendar{{/if}}
+                </a>
+            </div>
+            {{else}}
+            <div style="text-align: center;">
+                <div style="background: linear-gradient(135deg, var(--theme-surface), var(--theme-bg-alt)); padding: 3rem; border-radius: var(--radius-lg); border: 1px solid var(--theme-border); max-width: 500px; margin: 0 auto;">
+                    <div style="width: 4rem; height: 4rem; margin: 0 auto 1.5rem; background: var(--theme-accent); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
+                        <svg class="royal-icon-lg" viewBox="0 0 64 64" style="color: var(--theme-bg);">
+                            <use href="/assets/sprites/royal-icons.ddf91c.svg#calendar"></use>
+                        </svg>
+                    </div>
+                    <h3 style="color: var(--theme-text); font-size: 1.25rem; margin-bottom: 1rem;">Check My Calendar</h3>
+                    <p style="color: var(--theme-text-subtle); margin-bottom: 2rem;">View available dates and book your appointment</p>
+                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="royal-btn">
+                        <svg class="royal-icon" viewBox="0 0 64 64" style="margin-right: 0.5rem;">
+                            <use href="/assets/sprites/royal-icons.ddf91c.svg#calendar"></use>
+                        </svg>
+                        View Calendar
+                    </a>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+        {{/if}}
+
+        <!-- Testimonials -->
+        {{#if content.testimonials_section_visible}}
+        <div class="royal-card" style="margin-bottom: 4rem; background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)); position: relative; overflow: hidden;">
+            <div style="position: absolute; top: -30px; right: -30px; opacity: 0.2; z-index: 1;">
+                <svg style="width: 150px; height: 150px; color: var(--theme-accent);" viewBox="0 0 64 64">
+                    <use href="/assets/sprites/royal-icons.ddf91c.svg#crown"></use>
+                </svg>
+            </div>
+            
+            <div style="position: relative; z-index: 2;">
+                <h2 style="text-align: center; color: var(--theme-text); margin-bottom: 3rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem;">
+                    <svg class="royal-icon" viewBox="0 0 64 64">
+                        <use href="/assets/sprites/royal-icons.ddf91c.svg#royal"></use>
+                    </svg>
+                    {{#if content.testimonials_section_title}}{{content.testimonials_section_title}}{{else}}Client Testimonials{{/if}}
+                </h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                    {{#each testimonials}}
+                    {{#if (lt @index (or ../content.testimonials_display_count 3))}}
+                    <div style="background: rgba(248, 246, 240, 0.1); padding: 2rem; border-radius: var(--radius-md); backdrop-filter: blur(10px);">
+                        <div style="color: var(--theme-accent); margin-bottom: 1rem; display: flex;">
+                            {{#times this.rating}}
+                            <svg style="width: 16px; height: 16px; fill: currentColor;" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            {{/times}}
+                        </div>
+                        <div style="color: var(--theme-text); font-style: italic; margin-bottom: 1rem; line-height: 1.6;">
+                            "{{this.text}}"
+                        </div>
+                        <div style="color: var(--theme-accent); font-weight: 600; text-align: right;">
+                            — {{this.name}}
+                        </div>
+                    </div>
+                    {{/if}}
+                    {{else}}
+                    <!-- Default testimonials if none provided - respect display count -->
+                    {{#times (or content.testimonials_display_count 3)}}
+                    {{#if (eq this 1)}}
+                    <div style="background: rgba(248, 246, 240, 0.1); padding: 2rem; border-radius: var(--radius-md); backdrop-filter: blur(10px);">
+                        <div style="color: var(--theme-accent); margin-bottom: 1rem; display: flex;">
+                            {{#times 5}}
+                            <svg style="width: 16px; height: 16px; fill: currentColor;" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            {{/times}}
+                        </div>
+                        <div style="color: var(--theme-text); font-style: italic; margin-bottom: 1rem; line-height: 1.6;">
+                            "She is absolutely wonderful. Professional, elegant, and truly caring. An unforgettable experience."
+                        </div>
+                        <div style="color: var(--theme-accent); font-weight: 600; text-align: right;">
+                            — MICHAEL D.
+                        </div>
+                    </div>
+                    {{else if (eq this 2)}}
+                    <div style="background: rgba(248, 246, 240, 0.1); padding: 2rem; border-radius: var(--radius-md); backdrop-filter: blur(10px);">
+                        <div style="color: var(--theme-accent); margin-bottom: 1rem; display: flex;">
+                            {{#times 5}}
+                            <svg style="width: 16px; height: 16px; fill: currentColor;" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            {{/times}}
+                        </div>
+                        <div style="color: var(--theme-text); font-style: italic; margin-bottom: 1rem; line-height: 1.6;">
+                            "She is intelligent, sophisticated, and absolutely captivating. A truly remarkable companion."
+                        </div>
+                        <div style="color: var(--theme-accent); font-weight: 600; text-align: right;">
+                            — DAVID L.
+                        </div>
+                    </div>
+                    {{else if (eq this 3)}}
+                    <div style="background: rgba(248, 246, 240, 0.1); padding: 2rem; border-radius: var(--radius-md); backdrop-filter: blur(10px);">
+                        <div style="color: var(--theme-accent); margin-bottom: 1rem; display: flex;">
+                            {{#times 5}}
+                            <svg style="width: 16px; height: 16px; fill: currentColor;" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            {{/times}}
+                        </div>
+                        <div style="color: var(--theme-text); font-style: italic; margin-bottom: 1rem; line-height: 1.6;">
+                            "Exceptional service and genuine warmth. Highly recommended for discerning clients."
+                        </div>
+                        <div style="color: var(--theme-accent); font-weight: 600; text-align: right;">
+                            — ROBERT T.
+                        </div>
+                    </div>
+                    {{/if}}
+                    {{/times}}
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+</section>
+
+<style>
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    25% { transform: translateY(-15px) rotate(5deg); }
+    50% { transform: translateY(-25px) rotate(0deg); }
+    75% { transform: translateY(-15px) rotate(-5deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .royal-container > div[style*="display: flex"] {
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    
+    .royal-container > div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+</style>

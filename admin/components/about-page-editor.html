@@ -383,16 +383,11 @@ document.addEventListener('DOMContentLoaded', function() {
             this.showLoading();
             
             try {
-                const response = await fetch(`/api/model-content/${this.currentModelSlug}/pages/2`);
+                const response = await fetch(`/api/model-content-new/${this.currentModelSlug}/about`);
                 const data = await response.json();
-                const items = (data && (data.items || (data.data && data.data.items))) || [];
-                if (data.success && items.length) {
-                    // Convert items array to field object
-                    const contentFields = {};
-                    items.forEach(item => {
-                        contentFields[item.content_key] = item.content_value;
-                    });
-                    this.populateFields(contentFields);
+                
+                if (data.success && data.data) {
+                    this.populateFields(data.data);
                 } else {
                     console.warn('No about page content found, using defaults');
                 }
@@ -521,13 +516,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             try {
-                const response = await fetch(`/api/model-content/${this.currentModelSlug}/pages/2/${fieldName}`, {
+                const response = await fetch(`/api/model-content-new/${this.currentModelSlug}/about`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        content_value: value
+                        [fieldName]: value
                     })
                 });
                 
@@ -948,13 +943,13 @@ window.deleteFact = function(factId) {
         }
         
         try {
-            const response = await fetch(`/api/model-content/${modelSlug}/pages/2/${fieldName}`, {
+            const response = await fetch(`/api/model-content-new/${modelSlug}/about`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    content_value: value ? 1 : 0
+                    [fieldName]: value ? 1 : 0
                 })
             });
             

@@ -1128,7 +1128,7 @@ class ModelThemeManager {
       if (!confirm('You have unsaved color changes. Save them before activating the theme?')) {
         return;
       }
-      await this.saveColors();
+      await this.saveModelThemeColors();
     }
     
     try {
@@ -1270,13 +1270,31 @@ class ModelThemeManager {
   }
   
   selectAndClosePreview(themeId) {
-    // Close modal first
     const modal = document.querySelector('.theme-preview-modal');
-    const modalInstance = bootstrap.Modal.getInstance(modal);
-    modalInstance.hide();
-    
-    // Select the theme
+    const modalInstance = modal ? bootstrap.Modal.getInstance(modal) : null;
+    if (modalInstance) modalInstance.hide();
+
+    // Select the theme in UI
     this.selectTheme(themeId);
+
+    // Persist immediately (activate; include palette if chosen)
+    setTimeout(async () => {
+      try {
+        if (this.selectedPalette) {
+          const palette = this.customPalettes.find(p => p.id === this.selectedPalette);
+          if (palette) {
+            this.appliedPalette = palette.id;
+            this.currentColors = { ...palette.colors };
+            await this.activateThemeWithPalette();
+            return;
+          }
+        }
+        await this.activateTheme();
+      } catch (e) {
+        console.error('Error activating theme from preview:', e);
+        this.showError('Failed to activate theme. Please try again.');
+      }
+    }, 150);
   }
 
   showSuccess(message) {

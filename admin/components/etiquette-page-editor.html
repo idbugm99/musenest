@@ -1,22 +1,35 @@
-<!-- Etiquette Page Content Editor — Normalized (Sections/Items/CTA) -->
+<!-- Etiquette Page Content Editor -->
 <div class="container-fluid py-4">
-  <div class="row mb-3">
-    <div class="col-12 d-flex justify-content-between align-items-center">
-      <div>
-        <h1 class="h3 mb-1"><i class="fas fa-scale-balanced text-primary me-2"></i>Etiquette Page Content Editor</h1>
-        <div class="text-muted small">Manage page header, sections, and items with ordering and visibility</div>
-      </div>
-      <div class="d-flex gap-2">
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="page_published_main" data-field="page_published">
-          <label class="form-check-label fw-bold text-warning" for="page_published_main" id="publish-label-main">
-            <i class="fas fa-eye-slash me-1"></i>Draft
-          </label>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-2 text-gray-800">
+                        <i class="fas fa-scale-balanced text-primary me-2"></i>
+                        Etiquette Page Content Editor
+                    </h1>
+                    <p class="text-muted mb-0">Manage page header, sections, and items with ordering and visibility</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input auto-save-field" type="checkbox" id="page_published_main" data-field="page_published">
+                        <label class="form-check-label fw-bold text-warning" for="page_published_main" id="publish-label-main">
+                            <i class="fas fa-eye-slash me-1"></i>Draft
+                        </label>
+                    </div>
+                    <a href="#" onclick="window.history.back()" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Content Hub
+                    </a>
+                </div>
+            </div>
         </div>
-        <a href="#" onclick="window.history.back()" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Back to Content Hub</a>
-      </div>
     </div>
-  </div>
+
+    <!-- Auto-save Status -->
+    <div id="auto-save-status" class="alert alert-info d-none">
+        <i class="fas fa-spinner fa-spin me-2"></i>
+        <span id="save-status-text">Saving...</span>
+    </div>
 
   <div class="row g-3">
     <!-- Page Header -->
@@ -163,15 +176,12 @@
   
   async function loadPublishStatus() {
     try {
-      const response = await fetch(`/api/model-content/${slug}/pages/17`);
+      const response = await fetch(`/api/model-content-new/${slug}/etiquette`);
       const data = await response.json();
-      if (data.success && data.data && data.data.items) {
-        const publishedField = data.data.items.find(item => item.content_key === 'page_published');
-        if (publishedField) {
-          const isPublished = publishedField.content_value === true || publishedField.content_value === 1 || publishedField.content_value === '1';
-          el('#page_published_main').checked = isPublished;
-          updatePublishLabel(isPublished);
-        }
+      if (data.success && data.data) {
+        const isPublished = data.data.page_published === true || data.data.page_published === 1 || data.data.page_published === '1';
+        el('#page_published_main').checked = isPublished;
+        updatePublishLabel(isPublished);
       }
     } catch (error) {
       console.warn('Could not load publish status:', error);
@@ -198,32 +208,50 @@
     }; 
     ['#header_title','#header_subtitle'].forEach(s=>el(s).addEventListener('input',()=>{clearTimeout(t);t=setTimeout(save,700);})); 
     
-    // Bind main publish toggle
-    const publishToggle = el('#page_published_main');
-    console.log('Attempting to bind publish toggle:', publishToggle);
-    if (publishToggle) {
-      publishToggle.addEventListener('change', async () => {
-        console.log('Publish toggle changed, new value:', publishToggle.checked);
-        const isPublished = publishToggle.checked;
-        updatePublishLabel(isPublished);
-        
-        // Save to unified content system
-        try {
-          console.log('Saving publish status:', isPublished ? 1 : 0);
-          const response = await fetch(`/api/model-content/${slug}/pages/17/page_published`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content_value: isPublished ? 1 : 0 })
-          });
-          const result = await response.json();
-          console.log('Save result:', result);
-        } catch (error) {
-          console.error('Failed to save publish status:', error);
-        }
-      });
-      console.log('Publish toggle event listener bound successfully');
+    // Bind auto-save for all fields including publish toggle
+    bindAutoSave();
+  }
+  
+  function bindAutoSave() {
+    const autoSaveFields = document.querySelectorAll('.auto-save-field');
+    
+    autoSaveFields.forEach(field => {
+      field.addEventListener('input', () => autoSave(field));
+      field.addEventListener('change', () => autoSave(field));
+    });
+    
+    console.log('Auto-save bound to', autoSaveFields.length, 'fields');
+  }
+  
+  async function autoSave(field) {
+    const fieldName = field.dataset.field;
+    let value;
+    
+    if (field.type === 'checkbox') {
+      value = field.checked ? 1 : 0;
     } else {
-      console.error('Could not find publish toggle element #page_published_main');
+      value = field.value;
+    }
+    
+    // Update publish label if this is the publish toggle
+    if (fieldName === 'page_published') {
+      updatePublishLabel(field.checked);
+    }
+    
+    try {
+      console.log('Auto-saving field:', fieldName, 'with value:', value);
+      const response = await fetch(`/api/model-content-new/${slug}/etiquette`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [fieldName]: value })
+      });
+      const result = await response.json();
+      
+      if (!result.success) {
+        console.error('Auto-save failed:', result.message);
+      }
+    } catch (error) {
+      console.error('Auto-save error:', error);
     }
   }
 
@@ -329,4 +357,32 @@
   })();
 })();
 </script>
+
+<style>
+/* Standard page editor styling */
+.enhanced-field {
+    position: relative;
+}
+
+.save-status {
+    min-height: 1.2rem;
+    font-size: 0.75rem;
+}
+
+.save-status.saving {
+    color: #007bff;
+}
+
+.save-status.saved {
+    color: #28a745;
+}
+
+.save-status.error {
+    color: #dc3545;
+}
+
+.auto-save-field:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+</style>
 

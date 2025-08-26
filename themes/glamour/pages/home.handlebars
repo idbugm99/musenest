@@ -389,24 +389,28 @@
 <style>
 /* Professional Glamour Theme Variables */
 :root {
-    --glamour-primary: #E9C77A;
-    --glamour-primary-hover: #D9B66A;
-    --glamour-gold: #EBCB8B;
-    --glamour-rose-gold: #D08770;
-    --glamour-deep-purple: #171228;
-    --glamour-neutral: #1E1632;
-    --glamour-champagne: #F5F2EA;
-    --glamour-black: #0F0F0F;
-    --glamour-white: #FEFEFE;
-    --glamour-card: #252032;
-    --glamour-border: rgba(235, 203, 139, 0.15);
+    --glamour-primary: {{theme.colors.accent}};
+    --glamour-primary-hover: {{theme.colors.btn-bg-hover}};
+    --glamour-gold: {{theme.colors.accent}};
+    --glamour-rose-gold: {{theme.colors.secondary}};
+    --glamour-deep-purple: {{theme.colors.bg-dark}};
+    --glamour-neutral: {{theme.colors.surface}};
+    --glamour-champagne: {{theme.colors.text-light}};
+    --glamour-black: {{theme.colors.text-dark}};
+    --glamour-white: {{theme.colors.text-light}};
+    --glamour-card: {{theme.colors.card-bg}};
+    --glamour-border: {{theme.colors.divider}};
+    --glamour-success: {{theme.colors.success}};
+    --glamour-warning: {{theme.colors.warning}};
+    --glamour-danger: {{theme.colors.danger}};
+    --glamour-burgundy: {{theme.colors.primary}};
 }
 
 /* Professional Hero Section */
 .glamour-hero {
     position: relative;
     min-height: 100vh;
-    background: linear-gradient(160deg, #A61147 0%, #7E1B5C 45%, #2B203F 100%);
+    background: linear-gradient(160deg, {{theme.colors.primary}} 0%, {{theme.colors.secondary}} 45%, {{theme.colors.card-bg}} 100%);
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -434,7 +438,7 @@
     width: 300px;
     height: 300px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 40%, transparent 70%);
+    background: radial-gradient(circle, {{theme.colors.overlay}} 0%, rgba(255, 255, 255, 0.05) 40%, transparent 70%);
     filter: blur(20px);
     animation: glamourSpotlightMove 20s infinite linear;
 }
@@ -515,30 +519,30 @@
     background: linear-gradient(135deg, var(--glamour-primary) 0%, var(--glamour-primary-hover) 100%);
     color: var(--glamour-black);
     border: none;
-    box-shadow: 0 2px 8px rgba(233, 199, 122, 0.2);
+    box-shadow: 0 2px 8px {{theme.colors.card-shadow}};
 }
 
 .glamour-btn-primary:hover {
-    background: linear-gradient(135deg, var(--glamour-primary-hover) 0%, #C7A55B 100%);
+    background: linear-gradient(135deg, var(--glamour-primary-hover) 0%, {{theme.colors.accent}} 100%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(233, 199, 122, 0.3);
+    box-shadow: 0 4px 12px {{theme.colors.card-shadow}};
     text-decoration: none;
     color: var(--glamour-black);
 }
 
 .glamour-btn-secondary {
-    background: rgba(255, 255, 255, 0.1);
+    background: {{theme.colors.modal-bg}};
     color: var(--glamour-white);
     border: 1px solid var(--glamour-border);
     backdrop-filter: blur(10px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px {{theme.colors.card-shadow}};
 }
 
 .glamour-btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: {{theme.colors.popover-bg}};
     border-color: var(--glamour-primary);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px {{theme.colors.card-shadow}};
     text-decoration: none;
     color: var(--glamour-white);
 }
@@ -551,7 +555,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    background: linear-gradient(90deg, transparent, {{theme.colors.overlay}}, transparent);
     transition: left 0.5s ease;
 }
 
@@ -602,7 +606,7 @@
     position: relative;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 40px {{theme.colors.card-shadow}};
 }
 
 .glamour-portrait-image {
@@ -636,8 +640,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(145deg, rgba(212, 175, 55, 0.1) 0%, rgba(232, 180, 184, 0.1) 100%);
-    border: 2px dashed rgba(212, 175, 55, 0.3);
+    background: linear-gradient(145deg, {{theme.colors.backdrop}} 0%, {{theme.colors.overlay}} 100%);
+    border: 2px dashed {{theme.colors.border-light}};
     border-radius: 20px;
     color: var(--glamour-champagne);
     text-align: center;
@@ -647,7 +651,7 @@
     font-size: 4rem;
     margin-bottom: 1rem;
     color: var(--glamour-gold);
-    text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    text-shadow: 0 0 20px {{theme.colors.focus-ring}};
 }
 
 .glamour-section-title {
@@ -734,7 +738,7 @@
 
 .glamour-gallery-item:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 15px 30px {{theme.colors.focus-ring}};
 }
 
 .glamour-gallery-image {
@@ -780,8 +784,8 @@
 
 .glamour-gallery-placeholder {
     aspect-ratio: 1;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(145deg, {{theme.colors.backdrop}} 0%, {{theme.colors.overlay}} 100%);
+    border: 1px solid {{theme.colors.border-light}};
     border-radius: 15px;
     display: flex;
     flex-direction: column;
@@ -817,9 +821,9 @@
 
 .glamour-travel-card {
     position: relative;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    background: linear-gradient(145deg, {{theme.colors.backdrop}} 0%, {{theme.colors.overlay}} 100%);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid {{theme.colors.border-light}};
     border-radius: 20px;
     padding: 2.5rem 2rem;
     text-align: center;
@@ -829,7 +833,7 @@
 
 .glamour-travel-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(139, 21, 56, 0.3);
+    box-shadow: 0 20px 40px {{theme.colors.card-shadow}};
 }
 
 .glamour-travel-glow {
@@ -894,7 +898,7 @@
 }
 
 .glamour-available-badge {
-    background: linear-gradient(45deg, var(--glamour-gold) 0%, #ffdc73 100%);
+    background: linear-gradient(45deg, var(--glamour-gold) 0%, {{theme.colors.success}} 100%);
     color: var(--glamour-black);
     padding: 8px 20px;
     border-radius: 25px;
@@ -912,9 +916,9 @@
 }
 
 .glamour-placeholder-card {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    background: linear-gradient(145deg, {{theme.colors.backdrop}} 0%, {{theme.colors.overlay}} 100%);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid {{theme.colors.border-light}};
     border-radius: 20px;
     padding: 4rem 2rem;
     text-align: center;
@@ -957,9 +961,9 @@
 
 .glamour-testimonial-card {
     position: relative;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    background: linear-gradient(145deg, {{theme.colors.backdrop}} 0%, {{theme.colors.overlay}} 100%);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid {{theme.colors.border-light}};
     border-radius: 20px;
     padding: 2.5rem 2rem;
     text-align: center;
@@ -969,7 +973,7 @@
 
 .glamour-testimonial-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 20px 40px {{theme.colors.focus-ring}};
 }
 
 .glamour-testimonial-shine {
@@ -978,7 +982,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    background: linear-gradient(90deg, transparent, {{theme.colors.overlay}}, transparent);
     transition: left 0.6s ease;
 }
 
@@ -1035,7 +1039,7 @@
 .glamour-cta-section {
     position: relative;
     padding: 6rem 0;
-    background: linear-gradient(160deg, rgba(166, 17, 71, 0.8) 0%, rgba(126, 27, 92, 0.8) 45%, rgba(43, 32, 63, 0.8) 100%);
+    background: linear-gradient(160deg, {{theme.colors.hero-bg}});
     color: var(--glamour-white);
     overflow: hidden;
 }
@@ -1050,10 +1054,10 @@
         repeating-linear-gradient(
             90deg,
             transparent 0px,
-            rgba(139, 21, 56, 0.1) 50px,
+            {{theme.colors.backdrop}} 50px,
             transparent 100px
         ),
-        radial-gradient(ellipse at center, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+        radial-gradient(ellipse at center, {{theme.colors.focus-ring}} 0%, transparent 70%);
     animation: glamourRedCarpet 10s infinite linear;
 }
 
@@ -1093,13 +1097,13 @@
     position: relative;
     overflow: hidden;
     border: none;
-    box-shadow: 0 2px 8px rgba(233, 199, 122, 0.2);
+    box-shadow: 0 2px 8px {{theme.colors.card-shadow}};
 }
 
 .glamour-btn-gold:hover {
-    background: linear-gradient(135deg, var(--glamour-primary-hover) 0%, #C7A55B 100%);
+    background: linear-gradient(135deg, var(--glamour-primary-hover) 0%, {{theme.colors.accent}} 100%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(233, 199, 122, 0.3);
+    box-shadow: 0 4px 12px {{theme.colors.card-shadow}};
     text-decoration: none;
     color: var(--glamour-black);
 }
@@ -1144,7 +1148,7 @@
     border-top: 1px solid var(--glamour-border);
     padding: 12px 16px 20px;
     z-index: 50;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 -4px 20px {{theme.colors.card-shadow}};
     display: none;
 }
 
@@ -1176,20 +1180,20 @@
 }
 
 .glamour-sticky-primary:hover {
-    background: linear-gradient(135deg, var(--glamour-primary-hover) 0%, #C7A55B 100%);
+    background: linear-gradient(135deg, var(--glamour-primary-hover) 0%, {{theme.colors.accent}} 100%);
     transform: translateY(-1px);
     text-decoration: none;
     color: var(--glamour-black);
 }
 
 .glamour-sticky-secondary {
-    background: rgba(255, 255, 255, 0.1);
+    background: {{theme.colors.backdrop}};
     border: 1px solid var(--glamour-border);
     color: var(--glamour-white);
 }
 
 .glamour-sticky-secondary:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: {{theme.colors.overlay}};
     transform: translateY(-1px);
     text-decoration: none;
     color: var(--glamour-white);

@@ -391,74 +391,43 @@ document.addEventListener('DOMContentLoaded', function() {
         
         async loadContentStatus() {
             try {
-                const pages = [
-                    { type: 'home', pageId: 1 },
-                    { type: 'about', pageId: 2 }, 
-                    { type: 'gallery', pageId: 16 },
-                    { type: 'rates', pageId: 5 },
-                    { type: 'etiquette', pageId: 17 },
-                    { type: 'contact', pageId: 3 }
-                ];
+                const pages = ['home', 'about', 'gallery', 'rates', 'etiquette', 'contact'];
                 let completedPages = 0;
                 let draftPages = 0;
                 let publishedPages = 0;
                 
-                for (const page of pages) {
+                for (const pageType of pages) {
                     try {
-                        // Check both APIs for published status
                         let isPublished = false;
                         let completionPercent = 0;
                         
-                        // First try the content-templates API for publish status
-                        try {
-                            const contentResponse = await fetch(`/api/model-content/${this.currentModelSlug}/pages/${page.pageId}`);
-                            const contentData = await contentResponse.json();
-                            console.log(`${page.type} API response:`, contentData);
+                        // Use the correct page-specific API for each page type
+                        let response, data;
+                        
+                        if (pageType === 'rates') {
+                            // Rates page has its own dedicated API
+                            response = await fetch(`/api/model-rates/${this.currentModelSlug}/page-content`);
+                        } else {
+                            // Other pages use the generic content API
+                            response = await fetch(`/api/model-content-new/${this.currentModelSlug}/${pageType}`);
+                        }
+                        
+                        data = await response.json();
+                        
+                        if (data.success && data.data) {
+                            const contentCount = Object.keys(data.data).length;
+                            const filledFields = Object.values(data.data).filter(value => 
+                                value && value.toString().trim().length > 0
+                            ).length;
                             
-                            if (contentData.success && contentData.data && contentData.data.items) {
-                                const items = contentData.data.items;
-                                console.log(`${page.type} found ${items.length} content items`);
-                                const publishedField = items.find(item => item.content_key === 'page_published');
-                                console.log(`${page.type} publishedField:`, publishedField);
-                                
-                                if (publishedField) {
-                                    // Handle various value types that could represent "published"
-                                    const val = publishedField.content_value;
-                                    isPublished = val === true || val === 1 || val === '1' || val === 'true' || val === 'on';
-                                    console.log(`${page.type} published status:`, val, '→', isPublished);
-                                } else {
-                                    console.log(`${page.type} no page_published field found in:`, items.map(i => i.content_key));
-                                }
-                                
-                                const filledFields = items.filter(item => 
-                                    item.content_value && item.content_value.toString().trim().length > 0
-                                ).length;
-                                completionPercent = items.length > 0 ? Math.round((filledFields / items.length) * 100) : 0;
-                            } else {
-                                console.log(`${page.type} API failed or no items:`, contentData);
-                            }
-                        } catch (contentError) {
-                            console.log(`${page.type} content API failed, trying page-specific API`);
-                            // Fallback to page-specific API
-                            const response = await fetch(`/api/model-content-new/${this.currentModelSlug}/${page.type}`);
-                            const data = await response.json();
-                            
-                            if (data.success && data.data) {
-                                const contentCount = Object.keys(data.data).length;
-                                const filledFields = Object.values(data.data).filter(value => 
-                                    value && value.toString().trim().length > 0
-                                ).length;
-                                
-                                completionPercent = contentCount > 0 ? Math.round((filledFields / contentCount) * 100) : 0;
-                                const publishedVal = data.data.page_published;
-                                isPublished = publishedVal === true || publishedVal === 1 || publishedVal === '1' || publishedVal === 'true' || publishedVal === 'on';
-                                console.log(`${page.type} fallback published status:`, publishedVal, '→', isPublished);
-                            }
+                            completionPercent = contentCount > 0 ? Math.round((filledFields / contentCount) * 100) : 0;
+                            const publishedVal = data.data.page_published;
+                            isPublished = publishedVal === true || publishedVal === 1 || publishedVal === '1' || publishedVal === 'true' || publishedVal === 'on';
+                            console.log(`${pageType} status: published=${publishedVal} → ${isPublished}, completion=${completionPercent}%`);
                         }
                         
                         // Update page status
-                        console.log(`Final status for ${page.type}: published=${isPublished}, completion=${completionPercent}%`);
-                        this.updatePageStatus(page.type, completionPercent, isPublished);
+                        this.updatePageStatus(pageType, completionPercent, isPublished);
                         
                         // Count for summary stats
                         if (completionPercent >= 50) {
@@ -472,8 +441,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                         
                     } catch (pageError) {
-                        console.warn(`Error loading ${page.type} status:`, pageError);
-                        this.updatePageStatus(page.type, 0, false);
+                        console.warn(`Error loading ${pageType} status:`, pageError);
+                        this.updatePageStatus(pageType, 0, false);
                         draftPages++;
                     }
                 }

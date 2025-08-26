@@ -12,7 +12,7 @@
     </div>
     {{else}}
     <!-- Fallback gradient background -->
-    <div class="absolute inset-0" style="background: var(--theme-gradient, linear-gradient(135deg, #be185d 0%, #ec4899 100%));"></div>
+    <div class="absolute inset-0" style="background: var(--theme-gradient, linear-gradient(135deg, var(--rose-primary) 0%, var(--theme-accent-light) 100%));"></div>
     {{/if}}
     
     <!-- Dark overlay for text contrast -->
@@ -23,7 +23,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
         
         <!-- Hero Heading -->
-        <h1 class="text-5xl md:text-6xl font-bold mb-4 text-white leading-tight rose-elegant-title" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+        <h1 class="text-5xl md:text-6xl font-bold mb-4 text-white leading-tight rose-elegant-title" style="text-shadow: 2px 2px 4px var(--theme-shadow-strong);">
             Gallery
         </h1>
         
@@ -61,8 +61,8 @@
     --gallery-text: var(--theme-text-primary);
     --gallery-text-muted: var(--theme-text-secondary);
     --gallery-border: var(--theme-border-primary);
-    --gallery-shadow: var(--theme-shadow, rgba(0, 0, 0, 0.1));
-    --gallery-shadow-hover: var(--theme-shadow-hover, rgba(0, 0, 0, 0.2));
+    --gallery-shadow: var(--theme-shadow);
+    --gallery-shadow-hover: var(--theme-shadow-hover);
     
     /* Gallery-specific settings using theme values */
     --gallery-border-radius: 12px;
@@ -100,7 +100,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--theme-bg-overlay, rgba(0, 0, 0, 0.05));
+    background: var(--theme-bg-overlay);
     pointer-events: none;
 }
 
@@ -457,7 +457,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.95);
+    background: var(--theme-backdrop);
     z-index: 1000;
     display: flex;
     align-items: center;
@@ -493,7 +493,7 @@
     max-height: 90vh;
     object-fit: contain;
     border-radius: 8px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 60px var(--theme-shadow);
 }
 
 .universal-gallery .gallery-lightbox-caption {
@@ -512,7 +512,7 @@
 
 /* Rose Gallery Header Styling */
 .rose-elegant-title {
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 10px rgba(236,72,153,0.5);
+    text-shadow: 2px 2px 4px var(--theme-shadow-strong), 0 0 10px color-mix(in srgb, var(--theme-accent), transparent 50%);
     position: relative;
 }
 
@@ -524,7 +524,7 @@
     transform: translateX(-50%);
     width: 60px;
     height: 2px;
-    background: linear-gradient(90deg, #be185d, #ec4899, #be185d);
+    background: linear-gradient(90deg, var(--rose-primary), var(--theme-accent-light), var(--rose-primary));
     border-radius: 2px;
 }
 

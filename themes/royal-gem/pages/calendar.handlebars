@@ -1,0 +1,459 @@
+<!-- Royal Gem Calendar Page - Full Interactive Calendar System -->
+<section class="royal-section" style="background: linear-gradient(135deg, var(--theme-bg), var(--theme-surface)); position: relative; min-height: 100vh;">
+    <!-- Royal Decorative Elements -->
+    <div style="position: absolute; top: 10%; left: 5%; opacity: 0.3; z-index: 1;">
+        <svg class="royal-icon-lg" viewBox="0 0 64 64" style="animation: float 9s ease-in-out infinite; width: 2.5rem; height: 2.5rem;">
+            <use href="/assets/sprites/royal-icons.ddf91c.svg#sapphire"></use>
+        </svg>
+    </div>
+    <div style="position: absolute; top: 60%; right: 8%; opacity: 0.4; z-index: 1;">
+        <svg class="royal-icon" viewBox="0 0 64 64" style="animation: float 7s ease-in-out infinite; animation-delay: 3s;">
+            <use href="/assets/sprites/royal-icons.ddf91c.svg#ruby"></use>
+        </svg>
+    </div>
+    <div style="position: absolute; bottom: 15%; left: 90%; opacity: 0.5; z-index: 1;">
+        <svg class="royal-icon" viewBox="0 0 64 64" style="animation: float 11s ease-in-out infinite; animation-delay: 5s;">
+            <use href="/assets/sprites/royal-icons.ddf91c.svg#diamond"></use>
+        </svg>
+    </div>
+
+    <div class="royal-container" style="position: relative; z-index: 2;">
+        <!-- Page Header -->
+        <div style="text-align: center; margin-bottom: 4rem;">
+            <div style="margin-bottom: 2rem;">
+                <svg class="royal-icon-lg" viewBox="0 0 64 64" style="color: var(--theme-accent); animation: pulse 3s ease-in-out infinite;">
+                    <use href="/assets/sprites/royal-icons.ddf91c.svg#crown-royal"></use>
+                </svg>
+            </div>
+            <h1 style="background: linear-gradient(45deg, var(--theme-accent), var(--theme-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                {{#if calendar_content.page_title}}{{calendar_content.page_title}}{{else}}My Calendar{{/if}}
+            </h1>
+            <p style="font-size: 1.2rem; color: var(--theme-text-subtle); max-width: 700px; margin: 0 auto;">
+                {{#if calendar_content.page_subtitle}}{{calendar_content.page_subtitle}}{{else}}View my current location and availability. Check where I'm traveling and when I'm available for appointments.{{/if}}
+            </p>
+        </div>
+
+        <!-- Calendar Container -->
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <!-- View Toggle (Mobile) -->
+            <div style="display: flex; justify-content: center; margin-bottom: 2rem;" class="royal-view-toggle md:hidden">
+                <div class="royal-card" style="padding: 0.25rem; display: flex; gap: 0;">
+                    <button id="royal-list-view-btn" style="padding: 0.75rem 1.5rem; border-radius: var(--radius-sm); font-weight: 600; transition: all 0.3s ease; background: var(--theme-accent); color: var(--theme-bg);">
+                        List
+                    </button>
+                    <button id="royal-month-view-btn" style="padding: 0.75rem 1.5rem; border-radius: var(--radius-sm); font-weight: 600; transition: all 0.3s ease; background: transparent; color: var(--theme-text);">
+                        Month
+                    </button>
+                </div>
+            </div>
+
+            <!-- Calendar Navigation -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <button id="royal-prev-month" class="royal-btn" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <svg style="width: 1rem; height: 1rem;" viewBox="0 0 64 64">
+                        <use href="/assets/sprites/royal-icons.ddf91c.svg#gem"></use>
+                    </svg>
+                    Previous
+                </button>
+                <h2 id="royal-month-title" style="color: var(--theme-accent); font-size: 1.5rem; font-weight: bold; text-align: center; min-width: 200px;"></h2>
+                <button id="royal-next-month" class="royal-btn" style="display: flex; align-items: center; gap: 0.5rem;">
+                    Next
+                    <svg style="width: 1rem; height: 1rem;" viewBox="0 0 64 64">
+                        <use href="/assets/sprites/royal-icons.ddf91c.svg#diamond"></use>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Calendar Grid -->
+            <div id="royal-calendar-container" class="royal-card" style="overflow: hidden; margin-bottom: 2rem;">
+                <!-- Calendar Header -->
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));">
+                    <div style="padding: 1rem; text-align: center; font-weight: bold; color: var(--theme-text); border-right: 1px solid rgba(255,255,255,0.2);">Sun</div>
+                    <div style="padding: 1rem; text-align: center; font-weight: bold; color: var(--theme-text); border-right: 1px solid rgba(255,255,255,0.2);">Mon</div>
+                    <div style="padding: 1rem; text-align: center; font-weight: bold; color: var(--theme-text); border-right: 1px solid rgba(255,255,255,0.2);">Tue</div>
+                    <div style="padding: 1rem; text-align: center; font-weight: bold; color: var(--theme-text); border-right: 1px solid rgba(255,255,255,0.2);">Wed</div>
+                    <div style="padding: 1rem; text-align: center; font-weight: bold; color: var(--theme-text); border-right: 1px solid rgba(255,255,255,0.2);">Thu</div>
+                    <div style="padding: 1rem; text-align: center; font-weight: bold; color: var(--theme-text); border-right: 1px solid rgba(255,255,255,0.2);">Fri</div>
+                    <div style="padding: 1rem; text-align: center; font-weight: bold; color: var(--theme-text);">Sat</div>
+                </div>
+                
+                <!-- Calendar Body -->
+                <div id="royal-calendar-grid" style="background: var(--theme-surface);">
+                    <div style="text-align: center; padding: 3rem; color: var(--theme-text-subtle);">
+                        <div style="display: inline-block; width: 2rem; height: 2rem; border: 3px solid var(--theme-accent); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem;"></div>
+                        <div>Loading royal calendar...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List View (Mobile) -->
+            <div id="royal-list-container" class="royal-card" style="padding: 1.5rem; margin-bottom: 2rem; display: none;">
+                <div id="royal-list-view">
+                    <div style="text-align: center; padding: 3rem; color: var(--theme-text-subtle);">
+                        <div style="display: inline-block; width: 2rem; height: 2rem; border: 3px solid var(--theme-accent); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem;"></div>
+                        <div>Loading events...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div style="display: flex; flex-wrap: true; justify-content: center; gap: 1.5rem; margin-bottom: 2rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 0.75rem; height: 0.75rem; border-radius: 50%; background: var(--theme-success, #10b981);"></div>
+                    <span style="color: var(--theme-text); font-weight: 600; font-size: 0.9rem;">Available</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 0.75rem; height: 0.75rem; border-radius: 50%; background: var(--theme-accent);"></div>
+                    <span style="color: var(--theme-text); font-weight: 600; font-size: 0.9rem;">Travel</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 0.75rem; height: 0.75rem; border-radius: 50%; background: var(--theme-warning, #f59e0b);"></div>
+                    <span style="color: var(--theme-text); font-weight: 600; font-size: 0.9rem;">Vacation</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 0.75rem; height: 0.75rem; border-radius: 50%; background: var(--theme-text-subtle);"></div>
+                    <span style="color: var(--theme-text); font-weight: 600; font-size: 0.9rem;">Unavailable</span>
+                </div>
+            </div>
+
+            <!-- Contact CTA -->
+            <div class="royal-card" style="text-align: center; background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)); position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -30px; right: -30px; opacity: 0.2; z-index: 1;">
+                    <svg style="width: 120px; height: 120px; color: var(--theme-accent);" viewBox="0 0 64 64">
+                        <use href="/assets/sprites/royal-icons.ddf91c.svg#crown-royal"></use>
+                    </svg>
+                </div>
+                
+                <div style="position: relative; z-index: 2;">
+                    <h3 style="color: var(--theme-text); margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem;">
+                        <svg class="royal-icon" viewBox="0 0 64 64" style="color: var(--theme-accent);">
+                            <use href="/assets/sprites/royal-icons.ddf91c.svg#jewelry"></use>
+                        </svg>
+                        Ready to Schedule?
+                    </h3>
+                    <p style="color: var(--theme-text); margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto;">
+                        Contact me directly to arrange your exclusive appointment. Discretion and elegance guaranteed.
+                    </p>
+                    <a href="/{{model.slug}}/contact{{previewParam}}" class="royal-btn" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                        <svg class="royal-icon" viewBox="0 0 64 64" style="margin-right: 0.8rem; color: var(--theme-accent);">
+                            <use href="/assets/sprites/royal-icons.ddf91c.svg#royal"></use>
+                        </svg>
+                        Contact Me
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Royal Calendar JavaScript -->
+<script>
+(function() {
+    const slug = {{{json model.slug}}};
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth() + 1;
+    
+    const calendarGrid = document.getElementById('royal-calendar-grid');
+    const monthTitle = document.getElementById('royal-month-title');
+    const prevButton = document.getElementById('royal-prev-month');
+    const nextButton = document.getElementById('royal-next-month');
+    
+    // Royal theme colors
+    const royalColors = {
+        available: 'var(--theme-success, #10b981)',
+        travel: 'var(--theme-accent)',
+        vacation: 'var(--theme-warning, #f59e0b)', 
+        unavailable: 'var(--theme-text-subtle)'
+    };
+    
+    const royalTextColors = {
+        available: 'white',
+        travel: 'var(--theme-bg)',
+        vacation: 'var(--theme-bg)',
+        unavailable: 'white'
+    };
+    
+    async function loadRoyalCalendar(year = currentYear, month = currentMonth) {
+        try {
+            const response = await fetch(`/api/model-calendar/${slug}?year=${year}&month=${month}`);
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to load royal calendar');
+            }
+            
+            const calendar = data.data.calendar;
+            currentYear = year;
+            currentMonth = month;
+            
+            // Update month title with royal styling
+            monthTitle.textContent = `${calendar.monthName} ${calendar.year}`;
+            
+            // Generate royal calendar grid
+            let gridHtml = '';
+            
+            const cellHeights = {
+                desktop: 100,
+                tablet: 70,
+                mobile: 60
+            };
+            
+            const screenWidth = window.innerWidth;
+            const cellHeight = screenWidth >= 1024 ? cellHeights.desktop : 
+                             screenWidth >= 768 ? cellHeights.tablet : cellHeights.mobile;
+            
+            calendar.weeks.forEach((week, weekIndex) => {
+                gridHtml += `<div style="display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid var(--theme-border); position: relative; min-height: ${cellHeight + (week.spans.length * 32)}px;">`;
+                
+                // Day cells with royal styling
+                week.days.forEach((day, dayIndex) => {
+                    const isToday = day === new Date().getDate() && 
+                                  currentMonth === (new Date().getMonth() + 1) && 
+                                  currentYear === new Date().getFullYear();
+                    
+                    const todayStyle = isToday ? 
+                        'background: linear-gradient(45deg, var(--theme-accent), var(--theme-primary)); color: var(--theme-bg); border-radius: 50%; width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; font-weight: bold;' : 
+                        'color: var(--theme-text);';
+                    
+                    gridHtml += `
+                        <div style="padding: 0.75rem; border-right: 1px solid var(--theme-border); ${day === 0 ? 'background: var(--theme-bg);' : 'background: var(--theme-surface);'} position: relative; min-height: ${cellHeight}px;">
+                            ${day > 0 ? `
+                                <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; ${todayStyle} position: relative; z-index: 10;">
+                                    ${day}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+                
+                // Add royal availability spans
+                week.spans.forEach((span, spanIndex) => {
+                    const bgColor = royalColors[span.status] || span.color;
+                    const textColor = royalTextColors[span.status] || 'white';
+                    
+                    gridHtml += `
+                        <div style="position: absolute; font-size: 0.75rem; padding: 0.25rem 0.5rem; z-index: 10; display: flex; align-items: center; justify-content: center; font-weight: 600; 
+                                   background: ${bgColor}; color: ${textColor}; border-radius: var(--radius-sm);
+                                   left: ${span.start_pos * 14.285714}%; width: ${span.width * 14.285714}%;
+                                   top: ${36 + (spanIndex * 32)}px; height: 28px; margin: 0 1px;
+                                   box-shadow: 0 2px 8px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.2);">
+                            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;">
+                                ${span.location}
+                                ${span.status === 'vacation' ? ' - Vacation' : ''}
+                            </span>
+                        </div>
+                    `;
+                });
+                
+                gridHtml += '</div>';
+            });
+            
+            // Generate royal list view
+            generateRoyalListView(calendar);
+            
+            calendarGrid.innerHTML = gridHtml;
+            
+        } catch (error) {
+            console.error('Error loading royal calendar:', error);
+            const errorHtml = `
+                <div style="text-align: center; padding: 3rem; color: var(--theme-text);">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">👑</div>
+                    <h3 style="font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem; color: var(--theme-accent);">Royal Calendar Unavailable</h3>
+                    <p style="color: var(--theme-text-subtle); margin-bottom: 2rem;">Please contact me directly for availability information.</p>
+                    <a href="/{{model.slug}}/contact{{previewParam}}" class="royal-btn">Contact Me</a>
+                </div>
+            `;
+            calendarGrid.innerHTML = errorHtml;
+            document.getElementById('royal-list-view').innerHTML = errorHtml;
+        }
+    }
+    
+    function generateRoyalListView(calendar) {
+        const listView = document.getElementById('royal-list-view');
+        if (!listView) return;
+        
+        let listHtml = '';
+        const events = [];
+        
+        // Collect all events from calendar data
+        calendar.weeks.forEach(week => {
+            week.spans.forEach(span => {
+                const startDate = new Date(calendar.year, calendar.month - 1, span.start_day);
+                events.push({
+                    date: startDate,
+                    status: span.status,
+                    location: span.location,
+                    duration: span.duration || 1
+                });
+            });
+        });
+        
+        // Sort events by date
+        events.sort((a, b) => a.date - b.date);
+        
+        // Generate royal list items
+        if (events.length === 0) {
+            listHtml = '<div style="text-align: center; padding: 2rem; color: var(--theme-text-subtle);">No royal appointments this month</div>';
+        } else {
+            events.forEach(event => {
+                const dateStr = event.date.toLocaleDateString('en-US', { 
+                    weekday: 'short', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                const statusDisplay = event.status.charAt(0).toUpperCase() + event.status.slice(1);
+                const bgColor = royalColors[event.status];
+                
+                listHtml += `
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--theme-border);">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div style="width: 0.75rem; height: 0.75rem; border-radius: 50%; background: ${bgColor}; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                            <div>
+                                <div style="font-weight: 600; color: var(--theme-text);">${dateStr}</div>
+                                <div style="font-size: 0.9rem; color: var(--theme-text-subtle);">${statusDisplay}</div>
+                            </div>
+                        </div>
+                        <div style="font-weight: 600; color: var(--theme-accent);">
+                            ${event.location}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        listView.innerHTML = listHtml;
+    }
+    
+    // Royal navigation event listeners
+    prevButton.addEventListener('click', () => {
+        if (currentMonth === 1) {
+            currentMonth = 12;
+            currentYear--;
+        } else {
+            currentMonth--;
+        }
+        loadRoyalCalendar(currentYear, currentMonth);
+    });
+    
+    nextButton.addEventListener('click', () => {
+        if (currentMonth === 12) {
+            currentMonth = 1;
+            currentYear++;
+        } else {
+            currentMonth++;
+        }
+        loadRoyalCalendar(currentYear, currentMonth);
+    });
+    
+    // Royal keyboard support
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            prevButton.click();
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            nextButton.click();
+        }
+    });
+    
+    // Royal view toggle functionality
+    const listViewBtn = document.getElementById('royal-list-view-btn');
+    const monthViewBtn = document.getElementById('royal-month-view-btn');
+    const calendarContainer = document.getElementById('royal-calendar-container');
+    const listContainer = document.getElementById('royal-list-container');
+    
+    let currentView = window.innerWidth <= 768 ? 'list' : 'month';
+    
+    function switchRoyalView(view) {
+        currentView = view;
+        
+        if (view === 'list') {
+            calendarContainer.style.display = 'none';
+            listContainer.style.display = 'block';
+            listViewBtn.style.background = 'var(--theme-accent)';
+            listViewBtn.style.color = 'var(--theme-bg)';
+            monthViewBtn.style.background = 'transparent';
+            monthViewBtn.style.color = 'var(--theme-text)';
+        } else {
+            calendarContainer.style.display = 'block';
+            listContainer.style.display = 'none';
+            monthViewBtn.style.background = 'var(--theme-accent)';
+            monthViewBtn.style.color = 'var(--theme-bg)';
+            listViewBtn.style.background = 'transparent';
+            listViewBtn.style.color = 'var(--theme-text)';
+        }
+    }
+    
+    if (listViewBtn && monthViewBtn) {
+        listViewBtn.addEventListener('click', () => switchRoyalView('list'));
+        monthViewBtn.addEventListener('click', () => switchRoyalView('month'));
+    }
+    
+    // Set initial royal view
+    switchRoyalView(currentView);
+    
+    // Load initial royal calendar
+    loadRoyalCalendar();
+})();
+</script>
+
+<!-- Royal Calendar Styles -->
+<style>
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Royal calendar responsive design */
+@media (max-width: 768px) {
+    #royal-calendar-container {
+        display: none !important;
+    }
+    
+    #royal-list-container {
+        display: block !important;
+    }
+    
+    .royal-view-toggle {
+        display: flex !important;
+    }
+    
+    .royal-container > div[style*="flex"] {
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+}
+
+@media (min-width: 769px) {
+    #royal-list-container {
+        display: none !important;
+    }
+    
+    .royal-view-toggle {
+        display: none !important;
+    }
+}
+
+/* Royal button hover effects */
+.royal-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+}
+
+/* Royal calendar grid hover effects */
+#royal-calendar-grid > div:hover {
+    background: rgba(212, 175, 55, 0.05) !important;
+    transition: background 0.3s ease;
+}
+</style>

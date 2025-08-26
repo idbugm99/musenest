@@ -29,21 +29,21 @@
                     <input type="text" name="website" style="display: none;" tabindex="-1" autocomplete="off">
                     
                     <div>
-                        <label for="name" class="block font-medium mb-2" style="font-size: 12px; line-height: 16px; color: #64748B;">
-                            {{#if contact_content.form_name_label}}{{contact_content.form_name_label}}{{else}}Your Name{{/if}}<span style="color: #EF4444;">*</span>
+                        <label for="name" class="block font-medium mb-2" style="font-size: 12px; line-height: 16px; color: {{theme.colors.text}};">
+                            {{#if contact_content.form_name_label}}{{contact_content.form_name_label}}{{else}}Your Name{{/if}}<span style="color: {{theme.colors.danger}};">*</span>
                         </label>
                         <input type="text" id="name" name="name" required 
-                               class="w-full px-4 border contact-input" style="height: 44px; border-radius: 12px; border-color: #E5E7EB;">
-                        <div class="error-message hidden" style="font-size: 12px; line-height: 16px; color: #EF4444; margin-top: 4px;"></div>
+                               class="w-full px-4 border contact-input" style="height: 44px; border-radius: 12px; border-color: {{theme.colors.border-light}};">
+                        <div class="error-message hidden" style="font-size: 12px; line-height: 16px; color: {{theme.colors.danger}}; margin-top: 4px;"></div>
                     </div>
                     
                     <div>
-                        <label for="email" class="block font-medium mb-2" style="font-size: 12px; line-height: 16px; color: #64748B;">
-                            {{#if contact_content.form_email_label}}{{contact_content.form_email_label}}{{else}}Email Address{{/if}}<span style="color: #EF4444;">*</span>
+                        <label for="email" class="block font-medium mb-2" style="font-size: 12px; line-height: 16px; color: {{theme.colors.text}};">
+                            {{#if contact_content.form_email_label}}{{contact_content.form_email_label}}{{else}}Email Address{{/if}}<span style="color: {{theme.colors.danger}};">*</span>
                         </label>
                         <input type="email" id="email" name="email" required 
-                               class="w-full px-4 border contact-input" style="height: 44px; border-radius: 12px; border-color: #E5E7EB;">
-                        <div class="error-message hidden" style="font-size: 12px; line-height: 16px; color: #EF4444; margin-top: 4px;"></div>
+                               class="w-full px-4 border contact-input" style="height: 44px; border-radius: 12px; border-color: {{theme.colors.border-light}};">
+                        <div class="error-message hidden" style="font-size: 12px; line-height: 16px; color: {{theme.colors.danger}}; margin-top: 4px;"></div>
                     </div>
                     
                     <div>
@@ -51,8 +51,8 @@
                             {{#if contact_content.form_phone_label}}{{contact_content.form_phone_label}}{{else}}Phone Number (Optional){{/if}}
                         </label>
                         <input type="tel" id="phone" name="phone" 
-                               class="w-full px-4 border contact-input" style="height: 44px; border-radius: 12px; border-color: #E5E7EB;">
-                        <div class="error-message hidden" style="font-size: 12px; line-height: 16px; color: #EF4444; margin-top: 4px;"></div>
+                               class="w-full px-4 border contact-input" style="height: 44px; border-radius: 12px; border-color: {{theme.colors.border-light}};">
+                        <div class="error-message hidden" style="font-size: 12px; line-height: 16px; color: {{theme.colors.danger}}; margin-top: 4px;"></div>
                     </div>
                     
                     <div>
@@ -60,8 +60,8 @@
                             {{#if contact_content.form_date_label}}{{contact_content.form_date_label}}{{else}}Preferred Date{{/if}}
                         </label>
                         <input type="date" id="date" name="date" 
-                               class="w-full px-4 border contact-input" style="height: 44px; border-radius: 12px; border-color: #E5E7EB;">
-                        <div class="error-message hidden" style="font-size: 12px; line-height: 16px; color: #EF4444; margin-top: 4px;"></div>
+                               class="w-full px-4 border contact-input" style="height: 44px; border-radius: 12px; border-color: {{theme.colors.border-light}};">
+                        <div class="error-message hidden" style="font-size: 12px; line-height: 16px; color: {{theme.colors.danger}}; margin-top: 4px;"></div>
                     </div>
                     
                     <div>
@@ -69,13 +69,13 @@
                             {{#if contact_content.form_duration_label}}{{contact_content.form_duration_label}}{{else}}Duration{{/if}}
                         </label>
                         <select id="duration" name="duration" 
-                                class="w-full px-4 border contact-input" style="height: 44px; border-radius: 12px; border-color: #E5E7EB;">
+                                class="w-full px-4 border contact-input" style="height: 44px; border-radius: 12px; border-color: {{theme.colors.border-light}};">
                             <option value="">Select duration</option>
                             {{#each (split (or contact_content.form_duration_options "1 Hour,90 Minutes,2 Hours,3 Hours,Overnight,Extended (please specify)") ",")}}
                                 <option value="{{trim this}}">{{trim this}}</option>
                             {{/each}}
                         </select>
-                        <div class="error-message hidden" style="font-size: 12px; line-height: 16px; color: #EF4444; margin-top: 4px;"></div>
+                        <div class="error-message hidden" style="font-size: 12px; line-height: 16px; color: {{theme.colors.danger}}; margin-top: 4px;"></div>
                     </div>
                     
                     <div>
@@ -85,7 +85,7 @@
                         <textarea id="message" name="message" rows="5" required 
                                   class="w-full px-4 py-3 border contact-input" style="border-radius: 12px; border-color: #E5E7EB;"
                                   placeholder="{{#if contact_content.form_message_placeholder}}{{contact_content.form_message_placeholder}}{{else}}Please include any specific requests or questions...{{/if}}"></textarea>
-                        <div class="error-message hidden" style="font-size: 12px; line-height: 16px; color: #EF4444; margin-top: 4px;"></div>
+                        <div class="error-message hidden" style="font-size: 12px; line-height: 16px; color: {{theme.colors.danger}}; margin-top: 4px;"></div>
                     </div>
                     
                     <button type="submit" id="submitBtn"

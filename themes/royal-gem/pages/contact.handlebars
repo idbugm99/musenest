@@ -1,0 +1,537 @@
+<!-- Royal Gem Contact Page - Comprehensive Contact System -->
+<section class="royal-section" style="background: linear-gradient(135deg, var(--theme-bg), var(--theme-surface)); position: relative;">
+    <!-- Royal Decorative Elements -->
+    <div style="position: absolute; top: 15%; left: 12%; opacity: 0.4; z-index: 1;">
+        <svg class="royal-icon-lg" viewBox="0 0 64 64" style="animation: float 6s ease-in-out infinite;">
+            <use href="/assets/sprites/royal-icons.ddf91c.svg#jewelry"></use>
+        </svg>
+    </div>
+    <div style="position: absolute; top: 50%; right: 10%; opacity: 0.3; z-index: 1;">
+        <svg class="royal-icon" viewBox="0 0 64 64" style="animation: float 8s ease-in-out infinite; animation-delay: 4s;">
+            <use href="/assets/sprites/royal-icons.ddf91c.svg#gem"></use>
+        </svg>
+    </div>
+    <div style="position: absolute; bottom: 20%; left: 80%; opacity: 0.5; z-index: 1;">
+        <svg class="royal-icon" viewBox="0 0 64 64" style="animation: float 10s ease-in-out infinite; animation-delay: 2s;">
+            <use href="/assets/sprites/royal-icons.ddf91c.svg#sapphire"></use>
+        </svg>
+    </div>
+
+    <div class="royal-container" style="position: relative; z-index: 2;">
+        <!-- Page Header -->
+        {{#if contact_content.contact_header_visible}}
+        <div style="text-align: center; margin-bottom: 4rem;">
+            <div style="margin-bottom: 2rem;">
+                <svg class="royal-icon-lg" viewBox="0 0 64 64" style="color: var(--theme-accent); animation: pulse 3s ease-in-out infinite;">
+                    <use href="/assets/sprites/royal-icons.ddf91c.svg#crown-royal"></use>
+                </svg>
+            </div>
+            <h1 style="background: linear-gradient(45deg, var(--theme-accent), var(--theme-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                {{#if contact_content.page_title}}{{contact_content.page_title}}{{else}}Contact Me{{/if}}
+            </h1>
+            {{#if contact_content.page_subtitle}}
+            <p style="font-size: 1.2rem; color: var(--theme-text-subtle); max-width: 700px; margin: 0 auto;">
+                {{contact_content.page_subtitle}}
+            </p>
+            {{/if}}
+        </div>
+        {{else}}
+        <!-- Default Header -->
+        <div style="text-align: center; margin-bottom: 4rem;">
+            <div style="margin-bottom: 2rem;">
+                <svg class="royal-icon-lg" viewBox="0 0 64 64" style="color: var(--theme-accent); animation: pulse 3s ease-in-out infinite;">
+                    <use href="/assets/sprites/royal-icons.ddf91c.svg#crown-royal"></use>
+                </svg>
+            </div>
+            <h1 style="background: linear-gradient(45deg, var(--theme-accent), var(--theme-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                Contact Me
+            </h1>
+            <p style="font-size: 1.2rem; color: var(--theme-text-subtle); max-width: 700px; margin: 0 auto;">
+                Begin your journey into elegance and sophistication. Reach out with discretion and respect.
+            </p>
+        </div>
+        {{/if}}
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; margin-bottom: 4rem;">
+            <!-- Contact Form -->
+            {{#if contact_content.contact_form_visible}}
+            <div style="order: 1;">
+                <div class="royal-card">
+                    <h2 style="color: var(--theme-accent); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.8rem;">
+                        <svg class="royal-icon" viewBox="0 0 64 64">
+                            <use href="/assets/sprites/royal-icons.ddf91c.svg#royal"></use>
+                        </svg>
+                        {{#if contact_content.form_title}}{{contact_content.form_title}}{{else}}Send a Message{{/if}}
+                    </h2>
+                    
+                    <form method="POST" id="royal-contact-form" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <!-- Honeypot field for spam protection -->
+                        <input type="text" name="website" style="display: none;" tabindex="-1" autocomplete="off">
+                        
+                        <div>
+                            <label style="display: block; color: var(--theme-text); font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                {{#if contact_content.form_name_label}}{{contact_content.form_name_label}}{{else}}Your Name{{/if}}<span style="color: var(--theme-danger, #ef4444);"> *</span>
+                            </label>
+                            <input type="text" id="royal-name" name="name" required 
+                                   class="royal-input"
+                                   style="width: 100%; padding: 1rem; background: var(--theme-bg-alt); border: 2px solid var(--theme-border); border-radius: var(--radius-sm); color: var(--theme-text); font-family: var(--font-body); transition: all 0.3s ease;">
+                            <div class="royal-error-message" style="display: none; font-size: 0.8rem; color: var(--theme-danger, #ef4444); margin-top: 0.25rem;"></div>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; color: var(--theme-text); font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                {{#if contact_content.form_email_label}}{{contact_content.form_email_label}}{{else}}Email Address{{/if}}<span style="color: var(--theme-danger, #ef4444);"> *</span>
+                            </label>
+                            <input type="email" id="royal-email" name="email" required 
+                                   class="royal-input"
+                                   style="width: 100%; padding: 1rem; background: var(--theme-bg-alt); border: 2px solid var(--theme-border); border-radius: var(--radius-sm); color: var(--theme-text); font-family: var(--font-body); transition: all 0.3s ease;">
+                            <div class="royal-error-message" style="display: none; font-size: 0.8rem; color: var(--theme-danger, #ef4444); margin-top: 0.25rem;"></div>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; color: var(--theme-text-subtle); font-weight: 500; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                {{#if contact_content.form_phone_label}}{{contact_content.form_phone_label}}{{else}}Phone Number (Optional){{/if}}
+                            </label>
+                            <input type="tel" id="royal-phone" name="phone" 
+                                   class="royal-input"
+                                   style="width: 100%; padding: 1rem; background: var(--theme-bg-alt); border: 2px solid var(--theme-border); border-radius: var(--radius-sm); color: var(--theme-text); font-family: var(--font-body); transition: all 0.3s ease;">
+                            <div class="royal-error-message" style="display: none; font-size: 0.8rem; color: var(--theme-danger, #ef4444); margin-top: 0.25rem;"></div>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; color: var(--theme-text-subtle); font-weight: 500; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                {{#if contact_content.form_date_label}}{{contact_content.form_date_label}}{{else}}Preferred Date{{/if}}
+                            </label>
+                            <input type="date" id="royal-date" name="date" 
+                                   class="royal-input"
+                                   style="width: 100%; padding: 1rem; background: var(--theme-bg-alt); border: 2px solid var(--theme-border); border-radius: var(--radius-sm); color: var(--theme-text); font-family: var(--font-body); transition: all 0.3s ease;">
+                            <div class="royal-error-message" style="display: none; font-size: 0.8rem; color: var(--theme-danger, #ef4444); margin-top: 0.25rem;"></div>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; color: var(--theme-text-subtle); font-weight: 500; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                {{#if contact_content.form_duration_label}}{{contact_content.form_duration_label}}{{else}}Duration{{/if}}
+                            </label>
+                            <select id="royal-duration" name="duration" 
+                                    class="royal-input"
+                                    style="width: 100%; padding: 1rem; background: var(--theme-bg-alt); border: 2px solid var(--theme-border); border-radius: var(--radius-sm); color: var(--theme-text); font-family: var(--font-body); transition: all 0.3s ease;">
+                                <option value="">Select duration</option>
+                                {{#each (split (or contact_content.form_duration_options "1 Hour,90 Minutes,2 Hours,3 Hours,Overnight,Extended (please specify)") ",")}}
+                                    <option value="{{trim this}}">{{trim this}}</option>
+                                {{/each}}
+                            </select>
+                            <div class="royal-error-message" style="display: none; font-size: 0.8rem; color: var(--theme-danger, #ef4444); margin-top: 0.25rem;"></div>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; color: var(--theme-text); font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                {{#if contact_content.form_message_label}}{{contact_content.form_message_label}}{{else}}Message{{/if}}<span style="color: var(--theme-danger, #ef4444);"> *</span>
+                            </label>
+                            <textarea id="royal-message" name="message" rows="6" required 
+                                      class="royal-input"
+                                      placeholder="{{#if contact_content.form_message_placeholder}}{{contact_content.form_message_placeholder}}{{else}}Please introduce yourself and describe what type of encounter you're seeking...{{/if}}"
+                                      style="width: 100%; padding: 1rem; background: var(--theme-bg-alt); border: 2px solid var(--theme-border); border-radius: var(--radius-sm); color: var(--theme-text); font-family: var(--font-body); resize: vertical; transition: all 0.3s ease;"></textarea>
+                            <div class="royal-error-message" style="display: none; font-size: 0.8rem; color: var(--theme-danger, #ef4444); margin-top: 0.25rem;"></div>
+                        </div>
+                        
+                        <button type="submit" id="royal-submit-btn" class="royal-btn" style="align-self: flex-start; font-size: 1.1rem; padding: 1.2rem 2rem; position: relative;">
+                            <span class="royal-button-text">
+                                <svg class="royal-icon" viewBox="0 0 64 64" style="margin-right: 0.8rem;">
+                                    <use href="/assets/sprites/royal-icons.ddf91c.svg#insignia"></use>
+                                </svg>
+                                {{#if contact_content.form_button_text}}{{contact_content.form_button_text}}{{else}}Send Message{{/if}}
+                            </span>
+                            <span class="royal-spinner" style="display: none;">
+                                <div style="display: inline-block; width: 1rem; height: 1rem; border: 2px solid var(--theme-bg); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 0.8rem;"></div>
+                                Sending...
+                            </span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {{/if}}
+
+            <!-- Contact Information Sections -->
+            <div style="order: 2; display: flex; flex-direction: column; gap: 2rem;">
+                <!-- Direct Contact -->
+                {{#if contact_content.contact_direct_visible}}
+                <div class="royal-card">
+                    <h2 style="color: var(--theme-accent); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.8rem;">
+                        <svg class="royal-icon" viewBox="0 0 64 64">
+                            <use href="/assets/sprites/royal-icons.ddf91c.svg#scepter"></use>
+                        </svg>
+                        {{#if contact_content.direct_title}}{{contact_content.direct_title}}{{else}}Direct Contact{{/if}}
+                    </h2>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(212, 175, 55, 0.05); border-radius: var(--radius-sm); border: 1px solid rgba(212, 175, 55, 0.2);">
+                            <svg class="royal-icon" viewBox="0 0 64 64" style="color: var(--theme-accent);">
+                                <use href="/assets/sprites/royal-icons.ddf91c.svg#gem"></use>
+                            </svg>
+                            <div>
+                                <div style="color: var(--theme-text); font-weight: 600; font-size: 0.9rem;">
+                                    {{#if contact_content.direct_email_label}}{{contact_content.direct_email_label}}{{else}}Email{{/if}}
+                                </div>
+                                <a href="mailto:{{contactEmail}}" style="color: var(--theme-accent); text-decoration: none; font-weight: 500;">{{contactEmail}}</a>
+                            </div>
+                        </div>
+                        
+                        {{#if contactPhone}}
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(212, 175, 55, 0.05); border-radius: var(--radius-sm); border: 1px solid rgba(212, 175, 55, 0.2);">
+                            <svg class="royal-icon" viewBox="0 0 64 64" style="color: var(--theme-accent);">
+                                <use href="/assets/sprites/royal-icons.ddf91c.svg#ruby"></use>
+                            </svg>
+                            <div>
+                                <div style="color: var(--theme-text); font-weight: 600; font-size: 0.9rem;">
+                                    {{#if contact_content.direct_phone_label}}{{contact_content.direct_phone_label}}{{else}}Phone{{/if}}
+                                </div>
+                                <a href="tel:{{contactPhone}}" style="color: var(--theme-accent); text-decoration: none; font-weight: 500;">{{contactPhone}}</a>
+                            </div>
+                        </div>
+                        {{/if}}
+                        
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(212, 175, 55, 0.05); border-radius: var(--radius-sm); border: 1px solid rgba(212, 175, 55, 0.2);">
+                            <svg class="royal-icon" viewBox="0 0 64 64" style="color: var(--theme-accent);">
+                                <use href="/assets/sprites/royal-icons.ddf91c.svg#diamond"></use>
+                            </svg>
+                            <div>
+                                <div style="color: var(--theme-text); font-weight: 600; font-size: 0.9rem;">Response Time</div>
+                                <div style="color: var(--theme-text-subtle); font-size: 0.9rem;">
+                                    {{#if contact_content.direct_response_text}}{{contact_content.direct_response_text}}{{else}}I typically respond within 2-4 hours{{/if}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+
+                <!-- Booking Guidelines -->
+                {{#if contact_content.contact_guidelines_visible}}
+                <div class="royal-card">
+                    <h3 style="color: var(--theme-accent); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem; font-size: 1.2rem;">
+                        <svg class="royal-icon" viewBox="0 0 64 64">
+                            <use href="/assets/sprites/royal-icons.ddf91c.svg#jewelry"></use>
+                        </svg>
+                        {{#if contact_content.guidelines_title}}{{contact_content.guidelines_title}}{{else}}Booking Guidelines{{/if}}
+                    </h3>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        {{#if contact_content.guideline_1}}
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <div style="width: 0.5rem; height: 0.5rem; background: var(--theme-accent); border-radius: 50%; margin-top: 0.5rem; flex-shrink: 0;"></div>
+                            <span style="color: var(--theme-text); line-height: 1.6;">{{contact_content.guideline_1}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if contact_content.guideline_2}}
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <div style="width: 0.5rem; height: 0.5rem; background: var(--theme-accent); border-radius: 50%; margin-top: 0.5rem; flex-shrink: 0;"></div>
+                            <span style="color: var(--theme-text); line-height: 1.6;">{{contact_content.guideline_2}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if contact_content.guideline_3}}
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <div style="width: 0.5rem; height: 0.5rem; background: var(--theme-accent); border-radius: 50%; margin-top: 0.5rem; flex-shrink: 0;"></div>
+                            <span style="color: var(--theme-text); line-height: 1.6;">{{contact_content.guideline_3}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if contact_content.guideline_4}}
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <div style="width: 0.5rem; height: 0.5rem; background: var(--theme-accent); border-radius: 50%; margin-top: 0.5rem; flex-shrink: 0;"></div>
+                            <span style="color: var(--theme-text); line-height: 1.6;">{{contact_content.guideline_4}}</span>
+                        </div>
+                        {{/if}}
+                    </div>
+                </div>
+                {{/if}}
+
+                <!-- Location & Services -->
+                {{#if contact_content.contact_location_visible}}
+                <div class="royal-card">
+                    <h3 style="color: var(--theme-accent); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem; font-size: 1.2rem;">
+                        <svg class="royal-icon" viewBox="0 0 64 64">
+                            <use href="/assets/sprites/royal-icons.ddf91c.svg#crown"></use>
+                        </svg>
+                        {{#if contact_content.location_title}}{{contact_content.location_title}}{{else}}Location & Services{{/if}}
+                    </h3>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        {{#if contact_content.location_area_text}}
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <div style="width: 0.5rem; height: 0.5rem; background: var(--theme-accent); border-radius: 50%; margin-top: 0.5rem; flex-shrink: 0;"></div>
+                            <span style="color: var(--theme-text); line-height: 1.6;">{{contact_content.location_area_text}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if contact_content.location_services_text}}
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <div style="width: 0.5rem; height: 0.5rem; background: var(--theme-accent); border-radius: 50%; margin-top: 0.5rem; flex-shrink: 0;"></div>
+                            <span style="color: var(--theme-text); line-height: 1.6;">{{contact_content.location_services_text}}</span>
+                        </div>
+                        {{/if}}
+                    </div>
+                </div>
+                {{/if}}
+
+                <!-- Privacy & Discretion -->
+                {{#if contact_content.contact_privacy_visible}}
+                <div class="royal-card" style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)); position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: -20px; right: -20px; opacity: 0.3; z-index: 1;">
+                        <svg style="width: 80px; height: 80px; color: var(--theme-accent);" viewBox="0 0 64 64">
+                            <use href="/assets/sprites/royal-icons.ddf91c.svg#crown-royal"></use>
+                        </svg>
+                    </div>
+                    
+                    <div style="position: relative; z-index: 2;">
+                        <h3 style="color: var(--theme-text); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.8rem; font-size: 1.2rem;">
+                            <svg class="royal-icon" viewBox="0 0 64 64">
+                                <use href="/assets/sprites/royal-icons.ddf91c.svg#insignia"></use>
+                            </svg>
+                            {{#if contact_content.privacy_title}}{{contact_content.privacy_title}}{{else}}Privacy & Discretion{{/if}}
+                        </h3>
+                        <p style="color: var(--theme-text); line-height: 1.6; font-size: 0.95rem;">
+                            {{#if contact_content.privacy_text}}{{contact_content.privacy_text}}{{else}}All communications are handled with the utmost discretion and confidentiality. Your privacy is my priority.{{/if}}
+                        </p>
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Royal Contact JavaScript -->
+<script>
+// Royal contact form handling with spam protection
+let royalLastSubmitTime = 0;
+const ROYAL_SUBMIT_COOLDOWN = 5000; // 5 seconds
+
+document.getElementById('royal-contact-form')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Throttle submissions
+    const now = Date.now();
+    if (now - royalLastSubmitTime < ROYAL_SUBMIT_COOLDOWN) {
+        showRoyalError('Please wait before submitting again.');
+        return;
+    }
+    
+    // Get form data
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    
+    // Check honeypot
+    if (data.website) {
+        // Silent fail for bots
+        return;
+    }
+    
+    // Clear previous errors
+    clearRoyalErrors();
+    
+    // Validate required fields
+    let hasErrors = false;
+    
+    if (!data.name?.trim()) {
+        showRoyalFieldError('royal-name', 'Name is required.');
+        hasErrors = true;
+    }
+    
+    if (!data.email?.trim()) {
+        showRoyalFieldError('royal-email', 'Email is required.');
+        hasErrors = true;
+    } else if (!isValidRoyalEmail(data.email)) {
+        showRoyalFieldError('royal-email', 'Please enter a valid email address.');
+        hasErrors = true;
+    }
+    
+    if (!data.message?.trim()) {
+        showRoyalFieldError('royal-message', 'Message is required.');
+        hasErrors = true;
+    }
+    
+    if (hasErrors) return;
+    
+    // Show loading state
+    const submitBtn = document.getElementById('royal-submit-btn');
+    const buttonText = submitBtn.querySelector('.royal-button-text');
+    const spinner = submitBtn.querySelector('.royal-spinner');
+    
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = '0.7';
+    buttonText.style.display = 'none';
+    spinner.style.display = 'inline-flex';
+    
+    // Simulate form submission (in real implementation, this would send to backend)
+    setTimeout(() => {
+        royalLastSubmitTime = now;
+        
+        // Reset button state
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        buttonText.style.display = 'inline-flex';
+        spinner.style.display = 'none';
+        
+        // Show success message with royal styling
+        showRoyalSuccess('Thank you for your message! I will get back to you within 2-4 hours.');
+        
+        // Reset form
+        this.reset();
+    }, 2000);
+});
+
+function showRoyalFieldError(fieldId, message) {
+    const field = document.getElementById(fieldId);
+    const errorDiv = field.parentElement.querySelector('.royal-error-message');
+    
+    field.style.borderColor = 'var(--theme-danger, #ef4444)';
+    field.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.2)';
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+}
+
+function clearRoyalErrors() {
+    document.querySelectorAll('.royal-input').forEach(input => {
+        input.style.borderColor = 'var(--theme-border)';
+        input.style.boxShadow = 'none';
+    });
+    document.querySelectorAll('.royal-error-message').forEach(error => {
+        error.style.display = 'none';
+    });
+}
+
+function showRoyalError(message) {
+    // Create royal styled error notification
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        background: var(--theme-danger, #ef4444);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: var(--radius-sm);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        z-index: 9999;
+        font-weight: 600;
+        animation: slideInRight 0.3s ease;
+    `;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
+}
+
+function showRoyalSuccess(message) {
+    // Create royal styled success notification
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        background: linear-gradient(45deg, var(--theme-accent), var(--theme-primary));
+        color: var(--theme-bg);
+        padding: 1rem 1.5rem;
+        border-radius: var(--radius-sm);
+        box-shadow: 0 8px 32px rgba(212, 175, 55, 0.4);
+        z-index: 9999;
+        font-weight: 600;
+        animation: slideInRight 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    `;
+    notification.innerHTML = `
+        <svg style="width: 1.25rem; height: 1.25rem;" viewBox="0 0 64 64">
+            <use href="/assets/sprites/royal-icons.ddf91c.svg#crown"></use>
+        </svg>
+        ${message}
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 6000);
+}
+
+function isValidRoyalEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// Royal input focus effects
+document.querySelectorAll('.royal-input').forEach(input => {
+    input.addEventListener('focus', function() {
+        this.style.borderColor = 'var(--theme-accent)';
+        this.style.boxShadow = '0 0 0 3px rgba(212, 175, 55, 0.2)';
+    });
+    
+    input.addEventListener('blur', function() {
+        if (!this.parentElement.querySelector('.royal-error-message').style.display === 'block') {
+            this.style.borderColor = 'var(--theme-border)';
+            this.style.boxShadow = 'none';
+        }
+    });
+});
+</script>
+
+<!-- Royal Contact Styles -->
+<style>
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes slideInRight {
+    0% { transform: translateX(100%); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+/* Royal form styling */
+.royal-input:focus {
+    outline: none;
+}
+
+.royal-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+}
+
+.royal-btn:disabled {
+    cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 968px) {
+    .royal-container > div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+    }
+    
+    .royal-container > div[style*="grid-template-columns"] > div {
+        order: initial !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .royal-container {
+        padding: 0 1rem !important;
+    }
+    
+    .royal-card {
+        padding: 1.5rem !important;
+    }
+    
+    .royal-btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+}
+</style>

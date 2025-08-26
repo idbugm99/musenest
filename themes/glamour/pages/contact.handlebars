@@ -74,10 +74,10 @@
                 <!-- Social Links -->
                 {{#if socialLinks}}
                 <div class="mt-12">
-                    <h3 class="text-xl font-semibold mb-6 glamour-heading" style="color: #F3EFE7;">Follow Me</h3>
+                    <h3 class="text-xl font-semibold mb-6 glamour-heading" style="color: {{theme.colors.text-light}};">Follow Me</h3>
                     <div class="flex space-x-4">
                         {{#each socialLinks}}
-                        <a href="{{this.url}}" class="w-12 h-12 rounded-full flex items-center justify-center hover:shadow-lg transition-all duration-300 transform hover:scale-110 border-2" style="border-color: #E9C77A; color: #E9C77A;">
+                        <a href="{{this.url}}" class="w-12 h-12 rounded-full flex items-center justify-center hover:shadow-lg transition-all duration-300 transform hover:scale-110 border-2" style="border-color: {{theme.colors.accent}}; color: {{theme.colors.accent}};">
                             <i class="fab fa-{{this.icon}}"></i>
                         </a>
                         {{/each}}
@@ -243,22 +243,22 @@
 <style>
 /* Contact Professional Variables */
 :root {
-    --glamour-primary: #E9C77A;
-    --glamour-primary-hover: #D9B66A;
-    --glamour-card-bg: #1E1730;
-    --glamour-input-bg: #211A31;
-    --glamour-text-primary: #F3EFE7;
-    --glamour-text-secondary: rgba(243, 239, 231, 0.8);
-    --glamour-border: rgba(255, 255, 255, 0.08);
-    --glamour-border-focus: #E9C77A;
-    --glamour-focus-shadow: rgba(233, 199, 122, 0.25);
+    --glamour-primary: {{theme.colors.accent}};
+    --glamour-primary-hover: {{theme.colors.btn-bg-hover}};
+    --glamour-card-bg: {{theme.colors.card-bg}};
+    --glamour-input-bg: {{theme.colors.input-bg}};
+    --glamour-text-primary: {{theme.colors.text-light}};
+    --glamour-text-secondary: {{theme.colors.text}};
+    --glamour-border: {{theme.colors.border-light}};
+    --glamour-border-focus: {{theme.colors.focus-ring}};
+    --glamour-focus-shadow: {{theme.colors.focus-ring}};
 }
 
 /* Professional Contact Hero */
 .glamour-contact-hero {
     position: relative;
     min-height: 60vh;
-    background: linear-gradient(160deg, #A61147 0%, #7E1B5C 45%, #2B203F 100%);
+    background: linear-gradient(160deg, {{theme.colors.bg-dark}} 0%, {{theme.colors.card-bg}} 45%, {{theme.colors.surface}} 100%);
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -276,13 +276,13 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 0 0 50px rgba(255, 255, 255, 0.18);
+    text-shadow: 0 0 50px {{theme.colors.focus-ring}};
 }
 
 .glamour-hero-subtitle {
     font-size: 18px;
     line-height: 28px;
-    color: rgba(245, 242, 234, 0.9);
+    color: {{theme.colors.text}};
     text-align: center;
     font-weight: 400;
     max-width: 600px;
@@ -291,7 +291,7 @@
 
 /* Professional Contact Layout */
 .glamour-contact-main {
-    background: linear-gradient(180deg, #0f0a15 0%, #1a0d1e 100%);
+    background: linear-gradient(180deg, {{theme.colors.bg-dark}} 0%, {{theme.colors.surface}} 100%);
     padding: 4rem 0;
 }
 
@@ -315,7 +315,7 @@
     background: var(--glamour-card-bg);
     border-radius: 16px;
     padding: 2.5rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 32px {{theme.colors.card-shadow}};
     border: 1px solid var(--glamour-border);
     height: fit-content;
 }
@@ -345,7 +345,7 @@
 }
 
 .glamour-info-row:hover {
-    background: rgba(255, 255, 255, 0.02);
+    background: {{theme.colors.table-row-hover}};
     border-radius: 8px;
 }
 
@@ -403,7 +403,7 @@
     background: var(--glamour-card-bg);
     border-radius: 16px;
     padding: 2.5rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 32px {{theme.colors.card-shadow}};
     border: 1px solid var(--glamour-border);
 }
 
@@ -473,7 +473,7 @@
 }
 
 .glamour-form-select {
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23E9C77A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='{{theme.colors.accent}}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
     background-repeat: no-repeat;
     background-position: right 12px center;
     background-size: 16px;
@@ -485,7 +485,7 @@
     height: 44px;
     border-radius: 22px;
     background: var(--glamour-primary);
-    color: #1a0d2e;
+    color: {{theme.colors.text-dark}};
     border: none;
     padding: 0 24px;
     font-size: 16px;
@@ -503,16 +503,16 @@
 .glamour-form-submit:hover {
     background: var(--glamour-primary-hover);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(233, 199, 122, 0.3);
+    box-shadow: 0 4px 12px {{theme.colors.focus-ring}};
 }
 
 /* Privacy Panel Styles */
 .glamour-privacy-panel {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background: linear-gradient(135deg, {{theme.colors.card-bg}} 0%, {{theme.colors.surface}} 100%);
     border-radius: 16px;
     padding: 2rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px {{theme.colors.card-shadow}};
+    border: 1px solid {{theme.colors.border-light}};
     position: relative;
     overflow: hidden;
 }
@@ -524,7 +524,7 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--glamour-primary) 0%, #D9B66A 100%);
+    background: linear-gradient(90deg, var(--glamour-primary) 0%, {{theme.colors.btn-bg-hover}} 100%);
 }
 
 .glamour-privacy-title {
@@ -545,7 +545,7 @@
 
 /* Professional Expectations Section */
 .glamour-expectations-section {
-    background: #0f0a15;
+    background: {{theme.colors.bg-dark}};
     padding: 4rem 0;
 }
 
@@ -572,7 +572,7 @@
     border-radius: 16px;
     padding: 2rem;
     text-align: center;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 32px {{theme.colors.card-shadow}};
     border: 1px solid var(--glamour-border);
     transition: all 0.3s ease;
     display: flex;
@@ -584,7 +584,7 @@
 
 .glamour-expectations-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 16px 48px {{theme.colors.card-shadow}};
 }
 
 .glamour-expectations-icon {
@@ -596,12 +596,12 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 1.5rem;
-    box-shadow: 0 4px 16px rgba(233, 199, 122, 0.2);
+    box-shadow: 0 4px 16px {{theme.colors.focus-ring}};
 }
 
 .glamour-expectations-icon i {
     font-size: 28px;
-    color: #1a0d2e;
+    color: {{theme.colors.text-dark}};
 }
 
 .glamour-expectations-card-title {

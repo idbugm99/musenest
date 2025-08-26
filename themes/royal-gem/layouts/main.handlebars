@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{pageTitle}} - {{siteName}}</title>
+    <meta name="description" content="{{metaDescription}}">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Universal Icon System -->
+    <link rel="stylesheet" href="/templates/universal/universal-icons.css">
+    
+    <!-- Royal Gem Typography - Elegant fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Royal Gem Color Tokens - Deep Jewel Tones & Gold */
+            --theme-primary: {{theme.colors.primary}};       /* Deep ruby red */
+            --theme-secondary: {{theme.colors.secondary}};   /* Royal purple */  
+            --theme-accent: {{theme.colors.accent}};         /* Royal gold */
+            
+            /* Surfaces - Rich midnight backgrounds */
+            --theme-bg: {{theme.colors.bg}};                 /* Deep midnight */
+            --theme-bg-alt: {{theme.colors.bg-alt}};         /* Lighter midnight */
+            --theme-surface: {{theme.colors.surface}};       /* Dark plum */
+            --theme-overlay: {{theme.colors.overlay}};       /* Gold overlay */
+            
+            /* Typography - Elegant contrast */
+            --theme-text: {{theme.colors.text}};             /* Warm cream */
+            --theme-text-subtle: {{theme.colors.text-subtle}}; /* Champagne */
+            
+            /* Interactive - Gold interactions */
+            --theme-link: {{theme.colors.link}};             /* Royal gold */
+            --theme-link-hover: {{theme.colors.link-hover}}; /* Bright gold */
+            --theme-focus: {{theme.colors.focus}};           /* Focus gold */
+            
+            /* Status - Jewel tones */
+            --theme-success: {{theme.colors.success}};       /* Emerald */
+            --theme-warning: {{theme.colors.warning}};       /* Amber */
+            --theme-error: {{theme.colors.error}};           /* Deep red */
+            
+            /* System - Subtle borders */
+            --theme-border: {{theme.colors.border}};         /* Purple border */
+            --theme-border-muted: {{theme.colors.border-muted}}; /* Subtle */
+            
+            /* Typography Scales */
+            --font-heading: 'Playfair Display', 'Times New Roman', serif;
+            --font-body: 'Inter', 'Helvetica Neue', sans-serif;
+            
+            /* Royal Gem Spacing */
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 32px;
+            
+            /* Royal Shadows - Jewel-toned */
+            --shadow-sm: 0 4px 8px rgba(139, 21, 56, 0.15);
+            --shadow-md: 0 8px 24px rgba(45, 27, 105, 0.2);
+            --shadow-lg: 0 16px 40px rgba(212, 175, 55, 0.25);
+        }
+        
+        /* Royal Gem Base Styles */
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background: linear-gradient(135deg, var(--theme-bg) 0%, var(--theme-bg-alt) 100%);
+            color: var(--theme-text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        /* Royal Background Pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 25%, var(--theme-accent) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, var(--theme-secondary) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, var(--theme-primary) 0%, transparent 70%);
+            opacity: 0.08;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            line-height: 1.2;
+            color: var(--theme-text);
+            margin-top: 0;
+        }
+        
+        h1 { font-size: clamp(2.5rem, 5vw, 4rem); }
+        h2 { font-size: clamp(2rem, 4vw, 3rem); }
+        h3 { font-size: clamp(1.5rem, 3vw, 2rem); }
+        
+        /* Royal Icons */
+        .royal-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            fill: currentColor;
+            color: var(--theme-accent);
+        }
+        
+        .royal-icon-lg {
+            width: 3rem;
+            height: 3rem;
+        }
+        
+        /* Royal Cards */
+        .royal-card {
+            background: linear-gradient(135deg, var(--theme-surface), var(--theme-bg-alt));
+            border: 1px solid var(--theme-border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .royal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--theme-accent), var(--theme-primary));
+        }
+        
+        /* Royal Buttons */
+        .royal-btn {
+            background: linear-gradient(45deg, var(--theme-accent), var(--theme-primary));
+            border: none;
+            border-radius: var(--radius-md);
+            color: var(--theme-bg);
+            font-family: var(--font-body);
+            font-weight: 600;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .royal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            color: var(--theme-bg);
+            text-decoration: none;
+        }
+        
+        .royal-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .royal-btn:hover::before {
+            left: 100%;
+        }
+        
+        /* Royal Navigation */
+        .royal-nav {
+            background: var(--theme-surface);
+            border-bottom: 1px solid var(--theme-border);
+            backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .royal-nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+        }
+        
+        .royal-logo {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--theme-accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .royal-nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 2rem;
+        }
+        
+        .royal-nav-link {
+            color: var(--theme-text);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            transition: all 0.3s ease;
+        }
+        
+        .royal-nav-link:hover,
+        .royal-nav-link.active {
+            color: var(--theme-accent);
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        /* Royal Container */
+        .royal-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        /* Royal Section */
+        .royal-section {
+            padding: 4rem 0;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .royal-nav-menu {
+                display: none; /* Will need mobile menu */
+            }
+            
+            .royal-card {
+                padding: 1.5rem;
+            }
+            
+            .royal-section {
+                padding: 2rem 0;
+            }
+        }
+        
+        /* Focus Styles */
+        *:focus-visible {
+            outline: 2px solid var(--theme-focus);
+            outline-offset: 2px;
+        }
+        
+        /* Preview Mode Banner */
+        {{#if preview.previewThemeId}}
+        .royal-preview-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--theme-warning);
+            color: var(--theme-bg);
+            text-align: center;
+            padding: 0.5rem;
+            font-weight: 600;
+            z-index: 2000;
+            box-shadow: var(--shadow-md);
+        }
+        
+        body {
+            padding-top: 40px; /* Account for preview banner */
+        }
+        {{/if}}
+    </style>
+</head>
+<body>
+    {{#if preview.previewThemeId}}
+    <div class="royal-preview-banner">
+        🎭 Previewing {{preview.previewThemeName}} Theme - This is a live preview
+    </div>
+    {{/if}}
+
+    {{> navigation}}
+    
+    <main>
+        {{{body}}}
+    </main>
+    
+    {{> footer}}
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!-- Beautiful Roses Contact Page -->
+
+<!-- Page Header -->
+{{#if contact_content.contact_header_visible}}
+<section style="padding: 4rem 2rem 2rem; background: var(--theme-bg-alt); text-align: center;">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <div class="section-header">
+            <h1>{{#if contact_content.page_title}}{{contact_content.page_title}}{{else}}Contact Me{{/if}}</h1>
+            {{#if contact_content.page_subtitle}}
+            <p style="font-size: 1.25rem; color: var(--theme-text-subtle); margin-top: 1rem;">{{contact_content.page_subtitle}}</p>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Main Contact Layout -->
+<section style="padding: 6rem 2rem; background: var(--theme-surface);">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div class="contact-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;">
+            
+            <!-- Contact Form Section -->
+            {{#if contact_content.contact_form_visible}}
+            <div class="contact-form-section">
+                <div class="card rose-card">
+                    <h2 style="color: var(--theme-primary); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.75rem;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="color: var(--theme-primary);">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                        </svg>
+                        {{#if contact_content.form_title}}{{contact_content.form_title}}{{else}}Send a Message{{/if}}
+                    </h2>
+                    
+                    <form method="POST" id="rose-contact-form" action="/{{modelSlug}}/contact{{previewParam}}" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <!-- Honeypot field for spam protection -->
+                        <input type="text" name="website" style="display: none;" tabindex="-1" autocomplete="off">
+                        
+                        <div class="form-field">
+                            <label style="display: block; color: var(--theme-text); font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                {{#if contact_content.form_name_label}}{{contact_content.form_name_label}}{{else}}Your Name{{/if}} <span style="color: var(--theme-error);">*</span>
+                            </label>
+                            <input type="text" name="name" required 
+                                   class="rose-input"
+                                   style="width: 100%; padding: 1rem; background: var(--theme-bg); border: 2px solid var(--theme-border); border-radius: 8px; color: var(--theme-text); font-family: var(--font-body); transition: all 0.3s ease;">
+                            <div class="error-message" style="display: none; font-size: 0.8rem; color: var(--theme-error); margin-top: 0.25rem;"></div>
+                        </div>
+                        
+                        <div class="form-field">
+                            <label style="display: block; color: var(--theme-text); font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                {{#if contact_content.form_email_label}}{{contact_content.form_email_label}}{{else}}Email Address{{/if}} <span style="color: var(--theme-error);">*</span>
+                            </label>
+                            <input type="email" name="email" required 
+                                   class="rose-input"
+                                   style="width: 100%; padding: 1rem; background: var(--theme-bg); border: 2px solid var(--theme-border); border-radius: 8px; color: var(--theme-text); font-family: var(--font-body); transition: all 0.3s ease;">
+                            <div class="error-message" style="display: none; font-size: 0.8rem; color: var(--theme-error); margin-top: 0.25rem;"></div>
+                        </div>
+                        
+                        <div class="form-field">
+                            <label style="display: block; color: var(--theme-text); font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                {{#if contact_content.form_phone_label}}{{contact_content.form_phone_label}}{{else}}Phone Number (Optional){{/if}}
+                            </label>
+                            <input type="tel" name="phone"
+                                   class="rose-input"
+                                   style="width: 100%; padding: 1rem; background: var(--theme-bg); border: 2px solid var(--theme-border); border-radius: 8px; color: var(--theme-text); font-family: var(--font-body); transition: all 0.3s ease;">
+                            <div class="error-message" style="display: none; font-size: 0.8rem; color: var(--theme-error); margin-top: 0.25rem;"></div>
+                        </div>
+                        
+                        <div class="form-field">
+                            <label style="display: block; color: var(--theme-text); font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                {{#if contact_content.form_date_label}}{{contact_content.form_date_label}}{{else}}Preferred Date{{/if}}
+                            </label>
+                            <input type="date" name="date"
+                                   class="rose-input"
+                                   style="width: 100%; padding: 1rem; background: var(--theme-bg); border: 2px solid var(--theme-border); border-radius: 8px; color: var(--theme-text); font-family: var(--font-body); transition: all 0.3s ease;">
+                            <div class="error-message" style="display: none; font-size: 0.8rem; color: var(--theme-error); margin-top: 0.25rem;"></div>
+                        </div>
+                        
+                        <div class="form-field">
+                            <label style="display: block; color: var(--theme-text); font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                {{#if contact_content.form_duration_label}}{{contact_content.form_duration_label}}{{else}}Duration{{/if}}
+                            </label>
+                            <select name="duration" 
+                                    class="rose-input"
+                                    style="width: 100%; padding: 1rem; background: var(--theme-bg); border: 2px solid var(--theme-border); border-radius: 8px; color: var(--theme-text); font-family: var(--font-body); transition: all 0.3s ease;">
+                                <option value="">Select duration</option>
+                                {{#each (split (or contact_content.form_duration_options "1 Hour,90 Minutes,2 Hours,3 Hours,Overnight,Extended (please specify)") ",")}}
+                                    <option value="{{trim this}}">{{trim this}}</option>
+                                {{/each}}
+                            </select>
+                            <div class="error-message" style="display: none; font-size: 0.8rem; color: var(--theme-error); margin-top: 0.25rem;"></div>
+                        </div>
+                        
+                        <div class="form-field">
+                            <label style="display: block; color: var(--theme-text); font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                {{#if contact_content.form_message_label}}{{contact_content.form_message_label}}{{else}}Message{{/if}} <span style="color: var(--theme-error);">*</span>
+                            </label>
+                            <textarea name="message" rows="6" required
+                                      class="rose-input"
+                                      placeholder="{{#if contact_content.form_message_placeholder}}{{contact_content.form_message_placeholder}}{{else}}Please introduce yourself and describe what type of encounter you're seeking...{{/if}}"
+                                      style="width: 100%; padding: 1rem; background: var(--theme-bg); border: 2px solid var(--theme-border); border-radius: 8px; color: var(--theme-text); font-family: var(--font-body); resize: vertical; transition: all 0.3s ease;"></textarea>
+                            <div class="error-message" style="display: none; font-size: 0.8rem; color: var(--theme-error); margin-top: 0.25rem;"></div>
+                        </div>
+                        
+                        <button type="submit" class="btn rose-btn" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 0.5rem;">
+                            <span class="button-text">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 0.5rem;">
+                                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                                </svg>
+                                {{#if contact_content.form_button_text}}{{contact_content.form_button_text}}{{else}}Send Message{{/if}}
+                            </span>
+                            <span class="spinner" style="display: none;">Sending...</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Contact Information Sections -->
+            <div class="contact-info-sections">
+                <!-- Direct Contact Section -->
+                {{#if contact_content.contact_direct_visible}}
+                <div class="contact-section">
+                    <div class="card rose-card" style="margin-bottom: 2rem;">
+                        <h2 style="color: var(--theme-primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="color: var(--theme-primary);">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                            </svg>
+                            {{#if contact_content.direct_title}}{{contact_content.direct_title}}{{else}}Direct Contact{{/if}}
+                        </h2>
+                        
+                        <div class="contact-methods" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div class="contact-method" style="display: flex; align-items: center; gap: 0.75rem;">
+                                <span class="label" style="font-weight: 600; color: var(--theme-text); min-width: 60px;">{{#if contact_content.direct_email_label}}{{contact_content.direct_email_label}}{{else}}Email{{/if}}</span>
+                                <a href="mailto:{{model.email}}" style="color: var(--theme-primary); text-decoration: none;">{{model.email}}</a>
+                            </div>
+                            
+                            {{#if model.phone}}
+                            <div class="contact-method" style="display: flex; align-items: center; gap: 0.75rem;">
+                                <span class="label" style="font-weight: 600; color: var(--theme-text); min-width: 60px;">{{#if contact_content.direct_phone_label}}{{contact_content.direct_phone_label}}{{else}}Phone{{/if}}</span>
+                                <a href="tel:{{model.phone}}" style="color: var(--theme-primary); text-decoration: none;">{{model.phone}}</a>
+                            </div>
+                            {{/if}}
+                            
+                            <div class="contact-method" style="display: flex; align-items: center; gap: 0.75rem;">
+                                <span class="label" style="font-weight: 600; color: var(--theme-text); min-width: 60px;">Response</span>
+                                <span style="color: var(--theme-text-subtle);">{{#if contact_content.direct_response_text}}{{contact_content.direct_response_text}}{{else}}I typically respond within 2-4 hours{{/if}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Booking Guidelines Section -->
+                {{#if contact_content.contact_guidelines_visible}}
+                <div class="contact-section">
+                    <div class="card rose-card" style="margin-bottom: 2rem;">
+                        <h3 style="color: var(--theme-primary); margin-bottom: 1.5rem;">{{#if contact_content.guidelines_title}}{{contact_content.guidelines_title}}{{else}}Booking Guidelines{{/if}}</h3>
+                        <ul class="guidelines-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem;">
+                            {{#if contact_content.guideline_1}}
+                            <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="color: var(--theme-primary); margin-top: 0.25rem; flex-shrink: 0;">
+                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                </svg>
+                                <span style="line-height: 1.5;">{{contact_content.guideline_1}}</span>
+                            </li>
+                            {{/if}}
+                            {{#if contact_content.guideline_2}}
+                            <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="color: var(--theme-primary); margin-top: 0.25rem; flex-shrink: 0;">
+                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                </svg>
+                                <span style="line-height: 1.5;">{{contact_content.guideline_2}}</span>
+                            </li>
+                            {{/if}}
+                            {{#if contact_content.guideline_3}}
+                            <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="color: var(--theme-primary); margin-top: 0.25rem; flex-shrink: 0;">
+                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                </svg>
+                                <span style="line-height: 1.5;">{{contact_content.guideline_3}}</span>
+                            </li>
+                            {{/if}}
+                            {{#if contact_content.guideline_4}}
+                            <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="color: var(--theme-primary); margin-top: 0.25rem; flex-shrink: 0;">
+                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                </svg>
+                                <span style="line-height: 1.5;">{{contact_content.guideline_4}}</span>
+                            </li>
+                            {{/if}}
+                        </ul>
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Location & Services Section -->
+                {{#if contact_content.contact_location_visible}}
+                <div class="contact-section">
+                    <div class="card rose-card" style="margin-bottom: 2rem;">
+                        <h3 style="color: var(--theme-primary); margin-bottom: 1.5rem;">{{#if contact_content.location_title}}{{contact_content.location_title}}{{else}}Location & Services{{/if}}</h3>
+                        <ul class="location-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem;">
+                            {{#if contact_content.location_area_text}}
+                            <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="color: var(--theme-primary); margin-top: 0.25rem; flex-shrink: 0;">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                </svg>
+                                <span style="line-height: 1.5;">{{contact_content.location_area_text}}</span>
+                            </li>
+                            {{/if}}
+                            {{#if contact_content.location_services_text}}
+                            <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="color: var(--theme-primary); margin-top: 0.25rem; flex-shrink: 0;">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <span style="line-height: 1.5;">{{contact_content.location_services_text}}</span>
+                            </li>
+                            {{/if}}
+                        </ul>
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Privacy & Discretion Section -->
+                {{#if contact_content.contact_privacy_visible}}
+                <div class="contact-section">
+                    <div class="card rose-card privacy-section" style="background: linear-gradient(135deg, var(--theme-surface) 0%, var(--theme-bg-alt) 100%); border: 2px solid var(--theme-primary); margin-bottom: 2rem;">
+                        <h3 style="color: var(--theme-primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="color: var(--theme-primary);">
+                                <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/>
+                            </svg>
+                            {{#if contact_content.privacy_title}}{{contact_content.privacy_title}}{{else}}Privacy & Discretion{{/if}}
+                        </h3>
+                        <p style="line-height: 1.6; color: var(--theme-text);">{{#if contact_content.privacy_text}}{{contact_content.privacy_text}}{{else}}All communications are handled with the utmost discretion and confidentiality. Your privacy is my priority, and I maintain the highest standards of professionalism in all interactions.{{/if}}</p>
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Form Styling -->
+<style>
+.rose-input:focus {
+    border-color: var(--theme-primary) !important;
+    box-shadow: 0 0 0 3px rgba(185, 28, 92, 0.1) !important;
+    outline: none !important;
+}
+
+.rose-input:hover {
+    border-color: var(--theme-primary) !important;
+}
+
+#rose-contact-form .rose-error-message.show {
+    display: block !important;
+}
+
+#rose-contact-form .rose-input.error {
+    border-color: var(--theme-error) !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    section > div > div {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+    }
+}
+</style>
+
+<!-- Professional Contact Form JavaScript -->
+<script>
+(function() {
+    const form = document.getElementById('rose-contact-form');
+    if (!form) return;
+    
+    // Throttle submissions to prevent spam
+    let lastSubmitTime = 0;
+    const SUBMIT_COOLDOWN = 5000; // 5 seconds
+    
+    // Form submission handling with comprehensive validation
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Throttle submissions
+        const now = Date.now();
+        if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
+            showGlobalError('Please wait before submitting again.');
+            return;
+        }
+        
+        // Get form data
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+        
+        // Check honeypot field (silent fail for bots)
+        if (data.website) {
+            return;
+        }
+        
+        // Clear previous errors
+        clearAllErrors();
+        
+        // Comprehensive validation
+        let hasErrors = false;
+        
+        // Name validation
+        if (!data.name?.trim()) {
+            showFieldError('name', 'Name is required.');
+            hasErrors = true;
+        } else if (data.name.trim().length < 2) {
+            showFieldError('name', 'Name must be at least 2 characters.');
+            hasErrors = true;
+        }
+        
+        // Email validation
+        if (!data.email?.trim()) {
+            showFieldError('email', 'Email is required.');
+            hasErrors = true;
+        } else if (!isValidEmail(data.email)) {
+            showFieldError('email', 'Please enter a valid email address.');
+            hasErrors = true;
+        }
+        
+        // Phone validation (if provided)
+        if (data.phone?.trim() && !isValidPhone(data.phone)) {
+            showFieldError('phone', 'Please enter a valid phone number.');
+            hasErrors = true;
+        }
+        
+        // Date validation (if provided)
+        if (data.date && !isValidDate(data.date)) {
+            showFieldError('date', 'Please enter a valid future date.');
+            hasErrors = true;
+        }
+        
+        // Message validation
+        if (!data.message?.trim()) {
+            showFieldError('message', 'Message is required.');
+            hasErrors = true;
+        } else if (data.message.trim().length < 10) {
+            showFieldError('message', 'Message must be at least 10 characters.');
+            hasErrors = true;
+        } else if (data.message.trim().length > 2000) {
+            showFieldError('message', 'Message must be less than 2000 characters.');
+            hasErrors = true;
+        }
+        
+        if (hasErrors) return;
+        
+        // Show loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const buttonText = submitBtn.querySelector('.button-text');
+        const spinner = submitBtn.querySelector('.spinner');
+        
+        submitBtn.disabled = true;
+        buttonText.style.display = 'none';
+        spinner.style.display = 'inline';
+        
+        // Simulate form submission (replace with actual endpoint)
+        setTimeout(() => {
+            lastSubmitTime = now;
+            
+            // Reset button state
+            submitBtn.disabled = false;
+            buttonText.style.display = 'inline';
+            spinner.style.display = 'none';
+            
+            // Show success state
+            showSuccessMessage();
+            
+            // Reset form
+            this.reset();
+        }, 2000);
+    });
+    
+    // Real-time validation on field blur
+    form.querySelectorAll('.rose-input').forEach(input => {
+        input.addEventListener('blur', function() {
+            validateSingleField(this);
+        });
+    });
+    
+    // Validation helper functions
+    function validateSingleField(field) {
+        const value = field.value.trim();
+        const name = field.name;
+        
+        clearFieldError(name);
+        
+        if (field.required && !value) {
+            showFieldError(name, 'This field is required.');
+            return false;
+        }
+        
+        switch (name) {
+            case 'name':
+                if (value && value.length < 2) {
+                    showFieldError(name, 'Name must be at least 2 characters.');
+                    return false;
+                }
+                break;
+            case 'email':
+                if (value && !isValidEmail(value)) {
+                    showFieldError(name, 'Please enter a valid email address.');
+                    return false;
+                }
+                break;
+            case 'phone':
+                if (value && !isValidPhone(value)) {
+                    showFieldError(name, 'Please enter a valid phone number.');
+                    return false;
+                }
+                break;
+            case 'date':
+                if (value && !isValidDate(value)) {
+                    showFieldError(name, 'Please enter a valid future date.');
+                    return false;
+                }
+                break;
+            case 'message':
+                if (value && value.length < 10) {
+                    showFieldError(name, 'Message must be at least 10 characters.');
+                    return false;
+                } else if (value && value.length > 2000) {
+                    showFieldError(name, 'Message must be less than 2000 characters.');
+                    return false;
+                }
+                break;
+        }
+        
+        return true;
+    }
+    
+    // Error handling functions
+    function showFieldError(fieldName, message) {
+        const field = form.querySelector(`[name="${fieldName}"]`);
+        const errorDiv = field.parentElement.querySelector('.error-message');
+        
+        if (field && errorDiv) {
+            field.style.borderColor = 'var(--theme-error)';
+            field.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+    }
+    
+    function clearFieldError(fieldName) {
+        const field = form.querySelector(`[name="${fieldName}"]`);
+        const errorDiv = field?.parentElement.querySelector('.error-message');
+        
+        if (field) {
+            field.style.borderColor = 'var(--theme-border)';
+            field.style.boxShadow = 'none';
+        }
+        if (errorDiv) {
+            errorDiv.style.display = 'none';
+        }
+    }
+    
+    function clearAllErrors() {
+        form.querySelectorAll('.rose-input').forEach(field => {
+            field.style.borderColor = 'var(--theme-border)';
+            field.style.boxShadow = 'none';
+        });
+        form.querySelectorAll('.error-message').forEach(error => {
+            error.style.display = 'none';
+        });
+    }
+    
+    function showGlobalError(message) {
+        // Create or update global error message
+        let errorDiv = form.querySelector('.global-error');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.className = 'global-error';
+            errorDiv.style.cssText = 'background: var(--theme-error); color: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; text-align: center;';
+            form.insertBefore(errorDiv, form.firstChild);
+        }
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+    }
+    
+    function showSuccessMessage() {
+        form.innerHTML = `
+            <div style="text-align: center; padding: 3rem 2rem; color: var(--theme-success);">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" style="margin-bottom: 1.5rem; color: var(--theme-success);">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+                <h3 style="margin-bottom: 1rem; color: var(--theme-primary);">Message Sent Successfully!</h3>
+                <p style="color: var(--theme-text-subtle); line-height: 1.6;">
+                    Thank you for reaching out. I'll get back to you soon.
+                </p>
+            </div>
+        `;
+    }
+    
+    // Validation utility functions
+    function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+    
+    function isValidPhone(phone) {
+        // Basic phone validation - allows various formats
+        const cleaned = phone.replace(/\D/g, '');
+        return cleaned.length >= 10 && cleaned.length <= 15;
+    }
+    
+    function isValidDate(dateString) {
+        const date = new Date(dateString);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return date >= today && !isNaN(date.getTime());
+    }
+})();
+</script>

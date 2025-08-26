@@ -45,51 +45,54 @@
     </script>
     <style>
         :root {
-            /* Rose Garden Color Palette */
-            --rose-deep: #b91c1c; /* Deep rose red */
-            --rose-primary: #dc2626; /* Vibrant rose */
-            --rose-light: #fecaca; /* Soft blush pink */
-            --rose-blush: #fef2f2; /* Lightest rose tint */
-            --rose-white: #fefefe; /* Pure white */
-            --rose-gold: #d4af37; /* Elegant gold accent */
-            --rose-bronze: #cd7f32; /* Warm bronze */
-            --rose-text: #881337; /* Deep rose text */
-            --rose-muted: #9f1239; /* Muted rose */
-            --rose-shadow: rgba(185, 28, 28, 0.15); /* Soft rose shadow */
-            --rose-gradient: linear-gradient(135deg, #fef2f2 0%, #fecaca 50%, #fbb6ce 100%);
-            --rose-dark-gradient: linear-gradient(135deg, #881337 0%, #be185d 50%, #ec4899 100%);
+            /* Rose Garden Color Palette (DB-driven) */
+            --rose-deep: {{theme.colors.rose_deep}}{{#unless theme.colors.rose_deep}}#b91c1c{{/unless}};
+            --rose-primary: {{theme.colors.rose_primary}}{{#unless theme.colors.rose_primary}}#dc2626{{/unless}};
+            --rose-light: {{theme.colors.rose_light}}{{#unless theme.colors.rose_light}}#fecaca{{/unless}};
+            --rose-blush: {{theme.colors.rose_blush}}{{#unless theme.colors.rose_blush}}#fef2f2{{/unless}};
+            --rose-white: {{theme.colors.rose_white}}{{#unless theme.colors.rose_white}}#fefefe{{/unless}};
+            --rose-gold: {{theme.colors.rose_gold}}{{#unless theme.colors.rose_gold}}#d4af37{{/unless}};
+            --rose-bronze: {{theme.colors.rose_bronze}}{{#unless theme.colors.rose_bronze}}#cd7f32{{/unless}};
+            --rose-text: {{theme.colors.rose_text}}{{#unless theme.colors.rose_text}}#881337{{/unless}};
+            --rose-muted: {{theme.colors.rose_muted}}{{#unless theme.colors.rose_muted}}#9f1239{{/unless}};
+            --rose-shadow: rgba(185, 28, 28, 0.15);
+            --rose-gradient: linear-gradient(135deg, var(--rose-blush) 0%, var(--rose-light) 50%, color-mix(in srgb, var(--rose-light), #fbb6ce 40%) 100%);
+            --rose-dark-gradient: linear-gradient(135deg, var(--rose-text) 0%, color-mix(in srgb, var(--rose-text), var(--rose-primary) 40%) 50%, color-mix(in srgb, var(--rose-primary), #ec4899 50%) 100%);
+
+            /* Universal Theme Variables - canonical mapping */
+            --theme-bg-primary: {{theme.colors.bg}}{{#unless theme.colors.bg}}var(--rose-blush){{/unless}};
+            --theme-bg-secondary: {{theme.colors.bg_light}}{{#unless theme.colors.bg_light}}var(--rose-light){{/unless}};
+            --theme-bg-tertiary: {{theme.colors.surface}}{{#unless theme.colors.surface}}var(--rose-white){{/unless}};
+            --theme-bg-light: {{theme.colors.bg_light}}{{#unless theme.colors.bg_light}}#f9fafb{{/unless}};
+            --theme-bg-surface: {{theme.colors.surface}}{{#unless theme.colors.surface}}var(--rose-light){{/unless}};
+
+            --theme-text-primary: {{theme.colors.text}}{{#unless theme.colors.text}}var(--rose-text){{/unless}};
+            --theme-text-secondary: {{theme.colors.text_secondary}}{{#unless theme.colors.text_secondary}}var(--rose-muted){{/unless}};
+            --theme-text-muted: {{theme.colors.text_muted}}{{#unless theme.colors.text_muted}}#6b7280{{/unless}};
+            --theme-text-subtle: {{theme.colors.text_subtle}}{{#unless theme.colors.text_subtle}}#9ca3af{{/unless}};
+            --theme-text-inverted: {{theme.colors.text_inverted}}{{#unless theme.colors.text_inverted}}#fefefe{{/unless}};
+
+            --theme-border-primary: {{theme.colors.border}}{{#unless theme.colors.border}}var(--rose-light){{/unless}};
+            --theme-border-light: {{theme.colors.border_light}}{{#unless theme.colors.border_light}}#fee2e2{{/unless}};
+            --theme-border-subtle: {{theme.colors.border_subtle}}{{#unless theme.colors.border_subtle}}#f3f4f6{{/unless}};
+
+            --theme-accent: {{theme.colors.accent}}{{#unless theme.colors.accent}}var(--rose-primary){{/unless}};
+            --theme-accent-hover: {{theme.colors.accent_hover}}{{#unless theme.colors.accent_hover}}var(--rose-deep){{/unless}};
+            --theme-accent-light: {{theme.colors.accent_light}}{{#unless theme.colors.accent_light}}#f87171{{/unless}};
+            --theme-success: {{theme.colors.success}}{{#unless theme.colors.success}}#22c55e{{/unless}};
+            --theme-warning: {{theme.colors.warning}}{{#unless theme.colors.warning}}#f59e0b{{/unless}};
+            --theme-error: {{theme.colors.error}}{{#unless theme.colors.error}}#ef4444{{/unless}};
             
-            /* Legacy compatibility */
-            --luxury-accent: var(--rose-gold);
-            --luxury-text: var(--rose-text);
-            --luxury-muted: var(--rose-muted);
-            --luxury-background: var(--rose-blush);
-            --luxury-primary: var(--rose-primary);
-            --luxury-secondary: var(--rose-deep);
-            
-            /* Universal Theme Variables - Rose Theme */
-            --theme-bg-primary: #fef2f2;          /* Lightest rose background */
-            --theme-bg-secondary: #fecaca;        /* Light rose background */
-            --theme-bg-tertiary: #fefefe;         /* Card backgrounds (pure white) */
-            --theme-bg-light: #f9fafb;            /* Lighter elements */
-            --theme-bg-surface: #fecaca;          /* Surface elements */
-            
-            --theme-text-primary: #881337;        /* Primary text (deep rose) */
-            --theme-text-secondary: #9f1239;      /* Secondary text (muted rose) */
-            --theme-text-muted: #6b7280;          /* Muted text (neutral gray) */
-            --theme-text-subtle: #9ca3af;         /* Subtle text (light gray) */
-            --theme-text-inverted: #fefefe;       /* Inverted text (on dark backgrounds) */
-            
-            --theme-border-primary: #fecaca;      /* Rose borders */
-            --theme-border-light: #fee2e2;        /* Light rose borders */
-            --theme-border-subtle: #f3f4f6;       /* Subtle borders */
-            
-            --theme-accent: #dc2626;              /* Rose accent */
-            --theme-accent-hover: #b91c1c;        /* Rose hover */
-            --theme-accent-light: #f87171;        /* Light accent */
-            --theme-success: #22c55e;             /* Success green */
-            --theme-warning: #f59e0b;             /* Warning amber */
-            --theme-error: #ef4444;               /* Error red */
+            /* Additional canonical utilities */
+            --theme-gradient: linear-gradient(135deg, var(--rose-primary) 0%, var(--rose-light) 50%, color-mix(in srgb, var(--rose-primary), var(--rose-light) 40%) 100%);
+            --theme-black-rgb: 0, 0, 0;
+            --theme-white-rgb: 255, 255, 255;
+            --theme-shadow: rgba(var(--theme-black-rgb), 0.1);
+            --theme-shadow-hover: rgba(var(--theme-black-rgb), 0.2);
+            --theme-shadow-strong: rgba(var(--theme-black-rgb), 0.8);
+            --theme-backdrop: rgba(var(--theme-black-rgb), 0.95);
+            --theme-bg-overlay: rgba(var(--theme-black-rgb), 0.05);
+            --theme-hero-overlay: rgba(var(--theme-black-rgb), 0.6);
         }
         
         /* Luxury Typography System */

@@ -416,18 +416,18 @@
 
 <!-- Luxury Contact Page Styles -->
 <style>
-/* Luxury Color Palette */
+/* Luxury Color Palette using canonical tokens */
 :root {
-    --luxury-gold: #d4af37;
-    --luxury-gold-light: #f7e98e;
-    --luxury-gold-dark: #b8941f;
-    --luxury-rose-gold: #e8b4b8;
-    --luxury-deep-purple: #2d1b3d;
-    --luxury-burgundy: #8b1538;
-    --luxury-champagne: #f7e7ce;
-    --luxury-black: #1a1a1a;
-    --luxury-white: #ffffff;
-    --luxury-marble: #f8f9fa;
+    --luxury-gold: var(--theme-accent);
+    --luxury-gold-light: var(--theme-accent-light);
+    --luxury-gold-dark: var(--theme-accent-hover);
+    --luxury-rose-gold: var(--theme-accent-light);
+    --luxury-deep-purple: var(--theme-bg-tertiary);
+    --luxury-burgundy: var(--theme-error);
+    --luxury-champagne: var(--theme-text-primary);
+    --luxury-black: var(--theme-bg-primary);
+    --luxury-white: var(--theme-text-primary);
+    --luxury-marble: var(--theme-bg-secondary);
 }
 
 /* Contact Header Styling */
@@ -446,8 +446,8 @@
     width: 100%;
     height: 100%;
     background: 
-        radial-gradient(ellipse at 30% 20%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
-        radial-gradient(ellipse at 70% 80%, rgba(232, 180, 184, 0.1) 0%, transparent 50%);
+        radial-gradient(ellipse at 30% 20%, var(--theme-accent) 0%, transparent 50%);
+        radial-gradient(ellipse at 70% 80%, var(--theme-accent-light) 0%, transparent 50%);
     filter: blur(40px);
 }
 
@@ -509,7 +509,7 @@
     font-size: 4rem;
     color: var(--luxury-gold);
     margin-bottom: 2rem;
-    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.4));
+    filter: drop-shadow(0 0 20px var(--card-shadow));
 }
 
 .luxury-contact-title {
@@ -521,7 +521,7 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 0 0 50px rgba(212, 175, 55, 0.3);
+    text-shadow: 0 0 50px var(--card-shadow);
 }
 
 .luxury-contact-subtitle {
@@ -536,7 +536,7 @@
 
 .luxury-contact-description {
     font-size: 1.2rem;
-    color: rgba(247, 231, 206, 0.9);
+    color: var(--text-light); filter: opacity(0.9);
     text-align: center;
     font-weight: 300;
     line-height: 1.6;
@@ -546,7 +546,7 @@
 
 .luxury-contact-subtext {
     font-size: 1rem;
-    color: rgba(247, 231, 206, 0.8);
+    color: var(--text-light); filter: opacity(0.8);
     text-align: center;
     font-style: italic;
     max-width: 600px;
@@ -563,8 +563,8 @@
 /* Message Chamber */
 .luxury-message-chamber {
     position: relative;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-    border: 2px solid rgba(212, 175, 55, 0.2);
+    background: linear-gradient(145deg, var(--text-light) 0%, var(--text-light) 100%); filter: opacity(0.03);
+    border: 2px solid var(--theme-accent); filter: opacity(0.2);
     border-radius: 30px;
     overflow: hidden;
     backdrop-filter: blur(10px);
@@ -579,14 +579,14 @@
     height: 100px;
     background: linear-gradient(180deg, var(--luxury-gold) 0%, var(--luxury-gold-dark) 100%);
     border-radius: 50% 50% 0 0;
-    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 10px 30px var(--card-shadow);
 }
 
 .luxury-chamber-header-contact {
     position: relative;
     text-align: center;
     padding: 4rem 2rem 2rem;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, transparent 100%);
+    background: linear-gradient(135deg, var(--theme-accent) 0%, transparent 100%); filter: opacity(0.05);
 }
 
 .luxury-header-crown-contact {
@@ -600,7 +600,7 @@
     color: var(--luxury-black);
     font-size: 2rem;
     margin-bottom: 1.5rem;
-    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 10px 25px var(--card-shadow);
     animation: luxuryContactPulse 3s infinite ease-in-out;
 }
 
@@ -662,8 +662,8 @@
 .luxury-royal-input {
     width: 100%;
     padding: 1.25rem 1.5rem;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-    border: 2px solid rgba(212, 175, 55, 0.3);
+    background: linear-gradient(145deg, var(--text-light) 0%, var(--text-light) 100%); filter: opacity(0.05);
+    border: 2px solid var(--theme-accent); filter: opacity(0.3);
     border-radius: 15px;
     color: var(--luxury-white);
     font-size: 1.1rem;
@@ -674,12 +674,12 @@
 .luxury-royal-input:focus {
     outline: none;
     border-color: var(--luxury-gold);
-    box-shadow: 0 0 25px rgba(212, 175, 55, 0.2);
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+    box-shadow: 0 0 25px var(--card-shadow);
+    background: linear-gradient(145deg, var(--text-light) 0%, var(--text-light) 100%); filter: opacity(0.08);
 }
 
 .luxury-royal-input::placeholder {
-    color: rgba(247, 231, 206, 0.6);
+    color: var(--theme-text-primary); filter: opacity(0.6);
     font-style: italic;
 }
 
@@ -702,7 +702,7 @@
     position: relative;
     width: 100%;
     padding: 1.5rem 2rem;
-    background: linear-gradient(45deg, var(--luxury-gold) 0%, #ffdc73 50%, var(--luxury-rose-gold) 100%);
+    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--accent-light) 50%, var(--luxury-rose-gold) 100%);
     border: none;
     border-radius: 25px;
     color: var(--luxury-black);
@@ -712,14 +712,16 @@
     letter-spacing: 1px;
     cursor: pointer;
     overflow: hidden;
-    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 15px 35px var(--theme-accent);
+    filter: opacity(0.4);
     transition: all 0.3s ease;
     margin-top: 1rem;
 }
 
 .luxury-royal-submit-btn:hover {
     transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 20px 45px rgba(212, 175, 55, 0.5);
+    box-shadow: 0 20px 45px var(--theme-accent);
+    filter: opacity(0.5);
 }
 
 .luxury-btn-text {
@@ -749,7 +751,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    background: linear-gradient(90deg, transparent, var(--theme-text-primary), transparent); filter: opacity(0.6);
     transition: left 0.6s ease;
 }
 
@@ -769,8 +771,8 @@
 .luxury-location-palace,
 .luxury-privacy-palace {
     position: relative;
-    background: linear-gradient(145deg, rgba(212, 175, 55, 0.05) 0%, rgba(232, 180, 184, 0.05) 100%);
-    border: 2px solid rgba(212, 175, 55, 0.15);
+    background: linear-gradient(145deg, var(--theme-accent) 0%, var(--theme-accent-light) 100%); filter: opacity(0.05);
+    border: 2px solid var(--theme-accent); filter: opacity(0.15);
     border-radius: 25px;
     overflow: hidden;
     backdrop-filter: blur(10px);
@@ -785,7 +787,7 @@
     height: 60px;
     background: linear-gradient(180deg, var(--luxury-gold) 0%, var(--luxury-gold-dark) 100%);
     border-radius: 50% 50% 0 0;
-    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 8px 20px var(--card-shadow);
 }
 
 .luxury-palace-header {
@@ -804,7 +806,7 @@
     color: var(--luxury-black);
     font-size: 1.5rem;
     margin-bottom: 1rem;
-    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 8px 20px var(--card-shadow);
 }
 
 .luxury-palace-title {
@@ -830,15 +832,15 @@
     display: flex;
     align-items: center;
     padding: 1.5rem;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    background: linear-gradient(145deg, var(--text-light) 0%, var(--text-light) 100%); filter: opacity(0.05);
     border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--theme-text-primary); filter: opacity(0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .luxury-contact-item:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.15);
+    box-shadow: 0 10px 25px var(--card-shadow);
 }
 
 .luxury-contact-icon {
@@ -852,7 +854,7 @@
     margin-right: 1.5rem;
     font-size: 1.2rem;
     color: var(--luxury-black);
-    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 5px 15px var(--card-shadow);
 }
 
 .luxury-contact-info {
@@ -894,9 +896,9 @@
     gap: 1rem;
     padding: 1rem;
     margin-bottom: 1rem;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+    background: linear-gradient(145deg, var(--text-light) 0%, var(--text-light) 100%); filter: opacity(0.03);
     border-radius: 10px;
-    border: 1px solid rgba(212, 175, 55, 0.1);
+    border: 1px solid var(--theme-accent); filter: opacity(0.1);
     transition: transform 0.3s ease;
 }
 
@@ -974,7 +976,7 @@
 .luxury-column-contact {
     width: 2px;
     height: 100%;
-    background: linear-gradient(180deg, transparent 0%, rgba(212, 175, 55, 0.1) 50%, transparent 100%);
+    background: linear-gradient(180deg, transparent 0%, var(--theme-accent) 50%, transparent 100%); filter: opacity(0.1);
     animation: luxuryContactColumnGlow 4s ease-in-out infinite alternate;
 }
 
@@ -995,8 +997,8 @@
     width: 100%;
     height: 100%;
     background: 
-        radial-gradient(ellipse at 25% 25%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
-        radial-gradient(ellipse at 75% 75%, rgba(232, 180, 184, 0.05) 0%, transparent 50%);
+        radial-gradient(ellipse at 25% 25%, var(--theme-accent) 0%, transparent 50%);
+        radial-gradient(ellipse at 75% 75%, var(--theme-accent-light) 0%, transparent 50%);
 }
 
 .luxury-cta-content-imperial-contact {
@@ -1008,7 +1010,7 @@
     font-size: 3rem;
     color: var(--luxury-gold);
     margin-bottom: 2rem;
-    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.4));
+    filter: drop-shadow(0 0 20px var(--card-shadow));
 }
 
 .luxury-cta-title-imperial-contact {
@@ -1019,7 +1021,7 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 0 0 50px rgba(212, 175, 55, 0.3);
+    text-shadow: 0 0 50px var(--card-shadow);
 }
 
 .luxury-cta-subtitle-imperial-contact {
@@ -1059,28 +1061,30 @@
 }
 
 .luxury-cta-btn-primary-contact {
-    background: linear-gradient(45deg, var(--luxury-gold) 0%, #ffdc73 50%, var(--luxury-rose-gold) 100%);
+    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--accent-light) 50%, var(--luxury-rose-gold) 100%);
     color: var(--luxury-black);
-    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 15px 35px var(--theme-accent);
+    filter: opacity(0.4);
 }
 
 .luxury-cta-btn-primary-contact:hover {
     transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 20px 45px rgba(212, 175, 55, 0.5);
+    box-shadow: 0 20px 45px var(--theme-accent);
+    filter: opacity(0.5);
 }
 
 .luxury-cta-btn-secondary-contact {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
-    border: 2px solid rgba(212, 175, 55, 0.5);
+    background: linear-gradient(145deg, var(--text-light) 0%, var(--text-light) 100%); filter: opacity(0.08);
+    border: 2px solid var(--theme-accent); filter: opacity(0.5);
     color: var(--luxury-white);
     backdrop-filter: blur(10px);
 }
 
 .luxury-cta-btn-secondary-contact:hover {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 100%);
-    border-color: var(--luxury-gold);
+    background: linear-gradient(145deg, var(--text-light) 0%, var(--text-light) 100%); filter: opacity(0.12);
+    border-color: var(--theme-accent);
     transform: translateY(-3px);
-    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 15px 35px var(--card-shadow);
 }
 
 .luxury-btn-text-contact {
@@ -1100,13 +1104,20 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    background: linear-gradient(90deg, transparent, var(--theme-text-primary), transparent); filter: opacity(0.6);
     transition: left 0.6s ease;
 }
 
 .luxury-cta-btn-primary-contact:hover .luxury-btn-shimmer-contact {
     left: 100%;
 }
+
+/* --- Remove overlays/dimming on Contact page --- */
+.luxury-header-palace-bg { filter: none !important; opacity: 1 !important; }
+.luxury-cta-imperial-bg-contact, .luxury-imperial-pattern-contact { display: none !important; }
+.luxury-btn-shimmer-contact { display: none !important; }
+/* Reduce glassy form background tint */
+.luxury-royal-input, .luxury-contact-item { filter: none !important; }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
@@ -1303,7 +1314,8 @@ function showRoyalAlert(message, type) {
         background: linear-gradient(45deg, ${type === 'success' ? 'var(--luxury-gold)' : 'var(--luxury-burgundy)'} 0%, ${type === 'success' ? 'var(--luxury-gold-light)' : 'var(--luxury-rose-gold)'} 100%);
         color: var(--luxury-black);
         border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+        box-shadow: 0 10px 30px var(--accent);
+        filter: opacity(0.4);
         z-index: 10000;
         display: flex;
         align-items: center;

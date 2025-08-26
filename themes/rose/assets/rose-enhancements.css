@@ -1,18 +1,18 @@
 /* Rose Theme Custom Enhancements */
 /* Custom decorative elements that enhance the universal theme */
 
-/* Rose Color System Override */
+/* Rose Color System Override (DB-driven fallbacks to theme vars) */
 :root {
-    --rose-deep: #991b1b;
-    --rose-primary: #dc2626;
-    --rose-accent: #e11d48;
-    --rose-light: #fda4af;
-    --rose-pale: #fecaca;
-    --rose-blush: #fef2f2;
-    --rose-gold: #d4af37;
-    --rose-text-dark: #7f1d1d;
-    --rose-text-medium: #991b1b;
-    --rose-white: #ffffff;
+    --rose-deep: var(--theme-accent-hover, #991b1b);
+    --rose-primary: var(--theme-accent, #dc2626);
+    --rose-accent: var(--theme-accent, #e11d48);
+    --rose-light: var(--theme-bg-secondary, #fda4af);
+    --rose-pale: var(--theme-bg-secondary, #fecaca);
+    --rose-blush: var(--theme-bg-primary, #fef2f2);
+    --rose-gold: var(--theme-accent-light, #d4af37);
+    --rose-text-dark: var(--theme-text-primary, #7f1d1d);
+    --rose-text-medium: var(--theme-text-secondary, #991b1b);
+    --rose-white: var(--theme-text-inverted, #ffffff);
 }
 
 /* Rose Decorative Elements */
@@ -28,7 +28,7 @@
     position: relative;
     border-radius: 9999px;
     background:
-        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.0) 35%),
+        radial-gradient(circle at 30% 30%, rgba(var(--theme-text-inverted-rgb, 255,255,255),0.9) 0%, rgba(255,255,255,0.0) 35%),
         radial-gradient(circle at 70% 70%, color-mix(in srgb, var(--theme-accent), transparent 65%) 0%, transparent 60%),
         linear-gradient(135deg, color-mix(in srgb, var(--theme-accent), #ffffff 20%), var(--theme-accent));
     box-shadow:
@@ -80,8 +80,8 @@
     height: 40px;
     background: radial-gradient(circle at center, 
         var(--rose-accent) 0%, 
-        color-mix(in srgb, var(--rose-accent), #ff69b4 20%) 40%,
-        color-mix(in srgb, var(--rose-accent), #8b4513 10%) 100%);
+        color-mix(in srgb, var(--rose-accent), var(--theme-accent-light, #ff69b4) 20%) 40%,
+        color-mix(in srgb, var(--rose-accent), var(--theme-text, #8b4513) 10%) 100%);
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
     position: relative;
     animation: rose-bloom 3s ease-in-out infinite alternate;
@@ -94,7 +94,7 @@
     width: 35px;
     height: 35px;
     background: radial-gradient(ellipse at center, 
-        color-mix(in srgb, var(--rose-accent), white 30%) 0%, 
+        color-mix(in srgb, var(--rose-accent), var(--rose-white, #fff) 30%) 0%, 
         var(--rose-accent) 70%);
     border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
     top: -5px;
@@ -108,7 +108,7 @@
     width: 25px;
     height: 25px;
     background: radial-gradient(circle, 
-        color-mix(in srgb, var(--rose-accent), white 50%) 0%, 
+        color-mix(in srgb, var(--rose-accent), var(--rose-white, #fff) 50%) 0%, 
         var(--rose-accent) 100%);
     border-radius: 50%;
     top: 7px;
@@ -197,7 +197,7 @@
                     var(--rose-primary) 75%,
                     var(--rose-accent) 100%) border-box;
     border-radius: 16px;
-    box-shadow: 0 8px 25px rgba(225, 29, 72, 0.15);
+    box-shadow: 0 8px 25px color-mix(in srgb, var(--theme-accent), transparent 85%);
 }
 
 .rose-vine-border::before {
@@ -275,7 +275,7 @@
     position: relative;
     background: linear-gradient(135deg, 
         var(--theme-accent) 0%, 
-        color-mix(in srgb, var(--theme-accent), #ff69b4 15%) 50%,
+        color-mix(in srgb, var(--theme-accent), var(--theme-accent-light, #ff69b4) 15%) 50%,
         var(--theme-accent) 100%);
     box-shadow: 0 4px 15px color-mix(in srgb, var(--theme-accent), transparent 60%);
     transition: all 0.3s ease;
@@ -316,7 +316,7 @@
         var(--rose-white) 0%,
         color-mix(in srgb, var(--rose-white), var(--rose-blush) 50%) 100%);
     border: 2px solid color-mix(in srgb, var(--rose-accent), transparent 80%);
-    box-shadow: 0 8px 32px rgba(225, 29, 72, 0.12), 0 2px 8px rgba(225, 29, 72, 0.08);
+    box-shadow: 0 8px 32px color-mix(in srgb, var(--theme-accent), transparent 88%), 0 2px 8px color-mix(in srgb, var(--theme-accent), transparent 92%);
 }
 
 .theme-card.rose-enhanced::before {
@@ -344,7 +344,7 @@
 
 .theme-card.rose-enhanced:hover {
     transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 16px 48px rgba(225, 29, 72, 0.2), 0 4px 16px rgba(225, 29, 72, 0.15);
+    box-shadow: 0 16px 48px color-mix(in srgb, var(--theme-accent), transparent 80%), 0 4px 16px color-mix(in srgb, var(--theme-accent), transparent 85%);
     border-color: var(--rose-accent);
 }
 

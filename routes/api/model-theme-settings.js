@@ -47,33 +47,39 @@ router.get('/:slug', async (req, res) => {
       return res.fail(404, 'Model not found');
     }
 
-    // Get model's current theme settings
+    // Get model's current theme and color palette settings
     const themeRows = await db.query(`
-      SELECT theme_set_id, custom_color_scheme 
-      FROM model_theme_sets 
-      WHERE model_id = ? 
-      ORDER BY applied_at DESC 
-      LIMIT 1
+      SELECT 
+        m.theme_set_id, 
+        m.active_color_palette_id,
+        ts.name as theme_name,
+        ts.display_name as theme_display_name,
+        cp.name as palette_name,
+        cp.display_name as palette_display_name,
+        cp.is_system_palette
+      FROM models m
+      JOIN theme_sets ts ON m.theme_set_id = ts.id
+      LEFT JOIN color_palettes cp ON m.active_color_palette_id = cp.id
+      WHERE m.id = ?
     `, [model.id]);
 
     let themeData = {
       theme_set_id: null,
-      custom_colors: {}
+      theme_name: null,
+      active_color_palette_id: null,
+      palette_name: null,
+      is_custom_palette: false
     };
 
     if (themeRows && themeRows.length > 0) {
       const row = themeRows[0];
-      themeData.theme_set_id = row.theme_set_id;
-      
-      // Parse custom_color_scheme JSON if it exists
-      try {
-        themeData.custom_colors = row.custom_color_scheme ? 
-          (typeof row.custom_color_scheme === 'string' ? JSON.parse(row.custom_color_scheme) : row.custom_color_scheme) 
-          : {};
-      } catch (e) {
-        logger.warn('Failed to parse custom_color_scheme JSON', { model_id: model.id, error: e.message });
-        themeData.custom_colors = {};
-      }
+      themeData = {
+        theme_set_id: row.theme_set_id,
+        theme_name: row.theme_display_name || row.theme_name,
+        active_color_palette_id: row.active_color_palette_id,
+        palette_name: row.palette_display_name || row.palette_name,
+        is_custom_palette: !row.is_system_palette
+      };
     }
 
     return res.success({

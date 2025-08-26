@@ -613,11 +613,20 @@ document.addEventListener('DOMContentLoaded', function() {
             this.showLoading();
             
             try {
+                // Load content_templates data for header fields
                 const response = await fetch(`/api/model-content/${this.currentModelSlug}/pages/5`);
                 const data = await response.json();
                 const items = (data && (data.items || (data.data && data.data.items))) || [];
                 const content = {};
                 items.forEach(i => content[i.content_key] = i.content_value);
+                
+                // Load page_published from model_rates_page_content
+                const pageContentResponse = await fetch(`/api/model-rates/${this.currentModelSlug}/page-content`);
+                const pageContentData = await pageContentResponse.json();
+                if (pageContentData.success && pageContentData.data) {
+                    content.page_published = pageContentData.data.page_published;
+                }
+                
                 this.populateHeader(content);
             } catch (error) {
                 console.error('Error loading rates page content:', error);
@@ -714,7 +723,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const savePublish = async () => {
                     const value = publishToggle.checked ? 1 : 0;
                     this.updatePublishStatus(publishToggle.checked);
-                    await fetch(`/api/model-content/${this.currentModelSlug}/pages/5/page_published`, {
+                    await fetch(`/api/model-rates/${this.currentModelSlug}/page-content/page_published`, {
                         method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content_value: value })
                     });
                 };

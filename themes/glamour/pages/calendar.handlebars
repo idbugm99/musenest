@@ -133,14 +133,14 @@
 <style>
 /* Refined Glamour Theme Variables */
 :root {
-    --glamour-gold: #EBCB8B;
-    --glamour-rose-gold: #D08770;
-    --glamour-deep-purple: #171228;
-    --glamour-neutral: #1E1632;
-    --glamour-champagne: #F5F2EA;
-    --glamour-black: #0F0F0F;
-    --glamour-white: #FEFEFE;
-    --glamour-card: #252032;
+    --glamour-gold: {{theme.colors.accent}};
+    --glamour-rose-gold: {{theme.colors.secondary}};
+    --glamour-deep-purple: {{theme.colors.bg-dark}};
+    --glamour-neutral: {{theme.colors.surface}};
+    --glamour-champagne: {{theme.colors.text-light}};
+    --glamour-black: {{theme.colors.text-dark}};
+    --glamour-white: {{theme.colors.text-light}};
+    --glamour-card: {{theme.colors.card-bg}};
     --glamour-border: rgba(235, 203, 139, 0.15);
 }
 
@@ -148,7 +148,7 @@
 .glamour-calendar-hero {
     position: relative;
     padding: 8rem 0 6rem;
-    background: linear-gradient(135deg, #1a0d2e 0%, #2d1b3d 50%, #8b1538 100%);
+    background: linear-gradient(135deg, {{theme.colors.bg-dark}} 0%, {{theme.colors.card-bg}} 50%, {{theme.colors.primary}} 100%);
     overflow: hidden;
 }
 
@@ -374,10 +374,10 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.glamour-legend-available { background-color: #22C55E; }
-.glamour-legend-travel { background-color: #3B82F6; }
-.glamour-legend-vacation { background-color: #E9C77A; }
-.glamour-legend-unavailable { background-color: #A3A3A3; }
+.glamour-legend-available { background-color: {{theme.colors.success}}; }
+.glamour-legend-travel { background-color: {{theme.colors.primary}}; }
+.glamour-legend-vacation { background-color: {{theme.colors.warning}}; }
+.glamour-legend-unavailable { background-color: {{theme.colors.disabled-text}}; }
 
 /* Call to Action */
 .glamour-calendar-cta {
@@ -449,7 +449,7 @@
 }
 
 .glamour-btn-gold:hover {
-    background: #D4B071;
+    background: {{theme.colors.btn-bg-hover}};
     transform: translateY(-1px);
     box-shadow: 0 8px 24px rgba(235, 203, 139, 0.3);
     text-decoration: none;
@@ -538,23 +538,23 @@
 
 /* Event Bar Colors */
 .calendar-event-available {
-    background-color: #22C55E !important;
+    background-color: {{theme.colors.success}} !important;
     color: white !important;
 }
 
 .calendar-event-travel {
-    background-color: #3B82F6 !important;
+    background-color: {{theme.colors.primary}} !important;
     color: white !important;
 }
 
 .calendar-event-vacation {
-    background-color: #E9C77A !important;
-    color: #2B203F !important;
+    background-color: {{theme.colors.warning}} !important;
+    color: {{theme.colors.text-dark}} !important;
 }
 
 .calendar-event-unavailable {
-    background-color: #A3A3A3 !important;
-    color: #2B203F !important;
+    background-color: {{theme.colors.disabled-text}} !important;
+    color: {{theme.colors.text-dark}} !important;
 }
 
 /* List View */
@@ -671,17 +671,17 @@
     
     // Event color mapping
     const eventColors = {
-        'available': '#22C55E',
-        'travel': '#3B82F6', 
-        'vacation': '#E9C77A',
-        'unavailable': '#A3A3A3'
+        'available': '{{theme.colors.success}}',
+        'travel': '{{theme.colors.primary}}', 
+        'vacation': '{{theme.colors.warning}}',
+        'unavailable': '{{theme.colors.disabled-text}}'
     };
     
     const eventTextColors = {
         'available': 'white',
         'travel': 'white',
-        'vacation': '#2B203F', 
-        'unavailable': '#2B203F'
+        'vacation': '{{theme.colors.text-dark}}', 
+        'unavailable': '{{theme.colors.text-dark}}'
     };
     
     async function loadCalendar(year = currentYear, month = currentMonth) {

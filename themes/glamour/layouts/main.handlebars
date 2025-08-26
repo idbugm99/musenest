@@ -24,35 +24,35 @@
     <style>
         /* Glamour Theme Colors */
         :root {
-            --glamour-primary: #14101D;
-            --glamour-secondary: #221A31;
-            --glamour-accent: #E9C77A;
-            --glamour-text: #F3EFE7;
-            --glamour-background: #14101D;
+            --glamour-primary: {{theme.colors.background}};
+            --glamour-secondary: {{theme.colors.surface}};
+            --glamour-accent: {{theme.colors.accent}};
+            --glamour-text: {{theme.colors.text-light}};
+            --glamour-background: {{theme.colors.background}};
             
-            /* Universal Theme Variables - Glamour Theme */
-            --theme-bg-primary: #14101D;          /* Deep dark background */
-            --theme-bg-secondary: #221A31;        /* Purple-dark background */
-            --theme-bg-tertiary: #2d1b3d;         /* Card backgrounds */
-            --theme-bg-light: #3d2a4f;            /* Lighter elements */
-            --theme-bg-surface: #221A31;          /* Surface elements */
+            /* Universal Theme Variables - Glamour Theme - Dynamic from Database */
+            --theme-bg-primary: {{theme.colors.background}};        /* Primary background */
+            --theme-bg-secondary: {{theme.colors.surface}};         /* Secondary background */
+            --theme-bg-tertiary: {{theme.colors.card-bg}};          /* Card backgrounds */
+            --theme-bg-light: {{theme.colors.bg-light}};            /* Lighter elements */
+            --theme-bg-surface: {{theme.colors.surface}};           /* Surface elements */
             
-            --theme-text-primary: #F3EFE7;        /* Primary text (warm light) */
-            --theme-text-secondary: #E9C77A;      /* Secondary text (gold) */
-            --theme-text-muted: #D4B5B8;          /* Muted text */
-            --theme-text-subtle: #c7a7ab;         /* Subtle text */
-            --theme-text-inverted: #14101D;       /* Inverted text (on light backgrounds) */
+            --theme-text-primary: {{theme.colors.text-light}};      /* Primary text */
+            --theme-text-secondary: {{theme.colors.accent}};        /* Secondary text */
+            --theme-text-muted: {{theme.colors.text}};              /* Muted text */
+            --theme-text-subtle: {{theme.colors.disabled-text}};    /* Subtle text */
+            --theme-text-inverted: {{theme.colors.text-dark}};      /* Inverted text */
             
-            --theme-border-primary: #3d2a4f;      /* Primary borders */
-            --theme-border-light: #4f3763;        /* Light borders */
-            --theme-border-subtle: #614477;       /* Subtle borders */
+            --theme-border-primary: {{theme.colors.border-dark}};   /* Primary borders */
+            --theme-border-light: {{theme.colors.border-light}};    /* Light borders */
+            --theme-border-subtle: {{theme.colors.divider}};        /* Subtle borders */
             
-            --theme-accent: #E9C77A;              /* Gold accent */
-            --theme-accent-hover: #d4af37;        /* Gold hover */
-            --theme-accent-light: #f3d078;        /* Light accent */
-            --theme-success: #22c55e;             /* Success green */
-            --theme-warning: #f59e0b;             /* Warning amber */
-            --theme-error: #ef4444;               /* Error red */
+            --theme-accent: {{theme.colors.accent}};                /* Accent color */
+            --theme-accent-hover: {{theme.colors.btn-bg-hover}};    /* Accent hover */
+            --theme-accent-light: {{theme.colors.link-hover}};      /* Light accent */
+            --theme-success: {{theme.colors.success}};              /* Success green */
+            --theme-warning: {{theme.colors.warning}};              /* Warning amber */
+            --theme-error: {{theme.colors.danger}};                 /* Error red */
         }
         
         .text-glamour-primary { color: var(--glamour-primary); }
@@ -68,11 +68,11 @@
         .border-glamour-accent { border-color: var(--glamour-accent); }
         
         .glamour-gradient {
-            background: linear-gradient(135deg, #1a0d2e 0%, #2d1b3d 50%, #8b1538 100%);
+            background: linear-gradient(135deg, {{theme.colors.bg-dark}} 0%, {{theme.colors.card-bg}} 50%, {{theme.colors.accent}} 100%);
         }
         
         .glamour-text-gradient {
-            background: linear-gradient(135deg, #E9C77A 0%, #D4B5B8 100%);
+            background: linear-gradient(135deg, {{theme.colors.accent}} 0%, {{theme.colors.text}} 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -111,7 +111,7 @@
         
         /* Glamour Navigation Styles */
         .glamour-nav {
-            background: linear-gradient(135deg, #1a0d2e 0%, #2d1b3d 50%, #8b1538 100%);
+            background: linear-gradient(135deg, {{theme.colors.bg-dark}} 0%, {{theme.colors.card-bg}} 50%, {{theme.colors.accent}} 100%);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(233, 199, 122, 0.2);
         }
@@ -153,7 +153,7 @@
         
         /* Glamour Footer Styles */
         .glamour-footer {
-            background: linear-gradient(135deg, #1a0d2e 0%, #2d1b3d 50%, #8b1538 100%);
+            background: linear-gradient(135deg, {{theme.colors.bg-dark}} 0%, {{theme.colors.card-bg}} 50%, {{theme.colors.accent}} 100%);
             color: rgba(255, 255, 255, 0.95);
         }
         
@@ -178,8 +178,8 @@
         
         /* Glamour Button Styles */
         .glamour-btn {
-            background: linear-gradient(45deg, #E9C77A 0%, #D4B5B8 100%);
-            color: #1a0d2e;
+            background: linear-gradient(45deg, {{theme.colors.accent}} 0%, {{theme.colors.text}} 100%);
+            color: {{theme.colors.text-dark}};
             padding: 12px 24px;
             border-radius: 8px;
             font-weight: 600;
@@ -192,7 +192,7 @@
         .glamour-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(233, 199, 122, 0.4);
-            color: #1a0d2e;
+            color: {{theme.colors.text-dark}};
             text-decoration: none;
         }
         

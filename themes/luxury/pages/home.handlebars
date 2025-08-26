@@ -1,100 +1,92 @@
-<!-- Luxury Theme Home Page - Opulent Regal Design -->
+<!-- Luxury Theme Home Page - Using Universal Page System -->
 
-<!-- Hero Section with Dynamic/Marble Background and Gold Accents -->
+<!-- Load Universal Page System -->
+<link rel="stylesheet" href="/templates/universal/universal-hero-styles.css">
+<link rel="stylesheet" href="/templates/universal/universal-page-styles.css">
+<link rel="stylesheet" href="/themes/luxury/styles/luxury-theme-overrides.css">
+
+<!-- Universal Hero Section -->
 {{#if content.hero_section_visible}}
-<section class="luxury-hero {{#if content.heroBackgroundImageUrl}}luxury-hero-custom-bg bg-cover bg-center bg-fixed{{/if}}" data-aos="fade-in" {{#if content.heroBackgroundImageUrl}}style="background-image: url('{{content.heroBackgroundImageUrl}}')"{{/if}}>
+<section class="universal-hero {{#if content.heroBackgroundImageUrl}}universal-hero-custom-bg bg-cover bg-center bg-fixed{{/if}}" data-aos="fade-in" {{#if content.heroBackgroundImageUrl}}style="background-image: url('{{content.heroBackgroundImageUrl}}')"{{/if}}>
     {{#unless content.heroBackgroundImageUrl}}
-    <!-- Marble Texture Background (only if no custom image) -->
-    <div class="luxury-marble-bg"></div>
+    <!-- Theme Background Elements (only if no custom image) -->
+    <div class="universal-hero-bg-elements">
+        <div class="universal-bg-layer-1"></div>
+        <div class="universal-bg-layer-2"></div>
+        <div class="universal-bg-layer-3"></div>
+    </div>
     {{/unless}}
     
-    <!-- Gold Leaf Accent Elements -->
-    <div class="luxury-gold-accents">
-        <div class="luxury-gold-leaf luxury-leaf-1"></div>
-        <div class="luxury-gold-leaf luxury-leaf-2"></div>
-        <div class="luxury-gold-leaf luxury-leaf-3"></div>
+    <!-- Theme Decorative Elements -->
+    <div class="universal-hero-decorations">
+        <div class="universal-decoration-1"></div>
+        <div class="universal-decoration-2"></div>
+        <div class="universal-decoration-3"></div>
+        <div class="universal-decoration-4"></div>
+        <div class="universal-decoration-5"></div>
+        <div class="universal-decoration-6"></div>
     </div>
     
-    <!-- Hero Overlay for Better Text Readability -->
-    <div class="luxury-hero-overlay {{#if content.heroBackgroundImageUrl}}luxury-hero-overlay-custom{{/if}}"></div>
+    <!-- Theme-specific overlay (avoids global universal overlay side-effects) -->
+    <div class="luxury-hero-overlay"></div>
     
-    <!-- Hero Content with Royal Treatment -->
-    <div class="luxury-hero-content">
+    <!-- Hero Content -->
+    <div class="universal-hero-content">
         <div class="max-w-5xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-            <!-- Crown Icon -->
-            <div class="luxury-crown-icon" data-aos="fade-down" data-aos-delay="100">
-                <i class="fas fa-crown"></i>
+            <!-- Theme Icon -->
+            <div class="universal-hero-icon" data-aos="fade-down" data-aos-delay="100">
+                <i class="universal-theme-icon"></i>
             </div>
             
-            <!-- Regal Title -->
-            <h1 class="luxury-hero-title" data-aos="fade-up" data-aos-delay="300">
-                {{#if content.hero_title}}{{content.hero_title}}{{else}}{{siteName}}{{/if}}
+            <!-- Hero Title -->
+            <h1 class="universal-hero-title" data-aos="fade-up" data-aos-delay="300">
+                {{#if content.hero_title}}{{content.hero_title}}{{else}}{{model.name}}{{/if}}
             </h1>
             
-            <!-- Elegant Subtitle -->
+            <!-- Hero Subtitle -->
             {{#if content.hero_subtitle}}
-            <p class="luxury-hero-subtitle" data-aos="fade-up" data-aos-delay="500">
+            <p class="universal-hero-subtitle" data-aos="fade-up" data-aos-delay="500">
                 {{content.hero_subtitle}}
             </p>
             {{/if}}
             
-            <!-- Gold CTA Buttons with Royal Styling -->
-            <div class="luxury-cta-container" data-aos="fade-up" data-aos-delay="700">
-                {{!-- Primary hero button (aligns with Template 1/2 fields) --}}
+            <!-- Hero Description -->
+            {{#if content.hero_description}}
+            <div class="universal-hero-description" data-aos="fade-up" data-aos-delay="700">
+                {{{content.hero_description}}}
+            </div>
+            {{/if}}
+            
+            <!-- Hero CTA Buttons -->
+            <div class="universal-hero-cta" data-aos="fade-up" data-aos-delay="900">
                 {{#if content.hero_button_1_text}}
-                    {{#if (eq content.hero_button_1_link 'calendar')}}
-                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="luxury-btn luxury-btn-primary luxury-royal-effect"><span>{{content.hero_button_1_text}}</span><div class="luxury-btn-glow"></div></a>
-                    {{else if (eq content.hero_button_1_link 'contact')}}
-                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="luxury-btn luxury-btn-primary luxury-royal-effect"><span>{{content.hero_button_1_text}}</span><div class="luxury-btn-glow"></div></a>
-                    {{else if (eq content.hero_button_1_link 'about')}}
-                        <a href="/{{modelSlug}}/about{{previewParam}}" class="luxury-btn luxury-btn-primary luxury-royal-effect"><span>{{content.hero_button_1_text}}</span><div class="luxury-btn-glow"></div></a>
-                    {{else if (eq content.hero_button_1_link 'rates')}}
-                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="luxury-btn luxury-btn-primary luxury-royal-effect"><span>{{content.hero_button_1_text}}</span><div class="luxury-btn-glow"></div></a>
-                    {{else if (eq content.hero_button_1_link 'gallery')}}
-                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="luxury-btn luxury-btn-primary luxury-royal-effect"><span>{{content.hero_button_1_text}}</span><div class="luxury-btn-glow"></div></a>
-                    {{else}}
-                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="luxury-btn luxury-btn-primary luxury-royal-effect"><span>{{content.hero_button_1_text}}</span><div class="luxury-btn-glow"></div></a>
-                    {{/if}}
-                {{else}}
-                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="luxury-btn luxury-btn-primary luxury-royal-effect"><span>Contact Me</span><div class="luxury-btn-glow"></div></a>
+                <a href="{{#if content.hero_button_1_link}}/{{modelSlug}}/{{content.hero_button_1_link}}{{previewParam}}{{else}}/{{modelSlug}}/contact{{previewParam}}{{/if}}" 
+                   class="universal-btn universal-btn-primary universal-hero-btn-primary">
+                    {{content.hero_button_1_text}}
+                </a>
                 {{/if}}
-
-                {{!-- Secondary hero button --}}
+                
                 {{#if content.hero_button_2_text}}
-                    {{#if (eq content.hero_button_2_link 'calendar')}}
-                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="luxury-btn luxury-btn-secondary luxury-crystal-effect"><span>{{content.hero_button_2_text}}</span><div class="luxury-crystal-shine"></div></a>
-                    {{else if (eq content.hero_button_2_link 'contact')}}
-                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="luxury-btn luxury-btn-secondary luxury-crystal-effect"><span>{{content.hero_button_2_text}}</span><div class="luxury-crystal-shine"></div></a>
-                    {{else if (eq content.hero_button_2_link 'about')}}
-                        <a href="/{{modelSlug}}/about{{previewParam}}" class="luxury-btn luxury-btn-secondary luxury-crystal-effect"><span>{{content.hero_button_2_text}}</span><div class="luxury-crystal-shine"></div></a>
-                    {{else if (eq content.hero_button_2_link 'rates')}}
-                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="luxury-btn luxury-btn-secondary luxury-crystal-effect"><span>{{content.hero_button_2_text}}</span><div class="luxury-crystal-shine"></div></a>
-                    {{else if (eq content.hero_button_2_link 'gallery')}}
-                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="luxury-btn luxury-btn-secondary luxury-crystal-effect"><span>{{content.hero_button_2_text}}</span><div class="luxury-crystal-shine"></div></a>
-                    {{else}}
-                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="luxury-btn luxury-btn-secondary luxury-crystal-effect"><span>{{content.hero_button_2_text}}</span><div class="luxury-crystal-shine"></div></a>
-                    {{/if}}
-                {{else}}
-                    <a href="/{{modelSlug}}/gallery{{previewParam}}" class="luxury-btn luxury-btn-secondary luxury-crystal-effect"><span>View Gallery</span><div class="luxury-crystal-shine"></div></a>
+                <a href="{{#if content.hero_button_2_link}}/{{modelSlug}}/{{content.hero_button_2_link}}{{previewParam}}{{else}}/{{modelSlug}}/about{{previewParam}}{{/if}}" 
+                   class="universal-btn universal-btn-secondary universal-hero-btn-secondary ml-4">
+                    {{content.hero_button_2_text}}
+                </a>
                 {{/if}}
             </div>
         </div>
     </div>
     
-    <!-- Floating Luxury Elements -->
-    <div class="luxury-floating-gems" aria-hidden="true">
-        <div class="luxury-gem luxury-diamond-1">♦</div>
-        <div class="luxury-gem luxury-diamond-2">♦</div>
-        <div class="luxury-gem luxury-ruby-1">♦</div>
-        <div class="luxury-gem luxury-emerald-1">♦</div>
+    <!-- Hero Bottom Indicator -->
+    <div class="universal-hero-bottom-indicator" data-aos="bounce" data-aos-delay="1500">
+        <i class="fas fa-chevron-down"></i>
     </div>
 </section>
 {{/if}}
 
-<!-- About Section with Opulent Design -->
+<!-- Luxury About Section - Original Structure with Universal Styling -->
 {{#if content.about_section_visible}}
-<section class="luxury-about-section" data-aos="fade-in">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="luxury-about-section universal-section" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div class="grid lg:grid-cols-2 gap-16 items-center">
             
             <!-- Portrait with Regal Frame -->
@@ -113,16 +105,11 @@
                     {{/if}}
                     
                     <!-- Ornate Border Effects -->
-                    <div class="luxury-ornate-corners">
-                        <div class="luxury-corner luxury-corner-tl"></div>
-                        <div class="luxury-corner luxury-corner-tr"></div>
-                        <div class="luxury-corner luxury-corner-bl"></div>
-                        <div class="luxury-corner luxury-corner-br"></div>
-                    </div>
+                    <div class="luxury-frame-corner luxury-frame-corner-tl"></div>
+                    <div class="luxury-frame-corner luxury-frame-corner-tr"></div>
+                    <div class="luxury-frame-corner luxury-frame-corner-bl"></div>
+                    <div class="luxury-frame-corner luxury-frame-corner-br"></div>
                 </div>
-                
-                <!-- Golden Aura Effect -->
-                <div class="luxury-golden-aura"></div>
             </div>
             {{/if}}
             
@@ -130,7 +117,7 @@
             <div class="luxury-about-content" data-aos="fade-left">
                 <div class="luxury-section-header">
                     <div class="luxury-royal-divider"></div>
-                    <h2 class="luxury-section-title">
+                    <h2 class="universal-section-title luxury-section-title">
                         {{#if content.about_title}}{{content.about_title}}{{else}}About {{siteName}}{{/if}}
                     </h2>
                     <div class="luxury-royal-divider"></div>
@@ -138,31 +125,31 @@
                 
                 {{#if content.about_paragraph_1}}
                 <div class="luxury-text-content">
-                    <p class="luxury-lead-text">{{content.about_paragraph_1}}</p>
+                    <p class="universal-section-subtitle luxury-lead-text">{{content.about_paragraph_1}}</p>
                 </div>
                 {{/if}}
                 {{#if content.about_paragraph_2}}
                 <div class="luxury-text-content">
-                    <p class="luxury-lead-text">{{content.about_paragraph_2}}</p>
+                    <p class="universal-section-subtitle luxury-lead-text">{{content.about_paragraph_2}}</p>
                 </div>
                 {{/if}}
                 
                 {{#if content.about_link_text}}
                 <div class="luxury-about-cta">
                     {{#eq content.about_link_destination 'about'}}
-                        <a href="/{{modelSlug}}/about{{previewParam}}" class="luxury-link luxury-royal-link">
+                        <a href="/{{modelSlug}}/about{{previewParam}}" class="universal-btn universal-btn-primary luxury-royal-link">
                     {{/eq}}
                     {{#eq content.about_link_destination 'contact'}}
-                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="luxury-link luxury-royal-link">
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="universal-btn universal-btn-primary luxury-royal-link">
                     {{/eq}}
                     {{#eq content.about_link_destination 'gallery'}}
-                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="luxury-link luxury-royal-link">
+                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="universal-btn universal-btn-primary luxury-royal-link">
                     {{/eq}}
                     {{#eq content.about_link_destination 'rates'}}
-                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="luxury-link luxury-royal-link">
+                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="universal-btn universal-btn-primary luxury-royal-link">
                     {{/eq}}
                     {{#eq content.about_link_destination 'calendar'}}
-                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="luxury-link luxury-royal-link">
+                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="universal-btn universal-btn-primary luxury-royal-link">
                     {{/eq}}
                         {{content.about_link_text}}
                         <i class="fas fa-chevron-right luxury-link-chevron"></i>
@@ -170,7 +157,10 @@
                 </div>
                 {{else}}
                 <div class="luxury-about-cta">
-                    <a href="/{{modelSlug}}/about{{previewParam}}" class="luxury-link luxury-royal-link">Learn More<i class="fas fa-chevron-right luxury-link-chevron"></i></a>
+                    <a href="/{{modelSlug}}/about{{previewParam}}" class="universal-btn universal-btn-primary luxury-royal-link">
+                        Learn More
+                        <i class="fas fa-chevron-right luxury-link-chevron"></i>
+                    </a>
                 </div>
                 {{/if}}
             </div>
@@ -179,120 +169,128 @@
 </section>
 {{/if}}
 
-{{#if content.gallery_section_visible}}
-<section class="luxury-gallery-section luxury-section" data-aos="fade-in">
-    <div class="luxury-container">
-        <div class="luxury-section-header text-center luxury-space-y">
-            <h2 class="luxury-section-title">
-                {{#if content.gallery_section_title}}{{content.gallery_section_title}}{{else}}Gallery{{/if}}
+<!-- Universal Services Section -->
+{{#if content.services_section_visible}}
+<section class="universal-services-section" data-aos="fade-up">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <!-- Services Section Header -->
+        <div class="universal-section-header text-center mb-12" data-aos="fade-up">
+            <h2 class="universal-section-title">
+                {{#if content.services_title}}{{content.services_title}}{{else}}Services{{/if}}
             </h2>
-            <div class="luxury-ornate-separator"></div>
+            {{#if content.services_subtitle}}
+            <p class="universal-section-subtitle">{{content.services_subtitle}}</p>
+            {{/if}}
+        </div>
+        
+        <!-- Services Grid -->
+        <div class="universal-services-grid">
+            <!-- Service 1 -->
+            {{#if content.service_1_title}}
+            <div class="universal-service-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="universal-service-icon">
+                    <i class="{{#if content.service_1_icon}}{{content.service_1_icon}}{{else}}fas fa-star{{/if}}"></i>
+                </div>
+                <div class="universal-service-content">
+                    <h3 class="universal-service-title">{{content.service_1_title}}</h3>
+                    {{#if content.service_1_description}}
+                    <p class="universal-service-description">{{content.service_1_description}}</p>
+                    {{/if}}
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Service 2 -->
+            {{#if content.service_2_title}}
+            <div class="universal-service-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="universal-service-icon">
+                    <i class="{{#if content.service_2_icon}}{{content.service_2_icon}}{{else}}fas fa-heart{{/if}}"></i>
+                </div>
+                <div class="universal-service-content">
+                    <h3 class="universal-service-title">{{content.service_2_title}}</h3>
+                    {{#if content.service_2_description}}
+                    <p class="universal-service-description">{{content.service_2_description}}</p>
+                    {{/if}}
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Service 3 -->
+            {{#if content.service_3_title}}
+            <div class="universal-service-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="universal-service-icon">
+                    <i class="{{#if content.service_3_icon}}{{content.service_3_icon}}{{else}}fas fa-gem{{/if}}"></i>
+                </div>
+                <div class="universal-service-content">
+                    <h3 class="universal-service-title">{{content.service_3_title}}</h3>
+                    {{#if content.service_3_description}}
+                    <p class="universal-service-description">{{content.service_3_description}}</p>
+                    {{/if}}
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Gallery Preview Section (theme-specific preview, not full universal gallery) -->
+{{#if content.gallery_section_visible}}
+<section class="universal-gallery-preview-section" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="universal-section-header text-center mb-12" data-aos="fade-up">
+            <h2 class="universal-section-title">{{#if content.gallery_section_title}}{{content.gallery_section_title}}{{else}}Gallery{{/if}}</h2>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div class="luxury-gallery-preview-grid" data-aos="fade-up" data-aos-delay="200">
             {{#each galleryImages}}
-            <div class="luxury-gallery-item aspect-[3/4] overflow-hidden rounded-xl">
-                <img src="/uploads/{{../modelSlug}}/public/gallery/{{this.filename}}" 
-                     alt="{{#if this.caption}}{{this.caption}}{{else}}Gallery image{{/if}}" 
-                     class="w-full h-full object-cover transition-transform duration-300 hover:scale-105" loading="lazy">
+            <div class="luxury-gallery-preview-item">
+                <img src="/uploads/{{../modelSlug}}/public/gallery/{{this.filename}}" alt="{{#if this.caption}}{{this.caption}}{{else}}Gallery image{{/if}}" class="luxury-gallery-preview-image">
             </div>
             {{else}}
-            {{#times 5}}
-            <div class="luxury-gallery-placeholder aspect-[3/4] flex items-center justify-center bg-gray-100 rounded-xl">
-                <i class="fas fa-camera text-4xl text-gray-400"></i>
+            {{#times 6}}
+            <div class="luxury-gallery-preview-item luxury-gallery-preview-placeholder">
+                <i class="fas fa-camera"></i>
             </div>
             {{/times}}
             {{/each}}
         </div>
-        <div class="text-center mt-12">
-            <a href="/{{modelSlug}}/gallery{{previewParam}}" class="luxury-btn luxury-btn-royal luxury-imperial-border">
-                <span>{{#if content.gallery_button_text}}{{content.gallery_button_text}}{{else}}View Full Gallery{{/if}}</span>
-                <div class="luxury-imperial-glow"></div>
-            </a>
+
+        <div class="text-center mt-10" data-aos="fade-up" data-aos-delay="300">
+            <a href="/{{modelSlug}}/gallery{{previewParam}}" class="universal-btn universal-btn-primary">View Full Gallery</a>
         </div>
     </div>
 </section>
 {{/if}}
 
-{{#if content.travel_section_visible}}
-<section class="luxury-travel-section luxury-section bg-luxury-surface" data-aos="fade-in">
-    <div class="luxury-container">
-        <div class="luxury-section-header text-center luxury-space-y">
-            <h2 class="luxury-section-title">
-                {{#if content.travel_section_title}}{{content.travel_section_title}}{{else}}Travel Schedule{{/if}}
-            </h2>
-            <div class="luxury-ornate-separator"></div>
-        </div>
-        {{#if upcomingEvents}}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {{#each upcomingEvents}}
-            <div class="luxury-card-dark luxury-travel-card p-6" data-aos="fade-up" data-aos-delay="{{@index}}00">
-                <div class="text-center mb-4">
-                    <div class="luxury-service-icon"><i class="fas fa-map-marker-alt"></i></div>
-                    <h3 class="luxury-service-title">{{this.location}}</h3>
-                    <div class="luxury-lead-badge text-luxury-muted">
-                        {{#if this.dateRange}}{{this.dateRange}}{{else}}{{formatDate this.date}}{{/if}}
-                    </div>
-                </div>
-                <div class="text-center">
-                    <span class="luxury-available-badge bg-luxury-accent text-luxury-obsidian px-4 py-1 rounded-full font-semibold">Available</span>
-                    {{#if this.notes}}
-                    <p class="luxury-travel-notes text-luxury-muted mt-4">{{this.notes}}</p>
-                    {{/if}}
-                </div>
-            </div>
-            {{/each}}
-        </div>
-        <div class="text-center mt-12">
-            <a href="/{{modelSlug}}/{{#if content.travel_cta_link}}{{content.travel_cta_link}}{{else}}calendar{{/if}}{{previewParam}}" 
-               class="luxury-btn luxury-btn-royal luxury-imperial-border">
-                <span>{{#if content.travel_cta_text}}{{content.travel_cta_text}}{{else}}View Full Calendar{{/if}}</span>
-                <div class="luxury-imperial-glow"></div>
-            </a>
-        </div>
-        {{else}}
-        <div class="text-center">
-            <div class="luxury-card-dark p-8 max-w-md mx-auto">
-                <div class="luxury-service-icon"><i class="fas fa-calendar-alt"></i></div>
-                <h3 class="luxury-service-title">Check My Calendar</h3>
-                <p class="luxury-service-description text-luxury-muted">View available dates and book your appointment</p>
-                <a href="/{{modelSlug}}/calendar{{previewParam}}" class="luxury-btn luxury-btn-imperial mt-6">
-                    <span>View Calendar</span>
-                </a>
-            </div>
-        </div>
-        {{/if}}
-    </div>
-</section>
-{{/if}}
-
+<!-- Testimonials Section -->
 {{#if content.testimonials_section_visible}}
-<section class="luxury-testimonials-section luxury-section" data-aos="fade-in">
-    <div class="luxury-container">
-        <div class="luxury-section-header text-center luxury-space-y">
-            <h2 class="luxury-section-title">
-                {{#if content.testimonials_section_title}}{{content.testimonials_section_title}}{{else}}What Clients Say{{/if}}
+<section class="universal-testimonials-section" data-aos="fade-up">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="universal-section-header text-center mb-12">
+            <h2 class="universal-section-title">
+                {{#if content.testimonials_section_title}}{{content.testimonials_section_title}}{{else}}Testimonials{{/if}}
             </h2>
-            <div class="luxury-ornate-separator"></div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <div class="universal-testimonials-grid">
             {{#each testimonials}}
             {{#if (lt @index (or content.testimonials_display_count 3))}}
-            <div class="luxury-card-dark luxury-testimonial-card p-6" data-aos="fade-up" data-aos-delay="{{@index}}00">
-                <div class="luxury-stars text-luxury-accent mb-4">
+            <div class="universal-testimonial-card" data-aos="fade-up" data-aos-delay="{{@index}}00">
+                <div class="universal-testimonial-stars">
                     {{#times this.rating}}<i class="fas fa-star"></i>{{/times}}
                 </div>
-                <blockquote class="luxury-testimonial-text text-luxury-muted mb-4 line-clamp-3">"{{this.text}}"</blockquote>
-                <cite class="luxury-testimonial-author font-semibold">{{this.name}}</cite>
+                <blockquote class="universal-testimonial-text">"{{this.text}}"</blockquote>
+                <cite class="universal-testimonial-name">{{this.name}}</cite>
             </div>
             {{/if}}
             {{else}}
-            <div class="luxury-card-dark luxury-testimonial-card p-6">
-                <div class="luxury-stars text-luxury-accent mb-4">
+            <div class="universal-testimonial-card">
+                <div class="universal-testimonial-stars">
                     <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                 </div>
-                <blockquote class="luxury-testimonial-text text-luxury-muted mb-4">"Professional, elegant, and truly caring. An unforgettable experience."</blockquote>
-                <cite class="luxury-testimonial-author font-semibold">Michael D.</cite>
+                <blockquote class="universal-testimonial-text">"Professional, elegant, and truly caring. An unforgettable experience."</blockquote>
+                <cite class="universal-testimonial-name">Michael D.</cite>
             </div>
             {{/each}}
         </div>
@@ -300,143 +298,42 @@
 </section>
 {{/if}}
 
-<!-- Services Section with Palace Architecture -->
-{{#if content.services_section_visible}}
-<section class="luxury-services-section" data-aos="fade-in">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Regal Section Header -->
-        <div class="luxury-section-header text-center mb-20">
-            <div class="luxury-royal-crown">
-                <i class="fas fa-crown"></i>
-            </div>
-            <h2 class="luxury-section-title">
-                {{#if content.services_title}}{{content.services_title}}{{else}}Royal Services{{/if}}
+<!-- Contact CTA Section -->
+{{#if content.cta_section_visible}}
+<section class="universal-cta-section" data-aos="fade-up">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="text-center">
+            <h2 class="universal-cta-title">
+                {{#if content.cta_section_title}}{{content.cta_section_title}}{{else}}Ready to Begin?{{/if}}
             </h2>
-            <div class="luxury-ornate-separator"></div>
-            {{#if home_content.services_subtitle}}
-            <p class="luxury-section-subtitle">{{home_content.services_subtitle}}</p>
-            {{/if}}
-        </div>
-        
-        <!-- Palace Service Cards -->
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-            <!-- Service Card 1 -->
-            {{#if content.service_1_visible}}
-            <div class="luxury-service-palace" data-aos="fade-up" data-aos-delay="100">
-                <div class="luxury-palace-dome"></div>
-                <div class="luxury-service-content">
-                    <div class="luxury-service-icon">
-                        <i class="{{#if content.service_1_icon}}{{content.service_1_icon}}{{else}}fas fa-gem{{/if}}"></i>
-                    </div>
-                    <h3 class="luxury-service-title">
-                        {{#if content.service_1_title}}{{content.service_1_title}}{{else}}Premium Experience{{/if}}
-                    </h3>
-                    {{#if content.service_1_description}}
-                    <p class="luxury-service-description">{{content.service_1_description}}</p>
-                    {{/if}}
-                </div>
-                <div class="luxury-marble-base"></div>
-            </div>
+            {{#if content.cta_section_subtitle}}
+            <p class="universal-cta-description">{{content.cta_section_subtitle}}</p>
             {{/if}}
             
-            <!-- Service Card 2 -->
-            {{#if content.service_2_visible}}
-            <div class="luxury-service-palace" data-aos="fade-up" data-aos-delay="200">
-                <div class="luxury-palace-dome"></div>
-                <div class="luxury-service-content">
-                    <div class="luxury-service-icon">
-                        <i class="{{#if content.service_2_icon}}{{content.service_2_icon}}{{else}}fas fa-crown{{/if}}"></i>
-                    </div>
-                    <h3 class="luxury-service-title">
-                        {{#if content.service_2_title}}{{content.service_2_title}}{{else}}Royal Treatment{{/if}}
-                    </h3>
-                    {{#if content.service_2_description}}
-                    <p class="luxury-service-description">{{content.service_2_description}}</p>
-                    {{/if}}
-                </div>
-                <div class="luxury-marble-base"></div>
+            <div class="universal-cta-buttons">
+                {{#if content.cta_button_1_text}}
+                <a href="{{#if content.cta_button_1_link}}/{{modelSlug}}/{{content.cta_button_1_link}}{{previewParam}}{{else}}/{{modelSlug}}/contact{{previewParam}}{{/if}}" 
+                   class="universal-btn universal-btn-primary">
+                    {{content.cta_button_1_text}}
+                </a>
+                {{/if}}
+                
+                {{#if content.cta_button_2_text}}
+                <a href="{{#if content.cta_button_2_link}}/{{modelSlug}}/{{content.cta_button_2_link}}{{previewParam}}{{else}}/{{modelSlug}}/rates{{previewParam}}{{/if}}" 
+                   class="universal-btn universal-btn-secondary ml-4">
+                    {{content.cta_button_2_text}}
+                </a>
+                {{/if}}
             </div>
-            {{/if}}
-            
-            <!-- Service Card 3 -->
-            {{#if content.service_3_visible}}
-            <div class="luxury-service-palace" data-aos="fade-up" data-aos-delay="300">
-                <div class="luxury-palace-dome"></div>
-                <div class="luxury-service-content">
-                    <div class="luxury-service-icon">
-                        <i class="{{#if content.service_3_icon}}{{content.service_3_icon}}{{else}}fas fa-diamond{{/if}}"></i>
-                    </div>
-                    <h3 class="luxury-service-title">
-                        {{#if content.service_3_title}}{{content.service_3_title}}{{else}}Exclusive Access{{/if}}
-                    </h3>
-                    {{#if content.service_3_description}}
-                    <p class="luxury-service-description">{{content.service_3_description}}</p>
-                    {{/if}}
-                </div>
-                <div class="luxury-marble-base"></div>
-            </div>
-            {{/if}}
         </div>
-        
-        <!-- Services CTA with Royal Treatment -->
-        {{#if content.services_cta_text}}
-        <div class="text-center mt-16" data-aos="fade-up" data-aos-delay="400">
-            <a href="{{#if content.services_cta_link}}{{content.services_cta_link}}{{else}}/{{modelSlug}}/rates{{/if}}" 
-               class="luxury-btn luxury-btn-royal luxury-imperial-border">
-                <span>{{#if content.services_cta_text}}{{content.services_cta_text}}{{else}}View Royal Services{{/if}}</span>
-                <div class="luxury-imperial-glow"></div>
-            </a>
-        </div>
-        {{/if}}
     </div>
 </section>
 {{/if}}
 
-<!-- Call to Action Section with Palace Grand Hall -->
-{{#if content.cta_section_visible}}
-<section class="luxury-cta-section" data-aos="fade-in">
-    <!-- Palace Architecture Background -->
-    <div class="luxury-palace-architecture">
-        <div class="luxury-marble-columns">
-            <div class="luxury-column luxury-column-1"></div>
-            <div class="luxury-column luxury-column-2"></div>
-            <div class="luxury-column luxury-column-3"></div>
-            <div class="luxury-column luxury-column-4"></div>
-        </div>
-    </div>
-    
-    <div class="max-w-5xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-        <!-- Imperial Crown -->
-        <div class="luxury-imperial-crown" data-aos="fade-down">
-            <i class="fas fa-crown"></i>
-        </div>
-        
-        <h2 class="luxury-cta-title" data-aos="fade-up" data-aos-delay="200">
-            {{#if content.cta_section_title}}{{content.cta_section_title}}{{else}}Ready for Royal Treatment?{{/if}}
-        </h2>
-        
-        {{#if content.cta_section_subtitle}}
-        <p class="luxury-cta-subtitle" data-aos="fade-up" data-aos-delay="400">
-            {{content.cta_section_subtitle}}
-        </p>
-        {{/if}}
-        
-        <div class="luxury-cta-buttons" data-aos="fade-up" data-aos-delay="600">
-            <a href="{{#if content.cta_button_1_link}}{{content.cta_button_1_link}}{{else}}/{{modelSlug}}/contact{{/if}}" 
-               class="luxury-btn luxury-btn-imperial luxury-throne-effect">
-                <span>{{#if content.cta_button_1_text}}{{content.cta_button_1_text}}{{else}}Book Imperial Experience{{/if}}</span>
-                <div class="luxury-throne-glow"></div>
-            </a>
-            
-            <a href="{{#if content.cta_button_2_link}}{{content.cta_button_2_link}}{{else}}/{{modelSlug}}/rates{{/if}}" 
-               class="luxury-btn luxury-btn-crystal luxury-crystal-border">
-                <span>{{#if content.cta_button_2_text}}{{content.cta_button_2_text}}{{else}}View Royal Rates{{/if}}</span>
-            </a>
-        </div>
-    </div>
-    
-    <!-- Floating Luxury Crystals -->
-    <div class="luxury-crystal-chamber" aria-hidden="true">
+<!-- Crystal Decorations Section (Luxury Theme Specific) -->
+{{#if content.luxury_crystals_visible}}
+<section class="luxury-crystals-section">
+    <div class="luxury-crystal-container">
         <div class="luxury-crystal luxury-crystal-1"></div>
         <div class="luxury-crystal luxury-crystal-2"></div>
         <div class="luxury-crystal luxury-crystal-3"></div>
@@ -446,699 +343,181 @@
 </section>
 {{/if}}
 
-<!-- Luxury Theme Custom Styles -->
+<!-- Theme-Specific Testimonials Styling -->
 <style>
-/* Luxury Theme Variables */
-:root {
-    --luxury-gold: #d4af37;
-    --luxury-rich-gold: #b8860b;
-    --luxury-rose-gold: #e8b4b8;
-    --luxury-platinum: #e5e4e2;
-    --luxury-marble-white: #f8f6f0;
-    --luxury-marble-cream: #faf5f0;
-    --luxury-deep-burgundy: #722f37;
-    --luxury-royal-purple: #663399;
-    --luxury-obsidian: #0f0f23;
-    --luxury-pearl: #f0ead6;
+/* Testimonials Section - Using Dynamic Colors */
+.universal-testimonials-section {
+    background: var(--theme-surface);
+    color: var(--theme-text);
 }
 
-/* Hero Section Styling */
-.luxury-hero {
+.universal-testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.universal-testimonial-card {
+    background: var(--theme-card-bg);
+    border-radius: 16px;
+    padding: 2rem;
+    border: 2px solid var(--theme-border);
+    box-shadow: var(--theme-card-shadow);
+    transition: all 0.3s ease;
     position: relative;
-    min-height: 100vh;
-    background: linear-gradient(135deg, var(--luxury-marble-white) 0%, var(--luxury-marble-cream) 50%, var(--luxury-pearl) 100%);
-    display: flex;
-    align-items: center;
     overflow: hidden;
 }
 
-.luxury-marble-bg {
+.universal-testimonial-card::before {
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--theme-accent), var(--theme-secondary), var(--theme-accent));
+}
+
+.universal-testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--theme-card-shadow-hover, var(--card-shadow));
+}
+
+.universal-testimonial-stars {
+    color: var(--theme-accent);
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.universal-testimonial-text {
+    color: var(--theme-text);
+    font-size: 1.125rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+}
+
+.universal-testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.universal-testimonial-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid var(--theme-accent);
+}
+
+.universal-testimonial-name {
+    font-weight: 600;
+    color: var(--theme-text);
+}
+
+.universal-testimonial-location {
+    font-size: 0.875rem;
+    color: var(--theme-text-muted);
+}
+
+/* Luxury Crystals - Theme Specific Decoration */
+.luxury-crystals-section {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+    background: var(--theme-background);
+}
+
+.luxury-crystal-container {
+    position: relative;
     width: 100%;
     height: 100%;
-    background-image: 
-        radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(232, 180, 184, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 80%, rgba(212, 175, 55, 0.08) 0%, transparent 50%);
-    filter: blur(1px);
 }
 
-.luxury-gold-accents {
+.luxury-crystal {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(45deg, var(--theme-accent), var(--theme-secondary));
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    animation: luxury-crystal-float 8s ease-in-out infinite;
+    opacity: 0.7;
+    box-shadow: 0 0 20px var(--theme-accent);
 }
 
-.luxury-gold-leaf {
-    position: absolute;
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 100%);
-    border-radius: 0 100% 0 100%;
-    opacity: 0.3;
-    animation: luxuryFloatLeaf 20s infinite ease-in-out;
+.luxury-crystal-1 { 
+    top: 20%; 
+    left: 10%; 
+    animation-delay: 0s; 
 }
 
-.luxury-leaf-1 {
-    top: 10%;
-    left: 10%;
-    animation-delay: 0s;
-    transform: rotate(45deg);
+.luxury-crystal-2 { 
+    top: 60%; 
+    left: 80%; 
+    animation-delay: 2s; 
 }
 
-.luxury-leaf-2 {
-    top: 70%;
-    right: 15%;
-    animation-delay: 7s;
-    transform: rotate(-45deg);
+.luxury-crystal-3 { 
+    top: 80%; 
+    left: 20%; 
+    animation-delay: 4s; 
 }
 
-.luxury-leaf-3 {
-    bottom: 20%;
-    left: 70%;
-    animation-delay: 14s;
-    transform: rotate(135deg);
+.luxury-crystal-4 { 
+    top: 40%; 
+    left: 60%; 
+    animation-delay: 6s; 
 }
 
-@keyframes luxuryFloatLeaf {
-    0%, 100% { transform: translateY(0px) rotate(45deg) scale(1); }
-    33% { transform: translateY(-30px) rotate(90deg) scale(1.1); }
-    66% { transform: translateY(-15px) rotate(180deg) scale(0.9); }
+.luxury-crystal-5 { 
+    top: 10%; 
+    left: 90%; 
+    animation-delay: 8s; 
 }
 
+@keyframes luxury-crystal-float {
+    0%, 100% { 
+        transform: translateY(0) rotate(0deg) scale(1); 
+    }
+    25% { 
+        transform: translateY(-20px) rotate(90deg) scale(1.1); 
+    }
+    50% { 
+        transform: translateY(-10px) rotate(180deg) scale(0.9); 
+    }
+    75% { 
+        transform: translateY(-30px) rotate(270deg) scale(1.1); 
+    }
+}
+
+@media (max-width: 768px) {
+    .universal-testimonials-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<style>
 .luxury-hero-overlay {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.15);
-    z-index: 5;
-}
-
-.luxury-hero-content {
-    position: relative;
-    z-index: 10;
-    width: 100%;
-}
-
-.luxury-crown-icon {
-    font-size: 4rem;
-    color: var(--luxury-gold);
-    margin-bottom: 2rem;
-    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.4));
-    animation: luxuryCrownPulse 4s infinite ease-in-out;
-}
-
-@keyframes luxuryCrownPulse {
-    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.4)); }
-    50% { transform: scale(1.1); filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.6)); }
-}
-
-.luxury-hero-title {
-    font-size: 5rem;
-    font-weight: 900;
-    text-align: center;
-    margin-bottom: 2rem;
-    background: linear-gradient(45deg, var(--luxury-rich-gold) 0%, var(--luxury-gold) 50%, var(--luxury-rose-gold) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 2px 2px 4px rgba(212, 175, 55, 0.2);
-    letter-spacing: 2px;
-}
-
-.luxury-hero-subtitle {
-    font-size: 1.6rem;
-    color: var(--luxury-deep-burgundy);
-    text-align: center;
-    margin-bottom: 3rem;
-    font-weight: 400;
-    letter-spacing: 1px;
-    font-style: italic;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.luxury-cta-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-}
-
-/* Luxury Buttons */
-.luxury-btn {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 40px;
-    font-weight: 700;
-    text-decoration: none;
-    border-radius: 60px;
-    transition: all 0.4s ease;
-    overflow: hidden;
-    margin: 0 12px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 14px;
-    border: 2px solid transparent;
-}
-
-.luxury-btn-primary {
-    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 50%, var(--luxury-gold) 100%);
-    color: var(--luxury-obsidian);
-    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
-}
-
-.luxury-btn-primary:hover {
-    transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.5);
-}
-
-.luxury-btn-secondary {
-    background: rgba(255, 255, 255, 0.9);
-    color: var(--luxury-deep-burgundy);
-    border: 2px solid var(--luxury-gold);
-    backdrop-filter: blur(10px);
-}
-
-.luxury-btn-secondary:hover {
-    background: var(--luxury-gold);
-    color: var(--luxury-obsidian);
-    transform: translateY(-5px);
-}
-
-/* Royal Button Glow Effect */
-.luxury-royal-effect::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
-    transition: left 0.6s ease;
-}
-
-.luxury-royal-effect:hover::before {
-    left: 100%;
-}
-
-/* Floating Gems */
-.luxury-floating-gems {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.luxury-gem {
-    position: absolute;
-    font-size: 2rem;
-    animation: luxuryGemFloat 15s infinite ease-in-out;
-    opacity: 0.6;
-}
-
-.luxury-diamond-1 {
-    top: 15%;
-    left: 15%;
-    color: var(--luxury-platinum);
-    animation-delay: 0s;
-}
-
-.luxury-diamond-2 {
-    top: 60%;
-    right: 20%;
-    color: var(--luxury-pearl);
-    animation-delay: 5s;
-}
-
-.luxury-ruby-1 {
-    top: 80%;
-    left: 80%;
-    color: var(--luxury-deep-burgundy);
-    animation-delay: 10s;
-}
-
-.luxury-emerald-1 {
-    top: 30%;
-    right: 10%;
-    color: var(--luxury-royal-purple);
-    animation-delay: 3s;
-}
-
-@keyframes luxuryGemFloat {
-    0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.6; }
-    25% { transform: translateY(-25px) rotate(90deg); opacity: 1; }
-    50% { transform: translateY(-10px) rotate(180deg); opacity: 0.8; }
-    75% { transform: translateY(-20px) rotate(270deg); opacity: 1; }
-}
-
-/* About Section */
-.luxury-about-section {
-    padding: 8rem 0;
-    background: linear-gradient(180deg, var(--luxury-pearl) 0%, var(--luxury-marble-cream) 100%);
-    color: var(--luxury-obsidian);
-}
-
-.luxury-portrait-chamber {
-    position: relative;
-}
-
-.luxury-regal-frame {
-    position: relative;
-    padding: 20px;
-    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 100%);
-    border-radius: 30px;
-    box-shadow: 
-        0 30px 60px rgba(0, 0, 0, 0.2),
-        inset 0 0 0 3px var(--luxury-pearl);
-}
-
-.luxury-portrait-image {
-    width: 100%;
-    height: 600px;
-    object-fit: cover;
-    object-position: center 20%;
-    border-radius: 15px;
-    transition: transform 0.5s ease;
-}
-
-.luxury-regal-frame:hover .luxury-portrait-image {
-    transform: scale(1.02);
-}
-
-.luxury-portrait-placeholder {
-    height: 600px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: var(--luxury-marble-white);
-    border-radius: 15px;
-    color: var(--luxury-deep-burgundy);
-}
-
-.luxury-crown-placeholder {
-    font-size: 5rem;
-    color: var(--luxury-gold);
-    margin-bottom: 1rem;
-}
-
-/* Ornate Corners */
-.luxury-ornate-corners {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.luxury-corner {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    border: 3px solid var(--luxury-pearl);
-}
-
-.luxury-corner-tl {
-    top: 10px;
-    left: 10px;
-    border-right: none;
-    border-bottom: none;
-    border-radius: 10px 0 0 0;
-}
-
-.luxury-corner-tr {
-    top: 10px;
-    right: 10px;
-    border-left: none;
-    border-bottom: none;
-    border-radius: 0 10px 0 0;
-}
-
-.luxury-corner-bl {
-    bottom: 10px;
-    left: 10px;
-    border-right: none;
-    border-top: none;
-    border-radius: 0 0 0 10px;
-}
-
-.luxury-corner-br {
-    bottom: 10px;
-    right: 10px;
-    border-left: none;
-    border-top: none;
-    border-radius: 0 0 10px 0;
-}
-
-.luxury-golden-aura {
-    position: absolute;
-    top: -15px;
-    left: -15px;
-    right: -15px;
-    bottom: -15px;
-    background: linear-gradient(45deg, var(--luxury-gold) 0%, transparent 30%, transparent 70%, var(--luxury-rose-gold) 100%);
-    border-radius: 40px;
-    z-index: -1;
-    opacity: 0.4;
-    filter: blur(20px);
-    animation: luxuryAuraPulse 8s infinite ease-in-out;
-}
-
-@keyframes luxuryAuraPulse {
-    0%, 100% { opacity: 0.4; transform: scale(1); }
-    50% { opacity: 0.6; transform: scale(1.1); }
-}
-
-/* Royal Typography */
-.luxury-section-title {
-    font-size: 3.5rem;
-    font-weight: 800;
-    text-align: center;
-    margin: 2rem 0;
-    background: linear-gradient(45deg, var(--luxury-rich-gold) 0%, var(--luxury-gold) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.luxury-royal-divider {
-    width: 120px;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, var(--luxury-gold), transparent);
-    margin: 0 auto;
-}
-
-.luxury-lead-text {
-    font-size: 1.3rem;
-    line-height: 1.9;
-    color: var(--luxury-deep-burgundy);
-    margin: 2rem 0;
-    font-weight: 400;
-    text-align: center;
-}
-
-/* Services Section */
-.luxury-services-section {
-    padding: 8rem 0;
-    background: var(--luxury-marble-white);
-}
-
-.luxury-royal-crown {
-    font-size: 3rem;
-    color: var(--luxury-gold);
-    margin-bottom: 2rem;
-    filter: drop-shadow(0 5px 15px rgba(212, 175, 55, 0.3));
-}
-
-.luxury-ornate-separator {
-    width: 200px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--luxury-gold), var(--luxury-rich-gold), var(--luxury-gold), transparent);
-    margin: 2rem auto;
-    position: relative;
-}
-
-.luxury-ornate-separator::before,
-.luxury-ornate-separator::after {
-    content: '♦';
-    position: absolute;
-    top: -8px;
-    color: var(--luxury-gold);
-    font-size: 1.2rem;
-}
-
-.luxury-ornate-separator::before {
-    left: 20px;
-}
-
-.luxury-ornate-separator::after {
-    right: 20px;
-}
-
-/* Palace Service Cards */
-.luxury-service-palace {
-    position: relative;
-    background: linear-gradient(145deg, var(--luxury-marble-cream) 0%, var(--luxury-pearl) 100%);
-    border-radius: 25px;
-    padding: 3rem 2rem 2rem;
-    text-align: center;
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
-    border: 2px solid transparent;
-    background-clip: padding-box;
-    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.15);
-}
-
-.luxury-service-palace:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 25px 50px rgba(212, 175, 55, 0.25);
-    border-color: var(--luxury-gold);
-}
-
-.luxury-palace-dome {
-    position: absolute;
-    top: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 30px;
-    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 100%);
-    border-radius: 60px 60px 0 0;
-    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
-}
-
-.luxury-service-icon {
-    font-size: 3.5rem;
-    color: var(--luxury-gold);
-    margin: 1rem 0 2rem;
-    filter: drop-shadow(0 5px 10px rgba(212, 175, 55, 0.3));
-}
-
-.luxury-service-title {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--luxury-deep-burgundy);
-    margin-bottom: 1.5rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.luxury-service-description {
-    color: var(--luxury-deep-burgundy);
-    line-height: 1.7;
-    font-size: 1.1rem;
-    opacity: 0.8;
-}
-
-.luxury-marble-base {
-    position: absolute;
-    bottom: -10px;
-    left: 20px;
-    right: 20px;
-    height: 20px;
-    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
-    border-radius: 0 0 20px 20px;
-}
-
-/* CTA Section */
-.luxury-cta-section {
-    position: relative;
-    padding: 8rem 0;
-    background: linear-gradient(135deg, var(--luxury-deep-burgundy) 0%, var(--luxury-royal-purple) 50%, var(--luxury-obsidian) 100%);
-    color: var(--luxury-pearl);
-    overflow: hidden;
-}
-
-.luxury-palace-architecture {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.luxury-marble-columns {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 10%;
-}
-
-.luxury-column {
-    width: 40px;
-    height: 100%;
-    background: linear-gradient(180deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 50%, rgba(212, 175, 55, 0.1) 100%);
-    border-radius: 20px;
-    opacity: 0.3;
-    animation: luxuryColumnGlow 10s infinite ease-in-out;
-}
-
-.luxury-column-1 { animation-delay: 0s; }
-.luxury-column-2 { animation-delay: 2.5s; }
-.luxury-column-3 { animation-delay: 5s; }
-.luxury-column-4 { animation-delay: 7.5s; }
-
-@keyframes luxuryColumnGlow {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 0.6; }
-}
-
-.luxury-imperial-crown {
-    font-size: 4rem;
-    color: var(--luxury-gold);
-    margin-bottom: 2rem;
-    filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.5));
-}
-
-.luxury-cta-title {
-    font-size: 4rem;
-    font-weight: 900;
-    text-align: center;
-    margin-bottom: 2rem;
-    background: linear-gradient(45deg, var(--luxury-pearl) 0%, var(--luxury-gold) 50%, var(--luxury-pearl) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.luxury-cta-subtitle {
-    font-size: 1.4rem;
-    text-align: center;
-    margin-bottom: 3rem;
-    color: var(--luxury-pearl);
-    opacity: 0.9;
-    font-style: italic;
-}
-
-.luxury-cta-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    flex-wrap: wrap;
-}
-
-.luxury-btn-imperial {
-    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 100%);
-    color: var(--luxury-obsidian);
-    border: 2px solid var(--luxury-pearl);
-}
-
-.luxury-btn-imperial:hover {
-    transform: translateY(-7px) scale(1.08);
-    box-shadow: 0 20px 45px rgba(212, 175, 55, 0.6);
-}
-
-.luxury-btn-crystal {
-    background: rgba(240, 234, 214, 0.1);
-    color: var(--luxury-pearl);
-    border: 2px solid var(--luxury-gold);
-    backdrop-filter: blur(15px);
-}
-
-.luxury-btn-crystal:hover {
-    background: rgba(240, 234, 214, 0.2);
-    transform: translateY(-5px);
-}
-
-/* Testimonials Section */
-.luxury-testimonials-section .luxury-testimonial-card {
-    height: 100%;
-    min-height: 250px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.luxury-testimonials-section .grid {
-    align-items: stretch;
-}
-
-.luxury-testimonial-text {
-    flex-grow: 1;
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    line-height: 1.6;
-}
-
-.luxury-testimonial-author {
-    margin-top: auto;
-    padding-top: 1rem;
-}
-
-/* Gallery Section */
-.luxury-gallery-section .grid {
-    align-items: stretch;
-}
-
-.luxury-gallery-item {
-    aspect-ratio: 3/4;
-    border-radius: 12px;
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.luxury-gallery-item:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.luxury-gallery-section .text-center {
-    margin-top: 3rem;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .luxury-hero-title {
-        font-size: 3rem;
-    }
-    
-    .luxury-hero-subtitle {
-        font-size: 1.3rem;
-    }
-    
-    .luxury-section-title {
-        font-size: 2.5rem;
-    }
-    
-    .luxury-cta-title {
-        font-size: 2.8rem;
-    }
-    
-    .luxury-portrait-image,
-    .luxury-portrait-placeholder {
-        height: 400px;
-    }
-    
-    .luxury-cta-buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .luxury-btn {
-        width: 300px;
-        margin: 10px 0;
-    }
-}
+    right: 0;
+    bottom: 0;
+    background: {{theme.colors.hero-overlay}};
+    z-index: 3;
+}
+.luxury-gallery-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+}
+.luxury-gallery-preview-item { position: relative; border-radius: 12px; overflow: hidden; aspect-ratio: 1; }
+.luxury-gallery-preview-image { width: 100%; height: 100%; object-fit: cover; }
+.luxury-gallery-preview-placeholder { display: flex; align-items: center; justify-content: center; background: var(--theme-bg-secondary); color: var(--theme-accent); }
+@media (max-width: 1024px) { .luxury-gallery-preview-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 768px) { .luxury-gallery-preview-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 480px) { .luxury-gallery-preview-grid { grid-template-columns: repeat(2, 1fr); } }
+
+/* Service cards styling moved to luxury-theme-overrides.css - no hardcoded colors */
 </style>

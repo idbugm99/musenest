@@ -26,7 +26,7 @@ class RoseThemeEnhancements {
                 position: fixed;
                 width: 8px;
                 height: 12px;
-                background: linear-gradient(45deg, var(--theme-accent), color-mix(in srgb, var(--theme-accent), white 30%));
+                background: linear-gradient(45deg, var(--theme-accent), color-mix(in srgb, var(--theme-accent), var(--theme-text-inverted, #ffffff) 30%));
                 border-radius: 0 100% 0 100%;
                 pointer-events: none;
                 z-index: 1;
@@ -197,7 +197,7 @@ class RoseThemeEnhancements {
                 position: fixed;
                 width: 4px;
                 height: 4px;
-                background: var(--theme-accent, #e91e63);
+                background: var(--theme-accent);
                 border-radius: 50%;
                 pointer-events: none;
                 z-index: 1000;
@@ -223,8 +223,8 @@ class RoseThemeEnhancements {
         if (!card) return;
         
         card.style.boxShadow = `
-            0 0 20px color-mix(in srgb, var(--theme-accent, #e91e63), transparent 70%),
-            0 0 40px color-mix(in srgb, var(--theme-accent, #e91e63), transparent 90%)
+            0 0 20px color-mix(in srgb, var(--theme-accent), transparent 70%),
+            0 0 40px color-mix(in srgb, var(--theme-accent), transparent 90%)
         `;
     }
     
@@ -321,7 +321,7 @@ if (typeof window !== 'undefined') {
                     position: fixed;
                     width: 6px;
                     height: 6px;
-                    background: var(--theme-accent, #e91e63);
+                    background: var(--theme-accent);
                     border-radius: 50%;
                     pointer-events: none;
                     z-index: 1;

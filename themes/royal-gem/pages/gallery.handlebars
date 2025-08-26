@@ -1,0 +1,237 @@
+<!-- Royal Gem Gallery Page - Universal Gallery System Integration -->
+<section class="royal-section" style="background: linear-gradient(135deg, var(--theme-bg), var(--theme-surface)); position: relative;">
+    <!-- Royal Decorative Elements -->
+    <div style="position: absolute; top: 10%; left: 5%; opacity: 0.3; z-index: 1;">
+        <svg class="royal-icon-lg" viewBox="0 0 64 64" style="animation: float 9s ease-in-out infinite; width: 2.5rem; height: 2.5rem;">
+            <use href="/assets/sprites/royal-icons.ddf91c.svg#gem"></use>
+        </svg>
+    </div>
+    <div style="position: absolute; top: 60%; right: 8%; opacity: 0.4; z-index: 1;">
+        <svg class="royal-icon" viewBox="0 0 64 64" style="animation: float 7s ease-in-out infinite; animation-delay: 3s;">
+            <use href="/assets/sprites/royal-icons.ddf91c.svg#jewelry"></use>
+        </svg>
+    </div>
+    <div style="position: absolute; bottom: 15%; left: 90%; opacity: 0.5; z-index: 1;">
+        <svg class="royal-icon" viewBox="0 0 64 64" style="animation: float 11s ease-in-out infinite; animation-delay: 5s;">
+            <use href="/assets/sprites/royal-icons.ddf91c.svg#diamond"></use>
+        </svg>
+    </div>
+
+    <div class="royal-container" style="position: relative; z-index: 2;">
+        <!-- Page Header -->
+        {{#if gallery_content.gallery_header_visible}}
+        <div style="text-align: center; margin-bottom: 4rem;">
+            <div style="margin-bottom: 2rem;">
+                <svg class="royal-icon-lg" viewBox="0 0 64 64" style="color: var(--theme-accent); animation: pulse 3s ease-in-out infinite;">
+                    <use href="/assets/sprites/royal-icons.ddf91c.svg#crown-royal"></use>
+                </svg>
+            </div>
+            <h1 style="background: linear-gradient(45deg, var(--theme-accent), var(--theme-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                {{#if gallery_content.page_title}}{{gallery_content.page_title}}{{else}}Exclusive Gallery{{/if}}
+            </h1>
+            {{#if gallery_content.page_subtitle}}
+            <p style="font-size: 1.2rem; color: var(--theme-text-subtle); max-width: 700px; margin: 0 auto;">
+                {{gallery_content.page_subtitle}}
+            </p>
+            {{/if}}
+            {{#if gallery_content.page_description}}
+            <p style="font-size: 1.1rem; color: var(--theme-text); max-width: 800px; margin: 1rem auto 0;">
+                {{gallery_content.page_description}}
+            </p>
+            {{/if}}
+        </div>
+        {{else}}
+        <!-- Default Header -->
+        <div style="text-align: center; margin-bottom: 4rem;">
+            <div style="margin-bottom: 2rem;">
+                <svg class="royal-icon-lg" viewBox="0 0 64 64" style="color: var(--theme-accent); animation: pulse 3s ease-in-out infinite;">
+                    <use href="/assets/sprites/royal-icons.ddf91c.svg#crown-royal"></use>
+                </svg>
+            </div>
+            <h1 style="background: linear-gradient(45deg, var(--theme-accent), var(--theme-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                Exclusive Gallery
+            </h1>
+            <p style="font-size: 1.2rem; color: var(--theme-text-subtle); max-width: 700px; margin: 0 auto;">
+                A curated collection showcasing elegance, sophistication, and the artistry of refined companionship.
+            </p>
+        </div>
+        {{/if}}
+
+        <!-- Universal Gallery System -->
+        <div class="royal-gallery-wrapper">
+            {{{renderUniversalGallery modelSlug previewTheme=previewThemeId}}}
+        </div>
+
+        <!-- Gallery Information -->
+        <div class="royal-card" style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)); position: relative; overflow: hidden; margin-top: 4rem;">
+            <div style="position: absolute; top: -30px; right: -30px; opacity: 0.2; z-index: 1;">
+                <svg style="width: 120px; height: 120px; color: var(--theme-accent);" viewBox="0 0 64 64">
+                    <use href="/assets/sprites/royal-icons.ddf91c.svg#insignia"></use>
+                </svg>
+            </div>
+            
+            <div style="position: relative; z-index: 2; text-align: center;">
+                <h2 style="color: var(--theme-text); margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem;">
+                    <svg class="royal-icon" viewBox="0 0 64 64">
+                        <use href="/assets/sprites/royal-icons.ddf91c.svg#scepter"></use>
+                    </svg>
+                    About This Gallery
+                </h2>
+                <p style="color: var(--theme-text); line-height: 1.7; font-size: 1.1rem; max-width: 700px; margin: 0 auto;">
+                    Each image in this exclusive collection has been carefully selected to showcase the elegance, sophistication, and artistry that defines my approach to companionship. These portraits capture not just beauty, but the essence of refined taste and discretion.
+                </p>
+                <div style="margin-top: 2rem;">
+                    <a href="/{{model.slug}}/about{{previewParam}}" class="royal-btn" style="margin-right: 1rem;">
+                        <svg class="royal-icon" viewBox="0 0 64 64" style="margin-right: 0.5rem;">
+                            <use href="/assets/sprites/royal-icons.ddf91c.svg#gem"></use>
+                        </svg>
+                        Learn More About Me
+                    </a>
+                    <a href="/{{model.slug}}/contact{{previewParam}}" class="royal-btn" style="background: linear-gradient(45deg, var(--theme-accent), var(--theme-secondary));">
+                        <svg class="royal-icon" viewBox="0 0 64 64" style="margin-right: 0.5rem;">
+                            <use href="/assets/sprites/royal-icons.ddf91c.svg#royal"></use>
+                        </svg>
+                        Get In Touch
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Load Universal Gallery System CSS and JavaScript -->
+<link rel="stylesheet" href="/templates/universal/gallery-styles.css">
+<script src="/templates/universal/gallery-script.js"></script>
+
+<!-- Royal Theme Gallery CSS Variables Override -->
+<style>
+:root {
+    /* Royal Gallery Color Palette */
+    --gallery-primary: var(--theme-primary, #d4af37);
+    --gallery-primary-hover: var(--theme-accent, #b8941f);
+    --gallery-secondary: var(--theme-secondary, #8b4513);
+    --gallery-accent: var(--theme-accent, #ffd700);
+    --gallery-background: var(--theme-bg, #0f0d1a);
+    --gallery-surface: var(--theme-surface, #1a1625);
+    --gallery-text: var(--theme-text, #f8f6f0);
+    --gallery-text-muted: var(--theme-text-subtle, #c0b8a8);
+    --gallery-border: var(--theme-border, #2a2435);
+    --gallery-border-light: var(--theme-border-muted, #3d3448);
+    --gallery-shadow: rgba(212, 175, 55, 0.2);
+    --gallery-shadow-hover: rgba(212, 175, 55, 0.4);
+    
+    /* Royal Gallery Layout */
+    --gallery-border-radius: 12px;
+    --gallery-border-radius-large: 16px;
+    --gallery-grid-columns-desktop: 3;
+    --gallery-transition-duration: 0.3s;
+    --gallery-hover-lift: -4px;
+}
+
+/* Royal Gallery Enhancements */
+.royal-gallery-wrapper {
+    background: rgba(212, 175, 55, 0.02);
+    border-radius: var(--gallery-border-radius-large);
+    padding: 2rem;
+    border: 1px solid var(--gallery-border-light);
+    box-shadow: 0 8px 32px rgba(212, 175, 55, 0.1);
+}
+
+/* Override Universal Gallery styles for Royal theme */
+.universal-gallery-section {
+    background: var(--gallery-surface) !important;
+    border: 1px solid var(--gallery-border) !important;
+    border-radius: var(--gallery-border-radius) !important;
+    box-shadow: 0 4px 16px var(--gallery-shadow) !important;
+}
+
+.universal-gallery-section h2 {
+    color: var(--gallery-accent) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+}
+
+.universal-gallery-section h2::before {
+    content: "💎";
+    font-size: 1.2em;
+}
+
+.universal-gallery-item {
+    border-radius: var(--gallery-border-radius) !important;
+    overflow: hidden !important;
+    transition: all var(--gallery-transition-duration) ease !important;
+    border: 2px solid transparent !important;
+}
+
+.universal-gallery-item:hover {
+    transform: translateY(var(--gallery-hover-lift)) !important;
+    border-color: var(--gallery-accent) !important;
+    box-shadow: 0 12px 32px var(--gallery-shadow-hover) !important;
+}
+
+.universal-gallery-item img {
+    transition: all var(--gallery-transition-duration) ease !important;
+}
+
+.universal-gallery-item:hover img {
+    filter: brightness(1.1) saturate(1.1) !important;
+}
+
+.universal-lightbox {
+    background: rgba(15, 13, 26, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.universal-lightbox-content {
+    border-radius: var(--gallery-border-radius-large) !important;
+    box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3) !important;
+}
+
+/* Empty state styling */
+.universal-gallery-empty {
+    background: rgba(212, 175, 55, 0.05) !important;
+    border: 2px dashed var(--gallery-border-light) !important;
+    border-radius: var(--gallery-border-radius) !important;
+    color: var(--gallery-text-muted) !important;
+}
+
+/* Royal decorative animations */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .royal-gallery-wrapper {
+        padding: 1rem;
+        margin: 0 -1rem;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+    
+    :root {
+        --gallery-grid-columns-desktop: 2;
+    }
+    
+    .royal-container div[style*="display: flex"] {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 1rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --gallery-grid-columns-desktop: 1;
+    }
+}
+</style>

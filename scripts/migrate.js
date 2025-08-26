@@ -39,10 +39,14 @@ async function runMigrations() {
                 try {
                     await query(statement);
                 } catch (error) {
-                    // Skip errors for tables that already exist
-                    if (!error.message.includes('already exists')) {
-                        throw error;
+                    // Skip errors for existing structures (tables, indexes)
+                    if (
+                        error.message.includes('already exists') ||
+                        error.message.includes('Duplicate key name')
+                    ) {
+                        continue;
                     }
+                    throw error;
                 }
             }
             

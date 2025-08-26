@@ -103,6 +103,51 @@ class TemplateUtils {
         }
     }
 
+    static async loadUniversalPartials() {
+        const partialsPath = path.join(__dirname, '../templates/universal/pages');
+        
+        try {
+            const partialFiles = await fs.readdir(partialsPath);
+            
+            for (const file of partialFiles) {
+                if (file.endsWith('.handlebars')) {
+                    const partialName = file.replace('.handlebars', '');
+                    const partialPath = path.join(partialsPath, file);
+                    const partialContent = await fs.readFile(partialPath, 'utf8');
+                    
+                    handlebars.registerPartial(partialName, partialContent);
+                }
+            }
+            
+            console.log('✅ Universal partials loaded successfully');
+        } catch (error) {
+            console.error('❌ Failed to load universal partials:', error.message);
+        }
+    }
+
+    static async loadSharedPartials() {
+        const partialsPath = path.join(__dirname, '../themes/shared/partials');
+        
+        try {
+            const partialFiles = await fs.readdir(partialsPath);
+            
+            for (const file of partialFiles) {
+                if (file.endsWith('.handlebars')) {
+                    const partialName = file.replace('.handlebars', '');
+                    const partialPath = path.join(partialsPath, file);
+                    const partialContent = await fs.readFile(partialPath, 'utf8');
+                    
+                    // Register shared partials with simple names so they can be used across all themes
+                    handlebars.registerPartial(partialName, partialContent);
+                }
+            }
+            
+            console.log('✅ Shared partials loaded successfully');
+        } catch (error) {
+            console.error('❌ Failed to load shared partials:', error.message);
+        }
+    }
+
     static async precompileTemplates(templateId) {
         const pagesPath = path.join(__dirname, '../themes', templateId, 'pages');
         const compiled = {};

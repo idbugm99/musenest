@@ -34,11 +34,12 @@ function formatLocationDisplay(location, serviceType, radiusMiles) {
 async function getModelBySlug(slug) {
     try {
         const [models] = await db.execute(`
-            SELECT m.id, m.name, m.slug, m.email, m.phone, m.status, m.theme_set_id,
-                   ts.name as theme_name, ts.display_name as theme_display_name,
-                   ts.default_color_scheme
+            SELECT m.id, m.name, m.slug, m.email, m.phone, m.status, m.theme_set_id, m.active_color_palette_id,
+                   ts.name as theme_name, ts.display_name as theme_display_name, ts.default_palette_id,
+                   cp.name as palette_name, cp.display_name as palette_display_name
             FROM models m
             LEFT JOIN theme_sets ts ON m.theme_set_id = ts.id
+            LEFT JOIN color_palettes cp ON m.active_color_palette_id = cp.id
             WHERE m.slug = ? AND m.status IN ('active', 'trial', 'inactive')
             LIMIT 1
         `, [slug]);
@@ -47,6 +48,142 @@ async function getModelBySlug(slug) {
     } catch (error) {
         console.error('Error fetching model:', error);
         return null;
+    }
+}
+
+// Helper function to load dynamic colors from color palette database
+async function loadColorPalette(paletteId, themeId) {
+    try {
+        if (!paletteId && !themeId) {
+            console.log('🎨 No palette or theme ID provided, using fallback colors');
+            return { primary: '#3B82F6', secondary: '#6B7280', text: '#1F2937', background: '#FFFFFF', accent: '#10B981' };
+        }
+
+        // If no explicit palette, try to get theme default palette
+        let targetPaletteId = paletteId;
+        if (!targetPaletteId && themeId) {
+            const [themeRows] = await db.execute(`
+                SELECT default_palette_id FROM theme_sets WHERE id = ? LIMIT 1
+            `, [themeId]);
+            
+            if (themeRows.length > 0 && themeRows[0].default_palette_id) {
+                targetPaletteId = themeRows[0].default_palette_id;
+                console.log(`🎨 Using theme default palette ID: ${targetPaletteId}`);
+            }
+        }
+
+        if (!targetPaletteId) {
+            console.log('🎨 No palette ID available, using fallback colors');
+            return { primary: '#3B82F6', secondary: '#6B7280', text: '#1F2937', background: '#FFFFFF', accent: '#10B981' };
+        }
+
+        // Load color values from the palette
+        const [colorRows] = await db.execute(`
+            SELECT token_name, token_value 
+            FROM color_palette_values 
+            WHERE palette_id = ?
+        `, [targetPaletteId]);
+
+        console.log(`🎨 Loaded ${colorRows.length} color tokens from palette ${targetPaletteId}`);
+
+        if (colorRows.length === 0) {
+            console.log('🎨 No colors found in palette, using fallback colors');
+            return { primary: '#3B82F6', secondary: '#6B7280', text: '#1F2937', background: '#FFFFFF', accent: '#10B981' };
+        }
+
+        // Convert to color object and create backwards-compatible structure
+        const colors = {};
+        colorRows.forEach(row => {
+            colors[row.token_name] = row.token_value;
+        });
+
+        // Normalize legacy/variant token names to canonical schema
+        const aliasToCanonical = {
+            // brand
+            'theme-primary': 'primary', 'brand-primary': 'primary',
+            'theme-secondary': 'secondary',
+            'theme-accent': 'accent', 'highlight': 'accent',
+            // background/surface/overlay
+            'background': 'bg', 'theme-background': 'bg',
+            'surface': 'surface', 'card-background': 'surface', 'theme-surface': 'surface',
+            'bg-primary': 'bg', 'bg-secondary': 'bg-light', 'bg-tertiary': 'surface',
+            'hero-overlay': 'overlay', 'backdrop': 'overlay', 'theme-overlay': 'overlay',
+            // text
+            'theme-text': 'text', 'body-text': 'text',
+            'theme-text-light': 'text-light', 'light-text': 'text-light',
+            'theme-text-dark': 'text-dark', 'dark-text': 'text-dark',
+            'text-default': 'text',
+            // borders
+            'theme-border': 'border', 'border-default': 'border',
+            'theme-border-light': 'border-light',
+            // cards
+            'card-bg': 'card-bg', 'card-text': 'card-text', 'card-border': 'card-border', 'card-shadow': 'card-shadow',
+            // nav/footer
+            'nav-bg': 'nav-bg', 'nav-text': 'nav-text', 'nav-border': 'nav-border',
+            'footer-bg': 'footer-bg', 'footer-text': 'footer-text', 'footer-border': 'footer-border',
+            // buttons
+            'btn-bg': 'btn-bg', 'btn-text': 'btn-text', 'btn-border': 'btn-border',
+            'btn-bg-hover': 'btn-bg-hover', 'btn-text-hover': 'btn-text-hover',
+            'btn-disabled-bg': 'btn-disabled-bg', 'btn-disabled-text': 'btn-disabled-text',
+            // inputs
+            'input-bg': 'input-bg', 'input-text': 'input-text', 'input-border': 'input-border', 'input-placeholder': 'input-placeholder', 'input-focus-ring': 'input-focus-ring',
+            // hero
+            'hero-bg': 'hero-bg', 'hero-text': 'hero-text',
+            // misc
+            'focus-ring': 'focus-ring', 'info': 'info', 'success': 'success', 'warning': 'warning', 'danger': 'danger',
+        };
+
+        const normalized = { ...colors };
+        Object.entries(aliasToCanonical).forEach(([alias, canonical]) => {
+            if (colors[alias] && !normalized[canonical]) {
+                normalized[canonical] = colors[alias];
+            }
+        });
+
+        // Ensure key canonical tokens exist with sensible fallbacks
+        const std = {
+            primary: normalized['primary'] || '#3B82F6',
+            secondary: normalized['secondary'] || '#6B7280',
+            accent: normalized['accent'] || '#0EA5E9',
+            bg: normalized['bg'] || normalized['surface'] || '#FFFFFF',
+            'bg-light': normalized['bg-light'] || '#F8FAFC',
+            'bg-dark': normalized['bg-dark'] || '#0B0B15',
+            surface: normalized['surface'] || normalized['card-bg'] || '#FFFFFF',
+            overlay: normalized['overlay'] || 'rgba(0,0,0,0.5)',
+            text: normalized['text'] || '#1F2937',
+            'text-light': normalized['text-light'] || '#E9E7F1',
+            'text-dark': normalized['text-dark'] || '#0B0B15',
+            border: normalized['border'] || '#E2E8F0',
+            'border-light': normalized['border-light'] || '#C8D3E1',
+            'card-bg': normalized['card-bg'] || normalized['surface'] || '#FFFFFF',
+            'card-text': normalized['card-text'] || normalized['text'] || '#1F2937',
+            'card-border': normalized['card-border'] || normalized['border'] || '#E2E8F0',
+            'card-shadow': normalized['card-shadow'] || 'rgba(0,0,0,0.1)',
+            'btn-bg': normalized['btn-bg'] || normalized['primary'] || '#3B82F6',
+            'btn-bg-hover': normalized['btn-bg-hover'] || normalized['accent'] || '#2563EB',
+            'btn-text': normalized['btn-text'] || '#FFFFFF',
+            'btn-text-hover': normalized['btn-text-hover'] || '#0B0B15',
+            'btn-border': normalized['btn-border'] || normalized['primary'] || '#3B82F6',
+            'focus-ring': normalized['focus-ring'] || normalized['accent'] || '#3B82F6',
+        };
+
+        // Compose compatible colors used by legacy templates (do not overwrite canonical)
+        const compatibleColors = {
+            primary: std.primary,
+            secondary: std.secondary,
+            text: std.text,
+            background: std.bg,
+            accent: std.accent
+        };
+
+        console.log('🎨 Compatible colors:', compatibleColors);
+
+        // Return full color object with both token-based and compatible colors
+        return { ...normalized, ...std, ...compatibleColors };
+
+    } catch (error) {
+        console.error('Error loading color palette:', error);
+        return { primary: '#3B82F6', secondary: '#6B7280', text: '#1F2937', background: '#FFFFFF', accent: '#10B981' };
     }
 }
 
@@ -206,9 +343,10 @@ async function getModelContent(modelId, pageType) {
                     SELECT * FROM model_gallery_page_content WHERE model_id = ?
                 `, [modelId]);
                 
-                // Convert camelCase field names to snake_case for Handlebars template compatibility
                 if (pageContentRows.length > 0) {
                     const rawContent = pageContentRows[0];
+                    
+                    // Convert camelCase field names to snake_case for Handlebars template compatibility
                     Object.keys(rawContent).forEach(key => {
                         // Convert camelCase to snake_case (e.g., galleryHeaderVisible -> gallery_header_visible)
                         const snakeKey = key.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
@@ -309,27 +447,49 @@ router.get('/:slug/:page?', async (req, res) => {
             return `${path}?${params.toString()}`;
         }
         
-        // Check for theme preview parameter
-        const previewThemeId = req.query.preview_theme;
+        // Check for theme preview parameter (supports both ID and name)
+        const previewThemeParam = req.query.preview_theme;
         let previewTheme = null;
         
-        if (previewThemeId) {
+        if (previewThemeParam) {
             try {
+                // Check if it's a number (ID) or string (name)
+                const isNumeric = !isNaN(previewThemeParam) && !isNaN(parseFloat(previewThemeParam));
+                
+                let query, params;
+                if (isNumeric) {
+                    // Query by ID (legacy support)
+                    query = `
+                        SELECT ts.id, ts.name, ts.display_name, 
+                               cp.id as palette_id, cp.name as palette_name, cp.display_name as palette_display_name
+                        FROM theme_sets ts
+                        LEFT JOIN color_palettes cp ON cp.theme_set_id = ts.id AND cp.is_system_palette = 1
+                        WHERE ts.id = ? AND ts.is_active = 1 
+                        LIMIT 1
+                    `;
+                    params = [previewThemeParam];
+                } else {
+                    // Query by name (new support for "royal-gem", etc.)
+                    query = `
+                        SELECT ts.id, ts.name, ts.display_name,
+                               cp.id as palette_id, cp.name as palette_name, cp.display_name as palette_display_name
+                        FROM theme_sets ts
+                        LEFT JOIN color_palettes cp ON cp.theme_set_id = ts.id AND cp.is_system_palette = 1
+                        WHERE ts.name = ? AND ts.is_active = 1
+                        LIMIT 1
+                    `;
+                    params = [previewThemeParam];
+                }
 
-                const [previewRows] = await db.execute(`
-                    SELECT id, name, display_name, default_color_scheme 
-                    FROM theme_sets 
-                    WHERE id = ? AND is_active = 1 
-                    LIMIT 1
-                `, [previewThemeId]);
+                const [previewRows] = await db.execute(query, params);
                 
                 console.log(`📋 Preview query results:`, previewRows);
                 
                 if (previewRows.length > 0) {
                     previewTheme = previewRows[0];
-
+                    console.log(`✅ Found preview theme: ${previewTheme.display_name} (${previewTheme.name})`);
                 } else {
-                    console.log(`❌ No preview theme found with ID: ${previewThemeId}`);
+                    console.log(`❌ No preview theme found with parameter: ${previewThemeParam}`);
                 }
             } catch (error) {
                 console.error('❌ Error loading preview theme:', error);
@@ -369,6 +529,51 @@ router.get('/:slug/:page?', async (req, res) => {
             console.log('🎨 Will override theme colors:', paletteColors ? 'YES' : 'NO');
         }
         
+        // Check publication status for all pages (for both navigation and access control)
+        const pageStatus = {
+            home: true,
+            about: true,
+            gallery: true,
+            rates: true,
+            etiquette: true,
+            calendar: true,
+            contact: true
+        };
+
+        // Define page to table mapping
+        const pageTableMap = {
+            home: 'model_home_page_content',
+            about: 'model_about_page_content',
+            gallery: 'model_gallery_page_content',
+            rates: 'model_rates_page_content',
+            etiquette: 'model_etiquette_page_content',
+            calendar: 'model_calendar_page_content',
+            contact: 'model_contact_page_content'
+        };
+
+        // Check publication status for each page
+        for (const [pageName, tableName] of Object.entries(pageTableMap)) {
+            try {
+                const [pageContentRows] = await db.execute(`
+                    SELECT page_published FROM ${tableName} WHERE model_id = ?
+                `, [model.id]);
+                
+                if (pageContentRows.length > 0) {
+                    pageStatus[pageName] = pageContentRows[0].page_published !== 0; // Consider null/undefined as published
+                }
+            } catch (error) {
+                console.error(`Error checking ${pageName} page publish status:`, error);
+                // If there's an error checking, allow the page (fail open)
+                pageStatus[pageName] = true;
+            }
+        }
+
+        // If requesting a specific page that's unpublished, return 404
+        if (!pageStatus[page]) {
+            console.log(`🚫 ${page.charAt(0).toUpperCase() + page.slice(1)} page for model ${model.id} is unpublished`);
+            return res.status(404).send(`${page.charAt(0).toUpperCase() + page.slice(1)} page is not available`);
+        }
+        
         // Get content for this page
         const rawContent = await getModelContent(model.id, page);
         
@@ -385,7 +590,9 @@ router.get('/:slug/:page?', async (req, res) => {
             'modern': 'modern',
             'dark': 'dark',
             'rose': 'rose',
-            'bdsm': 'bdsm'
+            'bdsm': 'bdsm',
+            'royal-gem': 'royal-gem',
+            'simple-elegance': 'simple-elegance'
         };
         
         // Use preview theme if available, otherwise use model's assigned theme
@@ -402,20 +609,24 @@ router.get('/:slug/:page?', async (req, res) => {
             console.log(`🎨 Using assigned theme: ${themeName} (mapped from "${activeThemeName}")`);
         }
         
-        // Parse theme colors from database (use preview theme colors if available)
-        let themeColors = { primary: '#3B82F6', secondary: '#6B7280', text: '#1F2937', background: '#FFFFFF', accent: '#10B981' };
-        const colorScheme = previewTheme ? previewTheme.default_color_scheme : model.default_color_scheme;
-        
-        if (colorScheme) {
-            try {
-                // Check if it's already an object or needs parsing
-                themeColors = typeof colorScheme === 'string' 
-                    ? JSON.parse(colorScheme) 
-                    : colorScheme;
-            } catch (error) {
-                console.error('Error parsing theme colors:', error);
-            }
+        // Load dynamic colors from color palette database (use preview theme palette if available)
+        let paletteId = null;
+        let themeId = null;
+
+        if (previewTheme) {
+            // For preview themes, use the theme's default palette
+            paletteId = previewTheme.palette_id;
+            themeId = previewTheme.id;
+            console.log(`🎨 Preview mode - using theme ${themeId} (${previewTheme.name}) default palette ${paletteId}`);
+        } else {
+            // For regular mode, use model's active palette or theme default
+            paletteId = model.active_color_palette_id;
+            themeId = model.theme_set_id;
+            console.log(`🎨 Regular mode - model palette ${paletteId}, theme ${themeId}`);
         }
+
+        // Load dynamic colors from database
+        const themeColors = await loadColorPalette(paletteId, themeId);
 
 
         // Pre-load testimonials data for home pages
@@ -854,13 +1065,13 @@ router.get('/:slug/:page?', async (req, res) => {
             
             // Navigation structure
             navigation: [
-                { name: 'Home', url: `/${slug}${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'home' },
-                { name: 'About', url: `/${slug}/about${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'about' },
-                { name: 'Gallery', url: `/${slug}/gallery${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'gallery' },
-                { name: 'Rates', url: `/${slug}/rates${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'rates' },
-                { name: 'Etiquette', url: `/${slug}/etiquette${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'etiquette' },
-                ...(res.locals.calendarEnabled ? [{ name: 'Calendar', url: `/${slug}/calendar${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'calendar' }] : []),
-                { name: 'Contact', url: `/${slug}/contact${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'contact' }
+                ...(pageStatus.home ? [{ name: 'Home', url: `/${slug}${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'home' }] : []),
+                ...(pageStatus.about ? [{ name: 'About', url: `/${slug}/about${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'about' }] : []),
+                ...(pageStatus.gallery ? [{ name: 'Gallery', url: `/${slug}/gallery${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'gallery' }] : []),
+                ...(pageStatus.rates ? [{ name: 'Rates', url: `/${slug}/rates${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'rates' }] : []),
+                ...(pageStatus.etiquette ? [{ name: 'Etiquette', url: `/${slug}/etiquette${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'etiquette' }] : []),
+                ...(res.locals.calendarEnabled && pageStatus.calendar ? [{ name: 'Calendar', url: `/${slug}/calendar${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'calendar' }] : []),
+                ...(pageStatus.contact ? [{ name: 'Contact', url: `/${slug}/contact${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'contact' }] : [])
             ],
             // Current page info
             currentPage: page,
@@ -881,7 +1092,34 @@ router.get('/:slug/:page?', async (req, res) => {
         };
         
         // Render using the assigned theme with layout and theme-specific partials
-        const templatePath = `${themeName}/pages/${page}`;
+        
+        // Query for the correct template file from theme_set_pages table
+        let templatePath = `${themeName}/pages/${page}`;
+        try {
+            const [themePageResults] = await db.execute(`
+                SELECT tsp.template_file 
+                FROM theme_set_pages tsp
+                JOIN page_types pt ON tsp.page_type_id = pt.id
+                WHERE tsp.theme_set_id = ? AND pt.name = ?
+                LIMIT 1
+            `, [model.theme_set_id, page]);
+            
+            if (themePageResults.length > 0) {
+                // Remove leading slash, themes/ prefix, and .handlebars extension for templatePath
+                const templateFile = themePageResults[0].template_file;
+                templatePath = templateFile
+                    .replace(/^\//, '')           // Remove leading slash
+                    .replace(/^themes\//, '')     // Remove themes/ prefix 
+                    .replace(/\.handlebars$/, ''); // Remove .handlebars extension
+                console.log(`🎨 Using database template: ${templateFile} -> ${templatePath}`);
+            } else {
+                console.log(`🎨 No database template found for ${page}, using default: ${templatePath}`);
+            }
+        } catch (error) {
+            console.error('❌ Error querying theme template:', error);
+            console.log(`🎨 Falling back to default template: ${templatePath}`);
+        }
+        
         const layoutPath = `${themeName}/layouts/main`;
 
         

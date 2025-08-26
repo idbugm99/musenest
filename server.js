@@ -503,8 +503,8 @@ app.use('/api/model-etiquette', require('./routes/api/model-etiquette'));
 app.use('/api/etiquette-simple', require('./routes/api/model-etiquette-simple'));
 app.use('/api/about-content', require('./routes/api/model-about-content'));
 app.use('/api/home-content', require('./routes/api/model-home-content'));
-app.use('/api/etiquette-rosemastos', require('./routes/api/model-etiquette-rosemastos'));
-app.use('/api/contact-rosemastos', require('./routes/api/model-contact-rosemastos'));
+app.use('/api/etiquette-legacy', require('./routes/api/model-etiquette-legacy'));
+app.use('/api/contact-legacy', require('./routes/api/model-contact-legacy'));
 
 // Universal Gallery Admin API
 app.use('/api/universal-gallery', require('./routes/api/universal-gallery'));
@@ -574,7 +574,7 @@ app.get('/:slug/admin/content/etiquette', async (req, res) => {
         );
         if (!rows || !rows.length) return res.status(404).send('Model not found');
         
-        const etiquetteEditorPath = path.join(__dirname, 'admin/components/etiquette-rosemastos-editor.html');
+        const etiquetteEditorPath = path.join(__dirname, 'admin/components/etiquette-editor.html');
         const fs = require('fs');
         const etiquetteEditorHTML = fs.readFileSync(etiquetteEditorPath, 'utf8');
         
@@ -601,7 +601,7 @@ app.get('/:slug/admin/content/contact', async (req, res) => {
         );
         if (!rows || !rows.length) return res.status(404).send('Model not found');
         
-        const contactEditorPath = path.join(__dirname, 'admin/components/contact-rosemastos-editor.html');
+        const contactEditorPath = path.join(__dirname, 'admin/components/contact-page-editor.html');
         const fs = require('fs');
         const contactEditorHTML = fs.readFileSync(contactEditorPath, 'utf8');
         
@@ -2809,6 +2809,7 @@ app.use('/api/clients', require('./routes/api/clients'));
 app.use('/api/model-dashboard', require('./routes/api/sysadmin'));
 app.use('/api/media-preview', require('./routes/api/media-preview'));
 app.use('/api/theme-colors', require('./routes/api/theme-colors'));
+app.use('/api', require('./routes/api/color-palettes'));
 
 // Consolidated sysadmin API namespace (keeps legacy mounts above for back-compat)
 app.use('/api/sysadmin', require('./routes/api/sysadmin'));
@@ -2880,37 +2881,57 @@ app.get('/api/theme-management/models', async (req, res) => {
 app.put('/api/theme-management/models/:id/theme', async (req, res) => {
     try {
         const { id } = req.params;
-        const { theme_id, primary_color, accent_color } = req.body;
+        const { theme_set_id, theme_id, primary_color, accent_color } = req.body;
         
-        // Map theme names to IDs
-        const themeMap = {
-            'basic': 1,
-            'glamour': 2,
-            'luxury': 3,
-            'modern': 4,
-            'dark': 5
-        };
+        // Use theme_set_id directly if provided, otherwise fall back to theme_id mapping for backward compatibility
+        let themeSetId = theme_set_id;
         
-        const themeSetId = themeMap[theme_id];
-        if (theme_id && !themeSetId) {
-            return res.status(400).json({ error: 'Invalid theme ID' });
+        if (!themeSetId && theme_id) {
+            // Legacy support: Map theme names to IDs only if theme_set_id not provided
+            const themeMap = {
+                'basic': 1,
+                'glamour': 2,
+                'luxury': 3,
+                'modern': 4,
+                'dark': 5
+            };
+            
+            themeSetId = themeMap[theme_id];
+            if (!themeSetId) {
+                return res.status(400).json({ error: 'Invalid theme ID' });
+            }
         }
         
-        // Update the model's theme
-        await db.execute(`
+        if (!themeSetId) {
+            return res.status(400).json({ error: 'No theme_set_id or theme_id provided' });
+        }
+        
+        // Validate that the theme exists and get its default palette
+        const themeData = await db.query('SELECT id, default_palette_id FROM theme_sets WHERE id = ?', [themeSetId]);
+        if (themeData.length === 0) {
+            return res.status(400).json({ error: 'Theme does not exist' });
+        }
+
+        const theme = themeData[0];
+        
+        // Update the model's theme and reset to theme's default color palette
+        // This implements the two-tier system: theme change always resets to default palette
+        await db.query(`
             UPDATE models 
-            SET theme_set_id = ?, updated_at = CURRENT_TIMESTAMP 
+            SET theme_set_id = ?, 
+                active_color_palette_id = ?,
+                updated_at = CURRENT_TIMESTAMP 
             WHERE id = ?
-        `, [themeSetId, id]);
+        `, [themeSetId, theme.default_palette_id, id]);
         
         // TODO: Store custom colors in a separate table if provided
-        // For now, we'll just store the theme_id
         
         res.json({ 
             success: true, 
             message: 'Theme assigned successfully',
             model_id: id,
-            theme_id: theme_id
+            theme_set_id: themeSetId,
+            active_color_palette_id: theme.default_palette_id
         });
     } catch (error) {
         console.error('Error assigning theme:', error);
@@ -3158,26 +3179,32 @@ app.get('/api/theme-management/themes', async (req, res) => {
     try {
         const buildPreview = (path) => ({ url: path, embed: `${path}?embed=1` });
         
-        // Fetch themes from database
+        // Fetch themes from database with default palette info
         const themeRows = await db.query(`
-            SELECT id, name, display_name, description, default_color_scheme 
-            FROM theme_sets 
-            WHERE is_active = 1 
-            ORDER BY id ASC
+            SELECT 
+                ts.id, 
+                ts.name, 
+                ts.display_name, 
+                ts.description, 
+                ts.default_palette_id,
+                cp.name as palette_name,
+                cp.display_name as palette_display_name
+            FROM theme_sets ts 
+            LEFT JOIN color_palettes cp ON ts.default_palette_id = cp.id
+            WHERE ts.is_active = 1 
+            ORDER BY ts.id ASC
         `);
         
         const themes = themeRows.map(theme => {
-            // Parse the JSON color scheme
-            let colors = {};
-            try {
-                colors = theme.default_color_scheme ? 
-                    (typeof theme.default_color_scheme === 'string' ? 
-                        JSON.parse(theme.default_color_scheme) : theme.default_color_scheme) 
-                    : {};
-            } catch (e) {
-                console.warn('Failed to parse color scheme for theme', theme.id, e.message);
-                colors = { primary: '#3B82F6', accent: '#10B981' };
-            }
+            // Get basic color info from palette (for compatibility)
+            let colors = {
+                primary: '#007bff',
+                secondary: '#6c757d',
+                accent: '#28a745'
+            };
+            
+            // Note: Full color loading now handled by color palette API
+            console.log(`Theme ${theme.name} uses palette: ${theme.palette_name}`);
             
             return {
                 id: theme.id,  // Use numeric ID from database
@@ -3603,6 +3630,48 @@ async function startServer() {
             
             // Register the universal gallery helpers
             galleryHelpers.registerHelpers(handlebars);
+            
+            // Register universal page helpers
+            const UniversalPageHelpers = require('./src/helpers/UniversalPageHelpers');
+            const universalPageHelpers = new UniversalPageHelpers();
+            universalPageHelpers.registerHelpers(handlebars);
+            
+            // Load universal partials
+            const TemplateUtils = require('./utils/templateUtils');
+            await TemplateUtils.loadUniversalPartials();
+            
+            // Load shared partials (including universal-icon)
+            await TemplateUtils.loadSharedPartials();
+            
+            // Register the times helper for testimonial stars
+            handlebars.registerHelper('times', function(n, options) {
+                let result = '';
+                for (let i = 0; i < n; i++) {
+                    result += options.fn(this);
+                }
+                return result;
+            });
+            
+            // Register the lt (less than) helper for testimonial count limiting
+            handlebars.registerHelper('lt', function(a, b) {
+                return a < b;
+            });
+            
+            // Register the subtract helper for star ratings
+            handlebars.registerHelper('subtract', function(a, b) {
+                return a - b;
+            });
+            
+            // Register the limit helper for testimonials
+            handlebars.registerHelper('limit', function(array, limit) {
+                if (!Array.isArray(array)) return [];
+                return array.slice(0, limit || array.length);
+            });
+            
+            // Register the multiply helper for AOS delays
+            handlebars.registerHelper('multiply', function(a, b) {
+                return a * b;
+            });
             
             console.log('✅ Universal Gallery System initialized successfully');
         } catch (error) {

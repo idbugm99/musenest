@@ -5,10 +5,10 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h1 class="h3 mb-2 text-gray-800">
-                        <i class="fas fa-envelope text-danger me-2"></i>
+                        <i class="fas fa-envelope text-primary me-2"></i>
                         Contact Page Content Editor
                     </h1>
-                    <p class="text-muted mb-0">Configure contact forms and communication preferences</p>
+                    <p class="text-muted mb-0">Edit your contact page settings with real-time saving</p>
                 </div>
                 <div class="d-flex gap-2">
                     <div class="form-check form-switch">
@@ -346,23 +346,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     contentData = { ...data.data };
                 }
                 
-                // Load publish status from unified content system
-                try {
-                    const publishResponse = await fetch(`/api/model-content/${this.currentModelSlug}/pages/3?t=${Date.now()}`, {
-                        cache: 'no-store',
-                        headers: { 'Cache-Control': 'no-cache' }
-                    });
-                    const publishData = await publishResponse.json();
-                    
-                    if (publishData.success && publishData.data && publishData.data.items) {
-                        const publishedField = publishData.data.items.find(item => item.content_key === 'page_published');
-                        if (publishedField) {
-                            contentData.page_published = publishedField.content_value;
-                        }
-                    }
-                } catch (publishError) {
-                    console.warn('Could not load publish status:', publishError);
-                }
+                // page_published is already loaded from contact API above since it's in model_contact_page_content table
                 
                 this.populateFields(contentData);
                 
@@ -461,29 +445,16 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 let response, result;
                 
-                // Handle page_published field specially - save to unified content system
-                if (fieldName === 'page_published') {
-                    response = await fetch(`/api/model-content/${this.currentModelSlug}/pages/3/page_published`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Cache-Control': 'no-cache'
-                        },
-                        cache: 'no-store',
-                        body: JSON.stringify({ content_value: value })
-                    });
-                } else {
-                    // Save other fields to dedicated contact table via model-content-new
-                    response = await fetch(`/api/model-content-new/${this.currentModelSlug}/contact`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Cache-Control': 'no-cache'
-                        },
-                        cache: 'no-store',
-                        body: JSON.stringify({ [fieldName]: value })
-                    });
-                }
+                // Save all fields including page_published to model_contact_page_content via model-content-new
+                response = await fetch(`/api/model-content-new/${this.currentModelSlug}/contact`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache'
+                    },
+                    cache: 'no-store',
+                    body: JSON.stringify({ [fieldName]: value })
+                });
                 
                 result = await response.json();
                 

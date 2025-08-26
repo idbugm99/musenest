@@ -1,0 +1,1022 @@
+<!-- Etiquette Page Content Editor -->
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-2 text-gray-800">
+                        <i class="fas fa-scale-balanced text-primary me-2"></i>
+                        Etiquette Page Content Editor
+                    </h1>
+                    <p class="text-muted mb-0">Edit your etiquette and guidelines sections with real-time saving</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input auto-save-field" type="checkbox" id="page_published" data-field="page_published">
+                        <label class="form-check-label fw-bold text-warning" for="page_published" id="publish-label">
+                            <i class="fas fa-eye-slash me-1"></i>Draft
+                        </label>
+                    </div>
+                    <a href="#" onclick="window.history.back()" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Content Hub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auto-save Status -->
+    <div id="auto-save-status" class="alert alert-info d-none">
+        <i class="fas fa-spinner fa-spin me-2"></i>
+        <span id="save-status-text">Saving...</span>
+    </div>
+
+    <!-- Page Settings -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-cog me-2"></i>Page Settings
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <!-- Page Header -->
+                        <div class="col-lg-3">
+                            <div class="bg-light rounded p-3">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-heading me-2"></i>Page Header
+                                </h5>
+                                
+                                <div class="enhanced-field mb-3">
+                                    <label class="form-label fw-bold">Page Title</label>
+                                    <input type="text" class="form-control auto-save-field" 
+                                           id="page_title" 
+                                           data-field="page_title"
+                                           placeholder="Etiquette & Guidelines">
+                                    <div class="save-status mt-1"></div>
+                                </div>
+                                
+                                <div class="enhanced-field mb-3">
+                                    <label class="form-label fw-bold">Page Subtitle</label>
+                                    <textarea class="form-control auto-save-field" 
+                                            id="page_subtitle" 
+                                            data-field="page_subtitle"
+                                            rows="2"
+                                            placeholder="Creating memorable experiences built on mutual respect, discretion, and professionalism"></textarea>
+                                    <div class="save-status mt-1"></div>
+                                </div>
+
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input auto-save-field" type="checkbox" id="etiquette_header_visible" data-field="etiquette_header_visible">
+                                    <label class="form-check-label" for="etiquette_header_visible">Header Visible</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hero Section -->
+                        <div class="col-lg-4">
+                            <div class="bg-light rounded p-3">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-star me-2"></i>Hero Section
+                                </h5>
+                                
+                                <div class="enhanced-field mb-3">
+                                    <label class="form-label fw-bold">Hero Title</label>
+                                    <input type="text" class="form-control auto-save-field" 
+                                           id="hero_title" 
+                                           data-field="hero_title"
+                                           placeholder="Professional Etiquette">
+                                    <div class="save-status mt-1"></div>
+                                </div>
+                                
+                                <div class="enhanced-field mb-3">
+                                    <label class="form-label fw-bold">Hero Subtitle</label>
+                                    <textarea class="form-control auto-save-field" 
+                                            id="hero_subtitle" 
+                                            data-field="hero_subtitle"
+                                            rows="2"
+                                            placeholder="Guidelines for a respectful and professional experience"></textarea>
+                                    <div class="save-status mt-1"></div>
+                                </div>
+
+                                <div class="enhanced-field mb-3">
+                                    <label class="form-label fw-bold">
+                                        Background Image
+                                        <i class="fas fa-info-circle text-info ms-1" 
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-placement="top" 
+                                           title="For best results, use high-resolution images: 1920×1200px or larger, landscape orientation, under 500KB file size. Images will be used as parallax backgrounds."></i>
+                                    </label>
+                                    <select class="form-select auto-save-field" 
+                                            id="hero_background_image_id" 
+                                            data-field="hero_background_image_id">
+                                        <option value="">No custom background (use default)</option>
+                                        <!-- Gallery images will be populated here -->
+                                    </select>
+                                    <div class="save-status mt-1"></div>
+                                    <small class="text-muted">
+                                        <i class="fas fa-lightbulb text-warning me-1"></i>
+                                        <strong>Tip:</strong> Use high-resolution landscape images (1920×1200px+) for best parallax effect. 
+                                        Images should be under 500KB for fast loading.
+                                    </small>
+                                </div>
+                                
+                                <!-- Hero Background Preview -->
+                                <div id="hero-background-preview" class="d-none mb-3">
+                                    <div class="position-relative">
+                                        <img id="hero-background-preview-img" 
+                                             src="" 
+                                             alt="Hero background preview" 
+                                             class="img-fluid rounded" 
+                                             style="max-height: 120px; width: 100%; object-fit: cover;">
+                                        <div class="position-absolute top-0 end-0 p-2">
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>Selected
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="enhanced-field mb-3">
+                                    <label class="form-label fw-bold">Background Opacity</label>
+                                    <input type="range" class="form-range auto-save-field" 
+                                           id="hero_background_opacity" 
+                                           data-field="hero_background_opacity"
+                                           min="0" max="100" value="80">
+                                    <div class="d-flex justify-content-between">
+                                        <small>0%</small>
+                                        <small id="opacity-value">80%</small>
+                                        <small>100%</small>
+                                    </div>
+                                    <div class="save-status mt-1"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Parallax Controls -->
+                        <div class="col-lg-5">
+                            <div class="bg-light rounded p-3">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-layer-group me-2"></i>Parallax Controls
+                                </h5>
+                                
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input auto-save-field" type="checkbox" id="hero_parallax_enabled" data-field="hero_parallax_enabled">
+                                    <label class="form-check-label fw-bold" for="hero_parallax_enabled">Enable Parallax Effect</label>
+                                </div>
+
+                                <div class="enhanced-field mb-3">
+                                    <label class="form-label fw-bold">Parallax Speed</label>
+                                    <input type="range" class="form-range auto-save-field" 
+                                           id="hero_parallax_speed" 
+                                           data-field="hero_parallax_speed"
+                                           min="0.1" max="2" step="0.1" value="0.5">
+                                    <div class="d-flex justify-content-between">
+                                        <small>Slow (0.1)</small>
+                                        <small id="parallax-speed-value">0.5</small>
+                                        <small>Fast (2.0)</small>
+                                    </div>
+                                    <div class="save-status mt-1"></div>
+                                </div>
+
+                                <div class="enhanced-field mb-3">
+                                    <label class="form-label fw-bold">Focal Point</label>
+                                    <select class="form-select auto-save-field" 
+                                            id="hero_parallax_focal_point" 
+                                            data-field="hero_parallax_focal_point">
+                                        <option value="center">Center</option>
+                                        <option value="top">Top</option>
+                                        <option value="bottom">Bottom</option>
+                                        <option value="left">Left</option>
+                                        <option value="right">Right</option>
+                                        <option value="top-left">Top Left</option>
+                                        <option value="top-right">Top Right</option>
+                                        <option value="bottom-left">Bottom Left</option>
+                                        <option value="bottom-right">Bottom Right</option>
+                                    </select>
+                                    <div class="save-status mt-1"></div>
+                                    <small class="text-muted">Focus point for parallax movement</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-gradient-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-list-alt me-2"></i>Page Content
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        
+                        <!-- Booking & Screening Section -->
+                        <div class="col-lg-6">
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-calendar-check me-2"></i>Booking & Screening
+                                    </h5>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input auto-save-field" type="checkbox" id="etiquette_booking_visible" data-field="etiquette_booking_visible">
+                                        <label class="form-check-label text-white" for="etiquette_booking_visible">Visible</label>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="enhanced-field mb-3">
+                                        <label class="form-label fw-bold">Section Title</label>
+                                        <input type="text" class="form-control auto-save-field" 
+                                               id="booking_title" 
+                                               data-field="booking_title"
+                                               placeholder="Booking & Screening">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+
+                                    <h6 class="text-primary mt-4 mb-2">Initial Contact</h6>
+                                    <div class="enhanced-field mb-2">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control form-control-sm auto-save-field" 
+                                               id="booking_initial_contact_title" 
+                                               data-field="booking_initial_contact_title"
+                                               placeholder="Initial Contact">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                    <div class="enhanced-field mb-3">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control form-control-sm auto-save-field" 
+                                                id="booking_initial_contact_text" 
+                                                data-field="booking_initial_contact_text"
+                                                rows="2"
+                                                placeholder="Please introduce yourself politely..."></textarea>
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+
+                                    <h6 class="text-primary mt-3 mb-2">Screening Process</h6>
+                                    <div class="enhanced-field mb-2">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control form-control-sm auto-save-field" 
+                                               id="booking_screening_title" 
+                                               data-field="booking_screening_title"
+                                               placeholder="Screening Process">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                    <div class="enhanced-field mb-3">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control form-control-sm auto-save-field" 
+                                                id="booking_screening_text" 
+                                                data-field="booking_screening_text"
+                                                rows="2"
+                                                placeholder="For everyone's safety, a brief screening process..."></textarea>
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+
+                                    <h6 class="text-primary mt-3 mb-2">Advance Booking</h6>
+                                    <div class="enhanced-field mb-2">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control form-control-sm auto-save-field" 
+                                               id="booking_advance_title" 
+                                               data-field="booking_advance_title"
+                                               placeholder="Advance Booking">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                    <div class="enhanced-field">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control form-control-sm auto-save-field" 
+                                                id="booking_advance_text" 
+                                                data-field="booking_advance_text"
+                                                rows="2"
+                                                placeholder="I prefer bookings made at least 24 hours in advance..."></textarea>
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Respect & Boundaries Section -->
+                        <div class="col-lg-6">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-handshake me-2"></i>Respect & Boundaries
+                                    </h5>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input auto-save-field" type="checkbox" id="etiquette_respect_visible" data-field="etiquette_respect_visible">
+                                        <label class="form-check-label text-white" for="etiquette_respect_visible">Visible</label>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="enhanced-field mb-3">
+                                        <label class="form-label fw-bold">Section Title</label>
+                                        <input type="text" class="form-control auto-save-field" 
+                                               id="respect_title" 
+                                               data-field="respect_title"
+                                               placeholder="Respect & Boundaries">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+
+                                    <h6 class="text-info mt-4 mb-2">Mutual Respect</h6>
+                                    <div class="enhanced-field mb-2">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control form-control-sm auto-save-field" 
+                                               id="respect_mutual_title" 
+                                               data-field="respect_mutual_title"
+                                               placeholder="Mutual Respect">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                    <div class="enhanced-field mb-3">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control form-control-sm auto-save-field" 
+                                                id="respect_mutual_text" 
+                                                data-field="respect_mutual_text"
+                                                rows="2"
+                                                placeholder="I treat all clients with respect and kindness..."></textarea>
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+
+                                    <h6 class="text-info mt-3 mb-2">Professional Boundaries</h6>
+                                    <div class="enhanced-field mb-2">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control form-control-sm auto-save-field" 
+                                               id="respect_boundaries_title" 
+                                               data-field="respect_boundaries_title"
+                                               placeholder="Professional Boundaries">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                    <div class="enhanced-field mb-3">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control form-control-sm auto-save-field" 
+                                                id="respect_boundaries_text" 
+                                                data-field="respect_boundaries_text"
+                                                rows="2"
+                                                placeholder="Our time together is for companionship..."></textarea>
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+
+                                    <h6 class="text-info mt-3 mb-2">Personal Information</h6>
+                                    <div class="enhanced-field mb-2">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control form-control-sm auto-save-field" 
+                                               id="respect_personal_title" 
+                                               data-field="respect_personal_title"
+                                               placeholder="Personal Information">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                    <div class="enhanced-field">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control form-control-sm auto-save-field" 
+                                                id="respect_personal_text" 
+                                                data-field="respect_personal_text"
+                                                rows="2"
+                                                placeholder="Please do not ask for personal information..."></textarea>
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hygiene & Presentation Section -->
+                        <div class="col-lg-6">
+                            <div class="card border-success">
+                                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-spa me-2"></i>Hygiene & Presentation
+                                    </h5>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input auto-save-field" type="checkbox" id="etiquette_hygiene_visible" data-field="etiquette_hygiene_visible">
+                                        <label class="form-check-label text-white" for="etiquette_hygiene_visible">Visible</label>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="enhanced-field mb-3">
+                                        <label class="form-label fw-bold">Section Title</label>
+                                        <input type="text" class="form-control auto-save-field" 
+                                               id="hygiene_title" 
+                                               data-field="hygiene_title"
+                                               placeholder="Hygiene & Presentation">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+
+                                    <h6 class="text-success mt-4 mb-2">Personal Hygiene</h6>
+                                    <div class="enhanced-field mb-2">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control form-control-sm auto-save-field" 
+                                               id="hygiene_personal_title" 
+                                               data-field="hygiene_personal_title"
+                                               placeholder="Personal Hygiene">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                    <div class="enhanced-field mb-3">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control form-control-sm auto-save-field" 
+                                                id="hygiene_personal_text" 
+                                                data-field="hygiene_personal_text"
+                                                rows="2"
+                                                placeholder="Please arrive freshly showered and well-groomed..."></textarea>
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+
+                                    <h6 class="text-success mt-3 mb-2">Attire</h6>
+                                    <div class="enhanced-field mb-2">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control form-control-sm auto-save-field" 
+                                               id="hygiene_attire_title" 
+                                               data-field="hygiene_attire_title"
+                                               placeholder="Attire">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                    <div class="enhanced-field mb-3">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control form-control-sm auto-save-field" 
+                                                id="hygiene_attire_text" 
+                                                data-field="hygiene_attire_text"
+                                                rows="2"
+                                                placeholder="Dress appropriately for our planned activities..."></textarea>
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+
+                                    <h6 class="text-success mt-3 mb-2">Substances</h6>
+                                    <div class="enhanced-field mb-2">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control form-control-sm auto-save-field" 
+                                               id="hygiene_substances_title" 
+                                               data-field="hygiene_substances_title"
+                                               placeholder="Substances">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                    <div class="enhanced-field">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control form-control-sm auto-save-field" 
+                                                id="hygiene_substances_text" 
+                                                data-field="hygiene_substances_text"
+                                                rows="2"
+                                                placeholder="Please do not arrive under the influence..."></textarea>
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cancellation Policy Section -->
+                        <div class="col-lg-6">
+                            <div class="card border-warning">
+                                <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-calendar-times me-2"></i>Cancellation Policy
+                                    </h5>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input auto-save-field" type="checkbox" id="etiquette_cancellation_visible" data-field="etiquette_cancellation_visible">
+                                        <label class="form-check-label text-dark" for="etiquette_cancellation_visible">Visible</label>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="enhanced-field mb-3">
+                                        <label class="form-label fw-bold">Section Title</label>
+                                        <input type="text" class="form-control auto-save-field" 
+                                               id="cancellation_title" 
+                                               data-field="cancellation_title"
+                                               placeholder="Cancellation Policy">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+
+                                    <h6 class="text-warning mt-4 mb-2">Advance Notice</h6>
+                                    <div class="enhanced-field mb-2">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control form-control-sm auto-save-field" 
+                                               id="cancellation_advance_title" 
+                                               data-field="cancellation_advance_title"
+                                               placeholder="Advance Notice">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                    <div class="enhanced-field mb-3">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control form-control-sm auto-save-field" 
+                                                id="cancellation_advance_text" 
+                                                data-field="cancellation_advance_text"
+                                                rows="2"
+                                                placeholder="Please provide at least 2 hours notice..."></textarea>
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+
+                                    <h6 class="text-warning mt-3 mb-2">No-Shows</h6>
+                                    <div class="enhanced-field mb-2">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control form-control-sm auto-save-field" 
+                                               id="cancellation_noshow_title" 
+                                               data-field="cancellation_noshow_title"
+                                               placeholder="No-Shows">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                    <div class="enhanced-field mb-3">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control form-control-sm auto-save-field" 
+                                                id="cancellation_noshow_text" 
+                                                data-field="cancellation_noshow_text"
+                                                rows="2"
+                                                placeholder="No-shows without notice will result..."></textarea>
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+
+                                    <h6 class="text-warning mt-3 mb-2">My Cancellations</h6>
+                                    <div class="enhanced-field mb-2">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control form-control-sm auto-save-field" 
+                                               id="cancellation_my_title" 
+                                               data-field="cancellation_my_title"
+                                               placeholder="My Cancellations">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                    <div class="enhanced-field">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control form-control-sm auto-save-field" 
+                                                id="cancellation_my_text" 
+                                                data-field="cancellation_my_text"
+                                                rows="2"
+                                                placeholder="In the rare event I need to cancel..."></textarea>
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Safety & Discretion Section -->
+                        <div class="col-lg-6">
+                            <div class="card border-danger">
+                                <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-shield-alt me-2"></i>Safety & Discretion
+                                    </h5>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input auto-save-field" type="checkbox" id="etiquette_safety_visible" data-field="etiquette_safety_visible">
+                                        <label class="form-check-label text-white" for="etiquette_safety_visible">Visible</label>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="enhanced-field mb-3">
+                                        <label class="form-label fw-bold">Section Title</label>
+                                        <input type="text" class="form-control auto-save-field" 
+                                               id="safety_title" 
+                                               data-field="safety_title"
+                                               placeholder="Safety & Discretion">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+
+                                    <h6 class="text-danger mt-4 mb-2">Confidentiality</h6>
+                                    <div class="enhanced-field mb-2">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control form-control-sm auto-save-field" 
+                                               id="safety_confidentiality_title" 
+                                               data-field="safety_confidentiality_title"
+                                               placeholder="Confidentiality">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                    <div class="enhanced-field mb-3">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control form-control-sm auto-save-field" 
+                                                id="safety_confidentiality_text" 
+                                                data-field="safety_confidentiality_text"
+                                                rows="2"
+                                                placeholder="Your privacy is paramount..."></textarea>
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+
+                                    <h6 class="text-danger mt-3 mb-2">Safe Environment</h6>
+                                    <div class="enhanced-field mb-2">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control form-control-sm auto-save-field" 
+                                               id="safety_environment_title" 
+                                               data-field="safety_environment_title"
+                                               placeholder="Safe Environment">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                    <div class="enhanced-field mb-3">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control form-control-sm auto-save-field" 
+                                                id="safety_environment_text" 
+                                                data-field="safety_environment_text"
+                                                rows="2"
+                                                placeholder="I maintain a safe, clean, and welcoming environment..."></textarea>
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+
+                                    <h6 class="text-danger mt-3 mb-2">Professional Communication</h6>
+                                    <div class="enhanced-field mb-2">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control form-control-sm auto-save-field" 
+                                               id="safety_communication_title" 
+                                               data-field="safety_communication_title"
+                                               placeholder="Professional Communication">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                    <div class="enhanced-field">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control form-control-sm auto-save-field" 
+                                                id="safety_communication_text" 
+                                                data-field="safety_communication_text"
+                                                rows="2"
+                                                placeholder="All communications are handled professionally..."></textarea>
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Questions/CTA Section -->
+                        <div class="col-lg-6">
+                            <div class="card border-secondary">
+                                <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-question-circle me-2"></i>Questions & Contact
+                                    </h5>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input auto-save-field" type="checkbox" id="etiquette_questions_visible" data-field="etiquette_questions_visible">
+                                        <label class="form-check-label text-white" for="etiquette_questions_visible">Visible</label>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="enhanced-field mb-3">
+                                        <label class="form-label fw-bold">Section Title</label>
+                                        <input type="text" class="form-control auto-save-field" 
+                                               id="questions_title" 
+                                               data-field="questions_title"
+                                               placeholder="Questions?">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+
+                                    <div class="enhanced-field mb-3">
+                                        <label class="form-label fw-bold">Description Text</label>
+                                        <textarea class="form-control auto-save-field" 
+                                                id="questions_text" 
+                                                data-field="questions_text"
+                                                rows="3"
+                                                placeholder="If you have any questions about these guidelines or need clarification, please don't hesitate to reach out."></textarea>
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+
+                                    <div class="enhanced-field mb-3">
+                                        <label class="form-label fw-bold">Button Text</label>
+                                        <input type="text" class="form-control auto-save-field" 
+                                               id="questions_button_text" 
+                                               data-field="questions_button_text"
+                                               placeholder="Contact Me">
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+
+                                    <div class="enhanced-field">
+                                        <label class="form-label fw-bold">Button Link</label>
+                                        <select class="form-select auto-save-field" 
+                                                id="questions_button_link" 
+                                                data-field="questions_button_link">
+                                            <option value="contact">Contact Page</option>
+                                            <option value="calendar">Calendar Page</option>
+                                            <option value="rates">Rates Page</option>
+                                            <option value="about">About Page</option>
+                                            <option value="gallery">Gallery Page</option>
+                                            <option value="home">Home Page</option>
+                                        </select>
+                                        <div class="save-status mt-1"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function(){
+    let currentModelSlug = 'modelexample';
+    let imageData = {}; // Store image data for preview functionality
+    
+    // Extract slug from URL if available
+    const pathSegments = window.location.pathname.split('/').filter(segment => segment.length > 0);
+    if (pathSegments.length > 0) {
+        currentModelSlug = pathSegments[0];
+    }
+
+    // Initialize the editor
+    async function initializeEditor() {
+        await loadGalleryImages();
+        await loadContent();
+        bindAutoSave();
+        bindRangeUpdates();
+        console.log('Etiquette page editor initialized for model:', currentModelSlug);
+    }
+
+    // Load gallery images for background selection (same as gallery editor)
+    async function loadGalleryImages() {
+        try {
+            // Load approved gallery images for hero background selection
+            const imagesResponse = await fetch(`/api/model-gallery/${currentModelSlug}/available-images?status=approved&context=public_site`);
+            const imagesData = await imagesResponse.json();
+            
+            if (imagesData.success && imagesData.data && imagesData.data.images) {
+                const heroBackgroundSelect = document.getElementById('hero_background_image_id');
+                
+                // Store image data for preview
+                imageData = {};
+                
+                imagesData.data.images.forEach(image => {
+                    // Add option to hero background dropdown
+                    const option = document.createElement('option');
+                    option.value = image.id;
+                    option.textContent = `${image.filename} (${image.moderation_status || 'approved'})`;
+                    heroBackgroundSelect.appendChild(option);
+                    
+                    // Store image data for preview
+                    imageData[image.id] = image;
+                });
+                
+                console.log('Loaded gallery images for etiquette page background selection');
+            } else {
+                console.warn('No gallery images found');
+            }
+        } catch (error) {
+            console.error('Error loading gallery options:', error);
+        }
+    }
+
+    // Update hero background preview (same as gallery editor)
+    function updateHeroBackgroundPreview() {
+        const backgroundSelect = document.getElementById('hero_background_image_id');
+        const preview = document.getElementById('hero-background-preview');
+        const previewImg = document.getElementById('hero-background-preview-img');
+        
+        if (backgroundSelect.value && backgroundSelect.selectedOptions[0]) {
+            // Get filename from the selected option text
+            const selectedText = backgroundSelect.selectedOptions[0].textContent;
+            const filename = selectedText.split(' (')[0]; // Extract filename
+            
+            // Show preview with actual image - use the correct gallery path
+            preview.classList.remove('d-none');
+            previewImg.src = `/uploads/${currentModelSlug}/public/gallery/${filename}`;
+            previewImg.alt = `Background preview: ${filename}`;
+        } else {
+            // Hide preview when no image is selected
+            preview.classList.add('d-none');
+        }
+    }
+
+    // Load existing content from API
+    async function loadContent() {
+        try {
+            const response = await fetch(`/api/model-content-new/${currentModelSlug}/etiquette`);
+            const data = await response.json();
+            
+            if (data.success && data.data) {
+                const content = data.data;
+                
+                // Populate all form fields
+                Object.keys(content).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        if (element.type === 'checkbox') {
+                            element.checked = content[key] === 1 || content[key] === true;
+                        } else if (element.tagName === 'SELECT') {
+                            // For select elements, set the value after options are loaded
+                            element.value = content[key] || '';
+                            // If value didn't stick, try again after a brief delay
+                            if (element.value !== (content[key] || '')) {
+                                setTimeout(() => {
+                                    element.value = content[key] || '';
+                                }, 100);
+                            }
+                        } else {
+                            element.value = content[key] || '';
+                        }
+                    }
+                });
+
+                // Update publish label
+                updatePublishLabel(content.page_published);
+                
+                // Update hero background preview if image is selected
+                if (content.hero_background_image_id) {
+                    setTimeout(() => {
+                        updateHeroBackgroundPreview();
+                    }, 200); // Allow time for dropdown to be populated
+                }
+                
+                // Update range displays
+                updateOpacityDisplay();
+                updateParallaxSpeedDisplay();
+            }
+        } catch (error) {
+            console.error('Failed to load etiquette content:', error);
+            showStatus('Failed to load content', 'error');
+        }
+    }
+
+    // Bind auto-save functionality
+    function bindAutoSave() {
+        const autoSaveFields = document.querySelectorAll('.auto-save-field');
+        
+        autoSaveFields.forEach(field => {
+            // Debounced save for text inputs
+            let saveTimer;
+            const debouncedSave = () => {
+                clearTimeout(saveTimer);
+                saveTimer = setTimeout(() => autoSave(field), 700);
+            };
+
+            // Immediate save for checkboxes and selects
+            const immediateSave = () => autoSave(field);
+
+            if (field.type === 'text' || field.type === 'textarea') {
+                field.addEventListener('input', debouncedSave);
+            } else {
+                field.addEventListener('change', immediateSave);
+            }
+        });
+    }
+
+    // Auto-save field content
+    async function autoSave(field) {
+        const fieldName = field.dataset.field;
+        let value;
+
+        if (field.type === 'checkbox') {
+            value = field.checked ? 1 : 0;
+        } else if (field.type === 'number') {
+            value = field.value ? parseInt(field.value) : null;
+        } else if (field.tagName === 'SELECT') {
+            value = field.value || null;
+        } else if (field.type === 'range') {
+            value = parseFloat(field.value);
+        } else {
+            value = field.value;
+        }
+
+        // Update publish label if this is the publish toggle
+        if (fieldName === 'page_published') {
+            updatePublishLabel(field.checked);
+        }
+        
+        // Update hero background preview when image changes
+        if (fieldName === 'hero_background_image_id') {
+            updateHeroBackgroundPreview();
+        }
+
+        try {
+            showFieldStatus(field, 'saving');
+            
+            const response = await fetch(`/api/model-content-new/${currentModelSlug}/etiquette`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ [fieldName]: value })
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                showFieldStatus(field, 'saved');
+            } else {
+                showFieldStatus(field, 'error');
+                console.error('Save failed:', result.message);
+            }
+        } catch (error) {
+            showFieldStatus(field, 'error');
+            console.error('Auto-save error:', error);
+        }
+    }
+
+    // Update publish toggle label
+    function updatePublishLabel(isPublished) {
+        const label = document.getElementById('publish-label');
+        if (label) {
+            if (isPublished) {
+                label.innerHTML = '<i class="fas fa-eye me-1"></i>Published';
+                label.className = 'form-check-label fw-bold text-success';
+            } else {
+                label.innerHTML = '<i class="fas fa-eye-slash me-1"></i>Draft';
+                label.className = 'form-check-label fw-bold text-warning';
+            }
+        }
+    }
+
+    // Show field save status
+    function showFieldStatus(field, status) {
+        const statusElement = field.parentElement.querySelector('.save-status');
+        if (statusElement) {
+            statusElement.className = `save-status ${status}`;
+            switch (status) {
+                case 'saving':
+                    statusElement.textContent = 'Saving...';
+                    break;
+                case 'saved':
+                    statusElement.textContent = 'Saved';
+                    setTimeout(() => {
+                        statusElement.textContent = '';
+                        statusElement.className = 'save-status';
+                    }, 2000);
+                    break;
+                case 'error':
+                    statusElement.textContent = 'Save failed';
+                    break;
+            }
+        }
+    }
+
+    // Show general status
+    function showStatus(message, type) {
+        const status = document.getElementById('auto-save-status');
+        const text = document.getElementById('save-status-text');
+        
+        if (status && text) {
+            text.textContent = message;
+            status.className = `alert alert-${type === 'error' ? 'danger' : 'info'}`;
+            status.classList.remove('d-none');
+            
+            setTimeout(() => {
+                status.classList.add('d-none');
+            }, 3000);
+        }
+    }
+
+    // Bind range input updates
+    function bindRangeUpdates() {
+        const opacityRange = document.getElementById('hero_background_opacity');
+        const parallaxSpeedRange = document.getElementById('hero_parallax_speed');
+        
+        if (opacityRange) {
+            opacityRange.addEventListener('input', updateOpacityDisplay);
+        }
+        
+        if (parallaxSpeedRange) {
+            parallaxSpeedRange.addEventListener('input', updateParallaxSpeedDisplay);
+        }
+    }
+
+    // Update opacity display
+    function updateOpacityDisplay() {
+        const range = document.getElementById('hero_background_opacity');
+        const display = document.getElementById('opacity-value');
+        if (range && display) {
+            display.textContent = range.value + '%';
+        }
+    }
+
+    // Update parallax speed display
+    function updateParallaxSpeedDisplay() {
+        const range = document.getElementById('hero_parallax_speed');
+        const display = document.getElementById('parallax-speed-value');
+        if (range && display) {
+            display.textContent = range.value;
+        }
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeEditor);
+    } else {
+        initializeEditor();
+    }
+})();
+</script>
+
+<style>
+.enhanced-field {
+    position: relative;
+}
+
+.save-status {
+    min-height: 1.2rem;
+    font-size: 0.75rem;
+}
+
+.save-status.saving {
+    color: #007bff;
+}
+
+.save-status.saved {
+    color: #28a745;
+}
+
+.save-status.error {
+    color: #dc3545;
+}
+
+.auto-save-field:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.card {
+    transition: box-shadow 0.15s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+</style>

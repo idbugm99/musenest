@@ -71,19 +71,19 @@
             {{!-- Legend --}}
             <div class="flex flex-wrap justify-center gap-6 mb-8">
                 <div class="flex items-center">
-                    <div class="w-2.5 h-2.5 rounded-full mr-2" style="background-color: #22C55E;"></div>
+                    <div class="w-2.5 h-2.5 rounded-full mr-2" style="background-color: {{theme.colors.success}};"></div>
                     <span class="text-sm font-medium" style="font-size: 14px; line-height: 20px;">Available</span>
                 </div>
                 <div class="flex items-center">
-                    <div class="w-2.5 h-2.5 rounded-full mr-2" style="background-color: #3B82F6;"></div>
+                    <div class="w-2.5 h-2.5 rounded-full mr-2" style="background-color: {{theme.colors.primary}};"></div>
                     <span class="text-sm font-medium" style="font-size: 14px; line-height: 20px;">Travel</span>
                 </div>
                 <div class="flex items-center">
-                    <div class="w-2.5 h-2.5 rounded-full mr-2" style="background-color: #F59E0B;"></div>
+                    <div class="w-2.5 h-2.5 rounded-full mr-2" style="background-color: {{theme.colors.warning}};"></div>
                     <span class="text-sm font-medium" style="font-size: 14px; line-height: 20px;">Vacation</span>
                 </div>
                 <div class="flex items-center">
-                    <div class="w-2.5 h-2.5 rounded-full mr-2" style="background-color: #94A3B8;"></div>
+                    <div class="w-2.5 h-2.5 rounded-full mr-2" style="background-color: {{theme.colors.disabled-text}};"></div>
                     <span class="text-sm font-medium" style="font-size: 14px; line-height: 20px;">Unavailable</span>
                 </div>
             </div>
@@ -163,10 +163,10 @@
                 // Add availability spans positioned absolutely over the week
                 week.spans.forEach((span, spanIndex) => {
                     const eventColors = {
-                        'available': '#22C55E',
-                        'travel': '#3B82F6',
-                        'vacation': '#F59E0B', 
-                        'unavailable': '#94A3B8'
+                        'available': '{{theme.colors.success}}',
+                        'travel': '{{theme.colors.primary}}',
+                        'vacation': '{{theme.colors.warning}}', 
+                        'unavailable': '{{theme.colors.disabled-text}}'
                     };
                     
                     const textColors = {
@@ -243,10 +243,10 @@
         events.sort((a, b) => a.date - b.date);
         
         const eventColors = {
-            'available': '#22C55E',
-            'travel': '#3B82F6',
-            'vacation': '#F59E0B',
-            'unavailable': '#94A3B8'
+            'available': '{{theme.colors.success}}',
+            'travel': '{{theme.colors.primary}}',
+            'vacation': '{{theme.colors.warning}}',
+            'unavailable': '{{theme.colors.disabled-text}}'
         };
         
         // Generate list items
@@ -352,20 +352,20 @@
 <style>
 #list-view-btn.active,
 #month-view-btn.active {
-    background-color: #2563EB;
+    background-color: {{theme.colors.primary}};
     color: white;
 }
 
 #list-view-btn,
 #month-view-btn {
     background-color: transparent;
-    color: #64748B;
+    color: {{theme.colors.text}};
 }
 
 #list-view-btn:hover,
 #month-view-btn:hover {
-    background-color: #F1F5F9;
-    color: #2563EB;
+    background-color: {{theme.colors.surface}};
+    color: {{theme.colors.primary}};
 }
 
 @media (min-width: 641px) {

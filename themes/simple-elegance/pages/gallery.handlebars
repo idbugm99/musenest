@@ -1,0 +1,196 @@
+<!-- Beautiful Roses Gallery Page -->
+
+<!-- Page Header -->
+{{#if gallery_content.gallery_header_visible}}
+<section style="padding: 4rem 2rem 2rem; background: var(--theme-bg-alt); text-align: center;">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <div class="section-header">
+            <h1>{{#if gallery_content.page_title}}{{gallery_content.page_title}}{{else}}My Gallery{{/if}}</h1>
+            {{#if gallery_content.page_subtitle}}
+            <p style="font-size: 1.25rem; color: var(--theme-text-subtle); margin-top: 1rem;">{{gallery_content.page_subtitle}}</p>
+            {{/if}}
+            {{#if gallery_content.page_description}}
+            <p style="font-size: 1.125rem; color: var(--theme-text-subtle); margin-top: 1rem;">{{gallery_content.page_description}}</p>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Universal Gallery System -->
+<section style="padding: 4rem 2rem; background: var(--theme-surface);">
+    <div style="max-width: 1400px; margin: 0 auto;">
+        {{{renderUniversalGallery modelSlug previewTheme=previewThemeId}}}
+    </div>
+</section>
+
+<!-- Universal Gallery CSS and JavaScript -->
+<link rel="stylesheet" href="/templates/universal/gallery-styles.css">
+<script src="/templates/universal/gallery-script.js"></script>
+
+<!-- Beautiful Roses Gallery Theme Overrides -->
+<style>
+:root {
+    /* Override Universal Gallery variables with Beautiful Roses theme */
+    --gallery-primary: var(--theme-primary);
+    --gallery-primary-hover: var(--theme-primary-hover);
+    --gallery-background: var(--theme-bg);
+    --gallery-surface: var(--theme-surface);
+    --gallery-text: var(--theme-text);
+    --gallery-text-subtle: var(--theme-text-subtle);
+    --gallery-border: var(--theme-border);
+    --gallery-border-radius: 12px;
+    --gallery-shadow: var(--theme-shadow);
+    --gallery-shadow-hover: var(--theme-shadow-hover);
+    --gallery-grid-columns-desktop: 3;
+    --gallery-grid-columns-tablet: 2;
+    --gallery-grid-columns-mobile: 1;
+}
+
+/* Beautiful Roses styling for Universal Gallery components */
+
+/* Hide the Universal Gallery header to avoid duplication */
+.universal-gallery-header,
+.universal-gallery-hero,
+.gallery-hero {
+    display: none !important;
+}
+
+.universal-gallery-section {
+    background: var(--theme-surface) !important;
+    border: 1px solid var(--theme-border) !important;
+    border-radius: 12px !important;
+    box-shadow: var(--theme-shadow) !important;
+    margin-bottom: 3rem !important;
+}
+
+.universal-gallery-section h2 {
+    color: var(--theme-primary) !important;
+    font-family: var(--font-display) !important;
+    position: relative !important;
+}
+
+.universal-gallery-section h2::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-image: url('/themes/simple-elegance/assets/svg/rose-icon.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-right: 8px;
+    vertical-align: middle;
+    filter: brightness(0) saturate(100%) invert(15%) sepia(63%) saturate(6538%) hue-rotate(328deg) brightness(90%) contrast(93%);
+}
+
+.universal-gallery-item {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: var(--theme-shadow) !important;
+    transition: all 0.3s ease !important;
+}
+
+.universal-gallery-item:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: var(--theme-shadow-hover) !important;
+}
+
+.universal-gallery-filter-btn {
+    background: var(--theme-surface) !important;
+    color: var(--theme-text) !important;
+    border: 1px solid var(--theme-border) !important;
+    border-radius: 25px !important;
+    padding: 0.5rem 1rem !important;
+    font-family: var(--font-body) !important;
+    transition: all 0.3s ease !important;
+}
+
+.universal-gallery-filter-btn:hover,
+.universal-gallery-filter-btn.active {
+    background: var(--theme-primary) !important;
+    color: white !important;
+    border-color: var(--theme-primary) !important;
+}
+
+.universal-gallery-lightbox {
+    background: rgba(26, 13, 38, 0.95) !important;
+}
+
+.universal-gallery-lightbox-content {
+    border-radius: 12px !important;
+    box-shadow: 0 20px 64px rgba(0, 0, 0, 0.4) !important;
+}
+
+.universal-gallery-lightbox-close {
+    background: var(--theme-primary) !important;
+    color: white !important;
+    border-radius: 50% !important;
+    width: 40px !important;
+    height: 40px !important;
+}
+
+.universal-gallery-lightbox-nav {
+    background: var(--theme-primary) !important;
+    color: white !important;
+    border-radius: 50% !important;
+    width: 50px !important;
+    height: 50px !important;
+}
+
+/* Rose decorative elements for gallery sections */
+.universal-gallery-section::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 60px;
+    height: 60px;
+    background-image: url('/themes/simple-elegance/assets/svg/rose-stem.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.1;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Loading states */
+.universal-gallery-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    color: var(--theme-text-subtle);
+}
+
+.universal-gallery-loading::before {
+    content: '';
+    width: 48px;
+    height: 48px;
+    background-image: url('/themes/simple-elegance/assets/svg/rose-icon.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-bottom: 1rem;
+    filter: brightness(0) saturate(100%) invert(15%) sepia(63%) saturate(6538%) hue-rotate(328deg) brightness(90%) contrast(93%);
+    opacity: 0.5;
+    animation: rose-float 2s ease-in-out infinite;
+}
+
+@keyframes rose-float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .universal-gallery-section {
+        margin-bottom: 2rem !important;
+        padding: 1rem !important;
+    }
+    
+    .universal-gallery-section h2::before {
+        width: 20px !important;
+        height: 20px !important;
+    }
+}
+</style>

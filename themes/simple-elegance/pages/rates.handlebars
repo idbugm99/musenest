@@ -1,0 +1,198 @@
+<!-- Beautiful Roses Rates Page -->
+
+<!-- Page Header -->
+{{#if rates_content.rates_header_visible}}
+<section style="padding: 4rem 2rem 2rem; background: var(--theme-bg-alt); text-align: center;">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <div class="section-header">
+            <h1>{{#if rates_content.page_title}}{{rates_content.page_title}}{{else}}Service Rates{{/if}}</h1>
+            {{#if rates_content.page_subtitle}}
+            <p style="font-size: 1.25rem; color: var(--theme-text-subtle); margin-top: 1rem;">{{rates_content.page_subtitle}}</p>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Rates Tables Section -->
+{{#if rates_content.rates_table_visible}}
+<section style="padding: 6rem 2rem; background: var(--theme-surface);">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        
+        {{#if rates_content.table_title}}
+        <div class="section-header">
+            <h2>{{rates_content.table_title}}</h2>
+            {{#if rates_content.table_description}}
+            <p style="font-size: 1.125rem; color: var(--theme-text-subtle); margin-top: 1rem;">{{rates_content.table_description}}</p>
+            {{/if}}
+        </div>
+        {{/if}}
+        
+        <!-- Incall Services -->
+        {{#if rates_content.rates_incall_visible}}
+        {{#if rates.incall.length}}
+        <div style="margin-bottom: 4rem;">
+            <h3 style="margin-bottom: 2rem; color: var(--theme-primary);">Incall Services</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                {{#each rates.incall}}
+                <div class="card rose-card">
+                    {{#if ../rates_content.incall_show_service_name}}
+                    <h4 style="color: var(--theme-primary); margin-bottom: 1rem;">{{this.service_name}}</h4>
+                    {{/if}}
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        {{#if ../rates_content.incall_show_duration}}
+                        <span style="color: var(--theme-text-subtle);">{{this.duration}}</span>
+                        {{/if}}
+                        {{#if ../rates_content.incall_show_price}}
+                        <span style="font-size: 1.25rem; font-weight: 600; color: var(--theme-primary);">{{this.price}}</span>
+                        {{/if}}
+                    </div>
+                    {{#if this.description}}
+                    <p style="color: var(--theme-text-subtle); font-size: 0.9rem;">{{this.description}}</p>
+                    {{/if}}
+                </div>
+                {{/each}}
+            </div>
+        </div>
+        {{/if}}
+        {{/if}}
+        
+        <!-- Outcall Services -->
+        {{#if rates_content.rates_outcall_visible}}
+        {{#if rates.outcall.length}}
+        <div style="margin-bottom: 4rem;">
+            <h3 style="margin-bottom: 2rem; color: var(--theme-primary);">Outcall Services</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                {{#each rates.outcall}}
+                <div class="card rose-card">
+                    {{#if ../rates_content.outcall_show_service_name}}
+                    <h4 style="color: var(--theme-primary); margin-bottom: 1rem;">{{this.service_name}}</h4>
+                    {{/if}}
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        {{#if ../rates_content.outcall_show_duration}}
+                        <span style="color: var(--theme-text-subtle);">{{this.duration}}</span>
+                        {{/if}}
+                        {{#if ../rates_content.outcall_show_price}}
+                        <span style="font-size: 1.25rem; font-weight: 600; color: var(--theme-primary);">{{this.price}}</span>
+                        {{/if}}
+                    </div>
+                    {{#if this.description}}
+                    <p style="color: var(--theme-text-subtle); font-size: 0.9rem;">{{this.description}}</p>
+                    {{/if}}
+                </div>
+                {{/each}}
+            </div>
+        </div>
+        {{/if}}
+        {{/if}}
+        
+        <!-- Extended Services -->
+        {{#if rates_content.rates_extended_visible}}
+        {{#if rates.extended.length}}
+        <div style="margin-bottom: 4rem;">
+            <h3 style="margin-bottom: 2rem; color: var(--theme-primary);">{{#if rates_content.nav_extended_label}}{{rates_content.nav_extended_label}}{{else}}Extended Services{{/if}}</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                {{#each rates.extended}}
+                <div class="card rose-card">
+                    {{#if ../rates_content.extended_show_service_name}}
+                    <h4 style="color: var(--theme-primary); margin-bottom: 1rem;">{{this.service_name}}</h4>
+                    {{/if}}
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        {{#if ../rates_content.extended_show_duration}}
+                        <span style="color: var(--theme-text-subtle);">{{this.duration}}</span>
+                        {{/if}}
+                        {{#if ../rates_content.extended_show_price}}
+                        <span style="font-size: 1.25rem; font-weight: 600; color: var(--theme-primary);">{{this.price}}</span>
+                        {{/if}}
+                    </div>
+                    {{#if this.description}}
+                    <p style="color: var(--theme-text-subtle); font-size: 0.9rem;">{{this.description}}</p>
+                    {{/if}}
+                </div>
+                {{/each}}
+            </div>
+        </div>
+        {{/if}}
+        {{/if}}
+    </div>
+</section>
+{{/if}}
+
+<!-- Additional Services Section -->
+{{#if rates_content.rates_additional_visible}}
+{{#if additionalServices.length}}
+<section style="padding: 6rem 2rem; background: var(--theme-bg-alt);">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div class="section-header">
+            <h2>Additional Services</h2>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+            {{#each additionalServices}}
+            <div class="card rose-card" style="text-align: center;">
+                <h4 style="color: var(--theme-primary); margin-bottom: 1rem;">{{this.service_name}}</h4>
+                <div style="font-size: 1.25rem; font-weight: 600; color: var(--theme-primary); margin-bottom: 1rem;">{{this.price}}</div>
+                {{#if this.description}}
+                <p style="color: var(--theme-text-subtle); font-size: 0.9rem;">{{this.description}}</p>
+                {{/if}}
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+{{/if}}
+{{/if}}
+
+<!-- Terms & Policies Section -->
+{{#if rates_content.terms_visible}}
+<section style="padding: 6rem 2rem; background: var(--theme-surface);">
+    <div style="max-width: 1000px; margin: 0 auto;">
+        <div class="section-header">
+            <h2>{{#if rates_content.terms_title}}{{rates_content.terms_title}}{{else}}Terms & Policies{{/if}}</h2>
+        </div>
+        
+        {{#if rates_content.terms_content}}
+        <div style="font-size: 1.125rem; line-height: 1.7;">
+            {{{rates_content.terms_content}}}
+        </div>
+        {{/if}}
+    </div>
+</section>
+{{/if}}
+
+<!-- CTA Section -->
+{{#if rates_content.cta_visible}}
+<section style="padding: 6rem 2rem; background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-accent) 100%); color: white; text-align: center;">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <h2 style="margin-bottom: 1rem; color: white;">
+            {{#if rates_content.cta_title}}{{rates_content.cta_title}}{{else}}Ready to Connect?{{/if}}
+        </h2>
+        
+        {{#if rates_content.cta_description}}
+        <p style="font-size: 1.125rem; margin-bottom: 3rem; color: rgba(255, 255, 255, 0.9);">
+            {{rates_content.cta_description}}
+        </p>
+        {{/if}}
+        
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+            {{#if rates_content.cta_button_1_text}}
+            <a href="/{{modelSlug}}/{{#if rates_content.cta_button_1_link}}{{rates_content.cta_button_1_link}}{{else}}contact{{/if}}{{previewParam}}" 
+               style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 2rem; background: white; color: var(--theme-primary); border-radius: 8px; font-weight: 600; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);"
+               onmouseover="this.style.transform='translateY(-2px)'"
+               onmouseout="this.style.transform='translateY(0)'">
+                {{rates_content.cta_button_1_text}}
+            </a>
+            {{/if}}
+            
+            {{#if rates_content.cta_button_2_text}}
+            <a href="/{{modelSlug}}/{{#if rates_content.cta_button_2_link}}{{rates_content.cta_button_2_link}}{{else}}about{{/if}}{{previewParam}}" 
+               style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 2rem; background: transparent; color: white; border: 2px solid white; border-radius: 8px; font-weight: 600; text-decoration: none; transition: all 0.3s ease;"
+               onmouseover="this.style.background='white'; this.style.color='var(--theme-primary)'"
+               onmouseout="this.style.background='transparent'; this.style.color='white'">
+                {{rates_content.cta_button_2_text}}
+            </a>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}

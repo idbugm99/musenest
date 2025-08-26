@@ -1,0 +1,19 @@
+{{!-- 
+  Universal Icon System
+  Usage: {{> universal-icon name="crown" class="w-6 h-6"}}
+  
+  Parameters:
+  - name: Icon name (e.g. "crown", "diamond", "gem")
+  - class: CSS classes for sizing and styling (optional)
+  - color: Custom color (optional, defaults to currentColor)
+  - size: Quick size preset (sm, md, lg, xl) instead of custom class
+  - viewBox: Custom viewBox (defaults to "0 0 24 24")
+--}}
+
+{{!-- Universal SVG icon that works with any theme --}}
+<svg class="{{#if class}}{{class}}{{else}}{{#if size}}icon-{{size}}{{else}}royal-icon{{/if}}{{/if}} universal-icon" 
+     viewBox="{{#if viewBox}}{{viewBox}}{{else}}0 0 24 24{{/if}}" 
+     style="{{#if color}}color: {{color}};{{/if}}" 
+     aria-hidden="true">
+  <use href="/assets/sprites/royal-icons.ddf91c.svg#{{name}}"></use>
+</svg>

@@ -115,7 +115,7 @@
             <!-- Incall Services -->
             {{#if rates_content.rates_incall_visible}}
             <div class="luxury-rate-chamber" data-aos="fade-up" data-aos-delay="100"
-                 {{#if rates_content.rates_background_tint_visible}}style="background-color: {{#if rates_content.rates_background_tint_color}}{{rates_content.rates_background_tint_color}}{{else}}#FDF7E7{{/if}};"{{/if}}>
+                 {{#if rates_content.rates_background_tint_visible}}style="background-color: {{#if rates_content.rates_background_tint_color}}{{rates_content.rates_background_tint_color}}{{else}}var(--bg-light){{/if}};"{{/if}}>
                 <!-- Palace Dome -->
                 <div class="luxury-chamber-dome"></div>
                 
@@ -169,7 +169,7 @@
             <!-- Outcall Services -->
             {{#if rates_content.rates_outcall_visible}}
             <div class="luxury-rate-chamber" data-aos="fade-up" data-aos-delay="200"
-                 {{#if rates_content.rates_background_tint_visible}}style="background-color: {{#if rates_content.rates_background_tint_color}}{{rates_content.rates_background_tint_color}}{{else}}#FDF7E7{{/if}};"{{/if}}>
+                 {{#if rates_content.rates_background_tint_visible}}style="background-color: {{#if rates_content.rates_background_tint_color}}{{rates_content.rates_background_tint_color}}{{else}}var(--bg-light){{/if}};"{{/if}}>
                 <!-- Palace Dome -->
                 <div class="luxury-chamber-dome"></div>
                 
@@ -596,18 +596,26 @@
 
 <!-- Luxury Rates Page Custom Styles -->
 <style>
-/* Luxury Rates Page Variables */
+/* Luxury Rates Page Variables - now referencing canonical theme tokens only */
 :root {
-    --luxury-gold: #d4af37;
-    --luxury-rich-gold: #b8860b;
-    --luxury-rose-gold: #e8b4b8;
-    --luxury-platinum: #e5e4e2;
-    --luxury-marble-white: #f8f6f0;
-    --luxury-marble-cream: #faf5f0;
-    --luxury-deep-burgundy: #722f37;
-    --luxury-royal-purple: #663399;
-    --luxury-obsidian: #0f0f23;
-    --luxury-pearl: #f0ead6;
+    --luxury-gold: var(--theme-accent);
+    --luxury-rich-gold: var(--theme-accent-hover);
+    --luxury-rose-gold: var(--theme-accent-light);
+    --luxury-platinum: var(--theme-text-primary);
+    --luxury-deep-burgundy: var(--theme-text);
+    --luxury-royal-purple: var(--theme-bg-tertiary);
+    --luxury-marble-white: var(--theme-bg-secondary);
+    --luxury-marble-cream: var(--theme-bg-tertiary);
+    --luxury-obsidian: var(--theme-bg-primary);
+    --luxury-pearl: var(--theme-text-primary);
+    /* Direct canonical references for generic background/text usage */
+    --bg-theme: var(--theme-bg-primary);
+    --bg-theme-light: var(--theme-bg-secondary);
+    --text-theme: var(--theme-text);
+    --text-theme-primary: var(--theme-text-primary);
+    --border-theme: var(--theme-border-primary);
+    --border-light-theme: var(--theme-border-light);
+    --card-shadow: var(--theme-shadow, rgba(0,0,0,0.35));
 }
 
 /* Rates Header Styling */
@@ -625,9 +633,10 @@
     width: 100%;
     height: 100%;
     background-image: 
-        radial-gradient(circle at 25% 45%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 75% 25%, rgba(232, 180, 184, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 50% 75%, rgba(212, 175, 55, 0.06) 0%, transparent 50%);
+        radial-gradient(circle at 25% 45%, var(--accent) 0%, transparent 50%),
+        radial-gradient(circle at 75% 25%, var(--secondary) 0%, transparent 50%),
+        radial-gradient(circle at 50% 75%, var(--accent) 0%, transparent 50%);
+    opacity: 0.08;
 }
 
 .luxury-rates-coins {
@@ -674,13 +683,14 @@
     font-size: 4rem;
     color: var(--luxury-gold);
     margin-bottom: 2rem;
-    filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.5));
+    filter: drop-shadow(0 0 25px var(--accent));
+    opacity: 0.3;
     animation: luxuryRatesCrownPulse 5s infinite ease-in-out;
 }
 
 @keyframes luxuryRatesCrownPulse {
-    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.5)); }
-    50% { transform: scale(1.1); filter: drop-shadow(0 0 35px rgba(212, 175, 55, 0.7)); }
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 25px var(--accent)); }
+    50% { transform: scale(1.1); filter: drop-shadow(0 0 35px var(--accent)); }
 }
 
 .luxury-rates-title {
@@ -692,7 +702,7 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(212, 175, 55, 0.4);
+    text-shadow: 0 4px 12px var(--card-shadow), 0 2px 8px var(--accent);
     letter-spacing: 3px;
     position: relative;
 }
@@ -750,7 +760,7 @@
     position: absolute;
     font-size: 2.5rem;
     color: var(--luxury-gold);
-    opacity: 0.4;
+    opacity: 0.15;
     animation: luxuryOrnamentFloat 15s infinite ease-in-out;
 }
 
@@ -782,10 +792,10 @@
     position: sticky;
     top: 0;
     z-index: 50;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 234, 214, 0.95) 100%);
+    background: linear-gradient(135deg, var(--bg-theme) 0%, var(--bg-theme-light) 100%);
     backdrop-filter: blur(20px);
     border-bottom: 2px solid var(--luxury-gold);
-    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 4px 20px var(--card-shadow);
     padding: 1rem 0;
 }
 
@@ -802,7 +812,7 @@
     gap: 0.5rem;
     padding: 12px 24px;
     border-radius: 25px;
-    background: rgba(212, 175, 55, 0.1);
+    background: var(--bg-light);
     color: var(--luxury-deep-burgundy);
     text-decoration: none;
     font-weight: 600;
@@ -819,7 +829,7 @@
     color: var(--luxury-obsidian);
     border-color: var(--luxury-rich-gold);
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 8px 20px var(--card-shadow);
 }
 
 .luxury-nav-link i {
@@ -835,10 +845,11 @@
 /* Rate Chamber Styling */
 .luxury-rate-chamber {
     position: relative;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 234, 214, 0.9) 100%);
+    background: linear-gradient(145deg, var(--bg-theme) 0%, var(--bg-theme-light) 100%);
     border-radius: 30px;
     overflow: hidden;
-    box-shadow: 0 25px 50px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 25px 50px var(--card-shadow);
+    color: var(--text-theme-primary);
     border: 3px solid transparent;
     background-clip: padding-box;
 }
@@ -852,7 +863,7 @@
     height: 50px;
     background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 100%);
     border-radius: 100px 100px 0 0;
-    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 8px 20px var(--card-shadow);
 }
 
 .luxury-chamber-header {
@@ -883,6 +894,7 @@
 }
 
 .luxury-chamber-title {
+    color: var(--primary);
     font-size: 2.2rem;
     font-weight: 800;
     text-transform: uppercase;
@@ -891,13 +903,14 @@
 
 .luxury-chamber-content {
     padding: 2rem;
+    color: var(--text-theme);
 }
 
 .luxury-rate-item {
     display: flex;
     align-items: center;
     padding: 1.5rem 0;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    border-bottom: 1px solid var(--border-theme);
     transition: transform 0.3s ease;
 }
 
@@ -924,7 +937,7 @@
 }
 
 .luxury-highlight-badge {
-    background: linear-gradient(45deg, var(--luxury-gold) 0%, #ffdc73 100%);
+    background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--accent) 100%);
     color: var(--luxury-obsidian);
     padding: 4px 12px;
     border-radius: 15px;
@@ -932,13 +945,14 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 3px 10px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 3px 10px var(--accent);
+    box-shadow: 0 8px 20px var(--card-shadow);
     animation: luxuryBadgeGlow 2s infinite ease-in-out;
 }
 
 @keyframes luxuryBadgeGlow {
-    0%, 100% { box-shadow: 0 3px 10px rgba(212, 175, 55, 0.3); }
-    50% { box-shadow: 0 5px 15px rgba(212, 175, 55, 0.5); }
+    0%, 100% { box-shadow: 0 3px 10px var(--accent); filter: opacity(0.3); }
+    50% { box-shadow: 0 5px 15px var(--accent); filter: opacity(0.5); }
 }
 
 .luxury-rate-duration {
@@ -977,7 +991,8 @@
 
 .luxury-chamber-base {
     height: 20px;
-    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.3;
     margin-top: 1rem;
 }
 
@@ -1001,8 +1016,8 @@
 
 .luxury-table-description {
     font-size: 1.4rem;
-    color: var(--luxury-deep-burgundy);
-    opacity: 0.8;
+    color: var(--text-theme);
+    opacity: 1;
     line-height: 1.7;
     font-style: italic;
     max-width: 800px;
@@ -1023,7 +1038,7 @@
     font-size: 3.5rem;
     color: var(--luxury-gold);
     margin-bottom: 2rem;
-    filter: drop-shadow(0 5px 15px rgba(212, 175, 55, 0.4));
+    filter: drop-shadow(0 5px 15px var(--accent)) opacity(0.4);
     animation: luxurySectionCrownFloat 8s infinite ease-in-out;
 }
 
@@ -1088,12 +1103,12 @@
     transition: transform 0.4s ease, box-shadow 0.4s ease;
     border: 2px solid transparent;
     overflow: hidden;
-    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.15);
+    box-shadow: 0 15px 35px var(--card-shadow);
 }
 
 .luxury-extended-chamber:hover {
     transform: translateY(-10px) scale(1.02);
-    box-shadow: 0 25px 50px rgba(212, 175, 55, 0.25);
+    box-shadow: 0 25px 50px var(--card-shadow);
     border-color: var(--luxury-gold);
 }
 
@@ -1106,7 +1121,8 @@
     height: 40px;
     background: linear-gradient(45deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 100%);
     border-radius: 80px 80px 0 0;
-    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 5px 15px var(--accent);
+    box-shadow: 0 8px 20px var(--card-shadow);
 }
 
 .luxury-extended-header {
@@ -1116,7 +1132,7 @@
 .luxury-extended-icon {
     width: 60px;
     height: 60px;
-    background: rgba(212, 175, 55, 0.1);
+    background: var(--bg-light);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1124,7 +1140,7 @@
     margin: 0 auto 1.5rem;
     font-size: 1.5rem;
     color: var(--luxury-gold);
-    border: 2px solid rgba(212, 175, 55, 0.3);
+    border: 2px solid var(--border-light-theme);
     animation: luxuryExtendedIconFloat 6s infinite ease-in-out;
 }
 
@@ -1163,9 +1179,9 @@
 
 .luxury-extended-description {
     font-size: 1rem;
-    color: var(--luxury-deep-burgundy);
+    color: var(--text-theme);
     line-height: 1.6;
-    opacity: 0.7;
+    opacity: 1;
 }
 
 .luxury-extended-base {
@@ -1174,7 +1190,8 @@
     left: 25px;
     right: 25px;
     height: 30px;
-    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.3;
     border-radius: 0 0 25px 25px;
 }
 
@@ -1189,11 +1206,11 @@
 .luxury-policy-palace,
 .luxury-payment-palace,
 .luxury-terms-palace {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 234, 214, 0.9) 100%);
-    border: 2px solid rgba(212, 175, 55, 0.2);
+    background: linear-gradient(145deg, var(--bg-theme) 0%, var(--bg-theme-light) 100%);
+    border: 2px solid var(--border-light-theme);
     border-radius: 25px;
     padding: 3rem;
-    box-shadow: 0 20px 40px rgba(212, 175, 55, 0.1);
+    box-shadow: 0 20px 40px var(--card-shadow);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -1202,7 +1219,8 @@
 .luxury-payment-palace:hover,
 .luxury-terms-palace:hover {
     transform: translateY(-5px);
-    box-shadow: 0 30px 60px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 30px 60px var(--accent);
+    box-shadow: 0 4px 20px var(--card-shadow);
 }
 
 .luxury-service-header,
@@ -1224,8 +1242,8 @@
 }
 
 @keyframes luxuryServiceCrownGlow {
-    0%, 100% { filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3)); }
-    50% { filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5)); }
+    0%, 100% { filter: drop-shadow(0 0 10px var(--accent)) opacity(0.3); }
+    50% { filter: drop-shadow(0 0 20px var(--accent)) opacity(0.5); }
 }
 
 .luxury-service-title,
@@ -1259,9 +1277,9 @@
     align-items: flex-start;
     gap: 1.5rem;
     padding: 1.5rem;
-    background: rgba(255, 255, 255, 0.3);
+    background: var(--bg-theme-light);
     border-radius: 15px;
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    border: 1px solid var(--border-light-theme);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -1270,7 +1288,7 @@
 .luxury-payment-item:hover,
 .luxury-terms-item:hover {
     transform: translateX(10px);
-    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 10px 25px var(--card-shadow);
 }
 
 .luxury-service-ornament,
@@ -1307,11 +1325,12 @@
 
 .luxury-donation-chamber {
     position: relative;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 234, 214, 0.9) 100%);
+    background: linear-gradient(145deg, var(--bg) 0%, var(--bg-light) 100%);
     border: 3px solid var(--luxury-gold);
     border-radius: 30px;
     padding: 4rem;
-    box-shadow: 0 30px 60px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 30px 60px var(--accent);
+    box-shadow: 0 4px 20px var(--card-shadow);
     overflow: hidden;
 }
 
@@ -1319,13 +1338,13 @@
     font-size: 4rem;
     color: var(--luxury-gold);
     margin-bottom: 2rem;
-    filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.5));
+    filter: drop-shadow(0 0 30px var(--accent)) opacity(0.5);
     animation: luxuryDonationCrownPulse 5s infinite ease-in-out;
 }
 
 @keyframes luxuryDonationCrownPulse {
-    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.5)); }
-    50% { transform: scale(1.1); filter: drop-shadow(0 0 40px rgba(212, 175, 55, 0.7)); }
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 30px var(--accent)) opacity(0.5); }
+    50% { transform: scale(1.1); filter: drop-shadow(0 0 40px var(--accent)) opacity(0.7); }
 }
 
 .luxury-donation-title {
@@ -1399,7 +1418,8 @@
 .luxury-column {
     width: 80px;
     height: 100%;
-    background: linear-gradient(180deg, rgba(212, 175, 55, 0.08) 0%, rgba(212, 175, 55, 0.04) 50%, rgba(212, 175, 55, 0.08) 100%);
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 50%, var(--accent) 100%);
+    opacity: 0.08;
     border-radius: 40px;
     opacity: 0.3;
     animation: luxuryColumnGlow 15s infinite ease-in-out;
@@ -1418,13 +1438,13 @@
     font-size: 4.5rem;
     color: var(--luxury-gold);
     margin-bottom: 2rem;
-    filter: drop-shadow(0 0 35px rgba(212, 175, 55, 0.6));
+    filter: drop-shadow(0 0 35px var(--accent)) opacity(0.6);
     animation: luxuryImperialCrownPulse 6s infinite ease-in-out;
 }
 
 @keyframes luxuryImperialCrownPulse {
-    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 35px rgba(212, 175, 55, 0.6)); }
-    50% { transform: scale(1.15); filter: drop-shadow(0 0 45px rgba(212, 175, 55, 0.8)); }
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 35px var(--accent)) opacity(0.6); }
+    50% { transform: scale(1.15); filter: drop-shadow(0 0 45px var(--accent)) opacity(0.8); }
 }
 
 .luxury-cta-title-imperial {
@@ -1500,7 +1520,8 @@
 
 .luxury-btn-imperial:hover {
     transform: translateY(-8px) scale(1.08);
-    box-shadow: 0 20px 45px rgba(212, 175, 55, 0.6);
+    box-shadow: 0 20px 45px var(--accent);
+    filter: opacity(0.6);
 }
 
 .luxury-btn-imperial-glow {
@@ -1509,7 +1530,8 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+    background: linear-gradient(90deg, transparent, var(--text-light), transparent);
+    opacity: 0.7;
     transition: left 0.6s ease;
 }
 
@@ -1518,14 +1540,15 @@
 }
 
 .luxury-btn-royal {
-    background: rgba(240, 234, 214, 0.1);
+    background: var(--bg-light);
     color: var(--luxury-pearl);
     border: 2px solid var(--luxury-gold);
     backdrop-filter: blur(15px);
 }
 
 .luxury-btn-royal:hover {
-    background: rgba(240, 234, 214, 0.2);
+    background: var(--bg-light);
+    opacity: 0.2;
     transform: translateY(-5px);
 }
 
@@ -1536,7 +1559,7 @@
 
 .luxury-cta-secondary-link a {
     color: var(--luxury-pearl);
-    opacity: 0.7;
+    opacity: 1;
     text-decoration: underline;
     text-underline-offset: 4px;
     font-size: 1.1rem;
@@ -1610,7 +1633,7 @@
     font-size: 2.5rem;
     color: var(--luxury-gold);
     margin-bottom: 2rem;
-    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.4));
+    filter: drop-shadow(0 0 20px var(--accent)) opacity(0.4);
 }
 
 .luxury-footer-title {
@@ -1653,12 +1676,14 @@
 
 .luxury-footer-link:hover {
     opacity: 1;
-    background: rgba(212, 175, 55, 0.2);
+    background: var(--accent);
+    opacity: 0.2;
     transform: translateY(-2px);
 }
 
 .luxury-footer-bottom {
-    border-top: 1px solid rgba(212, 175, 55, 0.3);
+    border-top: 1px solid var(--accent);
+    border-opacity: 0.3;
     padding-top: 2rem;
     margin-top: 2rem;
 }

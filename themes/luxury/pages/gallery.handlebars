@@ -8,17 +8,17 @@
 <!-- Luxury Theme Gallery CSS Variables Override -->
 <style>
 :root {
-    --gallery-primary: #ffd700;
-    --gallery-primary-hover: #ffed4e;
-    --gallery-secondary: #cd9500;
-    --gallery-accent: #ffb300;
-    --gallery-background: linear-gradient(135deg, #f8f6f0, #f0ead6);
-    --gallery-surface: rgba(255, 255, 255, 0.95);
-    --gallery-text: #1a1a2e;
-    --gallery-text-muted: #4a4a5e;
-    --gallery-border: rgba(255, 215, 0, 0.2);
-    --gallery-shadow: rgba(205, 149, 0, 0.2);
-    --gallery-shadow-hover: rgba(205, 149, 0, 0.4);
+    --gallery-primary: var(--theme-accent);
+    --gallery-primary-hover: var(--theme-accent-hover);
+    --gallery-secondary: var(--theme-secondary, var(--theme-accent-hover));
+    --gallery-accent: var(--theme-accent);
+    --gallery-background: linear-gradient(135deg, var(--theme-bg-secondary), var(--theme-bg-tertiary));
+    --gallery-surface: var(--theme-bg-tertiary);
+    --gallery-text: var(--theme-text-primary);
+    --gallery-text-muted: var(--theme-text-muted);
+    --gallery-border: var(--theme-border-light);
+    --gallery-shadow: var(--theme-shadow, rgba(0,0,0,0.35));
+    --gallery-shadow-hover: var(--theme-shadow, rgba(0,0,0,0.45));
     
     --gallery-border-radius: 12px;
     --gallery-border-radius-large: 20px;
@@ -34,8 +34,8 @@
 <style>
 /* Luxury Theme Gallery Hero Section */
 .universal-gallery .gallery-hero {
-    background: linear-gradient(135deg, #f8f6f0, #f0ead6, #e8dcc0);
-    color: #1a1a2e;
+    background: linear-gradient(135deg, var(--theme-bg-secondary), var(--theme-bg-tertiary), var(--theme-bg-primary));
+    color: var(--theme-text-primary);
     position: relative;
     overflow: hidden;
 }
@@ -48,7 +48,7 @@
     transform: translateX(-50%);
     width: 300px;
     height: 150px;
-    background: radial-gradient(ellipse, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+    background: radial-gradient(ellipse, var(--theme-accent) 0%, transparent 70%);
     border-radius: 50%;
     animation: luxury-palace-glow 4s ease-in-out infinite alternate;
 }
@@ -57,10 +57,10 @@
     display: inline-block;
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
+    background: linear-gradient(135deg, var(--accent), var(--accent-light), var(--accent));
     border-radius: 50%;
     margin: 0 auto 2rem auto;
-    box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+    box-shadow: 0 0 30px var(--shadow-hover);
     animation: luxury-crown-pulse 3s ease-in-out infinite;
 }
 
@@ -70,8 +70,8 @@
 }
 
 @keyframes luxury-crown-pulse {
-    0%, 100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
-    50% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.8); }
+    0%, 100% { box-shadow: 0 0 30px var(--shadow-hover); }
+    50% { box-shadow: 0 0 50px var(--shadow-intense); }
 }
 
 /* Luxury Theme Gallery Items */
@@ -82,7 +82,7 @@
     left: -2px;
     right: -2px;
     bottom: -2px;
-    background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+    background: linear-gradient(45deg, var(--accent), var(--accent-light), var(--accent));
     border-radius: calc(var(--gallery-border-radius) + 2px);
     z-index: -1;
     opacity: 0;
@@ -102,12 +102,12 @@
     transform: translateX(-50%);
     width: 100px;
     height: 2px;
-    background: linear-gradient(90deg, transparent, #ffd700, transparent);
+    background: linear-gradient(90deg, transparent, var(--theme-accent), transparent);
 }
 
 .universal-gallery .gallery-section-title {
-    color: #ffd700;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    color: var(--theme-accent);
+    text-shadow: 0 0 10px var(--card-shadow);
     position: relative;
 }
 
@@ -119,40 +119,40 @@
     transform: translateX(-50%);
     width: 80px;
     height: 4px;
-    background: linear-gradient(90deg, #ffd700, #ffed4e, #ffd700);
+    background: linear-gradient(90deg, var(--theme-accent), var(--theme-accent-light), var(--theme-accent));
     border-radius: 2px;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    box-shadow: 0 0 10px var(--shadow-hover);
 }
 
 /* Luxury Theme Carousel Styling */
 .universal-gallery .gallery-carousel-container {
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(205, 164, 0, 0.05));
-    border: 1px solid rgba(255, 215, 0, 0.1);
+    background: linear-gradient(135deg, var(--theme-bg-tertiary), var(--theme-bg-secondary));
+    border: 1px solid var(--theme-border-light);
 }
 
 .universal-gallery .gallery-carousel-nav {
-    background: rgba(255, 215, 0, 0.9);
-    color: #1a1a2e;
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    background: var(--theme-accent); filter: opacity(0.9);
+    color: var(--theme-text-inverted);
+    box-shadow: 0 4px 15px var(--card-shadow);
 }
 
 .universal-gallery .gallery-carousel-nav:hover {
-    background: rgba(255, 215, 0, 1);
-    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
+    background: var(--theme-accent);
+    box-shadow: 0 8px 25px var(--shadow-hover);
 }
 
 .universal-gallery .gallery-carousel-dot {
-    background: rgba(255, 215, 0, 0.4);
+    background: var(--theme-accent); filter: opacity(0.4);
 }
 
 .universal-gallery .gallery-carousel-dot.active {
-    background: #ffd700;
+    background: var(--theme-accent);
 }
 
 /* Luxury Theme Empty State */
 .universal-gallery .gallery-empty-state {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
-    border: 1px solid rgba(255, 215, 0, 0.2);
+    background: linear-gradient(135deg, var(--theme-text-primary), var(--theme-bg-secondary)); filter: opacity(0.95);
+    border: 1px solid var(--theme-border-light);
     position: relative;
 }
 
@@ -164,18 +164,18 @@
     transform: translateX(-50%);
     width: 200px;
     height: 100px;
-    background: radial-gradient(ellipse, rgba(255, 215, 0, 0.2) 0%, transparent 70%);
+    background: radial-gradient(ellipse, var(--theme-accent) 0%, transparent 70%); filter: opacity(0.2);
     border-radius: 50%;
 }
 
 .universal-gallery .gallery-empty-icon {
-    background: linear-gradient(135deg, #ffd700, #ffed4e);
-    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+    background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-light));
+    box-shadow: 0 0 30px var(--card-shadow);
 }
 
 /* Luxury Theme CTA Section */
 .universal-gallery .gallery-cta {
-    background: linear-gradient(135deg, #ffd700, #cd9500, #ffd700);
+    background: linear-gradient(135deg, var(--theme-accent), var(--theme-secondary, var(--theme-accent-hover)), var(--theme-accent));
     color: white;
     position: relative;
 }
@@ -188,37 +188,37 @@
     transform: translateX(-50%);
     width: 400px;
     height: 200px;
-    background: radial-gradient(ellipse, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+    background: radial-gradient(ellipse, var(--theme-text-primary) 0%, transparent 70%); filter: opacity(0.2);
     border-radius: 50%;
     animation: luxury-palace-glow 4s ease-in-out infinite alternate;
 }
 
 .universal-gallery .gallery-cta-badge {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
-    color: #ffd700;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, var(--theme-text-primary), var(--theme-text-primary)); filter: opacity(0.9);
+    color: var(--theme-accent);
+    box-shadow: 0 0 20px var(--theme-text-primary); filter: opacity(0.3);
     animation: luxury-crown-pulse 3s ease-in-out infinite;
 }
 
 .universal-gallery .gallery-cta-primary {
     background: white;
-    color: #ffd700;
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+    color: var(--theme-accent);
+    box-shadow: 0 4px 15px var(--theme-text-primary); filter: opacity(0.3);
 }
 
 .universal-gallery .gallery-cta-primary:hover {
-    background: #f8f8f8;
-    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.4);
+    background: var(--theme-bg-secondary);
+    box-shadow: 0 8px 25px var(--theme-text-primary); filter: opacity(0.4);
 }
 
 .universal-gallery .gallery-cta-secondary {
-    border: 2px solid rgba(255, 255, 255, 0.8);
-    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--theme-text-primary); filter: opacity(0.8);
+    background: var(--theme-text-primary); filter: opacity(0.1);
     color: white;
 }
 
 .universal-gallery .gallery-cta-secondary:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--theme-text-primary); filter: opacity(0.2);
     border-color: white;
 }
 </style>

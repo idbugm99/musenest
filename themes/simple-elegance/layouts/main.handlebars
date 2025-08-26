@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" class="simple-elegance-theme">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{#if pageTitle}}{{pageTitle}} - {{/if}}{{model.name}} | Beautiful Roses</title>
+    <meta name="description" content="{{#if pageDescription}}{{pageDescription}}{{else}}Discover the elegant world of {{model.name}} - Grace, beauty, and memorable experiences.{{/if}}">
+    
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="/themes/simple-elegance/simple-elegance.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/themes/simple-elegance/assets/svg/rose-icon.svg">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="{{#if pageTitle}}{{pageTitle}} - {{/if}}{{model.name}}">
+    <meta property="og:description" content="{{#if pageDescription}}{{pageDescription}}{{else}}Grace, beauty, and memorable experiences{{/if}}">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/themes/simple-elegance/assets/svg/rose-icon.svg">
+    
+    <!-- Dynamic Color Palette CSS Variables -->
+    <style>
+        :root {
+            {{#each theme.colors}}
+            --theme-{{@key}}: {{this}};
+            {{/each}}
+        }
+    </style>
+    
+    <!-- Preload Critical Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body class="simple-elegance-theme">
+    
+    <!-- Beautiful Roses Navigation -->
+    <header class="simple-elegance-header">
+        <nav style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; max-width: 1200px; margin: 0 auto;">
+            
+            <!-- Logo & Model Name -->
+            <div class="nav-brand" style="display: flex; align-items: center; gap: 0.75rem;">
+                <div class="rose-icon" style="width: 32px; height: 32px; color: var(--theme-primary);">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 15.39l-3.76 2.27.99-4.28L5.64 9.87l4.38-.38L12 5.09l1.98 4.4 4.38.38-3.59 3.51.99 4.28L12 15.39z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 style="font-size: 1.5rem; font-weight: 700; margin: 0; font-family: var(--font-display); color: var(--theme-primary);">{{model.name}}</h1>
+                </div>
+            </div>
+            
+            <!-- Navigation Links -->
+            <div class="nav-links" style="display: flex; align-items: center; gap: 2rem;">
+                {{#each navigation}}
+                <a href="{{this.url}}" 
+                   class="nav-link {{#if this.active}}active{{/if}}" 
+                   style="text-decoration: none; color: {{#if this.active}}var(--theme-primary){{else}}var(--theme-text){{/if}}; font-weight: {{#if this.active}}600{{else}}500{{/if}}; font-family: var(--font-body); transition: color 0.3s ease;">
+                    {{this.name}}
+                </a>
+                {{/each}}
+            </div>
+            
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" style="display: none; background: none; border: none; color: var(--theme-primary); font-size: 1.5rem; cursor: pointer;" aria-label="Toggle menu">
+                ☰
+            </button>
+        </nav>
+        
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" style="display: none; background: var(--theme-surface); border-top: 1px solid var(--theme-border); padding: 1rem;">
+            {{#each navigation}}
+            <a href="{{this.url}}" 
+               class="mobile-nav-link {{#if this.active}}active{{/if}}" 
+               style="display: block; padding: 0.75rem 2rem; text-decoration: none; color: {{#if this.active}}var(--theme-primary){{else}}var(--theme-text){{/if}}; font-weight: {{#if this.active}}600{{else}}500{{/if}}; border-bottom: 1px solid var(--theme-border-muted);">
+                {{this.name}}
+            </a>
+            {{/each}}
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="simple-elegance-main" style="min-height: calc(100vh - 200px);">
+        {{{body}}}
+    </main>
+    
+    <!-- Beautiful Roses Footer -->
+    <footer class="simple-elegance-footer" style="background: var(--theme-bg-alt); border-top: 1px solid var(--theme-border); margin-top: 4rem;">
+        <div class="footer-content" style="max-width: 1200px; margin: 0 auto; padding: 3rem 2rem 2rem;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+                
+                <!-- Footer Brand -->
+                <div class="footer-brand">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                        <div class="rose-icon" style="width: 28px; height: 28px; color: var(--theme-primary);">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 15.39l-3.76 2.27.99-4.28L5.64 9.87l4.38-.38L12 5.09l1.98 4.4 4.38.38-3.59 3.51.99 4.28L12 15.39z"/>
+                            </svg>
+                        </div>
+                        <h3 style="font-family: var(--font-display); color: var(--theme-primary); margin: 0;">{{model.name}}</h3>
+                    </div>
+                    <p style="color: var(--theme-text-subtle); line-height: 1.6; margin: 0;">
+                        Grace, beauty, and memorable experiences in an elegant rose garden setting.
+                    </p>
+                </div>
+                
+                <!-- Quick Links -->
+                <div class="footer-links">
+                    <h4 style="font-family: var(--font-display); color: var(--theme-text); margin-bottom: 1rem;">Quick Links</h4>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        {{#each navigation}}
+                        <a href="{{this.url}}" style="color: var(--theme-text-subtle); text-decoration: none; transition: color 0.3s ease;" 
+                           onmouseover="this.style.color='var(--theme-primary)'" 
+                           onmouseout="this.style.color='var(--theme-text-subtle)'">
+                            {{this.name}}
+                        </a>
+                        {{/each}}
+                    </div>
+                </div>
+                
+                <!-- Contact Info -->
+                <div class="footer-contact">
+                    <h4 style="font-family: var(--font-display); color: var(--theme-text); margin-bottom: 1rem;">Contact</h4>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        {{#if contactEmail}}
+                        <a href="mailto:{{contactEmail}}" style="color: var(--theme-text-subtle); text-decoration: none; transition: color 0.3s ease;"
+                           onmouseover="this.style.color='var(--theme-primary)'" 
+                           onmouseout="this.style.color='var(--theme-text-subtle)'">
+                            {{contactEmail}}
+                        </a>
+                        {{/if}}
+                        {{#if contactPhone}}
+                        <a href="tel:{{contactPhone}}" style="color: var(--theme-text-subtle); text-decoration: none; transition: color 0.3s ease;"
+                           onmouseover="this.style.color='var(--theme-primary)'" 
+                           onmouseout="this.style.color='var(--theme-text-subtle)'">
+                            {{contactPhone}}
+                        </a>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer Bottom -->
+            <div style="border-top: 1px solid var(--theme-border-muted); padding-top: 2rem; text-align: center;">
+                <p style="color: var(--theme-text-subtle); margin: 0; font-size: 0.9rem;">
+                    © {{year}} {{model.name}}. All rights reserved. 
+                    <span style="color: var(--theme-primary); font-family: var(--font-display);">Beautiful Roses Theme</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Mobile Menu JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const navLinks = document.querySelector('.nav-links');
+            
+            // Show mobile menu button on small screens
+            function handleResize() {
+                if (window.innerWidth <= 768) {
+                    mobileMenuBtn.style.display = 'block';
+                    navLinks.style.display = 'none';
+                } else {
+                    mobileMenuBtn.style.display = 'none';
+                    navLinks.style.display = 'flex';
+                    mobileMenu.style.display = 'none';
+                }
+            }
+            
+            // Toggle mobile menu
+            mobileMenuBtn?.addEventListener('click', function() {
+                mobileMenu.style.display = mobileMenu.style.display === 'none' || !mobileMenu.style.display ? 'block' : 'none';
+            });
+            
+            // Handle resize
+            window.addEventListener('resize', handleResize);
+            handleResize();
+        });
+    </script>
+    
+    <!-- Reduced Motion Support -->
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.documentElement.style.setProperty('--animation-duration', '0.01ms');
+        }
+    </script>
+
+</body>
+</html>

@@ -18,6 +18,9 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+    <!-- Universal Icon System -->
+    <link rel="stylesheet" href="/templates/universal/universal-icons.css">
+    
     <!-- Google Fonts - Modern Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,41 +29,48 @@
     <!-- AOS Animation Library -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
+    <!-- Universal Page System CSS -->
+    <link rel="stylesheet" href="/templates/universal/universal-page-styles.css">
+    <link rel="stylesheet" href="/templates/universal/universal-hero-styles.css">
+    
+    <!-- Modern Theme Override CSS -->
+    <link rel="stylesheet" href="/themes/modern/styles/modern-theme-overrides.css">
+    
     <style>
         :root {
-            /* Modern Contemporary Color Palette - Updated */
-            --modern-primary: #1f2937;            /* Charcoal gray primary */
-            --modern-secondary: #4b5563;          /* Medium gray secondary */
-            --modern-accent: #3b82f6;             /* Clean blue accent */
-            --modern-text: #111827;               /* Deep text */
-            --modern-background: #ffffff;         /* Pure white background */
-            --modern-surface: #ffffff;            /* Card surfaces */
-            --modern-border: #e5e7eb;             /* Light borders */
-            --modern-muted: #6b7280;              /* Muted elements */
+            /* Modern Contemporary Color Palette - Dynamic Database Colors */
+            --modern-primary: {{theme.colors.background}};          /* Primary from database */
+            --modern-secondary: {{theme.colors.surface}};           /* Secondary from database */
+            --modern-accent: {{theme.colors.accent}};               /* Accent from database */
+            --modern-text: {{theme.colors.text-light}};             /* Text from database */
+            --modern-background: {{theme.colors.bg-light}};         /* Background from database */
+            --modern-surface: {{theme.colors.card-bg}};             /* Surface from database */
+            --modern-border: {{theme.colors.border-light}};         /* Border from database */
+            --modern-muted: {{theme.colors.text}};                  /* Muted from database */
             
             /* Universal Theme Variables - Modern Contemporary */
-            --theme-bg-primary: #ffffff;          /* Clean white background */
-            --theme-bg-secondary: #f9fafb;        /* Light gray background */
-            --theme-bg-tertiary: #ffffff;         /* Card backgrounds */
-            --theme-bg-light: #f3f4f6;            /* Lighter elements */
-            --theme-bg-surface: #ffffff;          /* Surface elements */
+            --theme-bg-primary: {{theme.colors.background}};        /* Clean background */
+            --theme-bg-secondary: {{theme.colors.surface}};         /* Secondary background */
+            --theme-bg-tertiary: {{theme.colors.card-bg}};          /* Card backgrounds */
+            --theme-bg-light: {{theme.colors.bg-light}};            /* Lighter elements */
+            --theme-bg-surface: {{theme.colors.surface}};           /* Surface elements */
             
-            --theme-text-primary: #111827;        /* Primary text (deep gray) */
-            --theme-text-secondary: #374151;      /* Secondary text */
-            --theme-text-muted: #6b7280;          /* Muted text */
-            --theme-text-subtle: #9ca3af;         /* Subtle text */
-            --theme-text-inverted: #ffffff;       /* Inverted text */
+            --theme-text-primary: {{theme.colors.text-light}};      /* Primary text */
+            --theme-text-secondary: {{theme.colors.text}};          /* Secondary text */
+            --theme-text-muted: {{theme.colors.disabled-text}};     /* Muted text */
+            --theme-text-subtle: {{theme.colors.disabled-text}};    /* Subtle text */
+            --theme-text-inverted: {{theme.colors.text-dark}};      /* Inverted text */
             
-            --theme-border-primary: #e5e7eb;      /* Primary borders */
-            --theme-border-light: #f3f4f6;        /* Light borders */
-            --theme-border-subtle: #f9fafb;       /* Subtle borders */
+            --theme-border-primary: {{theme.colors.border-dark}};   /* Primary borders */
+            --theme-border-light: {{theme.colors.border-light}};    /* Light borders */
+            --theme-border-subtle: {{theme.colors.divider}};        /* Subtle borders */
             
-            --theme-accent: #3b82f6;              /* Modern blue accent */
-            --theme-accent-hover: #2563eb;        /* Blue hover */
-            --theme-accent-light: #93c5fd;        /* Light accent */
-            --theme-success: #059669;             /* Modern green */
-            --theme-warning: #d97706;             /* Modern amber */
-            --theme-error: #dc2626;               /* Modern red */
+            --theme-accent: {{theme.colors.accent}};                /* Accent color */
+            --theme-accent-hover: {{theme.colors.btn-bg-hover}};    /* Accent hover */
+            --theme-accent-light: {{theme.colors.link-hover}};      /* Light accent */
+            --theme-success: {{theme.colors.success}};              /* Success color */
+            --theme-warning: {{theme.colors.warning}};              /* Warning color */
+            --theme-error: {{theme.colors.danger}};                 /* Error color */
         }
         
         /* Modern Contemporary Typography */
@@ -78,8 +88,8 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--modern-background);
-            color: var(--modern-text);
+            background-color: {{theme.colors.background}};
+            color: {{theme.colors.text-light}};
             line-height: 1.7;
             font-weight: 400;
             padding-top: 64px; /* Height of modern navigation (h-16 = 64px) */
@@ -114,17 +124,17 @@
         
         /* Modern Contemporary Card Styling */
         .modern-card {
-            background: var(--modern-surface);
+            background: {{theme.colors.card-bg}};
             border-radius: 12px;
-            border: 1px solid var(--modern-border);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid {{theme.colors.border-light}};
+            box-shadow: 0 2px 8px {{theme.colors.card-shadow}};
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
         }
         
         .modern-card:hover {
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 20px {{theme.colors.card-shadow}};
             transform: translateY(-3px);
         }
         
@@ -135,7 +145,7 @@
             left: 0;
             right: 0;
             height: 2px;
-            background: linear-gradient(90deg, var(--modern-primary), var(--modern-accent));
+            background: linear-gradient(90deg, {{theme.colors.background}}, {{theme.colors.accent}});
             transform: scaleX(0);
             transition: transform 0.3s ease;
         }
@@ -146,8 +156,8 @@
         
         /* Modern Contemporary Button Styling */
         .modern-btn {
-            background: var(--modern-primary);
-            color: white;
+            background: {{theme.colors.accent}};
+            color: {{theme.colors.text-light}};
             padding: 14px 28px;
             border-radius: 8px;
             font-weight: 600;
@@ -171,7 +181,7 @@
             left: 50%;
             width: 0;
             height: 0;
-            background: rgba(255, 255, 255, 0.2);
+            background: {{theme.colors.backdrop}};
             border-radius: 50%;
             transform: translate(-50%, -50%);
             transition: width 0.3s, height 0.3s;
@@ -184,13 +194,13 @@
         
         .modern-btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px {{theme.colors.card-shadow}};
         }
         
         .modern-btn-outline {
             background: transparent;
-            color: var(--modern-primary);
-            border: 2px solid var(--modern-primary);
+            color: {{theme.colors.accent}};
+            border: 2px solid {{theme.colors.accent}};
             padding: 10px 22px;
             border-radius: 8px;
             font-weight: 600;
@@ -205,23 +215,23 @@
         }
         
         .modern-btn-outline:hover {
-            background: var(--modern-primary);
-            color: white;
+            background: {{theme.colors.accent}};
+            color: {{theme.colors.text-light}};
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px {{theme.colors.card-shadow}};
         }
         
         /* Modern Navigation */
         .modern-nav {
-            background: rgba(255, 255, 255, 0.9);
+            background: {{theme.colors.nav-bg}};
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--modern-border);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid {{theme.colors.nav-border}};
+            box-shadow: 0 1px 3px {{theme.colors.card-shadow}};
         }
         
         .modern-nav .nav-link {
             font-weight: 500;
-            color: var(--modern-text);
+            color: {{theme.colors.nav-text}};
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-size: 13px;
@@ -239,7 +249,7 @@
             transform: translateX(-50%);
             width: 0;
             height: 2px;
-            background: var(--modern-primary);
+            background: {{theme.colors.accent}};
             transition: width 0.3s ease;
         }
         
@@ -250,8 +260,8 @@
         
         .modern-nav .nav-link:hover,
         .modern-nav .nav-link.active {
-            color: var(--modern-primary);
-            background: rgba(var(--modern-primary), 0.05);
+            color: {{theme.colors.accent}};
+            background: {{theme.colors.overlay}};
         }
         
         /* Modern Brand */
@@ -259,14 +269,14 @@
             font-family: 'Inter', sans-serif;
             font-weight: 900;
             font-size: 24px;
-            color: var(--modern-primary);
+            color: {{theme.colors.accent}};
             text-decoration: none;
             letter-spacing: -0.02em;
         }
         
         /* Hero Section Styling */
         .modern-hero {
-            background: linear-gradient(135deg, var(--modern-primary) 0%, var(--modern-secondary) 100%);
+            background: {{theme.colors.hero-bg}};
             position: relative;
             overflow: hidden;
         }
@@ -284,7 +294,7 @@
         
         /* Modern Hero Canvas with Custom Background Support */
         .modern-hero-canvas {
-            background: linear-gradient(135deg, var(--modern-primary) 0%, var(--modern-secondary) 100%);
+            background: {{theme.colors.hero-bg}};
             position: relative;
             overflow: hidden;
         }
@@ -401,26 +411,26 @@
         
         .modern-hover-lift:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 12px 25px {{theme.colors.card-shadow}};
         }
         
         /* Focus States for Accessibility */
         .modern-btn:focus,
         .modern-interactive:focus {
-            outline: 2px solid var(--modern-accent);
+            outline: 2px solid {{theme.colors.focus-ring}};
             outline-offset: 2px;
         }
         
         /* Modern Utilities */
         .modern-divider {
             height: 1px;
-            background: linear-gradient(90deg, transparent, var(--modern-border), transparent);
+            background: linear-gradient(90deg, transparent, {{theme.colors.divider}}, transparent);
             margin: 2rem 0;
         }
         
         .modern-badge {
-            background: var(--modern-accent);
-            color: white;
+            background: {{theme.colors.accent}};
+            color: {{theme.colors.text-light}};
             padding: 4px 12px;
             border-radius: 999px;
             font-size: 12px;
@@ -451,16 +461,16 @@
         }
         
         ::-webkit-scrollbar-track {
-            background: var(--modern-border);
+            background: {{theme.colors.border-light}};
         }
         
         ::-webkit-scrollbar-thumb {
-            background: var(--modern-primary);
+            background: {{theme.colors.accent}};
             border-radius: 3px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--modern-secondary);
+            background: {{theme.colors.btn-bg-hover}};
         }
         
         /* Universal Theme Utility Classes */
@@ -491,12 +501,12 @@
             color: var(--theme-text-primary);
             border: 1px solid var(--theme-border-light);
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px {{theme.colors.card-shadow}};
             transition: all 0.3s ease;
         }
         
         .theme-card:hover {
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            box-shadow: 0 20px 40px {{theme.colors.card-shadow}};
             transform: translateY(-2px);
         }
         
@@ -567,11 +577,11 @@
             const nav = document.querySelector('.modern-nav');
             if (nav) {
                 if (window.scrollY > 50) {
-                    nav.style.background = 'rgba(255,255,255,0.95)';
-                    nav.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+                    nav.style.background = '{{theme.colors.nav-bg}}';
+                    nav.style.boxShadow = '0 4px 12px {{theme.colors.card-shadow}}';
                 } else {
-                    nav.style.background = 'rgba(255,255,255,0.9)';
-                    nav.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+                    nav.style.background = '{{theme.colors.nav-bg}}';
+                    nav.style.boxShadow = '0 1px 3px {{theme.colors.card-shadow}}';
                 }
             }
             ticking = false;
@@ -592,7 +602,7 @@
                 ripple.style.cssText = `
                     position: absolute;
                     border-radius: 50%;
-                    background: rgba(255,255,255,0.4);
+                    background: {{theme.colors.backdrop}};
                     transform: scale(0);
                     animation: ripple-animation 0.6s linear;
                     pointer-events: none;

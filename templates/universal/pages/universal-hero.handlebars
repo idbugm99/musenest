@@ -1,0 +1,107 @@
+<!-- Universal Hero Section - Theme-Agnostic Component -->
+{{#if content.hero_section_visible}}
+<section class="universal-hero {{#if content.heroBackgroundImageUrl}}universal-hero-custom-bg bg-cover bg-center bg-fixed{{/if}}" data-aos="fade-in" {{#if content.heroBackgroundImageUrl}}style="background-image: url('{{content.heroBackgroundImageUrl}}')"{{/if}}>
+    {{#unless content.heroBackgroundImageUrl}}
+    <!-- Theme Background Elements (only if no custom image) -->
+    <div class="universal-hero-bg-elements">
+        <div class="universal-bg-layer-1"></div>
+        <div class="universal-bg-layer-2"></div>
+        <div class="universal-bg-layer-3"></div>
+    </div>
+    {{/unless}}
+    
+    <!-- Theme Decorative Elements -->
+    <div class="universal-hero-decorations">
+        <div class="universal-decoration-1"></div>
+        <div class="universal-decoration-2"></div>
+        <div class="universal-decoration-3"></div>
+        <div class="universal-decoration-4"></div>
+        <div class="universal-decoration-5"></div>
+        <div class="universal-decoration-6"></div>
+    </div>
+    
+    <!-- Hero Overlay for Better Text Readability -->
+    <div class="universal-hero-overlay {{#if content.heroBackgroundImageUrl}}universal-hero-overlay-custom{{/if}}"></div>
+    
+    <!-- Hero Content -->
+    <div class="universal-hero-content">
+        <div class="max-w-5xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+            <!-- Theme Icon -->
+            <div class="universal-hero-icon" data-aos="fade-down" data-aos-delay="100">
+                <i class="universal-theme-icon"></i>
+            </div>
+            
+            <!-- Hero Title -->
+            <h1 class="universal-hero-title" data-aos="fade-up" data-aos-delay="300">
+                {{#if content.hero_title}}{{content.hero_title}}{{else}}{{model.name}}{{/if}}
+            </h1>
+            
+            <!-- Hero Subtitle -->
+            {{#if content.hero_subtitle}}
+            <p class="universal-hero-subtitle" data-aos="fade-up" data-aos-delay="500">
+                {{content.hero_subtitle}}
+            </p>
+            {{/if}}
+            
+            <!-- Hero Description -->
+            {{#if content.hero_description}}
+            <div class="universal-hero-description" data-aos="fade-up" data-aos-delay="700">
+                {{{content.hero_description}}}
+            </div>
+            {{/if}}
+            
+            <!-- Hero CTA Buttons -->
+            {{#if content.hero_cta_visible}}
+            <div class="universal-hero-cta" data-aos="fade-up" data-aos-delay="900">
+                {{#if content.hero_primary_button_text}}
+                <a href="{{#if content.hero_primary_button_url}}{{content.hero_primary_button_url}}{{else}}/{{model.slug}}/contact{{/if}}" 
+                   class="universal-btn universal-btn-primary universal-hero-btn-primary">
+                    {{content.hero_primary_button_text}}
+                </a>
+                {{/if}}
+                
+                {{#if content.hero_secondary_button_text}}
+                <a href="{{#if content.hero_secondary_button_url}}{{content.hero_secondary_button_url}}{{else}}/{{model.slug}}/about{{/if}}" 
+                   class="universal-btn universal-btn-secondary universal-hero-btn-secondary ml-4">
+                    {{content.hero_secondary_button_text}}
+                </a>
+                {{/if}}
+            </div>
+            {{/if}}
+            
+            <!-- Hero Stats/Badges -->
+            {{#if content.hero_stats_visible}}
+            <div class="universal-hero-stats" data-aos="fade-up" data-aos-delay="1100">
+                <div class="universal-stats-grid">
+                    {{#if content.hero_stat_1_value}}
+                    <div class="universal-stat-item">
+                        <div class="universal-stat-value">{{content.hero_stat_1_value}}</div>
+                        <div class="universal-stat-label">{{content.hero_stat_1_label}}</div>
+                    </div>
+                    {{/if}}
+                    
+                    {{#if content.hero_stat_2_value}}
+                    <div class="universal-stat-item">
+                        <div class="universal-stat-value">{{content.hero_stat_2_value}}</div>
+                        <div class="universal-stat-label">{{content.hero_stat_2_label}}</div>
+                    </div>
+                    {{/if}}
+                    
+                    {{#if content.hero_stat_3_value}}
+                    <div class="universal-stat-item">
+                        <div class="universal-stat-value">{{content.hero_stat_3_value}}</div>
+                        <div class="universal-stat-label">{{content.hero_stat_3_label}}</div>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+    
+    <!-- Hero Bottom Indicator -->
+    <div class="universal-hero-bottom-indicator" data-aos="bounce" data-aos-delay="1500">
+        <i class="fas fa-chevron-down"></i>
+    </div>
+</section>
+{{/if}}
