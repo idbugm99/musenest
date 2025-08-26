@@ -1,4 +1,5 @@
 <!-- Royal Gem Gallery Page - Universal Gallery System Integration -->
+{{#if gallery_content.gallery_header_visible}}
 <section class="royal-section" style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)); position: relative;">
     <!-- Royal Decorative Elements -->
     <div style="position: absolute; top: 10%; left: 5%; opacity: 0.3; z-index: 1;">
@@ -56,9 +57,52 @@
             </p>
         </div>
         {{/if}}
+    </div>
+</section>
+{{else}}
+<!-- Default Header with Gradient -->
+<section class="royal-section" style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)); position: relative;">
+    <!-- Royal Decorative Elements -->
+    <div style="position: absolute; top: 10%; left: 5%; opacity: 0.3; z-index: 1;">
+        <svg class="royal-icon-lg" viewBox="0 0 64 64" style="animation: float 9s ease-in-out infinite; width: 2.5rem; height: 2.5rem;">
+            <use href="/assets/sprites/royal-icons.ddf91c.svg#gem"></use>
+        </svg>
+    </div>
+    <div style="position: absolute; top: 60%; right: 8%; opacity: 0.4; z-index: 1;">
+        <svg class="royal-icon" viewBox="0 0 64 64" style="animation: float 7s ease-in-out infinite; animation-delay: 3s;">
+            <use href="/assets/sprites/royal-icons.ddf91c.svg#jewelry"></use>
+        </svg>
+    </div>
+    <div style="position: absolute; bottom: 15%; left: 90%; opacity: 0.5; z-index: 1;">
+        <svg class="royal-icon" viewBox="0 0 64 64" style="animation: float 11s ease-in-out infinite; animation-delay: 5s;">
+            <use href="/assets/sprites/royal-icons.ddf91c.svg#diamond"></use>
+        </svg>
+    </div>
 
+    <div class="royal-container" style="position: relative; z-index: 2;">
+        <!-- Default Header -->
+        <div style="text-align: center; margin-bottom: 4rem;">
+            <div style="margin-bottom: 2rem;">
+                <svg class="royal-icon-lg" viewBox="0 0 64 64" style="color: var(--theme-accent); animation: pulse 3s ease-in-out infinite;">
+                    <use href="/assets/sprites/royal-icons.ddf91c.svg#crown-royal"></use>
+                </svg>
+            </div>
+            <h1 style="background: linear-gradient(45deg, var(--theme-accent), var(--theme-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                Exclusive Gallery
+            </h1>
+            <p style="font-size: 1.2rem; color: var(--theme-text-subtle); max-width: 700px; margin: 0 auto;">
+                A curated collection showcasing elegance, sophistication, and the artistry of refined companionship.
+            </p>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Gallery Content Section with Royal Dark Background -->
+<section style="padding: 5rem 0; background: var(--theme-bg);">
+    <div class="royal-container">
         <!-- Universal Gallery System -->
-        <div class="royal-gallery-wrapper">
+        <div class="royal-gallery-wrapper" style="background: var(--theme-bg);">
             {{{renderUniversalGallery modelSlug previewTheme=previewThemeId}}}
         </div>
 
@@ -87,7 +131,7 @@
                         </svg>
                         Learn More About Me
                     </a>
-                    <a href="/{{model.slug}}/contact{{previewParam}}" class="royal-btn" style="background: linear-gradient(45deg, var(--theme-accent), var(--theme-secondary));">
+                    <a href="/{{model.slug}}/contact{{previewParam}}" class="royal-btn">
                         <svg class="royal-icon" viewBox="0 0 64 64" style="margin-right: 0.5rem;">
                             <use href="/assets/sprites/royal-icons.ddf91c.svg#royal"></use>
                         </svg>
@@ -130,19 +174,93 @@
 
 /* Royal Gallery Enhancements */
 .royal-gallery-wrapper {
-    background: rgba(212, 175, 55, 0.02);
+    background: var(--theme-bg) !important;
     border-radius: var(--gallery-border-radius-large);
     padding: 2rem;
     border: 1px solid var(--gallery-border-light);
     box-shadow: 0 8px 32px rgba(212, 175, 55, 0.1);
 }
 
+/* Royal Gallery Background Consistency - Complete Coverage */
+.universal-gallery,
+.galleries-container,
+.gallery-main-section,
+.gallery-container,
+.gallery-grid,
+.gallery-masonry,
+.gallery-content,
+.gallery-wrapper,
+.gallery-items-container,
+div[class*="gallery"],
+div[id*="gallery"] {
+    background: var(--theme-bg) !important;
+    color: var(--theme-text) !important;
+}
+
+/* Force all gallery-related containers to dark background */
+.universal-gallery * {
+    background-color: transparent !important;
+}
+
+.universal-gallery > div,
+.universal-gallery section,
+.universal-gallery article {
+    background: var(--theme-bg) !important;
+}
+
+/* Target common universal gallery container classes */
+.max-w-7xl,
+.mx-auto,
+.px-4,
+.sm\\:px-6,
+.lg\\:px-8,
+div[class*="max-w"],
+div[class*="mx-auto"],
+div[class*="px-"] {
+    background: transparent !important;
+}
+
+/* Ensure main gallery containers use theme background */
+body .universal-gallery,
+body .gallery-main-section,
+body .galleries-container {
+    background: var(--theme-bg) !important;
+}
+
+/* Target any remaining white backgrounds */
+.universal-gallery div:not(.universal-gallery-item):not(.gallery-item) {
+    background: transparent !important;
+}
+
+/* Royal Gallery Section Container Override */
+.universal-gallery-section-container,
+.gallery-section-container {
+    background: var(--theme-bg) !important;
+    padding: 1rem 0 !important;
+}
+
 /* Override Universal Gallery styles for Royal theme */
 .universal-gallery-section {
-    background: var(--gallery-surface) !important;
-    border: 1px solid var(--gallery-border) !important;
-    border-radius: var(--gallery-border-radius) !important;
-    box-shadow: 0 4px 16px var(--gallery-shadow) !important;
+    background: linear-gradient(135deg, var(--gallery-surface), rgba(212, 175, 55, 0.05)) !important;
+    border: 2px solid var(--gallery-border) !important;
+    border-radius: var(--gallery-border-radius-large) !important;
+    box-shadow: 0 8px 32px var(--gallery-shadow), 0 0 0 1px rgba(212, 175, 55, 0.2) !important;
+    margin-bottom: 3rem !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.universal-gallery-section::before {
+    content: "" !important;
+    position: absolute !important;
+    top: -2px !important;
+    left: -2px !important;
+    right: -2px !important;
+    bottom: -2px !important;
+    background: linear-gradient(45deg, var(--theme-accent), var(--theme-primary), var(--theme-secondary)) !important;
+    border-radius: var(--gallery-border-radius-large) !important;
+    z-index: -1 !important;
+    opacity: 0.3 !important;
 }
 
 .universal-gallery-section h2 {
@@ -158,25 +276,57 @@
     font-size: 1.2em;
 }
 
-.universal-gallery-item {
+/* Royal Gallery Item Styling */
+.universal-gallery-item,
+.gallery-item,
+.gallery-image-container {
     border-radius: var(--gallery-border-radius) !important;
     overflow: hidden !important;
     transition: all var(--gallery-transition-duration) ease !important;
-    border: 2px solid transparent !important;
+    border: 2px solid var(--gallery-border) !important;
+    background: linear-gradient(135deg, var(--gallery-surface), rgba(212, 175, 55, 0.02)) !important;
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.1) !important;
+    position: relative !important;
 }
 
-.universal-gallery-item:hover {
-    transform: translateY(var(--gallery-hover-lift)) !important;
+.universal-gallery-item::before,
+.gallery-item::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.05), transparent) !important;
+    opacity: 0 !important;
+    transition: opacity var(--gallery-transition-duration) ease !important;
+    z-index: 2 !important;
+    pointer-events: none !important;
+}
+
+.universal-gallery-item:hover,
+.gallery-item:hover {
+    transform: translateY(var(--gallery-hover-lift)) scale(1.02) !important;
     border-color: var(--gallery-accent) !important;
-    box-shadow: 0 12px 32px var(--gallery-shadow-hover) !important;
+    box-shadow: 0 16px 48px var(--gallery-shadow-hover), 0 0 0 1px var(--gallery-accent) !important;
 }
 
-.universal-gallery-item img {
+.universal-gallery-item:hover::before,
+.gallery-item:hover::before {
+    opacity: 1 !important;
+}
+
+.universal-gallery-item img,
+.gallery-item img {
     transition: all var(--gallery-transition-duration) ease !important;
+    position: relative !important;
+    z-index: 1 !important;
 }
 
-.universal-gallery-item:hover img {
-    filter: brightness(1.1) saturate(1.1) !important;
+.universal-gallery-item:hover img,
+.gallery-item:hover img {
+    filter: brightness(1.1) saturate(1.2) !important;
+    transform: scale(1.05) !important;
 }
 
 .universal-lightbox {
@@ -187,6 +337,93 @@
 .universal-lightbox-content {
     border-radius: var(--gallery-border-radius-large) !important;
     box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3) !important;
+}
+
+/* Hide Universal Gallery Hero Section (we have our own) */
+.universal-gallery .gallery-hero,
+.gallery-hero {
+    display: none !important;
+}
+
+/* Royal Section Headers and Typography */
+.gallery-section-title,
+.gallery-title,
+h2.gallery-heading,
+h3.section-title,
+.section-title {
+    color: var(--gallery-accent) !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    margin: 2rem 0 !important;
+    position: relative !important;
+}
+
+.gallery-section-title::before,
+.gallery-title::before,
+h3.section-title::before,
+.section-title::before {
+    content: "👑" !important;
+    margin-right: 0.5rem !important;
+    font-size: 0.9em !important;
+}
+
+/* Royal Slider Styling */
+.gallery-slider-container,
+.slider-section {
+    background: linear-gradient(135deg, var(--gallery-surface), rgba(212, 175, 55, 0.03)) !important;
+    border: 2px solid var(--gallery-border) !important;
+    border-radius: var(--gallery-border-radius-large) !important;
+    padding: 2rem !important;
+    margin: 2rem 0 !important;
+    box-shadow: 0 8px 32px var(--gallery-shadow) !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.gallery-slider-container::before {
+    content: "" !important;
+    position: absolute !important;
+    top: -1px !important;
+    left: -1px !important;
+    right: -1px !important;
+    bottom: -1px !important;
+    background: linear-gradient(45deg, var(--theme-accent), var(--theme-primary)) !important;
+    border-radius: var(--gallery-border-radius-large) !important;
+    z-index: -1 !important;
+    opacity: 0.1 !important;
+}
+
+/* Royal Navigation Dots */
+.gallery-pagination-dots,
+.slider-dots {
+    text-align: center !important;
+    margin-top: 1.5rem !important;
+}
+
+.gallery-pagination-dot,
+.slider-dot {
+    width: 12px !important;
+    height: 12px !important;
+    border-radius: 50% !important;
+    background: var(--gallery-border) !important;
+    border: 2px solid var(--theme-accent) !important;
+    margin: 0 0.5rem !important;
+    cursor: pointer !important;
+    transition: all var(--gallery-transition-duration) ease !important;
+    display: inline-block !important;
+}
+
+.gallery-pagination-dot.active,
+.slider-dot.active {
+    background: var(--theme-accent) !important;
+    box-shadow: 0 0 8px var(--theme-accent) !important;
+    transform: scale(1.2) !important;
+}
+
+.gallery-pagination-dot:hover,
+.slider-dot:hover {
+    background: var(--theme-primary) !important;
+    transform: scale(1.1) !important;
 }
 
 /* Empty state styling */

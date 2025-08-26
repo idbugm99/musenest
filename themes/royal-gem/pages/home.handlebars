@@ -1,5 +1,5 @@
 <!-- Royal Gem Home Page -->
-<section class="royal-section" style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)); min-height: 80vh; position: relative;">
+<section class="royal-section" style="{{#if content.heroBackgroundImageUrl}}background: #000000;{{else}}background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));{{/if}} min-height: 80vh; position: relative;">
     <!-- Royal Background Decorations -->
     <div style="position: absolute; top: 15%; left: 8%; opacity: 0.4; z-index: 1;">
         <svg class="royal-icon-lg" viewBox="0 0 64 64" style="animation: float 8s ease-in-out infinite; width: 4rem; height: 4rem;">
@@ -19,7 +19,7 @@
 
     <!-- Load luxury parallax background if specified -->
     {{#if content.heroBackgroundImageUrl}}
-    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('{{content.heroBackgroundImageUrl}}'); background-size: cover; background-position: center; background-attachment: fixed; opacity: 0.3; z-index: 0;"></div>
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('{{content.heroBackgroundImageUrl}}'); background-size: cover; background-position: center; background-attachment: fixed; opacity: {{#if content.hero_background_opacity}}{{content.hero_background_opacity}}{{else}}0.6{{/if}}; z-index: 0;"></div>
     {{/if}}
 
     <div class="royal-container" style="position: relative; z-index: 2; padding-top: 6rem; padding-bottom: 6rem;">
@@ -71,14 +71,14 @@
                 {{/if}}
                 
                 {{#if content.hero_button_2_text}}
-                <a href="{{#if content.hero_button_2_link}}/{{modelSlug}}/{{content.hero_button_2_link}}{{previewParam}}{{else}}/{{modelSlug}}/about{{previewParam}}{{/if}}" class="royal-btn" style="background: linear-gradient(45deg, var(--theme-secondary), var(--theme-primary)); font-size: 1.2rem; padding: 1.2rem 2.5rem;">
+                <a href="{{#if content.hero_button_2_link}}/{{modelSlug}}/{{content.hero_button_2_link}}{{previewParam}}{{else}}/{{modelSlug}}/about{{previewParam}}{{/if}}" class="royal-btn" style="font-size: 1.2rem; padding: 1.2rem 2.5rem;">
                     <svg class="royal-icon" viewBox="0 0 64 64" style="margin-right: 0.8rem;">
                         <use href="/assets/sprites/royal-icons.ddf91c.svg#insignia"></use>
                     </svg>
                     {{content.hero_button_2_text}}
                 </a>
                 {{else}}
-                <a href="/{{modelSlug}}/about{{previewParam}}" class="royal-btn" style="background: linear-gradient(45deg, var(--theme-secondary), var(--theme-primary)); font-size: 1.2rem; padding: 1.2rem 2.5rem;">
+                <a href="/{{modelSlug}}/about{{previewParam}}" class="royal-btn" style="font-size: 1.2rem; padding: 1.2rem 2.5rem;">
                     <svg class="royal-icon" viewBox="0 0 64 64" style="margin-right: 0.8rem;">
                         <use href="/assets/sprites/royal-icons.ddf91c.svg#insignia"></use>
                     </svg>

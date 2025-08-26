@@ -210,6 +210,84 @@ All themes receive dynamic colors via CSS variables:
 - **Button Links:** Dynamic routing with `{{previewParam}}`
 - **Model Information:** `{{siteName}}`, `{{modelSlug}}`
 
+### Hero Background Image Implementation
+**CRITICAL:** Proper hero background implementation prevents visual conflicts and maintains theme aesthetics.
+
+#### Database Fields Available:
+- `heroBackgroundImageUrl` - Full URL to background image (optional)
+- `hero_background_opacity` - DECIMAL(3,2) controlling image transparency (default: 0.6)
+
+#### Implementation Pattern (REQUIRED):
+```handlebars
+<!-- Smart Background System -->
+<section style="{{#if content.heroBackgroundImageUrl}}background: #000000;{{else}}background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));{{/if}} min-height: 80vh; position: relative;">
+    
+    <!-- Parallax Background Image with Database-Controlled Opacity -->
+    {{#if content.heroBackgroundImageUrl}}
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
+                background-image: url('{{content.heroBackgroundImageUrl}}'); 
+                background-size: cover; 
+                background-position: center; 
+                background-attachment: fixed; 
+                opacity: {{#if content.hero_background_opacity}}{{content.hero_background_opacity}}{{else}}0.6{{/if}}; 
+                z-index: 0;"></div>
+    {{/if}}
+    
+    <!-- Content with proper z-index -->
+    <div style="position: relative; z-index: 2;">
+        <!-- Hero content here -->
+    </div>
+</section>
+```
+
+#### Key Implementation Rules:
+1. **Smart Background Switching:**
+   - **With Image:** Use pure black background (`#000000`) to eliminate color interference
+   - **Without Image:** Use theme gradient or solid colors as normal
+   - **Never:** Mix gradient backgrounds with hero images (creates "dusty" visual effects)
+
+2. **Database-Driven Opacity:**
+   - Always use `{{content.hero_background_opacity}}` instead of hardcoded values
+   - Provide fallback: `{{#if content.hero_background_opacity}}{{content.hero_background_opacity}}{{else}}0.6{{/if}}`
+   - Default should be 0.6 (60%) for good visibility while maintaining text readability
+
+3. **Proper Layering:**
+   - Background image: `z-index: 0`
+   - Content container: `z-index: 2` (minimum)
+   - Decorative elements: `z-index: 1` (optional, between background and content)
+
+4. **Admin Control Benefits:**
+   - Opacity becomes configurable through admin interface
+   - No code changes needed for different image prominence levels
+   - Consistent implementation across all themes
+
+#### Common Mistakes to Avoid:
+❌ **Wrong:** Hardcoded opacity values
+```handlebars
+<div style="opacity: 0.3; ...">  <!-- Fixed value, not admin-controllable -->
+```
+
+❌ **Wrong:** Gradient + Image backgrounds (creates muddy colors)
+```handlebars
+<section style="background: linear-gradient(...); ...">  <!-- Always active -->
+    <div style="background-image: url(...); ...">       <!-- Creates color interference -->
+```
+
+❌ **Wrong:** Missing z-index layering
+```handlebars
+<div>Hero content</div>  <!-- No z-index, may be hidden behind background -->
+```
+
+✅ **Correct:** Database-driven, smart background system
+```handlebars
+<section style="{{#if content.heroBackgroundImageUrl}}background: #000000;{{else}}background: linear-gradient(...);{{/if}}">
+    {{#if content.heroBackgroundImageUrl}}
+    <div style="opacity: {{#if content.hero_background_opacity}}{{content.hero_background_opacity}}{{else}}0.6{{/if}}; z-index: 0; ...">
+    {{/if}}
+    <div style="position: relative; z-index: 2;">Content</div>
+</section>
+```
+
 ### Content Structure
 ```javascript
 home_content: {
@@ -222,7 +300,8 @@ home_content: {
   hero_button_1_link: string,
   hero_button_2_text: string,
   hero_button_2_link: string,
-  heroBackgroundImageUrl: string,    // Optional
+  heroBackgroundImageUrl: string,    // Optional - full URL to background image
+  hero_background_opacity: decimal,  // Optional - 0.0 to 1.0, controls image transparency (default: 0.6)
   
   // About Preview Section
   about_section_visible: boolean,
