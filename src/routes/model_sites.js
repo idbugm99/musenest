@@ -592,6 +592,9 @@ router.get('/:slug/:page?', async (req, res) => {
             'rose': 'rose',
             'bdsm': 'bdsm',
             'royal-gem': 'royal-gem',
+            'royal_gem': 'royal-gem',
+            'royalgem': 'royal-gem',
+            'Royal Gem': 'royal-gem',
             'simple-elegance': 'simple-elegance'
         };
         

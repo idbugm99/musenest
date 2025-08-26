@@ -1,7 +1,7 @@
 <!-- Royal Gem Rates Page -->
 <!-- Rates Hero Section -->
 {{#if rates_content.rates_header_visible}}
-<section class="royal-section" style="background: linear-gradient(135deg, var(--theme-bg) 0%, var(--theme-bg-alt) 50%, var(--theme-surface) 100%); position: relative;">
+<section class="royal-section" style="background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-secondary) 100%); position: relative;">
     <!-- Royal Background Decorations -->
     <div style="position: absolute; top: 20%; left: 8%; opacity: 0.4; z-index: 1;">
         <svg class="royal-icon-lg" viewBox="0 0 64 64" style="animation: float 8s ease-in-out infinite; width: 3rem; height: 3rem;">
@@ -115,7 +115,7 @@
             <!-- Incall Rates -->
             {{#if rates_content.rates_incall_visible}}
             <div class="royal-card" style="overflow: hidden;">
-                <div style="background: linear-gradient(45deg, var(--theme-primary), var(--theme-accent)); color: var(--theme-bg); padding: 1.5rem; text-align: center;">
+                <div style="background: linear-gradient(45deg, var(--theme-primary), var(--theme-secondary)); color: var(--theme-bg); padding: 1.5rem; text-align: center;">
                     <h3 style="font-size: 1.5rem; font-weight: 700; margin: 0;">Incall Services</h3>
                 </div>
                 <div style="padding: 2rem;">
@@ -548,7 +548,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const stickyNav = document.getElementById('royal-sticky-nav');
-    const navLinks = document.querySelectorAll('.royal-nav-link');
+    // Scope to in-page sticky nav only so we don't hijack the top site navigation
+    const navLinks = stickyNav ? stickyNav.querySelectorAll('.royal-nav-link') : [];
     const sections = document.querySelectorAll('section[id]');
     
     // Sticky navigation behavior
@@ -575,22 +576,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Smooth scrolling for navigation links
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
+            const href = this.getAttribute('href') || '';
+            // Only intercept in-page hash links (e.g., #rates-section)
+            if (!href.startsWith('#')) return; // allow normal navigation
+
             e.preventDefault();
-            
-            const targetId = this.getAttribute('href').substring(1);
+            const targetId = href.substring(1);
             const targetSection = document.getElementById(targetId);
-            
             if (targetSection) {
-                // Calculate offset for sticky nav
                 const navHeight = stickyNav.offsetHeight || 0;
                 const targetPosition = targetSection.offsetTop - navHeight - 20;
-                
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
-                
-                // Update active nav link
+                window.scrollTo({ top: targetPosition, behavior: 'smooth' });
                 navLinks.forEach(nl => nl.classList.remove('active'));
                 this.classList.add('active');
             }

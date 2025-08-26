@@ -26,18 +26,18 @@
             
             /* Surfaces - Rich midnight backgrounds */
             --theme-bg: {{theme.colors.bg}};                 /* Deep midnight */
-            --theme-bg-alt: {{theme.colors.bg-alt}};         /* Lighter midnight */
+            --theme-bg-alt: {{#if (lookup theme.colors "bg-light")}}{{lookup theme.colors "bg-light"}}{{else}}{{#if (lookup theme.colors "bg-alt")}}{{lookup theme.colors "bg-alt"}}{{else}}{{theme.colors.bg}}{{/if}}{{/if}};         /* Lighter midnight */
             --theme-surface: {{theme.colors.surface}};       /* Dark plum */
             --theme-overlay: {{theme.colors.overlay}};       /* Gold overlay */
             
             /* Typography - Elegant contrast */
             --theme-text: {{theme.colors.text}};             /* Warm cream */
-            --theme-text-subtle: {{theme.colors.text-subtle}}; /* Champagne */
+            --theme-text-subtle: {{#if (lookup theme.colors "text-subtle")}}{{lookup theme.colors "text-subtle"}}{{else}}{{#if (lookup theme.colors "text_muted")}}{{lookup theme.colors "text_muted"}}{{else}}{{#if (lookup theme.colors "text-muted")}}{{lookup theme.colors "text-muted"}}{{else}}{{theme.colors.text}}{{/if}}{{/if}}{{/if}}; /* Champagne */
             
             /* Interactive - Gold interactions */
-            --theme-link: {{theme.colors.link}};             /* Royal gold */
-            --theme-link-hover: {{theme.colors.link-hover}}; /* Bright gold */
-            --theme-focus: {{theme.colors.focus}};           /* Focus gold */
+            --theme-link: {{#if (lookup theme.colors "link")}}{{lookup theme.colors "link"}}{{else}}{{theme.colors.accent}}{{/if}};             /* Link */
+            --theme-link-hover: {{#if (lookup theme.colors "link-hover")}}{{lookup theme.colors "link-hover"}}{{else}}{{#if (lookup theme.colors "accent-hover")}}{{lookup theme.colors "accent-hover"}}{{else}}{{theme.colors.accent}}{{/if}}{{/if}}; /* Link hover */
+            --theme-focus: {{#if (lookup theme.colors "focus")}}{{lookup theme.colors "focus"}}{{else}}{{#if (lookup theme.colors "focus-ring")}}{{lookup theme.colors "focus-ring"}}{{else}}{{theme.colors.accent}}{{/if}}{{/if}};           /* Focus */
             
             /* Status - Jewel tones */
             --theme-success: {{theme.colors.success}};       /* Emerald */
@@ -46,7 +46,7 @@
             
             /* System - Subtle borders */
             --theme-border: {{theme.colors.border}};         /* Purple border */
-            --theme-border-muted: {{theme.colors.border-muted}}; /* Subtle */
+            --theme-border-muted: {{#if (lookup theme.colors "border-subtle")}}{{lookup theme.colors "border-subtle"}}{{else}}{{#if (lookup theme.colors "border_light")}}{{lookup theme.colors "border_light"}}{{else}}{{#if (lookup theme.colors "border-light")}}{{lookup theme.colors "border-light"}}{{else}}{{theme.colors.border}}{{/if}}{{/if}}{{/if}}; /* Subtle */
             
             /* Typography Scales */
             --font-heading: 'Playfair Display', 'Times New Roman', serif;
@@ -123,7 +123,7 @@
         
         /* Royal Cards */
         .royal-card {
-            background: linear-gradient(135deg, var(--theme-surface), var(--theme-bg-alt));
+            background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
             border: 1px solid var(--theme-border);
             border-radius: var(--radius-lg);
             padding: 2rem;
