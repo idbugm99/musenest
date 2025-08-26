@@ -458,24 +458,32 @@ router.get('/:slug/:page?', async (req, res) => {
                 
                 let query, params;
                 if (isNumeric) {
-                    // Query by ID (legacy support)
+                    // Query by ID (legacy support) - find system palette or any palette as fallback
                     query = `
-                        SELECT ts.id, ts.name, ts.display_name, 
-                               cp.id as palette_id, cp.name as palette_name, cp.display_name as palette_display_name
+                        SELECT ts.id, ts.name, ts.display_name, ts.default_palette_id,
+                               COALESCE(cp_system.id, cp_any.id) as palette_id,
+                               COALESCE(cp_system.name, cp_any.name) as palette_name,
+                               COALESCE(cp_system.display_name, cp_any.display_name) as palette_display_name
                         FROM theme_sets ts
-                        LEFT JOIN color_palettes cp ON cp.theme_set_id = ts.id AND cp.is_system_palette = 1
+                        LEFT JOIN color_palettes cp_system ON cp_system.theme_set_id = ts.id AND cp_system.is_system_palette = 1
+                        LEFT JOIN color_palettes cp_any ON cp_any.theme_set_id = ts.id
                         WHERE ts.id = ? AND ts.is_active = 1 
+                        ORDER BY cp_system.id DESC, cp_any.id DESC
                         LIMIT 1
                     `;
                     params = [previewThemeParam];
                 } else {
-                    // Query by name (new support for "royal-gem", etc.)
+                    // Query by name (new support for "royal-gem", etc.) - find system palette or any palette as fallback
                     query = `
-                        SELECT ts.id, ts.name, ts.display_name,
-                               cp.id as palette_id, cp.name as palette_name, cp.display_name as palette_display_name
+                        SELECT ts.id, ts.name, ts.display_name, ts.default_palette_id,
+                               COALESCE(cp_system.id, cp_any.id) as palette_id,
+                               COALESCE(cp_system.name, cp_any.name) as palette_name,
+                               COALESCE(cp_system.display_name, cp_any.display_name) as palette_display_name
                         FROM theme_sets ts
-                        LEFT JOIN color_palettes cp ON cp.theme_set_id = ts.id AND cp.is_system_palette = 1
+                        LEFT JOIN color_palettes cp_system ON cp_system.theme_set_id = ts.id AND cp_system.is_system_palette = 1
+                        LEFT JOIN color_palettes cp_any ON cp_any.theme_set_id = ts.id
                         WHERE ts.name = ? AND ts.is_active = 1
+                        ORDER BY cp_system.id DESC, cp_any.id DESC
                         LIMIT 1
                     `;
                     params = [previewThemeParam];
@@ -617,10 +625,10 @@ router.get('/:slug/:page?', async (req, res) => {
         let themeId = null;
 
         if (previewTheme) {
-            // For preview themes, use the theme's default palette
-            paletteId = previewTheme.palette_id;
+            // For preview themes, use the theme's palette or default_palette_id as fallback
+            paletteId = previewTheme.palette_id || previewTheme.default_palette_id;
             themeId = previewTheme.id;
-            console.log(`🎨 Preview mode - using theme ${themeId} (${previewTheme.name}) default palette ${paletteId}`);
+            console.log(`🎨 Preview mode - using theme ${themeId} (${previewTheme.name}) palette ${paletteId} (${previewTheme.palette_id ? 'found' : 'fallback'})`);
         } else {
             // For regular mode, use model's active palette or theme default
             paletteId = model.active_color_palette_id;
