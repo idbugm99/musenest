@@ -10,281 +10,265 @@
     <meta name="og:type" content="website">
     <meta name="og:image" content="{{ogImage}}">
     
+    <!-- Font Awesome Free Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Elegant Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
     <!-- Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     
-    <!-- AOS Animation Library -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
     <!-- Glamour Theme Styles -->
     <style>
-        /* Glamour Theme Colors */
+    :root {
+        /* 17-Token Color System from Database with Fallbacks */
+        --theme-primary: {{#if theme.colors.primary}}{{theme.colors.primary}}{{else}}#8B5CF6{{/if}};
+        --theme-secondary: {{#if theme.colors.secondary}}{{theme.colors.secondary}}{{else}}#EC4899{{/if}};
+        --theme-accent: {{#if theme.colors.accent}}{{theme.colors.accent}}{{else}}#F59E0B{{/if}};
+        --theme-bg: {{#if theme.colors.bg}}{{theme.colors.bg}}{{else}}#111827{{/if}};
+        --theme-bg-alt: {{#if (lookup theme.colors "bg-alt")}}{{lookup theme.colors "bg-alt"}}{{else}}{{#if (lookup theme.colors "bg-light")}}{{lookup theme.colors "bg-light"}}{{else}}#1F2937{{/if}}{{/if}};
+        --theme-surface: {{#if theme.colors.surface}}{{theme.colors.surface}}{{else}}#374151{{/if}};
+        --theme-overlay: {{#if theme.colors.overlay}}{{theme.colors.overlay}}{{else}}rgba(139, 92, 246, 0.1){{/if}};
+        --theme-text: {{#if theme.colors.text}}{{theme.colors.text}}{{else}}#F9FAFB{{/if}};
+        --theme-text-subtle: {{#if (lookup theme.colors "text-subtle")}}{{lookup theme.colors "text-subtle"}}{{else}}{{#if (lookup theme.colors "text_muted")}}{{lookup theme.colors "text_muted"}}{{else}}#D1D5DB{{/if}}{{/if}};
+        --theme-link: {{#if theme.colors.link}}{{theme.colors.link}}{{else}}{{#if theme.colors.accent}}{{theme.colors.accent}}{{else}}#F59E0B{{/if}}{{/if}};
+        --theme-link-hover: {{#if (lookup theme.colors "link-hover")}}{{lookup theme.colors "link-hover"}}{{else}}{{#if (lookup theme.colors "accent-hover")}}{{lookup theme.colors "accent-hover"}}{{else}}#D97706{{/if}}{{/if}};
+        --theme-focus: {{#if theme.colors.focus}}{{theme.colors.focus}}{{else}}{{#if theme.colors.accent}}{{theme.colors.accent}}{{else}}#F59E0B{{/if}}{{/if}};
+        --theme-success: {{#if theme.colors.success}}{{theme.colors.success}}{{else}}#10B981{{/if}};
+        --theme-warning: {{#if theme.colors.warning}}{{theme.colors.warning}}{{else}}#F59E0B{{/if}};
+        --theme-error: {{#if theme.colors.error}}{{theme.colors.error}}{{else}}#EF4444{{/if}};
+        --theme-border: {{#if theme.colors.border}}{{theme.colors.border}}{{else}}#4B5563{{/if}};
+        --theme-border-muted: {{#if (lookup theme.colors "border-muted")}}{{lookup theme.colors "border-muted"}}{{else}}{{#if (lookup theme.colors "border-light")}}{{lookup theme.colors "border-light"}}{{else}}#374151{{/if}}{{/if}};
+        
+        /* Typography */
+        --font-display: 'Playfair Display', serif;
+        --font-body: 'Inter', sans-serif;
+        
+        /* Spacing & Layout */
+        --container-max-width: 1200px;
+        --section-padding-y: 4rem;
+        --section-padding-x: 1.5rem;
+        
+        /* Glamour-Specific Design Tokens */
+        --glamour-gradient: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+        --glamour-glow: 0 0 20px rgba(147, 51, 234, 0.3);
+        --glamour-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        --glamour-border-radius: 1rem;
+        --glamour-transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    /* Base Styles */
+    body {
+        background-color: var(--theme-bg);
+        color: var(--theme-text);
+        font-family: var(--font-body);
+        line-height: 1.6;
+    }
+    
+    /* Typography */
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-display);
+        font-weight: 500;
+        line-height: 1.2;
+        color: var(--theme-text);
+    }
+    
+    h1 { font-size: 3rem; }
+    h2 { font-size: 2.5rem; }
+    h3 { font-size: 2rem; }
+    h4 { font-size: 1.5rem; }
+    
+    /* Glamour Theme Elements */
+    .glamour-gradient {
+        background: var(--glamour-gradient);
+        color: white;
+    }
+    
+    .glamour-card {
+        background: var(--theme-surface);
+        border: 1px solid var(--theme-border-muted);
+        border-radius: var(--glamour-border-radius);
+        box-shadow: var(--glamour-shadow);
+        transition: var(--glamour-transition);
+        overflow: hidden;
+    }
+    
+    .glamour-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--glamour-glow), var(--glamour-shadow);
+    }
+    
+    .glamour-btn {
+        background: var(--glamour-gradient);
+        color: white;
+        padding: 0.875rem 2rem;
+        border-radius: 50px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--glamour-transition);
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+    
+    .glamour-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--glamour-glow);
+        text-decoration: none;
+        color: white;
+    }
+    
+    .glamour-btn-outline {
+        background: transparent;
+        color: var(--theme-primary);
+        padding: 0.875rem 2rem;
+        border-radius: 50px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--glamour-transition);
+        border: 2px solid var(--theme-primary);
+        cursor: pointer;
+        font-size: 1rem;
+    }
+    
+    .glamour-btn-outline:hover {
+        background: var(--theme-primary);
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: var(--glamour-glow);
+    }
+    
+    /* Hero section outline buttons (white on gradient background) */
+    .glamour-btn-hero-outline {
+        background: transparent;
+        color: white;
+        padding: 0.875rem 2rem;
+        border-radius: 50px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--glamour-transition);
+        border: 2px solid white;
+        cursor: pointer;
+        font-size: 1.125rem;
+    }
+    
+    .glamour-btn-hero-outline:hover {
+        background: white;
+        color: var(--theme-primary);
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px -5px rgba(255, 255, 255, 0.3);
+    }
+    
+    /* Parallax and Animation Styles */
+    .parallax-bg {
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+        .parallax-bg {
+            background-attachment: scroll;
+        }
+        * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+    
+    /* Micro-animations */
+    @keyframes glamourFadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes glamourSlideIn {
+        from { opacity: 0; transform: translateX(-30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .animate-fade-in {
+        animation: glamourFadeIn 0.8s ease-out forwards;
+    }
+    
+    .animate-slide-in {
+        animation: glamourSlideIn 0.8s ease-out forwards;
+    }
+    
+    /* Focus States for Accessibility */
+    a:focus,
+    button:focus,
+    input:focus,
+    textarea:focus,
+    select:focus {
+        outline: 2px solid var(--theme-focus);
+        outline-offset: 2px;
+    }
+    
+    /* Link Styles */
+    a {
+        color: var(--theme-link);
+        transition: color 0.3s ease;
+    }
+    
+    a:hover {
+        color: var(--theme-link-hover);
+    }
+    
+    /* Navigation Styles */
+    .glamour-nav {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--theme-border-muted);
+        transition: var(--glamour-transition);
+    }
+    
+    .glamour-nav.scrolled {
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
         :root {
-            --glamour-primary: {{theme.colors.background}};
-            --glamour-secondary: {{theme.colors.surface}};
-            --glamour-accent: {{theme.colors.accent}};
-            --glamour-text: {{theme.colors.text-light}};
-            --glamour-background: {{theme.colors.background}};
-            
-            /* Universal Theme Variables - Glamour Theme - Dynamic from Database */
-            --theme-bg-primary: {{theme.colors.background}};        /* Primary background */
-            --theme-bg-secondary: {{theme.colors.surface}};         /* Secondary background */
-            --theme-bg-tertiary: {{theme.colors.card-bg}};          /* Card backgrounds */
-            --theme-bg-light: {{theme.colors.bg-light}};            /* Lighter elements */
-            --theme-bg-surface: {{theme.colors.surface}};           /* Surface elements */
-            
-            --theme-text-primary: {{theme.colors.text-light}};      /* Primary text */
-            --theme-text-secondary: {{theme.colors.accent}};        /* Secondary text */
-            --theme-text-muted: {{theme.colors.text}};              /* Muted text */
-            --theme-text-subtle: {{theme.colors.disabled-text}};    /* Subtle text */
-            --theme-text-inverted: {{theme.colors.text-dark}};      /* Inverted text */
-            
-            --theme-border-primary: {{theme.colors.border-dark}};   /* Primary borders */
-            --theme-border-light: {{theme.colors.border-light}};    /* Light borders */
-            --theme-border-subtle: {{theme.colors.divider}};        /* Subtle borders */
-            
-            --theme-accent: {{theme.colors.accent}};                /* Accent color */
-            --theme-accent-hover: {{theme.colors.btn-bg-hover}};    /* Accent hover */
-            --theme-accent-light: {{theme.colors.link-hover}};      /* Light accent */
-            --theme-success: {{theme.colors.success}};              /* Success green */
-            --theme-warning: {{theme.colors.warning}};              /* Warning amber */
-            --theme-error: {{theme.colors.danger}};                 /* Error red */
+            --section-padding-y: 2rem;
+            --section-padding-x: 1rem;
         }
         
-        .text-glamour-primary { color: var(--glamour-primary); }
-        .bg-glamour-primary { background-color: var(--glamour-primary); }
-        .border-glamour-primary { border-color: var(--glamour-primary); }
-        
-        .text-glamour-secondary { color: var(--glamour-secondary); }
-        .bg-glamour-secondary { background-color: var(--glamour-secondary); }
-        .border-glamour-secondary { border-color: var(--glamour-secondary); }
-        
-        .text-glamour-accent { color: var(--glamour-accent); }
-        .bg-glamour-accent { background-color: var(--glamour-accent); }
-        .border-glamour-accent { border-color: var(--glamour-accent); }
-        
-        .glamour-gradient {
-            background: linear-gradient(135deg, {{theme.colors.bg-dark}} 0%, {{theme.colors.card-bg}} 50%, {{theme.colors.accent}} 100%);
-        }
-        
-        .glamour-text-gradient {
-            background: linear-gradient(135deg, {{theme.colors.accent}} 0%, {{theme.colors.text}} 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        /* Glamour Theme Typography */
-        body {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            background-color: var(--glamour-background);
-            color: var(--glamour-text);
-            padding-top: 64px; /* Height of glamour navigation (h-16 = 64px) */
-        }
-        
-        .glamour-heading {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            font-weight: 700;
-            letter-spacing: -0.025em;
-        }
-        
-        /* Glamour Animations */
-        .glamour-hover-lift:hover {
-            transform: translateY(-4px);
-            transition: transform 0.3s ease;
-        }
-        
-        .glamour-fade-in {
-            opacity: 0;
-            animation: glamourFadeIn 0.6s ease-out forwards;
-        }
-        
-        @keyframes glamourFadeIn {
-            to {
-                opacity: 1;
-            }
-        }
-        
-        /* Glamour Navigation Styles */
-        .glamour-nav {
-            background: linear-gradient(135deg, {{theme.colors.bg-dark}} 0%, {{theme.colors.card-bg}} 50%, {{theme.colors.accent}} 100%);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(233, 199, 122, 0.2);
-        }
-        
-        .glamour-brand {
-            color: rgba(255, 255, 255, 0.95);
-            font-size: 1.5rem;
-            font-weight: 300;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-        
-        .glamour-brand:hover {
-            color: rgba(255, 255, 255, 0.7);
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-        }
-        
-        .glamour-nav-link {
-            color: rgba(255, 255, 255, 0.9);
-            text-decoration: none;
-            font-weight: 500;
-            padding: 8px 12px;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        
-        .glamour-nav-link:hover {
-            color: rgba(255, 255, 255, 1);
-            background-color: rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(5px);
-        }
-        
-        .glamour-nav-link.active {
-            color: rgba(255, 255, 255, 1);
-            background-color: rgba(0, 0, 0, 0.2);
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Glamour Footer Styles */
-        .glamour-footer {
-            background: linear-gradient(135deg, {{theme.colors.bg-dark}} 0%, {{theme.colors.card-bg}} 50%, {{theme.colors.accent}} 100%);
-            color: rgba(255, 255, 255, 0.95);
-        }
-        
-        .glamour-footer-text {
-            color: rgba(255, 255, 255, 0.8);
-        }
-        
-        .glamour-footer-link {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-        
-        .glamour-footer-link:hover {
-            color: rgba(255, 255, 255, 1);
-            text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
-        }
-        
-        .glamour-footer-border {
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Glamour Button Styles */
-        .glamour-btn {
-            background: linear-gradient(45deg, {{theme.colors.accent}} 0%, {{theme.colors.text}} 100%);
-            color: {{theme.colors.text-dark}};
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(233, 199, 122, 0.3);
-        }
-        
-        .glamour-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(233, 199, 122, 0.4);
-            color: {{theme.colors.text-dark}};
-            text-decoration: none;
-        }
-        
-        /* Glamour Cards */
-        .glamour-card {
-            background: var(--glamour-secondary);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(233, 199, 122, 0.15);
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-        }
-        
-        /* Universal Theme Utility Classes */
-        /* Background Classes */
-        .theme-bg-primary { background-color: var(--theme-bg-primary) !important; }
-        .theme-bg-secondary { background-color: var(--theme-bg-secondary) !important; }
-        .theme-bg-tertiary { background-color: var(--theme-bg-tertiary) !important; }
-        .theme-bg-light { background-color: var(--theme-bg-light) !important; }
-        
-        /* Text Color Classes */
-        .theme-text-primary { color: var(--theme-text-primary) !important; }
-        .theme-text-secondary { color: var(--theme-text-secondary) !important; }
-        .theme-text-muted { color: var(--theme-text-muted) !important; }
-        .theme-text-subtle { color: var(--theme-text-subtle) !important; }
-        
-        /* Border Classes */
-        .theme-border-primary { border-color: var(--theme-border-primary) !important; }
-        .theme-border-light { border-color: var(--theme-border-light) !important; }
-        
-        /* Accent Classes */
-        .theme-accent { color: var(--theme-accent) !important; }
-        .theme-accent-bg { background-color: var(--theme-accent) !important; }
-        .theme-accent-border { border-color: var(--theme-accent) !important; }
-        
-        /* Semantic Component Classes */
-        .theme-card {
-            background-color: var(--theme-bg-tertiary);
-            color: var(--theme-text-primary);
-            border: 1px solid var(--theme-border-light);
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .theme-card:hover {
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-            transform: translateY(-2px);
-        }
-        
-        .theme-section {
-            background-color: var(--theme-bg-primary);
-            color: var(--theme-text-primary);
-        }
-        
-        .theme-section-alt {
-            background-color: var(--theme-bg-secondary);
-            color: var(--theme-text-primary);
-        }
-        
-        .theme-header {
-            color: var(--theme-text-primary);
-            font-weight: bold;
-        }
-        
-        .theme-body-text {
-            color: var(--theme-text-secondary);
-        }
-        
-        .theme-muted-text {
-            color: var(--theme-text-muted);
-        }
-        
-        .theme-subtle-text {
-            color: var(--theme-text-subtle);
-        }
+        h1 { font-size: 2.5rem; }
+        h2 { font-size: 2rem; }
+        h3 { font-size: 1.75rem; }
+    }
     </style>
     
-    <!-- Additional page-specific styles -->
-    {{#if additionalCSS}}
-    <style>
-        {{{additionalCSS}}}
-    </style>
-    {{/if}}
+    <!-- Theme Color Loader -->
+    <script src="/public/js/theme-color-loader.js"></script>
 </head>
-<body class="bg-glamour-background font-serif">
+
+<body style="background-color: var(--theme-bg);">
     <!-- Navigation -->
     {{> navigation}}
     
     <!-- Theme Preview Banner -->
     {{#if theme.isPreview}}
-    <div class="bg-gradient-to-r from-purple-900 to-pink-800 text-white py-2 px-4 text-center text-sm font-medium">
-        <i class="fas fa-eye me-2"></i>You are previewing the <strong>{{theme.previewThemeName}}</strong> theme. This is not your active theme.
+    <div class="bg-orange-500 text-white py-2 px-4 text-center text-sm font-medium">
+        <i class="fas fa-eye mr-2"></i>You are previewing the <strong>{{theme.previewThemeName}}</strong> theme. This is not your active theme.
     </div>
     {{/if}}
     
@@ -298,12 +282,37 @@
     
     <!-- Scripts -->
     <script>
-        // Initialize AOS
-        AOS.init({
-            duration: 800,
-            easing: 'ease-out-cubic',
-            once: true,
-            offset: 50
+        // Navigation scroll effect
+        window.addEventListener('scroll', function() {
+            const nav = document.querySelector('.glamour-nav');
+            if (nav) {
+                if (window.scrollY > 50) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+            }
+        });
+        
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in');
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all elements with animation classes
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.animate-on-scroll').forEach(el => {
+                observer.observe(el);
+            });
         });
     </script>
     

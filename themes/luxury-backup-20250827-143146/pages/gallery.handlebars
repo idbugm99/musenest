@@ -1,0 +1,224 @@
+<!-- Universal Gallery System for Luxury Theme -->
+{{{renderUniversalGallery modelSlug previewTheme=previewThemeId}}}
+
+<!-- Load Universal Gallery System CSS and JavaScript -->
+<link rel="stylesheet" href="/templates/universal/gallery-styles.css">
+<script src="/templates/universal/gallery-script.js"></script>
+
+<!-- Luxury Theme Gallery CSS Variables Override -->
+<style>
+:root {
+    --gallery-primary: var(--theme-accent);
+    --gallery-primary-hover: var(--theme-accent-hover);
+    --gallery-secondary: var(--theme-secondary, var(--theme-accent-hover));
+    --gallery-accent: var(--theme-accent);
+    --gallery-background: linear-gradient(135deg, var(--theme-bg-secondary), var(--theme-bg-tertiary));
+    --gallery-surface: var(--theme-bg-tertiary);
+    --gallery-text: var(--theme-text-primary);
+    --gallery-text-muted: var(--theme-text-muted);
+    --gallery-border: var(--theme-border-light);
+    --gallery-shadow: var(--theme-shadow, rgba(0,0,0,0.35));
+    --gallery-shadow-hover: var(--theme-shadow, rgba(0,0,0,0.45));
+    
+    --gallery-border-radius: 12px;
+    --gallery-border-radius-large: 20px;
+    --gallery-grid-columns-desktop: 3;
+    --gallery-transition-duration: 0.4s;
+    --gallery-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+    --gallery-hover-lift: -8px;
+    --gallery-hover-scale: 1.02;
+}
+</style>
+
+<!-- Luxury Theme Gallery Custom Page Styles -->
+<style>
+/* Luxury Theme Gallery Hero Section */
+.universal-gallery .gallery-hero {
+    background: linear-gradient(135deg, var(--theme-bg-secondary), var(--theme-bg-tertiary), var(--theme-bg-primary));
+    color: var(--theme-text-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.universal-gallery .gallery-hero::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 150px;
+    background: radial-gradient(ellipse, var(--theme-accent) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: luxury-palace-glow 4s ease-in-out infinite alternate;
+}
+
+.universal-gallery .gallery-hero .hero-badge {
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-light), var(--accent));
+    border-radius: 50%;
+    margin: 0 auto 2rem auto;
+    box-shadow: 0 0 30px var(--shadow-hover);
+    animation: luxury-crown-pulse 3s ease-in-out infinite;
+}
+
+@keyframes luxury-palace-glow {
+    0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+    50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+}
+
+@keyframes luxury-crown-pulse {
+    0%, 100% { box-shadow: 0 0 30px var(--shadow-hover); }
+    50% { box-shadow: 0 0 50px var(--shadow-intense); }
+}
+
+/* Luxury Theme Gallery Items */
+.universal-gallery .gallery-grid-item::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, var(--accent), var(--accent-light), var(--accent));
+    border-radius: calc(var(--gallery-border-radius) + 2px);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.universal-gallery .gallery-grid-item:hover::before {
+    opacity: 1;
+}
+
+/* Luxury Theme Gallery Sections */
+.universal-gallery .gallery-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--theme-accent), transparent);
+}
+
+.universal-gallery .gallery-section-title {
+    color: var(--theme-accent);
+    text-shadow: 0 0 10px var(--card-shadow);
+    position: relative;
+}
+
+.universal-gallery .gallery-section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--theme-accent), var(--theme-accent-light), var(--theme-accent));
+    border-radius: 2px;
+    box-shadow: 0 0 10px var(--shadow-hover);
+}
+
+/* Luxury Theme Carousel Styling */
+.universal-gallery .gallery-carousel-container {
+    background: linear-gradient(135deg, var(--theme-bg-tertiary), var(--theme-bg-secondary));
+    border: 1px solid var(--theme-border-light);
+}
+
+.universal-gallery .gallery-carousel-nav {
+    background: var(--theme-accent); filter: opacity(0.9);
+    color: var(--theme-text-inverted);
+    box-shadow: 0 4px 15px var(--card-shadow);
+}
+
+.universal-gallery .gallery-carousel-nav:hover {
+    background: var(--theme-accent);
+    box-shadow: 0 8px 25px var(--shadow-hover);
+}
+
+.universal-gallery .gallery-carousel-dot {
+    background: var(--theme-accent); filter: opacity(0.4);
+}
+
+.universal-gallery .gallery-carousel-dot.active {
+    background: var(--theme-accent);
+}
+
+/* Luxury Theme Empty State */
+.universal-gallery .gallery-empty-state {
+    background: linear-gradient(135deg, var(--theme-text-primary), var(--theme-bg-secondary)); filter: opacity(0.95);
+    border: 1px solid var(--theme-border-light);
+    position: relative;
+}
+
+.universal-gallery .gallery-empty-state::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 100px;
+    background: radial-gradient(ellipse, var(--theme-accent) 0%, transparent 70%); filter: opacity(0.2);
+    border-radius: 50%;
+}
+
+.universal-gallery .gallery-empty-icon {
+    background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-light));
+    box-shadow: 0 0 30px var(--card-shadow);
+}
+
+/* Luxury Theme CTA Section */
+.universal-gallery .gallery-cta {
+    background: linear-gradient(135deg, var(--theme-accent), var(--theme-secondary, var(--theme-accent-hover)), var(--theme-accent));
+    color: white;
+    position: relative;
+}
+
+.universal-gallery .gallery-cta::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;
+    height: 200px;
+    background: radial-gradient(ellipse, var(--theme-text-primary) 0%, transparent 70%); filter: opacity(0.2);
+    border-radius: 50%;
+    animation: luxury-palace-glow 4s ease-in-out infinite alternate;
+}
+
+.universal-gallery .gallery-cta-badge {
+    background: linear-gradient(135deg, var(--theme-text-primary), var(--theme-text-primary)); filter: opacity(0.9);
+    color: var(--theme-accent);
+    box-shadow: 0 0 20px var(--theme-text-primary); filter: opacity(0.3);
+    animation: luxury-crown-pulse 3s ease-in-out infinite;
+}
+
+.universal-gallery .gallery-cta-primary {
+    background: white;
+    color: var(--theme-accent);
+    box-shadow: 0 4px 15px var(--theme-text-primary); filter: opacity(0.3);
+}
+
+.universal-gallery .gallery-cta-primary:hover {
+    background: var(--theme-bg-secondary);
+    box-shadow: 0 8px 25px var(--theme-text-primary); filter: opacity(0.4);
+}
+
+.universal-gallery .gallery-cta-secondary {
+    border: 2px solid var(--theme-text-primary); filter: opacity(0.8);
+    background: var(--theme-text-primary); filter: opacity(0.1);
+    color: white;
+}
+
+.universal-gallery .gallery-cta-secondary:hover {
+    background: var(--theme-text-primary); filter: opacity(0.2);
+    border-color: white;
+}
+</style>

@@ -88,8 +88,8 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background-color: {{theme.colors.background}};
-            color: {{theme.colors.text-light}};
+            background-color: var(--theme-bg);
+            color: var(--theme-text);
             line-height: 1.7;
             font-weight: 400;
             padding-top: 64px; /* Height of modern navigation (h-16 = 64px) */
@@ -223,15 +223,15 @@
         
         /* Modern Navigation */
         .modern-nav {
-            background: {{theme.colors.nav-bg}};
+            background: var(--theme-surface);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid {{theme.colors.nav-border}};
-            box-shadow: 0 1px 3px {{theme.colors.card-shadow}};
+            border-bottom: 1px solid var(--theme-border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         
         .modern-nav .nav-link {
             font-weight: 500;
-            color: {{theme.colors.nav-text}};
+            color: var(--theme-text);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-size: 13px;
@@ -249,7 +249,7 @@
             transform: translateX(-50%);
             width: 0;
             height: 2px;
-            background: {{theme.colors.accent}};
+            background: var(--theme-accent);
             transition: width 0.3s ease;
         }
         
@@ -260,8 +260,8 @@
         
         .modern-nav .nav-link:hover,
         .modern-nav .nav-link.active {
-            color: {{theme.colors.accent}};
-            background: {{theme.colors.overlay}};
+            color: var(--theme-accent);
+            background: var(--theme-surface);
         }
         
         /* Modern Brand */
@@ -269,7 +269,7 @@
             font-family: 'Inter', sans-serif;
             font-weight: 900;
             font-size: 24px;
-            color: {{theme.colors.accent}};
+            color: var(--theme-accent);
             text-decoration: none;
             letter-spacing: -0.02em;
         }
@@ -537,6 +537,9 @@
             color: var(--theme-text-subtle);
         }
     </style>
+    
+    <!-- Dynamic theme color CSS - Load AFTER inline styles so variables override -->
+    <link rel="stylesheet" href="/api/theme-colors/{{#if previewThemeId}}{{previewThemeId}}{{else}}{{themeId}}{{/if}}/css?v={{timestamp}}&force=1">
 </head>
 <body>
     <!-- Navigation -->

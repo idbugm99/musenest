@@ -1,263 +1,372 @@
-<!-- Luxury Theme Home Page - Using Universal Page System -->
+<!-- Luxury Home Page -->
 
-<!-- Load Universal Page System -->
-<link rel="stylesheet" href="/templates/universal/universal-hero-styles.css">
-<link rel="stylesheet" href="/templates/universal/universal-page-styles.css">
-<link rel="stylesheet" href="/themes/luxury/styles/luxury-theme-overrides.css">
+<!-- Hero Section -->
+<section class="luxury-hero-section" style="{{#if content.heroBackgroundImageUrl}}background: #2C1810;{{else}}background: linear-gradient(135deg, #D4AF37, #8B4513);{{/if}} min-height: 100vh; position: relative; overflow: hidden;">
+    
+    <!-- Luxury Decorative Elements -->
+    <div style="position: absolute; top: 15%; left: 8%; opacity: 0.3; z-index: 1;">
+        <div style="width: 4rem; height: 4rem; border: 2px solid rgba(212, 175, 55, 0.6); border-radius: 50%; animation: luxuryFloat 8s ease-in-out infinite;"></div>
+    </div>
+    <div style="position: absolute; top: 25%; right: 12%; opacity: 0.4; z-index: 1;">
+        <div style="width: 3rem; height: 3rem; background: rgba(212, 175, 55, 0.3); border-radius: 50%; animation: luxuryFloat 10s ease-in-out infinite; animation-delay: 3s;"></div>
+    </div>
+    <div style="position: absolute; bottom: 30%; left: 75%; opacity: 0.5; z-index: 1;">
+        <div style="width: 2rem; height: 2rem; border: 2px solid rgba(212, 175, 55, 0.4); border-radius: 50%; animation: luxuryFloat 12s ease-in-out infinite; animation-delay: 6s;"></div>
+    </div>
 
-<!-- Universal Hero Section -->
-{{#if content.hero_section_visible}}
-<section class="universal-hero {{#if content.heroBackgroundImageUrl}}universal-hero-custom-bg bg-cover bg-center bg-fixed{{/if}}" data-aos="fade-in" {{#if content.heroBackgroundImageUrl}}style="background-image: url('{{content.heroBackgroundImageUrl}}')"{{/if}}>
-    {{#unless content.heroBackgroundImageUrl}}
-    <!-- Theme Background Elements (only if no custom image) -->
-    <div class="universal-hero-bg-elements">
-        <div class="universal-bg-layer-1"></div>
-        <div class="universal-bg-layer-2"></div>
-        <div class="universal-bg-layer-3"></div>
-    </div>
-    {{/unless}}
+    <!-- Parallax Background Image -->
+    {{#if content.heroBackgroundImageUrl}}
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('{{content.heroBackgroundImageUrl}}'); background-size: cover; background-position: center; background-attachment: fixed; opacity: {{#if content.hero_background_opacity}}{{content.hero_background_opacity}}{{else}}0.7{{/if}}; z-index: 0;"></div>
+    {{/if}}
     
-    <!-- Theme Decorative Elements -->
-    <div class="universal-hero-decorations">
-        <div class="universal-decoration-1"></div>
-        <div class="universal-decoration-2"></div>
-        <div class="universal-decoration-3"></div>
-        <div class="universal-decoration-4"></div>
-        <div class="universal-decoration-5"></div>
-        <div class="universal-decoration-6"></div>
-    </div>
-    
-    <!-- Theme-specific overlay (avoids global universal overlay side-effects) -->
-    <div class="luxury-hero-overlay"></div>
-    
-    <!-- Hero Content -->
-    <div class="universal-hero-content">
-        <div class="max-w-5xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-            <!-- Theme Icon -->
-            <div class="universal-hero-icon" data-aos="fade-down" data-aos-delay="100">
-                <i class="universal-theme-icon"></i>
+    <div class="luxury-container" style="position: relative; z-index: 2; padding-top: 8rem; padding-bottom: 8rem; max-width: 1200px; margin: 0 auto; padding-left: 2rem; padding-right: 2rem;">
+        <!-- Hero Section -->
+        <div style="text-align: center; margin-bottom: 6rem;">
+            <div style="margin-bottom: 3rem;">
+                <div style="width: 5rem; height: 5rem; background: linear-gradient(45deg, #D4AF37, #B8941F); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; animation: luxuryPulse 4s ease-in-out infinite;">
+                    <i class="fas fa-crown"></i>
+                </div>
             </div>
             
-            <!-- Hero Title -->
-            <h1 class="universal-hero-title" data-aos="fade-up" data-aos-delay="300">
-                {{#if content.hero_title}}{{content.hero_title}}{{else}}{{model.name}}{{/if}}
+            <h1 style="font-size: clamp(3rem, 8vw, 6rem); color: #F5F5DC; margin-bottom: 2rem; font-family: Georgia, serif; font-weight: 700; text-shadow: 0 4px 20px rgba(0,0,0,0.5); line-height: 1.1;">
+                {{#if content.hero_title}}{{content.hero_title}}{{else}}{{#if model.name}}{{model.name}}{{else}}{{modelName}}{{/if}}{{/if}}
             </h1>
             
-            <!-- Hero Subtitle -->
             {{#if content.hero_subtitle}}
-            <p class="universal-hero-subtitle" data-aos="fade-up" data-aos-delay="500">
+            <p style="font-size: 1.5rem; color: rgba(245, 245, 220, 0.9); max-width: 800px; margin: 0 auto 1.5rem; line-height: 1.6; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">
                 {{content.hero_subtitle}}
+            </p>
+            {{else}}
+            <p style="font-size: 1.5rem; color: rgba(245, 245, 220, 0.9); max-width: 800px; margin: 0 auto 1.5rem; line-height: 1.6; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+                {{#if tagline}}{{tagline}}{{else}}Experience elegance, sophistication, and unforgettable moments with a refined companion.{{/if}}
             </p>
             {{/if}}
             
-            <!-- Hero Description -->
             {{#if content.hero_description}}
-            <div class="universal-hero-description" data-aos="fade-up" data-aos-delay="700">
+            <div style="font-size: 1.1rem; color: rgba(245, 245, 220, 0.8); max-width: 700px; margin: 0 auto 3rem; line-height: 1.6; text-shadow: 0 1px 5px rgba(0,0,0,0.3);">
                 {{{content.hero_description}}}
             </div>
+            {{else}}
+            <div style="margin-bottom: 3rem;"></div>
             {{/if}}
             
-            <!-- Hero CTA Buttons -->
-            <div class="universal-hero-cta" data-aos="fade-up" data-aos-delay="900">
+            <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
                 {{#if content.hero_button_1_text}}
-                <a href="{{#if content.hero_button_1_link}}/{{modelSlug}}/{{content.hero_button_1_link}}{{previewParam}}{{else}}/{{modelSlug}}/contact{{previewParam}}{{/if}}" 
-                   class="universal-btn universal-btn-primary universal-hero-btn-primary">
+                <a href="{{#if content.hero_button_1_link}}/{{modelSlug}}/{{content.hero_button_1_link}}{{previewParam}}{{else}}/{{modelSlug}}/contact{{previewParam}}{{/if}}" class="luxury-hero-btn" style="font-size: 1.2rem; padding: 1.2rem 2.5rem;">
+                    <i class="fas fa-calendar-alt" style="margin-right: 0.8rem;"></i>
                     {{content.hero_button_1_text}}
+                </a>
+                {{else}}
+                <a href="/{{modelSlug}}/contact{{previewParam}}" class="luxury-hero-btn" style="font-size: 1.2rem; padding: 1.2rem 2.5rem;">
+                    <i class="fas fa-envelope" style="margin-right: 0.8rem;"></i>
+                    Book Now
                 </a>
                 {{/if}}
                 
                 {{#if content.hero_button_2_text}}
-                <a href="{{#if content.hero_button_2_link}}/{{modelSlug}}/{{content.hero_button_2_link}}{{previewParam}}{{else}}/{{modelSlug}}/about{{previewParam}}{{/if}}" 
-                   class="universal-btn universal-btn-secondary universal-hero-btn-secondary ml-4">
+                <a href="{{#if content.hero_button_2_link}}/{{modelSlug}}/{{content.hero_button_2_link}}{{previewParam}}{{else}}/{{modelSlug}}/about{{previewParam}}{{/if}}" class="luxury-hero-btn-outline" style="font-size: 1.2rem; padding: 1.2rem 2.5rem;">
+                    <i class="fas fa-user" style="margin-right: 0.8rem;"></i>
                     {{content.hero_button_2_text}}
+                </a>
+                {{else}}
+                <a href="/{{modelSlug}}/about{{previewParam}}" class="luxury-hero-btn-outline" style="font-size: 1.2rem; padding: 1.2rem 2.5rem;">
+                    <i class="fas fa-user" style="margin-right: 0.8rem;"></i>
+                    View Services
                 </a>
                 {{/if}}
             </div>
         </div>
     </div>
-    
-    <!-- Hero Bottom Indicator -->
-    <div class="universal-hero-bottom-indicator" data-aos="bounce" data-aos-delay="1500">
-        <i class="fas fa-chevron-down"></i>
-    </div>
 </section>
-{{/if}}
 
-<!-- Luxury About Section - Original Structure with Universal Styling -->
+<!-- About Preview Section -->
 {{#if content.about_section_visible}}
-<section class="luxury-about-section universal-section" data-aos="fade-in">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div class="grid lg:grid-cols-2 gap-16 items-center">
-            
-            <!-- Portrait with Regal Frame -->
-            {{#if content.portrait_section_visible}}
-            <div class="luxury-portrait-chamber" data-aos="fade-right">
-                <div class="luxury-regal-frame">
-                    {{#if content.portrait_image_url}}
+<section class="py-20 animate-on-scroll" style="background-color: var(--theme-bg);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{#if content.portrait_section_visible}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <!-- About Image -->
+            {{#if content.portrait_image_url}}
+            <div class="relative animate-luxury-fade-in">
+                <div class="luxury-card overflow-hidden aspect-[4/5]">
                     <img src="{{content.portrait_image_url}}" 
-                         alt="{{#if content.portrait_alt}}{{content.portrait_alt}}{{else}}Royal Portrait{{/if}}"
-                         class="luxury-portrait-image">
-                    {{else}}
-                    <div class="luxury-portrait-placeholder">
-                        <i class="fas fa-crown luxury-crown-placeholder"></i>
-                        <p>Royal Portrait</p>
-                    </div>
-                    {{/if}}
-                    
-                    <!-- Ornate Border Effects -->
-                    <div class="luxury-frame-corner luxury-frame-corner-tl"></div>
-                    <div class="luxury-frame-corner luxury-frame-corner-tr"></div>
-                    <div class="luxury-frame-corner luxury-frame-corner-bl"></div>
-                    <div class="luxury-frame-corner luxury-frame-corner-br"></div>
+                         alt="{{#if content.portrait_alt}}{{content.portrait_alt}}{{else}}Professional Portrait{{/if}}"
+                         class="w-full h-full object-cover">
+                </div>
+                <div class="absolute -bottom-6 -right-6 w-24 h-24 luxury-gradient rounded-full flex items-center justify-center">
+                    <i class="fas fa-crown text-white text-2xl"></i>
+                </div>
+            </div>
+            {{else}}
+            <!-- Fallback if no portrait image -->
+            <div class="relative animate-luxury-fade-in">
+                <div class="luxury-card overflow-hidden aspect-[4/5] bg-gradient-to-br from-luxury-light to-luxury-secondary flex items-center justify-center">
+                    <i class="fas fa-user text-luxury-primary text-6xl opacity-50"></i>
+                </div>
+                <div class="absolute -bottom-6 -right-6 w-24 h-24 luxury-gradient rounded-full flex items-center justify-center">
+                    <i class="fas fa-crown text-white text-2xl"></i>
                 </div>
             </div>
             {{/if}}
             
-            <!-- About Content with Royal Typography -->
-            <div class="luxury-about-content" data-aos="fade-left">
-                <div class="luxury-section-header">
-                    <div class="luxury-royal-divider"></div>
-                    <h2 class="universal-section-title luxury-section-title">
-                        {{#if content.about_title}}{{content.about_title}}{{else}}About {{siteName}}{{/if}}
-                    </h2>
-                    <div class="luxury-royal-divider"></div>
-                </div>
+            <!-- About Content -->
+            <div class="animate-luxury-slide-in" style="animation-delay: 0.2s;">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 luxury-gold-text" 
+                    style="font-family: var(--font-display);">
+                    {{#if content.about_title}}{{content.about_title}}{{else}}About {{siteName}}{{/if}}
+                </h2>
                 
                 {{#if content.about_paragraph_1}}
-                <div class="luxury-text-content">
-                    <p class="universal-section-subtitle luxury-lead-text">{{content.about_paragraph_1}}</p>
-                </div>
-                {{/if}}
-                {{#if content.about_paragraph_2}}
-                <div class="luxury-text-content">
-                    <p class="universal-section-subtitle luxury-lead-text">{{content.about_paragraph_2}}</p>
-                </div>
+                <p class="text-xl leading-relaxed mb-6" style="color: var(--theme-text-subtle);">
+                    {{content.about_paragraph_1}}
+                </p>
                 {{/if}}
                 
+                {{#if content.about_paragraph_2}}
+                <p class="text-lg leading-relaxed mb-8" style="color: var(--theme-text-subtle);">
+                    {{content.about_paragraph_2}}
+                </p>
+                {{/if}}
+                
+                {{#unless content.about_paragraph_1}}
+                <p class="text-xl leading-relaxed mb-6" style="color: var(--theme-text-subtle);">
+                    Welcome to my world of elegance and sophistication. I am a refined companion who values discretion, intelligence, and genuine connection.
+                </p>
+                <p class="text-lg leading-relaxed mb-8" style="color: var(--theme-text-subtle);">
+                    With years of experience in providing exclusive companionship services, I bring understanding, intimacy, and unforgettable moments to each encounter.
+                </p>
+                {{/unless}}
+                
+                <div class="luxury-divider"></div>
+                
                 {{#if content.about_link_text}}
-                <div class="luxury-about-cta">
-                    {{#eq content.about_link_destination 'about'}}
-                        <a href="/{{modelSlug}}/about{{previewParam}}" class="universal-btn universal-btn-primary luxury-royal-link">
-                    {{/eq}}
-                    {{#eq content.about_link_destination 'contact'}}
-                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="universal-btn universal-btn-primary luxury-royal-link">
-                    {{/eq}}
-                    {{#eq content.about_link_destination 'gallery'}}
-                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="universal-btn universal-btn-primary luxury-royal-link">
-                    {{/eq}}
-                    {{#eq content.about_link_destination 'rates'}}
-                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="universal-btn universal-btn-primary luxury-royal-link">
-                    {{/eq}}
-                    {{#eq content.about_link_destination 'calendar'}}
-                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="universal-btn universal-btn-primary luxury-royal-link">
-                    {{/eq}}
-                        {{content.about_link_text}}
-                        <i class="fas fa-chevron-right luxury-link-chevron"></i>
-                    </a>
-                </div>
+                    {{#if (eq content.about_link_destination 'about')}}
+                        <a href="/{{modelSlug}}/about{{previewParam}}" class="luxury-btn-outline">
+                            <i class="fas fa-user-circle"></i>
+                            {{content.about_link_text}}
+                        </a>
+                    {{else}}
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="luxury-btn-outline">
+                            <i class="fas fa-envelope"></i>
+                            {{content.about_link_text}}
+                        </a>
+                    {{/if}}
                 {{else}}
-                <div class="luxury-about-cta">
-                    <a href="/{{modelSlug}}/about{{previewParam}}" class="universal-btn universal-btn-primary luxury-royal-link">
-                        Learn More
-                        <i class="fas fa-chevron-right luxury-link-chevron"></i>
+                    <a href="/{{modelSlug}}/about{{previewParam}}" class="luxury-btn-outline">
+                        <i class="fas fa-user-circle"></i>
+                        Learn More About Me
                     </a>
-                </div>
                 {{/if}}
             </div>
         </div>
+        {{else}}
+        <div class="text-center max-w-4xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 luxury-gold-text" 
+                style="font-family: var(--font-display);">
+                {{#if content.about_title}}{{content.about_title}}{{else}}About {{siteName}}{{/if}}
+            </h2>
+            {{#if content.about_paragraph_1}}
+            <p class="text-xl leading-relaxed mb-6" style="color: var(--theme-text-subtle);">
+                {{content.about_paragraph_1}}
+            </p>
+            {{/if}}
+            {{#if content.about_paragraph_2}}
+            <p class="text-lg leading-relaxed mb-8" style="color: var(--theme-text-subtle);">
+                {{content.about_paragraph_2}}
+            </p>
+            {{/if}}
+            {{#if content.about_link_text}}
+                <a href="/{{modelSlug}}/about{{previewParam}}" style="color: var(--theme-accent); font-weight: 600;">{{content.about_link_text}} →</a>
+            {{else}}
+                <a href="/{{modelSlug}}/about{{previewParam}}" style="color: var(--theme-accent); font-weight: 600;">Learn More About Me →</a>
+            {{/if}}
+        </div>
+        {{/if}}
     </div>
 </section>
 {{/if}}
 
-<!-- Universal Services Section -->
-{{#if content.services_section_visible}}
-<section class="universal-services-section" data-aos="fade-up">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <!-- Services Section Header -->
-        <div class="universal-section-header text-center mb-12" data-aos="fade-up">
-            <h2 class="universal-section-title">
-                {{#if content.services_title}}{{content.services_title}}{{else}}Services{{/if}}
+<!-- Services Preview Section -->
+<!-- {{#if content.services_section_visible}}
+<section class="py-20 animate-on-scroll" style="background-color: var(--theme-bg-alt);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 luxury-gold-text" 
+                style="font-family: var(--font-display);">
+                {{#if content.services_section_title}}{{content.services_section_title}}{{else}}Exclusive Services{{/if}}
             </h2>
-            {{#if content.services_subtitle}}
-            <p class="universal-section-subtitle">{{content.services_subtitle}}</p>
+            {{#if content.services_section_subtitle}}
+            <p class="text-xl max-w-3xl mx-auto leading-relaxed" style="color: var(--theme-text-subtle);">
+                {{content.services_section_subtitle}}
+            </p>
+            {{else}}
+            <p class="text-xl max-w-3xl mx-auto leading-relaxed" style="color: var(--theme-text-subtle);">
+                Curated experiences designed for the most discerning clientele.
+            </p>
             {{/if}}
         </div>
         
-        <!-- Services Grid -->
-        <div class="universal-services-grid">
-            <!-- Service 1 -->
-            {{#if content.service_1_title}}
-            <div class="universal-service-card" data-aos="fade-up" data-aos-delay="100">
-                <div class="universal-service-icon">
-                    <i class="{{#if content.service_1_icon}}{{content.service_1_icon}}{{else}}fas fa-star{{/if}}"></i>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {{#each services}}
+            {{#if (lt @index 3)}}
+            <div class="luxury-card p-8 text-center animate-luxury-scale" style="animation-delay: {{multiply @index 0.1}}s;">
+                <div class="w-16 h-16 luxury-gradient rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="{{#if this.icon}}{{this.icon}}{{else}}fas fa-gem{{/if}} text-white text-2xl"></i>
                 </div>
-                <div class="universal-service-content">
-                    <h3 class="universal-service-title">{{content.service_1_title}}</h3>
-                    {{#if content.service_1_description}}
-                    <p class="universal-service-description">{{content.service_1_description}}</p>
-                    {{/if}}
+                <h3 class="text-2xl font-semibold mb-4" style="color: var(--theme-text); font-family: var(--font-display);">
+                    {{this.service_name}}
+                </h3>
+                {{#if this.description}}
+                <p class="leading-relaxed mb-6" style="color: var(--theme-text-subtle);">
+                    {{this.description}}
+                </p>
+                {{else}}
+                <p class="leading-relaxed mb-6" style="color: var(--theme-text-subtle);">
+                    Professional companionship service designed for discerning individuals who value elegance and sophistication.
+                </p>
+                {{/if}}
+                {{#if this.tagline}}
+                <div class="text-sm font-medium" style="color: var(--theme-accent);">
+                    {{this.tagline}}
                 </div>
+                {{/if}}
             </div>
             {{/if}}
-            
-            <!-- Service 2 -->
-            {{#if content.service_2_title}}
-            <div class="universal-service-card" data-aos="fade-up" data-aos-delay="200">
-                <div class="universal-service-icon">
-                    <i class="{{#if content.service_2_icon}}{{content.service_2_icon}}{{else}}fas fa-heart{{/if}}"></i>
-                </div>
-                <div class="universal-service-content">
-                    <h3 class="universal-service-title">{{content.service_2_title}}</h3>
-                    {{#if content.service_2_description}}
-                    <p class="universal-service-description">{{content.service_2_description}}</p>
-                    {{/if}}
-                </div>
-            </div>
-            {{/if}}
-            
-            <!-- Service 3 -->
-            {{#if content.service_3_title}}
-            <div class="universal-service-card" data-aos="fade-up" data-aos-delay="300">
-                <div class="universal-service-icon">
-                    <i class="{{#if content.service_3_icon}}{{content.service_3_icon}}{{else}}fas fa-gem{{/if}}"></i>
-                </div>
-                <div class="universal-service-content">
-                    <h3 class="universal-service-title">{{content.service_3_title}}</h3>
-                    {{#if content.service_3_description}}
-                    <p class="universal-service-description">{{content.service_3_description}}</p>
-                    {{/if}}
-                </div>
-            </div>
-            {{/if}}
+            {{/each}}
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="/{{modelSlug}}/rates{{previewParam}}" 
+               class="luxury-btn">
+                <i class="fas fa-list"></i>
+                {{#if content.services_cta_text}}{{content.services_cta_text}}{{else}}View All Services{{/if}}
+            </a>
         </div>
     </div>
 </section>
 {{/if}}
-
-<!-- Gallery Preview Section (theme-specific preview, not full universal gallery) -->
+-->
+<!-- Gallery Preview Section -->
 {{#if content.gallery_section_visible}}
-<section class="universal-gallery-preview-section" data-aos="fade-in">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div class="universal-section-header text-center mb-12" data-aos="fade-up">
-            <h2 class="universal-section-title">{{#if content.gallery_section_title}}{{content.gallery_section_title}}{{else}}Gallery{{/if}}</h2>
+{{#if galleryImages}}
+<section class="py-20 animate-on-scroll" style="background-color: var(--theme-bg);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 luxury-gold-text" 
+                style="font-family: var(--font-display);">
+                {{#if content.gallery_section_title}}{{content.gallery_section_title}}{{else}}Portfolio{{/if}}
+            </h2>
+            <p class="text-xl max-w-3xl mx-auto leading-relaxed" style="color: var(--theme-text-subtle);">
+                A curated collection of professional photography showcasing elegance and sophistication.
+            </p>
         </div>
-
-        <div class="luxury-gallery-preview-grid" data-aos="fade-up" data-aos-delay="200">
+        
+        <!-- Gallery Preview Grid -->
+        {{#if galleryImages}}
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-12">
             {{#each galleryImages}}
-            <div class="luxury-gallery-preview-item">
-                <img src="/uploads/{{../modelSlug}}/public/gallery/{{this.filename}}" alt="{{#if this.caption}}{{this.caption}}{{else}}Gallery image{{/if}}" class="luxury-gallery-preview-image">
+            <div class="luxury-card overflow-hidden aspect-square group animate-luxury-fade-in" style="animation-delay: {{multiply @index 0.1}}s;">
+                <img src="/uploads/{{../modelSlug}}/public/gallery/{{this.filename}}" 
+                     alt="{{#if this.caption}}{{this.caption}}{{else}}Gallery image{{/if}}"
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                <div class="absolute inset-0 luxury-gradient opacity-0 group-hover:opacity-40 transition-opacity duration-300 flex items-center justify-center">
+                    <i class="fas fa-search-plus text-white text-2xl"></i>
+                </div>
             </div>
-            {{else}}
-            {{#times 6}}
-            <div class="luxury-gallery-preview-item luxury-gallery-preview-placeholder">
-                <i class="fas fa-camera"></i>
-            </div>
-            {{/times}}
             {{/each}}
         </div>
+        {{else}}
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-12">
+            {{#times 5}}
+            <div class="luxury-card overflow-hidden aspect-square group animate-luxury-fade-in" style="animation-delay: {{multiply this 0.1}}s;">
+                <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                    <i class="fas fa-image text-gray-400 text-3xl"></i>
+                </div>
+            </div>
+            {{/times}}
+        </div>
+        {{/if}}
+        
+        <div class="text-center">
+            <a href="/{{modelSlug}}/gallery{{previewParam}}" 
+               class="luxury-btn text-lg px-8 py-4">
+                <i class="fas fa-images"></i>
+                View Full Portfolio
+            </a>
+        </div>
+    </div>
+</section>
+{{/if}}
+{{/if}}
 
-        <div class="text-center mt-10" data-aos="fade-up" data-aos-delay="300">
-            <a href="/{{modelSlug}}/gallery{{previewParam}}" class="universal-btn universal-btn-primary">View Full Gallery</a>
+<!-- Travel/Calendar Section -->
+{{#if content.travel_section_visible}}
+<section class="py-20 animate-on-scroll" style="background-color: var(--theme-bg-alt);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 luxury-gold-text" 
+                style="font-family: var(--font-display);">
+                {{#if content.travel_section_title}}{{content.travel_section_title}}{{else}}Location Availability{{/if}}
+            </h2>
+            <p class="text-xl max-w-3xl mx-auto leading-relaxed" style="color: var(--theme-text-subtle);">
+                Schedule your exclusive experience in these premier destinations.
+            </p>
+        </div>
+        
+        {{#if upcomingEvents}}
+        <div class="grid grid-cols-1 md:grid-cols-{{#if (gt upcomingEvents.length 2)}}3{{else}}2{{/if}} gap-8 justify-center">
+            {{#each upcomingEvents}}
+            {{#if (lt @index 3)}}
+            <div class="luxury-card p-8 text-center animate-luxury-scale" style="animation-delay: {{multiply @index 0.1}}s;">
+                <div class="w-16 h-16 luxury-gradient rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-map-marker-alt text-white text-xl"></i>
+                </div>
+                <h3 class="text-2xl font-semibold mb-2" style="font-family: var(--font-display); color: var(--theme-text);">
+                    {{this.location}}
+                </h3>
+                <p class="mb-4 text-lg" style="color: var(--theme-text-subtle);">
+                    {{this.dateRange}}
+                </p>
+                {{#if this.notes}}
+                <p class="text-sm italic" style="color: var(--theme-text-subtle);">
+                    {{this.notes}}
+                </p>
+                {{/if}}
+                <div class="mt-4">
+                    <span class="inline-block bg-luxury-primary/10 text-luxury-primary px-3 py-1 rounded-full text-sm font-medium">
+                        Available Now
+                    </span>
+                </div>
+            </div>
+            {{/if}}
+            {{/each}}
+        </div>
+        {{else}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {{#times 3}}
+            <div class="luxury-card p-8 text-center animate-luxury-scale" style="animation-delay: {{multiply this 0.1}}s;">
+                <div class="w-16 h-16 luxury-gradient rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-map-marker-alt text-white text-xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2" style="font-family: var(--font-display); color: var(--theme-text);">
+                    {{#if (eq this 1)}}New York{{/if}}
+                    {{#if (eq this 2)}}London{{/if}}
+                    {{#if (eq this 3)}}Paris{{/if}}
+                </h3>
+                <p class="mb-4" style="color: var(--theme-text-subtle);">
+                    Coming Soon
+                </p>
+            </div>
+            {{/times}}
+        </div>
+        {{/if}}
+        
+        <div class="text-center mt-12">
+            <a href="/{{modelSlug}}/{{#if content.travel_cta_link}}{{content.travel_cta_link}}{{else}}calendar{{/if}}{{previewParam}}" 
+               class="luxury-btn">
+                <i class="fas fa-calendar-alt"></i>
+                {{#if content.travel_cta_text}}{{content.travel_cta_text}}{{else}}View Full Calendar{{/if}}
+            </a>
         </div>
     </div>
 </section>
@@ -265,259 +374,151 @@
 
 <!-- Testimonials Section -->
 {{#if content.testimonials_section_visible}}
-<section class="universal-testimonials-section" data-aos="fade-up">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div class="universal-section-header text-center mb-12">
-            <h2 class="universal-section-title">
-                {{#if content.testimonials_section_title}}{{content.testimonials_section_title}}{{else}}Testimonials{{/if}}
+<section class="py-20 animate-on-scroll" style="background-color: var(--theme-bg);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 luxury-gold-text" 
+                style="font-family: var(--font-display);">
+                {{#if content.testimonials_section_title}}{{content.testimonials_section_title}}{{else}}Client Testimonials{{/if}}
             </h2>
+            <p class="text-xl max-w-3xl mx-auto leading-relaxed" style="color: var(--theme-text-subtle);">
+                Discover what discerning clients say about their experiences.
+            </p>
         </div>
         
-        <div class="universal-testimonials-grid">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             {{#each testimonials}}
             {{#if (lt @index (or content.testimonials_display_count 3))}}
-            <div class="universal-testimonial-card" data-aos="fade-up" data-aos-delay="{{@index}}00">
-                <div class="universal-testimonial-stars">
-                    {{#times this.rating}}<i class="fas fa-star"></i>{{/times}}
+            <div class="luxury-card p-8 animate-luxury-fade-in" style="animation-delay: {{multiply @index 0.1}}s;">
+                <div class="mb-6">
+                    <div class="flex justify-center text-yellow-400 mb-4">
+                        {{#times this.rating}}
+                        <i class="fas fa-star text-xl"></i>
+                        {{/times}}
+                    </div>
+                    <p class="text-lg leading-relaxed mb-6 italic" style="color: var(--theme-text-subtle);">
+                        "{{this.text}}"
+                    </p>
                 </div>
-                <blockquote class="universal-testimonial-text">"{{this.text}}"</blockquote>
-                <cite class="universal-testimonial-name">{{this.name}}</cite>
+                <div class="flex items-center justify-center">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center mr-4"
+                         style="background: var(--luxury-gradient);">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-semibold luxury-gold-text">
+                            {{this.name}}
+                        </div>
+                    </div>
+                </div>
             </div>
             {{/if}}
             {{else}}
-            <div class="universal-testimonial-card">
-                <div class="universal-testimonial-stars">
-                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            <!-- Default testimonials if none provided -->
+            {{#times (or content.testimonials_display_count 3)}}
+            {{#if (eq this 1)}}
+            <div class="luxury-card p-8 animate-luxury-fade-in" style="animation-delay: 0s;">
+                <div class="mb-6">
+                    <div class="flex justify-center text-yellow-400 mb-4">
+                        {{#times 5}}
+                        <i class="fas fa-star text-xl"></i>
+                        {{/times}}
+                    </div>
+                    <p class="text-lg leading-relaxed mb-6 italic" style="color: var(--theme-text-subtle);">
+                        "She is absolutely wonderful. Professional, elegant, and truly caring. An unforgettable experience."
+                    </p>
                 </div>
-                <blockquote class="universal-testimonial-text">"Professional, elegant, and truly caring. An unforgettable experience."</blockquote>
-                <cite class="universal-testimonial-name">Michael D.</cite>
+                <div class="flex items-center justify-center">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center mr-4"
+                         style="background: var(--luxury-gradient);">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-semibold luxury-gold-text">
+                            MICHAEL D.
+                        </div>
+                    </div>
+                </div>
             </div>
+            {{else if (eq this 2)}}
+            <div class="luxury-card p-8 animate-luxury-fade-in" style="animation-delay: 0.1s;">
+                <div class="mb-6">
+                    <div class="flex justify-center text-yellow-400 mb-4">
+                        {{#times 5}}
+                        <i class="fas fa-star text-xl"></i>
+                        {{/times}}
+                    </div>
+                    <p class="text-lg leading-relaxed mb-6 italic" style="color: var(--theme-text-subtle);">
+                        "She is intelligent, sophisticated, and absolutely captivating. A truly remarkable companion."
+                    </p>
+                </div>
+                <div class="flex items-center justify-center">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center mr-4"
+                         style="background: var(--luxury-gradient);">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-semibold luxury-gold-text">
+                            DAVID L.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{else if (eq this 3)}}
+            <div class="luxury-card p-8 animate-luxury-fade-in" style="animation-delay: 0.2s;">
+                <div class="mb-6">
+                    <div class="flex justify-center text-yellow-400 mb-4">
+                        {{#times 5}}
+                        <i class="fas fa-star text-xl"></i>
+                        {{/times}}
+                    </div>
+                    <p class="text-lg leading-relaxed mb-6 italic" style="color: var(--theme-text-subtle);">
+                        "Exceptional service and genuine warmth. Highly recommended for discerning clients."
+                    </p>
+                </div>
+                <div class="flex items-center justify-center">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center mr-4"
+                         style="background: var(--luxury-gradient);">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-semibold luxury-gold-text">
+                            ROBERT T.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+            {{/times}}
             {{/each}}
         </div>
     </div>
 </section>
 {{/if}}
 
-<!-- Contact CTA Section -->
-{{#if content.cta_section_visible}}
-<section class="universal-cta-section" data-aos="fade-up">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div class="text-center">
-            <h2 class="universal-cta-title">
-                {{#if content.cta_section_title}}{{content.cta_section_title}}{{else}}Ready to Begin?{{/if}}
+<!-- CTA Section -->
+<section class="py-20 animate-on-scroll" style="background: var(--luxury-gradient);">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="animate-luxury-fade-in">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-6" 
+                style="font-family: var(--font-display);">
+                Experience Luxury
             </h2>
-            {{#if content.cta_section_subtitle}}
-            <p class="universal-cta-description">{{content.cta_section_subtitle}}</p>
-            {{/if}}
-            
-            <div class="universal-cta-buttons">
-                {{#if content.cta_button_1_text}}
-                <a href="{{#if content.cta_button_1_link}}/{{modelSlug}}/{{content.cta_button_1_link}}{{previewParam}}{{else}}/{{modelSlug}}/contact{{previewParam}}{{/if}}" 
-                   class="universal-btn universal-btn-primary">
-                    {{content.cta_button_1_text}}
+            <p class="text-xl text-white/90 mb-12 leading-relaxed max-w-3xl mx-auto">
+                Ready to create your own unforgettable experience? Let's discuss how we can make your vision a reality.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                <a href="/{{modelSlug}}/calendar{{previewParam}}" 
+                   class="luxury-btn luxury-btn-white text-lg px-8 py-4">
+                    <i class="fas fa-calendar-alt"></i>
+                    View Calendar
                 </a>
-                {{/if}}
-                
-                {{#if content.cta_button_2_text}}
-                <a href="{{#if content.cta_button_2_link}}/{{modelSlug}}/{{content.cta_button_2_link}}{{previewParam}}{{else}}/{{modelSlug}}/rates{{previewParam}}{{/if}}" 
-                   class="universal-btn universal-btn-secondary ml-4">
-                    {{content.cta_button_2_text}}
+                <a href="/{{modelSlug}}/contact{{previewParam}}" 
+                   class="luxury-btn-outline text-lg px-8 py-4" style="color: white; border-color: white;">
+                    <i class="fas fa-envelope"></i>
+                    Contact Me
                 </a>
-                {{/if}}
             </div>
         </div>
     </div>
 </section>
-{{/if}}
-
-<!-- Crystal Decorations Section (Luxury Theme Specific) -->
-{{#if content.luxury_crystals_visible}}
-<section class="luxury-crystals-section">
-    <div class="luxury-crystal-container">
-        <div class="luxury-crystal luxury-crystal-1"></div>
-        <div class="luxury-crystal luxury-crystal-2"></div>
-        <div class="luxury-crystal luxury-crystal-3"></div>
-        <div class="luxury-crystal luxury-crystal-4"></div>
-        <div class="luxury-crystal luxury-crystal-5"></div>
-    </div>
-</section>
-{{/if}}
-
-<!-- Theme-Specific Testimonials Styling -->
-<style>
-/* Testimonials Section - Using Dynamic Colors */
-.universal-testimonials-section {
-    background: var(--theme-surface);
-    color: var(--theme-text);
-}
-
-.universal-testimonials-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-}
-
-.universal-testimonial-card {
-    background: var(--theme-card-bg);
-    border-radius: 16px;
-    padding: 2rem;
-    border: 2px solid var(--theme-border);
-    box-shadow: var(--theme-card-shadow);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.universal-testimonial-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--theme-accent), var(--theme-secondary), var(--theme-accent));
-}
-
-.universal-testimonial-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--theme-card-shadow-hover, var(--card-shadow));
-}
-
-.universal-testimonial-stars {
-    color: var(--theme-accent);
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
-}
-
-.universal-testimonial-text {
-    color: var(--theme-text);
-    font-size: 1.125rem;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-    font-style: italic;
-}
-
-.universal-testimonial-author {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.universal-testimonial-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: 2px solid var(--theme-accent);
-}
-
-.universal-testimonial-name {
-    font-weight: 600;
-    color: var(--theme-text);
-}
-
-.universal-testimonial-location {
-    font-size: 0.875rem;
-    color: var(--theme-text-muted);
-}
-
-/* Luxury Crystals - Theme Specific Decoration */
-.luxury-crystals-section {
-    position: relative;
-    height: 200px;
-    overflow: hidden;
-    background: var(--theme-background);
-}
-
-.luxury-crystal-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-
-.luxury-crystal {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(45deg, var(--theme-accent), var(--theme-secondary));
-    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-    animation: luxury-crystal-float 8s ease-in-out infinite;
-    opacity: 0.7;
-    box-shadow: 0 0 20px var(--theme-accent);
-}
-
-.luxury-crystal-1 { 
-    top: 20%; 
-    left: 10%; 
-    animation-delay: 0s; 
-}
-
-.luxury-crystal-2 { 
-    top: 60%; 
-    left: 80%; 
-    animation-delay: 2s; 
-}
-
-.luxury-crystal-3 { 
-    top: 80%; 
-    left: 20%; 
-    animation-delay: 4s; 
-}
-
-.luxury-crystal-4 { 
-    top: 40%; 
-    left: 60%; 
-    animation-delay: 6s; 
-}
-
-.luxury-crystal-5 { 
-    top: 10%; 
-    left: 90%; 
-    animation-delay: 8s; 
-}
-
-@keyframes luxury-crystal-float {
-    0%, 100% { 
-        transform: translateY(0) rotate(0deg) scale(1); 
-    }
-    25% { 
-        transform: translateY(-20px) rotate(90deg) scale(1.1); 
-    }
-    50% { 
-        transform: translateY(-10px) rotate(180deg) scale(0.9); 
-    }
-    75% { 
-        transform: translateY(-30px) rotate(270deg) scale(1.1); 
-    }
-}
-
-@media (max-width: 768px) {
-    .universal-testimonials-grid {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
-
-<style>
-.luxury-hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: {{theme.colors.hero-overlay}};
-    z-index: 3;
-}
-.luxury-gallery-preview-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 16px;
-}
-.luxury-gallery-preview-item { position: relative; border-radius: 12px; overflow: hidden; aspect-ratio: 1; }
-.luxury-gallery-preview-image { width: 100%; height: 100%; object-fit: cover; }
-.luxury-gallery-preview-placeholder { display: flex; align-items: center; justify-content: center; background: var(--theme-bg-secondary); color: var(--theme-accent); }
-@media (max-width: 1024px) { .luxury-gallery-preview-grid { grid-template-columns: repeat(4, 1fr); } }
-@media (max-width: 768px) { .luxury-gallery-preview-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 480px) { .luxury-gallery-preview-grid { grid-template-columns: repeat(2, 1fr); } }
-
-/* Service cards styling moved to luxury-theme-overrides.css - no hardcoded colors */
-</style>

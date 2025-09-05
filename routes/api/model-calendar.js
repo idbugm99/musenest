@@ -55,6 +55,147 @@ router.get('/:modelSlug', async (req, res) => {
   }
 });
 
+// New availability endpoint with flexible date range scanning
+router.get('/:modelSlug/availability', async (req, res) => {
+  try {
+    const model = await getModelBySlug(req.params.modelSlug);
+    if (!model) return res.fail(404, 'Model not found');
+    
+    // Parse query parameters with validation
+    const days = Math.min(Math.max(parseInt(req.query.days) || 30, 1), 365); // 1-365 days
+    const status = req.query.status ? req.query.status.toLowerCase() : null;
+    const limit = req.query.limit ? Math.min(Math.max(parseInt(req.query.limit), 1), 1000) : null; // 1-1000
+    const includePast = req.query.include_past === 'true';
+    
+    // Calculate date range
+    const startDate = includePast ? 
+      new Date(Date.now() - (days * 24 * 60 * 60 * 1000)) : // Go back X days if include_past
+      new Date(); // Start from today
+    
+    const endDate = new Date(startDate.getTime() + (days * 24 * 60 * 60 * 1000));
+    
+    // Build query with optional filters
+    let query = `
+      SELECT 
+        ce.id,
+        ce.location,
+        ce.service_type,
+        ce.radius_miles,
+        ce.location_details,
+        ce.start_date,
+        ce.end_date,
+        ce.all_day,
+        ce.status,
+        ce.color,
+        ce.notes,
+        (ce.status = 'available') as is_available,
+        DATEDIFF(ce.end_date, ce.start_date) + 1 as duration_days
+      FROM calendar_availability ce
+      WHERE ce.model_id = ? 
+        AND ce.is_visible = 1
+        AND ce.start_date <= ? 
+        AND ce.end_date >= ?
+    `;
+    
+    const queryParams = [model.id, endDate.toISOString().split('T')[0], startDate.toISOString().split('T')[0]];
+    
+    // Add status filter if specified
+    if (status) {
+      query += ' AND ce.status = ?';
+      queryParams.push(status);
+    }
+    
+    query += ' ORDER BY ce.start_date ASC';
+    
+    // Add limit if specified
+    if (limit) {
+      query += ' LIMIT ?';
+      queryParams.push(limit);
+    }
+    
+    const rows = await db.query(query, queryParams);
+    
+    // Format events with enhanced date information
+    const events = rows.map(event => {
+      const startDate = new Date(event.start_date);
+      const endDate = new Date(event.end_date);
+      
+      // Format location display
+      const locationDisplay = formatLocationDisplay(
+        event.location, 
+        event.service_type, 
+        event.radius_miles
+      );
+      
+      // Create date range display
+      let dateRange;
+      if (event.start_date === event.end_date) {
+        // Single day event
+        dateRange = startDate.toLocaleDateString('en-US', { 
+          month: 'long', 
+          day: 'numeric', 
+          year: 'numeric' 
+        });
+      } else {
+        // Multi-day event
+        const startMonth = startDate.toLocaleDateString('en-US', { month: 'long' });
+        const endMonth = endDate.toLocaleDateString('en-US', { month: 'long' });
+        
+        if (startDate.getFullYear() === endDate.getFullYear()) {
+          if (startDate.getMonth() === endDate.getMonth()) {
+            // Same month and year
+            dateRange = `${startMonth} ${startDate.getDate()}-${endDate.getDate()}, ${startDate.getFullYear()}`;
+          } else {
+            // Same year, different months
+            dateRange = `${startMonth} ${startDate.getDate()} - ${endMonth} ${endDate.getDate()}, ${startDate.getFullYear()}`;
+          }
+        } else {
+          // Different years
+          dateRange = `${startDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} - ${endDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
+        }
+      }
+      
+      return {
+        id: event.id,
+        location: locationDisplay,
+        service_type: event.service_type,
+        radius_miles: event.radius_miles,
+        location_details: event.location_details,
+        start_date: event.start_date,
+        end_date: event.end_date,
+        all_day: !!event.all_day,
+        status: event.status,
+        color: event.color || getStatusColor(event.status),
+        notes: event.notes,
+        is_available: !!event.is_available,
+        duration_days: event.duration_days,
+        date_range: dateRange
+      };
+    });
+    
+    // Prepare response metadata
+    const responseData = {
+      model_slug: model.slug,
+      model_name: model.name,
+      events: events,
+      total_events: events.length,
+      date_range_requested: `${days} days`,
+      date_range_start: startDate.toISOString().split('T')[0],
+      date_range_end: endDate.toISOString().split('T')[0],
+      filters_applied: {
+        status: status || 'all',
+        include_past: includePast,
+        limit: limit || 'none'
+      }
+    };
+    
+    return res.success(responseData);
+  } catch (error) {
+    logger.error('calendar.availability error', { error: error.message });
+    return res.fail(500, 'Failed to load availability', error.message);
+  }
+});
+
 // Helper function to process monthly calendar data
 function processMonthlyCalendar(year, month, periods, timezone) {
   const monthStart = new Date(year, month - 1, 1);

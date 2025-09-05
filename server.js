@@ -126,6 +126,7 @@ app.use('/:slug/uploads', (req, res, next) => {
 app.use('/admin/components', express.static(path.join(__dirname, 'admin/components')));
 app.use('/admin/assets', express.static(path.join(__dirname, 'admin/assets')));
 app.use('/admin/js', express.static(path.join(__dirname, 'admin/js')));
+app.use('/admin/pages', express.static(path.join(__dirname, 'admin/pages')));
 
 // Templates static files (for universal gallery system)
 app.use('/templates', express.static(path.join(__dirname, 'templates')));
@@ -500,15 +501,13 @@ app.get('/:slug/admin/content/about', async (req, res) => {
 // Rates API (table-driven)
 app.use('/api/model-rates', require('./routes/api/model-rates'));
 app.use('/api/model-etiquette', require('./routes/api/model-etiquette'));
-app.use('/api/etiquette-simple', require('./routes/api/model-etiquette-simple'));
-app.use('/api/about-content', require('./routes/api/model-about-content'));
-app.use('/api/home-content', require('./routes/api/model-home-content'));
-app.use('/api/etiquette-legacy', require('./routes/api/model-etiquette-legacy'));
-app.use('/api/contact-legacy', require('./routes/api/model-contact-legacy'));
+app.use('/api/model-about', require('./routes/api/model-about'));
+app.use('/api/model-home', require('./routes/api/model-home'));
+app.use('/api/model-contact', require('./routes/api/model-contact'));
 
 // Universal Gallery Admin API
 app.use('/api/universal-gallery', require('./routes/api/universal-gallery'));
-app.use('/api/universal-gallery-profiles', require('./routes/api/universal-gallery-profiles'));
+app.use('/api/universal-gallery-profiles', require('./routes/api/gallery-profiles'));
 
 // New Model Admin: Gallery Page Editor
 app.get('/:slug/admin/content/gallery', async (req, res) => {
@@ -2791,28 +2790,28 @@ app.use('/api/testimonials', require('./routes/testimonials'));
 app.use('/api/calendar', require('./routes/calendar'));
 app.use('/api/theme-custom', require('./routes/theme-customization'));
 app.use('/api/theme-sets', require('./routes/theme-sets'));
-app.use('/api/onboarding', require('./routes/api/onboarding'));
+app.use('/api/onboarding', require('./routes/api/admin-onboarding'));
 // Legacy admin API mounts (aliases) — keep minimal to avoid duplication
-app.use('/api/admin-business', require('./routes/api/sysadmin'));
-app.use('/api/system-management', require('./routes/api/sysadmin'));
-app.use('/api/impersonation', require('./routes/api/impersonation'));
+app.use('/api/admin-business', require('./routes/api/admin-system'));
+app.use('/api/system-management', require('./routes/api/admin-system'));
+app.use('/api/impersonation', require('./routes/api/admin-impersonation'));
 app.use('/api/content-moderation', require('./routes/api/content-moderation'));
-app.use('/api/enhanced-content-moderation', require('./routes/api/enhanced-content-moderation'));
-app.use('/api/media-review-queue', require('./routes/api/media-review-queue'));
-app.use('/api/admin-models', require('./routes/api/sysadmin'));
+app.use('/api/enhanced-content-moderation', require('./routes/api/content-moderation-enhanced'));
+app.use('/api/media-review-queue', require('./routes/api/content-review-queue'));
+app.use('/api/admin-models', require('./routes/api/admin-system'));
 app.use('/api/test', require('./routes/api/test'));
 // Webhook routes removed - now using parallel Venice.ai processing
-app.use('/api/ai-server-management', require('./routes/api/sysadmin'));
-app.use('/api/site-configuration', require('./routes/api/sysadmin'));
-app.use('/api/clients', require('./routes/api/clients'));
+app.use('/api/ai-server-management', require('./routes/api/admin-system'));
+app.use('/api/site-configuration', require('./routes/api/admin-system'));
+app.use('/api/clients', require('./routes/api/admin-clients'));
 // Model Dashboard APIs (Phase 2 - Backend Infrastructure)
-app.use('/api/model-dashboard', require('./routes/api/sysadmin'));
+app.use('/api/model-dashboard', require('./routes/api/admin-system'));
 app.use('/api/media-preview', require('./routes/api/media-preview'));
 app.use('/api/theme-colors', require('./routes/api/theme-colors'));
-app.use('/api', require('./routes/api/color-palettes'));
+app.use('/api/color-palettes', require('./routes/api/color-palettes'));
 
 // Consolidated sysadmin API namespace (keeps legacy mounts above for back-compat)
-app.use('/api/sysadmin', require('./routes/api/sysadmin'));
+app.use('/api/sysadmin', require('./routes/api/admin-system'));
 // Model Admin API (per-model)
 try {
   app.use('/api/model-gallery', require('./routes/api/model-gallery'));
@@ -2825,25 +2824,16 @@ try {
   console.warn('Gallery monitoring API not available:', e.message);
 }
 try {
-  app.use('/api/model-media-library', require('./routes/api/model-media-library'));
+  app.use('/api/model-media-library', require('./routes/api/media-library'));
 } catch (e) {
   console.warn('Media Library API not available:', e.message);
 }
 try {
-  app.use('/api/model-gallery-sections', require('./routes/api/model-gallery-sections'));
-  app.use('/api/public-gallery', require('./routes/api/public-gallery'));
+  app.use('/api/model-gallery-sections', require('./routes/api/gallery-sections'));
+  app.use('/api/public-gallery', require('./routes/api/gallery-public'));
 } catch (e) {
   console.warn('Gallery Sections API not available:', e.message);
 }
-try {
-  app.use('/api/model-content', require('./routes/api/model-content'));
-} catch (e) {}
-try { 
-  app.use('/api', require('./routes/api/model-home-page')); 
-} catch (e) { console.warn('Home page API not available:', e.message); }
-try {
-  app.use('/api/model-content-new', require('./routes/api/model-content-new'));
-} catch (e) {}
 try { 
   app.use('/api/quick-facts', require('./routes/api/quick-facts')); 
   console.log('✅ Quick Facts API route loaded successfully');
@@ -2855,6 +2845,12 @@ try { app.use('/api/model-testimonials', require('./routes/api/model-testimonial
 try { app.use('/api/model-themes', require('./routes/api/model-themes')); } catch (e) {}
 try { app.use('/api/model-theme-settings', require('./routes/api/model-theme-settings')); } catch (e) {}
 try { app.use('/api/model-calendar', require('./routes/api/model-calendar')); } catch (e) {}
+try { app.use('/api/model-profile', require('./routes/api/model-profile')); } catch (e) {}
+try { app.use('/api/gallery-images', require('./routes/api/gallery-images')); } catch (e) {}
+try { app.use('/api/theme-templates', require('./routes/api/theme-templates')); } catch (e) {}
+try { app.use('/api/page-status', require('./routes/api/page-status')); } catch (e) {}
+try { app.use('/api/content-templates', require('./routes/api/content-templates')); } catch (e) {}
+try { app.use('/api/data-dump', require('./routes/api/data-dump')); } catch (e) {}
 
 // CRM API Routes
 app.use('/api/crm', require('./routes/api/crm/clients'));

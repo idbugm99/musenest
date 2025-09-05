@@ -57,6 +57,8 @@ async function loadGalleryData(modelSlug, previewTheme, options) {
             ...options
         });
         
+        console.log(`🔍 Loading gallery data for: ${modelSlug}, preview: ${previewTheme}, options:`, options);
+        
         const response = await fetch(`/api/universal-gallery/config?${params}`);
         
         if (!response.ok) {
@@ -64,6 +66,18 @@ async function loadGalleryData(modelSlug, previewTheme, options) {
         }
         
         const data = await response.json();
+        
+        console.log('🎨 API Response:', data);
+        console.log('🖼️ Sections found:', data.data?.sections?.length || 0);
+        if (data.data?.sections) {
+            data.data.sections.forEach((section, i) => {
+                console.log(`📁 Section ${i}: ${section.name} (${section.layout}) - ${section.items?.length || 0} items`);
+                if (section.items?.length > 0) {
+                    console.log('🖼️ First item:', section.items[0]);
+                }
+            });
+        }
+        
         return data;
         
     } catch (error) {
@@ -75,6 +89,12 @@ async function loadGalleryData(modelSlug, previewTheme, options) {
 // Render gallery content with multiple sections
 async function renderGallery(container, galleryData, galleryConfig) {
     try {
+        console.log('🎨 Starting renderGallery with:', {
+            container: container.id,
+            sectionsCount: galleryData.sections?.length || 0,
+            config: galleryConfig
+        });
+        
         // Clear loading state
         container.innerHTML = '';
         container.classList.remove('loading');
@@ -84,23 +104,16 @@ async function renderGallery(container, galleryData, galleryConfig) {
         
         // Check if we have sections data
         if (!galleryData.sections || galleryData.sections.length === 0) {
+            console.log('❌ No gallery sections found, showing empty state');
             container.innerHTML = '<div class="no-gallery-sections">No gallery sections available.</div>';
             return;
         }
         
+        console.log('✅ Processing sections:', galleryData.sections.map(s => `${s.name} (${s.items?.length || 0} items)`));
+        
         let galleryHtml = '';
         
-        // Add hero section if enabled
-        if (galleryConfig.hero && galleryConfig.hero.enabled) {
-            galleryHtml += `
-                <div class="gallery-hero">
-                    <div class="hero-content">
-                        <h1 class="hero-title">${escapeHtml(galleryConfig.hero.title)}</h1>
-                        ${galleryConfig.hero.subtitle ? `<p class="hero-subtitle">${escapeHtml(galleryConfig.hero.subtitle)}</p>` : ''}
-                    </div>
-                </div>
-            `;
-        }
+        // Hero section disabled - individual themes handle their own hero sections
         
         galleryHtml += '<div class="universal-gallery-sections">';
         

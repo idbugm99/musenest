@@ -49,11 +49,12 @@ class ThemeColorLoader {
         }
         
         // Create style element with theme colors
-        const styleElement = document.createElement('div');
-        styleElement.innerHTML = themeCSS;
+        const styleElement = document.createElement('style');
+        styleElement.id = 'database-theme-colors';
+        styleElement.textContent = themeCSS;
         
         // Insert into head
-        document.head.appendChild(styleElement.firstElementChild);
+        document.head.appendChild(styleElement);
         
         // Trigger custom event for other components
         window.dispatchEvent(new CustomEvent('themeColorsLoaded', {

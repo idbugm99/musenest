@@ -1,0 +1,156 @@
+<!-- Testimonials Header -->
+<section class="relative py-32 overflow-hidden" style="background: var(--glamour-gradient); color: white;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="mb-8">
+            <i class="fas fa-star text-6xl mb-6 text-white/80"></i>
+        </div>
+        <h1 class="text-5xl md:text-6xl font-bold mb-6" style="font-family: var(--font-display);">
+            Testimonials
+        </h1>
+        <p class="text-xl text-white/90 max-w-3xl mx-auto">
+            What clients say about their experiences with professional companionship and service.
+        </p>
+    </div>
+    <div class="absolute inset-0 opacity-10 pointer-events-none">
+        <div class="absolute top-20 left-20 w-32 h-32 border border-white/20 rounded-full"></div>
+        <div class="absolute bottom-32 right-16 w-24 h-24 border border-white/20 rounded-full"></div>
+    </div>
+</section>
+
+<!-- Testimonials Grid -->
+<section class="py-20" style="background-color: var(--theme-bg);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{#if testimonials}}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            {{#each testimonials}}
+            <div class="glamour-card p-8">
+                <!-- Star Rating -->
+                <div class="flex mb-6">
+                    {{#times (or this.rating 5)}}
+                    <i class="fas fa-star text-xl" style="color: var(--theme-accent);"></i>
+                    {{/times}}
+                </div>
+                
+                <!-- Testimonial Text -->
+                <blockquote class="text-lg mb-6 leading-relaxed" style="color: var(--theme-text-subtle);">
+                    "{{this.text}}"
+                </blockquote>
+                
+                <!-- Client Info -->
+                <div class="border-t pt-6" style="border-color: var(--theme-border);">
+                    <div class="font-semibold text-lg" style="color: var(--theme-text);">
+                        {{this.client_name}}
+                    </div>
+                    {{#if this.location}}
+                    <div class="text-sm mt-1" style="color: var(--theme-text-subtle);">
+                        {{this.location}}
+                    </div>
+                    {{/if}}
+                    {{#if this.date}}
+                    <div class="text-xs mt-2" style="color: var(--theme-text-subtle);">
+                        {{formatDate this.date}}
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        {{else}}
+        <div class="text-center py-16">
+            <div class="glamour-card p-12 max-w-2xl mx-auto">
+                <i class="fas fa-quote-left text-6xl mb-8" style="color: var(--theme-primary);"></i>
+                <h2 class="text-3xl font-bold mb-6" style="color: var(--theme-text); font-family: var(--font-display);">
+                    Client Testimonials Coming Soon
+                </h2>
+                <p class="text-lg mb-8" style="color: var(--theme-text-subtle);">
+                    We respect our clients' privacy and are working on sharing testimonials in a way that maintains discretion while showcasing the quality of our service.
+                </p>
+                <div class="flex justify-center space-x-4 text-4xl mb-8">
+                    <i class="fas fa-star" style="color: var(--theme-accent);"></i>
+                    <i class="fas fa-star" style="color: var(--theme-accent);"></i>
+                    <i class="fas fa-star" style="color: var(--theme-accent);"></i>
+                    <i class="fas fa-star" style="color: var(--theme-accent);"></i>
+                    <i class="fas fa-star" style="color: var(--theme-accent);"></i>
+                </div>
+                <p class="text-sm" style="color: var(--theme-text-subtle);">
+                    Exceptional service • Complete discretion • Professional excellence
+                </p>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="py-20" style="background-color: var(--theme-bg-alt);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-6" style="color: var(--theme-text); font-family: var(--font-display);">
+                Excellence in Numbers
+            </h2>
+            <p class="text-lg" style="color: var(--theme-text-subtle);">
+                Quality service backed by satisfied clients
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="glamour-card p-8 text-center">
+                <div class="text-5xl font-bold mb-4" style="color: var(--theme-primary);">
+                    100%
+                </div>
+                <h3 class="text-xl font-semibold mb-2" style="color: var(--theme-text);">
+                    Client Satisfaction
+                </h3>
+                <p style="color: var(--theme-text-subtle);">
+                    Professional service excellence
+                </p>
+            </div>
+            
+            <div class="glamour-card p-8 text-center">
+                <div class="text-5xl font-bold mb-4" style="color: var(--theme-primary);">
+                    5★
+                </div>
+                <h3 class="text-xl font-semibold mb-2" style="color: var(--theme-text);">
+                    Average Rating
+                </h3>
+                <p style="color: var(--theme-text-subtle);">
+                    Consistently exceptional experiences
+                </p>
+            </div>
+            
+            <div class="glamour-card p-8 text-center">
+                <div class="text-5xl font-bold mb-4" style="color: var(--theme-primary);">
+                    24/7
+                </div>
+                <h3 class="text-xl font-semibold mb-2" style="color: var(--theme-text);">
+                    Discretion
+                </h3>
+                <p style="color: var(--theme-text-subtle);">
+                    Complete privacy guaranteed
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-16" style="background-color: var(--theme-bg);">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold mb-6" style="color: var(--theme-text); font-family: var(--font-display);">
+            Experience Excellence Yourself
+        </h2>
+        <p class="text-lg mb-8" style="color: var(--theme-text-subtle);">
+            Join our satisfied clients and discover what makes our service truly exceptional.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/{{modelSlug}}/calendar{{previewParam}}" class="glamour-btn">
+                <i class="fas fa-calendar-alt"></i>
+                Book Consultation
+            </a>
+            <a href="/{{modelSlug}}/contact{{previewParam}}" class="glamour-btn-outline">
+                <i class="fas fa-envelope"></i>
+                Send Message
+            </a>
+        </div>
+    </div>
+</section>

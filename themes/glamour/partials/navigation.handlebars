@@ -1,67 +1,151 @@
-<!-- Glamour Theme Navigation -->
-<nav class="glamour-nav shadow-lg fixed top-0 left-0 right-0 z-50">
+<!-- Glamour Navigation - Elegant and Sophisticated -->
+<nav class="glamour-nav fixed w-full top-0 z-50" role="navigation" aria-label="Primary Navigation">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-            <!-- Logo/Brand -->
+        <div class="flex items-center justify-between h-16">
+            
+            <!-- Brand/Logo -->
             <div class="flex items-center">
-                <a href="/{{modelSlug}}{{previewParam}}" class="glamour-brand">
+                <a href="/{{modelSlug}}{{previewParam}}" 
+                   class="font-bold text-2xl transition-all duration-300 hover:scale-105"
+                   style="font-family: var(--font-display); color: var(--theme-primary);">
+                    <i class="fas fa-gem mr-2" style="color: var(--theme-accent);"></i>
                     {{siteName}}
                 </a>
             </div>
             
-            <!-- Desktop Menu -->
-            <div class="hidden md:flex items-center space-x-8">
-                {{#each navigation}}
-                <a href="{{this.url}}" 
-                   class="glamour-nav-link {{#if this.active}}active{{/if}}">
-                    {{this.name}}
-                </a>
-                {{/each}}
+            <!-- Desktop Navigation -->
+            <div class="hidden md:block">
+                <div class="ml-10 flex items-baseline space-x-8" role="menubar">
+                    {{#each navigation}}
+                    <a href="{{this.url}}" 
+                       class="nav-link px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 {{#if this.active}}glamour-nav-active{{/if}}"
+                       style="color: var(--theme-text); font-family: var(--font-body);"
+                       role="menuitem" 
+                       aria-current="{{#if this.active}}page{{/if}}">
+                        {{this.name}}
+                    </a>
+                    {{/each}}
+                </div>
             </div>
             
-            <!-- Mobile Menu Button -->
+            <!-- CTA Button -->
+            <div class="hidden md:block">
+                <a href="/{{modelSlug}}/calendar{{previewParam}}" 
+                   class="glamour-btn">
+                    <i class="fas fa-calendar-alt"></i>
+                    Book Now
+                </a>
+            </div>
+            
+            <!-- Mobile menu button -->
             <div class="md:hidden">
                 <button type="button" 
-                        class="text-white hover:text-gray-200 focus:outline-none transition-colors p-2"
+                        class="inline-flex items-center justify-center p-2 rounded-lg transition-colors duration-300"
+                        style="color: var(--theme-text); border: 1px solid var(--theme-border);"
+                        aria-controls="mobile-menu" 
+                        aria-expanded="false"
                         onclick="toggleMobileMenu()">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
+                    <span class="sr-only">Open main menu</span>
+                    <i class="fas fa-bars text-xl" id="mobile-menu-icon"></i>
                 </button>
             </div>
         </div>
     </div>
     
-    <!-- Mobile Menu -->
-    <div id="mobileMenu" class="md:hidden hidden bg-black bg-opacity-95 backdrop-blur-md border-t border-white border-opacity-20">
-        <div class="px-2 pt-2 pb-3 space-y-1">
+    <!-- Mobile Navigation Menu -->
+    <div id="mobile-menu" class="md:hidden hidden">
+        <div class="px-4 pt-4 pb-6 space-y-3 border-t"
+             style="background: var(--theme-surface); border-color: var(--theme-border);">
             {{#each navigation}}
             <a href="{{this.url}}" 
-               class="glamour-nav-link block {{#if this.active}}active{{/if}}">
+               class="block px-4 py-3 rounded-lg text-base font-medium transition-colors duration-300 {{#if this.active}}mobile-nav-active{{/if}}"
+               style="color: var(--theme-text);"
+               role="menuitem">
                 {{this.name}}
             </a>
             {{/each}}
+            
+            <!-- Mobile CTA -->
+            <div class="pt-4">
+                <a href="/{{modelSlug}}/calendar{{previewParam}}" 
+                   class="glamour-btn w-full justify-center">
+                    <i class="fas fa-calendar-alt"></i>
+                    Book Now
+                </a>
+            </div>
         </div>
     </div>
 </nav>
 
+<style>
+/* Navigation-specific styles */
+.nav-link:hover {
+    background: var(--theme-overlay);
+    color: var(--theme-primary) !important;
+    transform: translateY(-1px);
+}
+
+.glamour-nav-active {
+    background: var(--theme-overlay);
+    color: var(--theme-primary) !important;
+    font-weight: 600;
+}
+
+.mobile-nav-active {
+    background: var(--theme-overlay);
+    color: var(--theme-primary) !important;
+    font-weight: 600;
+}
+
+/* Mobile menu animations */
+#mobile-menu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+#mobile-menu.show {
+    max-height: 500px;
+}
+</style>
+
 <script>
 function toggleMobileMenu() {
-    const menu = document.getElementById('mobileMenu');
-    if (menu.classList.contains('hidden')) {
-        menu.classList.remove('hidden');
-    } else {
+    const menu = document.getElementById('mobile-menu');
+    const icon = document.getElementById('mobile-menu-icon');
+    
+    if (menu.classList.contains('show')) {
+        menu.classList.remove('show');
         menu.classList.add('hidden');
+        icon.className = 'fas fa-bars text-xl';
+    } else {
+        menu.classList.remove('hidden');
+        menu.classList.add('show');
+        icon.className = 'fas fa-times text-xl';
     }
 }
 
 // Close mobile menu when clicking outside
 document.addEventListener('click', function(event) {
-    const menu = document.getElementById('mobileMenu');
-    const button = event.target.closest('button');
+    const menu = document.getElementById('mobile-menu');
+    const button = event.target.closest('[aria-controls="mobile-menu"]');
     
-    if (!menu.contains(event.target) && !button) {
-        menu.classList.add('hidden');
+    if (!button && !menu.contains(event.target) && menu.classList.contains('show')) {
+        toggleMobileMenu();
+    }
+});
+
+// Close mobile menu on window resize to desktop
+window.addEventListener('resize', function() {
+    if (window.innerWidth >= 768) {
+        const menu = document.getElementById('mobile-menu');
+        const icon = document.getElementById('mobile-menu-icon');
+        
+        if (menu.classList.contains('show')) {
+            menu.classList.remove('show');
+            menu.classList.add('hidden');
+            icon.className = 'fas fa-bars text-xl';
+        }
     }
 });
 </script>

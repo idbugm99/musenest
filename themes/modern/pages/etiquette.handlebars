@@ -1,14 +1,23 @@
 <!-- Modern Contemporary Etiquette Page -->
 
-<!-- MC Hero -->
+<!-- Standardized Modern Hero Section -->
 {{#if etiquette_content.etiquette_header_visible}}
-<header class="etiquette-hero">
+<section class="hero-section" style="min-height: 40vh; background: {{theme.colors.hero-bg}}; display: flex; align-items: center; position: relative;">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <span class="policy-chip">Professional Standards</span>
-    <h1>{{#if etiquette_content.page_title}}{{etiquette_content.page_title}}{{else}}Etiquette & Guidelines{{/if}}</h1>
-    <p class="sub">{{#if etiquette_content.page_subtitle}}{{etiquette_content.page_subtitle}}{{else}}Clear, friendly policies so our time together runs smoothly.{{/if}}</p>
+    <h1 style="font-size: 3.75rem; font-weight: 800; margin-bottom: 1.5rem; color: {{theme.colors.hero-text}};">
+      {{#if etiquette_content.page_title}}{{etiquette_content.page_title}}{{else}}Etiquette & Guidelines{{/if}}
+    </h1>
+    {{#if etiquette_content.page_subtitle}}
+    <p style="font-size: 1.25rem; color: {{theme.colors.hero-subtext}}; max-width: 42rem; margin: 0 auto;">
+      {{etiquette_content.page_subtitle}}
+    </p>
+    {{else}}
+    <p style="font-size: 1.25rem; color: {{theme.colors.hero-subtext}}; max-width: 42rem; margin: 0 auto;">
+      Clear, friendly policies so our time together runs smoothly.
+    </p>
+    {{/if}}
   </div>
-</header>
+</section>
 {{/if}}
 
 <!-- Main Content -->
@@ -210,17 +219,17 @@
   background: #F6F8FB; /* page bg */ 
 }
 
-/* ---- Reusable tokens (match your theme) ---- */
+/* ---- Reusable tokens (use API-loaded colors) ---- */
 :root{
-  --mc-primary: #6D5DF6; 
-  --mc-primary-700: #5B4EE6; 
-  --mc-primary-50: #EEF2FF;
-  --mc-text: #0F172A; 
-  --mc-muted: #475569; 
+  --mc-primary: {{theme.colors.primary}}; 
+  --mc-primary-700: {{theme.colors.btn-bg-hover}}; 
+  --mc-primary-50: {{theme.colors.bg-light}};
+  --mc-text: {{theme.colors.text}}; 
+  --mc-muted: {{theme.colors.text-light}}; 
   --mc-on-dark: #F8FAFC;
-  --mc-surface: #FFFFFF; 
-  --mc-border: #E6EAF1;
-  --mc-shadow: 0 10px 30px rgba(2,6,23,.08);
+  --mc-surface: {{theme.colors.surface}}; 
+  --mc-border: {{theme.colors.border}};
+  --mc-shadow: 0 10px 30px {{theme.colors.card-shadow}};
 }
 
 /* ---- Hero ---- */

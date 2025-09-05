@@ -1,127 +1,492 @@
-<!-- Universal Gallery System for Dark Theme -->
-{{{renderUniversalGallery modelSlug previewTheme=previewThemeId}}}
+<!-- Dark Sophisticated Boudoir Gallery Page - Universal Gallery System Integration -->
+{{#if gallery_content.gallery_header_visible}}
+<section class="boudoir-section" style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)); min-height: 60vh; display: flex; align-items: center; justify-content: center; padding: 4rem 0; position: relative; overflow: hidden;">
+    <!-- Boudoir Decorative Elements -->
+    <div style="position: absolute; top: 10%; left: 5%; opacity: 0.3; z-index: 1;">
+        <svg width="40" height="40" viewBox="0 0 80 80" style="animation: silk-float 9s ease-in-out infinite; color: var(--theme-accent);">
+            <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.8"/>
+        </svg>
+    </div>
+    <div style="position: absolute; top: 60%; right: 8%; opacity: 0.4; z-index: 1;">
+        <svg width="32" height="32" viewBox="0 0 80 80" style="animation: silk-float 7s ease-in-out infinite; animation-delay: 3s; color: var(--theme-accent);">
+            <rect x="25" y="25" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+        </svg>
+    </div>
+    <div style="position: absolute; bottom: 15%; left: 90%; opacity: 0.5; z-index: 1;">
+        <svg width="32" height="32" viewBox="0 0 80 80" style="animation: silk-float 11s ease-in-out infinite; animation-delay: 5s; color: var(--theme-primary);">
+            <rect x="30" y="30" width="20" height="20" fill="currentColor" opacity="0.7"/>
+        </svg>
+    </div>
+
+    <div class="boudoir-container" style="position: relative; z-index: 2;">
+        <!-- Page Header -->
+        {{#if gallery_content.gallery_header_visible}}
+        <div style="text-align: center; margin-bottom: 4rem;">
+            <div style="margin-bottom: 2rem;">
+                <svg width="80" height="80" viewBox="0 0 80 80" style="color: var(--theme-accent); animation: pulse 3s ease-in-out infinite;">
+                    <defs>
+                        <linearGradient id="gallery-crown-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--theme-accent);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:var(--theme-primary);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="40" cy="40" r="35" fill="none" stroke="url(#gallery-crown-gradient)" stroke-width="3" opacity="0.8"/>
+                    <circle cx="40" cy="40" r="12" fill="url(#gallery-crown-gradient)" opacity="0.9"/>
+                </svg>
+            </div>
+            <h1 style="background: linear-gradient(45deg, var(--theme-accent), var(--theme-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5rem);">
+                {{#if gallery_content.page_title}}{{gallery_content.page_title}}{{else}}Exclusive Gallery{{/if}}
+            </h1>
+            {{#if gallery_content.page_subtitle}}
+            <p style="font-size: 1.2rem; color: var(--theme-text-subtle); max-width: 700px; margin: 0 auto;">
+                {{gallery_content.page_subtitle}}
+            </p>
+            {{/if}}
+            {{#if gallery_content.page_description}}
+            <p style="font-size: 1.1rem; color: var(--theme-text); max-width: 800px; margin: 1rem auto 0;">
+                {{gallery_content.page_description}}
+            </p>
+            {{/if}}
+        </div>
+        {{else}}
+        <!-- Default Header -->
+        <div style="text-align: center; margin-bottom: 4rem;">
+            <div style="margin-bottom: 2rem;">
+                <svg width="80" height="80" viewBox="0 0 80 80" style="color: var(--theme-accent); animation: pulse 3s ease-in-out infinite;">
+                    <defs>
+                        <linearGradient id="gallery-default-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--theme-accent);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:var(--theme-primary);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="40" cy="40" r="35" fill="none" stroke="url(#gallery-default-gradient)" stroke-width="3" opacity="0.8"/>
+                    <circle cx="40" cy="40" r="12" fill="url(#gallery-default-gradient)" opacity="0.9"/>
+                </svg>
+            </div>
+            <h1 style="background: linear-gradient(45deg, var(--theme-accent), var(--theme-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5rem);">
+                Exclusive Gallery
+            </h1>
+            <p style="font-size: 1.2rem; color: var(--theme-text-subtle); max-width: 700px; margin: 0 auto;">
+                A curated collection showcasing elegance, sophistication, and the artistry of refined companionship.
+            </p>
+        </div>
+        {{/if}}
+    </div>
+</section>
+{{else}}
+<!-- Default Header with Gradient -->
+<section class="boudoir-section" style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)); min-height: 60vh; display: flex; align-items: center; justify-content: center; padding: 4rem 0; position: relative; overflow: hidden;">
+    <!-- Boudoir Decorative Elements -->
+    <div style="position: absolute; top: 10%; left: 5%; opacity: 0.3; z-index: 1;">
+        <svg width="40" height="40" viewBox="0 0 80 80" style="animation: silk-float 9s ease-in-out infinite; color: var(--theme-accent);">
+            <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.8"/>
+        </svg>
+    </div>
+    <div style="position: absolute; top: 60%; right: 8%; opacity: 0.4; z-index: 1;">
+        <svg width="32" height="32" viewBox="0 0 80 80" style="animation: silk-float 7s ease-in-out infinite; animation-delay: 3s; color: var(--theme-accent);">
+            <rect x="25" y="25" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+        </svg>
+    </div>
+    <div style="position: absolute; bottom: 15%; left: 90%; opacity: 0.5; z-index: 1;">
+        <svg width="32" height="32" viewBox="0 0 80 80" style="animation: silk-float 11s ease-in-out infinite; animation-delay: 5s; color: var(--theme-primary);">
+            <rect x="30" y="30" width="20" height="20" fill="currentColor" opacity="0.7"/>
+        </svg>
+    </div>
+
+    <div class="boudoir-container" style="position: relative; z-index: 2;">
+        <!-- Default Header -->
+        <div style="text-align: center; margin-bottom: 4rem;">
+            <div style="margin-bottom: 2rem;">
+                <svg width="80" height="80" viewBox="0 0 80 80" style="color: var(--theme-accent); animation: pulse 3s ease-in-out infinite;">
+                    <defs>
+                        <linearGradient id="gallery-fallback-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--theme-accent);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:var(--theme-primary);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="40" cy="40" r="35" fill="none" stroke="url(#gallery-fallback-gradient)" stroke-width="3" opacity="0.8"/>
+                    <circle cx="40" cy="40" r="12" fill="url(#gallery-fallback-gradient)" opacity="0.9"/>
+                </svg>
+            </div>
+            <h1 style="background: linear-gradient(45deg, var(--theme-accent), var(--theme-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5rem);">
+                Exclusive Gallery
+            </h1>
+            <p style="font-size: 1.2rem; color: var(--theme-text-subtle); max-width: 700px; margin: 0 auto;">
+                A curated collection showcasing elegance, sophistication, and the artistry of refined companionship.
+            </p>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Gallery Content Section with Boudoir Dark Background -->
+<section style="padding: 5rem 0; background: var(--theme-bg);">
+    <div class="boudoir-container">
+        <!-- Universal Gallery System -->
+        <div class="boudoir-gallery-wrapper" style="background: var(--theme-bg);">
+            {{{renderUniversalGallery modelSlug previewTheme=previewThemeId}}}
+        </div>
+
+        <!-- Gallery Information -->
+        <div class="boudoir-card-luxury" style="background: linear-gradient(135deg, var(--theme-surface), var(--theme-bg-alt)); position: relative; overflow: hidden; margin-top: 4rem;">
+            <div style="position: absolute; top: -30px; right: -30px; opacity: 0.2; z-index: 1;">
+                <svg style="width: 120px; height: 120px; color: var(--theme-accent);" viewBox="0 0 80 80">
+                    <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+                    <circle cx="40" cy="40" r="15" fill="currentColor" opacity="0.3"/>
+                </svg>
+            </div>
+            
+            <div style="position: relative; z-index: 2; text-align: center;">
+                <h2 style="color: var(--theme-text); margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem; font-family: var(--font-display); font-size: 2rem;">
+                    <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                        <path d="M40 10c-11 0-20 9-20 20 0 15 20 40 20 40s20-25 20-40c0-11-9-20-20-20zm0 27c-4 0-7-3-7-7s3-7 7-7 7 3 7 7-3 7-7 7z" fill="currentColor" opacity="0.8"/>
+                    </svg>
+                    About This Gallery
+                </h2>
+                <p style="color: var(--theme-text); line-height: 1.7; font-size: 1.1rem; max-width: 700px; margin: 0 auto;">
+                    Each image in this exclusive collection has been carefully selected to showcase the elegance, sophistication, and artistry that defines my approach to companionship. These portraits capture not just beauty, but the essence of refined taste and discretion.
+                </p>
+                <div style="margin-top: 2rem;">
+                    <a href="/{{model.slug}}/about{{previewParam}}" class="boudoir-btn boudoir-btn-outline" style="margin-right: 1rem;">
+                        Learn More About Me
+                    </a>
+                    <a href="/{{model.slug}}/contact{{previewParam}}" class="boudoir-btn boudoir-btn-primary">
+                        Get In Touch
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- Load Universal Gallery System CSS and JavaScript -->
 <link rel="stylesheet" href="/templates/universal/gallery-styles.css">
 <script src="/templates/universal/gallery-script.js"></script>
 
-<!-- Dark Theme Gallery CSS Variables Override -->
+<!-- Dark Boudoir Theme Gallery CSS Variables Override -->
 <style>
 :root {
-    --gallery-primary: #8b5cf6;
-    --gallery-primary-hover: #7c3aed;
-    --gallery-secondary: #6b46c1;
-    --gallery-accent: #a855f7;
-    --gallery-background: #111827;
-    --gallery-surface: #1f2937;
-    --gallery-text: #f9fafb;
-    --gallery-text-muted: #d1d5db;
-    --gallery-border: #374151;
-    --gallery-shadow: rgba(0, 0, 0, 0.3);
-    --gallery-shadow-hover: rgba(139, 92, 246, 0.3);
+    /* Boudoir Gallery Color Palette */
+    --gallery-primary: var(--theme-primary, #d4af37);
+    --gallery-primary-hover: var(--theme-accent, #e8b4cb);
+    --gallery-secondary: var(--theme-secondary, #2d1b69);
+    --gallery-accent: var(--theme-accent, #e8b4cb);
+    --gallery-background: var(--theme-bg, #0a0a0f);
+    --gallery-surface: var(--theme-surface, #2a2438);
+    --gallery-text: var(--theme-text, #f5f1e8);
+    --gallery-text-muted: var(--theme-text-subtle, #c9b991);
+    --gallery-border: var(--theme-border, #3d3447);
+    --gallery-border-light: var(--theme-border-muted, #2a2438);
+    --gallery-shadow: rgba(212, 175, 55, 0.2);
+    --gallery-shadow-hover: rgba(212, 175, 55, 0.4);
     
-    --gallery-border-radius: 8px;
-    --gallery-border-radius-large: 12px;
+    /* Boudoir Gallery Layout */
+    --gallery-border-radius: 12px;
+    --gallery-border-radius-large: 16px;
     --gallery-grid-columns-desktop: 3;
     --gallery-transition-duration: 0.3s;
-    --gallery-hover-lift: -2px;
-    --gallery-hover-scale: 1.05;
-}
-</style>
-
-<!-- Dark Theme Gallery Custom Page Styles -->
-<style>
-/* Dark Theme Gallery Specific Styling */
-.universal-gallery .gallery-hero {
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-    color: white;
+    --gallery-hover-lift: -4px;
 }
 
-.universal-gallery .gallery-hero .hero-badge {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
+/* Boudoir Gallery Enhancements */
+.boudoir-gallery-wrapper {
+    background: var(--theme-bg) !important;
+    border-radius: var(--gallery-border-radius-large);
+    padding: 2rem;
+    border: 1px solid var(--gallery-border-light);
+    box-shadow: 0 8px 32px rgba(212, 175, 55, 0.1);
 }
 
-/* Dark Theme Gallery Items */
-.universal-gallery .gallery-grid-item {
-    background: #1f2937;
-    border: 1px solid #374151;
+/* Boudoir Gallery Background Consistency - Complete Coverage */
+.universal-gallery,
+.galleries-container,
+.gallery-main-section,
+.gallery-container,
+.gallery-grid,
+.gallery-masonry,
+.gallery-content,
+.gallery-wrapper,
+.gallery-items-container,
+div[class*="gallery"],
+div[id*="gallery"] {
+    background: var(--theme-bg) !important;
+    color: var(--theme-text) !important;
 }
 
-.universal-gallery .gallery-grid-item:hover {
-    border-color: var(--gallery-primary);
-    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+/* Force all gallery-related containers to dark background */
+.universal-gallery * {
+    background-color: transparent !important;
 }
 
-/* Dark Theme Gallery Sections */
-.universal-gallery .gallery-section-title {
-    color: var(--gallery-primary);
+.universal-gallery > div,
+.universal-gallery section,
+.universal-gallery article {
+    background: var(--theme-bg) !important;
 }
 
-/* Dark Theme Carousel Styling */
-.universal-gallery .gallery-carousel-container {
-    background: rgba(31, 41, 55, 0.8);
-    border: 1px solid #374151;
+/* Target common universal gallery container classes */
+.max-w-7xl,
+.mx-auto,
+.px-4,
+.sm\\:px-6,
+.lg\\:px-8,
+div[class*="max-w"],
+div[class*="mx-auto"],
+div[class*="px-"] {
+    background: transparent !important;
 }
 
-.universal-gallery .gallery-carousel-nav {
-    background: rgba(255, 255, 255, 0.9);
-    color: #374151;
+/* Ensure main gallery containers use theme background */
+body .universal-gallery,
+body .gallery-main-section,
+body .galleries-container {
+    background: var(--theme-bg) !important;
 }
 
-.universal-gallery .gallery-carousel-nav:hover {
-    background: rgba(255, 255, 255, 1);
+/* Target any remaining white backgrounds */
+.universal-gallery div:not(.universal-gallery-item):not(.gallery-item) {
+    background: transparent !important;
 }
 
-.universal-gallery .gallery-carousel-dot {
-    background: #94a3b8;
+/* Boudoir Gallery Section Container Override */
+.universal-gallery-section-container,
+.gallery-section-container {
+    background: var(--theme-bg) !important;
+    padding: 1rem 0 !important;
 }
 
-.universal-gallery .gallery-carousel-dot.active {
-    background: var(--gallery-primary);
+/* Override Universal Gallery styles for Boudoir theme */
+.universal-gallery-section {
+    background: linear-gradient(135deg, var(--gallery-surface), rgba(232, 180, 203, 0.05)) !important;
+    border: 2px solid var(--gallery-border) !important;
+    border-radius: var(--gallery-border-radius-large) !important;
+    box-shadow: 0 8px 32px var(--gallery-shadow), 0 0 0 1px rgba(232, 180, 203, 0.2) !important;
+    margin-bottom: 3rem !important;
+    position: relative !important;
+    overflow: hidden !important;
 }
 
-/* Dark Theme Empty State */
-.universal-gallery .gallery-empty-state {
-    background: #1f2937;
-    border: 1px solid #374151;
-    color: var(--gallery-text);
+.universal-gallery-section::before {
+    content: "" !important;
+    position: absolute !important;
+    top: -2px !important;
+    left: -2px !important;
+    right: -2px !important;
+    bottom: -2px !important;
+    background: linear-gradient(45deg, var(--theme-accent), var(--theme-primary), var(--theme-secondary)) !important;
+    border-radius: var(--gallery-border-radius-large) !important;
+    z-index: -1 !important;
+    opacity: 0.3 !important;
 }
 
-.universal-gallery .gallery-empty-icon {
-    background: var(--gallery-primary);
+.universal-gallery-section h2 {
+    color: var(--gallery-accent) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    font-family: var(--font-display) !important;
 }
 
-/* Dark Theme CTA Section */
-.universal-gallery .gallery-cta {
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-    color: white;
+.universal-gallery-section h2::before {
+    content: "✨";
+    font-size: 1.2em;
 }
 
-.universal-gallery .gallery-cta-badge {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+/* Boudoir Gallery Item Styling */
+.universal-gallery-item,
+.gallery-item,
+.gallery-image-container {
+    border-radius: var(--gallery-border-radius) !important;
+    overflow: hidden !important;
+    transition: all var(--gallery-transition-duration) ease !important;
+    border: 2px solid var(--gallery-border) !important;
+    background: linear-gradient(135deg, var(--gallery-surface), rgba(232, 180, 203, 0.02)) !important;
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.1) !important;
+    position: relative !important;
 }
 
-.universal-gallery .gallery-cta-primary {
-    background: white;
-    color: #8b5cf6;
+.universal-gallery-item::before,
+.gallery-item::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: linear-gradient(45deg, transparent, rgba(232, 180, 203, 0.05), transparent) !important;
+    opacity: 0 !important;
+    transition: opacity var(--gallery-transition-duration) ease !important;
+    z-index: 2 !important;
+    pointer-events: none !important;
 }
 
-.universal-gallery .gallery-cta-primary:hover {
-    background: #f3f4f6;
+.universal-gallery-item:hover,
+.gallery-item:hover {
+    transform: translateY(var(--gallery-hover-lift)) scale(1.02) !important;
+    border-color: var(--gallery-accent) !important;
+    box-shadow: 0 16px 48px var(--gallery-shadow-hover), 0 0 0 1px var(--gallery-accent) !important;
 }
 
-.universal-gallery .gallery-cta-secondary {
-    border: 2px solid white;
-    background: transparent;
-    color: white;
+.universal-gallery-item:hover::before,
+.gallery-item:hover::before {
+    opacity: 1 !important;
 }
 
-.universal-gallery .gallery-cta-secondary:hover {
-    background: rgba(255, 255, 255, 0.1);
+.universal-gallery-item img,
+.gallery-item img {
+    transition: all var(--gallery-transition-duration) ease !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.universal-gallery-item:hover img,
+.gallery-item:hover img {
+    filter: brightness(1.1) saturate(1.2) !important;
+    transform: scale(1.05) !important;
+}
+
+.universal-lightbox {
+    background: rgba(10, 10, 15, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.universal-lightbox-content {
+    border-radius: var(--gallery-border-radius-large) !important;
+    box-shadow: 0 20px 60px rgba(232, 180, 203, 0.3) !important;
+}
+
+/* Hide Universal Gallery Hero Section (we have our own) */
+.universal-gallery .gallery-hero,
+.gallery-hero {
+    display: none !important;
+}
+
+/* Boudoir Section Headers and Typography */
+.gallery-section-title,
+.gallery-title,
+h2.gallery-heading,
+h3.section-title,
+.section-title {
+    color: var(--gallery-accent) !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    margin: 2rem 0 !important;
+    position: relative !important;
+    font-family: var(--font-display) !important;
+}
+
+.gallery-section-title::before,
+.gallery-title::before,
+h3.section-title::before,
+.section-title::before {
+    content: "✨" !important;
+    margin-right: 0.5rem !important;
+    font-size: 0.9em !important;
+}
+
+/* Boudoir Slider Styling */
+.gallery-slider-container,
+.slider-section {
+    background: linear-gradient(135deg, var(--gallery-surface), rgba(232, 180, 203, 0.03)) !important;
+    border: 2px solid var(--gallery-border) !important;
+    border-radius: var(--gallery-border-radius-large) !important;
+    padding: 2rem !important;
+    margin: 2rem 0 !important;
+    box-shadow: 0 8px 32px var(--gallery-shadow) !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.gallery-slider-container::before {
+    content: "" !important;
+    position: absolute !important;
+    top: -1px !important;
+    left: -1px !important;
+    right: -1px !important;
+    bottom: -1px !important;
+    background: linear-gradient(45deg, var(--theme-accent), var(--theme-primary)) !important;
+    border-radius: var(--gallery-border-radius-large) !important;
+    z-index: -1 !important;
+    opacity: 0.1 !important;
+}
+
+/* Boudoir Navigation Dots */
+.gallery-pagination-dots,
+.slider-dots {
+    text-align: center !important;
+    margin-top: 1.5rem !important;
+}
+
+.gallery-pagination-dot,
+.slider-dot {
+    width: 12px !important;
+    height: 12px !important;
+    border-radius: 50% !important;
+    background: var(--gallery-border) !important;
+    border: 2px solid var(--theme-accent) !important;
+    margin: 0 0.5rem !important;
+    cursor: pointer !important;
+    transition: all var(--gallery-transition-duration) ease !important;
+    display: inline-block !important;
+}
+
+.gallery-pagination-dot.active,
+.slider-dot.active {
+    background: var(--theme-accent) !important;
+    box-shadow: 0 0 8px var(--theme-accent) !important;
+    transform: scale(1.2) !important;
+}
+
+.gallery-pagination-dot:hover,
+.slider-dot:hover {
+    background: var(--theme-primary) !important;
+    transform: scale(1.1) !important;
+}
+
+/* Empty state styling */
+.universal-gallery-empty {
+    background: rgba(232, 180, 203, 0.05) !important;
+    border: 2px dashed var(--gallery-border-light) !important;
+    border-radius: var(--gallery-border-radius) !important;
+    color: var(--gallery-text-muted) !important;
+}
+
+/* Boudoir decorative animations */
+@keyframes silk-float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .boudoir-gallery-wrapper {
+        padding: 1rem;
+        margin: 0 -1rem;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+    
+    :root {
+        --gallery-grid-columns-desktop: 2;
+    }
+    
+    .boudoir-container div[style*="display: flex"] {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 1rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --gallery-grid-columns-desktop: 1;
+    }
 }
 </style>

@@ -1,0 +1,187 @@
+<!-- Modern Contemporary Card Component -->
+<!-- Standardized card component following Modern Theme Consistency Plan -->
+<div class="modern-card {{cardClass}}"
+     style="background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            {{#if customStyles}}{{customStyles}}{{/if}}"
+     onmouseover="this.style.transform='translateY(-4px)'; 
+                  this.style.boxShadow='0 10px 25px -3px rgba(0, 0, 0, 0.15)';"
+     onmouseout="this.style.transform='translateY(0)'; 
+                 this.style.boxShadow='0 4px 6px -1px rgba(0, 0, 0, 0.1)';">
+    
+    <!-- Top Accent Border (optional) -->
+    {{#if accentColor}}
+    <div style="position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: {{accentColor}};"></div>
+    {{/if}}
+    
+    <!-- Card Header (optional) -->
+    {{#if cardHeader}}
+    <div class="modern-card-header" 
+         style="margin-bottom: 1rem;
+                padding-bottom: 1rem;
+                border-bottom: 1px solid #f1f5f9;">
+        {{#if cardHeader.icon}}
+        <div style="display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 48px;
+                    height: 48px;
+                    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+                    color: white;
+                    border-radius: 12px;
+                    margin-bottom: 1rem;
+                    font-size: 1.25rem;">
+            <i class="{{cardHeader.icon}}"></i>
+        </div>
+        {{/if}}
+        
+        {{#if cardHeader.title}}
+        <h3 style="font-size: 1.25rem;
+                   font-weight: 700;
+                   color: #0f172a;
+                   margin: 0;
+                   line-height: 1.4;">
+            {{cardHeader.title}}
+        </h3>
+        {{/if}}
+        
+        {{#if cardHeader.subtitle}}
+        <p style="font-size: 0.9rem;
+                  color: #64748b;
+                  margin: 0.25rem 0 0 0;">
+            {{cardHeader.subtitle}}
+        </p>
+        {{/if}}
+    </div>
+    {{/if}}
+    
+    <!-- Card Body -->
+    <div class="modern-card-body">
+        {{#if cardTitle}}
+        <h4 style="font-size: 1.125rem;
+                   font-weight: 600;
+                   color: #0f172a;
+                   margin: 0 0 0.75rem 0;
+                   line-height: 1.4;">
+            {{cardTitle}}
+        </h4>
+        {{/if}}
+        
+        {{#if cardContent}}
+        <div style="color: #475569;
+                    line-height: 1.6;
+                    font-size: 0.95rem;">
+            {{cardContent}}
+        </div>
+        {{/if}}
+        
+        {{#if cardList}}
+        <ul style="list-style: none;
+                   padding: 0;
+                   margin: 0;">
+            {{#each cardList}}
+            <li style="display: flex;
+                       align-items: center;
+                       gap: 0.5rem;
+                       padding: 0.5rem 0;
+                       border-bottom: 1px solid #f8fafc;">
+                {{#if this.icon}}
+                <i class="{{this.icon}}" 
+                   style="color: #2563eb; 
+                          font-size: 0.875rem; 
+                          width: 16px; 
+                          text-align: center;"></i>
+                {{/if}}
+                <span style="color: #374151; 
+                            font-size: 0.9rem;">{{this.text}}</span>
+                {{#if this.badge}}
+                <span style="margin-left: auto;
+                            background: {{#if this.badge.color}}{{this.badge.color}}{{else}}#dbeafe{{/if}};
+                            color: {{#if this.badge.textColor}}{{this.badge.textColor}}{{else}}#1e40af{{/if}};
+                            padding: 0.25rem 0.5rem;
+                            border-radius: 6px;
+                            font-size: 0.75rem;
+                            font-weight: 600;">
+                    {{this.badge.text}}
+                </span>
+                {{/if}}
+            </li>
+            {{/each}}
+        </ul>
+        {{/if}}
+    </div>
+    
+    <!-- Card Footer (optional) -->
+    {{#if cardFooter}}
+    <div class="modern-card-footer"
+         style="margin-top: 1.5rem;
+                padding-top: 1rem;
+                border-top: 1px solid #f1f5f9;">
+        
+        {{#if cardFooter.buttons}}
+        <div style="display: flex;
+                    gap: 0.75rem;
+                    flex-wrap: wrap;
+                    {{#if cardFooter.centered}}justify-content: center;{{/if}}">
+            {{#each cardFooter.buttons}}
+            <a href="{{this.url}}" 
+               style="display: inline-flex;
+                      align-items: center;
+                      gap: 0.375rem;
+                      padding: 0.5rem 1rem;
+                      border-radius: 8px;
+                      font-weight: 600;
+                      font-size: 0.875rem;
+                      text-decoration: none;
+                      transition: all 0.3s ease;
+                      {{#if this.primary}}
+                      background: #2563eb;
+                      color: white;
+                      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+                      {{else}}
+                      background: transparent;
+                      color: #2563eb;
+                      border: 1px solid #d1d5db;
+                      {{/if}}"
+               onmouseover="{{#if this.primary}}
+                           this.style.background='#1d4ed8';
+                           this.style.boxShadow='0 4px 8px rgba(37, 99, 235, 0.3)';
+                           {{else}}
+                           this.style.background='#f8fafc';
+                           this.style.borderColor='#2563eb';
+                           {{/if}}"
+               onmouseout="{{#if this.primary}}
+                          this.style.background='#2563eb';
+                          this.style.boxShadow='0 2px 4px rgba(37, 99, 235, 0.2)';
+                          {{else}}
+                          this.style.background='transparent';
+                          this.style.borderColor='#d1d5db';
+                          {{/if}}">
+                {{#if this.icon}}<i class="{{this.icon}}"></i>{{/if}}
+                {{this.text}}
+            </a>
+            {{/each}}
+        </div>
+        {{/if}}
+        
+        {{#if cardFooter.text}}
+        <div style="color: #64748b;
+                    font-size: 0.875rem;
+                    {{#if cardFooter.centered}}text-align: center;{{/if}}">
+            {{cardFooter.text}}
+        </div>
+        {{/if}}
+    </div>
+    {{/if}}
+</div>

@@ -1,31 +1,232 @@
-<!-- Universal Gallery System for Glamour Theme -->
-{{{renderUniversalGallery modelSlug previewTheme=previewThemeId}}}
-
-<!-- Load Universal Gallery System CSS and JavaScript -->
+<!-- Universal Gallery System CSS and JavaScript -->
 <link rel="stylesheet" href="/templates/universal/gallery-styles.css">
 <script src="/templates/universal/gallery-script.js"></script>
 
-<!-- Glamour Theme Gallery CSS Variables Override -->
-<style>
-:root {
-    --gallery-primary: #E9C77A;
-    --gallery-primary-hover: #D9B66A;
-    --gallery-secondary: #D08770;
-    --gallery-accent: #EBCB8B;
-    --gallery-background: linear-gradient(145deg, #171228, #1E1632);
-    --gallery-surface: #1E1730;
-    --gallery-text: #F3EFE7;
-    --gallery-text-muted: #F5F2EA;
-    --gallery-border: rgba(235, 203, 139, 0.15);
-    --gallery-shadow: rgba(212, 175, 55, 0.2);
-    --gallery-shadow-hover: rgba(212, 175, 55, 0.4);
-    
-    --gallery-border-radius: 15px;
-    --gallery-border-radius-large: 20px;
-    --gallery-grid-columns-desktop: 3;
-    --gallery-transition-duration: 0.4s;
-    --gallery-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
-    --gallery-hover-lift: -10px;
-    --gallery-hover-scale: 1.02;
-}</style>
+<!-- Gallery Header -->
+{{#if gallery_content.page_header_visible}}
+<section class="relative py-32 overflow-hidden" style="background: var(--glamour-gradient); color: white;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="mb-8">
+            <i class="fas fa-images text-6xl mb-6 text-white/80"></i>
+        </div>
+        <h1 class="text-5xl md:text-6xl font-bold mb-6" style="font-family: var(--font-display);">
+            {{#if gallery_content.page_title}}{{gallery_content.page_title}}{{else}}Gallery{{/if}}
+        </h1>
+        <p class="text-xl text-white/90 max-w-3xl mx-auto">
+            {{#if gallery_content.page_subtitle}}{{gallery_content.page_subtitle}}{{else}}A curated collection of professional photography showcasing elegance, sophistication, and artistry.{{/if}}
+        </p>
+    </div>
+    <div class="absolute inset-0 opacity-10 pointer-events-none">
+        <div class="absolute top-20 left-10 w-32 h-32 border border-white/20 rounded-full"></div>
+        <div class="absolute bottom-32 right-20 w-24 h-24 border border-white/20 rounded-full"></div>
+    </div>
+</section>
+{{else}}
+<section class="relative py-32 overflow-hidden" style="background: var(--glamour-gradient); color: white;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="mb-8">
+            <i class="fas fa-images text-6xl mb-6 text-white/80"></i>
+        </div>
+        <h1 class="text-5xl md:text-6xl font-bold mb-6" style="font-family: var(--font-display);">
+            Gallery
+        </h1>
+        <p class="text-xl text-white/90 max-w-3xl mx-auto">
+            A curated collection of professional photography showcasing elegance, sophistication, and artistry.
+        </p>
+    </div>
+    <div class="absolute inset-0 opacity-10 pointer-events-none">
+        <div class="absolute top-20 left-10 w-32 h-32 border border-white/20 rounded-full"></div>
+        <div class="absolute bottom-32 right-20 w-24 h-24 border border-white/20 rounded-full"></div>
+    </div>
+</section>
+{{/if}}
 
+<!-- Universal Gallery System Integration -->
+<section class="py-20" style="background-color: var(--theme-bg);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="theme-gallery-wrapper">
+            {{{renderUniversalGallery modelSlug previewTheme=previewThemeId}}}
+        </div>
+    </div>
+</section>
+
+<!-- Gallery CTA -->
+<section class="py-16" style="background-color: var(--theme-bg-alt);">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="glamour-card p-12">
+            <h2 class="text-3xl font-bold mb-6" style="color: var(--theme-text); font-family: var(--font-display);">
+                Like What You See?
+            </h2>
+            <p class="text-lg mb-8" style="color: var(--theme-text-subtle);">
+                Ready to create your own unforgettable experience? Let's discuss how we can make your vision a reality.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/{{modelSlug}}/calendar{{previewParam}}" class="glamour-btn">
+                    <i class="fas fa-calendar-alt"></i>
+                    Schedule Consultation
+                </a>
+                <a href="/{{modelSlug}}/contact{{previewParam}}" class="glamour-btn-outline">
+                    <i class="fas fa-envelope"></i>
+                    Send Message
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Glamour Theme Gallery CSS Overrides -->
+<style>
+/* Universal Gallery CSS Variable Overrides for Glamour Theme */
+:root {
+    --gallery-primary: var(--theme-primary, #9333EA);
+    --gallery-primary-hover: var(--theme-link-hover, #7C3AED);
+    --gallery-accent: var(--theme-accent, #F59E0B);
+    --gallery-background: var(--theme-surface, #FFFFFF);
+    --gallery-background-alt: var(--theme-bg-alt, #FAF5FF);
+    --gallery-text: var(--theme-text, #581C87);
+    --gallery-text-subtle: var(--theme-text-subtle, #7C2D92);
+    --gallery-border: var(--theme-border, #E9D5FF);
+    --gallery-border-radius: var(--glamour-border-radius, 1rem);
+    --gallery-shadow: var(--glamour-shadow, 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04));
+    --gallery-transition: var(--glamour-transition, all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94));
+}
+
+/* Override Universal Gallery styles with Glamour theme */
+.universal-gallery-section {
+    background: var(--theme-surface) !important;
+    border: 1px solid var(--theme-border-muted) !important;
+    border-radius: var(--glamour-border-radius) !important;
+    box-shadow: var(--glamour-shadow) !important;
+}
+
+.universal-gallery-section:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--glamour-glow), var(--glamour-shadow) !important;
+}
+
+.universal-gallery-section h2,
+.universal-gallery-section h3 {
+    color: var(--theme-text) !important;
+    font-family: var(--font-display) !important;
+}
+
+.universal-gallery-section p {
+    color: var(--theme-text-subtle) !important;
+}
+
+.universal-gallery * {
+    background-color: var(--theme-bg) !important;
+}
+
+.gallery-hero {
+    background: var(--theme-bg) !important;
+}
+
+/* Gallery navigation and controls */
+.gallery-nav,
+.gallery-controls {
+    background: var(--theme-surface) !important;
+    border: 1px solid var(--theme-border) !important;
+    border-radius: var(--glamour-border-radius) !important;
+}
+
+.gallery-nav button,
+.gallery-controls button {
+    color: var(--theme-primary) !important;
+    border: 1px solid var(--theme-border) !important;
+    transition: var(--glamour-transition) !important;
+}
+
+.gallery-nav button:hover,
+.gallery-controls button:hover {
+    background: var(--theme-overlay) !important;
+    color: var(--theme-primary) !important;
+}
+
+/* Gallery grid and image containers */
+.gallery-grid-item,
+.gallery-image-container {
+    border-radius: var(--glamour-border-radius) !important;
+    overflow: hidden !important;
+    transition: var(--glamour-transition) !important;
+}
+
+.gallery-grid-item:hover,
+.gallery-image-container:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--glamour-glow) !important;
+}
+
+/* Lightbox styling */
+.gallery-lightbox {
+    background: rgba(88, 28, 135, 0.95) !important;
+}
+
+.gallery-lightbox-content {
+    border-radius: var(--glamour-border-radius) !important;
+    box-shadow: var(--glamour-glow) !important;
+}
+
+.gallery-lightbox button {
+    color: white !important;
+    background: var(--theme-primary) !important;
+    border-radius: 50% !important;
+    transition: var(--glamour-transition) !important;
+}
+
+.gallery-lightbox button:hover {
+    background: var(--theme-secondary) !important;
+    transform: scale(1.1) !important;
+}
+
+/* Gallery filters and search */
+.gallery-filters,
+.gallery-search {
+    background: var(--theme-surface) !important;
+    border: 1px solid var(--theme-border) !important;
+    border-radius: var(--glamour-border-radius) !important;
+    box-shadow: var(--glamour-shadow) !important;
+}
+
+.gallery-filter-btn {
+    color: var(--theme-text) !important;
+    border: 1px solid var(--theme-border) !important;
+    transition: var(--glamour-transition) !important;
+}
+
+.gallery-filter-btn.active,
+.gallery-filter-btn:hover {
+    background: var(--glamour-gradient) !important;
+    color: white !important;
+    border-color: transparent !important;
+}
+
+/* Loading states */
+.gallery-loading {
+    color: var(--theme-primary) !important;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .universal-gallery-section {
+        margin: 0.5rem !important;
+        border-radius: calc(var(--glamour-border-radius) * 0.75) !important;
+    }
+}
+
+/* Animation overrides */
+.gallery-fade-in {
+    animation: glamourFadeIn 0.8s ease-out forwards !important;
+}
+
+@keyframes glamourFadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+</style>

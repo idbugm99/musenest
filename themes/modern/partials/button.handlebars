@@ -1,0 +1,169 @@
+<!-- Modern Contemporary Button Component -->
+<!-- Standardized button component following Modern Theme Consistency Plan -->
+<a href="{{url}}" 
+   class="modern-btn {{#if primary}}modern-btn-primary{{else if secondary}}modern-btn-secondary{{else if outline}}modern-btn-outline{{else}}modern-btn-primary{{/if}} {{btnClass}}"
+   {{#if target}}target="{{target}}"{{/if}}
+   style="display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 0.9rem;
+          text-decoration: none;
+          transition: all 0.3s ease;
+          white-space: nowrap;
+          cursor: pointer;
+          border: none;
+          position: relative;
+          overflow: hidden;
+          {{#if size}}
+          {{#if (eq size 'sm')}}
+          padding: 0.5rem 1rem;
+          font-size: 0.825rem;
+          {{else if (eq size 'lg')}}
+          padding: 1rem 2rem;
+          font-size: 1rem;
+          {{else if (eq size 'xl')}}
+          padding: 1.25rem 2.5rem;
+          font-size: 1.125rem;
+          {{/if}}
+          {{/if}}
+          {{#if primary}}
+          background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+          color: white;
+          box-shadow: 0 4px 15px rgba(37, 99, 235, 0.25);
+          {{else if secondary}}
+          background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+          color: white;
+          box-shadow: 0 4px 15px rgba(30, 41, 59, 0.25);
+          {{else if outline}}
+          background: transparent;
+          color: #2563eb;
+          border: 2px solid #e2e8f0;
+          box-shadow: none;
+          {{else}}
+          background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+          color: white;
+          box-shadow: 0 4px 15px rgba(37, 99, 235, 0.25);
+          {{/if}}
+          {{#if customStyles}}{{customStyles}}{{/if}}"
+   onmouseover="this.style.transform='translateY(-2px)';
+               {{#if primary}}
+               this.style.boxShadow='0 8px 25px rgba(37, 99, 235, 0.35)';
+               this.style.background='linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%)';
+               {{else if secondary}}
+               this.style.boxShadow='0 8px 25px rgba(30, 41, 59, 0.35)';
+               this.style.background='linear-gradient(135deg, #334155 0%, #475569 100%)';
+               {{else if outline}}
+               this.style.background='#f8fafc';
+               this.style.borderColor='#2563eb';
+               this.style.boxShadow='0 4px 15px rgba(37, 99, 235, 0.1)';
+               {{else}}
+               this.style.boxShadow='0 8px 25px rgba(37, 99, 235, 0.35)';
+               this.style.background='linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%)';
+               {{/if}}"
+   onmouseout="this.style.transform='translateY(0)';
+              {{#if primary}}
+              this.style.boxShadow='0 4px 15px rgba(37, 99, 235, 0.25)';
+              this.style.background='linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)';
+              {{else if secondary}}
+              this.style.boxShadow='0 4px 15px rgba(30, 41, 59, 0.25)';
+              this.style.background='linear-gradient(135deg, #1e293b 0%, #334155 100%)';
+              {{else if outline}}
+              this.style.background='transparent';
+              this.style.borderColor='#e2e8f0';
+              this.style.boxShadow='none';
+              {{else}}
+              this.style.boxShadow='0 4px 15px rgba(37, 99, 235, 0.25)';
+              this.style.background='linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)';
+              {{/if}}"
+   {{#if onclick}}onclick="{{onclick}}"{{/if}}>
+   
+   <!-- Icon (optional) -->
+   {{#if icon}}
+   <i class="{{icon}}" 
+      style="font-size: {{#if size}}{{#if (eq size 'sm')}}0.75rem{{else if (eq size 'lg')}}1rem{{else if (eq size 'xl')}}1.125rem{{else}}0.875rem{{/if}}{{else}}0.875rem{{/if}};"></i>
+   {{/if}}
+   
+   <!-- Button Text -->
+   <span>{{text}}</span>
+   
+   <!-- Loading Spinner (optional) -->
+   {{#if loading}}
+   <div style="width: 14px; 
+               height: 14px; 
+               border: 2px solid rgba(255, 255, 255, 0.3); 
+               border-top: 2px solid white; 
+               border-radius: 50%; 
+               animation: modern-spin 1s linear infinite;"></div>
+   {{/if}}
+   
+   <!-- Ripple Effect (optional) -->
+   {{#if ripple}}
+   <div style="position: absolute;
+               top: 50%;
+               left: 50%;
+               width: 0;
+               height: 0;
+               border-radius: 50%;
+               background: rgba(255, 255, 255, 0.4);
+               transform: translate(-50%, -50%);
+               transition: width 0.3s ease, height 0.3s ease;
+               pointer-events: none;"></div>
+   {{/if}}
+</a>
+
+<!-- Button Animation Styles -->
+{{#if @first}}
+<style>
+@keyframes modern-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Disabled state */
+.modern-btn:disabled,
+.modern-btn.disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Focus state for accessibility */
+.modern-btn:focus {
+    outline: 2px solid #2563eb !important;
+    outline-offset: 2px !important;
+}
+
+/* Active/pressed state */
+.modern-btn:active {
+    transform: translateY(1px) !important;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .modern-btn {
+        padding: 0.625rem 1.25rem !important;
+        font-size: 0.875rem !important;
+    }
+    
+    .modern-btn.modern-btn-sm {
+        padding: 0.5rem 0.875rem !important;
+        font-size: 0.8rem !important;
+    }
+    
+    .modern-btn.modern-btn-lg {
+        padding: 0.875rem 1.75rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .modern-btn.modern-btn-xl {
+        padding: 1rem 2rem !important;
+        font-size: 1rem !important;
+    }
+}
+</style>
+{{/if}}

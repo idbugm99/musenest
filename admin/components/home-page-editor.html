@@ -941,17 +941,17 @@ document.addEventListener('DOMContentLoaded', function() {
             this.showLoading();
             
             try {
-                const apiUrl = `/api/model-content/${this.currentModelSlug}/home-page`;
+                const apiUrl = `/api/model-home/${this.currentModelSlug}/home`;
                 console.log('Fetching from URL:', apiUrl);
                 const response = await fetch(apiUrl);
                 const data = await response.json();
                 console.log('API Response:', data);
                 
-                if (data.success && data.content) {
+                if (data.success && data.data) {
                     // Store content data for later use
-                    this.contentData = data.content;
+                    this.contentData = data.data;
                     // Convert content object to the format expected by the form
-                    this.populateFields(data.content);
+                    this.populateFields(data.data);
                 } else {
                     console.error('Failed to load content:', data);
                     alert('Failed to load page content');
@@ -1081,7 +1081,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             try {
-                const response = await fetch(`/api/model-content/${this.currentModelSlug}/home-page`, {
+                const response = await fetch(`/api/model-home/${this.currentModelSlug}/home`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1198,7 +1198,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 // Load gallery sections for featured gallery selection
-                const sectionsResponse = await fetch(`/api/model-content/${this.currentModelSlug}/gallery-sections`);
+                const sectionsResponse = await fetch(`/api/model-gallery-sections/${this.currentModelSlug}`);
                 const sectionsData = await sectionsResponse.json();
                 
                 if (sectionsData.success && sectionsData.sections) {

@@ -1,38 +1,50 @@
 {{!-- Modern Theme - Calendar Page with Visual Monthly Grid --}}
-<div class="min-h-screen bg-white">
+
+{{!-- Standardized Modern Hero Section --}}
+<section class="hero-section" style="min-height: 40vh; background: {{theme.colors.hero-bg}}; display: flex; align-items: center; position: relative;">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h1 style="font-size: 3.75rem; font-weight: 800; margin-bottom: 1.5rem; color: {{theme.colors.hero-text}};">
+      {{#if calendar_content.page_title}}{{calendar_content.page_title}}{{else}}My Calendar{{/if}}
+    </h1>
+    {{#if calendar_content.page_subtitle}}
+    <p style="font-size: 1.25rem; color: {{theme.colors.hero-subtext}}; max-width: 42rem; margin: 0 auto;">
+      {{calendar_content.page_subtitle}}
+    </p>
+    {{else}}
+    <p style="font-size: 1.25rem; color: {{theme.colors.hero-subtext}}; max-width: 42rem; margin: 0 auto;">
+      View my availability and travel schedule. Clean, simple, and always up-to-date.
+    </p>
+    {{/if}}
+  </div>
+</section>
+
+<div class="min-h-screen" style="background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);">
     <div class="container mx-auto px-4 py-16">
-        {{!-- Page Header --}}
-        {{#if calendar_content.calendar_header_visible}}
-        <div class="text-center mb-16">
-            <h1 class="text-5xl font-black mb-8 text-gray-900 tracking-tight">
-                {{#if calendar_content.page_title}}{{calendar_content.page_title}}{{else}}My Calendar{{/if}}
-            </h1>
-            {{#if calendar_content.page_subtitle}}
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                {{calendar_content.page_subtitle}}
-            </p>
-            {{else}}
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                View my availability and travel schedule. Clean, simple, and always up-to-date.
-            </p>
-            {{/if}}
-        </div>
-        {{/if}}
 
         {{!-- Calendar Container --}}
         <div class="max-w-6xl mx-auto">
             {{!-- Calendar Navigation --}}
-            {{#if calendar_content.calendar_navigation_visible}}
             <div class="flex justify-between items-center mb-12">
-                <button id="prev-month" class="px-6 py-3 bg-gray-900 text-white font-bold rounded-full hover:bg-gray-800 transition-colors duration-300 text-lg">
+                <button onclick="document.getElementById('prev-month').click()" 
+                        style="display: inline-flex; align-items: center; padding: 0.75rem 1.5rem; background: {{theme.colors.primary}}; color: {{theme.colors.primary-text}}; border-radius: 0.5rem; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s ease;"
+                        onmouseover="this.style.background='{{theme.colors.btn-bg-hover}}'"
+                        onmouseout="this.style.background='{{theme.colors.primary}}'">
+                    <i class="fas fa-chevron-left" style="margin-right: 0.5rem;"></i>
                     {{#if calendar_content.nav_previous_text}}{{calendar_content.nav_previous_text}}{{else}}← Previous{{/if}}
                 </button>
-                <h2 id="month-title" class="text-4xl font-black text-gray-900 tracking-tight"></h2>
-                <button id="next-month" class="px-6 py-3 bg-gray-900 text-white font-bold rounded-full hover:bg-gray-800 transition-colors duration-300 text-lg">
+                <h2 id="month-title" class="text-4xl font-black tracking-tight" style="color: {{theme.colors.text}};"></h2>
+                <button onclick="document.getElementById('next-month').click()" 
+                        style="display: inline-flex; align-items: center; padding: 0.75rem 1.5rem; background: {{theme.colors.primary}}; color: {{theme.colors.primary-text}}; border-radius: 0.5rem; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s ease;"
+                        onmouseover="this.style.background='{{theme.colors.btn-bg-hover}}'"
+                        onmouseout="this.style.background='{{theme.colors.primary}}'">
                     {{#if calendar_content.nav_next_text}}{{calendar_content.nav_next_text}}{{else}}Next →{{/if}}
+                    <i class="fas fa-chevron-right" style="margin-left: 0.5rem;"></i>
                 </button>
+                
+                <!-- Hidden actual navigation buttons for functionality -->
+                <button id="prev-month" style="display: none;"></button>
+                <button id="next-month" style="display: none;"></button>
             </div>
-            {{/if}}
 
             {{!-- Mobile View Toggle --}}
             <div class="modern-mobile-toggle mb-8">
@@ -49,16 +61,15 @@
             </div>
 
             {{!-- Calendar Grid --}}
-            {{#if calendar_content.calendar_grid_visible}}
-            <div class="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden mb-12">
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden mb-12" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
                 {{!-- Calendar Header --}}
-                <div class="grid grid-cols-7 bg-gray-900">
-                    <div class="p-4 text-center font-bold text-white border-r border-gray-700">Sun</div>
-                    <div class="p-4 text-center font-bold text-white border-r border-gray-700">Mon</div>
-                    <div class="p-4 text-center font-bold text-white border-r border-gray-700">Tue</div>
-                    <div class="p-4 text-center font-bold text-white border-r border-gray-700">Wed</div>
-                    <div class="p-4 text-center font-bold text-white border-r border-gray-700">Thu</div>
-                    <div class="p-4 text-center font-bold text-white border-r border-gray-700">Fri</div>
+                <div class="grid grid-cols-7" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%);">
+                    <div class="p-4 text-center font-bold text-white border-r" style="border-color: rgba(255, 255, 255, 0.1);">Sun</div>
+                    <div class="p-4 text-center font-bold text-white border-r" style="border-color: rgba(255, 255, 255, 0.1);">Mon</div>
+                    <div class="p-4 text-center font-bold text-white border-r" style="border-color: rgba(255, 255, 255, 0.1);">Tue</div>
+                    <div class="p-4 text-center font-bold text-white border-r" style="border-color: rgba(255, 255, 255, 0.1);">Wed</div>
+                    <div class="p-4 text-center font-bold text-white border-r" style="border-color: rgba(255, 255, 255, 0.1);">Thu</div>
+                    <div class="p-4 text-center font-bold text-white border-r" style="border-color: rgba(255, 255, 255, 0.1);">Fri</div>
                     <div class="p-4 text-center font-bold text-white">Sat</div>
                 </div>
                 
@@ -70,7 +81,6 @@
                     </div>
                 </div>
             </div>
-            {{/if}}
 
             {{!-- List View (Hidden by default) --}}
             <div id="list-view" class="modern-list-view bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden mb-12" style="display: none;">
@@ -118,7 +128,10 @@
                 </p>
                 {{/if}}
                 <a href="{{#if calendar_content.cta_button_link}}{{calendar_content.cta_button_link}}{{else}}/{{modelSlug}}/contact{{previewParam}}{{/if}}" 
-                   class="inline-block px-10 py-5 bg-gray-900 text-white font-bold text-xl rounded-full hover:bg-gray-800 transition-colors duration-300">
+                   style="display: inline-flex; align-items: center; padding: 1rem 2rem; background: {{theme.colors.primary}}; color: {{theme.colors.primary-text}}; font-weight: 600; font-size: 1.125rem; border-radius: 0.5rem; text-decoration: none; transition: all 0.2s ease;"
+                   onmouseover="this.style.background='{{theme.colors.btn-bg-hover}}'"
+                   onmouseout="this.style.background='{{theme.colors.primary}}'">
+                    <i class="fas fa-envelope" style="margin-right: 0.75rem;"></i>
                     {{#if calendar_content.cta_button_text}}{{calendar_content.cta_button_text}}{{else}}Contact Me{{/if}}
                 </a>
             </div>
@@ -341,7 +354,9 @@
             currentMonth = month;
             
             // Update month title
-            monthTitle.textContent = `${calendar.monthName} ${calendar.year}`;
+            if (monthTitle) {
+                monthTitle.textContent = `${calendar.monthName} ${calendar.year}`;
+            }
             
             // Generate calendar grid
             let gridHtml = '';
@@ -389,7 +404,9 @@
                 gridHtml += '</div>';
             });
             
-            calendarGrid.innerHTML = gridHtml;
+            if (calendarGrid) {
+                calendarGrid.innerHTML = gridHtml;
+            }
             
             // Generate list view if needed
             if (currentView === 'list') {
@@ -398,13 +415,15 @@
             
         } catch (error) {
             console.error('Error loading calendar:', error);
-            calendarGrid.innerHTML = `
-                <div class="text-center py-16 text-red-500">
-                    <div class="text-6xl mb-6">⚠️</div>
-                    <h3 class="text-2xl font-bold mb-4">{{#if calendar_content.error_title}}{{calendar_content.error_title}}{{else}}Calendar Unavailable{{/if}}</h3>
-                    <p class="text-lg">{{#if calendar_content.error_message}}{{calendar_content.error_message}}{{else}}Please contact me directly for scheduling information.{{/if}}</p>
-                </div>
-            `;
+            if (calendarGrid) {
+                calendarGrid.innerHTML = `
+                    <div class="text-center py-16 text-red-500">
+                        <div class="text-6xl mb-6">⚠️</div>
+                        <h3 class="text-2xl font-bold mb-4">{{#if calendar_content.error_title}}{{calendar_content.error_title}}{{else}}Calendar Unavailable{{/if}}</h3>
+                        <p class="text-lg">{{#if calendar_content.error_message}}{{calendar_content.error_message}}{{else}}Please contact me directly for scheduling information.{{/if}}</p>
+                    </div>
+                `;
+            }
         }
     }
     
@@ -463,15 +482,31 @@
         currentView = newView;
         
         if (newView === 'list') {
-            calendarGrid.parentElement.style.display = 'none';
-            listView.style.display = 'block';
-            listViewBtn.classList.add('modern-toggle-active');
-            monthViewBtn.classList.remove('modern-toggle-active');
+            if (calendarGrid && calendarGrid.parentElement) {
+                calendarGrid.parentElement.style.display = 'none';
+            }
+            if (listView) {
+                listView.style.display = 'block';
+            }
+            if (listViewBtn) {
+                listViewBtn.classList.add('modern-toggle-active');
+            }
+            if (monthViewBtn) {
+                monthViewBtn.classList.remove('modern-toggle-active');
+            }
         } else {
-            calendarGrid.parentElement.style.display = 'block';
-            listView.style.display = 'none';
-            monthViewBtn.classList.add('modern-toggle-active');
-            listViewBtn.classList.remove('modern-toggle-active');
+            if (calendarGrid && calendarGrid.parentElement) {
+                calendarGrid.parentElement.style.display = 'block';
+            }
+            if (listView) {
+                listView.style.display = 'none';
+            }
+            if (monthViewBtn) {
+                monthViewBtn.classList.add('modern-toggle-active');
+            }
+            if (listViewBtn) {
+                listViewBtn.classList.remove('modern-toggle-active');
+            }
         }
         
         // Reload calendar data for current view
@@ -492,25 +527,29 @@
     }
     
     // Navigation event listeners
-    prevButton.addEventListener('click', () => {
-        if (currentMonth === 1) {
-            currentMonth = 12;
-            currentYear--;
-        } else {
-            currentMonth--;
-        }
-        loadCalendar(currentYear, currentMonth);
-    });
+    if (prevButton) {
+        prevButton.addEventListener('click', () => {
+            if (currentMonth === 1) {
+                currentMonth = 12;
+                currentYear--;
+            } else {
+                currentMonth--;
+            }
+            loadCalendar(currentYear, currentMonth);
+        });
+    }
     
-    nextButton.addEventListener('click', () => {
-        if (currentMonth === 12) {
-            currentMonth = 1;
-            currentYear++;
-        } else {
-            currentMonth++;
-        }
-        loadCalendar(currentYear, currentMonth);
-    });
+    if (nextButton) {
+        nextButton.addEventListener('click', () => {
+            if (currentMonth === 12) {
+                currentMonth = 1;
+                currentYear++;
+            } else {
+                currentMonth++;
+            }
+            loadCalendar(currentYear, currentMonth);
+        });
+    }
     
     // Load initial calendar
     loadCalendar();

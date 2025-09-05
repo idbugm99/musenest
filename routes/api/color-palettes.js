@@ -2,6 +2,261 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../config/database');
 
+// Helper function to normalize color tokens (same logic as loadColorPalette)
+function normalizeColorTokens(rawTokens) {
+    const colors = {};
+    rawTokens.forEach(row => {
+        colors[row.token_name] = row.token_value;
+    });
+
+    // Normalize legacy/variant token names to canonical schema
+    const aliasToCanonical = {
+        // brand
+        'theme-primary': 'primary', 'brand-primary': 'primary',
+        'theme-secondary': 'secondary',
+        'theme-accent': 'accent', 'highlight': 'accent',
+        // background/surface/overlay
+        'background': 'bg', 'theme-background': 'bg',
+        'surface': 'surface', 'card-background': 'surface', 'theme-surface': 'surface',
+        'bg-primary': 'bg', 'bg-secondary': 'bg-light', 'bg-tertiary': 'surface',
+        'hero-overlay': 'overlay', 'backdrop': 'overlay', 'theme-overlay': 'overlay',
+        // text
+        'theme-text': 'text', 'body-text': 'text',
+        'theme-text-light': 'text-light', 'light-text': 'text-light',
+        'theme-text-dark': 'text-dark', 'dark-text': 'text-dark',
+        'text-default': 'text',
+        // borders
+        'theme-border': 'border', 'border-default': 'border',
+        'theme-border-light': 'border-light',
+        // cards
+        'card-bg': 'card-bg', 'card-text': 'card-text', 'card-border': 'card-border', 'card-shadow': 'card-shadow',
+        // nav/footer
+        'nav-bg': 'nav-bg', 'nav-text': 'nav-text', 'nav-border': 'nav-border',
+        'footer-bg': 'footer-bg', 'footer-text': 'footer-text', 'footer-border': 'footer-border',
+        // buttons
+        'btn-bg': 'btn-bg', 'btn-text': 'btn-text', 'btn-border': 'btn-border',
+        'btn-bg-hover': 'btn-bg-hover', 'btn-text-hover': 'btn-text-hover',
+        'btn-disabled-bg': 'btn-disabled-bg', 'btn-disabled-text': 'btn-disabled-text',
+        // inputs
+        'input-bg': 'input-bg', 'input-text': 'input-text', 'input-border': 'input-border', 'input-placeholder': 'input-placeholder', 'input-focus-ring': 'input-focus-ring',
+        // hero
+        'hero-bg': 'hero-bg', 'hero-text': 'hero-text',
+        // misc
+        'focus-ring': 'focus-ring', 'info': 'info', 'success': 'success', 'warning': 'warning', 'danger': 'danger',
+    };
+
+    const normalized = { ...colors };
+    Object.entries(aliasToCanonical).forEach(([alias, canonical]) => {
+        if (colors[alias] && !normalized[canonical]) {
+            normalized[canonical] = colors[alias];
+        }
+    });
+
+    // Ensure key canonical tokens exist with sensible fallbacks
+    const std = {
+        primary: normalized['primary'] || '#3B82F6',
+        secondary: normalized['secondary'] || '#6B7280',
+        accent: normalized['accent'] || '#0EA5E9',
+        bg: normalized['bg'] || normalized['surface'] || '#FFFFFF',
+        'bg-light': normalized['bg-light'] || '#F8FAFC',
+        'bg-dark': normalized['bg-dark'] || '#0B0B15',
+        surface: normalized['surface'] || normalized['card-bg'] || '#FFFFFF',
+        overlay: normalized['overlay'] || 'rgba(0,0,0,0.5)',
+        text: normalized['text'] || '#1F2937',
+        'text-light': normalized['text-light'] || '#E9E7F1',
+        'text-dark': normalized['text-dark'] || '#0B0B15',
+        border: normalized['border'] || '#E2E8F0',
+        'border-light': normalized['border-light'] || '#C8D3E1',
+        'card-bg': normalized['card-bg'] || normalized['surface'] || '#FFFFFF',
+        'card-text': normalized['card-text'] || normalized['text'] || '#1F2937',
+        'card-border': normalized['card-border'] || normalized['border'] || '#E2E8F0',
+        'card-shadow': normalized['card-shadow'] || 'rgba(0,0,0,0.1)',
+        'btn-bg': normalized['btn-bg'] || normalized['primary'] || '#3B82F6',
+        'btn-bg-hover': normalized['btn-bg-hover'] || normalized['accent'] || '#2563EB',
+        'btn-text': normalized['btn-text'] || '#FFFFFF',
+        'btn-text-hover': normalized['btn-text-hover'] || '#0B0B15',
+        'btn-border': normalized['btn-border'] || normalized['primary'] || '#3B82F6',
+        'focus-ring': normalized['focus-ring'] || normalized['accent'] || '#3B82F6',
+    };
+
+    // Compose compatible colors used by legacy templates
+    const compatibleColors = {
+        primary: std.primary,
+        secondary: std.secondary,
+        text: std.text,
+        background: std.bg,
+        accent: std.accent
+    };
+
+    // Return full color object with both token-based and compatible colors
+    return { ...normalized, ...std, ...compatibleColors };
+}
+
+/**
+ * GET /api/color-palettes/:paletteId
+ * Get color palette by ID with full normalization (replacement for loadColorPalette)
+ */
+router.get('/:paletteId', async (req, res) => {
+    try {
+        const paletteId = parseInt(req.params.paletteId);
+        
+        if (!paletteId || isNaN(paletteId)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid palette ID'
+            });
+        }
+
+        // Get palette info
+        const paletteInfo = await db.query(`
+            SELECT id, name, display_name, theme_set_id, is_system_palette
+            FROM color_palettes 
+            WHERE id = ?
+        `, [paletteId]);
+
+        if (!paletteInfo.length) {
+            return res.status(404).json({
+                success: false,
+                message: 'Color palette not found'
+            });
+        }
+
+        // Get all color tokens for the palette
+        const colorTokens = await db.query(`
+            SELECT token_name, token_value, token_description
+            FROM color_palette_values
+            WHERE palette_id = ?
+        `, [paletteId]);
+
+        if (colorTokens.length === 0) {
+            // Return fallback colors if no tokens found
+            const fallbackColors = normalizeColorTokens([]);
+            return res.status(200).json({
+                success: true,
+                data: {
+                    palette_id: paletteId,
+                    palette_info: paletteInfo[0],
+                    colors: fallbackColors,
+                    raw_tokens: [],
+                    token_count: 0,
+                    is_fallback: true
+                }
+            });
+        }
+
+        // Normalize colors using the same logic as loadColorPalette
+        const normalizedColors = normalizeColorTokens(colorTokens);
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                palette_id: paletteId,
+                palette_info: paletteInfo[0],
+                colors: normalizedColors,
+                raw_tokens: colorTokens,
+                token_count: colorTokens.length,
+                is_fallback: false
+            }
+        });
+
+    } catch (error) {
+        console.error('Error loading color palette:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+});
+
+/**
+ * GET /api/color-palettes/by-theme/:themeId
+ * Get default color palette for a theme (replacement for theme default palette lookup)
+ */
+router.get('/by-theme/:themeId', async (req, res) => {
+    try {
+        const themeId = parseInt(req.params.themeId);
+        
+        if (!themeId || isNaN(themeId)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid theme ID'
+            });
+        }
+
+        // Get theme's default palette ID
+        const themeInfo = await db.query(`
+            SELECT id, name, display_name, default_palette_id
+            FROM theme_sets 
+            WHERE id = ?
+        `, [themeId]);
+
+        if (!themeInfo.length) {
+            return res.status(404).json({
+                success: false,
+                message: 'Theme not found'
+            });
+        }
+
+        const theme = themeInfo[0];
+        
+        if (!theme.default_palette_id) {
+            // Return fallback colors if theme has no default palette
+            const fallbackColors = normalizeColorTokens([]);
+            return res.status(200).json({
+                success: true,
+                data: {
+                    theme_id: themeId,
+                    theme_info: theme,
+                    palette_id: null,
+                    colors: fallbackColors,
+                    raw_tokens: [],
+                    token_count: 0,
+                    is_fallback: true
+                }
+            });
+        }
+
+        // Get palette info and colors
+        const paletteInfo = await db.query(`
+            SELECT id, name, display_name, is_system_palette
+            FROM color_palettes 
+            WHERE id = ?
+        `, [theme.default_palette_id]);
+
+        const colorTokens = await db.query(`
+            SELECT token_name, token_value, token_description
+            FROM color_palette_values
+            WHERE palette_id = ?
+        `, [theme.default_palette_id]);
+
+        // Normalize colors using the same logic as loadColorPalette
+        const normalizedColors = normalizeColorTokens(colorTokens);
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                theme_id: themeId,
+                theme_info: theme,
+                palette_id: theme.default_palette_id,
+                palette_info: paletteInfo[0] || null,
+                colors: normalizedColors,
+                raw_tokens: colorTokens,
+                token_count: colorTokens.length,
+                is_fallback: colorTokens.length === 0
+            }
+        });
+
+    } catch (error) {
+        console.error('Error loading theme default palette:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+});
+
 /**
  * GET /api/models/:id/colors
  * Get model's current color scheme with theme and palette information

@@ -404,7 +404,7 @@ window.GalleryPageEditor = {
     
     async loadContent() {
         try {
-            const response = await fetch(`/api/model-content-new/${this.currentModelSlug}/gallery`);
+            const response = await fetch(`/api/model-gallery/${this.currentModelSlug}/sections`);
             const data = await response.json();
             
             if (data.success && data.data) {
@@ -530,7 +530,7 @@ window.GalleryPageEditor = {
         }
         
         try {
-            const response = await fetch(`/api/model-content-new/${this.currentModelSlug}/gallery`, {
+            const response = await fetch(`/api/model-gallery/${this.currentModelSlug}/sections`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -824,7 +824,7 @@ window.GalleryPageEditor = {
     
     async saveSelectedSections() {
         try {
-            const response = await fetch(`/api/model-content-new/${this.currentModelSlug}/gallery`, {
+            const response = await fetch(`/api/model-gallery/${this.currentModelSlug}/sections`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'

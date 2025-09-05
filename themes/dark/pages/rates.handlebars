@@ -1,173 +1,209 @@
+<!-- Dark Sophisticated Boudoir Rates Page -->
 <!-- Rates Hero Section -->
-<section class="theme-accent-bg theme-text-inverted py-16 rates-section" data-aos="fade-in">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center">
-            <h1 class="text-4xl font-bold mb-6 leading-tight rates-header">
-                {{#if rates_content.page_title}}{{rates_content.page_title}}{{else}}Rates & Donations{{/if}}
-            </h1>
-            
-            <!-- Optional Divider -->
-            {{#if rates_content.hero_divider_visible}}
-            <div class="mb-6">
-                {{#if (eq rates_content.hero_divider_type 'line')}}
-                <div class="w-24 h-1 bg-white opacity-50 mx-auto"></div>
-                {{else}}
-                <i class="{{#if rates_content.hero_divider_icon}}{{rates_content.hero_divider_icon}}{{else}}fas fa-heart{{/if}} text-2xl opacity-75"></i>
-                {{/if}}
-            </div>
+{{#if rates_content.rates_header_visible}}
+<section class="boudoir-section" style="background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-secondary) 100%); min-height: 60vh; display: flex; align-items: center; justify-content: center; padding: 4rem 0; position: relative; overflow: hidden;">
+    <!-- Boudoir Background Decorations -->
+    <div style="position: absolute; top: 20%; left: 8%; opacity: 0.4; z-index: 1;">
+        <svg width="48" height="48" viewBox="0 0 80 80" style="animation: silk-float 8s ease-in-out infinite; color: var(--theme-accent);">
+            <rect x="30" y="30" width="20" height="20" fill="currentColor" opacity="0.7"/>
+        </svg>
+    </div>
+    <div style="position: absolute; top: 40%; right: 12%; opacity: 0.3; z-index: 1;">
+        <svg width="32" height="32" viewBox="0 0 80 80" style="animation: silk-float 6s ease-in-out infinite; animation-delay: 4s; color: var(--theme-accent);">
+            <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.8"/>
+        </svg>
+    </div>
+    <div style="position: absolute; bottom: 30%; left: 85%; opacity: 0.5; z-index: 1;">
+        <svg width="32" height="32" viewBox="0 0 80 80" style="animation: silk-float 10s ease-in-out infinite; animation-delay: 2s; color: var(--theme-primary);">
+            <circle cx="40" cy="40" r="5" fill="currentColor" opacity="0.9"/>
+        </svg>
+    </div>
+
+    <div class="boudoir-container" style="position: relative; z-index: 2; width: 100%;">
+        <div style="text-align: center;">
+        <div style="margin-bottom: 2rem;">
+            <svg width="80" height="80" viewBox="0 0 80 80" style="color: var(--theme-accent); animation: pulse 4s ease-in-out infinite;">
+                <defs>
+                    <linearGradient id="rates-crown-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:var(--theme-accent);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:var(--theme-primary);stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <circle cx="40" cy="40" r="35" fill="none" stroke="url(#rates-crown-gradient)" stroke-width="3" opacity="0.8"/>
+                <circle cx="40" cy="40" r="12" fill="url(#rates-crown-gradient)" opacity="0.9"/>
+            </svg>
+        </div>
+        <h1 style="background: linear-gradient(45deg, var(--theme-accent), var(--theme-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 1.5rem; font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5rem);">
+            {{#if rates_content.page_title}}{{rates_content.page_title}}{{else}}Rates & Investment{{/if}}
+        </h1>
+        
+        <!-- Optional Divider -->
+        {{#if rates_content.hero_divider_visible}}
+        <div style="margin-bottom: 1.5rem;">
+            {{#if (eq rates_content.hero_divider_type 'line')}}
+            <div style="width: 6rem; height: 2px; background: var(--theme-accent); margin: 0 auto; opacity: 0.7;"></div>
+            {{else}}
+            <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent); opacity: 0.75;">
+                <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+            </svg>
             {{/if}}
-            
-            {{#if rates_content.page_subtitle}}
-            <p class="text-base leading-relaxed max-w-4xl mx-auto theme-text-inverted opacity-90" style="line-height: 26px;">
-                {{rates_content.page_subtitle}}
+        </div>
+        {{/if}}
+        
+        {{#if rates_content.page_subtitle}}
+        <p style="font-size: 1.2rem; color: var(--theme-text-subtle); max-width: 700px; margin: 0 auto; line-height: 1.6;">
+            {{rates_content.page_subtitle}}
+        </p>
+        {{else}}
+        <p style="font-size: 1.2rem; color: var(--theme-text-subtle); max-width: 700px; margin: 0 auto; line-height: 1.6;">
+            Exclusive companionship is an investment in unforgettable experiences. My rates reflect the quality, discretion, and sophistication you deserve.
+        </p>
+        {{/if}}
+    </div>
+</section>
+{{/if}}
+
+<!-- Boudoir Static Sub Navigation -->
+<div id="boudoir-sub-nav" style="background: var(--theme-surface); border-bottom: 1px solid var(--theme-border); position: static; z-index: 40; opacity: 1; display: block;">
+    <div class="boudoir-container">
+        <nav style="display: flex; justify-content: center; align-items: center; padding: 1rem 0; gap: 2rem; flex-wrap: wrap;">
+            {{#if rates_content.rates_table_visible}}
+            <a href="#rates-section" style="color: var(--theme-text-subtle); font-weight: 500; transition: all 0.3s ease; padding: 0.5rem 1rem; border-radius: var(--radius-sm); text-decoration: none;">
+                {{#if rates_content.nav_rates_label}}{{rates_content.nav_rates_label}}{{else}}Rates{{/if}}
+            </a>
+            {{/if}}
+            {{#if rates.extended.length}}
+            <a href="#extended-section" style="color: var(--theme-text-subtle); font-weight: 500; transition: all 0.3s ease; padding: 0.5rem 1rem; border-radius: var(--radius-sm); text-decoration: none;">
+                {{#if rates_content.nav_extended_label}}{{rates_content.nav_extended_label}}{{else}}Extended{{/if}}
+            </a>
+            {{/if}}
+            {{#if rates_content.rates_additional_visible}}
+            <a href="#services-section" style="color: var(--theme-text-subtle); font-weight: 500; transition: all 0.3s ease; padding: 0.5rem 1rem; border-radius: var(--radius-sm); text-decoration: none;">
+                {{#if rates_content.nav_services_label}}{{rates_content.nav_services_label}}{{else}}Services{{/if}}
+            </a>
+            {{/if}}
+            <a href="#policies-section" style="color: var(--theme-text-subtle); font-weight: 500; transition: all 0.3s ease; padding: 0.5rem 1rem; border-radius: var(--radius-sm); text-decoration: none;">
+                {{#if rates_content.nav_policies_label}}{{rates_content.nav_policies_label}}{{else}}Policies{{/if}}
+            </a>
+            {{#if rates_content.rates_payment_visible}}
+            <a href="#payment-section" style="color: var(--theme-text-subtle); font-weight: 500; transition: all 0.3s ease; padding: 0.5rem 1rem; border-radius: var(--radius-sm); text-decoration: none;">
+                {{#if rates_content.nav_payment_label}}{{rates_content.nav_payment_label}}{{else}}Payment{{/if}}
+            </a>
+            {{/if}}
+            {{#if rates_content.cta_visible}}
+            <a href="#contact-section" style="color: var(--theme-text-subtle); font-weight: 500; transition: all 0.3s ease; padding: 0.5rem 1rem; border-radius: var(--radius-sm); text-decoration: none;">
+                {{#if rates_content.nav_contact_label}}{{rates_content.nav_contact_label}}{{else}}Contact{{/if}}
+            </a>
+            {{/if}}
+        </nav>
+    </div>
+</div>
+
+<!-- Main Rates Section -->
+{{#if rates_content.rates_table_visible}}
+<section id="rates-section" style="padding: 5rem 0; background: var(--theme-bg-alt);">
+    <div class="boudoir-container">
+        {{#if rates_content.table_title}}
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h2 style="color: var(--theme-accent); margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem; font-family: var(--font-display); font-size: 2rem;">
+                <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                    <rect x="25" y="25" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+                </svg>
+                {{rates_content.table_title}}
+            </h2>
+            {{#if rates_content.table_description}}
+            <p style="color: var(--theme-text-subtle); max-width: 600px; margin: 0 auto; line-height: 1.6;">
+                {{rates_content.table_description}}
             </p>
             {{/if}}
         </div>
-    </div>
-</section>
+        {{/if}}
 
-<!-- Sticky Sub-Navigation -->
-<div id="sticky-nav" class="theme-bg-secondary theme-border-light border-b sticky top-16 z-40 transition-all duration-300 opacity-0 translate-y-[-100%] hidden md:block">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <nav class="flex justify-center space-x-8 py-4" aria-label="Page navigation">
-            <a href="#rates-section" class="nav-link text-sm font-medium transition-colors px-3 py-2 rounded-lg theme-text-muted">
-                {{#if rates_content.nav_rates_label}}{{rates_content.nav_rates_label}}{{else}}Rates{{/if}}
-            </a>
-            {{#if rates.extended.length}}
-            <a href="#extended-section" class="nav-link text-sm font-medium transition-colors px-3 py-2 rounded-lg theme-text-muted">
-                {{#if rates_content.nav_extended_label}}{{rates_content.nav_extended_label}}{{else}}Extended{{/if}}
-            </a>
-            {{/if}}
-            {{#if rates_content.rates_additional_visible}}
-            <a href="#services-section" class="nav-link text-sm font-medium transition-colors px-3 py-2 rounded-lg theme-text-muted">
-                {{#if rates_content.nav_services_label}}{{rates_content.nav_services_label}}{{else}}Services{{/if}}
-            </a>
-            {{/if}}
-            <a href="#policies-section" class="nav-link text-sm font-medium transition-colors px-3 py-2 rounded-lg theme-text-muted">
-                {{#if rates_content.nav_policies_label}}{{rates_content.nav_policies_label}}{{else}}Policies{{/if}}
-            </a>
-            {{#if rates_content.rates_payment_visible}}
-            <a href="#payment-section" class="nav-link text-sm font-medium transition-colors px-3 py-2 rounded-lg theme-text-muted">
-                {{#if rates_content.nav_payment_label}}{{rates_content.nav_payment_label}}{{else}}Payment{{/if}}
-            </a>
-            {{/if}}
-            {{#if rates_content.cta_visible}}
-            <a href="#contact-section" class="nav-link text-sm font-medium transition-colors px-3 py-2 rounded-lg theme-text-muted">
-                {{#if rates_content.nav_contact_label}}{{rates_content.nav_contact_label}}{{else}}Contact{{/if}}
-            </a>
-            {{/if}}
-        </nav>
-    </div>
-</div>
-
-<!-- Mobile Horizontal Scrollable Tabs -->
-<div class="theme-bg-secondary theme-border-light border-b md:hidden overflow-x-auto">
-    <div class="px-4">
-        <nav class="flex space-x-6 py-4 min-w-max" aria-label="Page navigation">
-            <a href="#rates-section" class="nav-link-mobile text-sm font-medium whitespace-nowrap transition-colors px-3 py-2 rounded-lg theme-text-muted">
-                {{#if rates_content.nav_rates_label}}{{rates_content.nav_rates_label}}{{else}}Rates{{/if}}
-            </a>
-            {{#if rates.extended.length}}
-            <a href="#extended-section" class="nav-link-mobile text-sm font-medium whitespace-nowrap transition-colors px-3 py-2 rounded-lg theme-text-muted">
-                {{#if rates_content.nav_extended_label}}{{rates_content.nav_extended_label}}{{else}}Extended{{/if}}
-            </a>
-            {{/if}}
-            {{#if rates_content.rates_additional_visible}}
-            <a href="#services-section" class="nav-link-mobile text-sm font-medium whitespace-nowrap transition-colors px-3 py-2 rounded-lg theme-text-muted">
-                {{#if rates_content.nav_services_label}}{{rates_content.nav_services_label}}{{else}}Services{{/if}}
-            </a>
-            {{/if}}
-            <a href="#policies-section" class="nav-link-mobile text-sm font-medium whitespace-nowrap transition-colors px-3 py-2 rounded-lg theme-text-muted">
-                {{#if rates_content.nav_policies_label}}{{rates_content.nav_policies_label}}{{else}}Policies{{/if}}
-            </a>
-            {{#if rates_content.rates_payment_visible}}
-            <a href="#payment-section" class="nav-link-mobile text-sm font-medium whitespace-nowrap transition-colors px-3 py-2 rounded-lg theme-text-muted">
-                {{#if rates_content.nav_payment_label}}{{rates_content.nav_payment_label}}{{else}}Payment{{/if}}
-            </a>
-            {{/if}}
-            {{#if rates_content.cta_visible}}
-            <a href="#contact-section" class="nav-link-mobile text-sm font-medium whitespace-nowrap transition-colors px-3 py-2 rounded-lg theme-text-muted">
-                {{#if rates_content.nav_contact_label}}{{rates_content.nav_contact_label}}{{else}}Contact{{/if}}
-            </a>
-            {{/if}}
-        </nav>
-    </div>
-</div>
-
-<!-- Main Rates Section - Two Column Layout -->
-{{#if rates_content.rates_table_visible}}
-<section id="rates-section" class="py-20 theme-section rates-section">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
             <!-- Incall Rates -->
             {{#if rates_content.rates_incall_visible}}
-            <div class="theme-card rates-table rounded-lg shadow-lg overflow-hidden" data-aos="fade-up" data-aos-delay="0">
-                <div class="theme-accent-bg theme-text-inverted px-6 py-4">
-                    <h2 class="text-2xl font-bold text-center">Incall</h2>
+            <div class="boudoir-card-luxury" style="overflow: hidden;">
+                <div style="background: linear-gradient(45deg, var(--theme-primary), var(--theme-secondary)); color: var(--theme-bg); padding: 1.5rem; text-align: center;">
+                    <h3 style="font-size: 1.5rem; font-weight: 700; margin: 0; font-family: var(--font-display);">Incall Services</h3>
                 </div>
-                <div class="p-6">
-                    {{#each rates.incall}}
-                    <div class="flex items-center border-b last:border-b-0 theme-border-light" style="height: 56px;">
-                        <div class="flex-1 pr-4">
-                            <div class="font-semibold theme-text-primary flex items-center">
-                                {{#if this.serviceName}}{{this.serviceName}}{{else}}{{this.duration}}{{/if}}
-                                {{#if ../rates_content.rates_highlight_badge_visible}}
-                                {{#if this.highlightBadge}}
-                                <span class="ml-2 px-2 py-1 text-xs font-bold uppercase rounded-full" style="background: #F59E0B; color: #111827;">
-                                    {{#if this.highlightBadgeText}}{{this.highlightBadgeText}}{{else}}{{#if ../rates_content.rates_highlight_badge_text}}{{../rates_content.rates_highlight_badge_text}}{{else}}Most Popular{{/if}}{{/if}}
-                                </span>
-                                {{else}}{{#if this.isMostPopular}}
-                                <span class="ml-2 px-2 py-1 text-xs font-bold uppercase rounded-full" style="background: #F59E0B; color: #111827;">
-                                    {{#if ../rates_content.rates_highlight_badge_text}}{{../rates_content.rates_highlight_badge_text}}{{else}}Most Popular{{/if}}
-                                </span>
-                                {{/if}}{{/if}}
+                <div style="padding: 2rem;">
+                    {{#if rates.incall.length}}
+                        {{#each rates.incall}}
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--theme-border-muted); last-child:border-bottom: none;">
+                            <div>
+                                {{#if ../rates_content.incall_show_service_name}}
+                                <div style="font-weight: 600; color: var(--theme-text); margin-bottom: 0.25rem;">
+                                    {{#if this.serviceName}}{{this.serviceName}}{{else}}{{this.duration}}{{/if}}
+                                    {{#if this.highlightBadge}}
+                                    <span style="background: var(--theme-accent); color: var(--theme-bg); padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.75rem; margin-left: 0.5rem; font-weight: 700;">
+                                        {{#if this.highlightBadgeText}}{{this.highlightBadgeText}}{{else}}POPULAR{{/if}}
+                                    </span>
+                                    {{/if}}
+                                </div>
+                                {{/if}}
+                                {{#if ../rates_content.incall_show_duration}}
+                                {{#if this.serviceName}}
+                                <div style="color: var(--theme-text-subtle); font-size: 0.9rem;">{{this.duration}}</div>
+                                {{/if}}
                                 {{/if}}
                             </div>
-                            {{#if this.serviceName}}
-                            <div class="text-sm theme-text-secondary">{{this.duration}}</div>
+                            {{#if ../rates_content.incall_show_price}}
+                            <div style="font-size: 1.25rem; font-weight: 700; color: var(--theme-accent);">${{this.price}}</div>
                             {{/if}}
                         </div>
-                        
-                        <div class="text-xl font-bold theme-accent text-right" style="width: 88px;">${{this.price}}</div>
-                    </div>
-                    {{/each}}
+                        {{/each}}
+                    {{else}}
+                        <div style="text-align: center; padding: 2rem; color: var(--theme-text-subtle);">
+                            <svg width="32" height="32" viewBox="0 0 80 80" style="margin-bottom: 1rem; color: var(--theme-accent);">
+                                <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                            </svg>
+                            <p>Contact for personalized rates</p>
+                        </div>
+                    {{/if}}
                 </div>
             </div>
             {{/if}}
 
             <!-- Outcall Rates -->
             {{#if rates_content.rates_outcall_visible}}
-            <div class="theme-card rates-table rounded-lg shadow-lg overflow-hidden" data-aos="fade-up" data-aos-delay="100">
-                <div class="theme-bg-light theme-text-primary px-6 py-4" style="background: linear-gradient(135deg, var(--theme-accent-light), var(--theme-accent))">
-                    <h2 class="text-2xl font-bold text-center theme-text-inverted">Outcall</h2>
+            <div class="boudoir-card-luxury" style="overflow: hidden;">
+                <div style="background: linear-gradient(45deg, var(--theme-secondary), var(--theme-primary)); color: var(--theme-text); padding: 1.5rem; text-align: center;">
+                    <h3 style="font-size: 1.5rem; font-weight: 700; margin: 0; font-family: var(--font-display);">Outcall Services</h3>
                 </div>
-                <div class="p-6">
-                    {{#each rates.outcall}}
-                    <div class="flex items-center border-b last:border-b-0 theme-border-light" style="height: 56px;">
-                        <div class="flex-1 pr-4">
-                            <div class="font-semibold theme-text-primary flex items-center">
-                                {{#if this.serviceName}}{{this.serviceName}}{{else}}{{this.duration}}{{/if}}
-                                {{#if ../rates_content.rates_highlight_badge_visible}}
-                                {{#if this.highlightBadge}}
-                                <span class="ml-2 px-2 py-1 text-xs font-bold uppercase rounded-full" style="background: #F59E0B; color: #111827;">
-                                    {{#if this.highlightBadgeText}}{{this.highlightBadgeText}}{{else}}{{#if ../rates_content.rates_highlight_badge_text}}{{../rates_content.rates_highlight_badge_text}}{{else}}Most Popular{{/if}}{{/if}}
-                                </span>
-                                {{else}}{{#if this.isMostPopular}}
-                                <span class="ml-2 px-2 py-1 text-xs font-bold uppercase rounded-full" style="background: #F59E0B; color: #111827;">
-                                    {{#if ../rates_content.rates_highlight_badge_text}}{{../rates_content.rates_highlight_badge_text}}{{else}}Most Popular{{/if}}
-                                </span>
-                                {{/if}}{{/if}}
+                <div style="padding: 2rem;">
+                    {{#if rates.outcall.length}}
+                        {{#each rates.outcall}}
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--theme-border-muted); last-child:border-bottom: none;">
+                            <div>
+                                {{#if ../rates_content.outcall_show_service_name}}
+                                <div style="font-weight: 600; color: var(--theme-text); margin-bottom: 0.25rem;">
+                                    {{#if this.serviceName}}{{this.serviceName}}{{else}}{{this.duration}}{{/if}}
+                                    {{#if this.highlightBadge}}
+                                    <span style="background: var(--theme-accent); color: var(--theme-bg); padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.75rem; margin-left: 0.5rem; font-weight: 700;">
+                                        {{#if this.highlightBadgeText}}{{this.highlightBadgeText}}{{else}}POPULAR{{/if}}
+                                    </span>
+                                    {{/if}}
+                                </div>
+                                {{/if}}
+                                {{#if ../rates_content.outcall_show_duration}}
+                                {{#if this.serviceName}}
+                                <div style="color: var(--theme-text-subtle); font-size: 0.9rem;">{{this.duration}}</div>
+                                {{/if}}
                                 {{/if}}
                             </div>
-                            {{#if this.serviceName}}
-                            <div class="text-sm theme-text-secondary">{{this.duration}}</div>
+                            {{#if ../rates_content.outcall_show_price}}
+                            <div style="font-size: 1.25rem; font-weight: 700; color: var(--theme-secondary);">${{this.price}}</div>
                             {{/if}}
                         </div>
-                        
-                        <div class="text-xl font-bold theme-accent text-right" style="width: 88px;">${{this.price}}</div>
-                    </div>
-                    {{/each}}
+                        {{/each}}
+                    {{else}}
+                        <div style="text-align: center; padding: 2rem; color: var(--theme-text-subtle);">
+                            <svg width="32" height="32" viewBox="0 0 80 80" style="margin-bottom: 1rem; color: var(--theme-accent);">
+                                <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                            </svg>
+                            <p>Contact for personalized rates</p>
+                        </div>
+                    {{/if}}
                 </div>
             </div>
             {{/if}}
@@ -179,24 +215,41 @@
 <!-- Extended Engagements Section -->
 {{#if rates_content.rates_extended_visible}}
 {{#if rates.extended.length}}
-<section id="extended-section" class="py-20 theme-section-alt">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12" data-aos="fade-up">
-            <h2 class="text-3xl font-bold mb-4 basic-heading theme-accent">
-                Extended Engagements
+<section id="extended-section" style="padding: 5rem 0; background: var(--theme-surface);">
+    <div class="boudoir-container">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h2 style="color: var(--theme-accent); margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem; font-family: var(--font-display); font-size: 2rem;">
+                <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                    <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+                    <circle cx="40" cy="40" r="12" fill="currentColor" opacity="0.9"/>
+                </svg>
+                Extended Experiences
             </h2>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
             {{#each rates.extended}}
-            <div class="theme-card theme-border-light border rounded-lg shadow-sm p-8 text-center" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
-                <h3 class="text-xl font-bold mb-4 theme-text-primary">{{this.serviceName}}</h3>
-                {{#if this.price}}
-                <div class="text-2xl font-bold mb-2 leading-8 theme-accent">${{this.price}}</div>
-                {{else}}
-                <div class="text-2xl font-bold mb-2 leading-8 theme-text-muted">Custom</div>
-                {{/if}}
-                <p class="text-sm leading-relaxed theme-text-secondary">{{this.duration}}</p>
+            <div class="boudoir-card" style="text-align: center; position: relative; overflow: hidden; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                <div style="position: absolute; top: -20px; right: -20px; opacity: 0.1; z-index: 1;">
+                    <svg style="width: 80px; height: 80px; color: var(--theme-accent);" viewBox="0 0 80 80">
+                        <rect x="30" y="30" width="20" height="20" fill="currentColor" opacity="0.7"/>
+                    </svg>
+                </div>
+                
+                <div style="position: relative; z-index: 2; padding: 2rem;">
+                    <div style="margin-bottom: 1.5rem;">
+                        <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                            <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                        </svg>
+                    </div>
+                    <h3 style="color: var(--theme-text); margin-bottom: 1rem; font-size: 1.25rem; font-family: var(--font-display);">{{this.serviceName}}</h3>
+                    {{#if this.price}}
+                    <div style="color: var(--theme-accent); font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem;">${{this.price}}</div>
+                    {{else}}
+                    <div style="color: var(--theme-accent); font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem;">Custom</div>
+                    {{/if}}
+                    <p style="color: var(--theme-text-subtle); line-height: 1.6;">{{this.duration}}</p>
+                </div>
             </div>
             {{/each}}
         </div>
@@ -205,146 +258,143 @@
 {{/if}}
 {{/if}}
 
-<!-- Detail Sections - Two Column Layout -->
-<section id="services-section" class="py-20 theme-section">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- Services and Policies Section -->
+<section id="services-section" style="padding: 5rem 0; background: var(--theme-bg-alt);">
+    <div class="boudoir-container">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
             
             <!-- Additional Services -->
             {{#if rates_content.rates_additional_visible}}
-            <div class="theme-card rounded-lg shadow-lg p-8" data-aos="fade-up" data-aos-delay="0">
-                <div class="text-center mb-6">
-                    <i class="fas fa-plus-circle text-3xl theme-accent mb-4"></i>
-                    <h3 class="text-2xl font-bold theme-text-primary">Additional Services</h3>
+            <div class="boudoir-card-luxury">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <svg width="64" height="64" viewBox="0 0 80 80" style="color: var(--theme-accent); margin-bottom: 1rem;">
+                        <path d="M40 10c-11 0-20 9-20 20 0 15 20 40 20 40s20-25 20-40c0-11-9-20-20-20zm0 27c-4 0-7-3-7-7s3-7 7-7 7 3 7 7-3 7-7 7z" fill="currentColor" opacity="0.8"/>
+                    </svg>
+                    <h3 style="color: var(--theme-text); font-size: 1.5rem; font-family: var(--font-display);">Additional Services</h3>
                 </div>
                 
-                {{#if rates_content.additional_services}}
-                    <ul class="space-y-2">
-                        {{#each (split rates_content.additional_services " • ")}}
-                        <li class="flex items-start" style="padding: 4px 0;">
-                            <svg class="w-4 h-4 text-purple-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                            </svg>
-                            <span class="theme-text-secondary leading-relaxed">{{this}}</span>
-                        </li>
-                        {{/each}}
-                    </ul>
+                {{#if additionalServices.length}}
+                    {{#each additionalServices}}
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--theme-border-muted);">
+                        <div>
+                            <div style="font-weight: 500; color: var(--theme-text);">{{this.service_name}}</div>
+                            {{#if this.description}}
+                            <div style="font-size: 0.9rem; color: var(--theme-text-subtle);">{{this.description}}</div>
+                            {{/if}}
+                        </div>
+                        <div style="color: var(--theme-accent); font-weight: 600;">${{this.price}}</div>
+                    </div>
+                    {{/each}}
                 {{else}}
-                    <ul class="space-y-2">
-                        <li class="flex items-start" style="padding: 4px 0;">
-                            <svg class="w-4 h-4 text-purple-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                            </svg>
-                            <span class="theme-text-secondary leading-relaxed">Dinner dates: +$100 (restaurant cost separate)</span>
-                        </li>
-                        <li class="flex items-start" style="padding: 4px 0;">
-                            <svg class="w-4 h-4 text-purple-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                            </svg>
-                            <span class="theme-text-secondary leading-relaxed">Travel outside city: +$500/day + expenses</span>
-                        </li>
-                    </ul>
+                    <div style="text-align: center; padding: 2rem; color: var(--theme-text-subtle);">
+                        <p>Additional services available upon request</p>
+                    </div>
                 {{/if}}
             </div>
             {{/if}}
             
             <!-- Booking Policies -->
-            <div id="policies-section" class="theme-card rounded-lg shadow-lg p-8" data-aos="fade-up" data-aos-delay="100">
-                <div class="text-center mb-6">
-                    <i class="fas fa-calendar-check text-3xl text-green-400 mb-4"></i>
-                    <h3 class="text-2xl font-bold theme-text-primary">Booking Policies</h3>
+            <div id="policies-section" class="boudoir-card-luxury">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <svg width="64" height="64" viewBox="0 0 80 80" style="color: var(--theme-accent); margin-bottom: 1rem;">
+                        <rect x="25" y="25" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+                    </svg>
+                    <h3 style="color: var(--theme-text); font-size: 1.5rem; font-family: var(--font-display);">Booking Policies</h3>
                 </div>
                 
-                {{#if rates_content.booking_policies}}
-                    <ul class="space-y-2">
-                        {{#each (split rates_content.booking_policies " • ")}}
-                        <li class="flex items-start" style="padding: 4px 0;">
-                            <svg class="w-4 h-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                            </svg>
-                            <span class="theme-text-secondary leading-relaxed">{{this}}</span>
-                        </li>
-                        {{/each}}
-                    </ul>
-                {{else}}
-                    <ul class="space-y-2">
-                        <li class="flex items-start" style="padding: 4px 0;">
-                            <svg class="w-4 h-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                            </svg>
-                            <span class="theme-text-secondary leading-relaxed">Advance booking recommended</span>
-                        </li>
-                        <li class="flex items-start" style="padding: 4px 0;">
-                            <svg class="w-4 h-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                            </svg>
-                            <span class="theme-text-secondary leading-relaxed">Same day booking: +$100</span>
-                        </li>
-                    </ul>
-                {{/if}}
+                <div style="color: var(--theme-text-subtle); line-height: 1.7;">
+                    <div style="margin-bottom: 1rem; display: flex; align-items: start; gap: 0.75rem;">
+                        <svg width="16" height="16" viewBox="0 0 80 80" style="color: var(--theme-accent); margin-top: 0.25rem; flex-shrink: 0;">
+                            <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                        </svg>
+                        <span>Advance booking recommended for optimal scheduling</span>
+                    </div>
+                    <div style="margin-bottom: 1rem; display: flex; align-items: start; gap: 0.75rem;">
+                        <svg width="16" height="16" viewBox="0 0 80 80" style="color: var(--theme-accent); margin-top: 0.25rem; flex-shrink: 0;">
+                            <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                        </svg>
+                        <span>Same day booking: additional $100 fee</span>
+                    </div>
+                    <div style="margin-bottom: 1rem; display: flex; align-items: start; gap: 0.75rem;">
+                        <svg width="16" height="16" viewBox="0 0 80 80" style="color: var(--theme-accent); margin-top: 0.25rem; flex-shrink: 0;">
+                            <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                        </svg>
+                        <span>Screening required for all new clients</span>
+                    </div>
+                </div>
             </div>
         </div>
         
         <!-- Payment Terms and Terms Grid -->
-        <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem;">
             <!-- Payment Terms -->
             {{#if rates_content.rates_payment_visible}}
-            <div id="payment-section" class="theme-card rounded-lg shadow-lg p-8" data-aos="fade-up" data-aos-delay="200">
-                <div class="text-center mb-6">
-                    <svg class="w-6 h-6 theme-accent mb-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            <div id="payment-section" class="boudoir-card-luxury">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <svg width="64" height="64" viewBox="0 0 80 80" style="color: var(--theme-accent); margin-bottom: 1rem;">
+                        <circle cx="40" cy="40" r="5" fill="currentColor" opacity="0.9"/>
                     </svg>
-                    <h3 class="text-2xl font-bold theme-text-primary">Payment & Additional Information</h3>
+                    <h3 style="color: var(--theme-text); font-size: 1.5rem; font-family: var(--font-display);">Payment Information</h3>
                 </div>
                 
-                <div class="space-y-2">
-                    {{#if rates_content.payment_terms}}
-                        {{#each (split rates_content.payment_terms " • ")}}
-                        <div class="flex items-start" style="padding: 4px 0;">
-                            <svg class="w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                            <span class="theme-text-secondary leading-relaxed">{{this}}</span>
-                        </div>
-                        {{/each}}
-                    {{else}}
-                        <div class="flex items-start" style="padding: 4px 0;">
-                            <svg class="w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                            <span class="theme-text-secondary leading-relaxed">Cash or discrete payment methods accepted</span>
-                        </div>
-                        <div class="flex items-start" style="padding: 4px 0;">
-                            <svg class="w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                            <span class="theme-text-secondary leading-relaxed">Payment required at the beginning of our time together</span>
-                        </div>
-                    {{/if}}
+                <div style="color: var(--theme-text-subtle); line-height: 1.7;">
+                    <div style="margin-bottom: 1rem; display: flex; align-items: start; gap: 0.75rem;">
+                        <svg width="16" height="16" viewBox="0 0 80 80" style="color: var(--theme-accent); margin-top: 0.25rem; flex-shrink: 0;">
+                            <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                        </svg>
+                        <span>Cash, bank transfer, or cryptocurrency accepted</span>
+                    </div>
+                    <div style="margin-bottom: 1rem; display: flex; align-items: start; gap: 0.75rem;">
+                        <svg width="16" height="16" viewBox="0 0 80 80" style="color: var(--theme-accent); margin-top: 0.25rem; flex-shrink: 0;">
+                            <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                        </svg>
+                        <span>Payment required at the beginning of our time together</span>
+                    </div>
+                    <div style="margin-bottom: 1rem; display: flex; align-items: start; gap: 0.75rem;">
+                        <svg width="16" height="16" viewBox="0 0 80 80" style="color: var(--theme-accent); margin-top: 0.25rem; flex-shrink: 0;">
+                            <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                        </svg>
+                        <span>All transactions are confidential and discrete</span>
+                    </div>
                 </div>
             </div>
             {{/if}}
             
             <!-- Terms & Additional Information -->
             {{#if rates_content.terms_visible}}
-            <div class="theme-card rounded-lg shadow-lg p-8" data-aos="fade-up" data-aos-delay="300">
-                <div class="text-center mb-6">
-                    <svg class="w-6 h-6 theme-text-muted mb-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            <div class="boudoir-card-luxury">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <svg width="64" height="64" viewBox="0 0 80 80" style="color: var(--theme-accent); margin-bottom: 1rem;">
+                        <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.8"/>
                     </svg>
-                    <h3 class="text-2xl font-bold theme-text-primary">
+                    <h3 style="color: var(--theme-text); font-size: 1.5rem; font-family: var(--font-display);">
                         {{#if rates_content.terms_title}}{{rates_content.terms_title}}{{else}}Terms & Conditions{{/if}}
                     </h3>
                 </div>
-                <div class="space-y-2">
-                    {{#each (split rates_content.terms_content " • ")}}
-                    <div class="flex items-start" style="padding: 4px 0;">
-                        <svg class="w-4 h-4 theme-text-muted mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        <span class="theme-text-secondary leading-relaxed">{{this}}</span>
-                    </div>
-                    {{/each}}
+                <div style="color: var(--theme-text-subtle); line-height: 1.7;">
+                    {{#if rates_content.terms_content}}
+                        {{#each (split rates_content.terms_content " • ")}}
+                        <div style="margin-bottom: 1rem; display: flex; align-items: start; gap: 0.75rem;">
+                            <svg width="16" height="16" viewBox="0 0 80 80" style="color: var(--theme-accent); margin-top: 0.25rem; flex-shrink: 0;">
+                                <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                            </svg>
+                            <span>{{this}}</span>
+                        </div>
+                        {{/each}}
+                    {{else}}
+                        <div style="margin-bottom: 1rem; display: flex; align-items: start; gap: 0.75rem;">
+                            <svg width="16" height="16" viewBox="0 0 80 80" style="color: var(--theme-accent); margin-top: 0.25rem; flex-shrink: 0;">
+                                <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                            </svg>
+                            <span>Cancellation with less than 2 hours notice may incur a fee</span>
+                        </div>
+                        <div style="margin-bottom: 1rem; display: flex; align-items: start; gap: 0.75rem;">
+                            <svg width="16" height="16" viewBox="0 0 80 80" style="color: var(--theme-accent); margin-top: 0.25rem; flex-shrink: 0;">
+                                <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                            </svg>
+                            <span>Extended bookings require a 25% deposit</span>
+                        </div>
+                    {{/if}}
                 </div>
             </div>
             {{/if}}
@@ -354,240 +404,161 @@
 
 <!-- Donations Section -->
 {{#if rates_content.donations_visible}}
-<section class="py-16 theme-section">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
-        <div class="flex items-center justify-center mb-2">
-            <svg class="w-5 h-5 theme-accent mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+<section style="padding: 3rem 0; background: var(--theme-surface); text-align: center;">
+    <div class="boudoir-container">
+        <div style="margin-bottom: 1rem;">
+            <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
             </svg>
-            <h2 class="text-xl font-bold theme-accent">
-                {{#if rates_content.donation_title}}{{rates_content.donation_title}}{{else}}Donations{{/if}}
-            </h2>
         </div>
-        <p class="text-base leading-relaxed theme-text-secondary">
+        <h2 style="color: var(--theme-accent); margin-bottom: 1rem; font-family: var(--font-display);">
+            {{#if rates_content.donation_title}}{{rates_content.donation_title}}{{else}}Donations{{/if}}
+        </h2>
+        <p style="color: var(--theme-text-subtle); max-width: 600px; margin: 0 auto; line-height: 1.6;">
             {{#if rates_content.donation_description}}{{rates_content.donation_description}}{{else}}Donations are appreciated to help support my work{{/if}}
         </p>
+        </div>
     </div>
 </section>
 {{/if}}
 
-<!-- Contact Info Block -->
-<section class="py-8 theme-section-alt">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
-        <p class="text-base theme-text-secondary mb-4">Questions? Contact first.</p>
-        <a href="/{{modelSlug}}/contact{{previewParam}}" class="inline-flex items-center px-4 py-2 border-2 theme-accent-border theme-accent rounded-lg font-semibold hover:bg-purple-600 hover:text-white transition-colors">
-            Contact Me
-        </a>
-    </div>
-</section>
-
-<!-- Bottom CTA Band -->
+<!-- Contact CTA Section -->
 {{#if rates_content.cta_visible}}
-<section id="contact-section" class="py-16 theme-accent-bg theme-text-inverted">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
-        <h2 class="text-3xl font-bold mb-6">
-            {{#if rates_content.cta_title}}{{rates_content.cta_title}}{{else}}Ready to Meet?{{/if}}
+<section id="contact-section" class="boudoir-card-luxury" style="background: linear-gradient(135deg, var(--theme-surface), var(--theme-bg-alt)); position: relative; overflow: hidden; margin: 4rem 2rem;">
+    <div style="position: absolute; top: -30px; right: -30px; opacity: 0.2; z-index: 1;">
+        <svg style="width: 120px; height: 120px; color: var(--theme-accent);" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+            <circle cx="40" cy="40" r="15" fill="currentColor" opacity="0.3"/>
+        </svg>
+    </div>
+    
+    <div style="position: relative; z-index: 2; text-align: center; padding: 4rem 2rem;">
+        <h2 style="color: var(--theme-text); margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem; font-family: var(--font-display); font-size: 2rem;">
+            <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+                <circle cx="40" cy="40" r="12" fill="currentColor" opacity="0.9"/>
+            </svg>
+            {{#if rates_content.cta_title}}{{rates_content.cta_title}}{{else}}Ready to Begin?{{/if}}
         </h2>
-        <p class="text-xl mb-8">
-            {{#if rates_content.cta_description}}{{rates_content.cta_description}}{{else}}Experience elegance and sophistication with professional companionship services{{/if}}
+        <p style="color: var(--theme-text); margin-bottom: 2rem; font-size: 1.1rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.7;">
+            {{#if rates_content.cta_description}}{{rates_content.cta_description}}{{else}}Investment in quality companionship is investment in yourself. Contact me to discuss arrangements and create an unforgettable experience tailored to your desires.{{/if}}
         </p>
-        {{#if rates_content.cta_secondary_text}}
-        <p class="text-lg mb-8 opacity-75 max-w-xl mx-auto italic">
-            {{rates_content.cta_secondary_text}}
-        </p>
-        {{/if}}
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <!-- Primary Button (Contact Me) -->
-            <a href="/{{modelSlug}}/contact{{previewParam}}" class="bg-white theme-text-inverted px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors" style="color: var(--theme-accent);">
+        <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
+            {{#if rates_content.cta_button_1_text}}
+            <a href="/{{model.slug}}/{{#if rates_content.cta_button_1_link}}{{rates_content.cta_button_1_link}}{{else}}contact{{/if}}{{previewParam}}" class="boudoir-btn boudoir-btn-primary" style="font-size: 1.1rem; padding: 1.2rem 2rem;">
+                {{rates_content.cta_button_1_text}}
+            </a>
+            {{else}}
+            <a href="/{{model.slug}}/contact{{previewParam}}" class="boudoir-btn boudoir-btn-primary" style="font-size: 1.1rem; padding: 1.2rem 2rem;">
                 Contact Me
             </a>
-            
-            <!-- Secondary Button (View Calendar) -->
-            <a href="/{{modelSlug}}/calendar{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white transition-colors" style="hover:color: var(--theme-accent);">
-                View Calendar
+            {{/if}}
+            {{#if rates_content.cta_button_2_text}}
+            <a href="/{{model.slug}}/{{#if rates_content.cta_button_2_link}}{{rates_content.cta_button_2_link}}{{else}}calendar{{/if}}{{previewParam}}" class="boudoir-btn boudoir-btn-outline" style="font-size: 1.1rem; padding: 1.2rem 2rem;">
+                {{rates_content.cta_button_2_text}}
             </a>
+            {{else}}
+            <a href="/{{model.slug}}/calendar{{previewParam}}" class="boudoir-btn boudoir-btn-outline" style="font-size: 1.1rem; padding: 1.2rem 2rem;">
+                Check Availability
+            </a>
+            {{/if}}
         </div>
     </div>
 </section>
 {{/if}}
 
-<!-- Footer Section -->
-<footer class="theme-bg-secondary theme-text-primary {{#if rates_content.footer_border_visible}}border-t-4 theme-accent-border{{/if}} {{#if rates_content.footer_padding_enhanced}}py-16{{else}}py-12{{/if}}">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center">
-            <div class="mb-8">
-                <h3 class="text-2xl font-bold mb-4 basic-heading theme-text-primary">{{#if rates_content.footer_title}}{{rates_content.footer_title}}{{else}}{{model.name}}{{/if}}</h3>
-                <p class="theme-text-secondary mb-6 max-w-2xl mx-auto">
-                    {{#if rates_content.footer_description}}{{rates_content.footer_description}}{{else}}Professional companionship services with the highest standards of discretion and elegance.{{/if}}
-                </p>
-            </div>
-            
-            <!-- Footer Links -->
-            <div class="flex flex-col sm:flex-row justify-center items-center gap-6 mb-8">
-                <a href="/{{model.slug}}/about" class="theme-text-secondary hover:text-white transition-colors {{#if rates_content.footer_padding_enhanced}}px-4 py-2{{else}}px-2 py-1{{/if}} rounded hover:bg-gray-700">About</a>
-                <a href="/{{model.slug}}/gallery" class="theme-text-secondary hover:text-white transition-colors {{#if rates_content.footer_padding_enhanced}}px-4 py-2{{else}}px-2 py-1{{/if}} rounded hover:bg-gray-700">Gallery</a>
-                <a href="/{{model.slug}}/rates" class="theme-text-secondary hover:text-white transition-colors {{#if rates_content.footer_padding_enhanced}}px-4 py-2{{else}}px-2 py-1{{/if}} rounded hover:bg-gray-700">Rates</a>
-                <a href="/{{model.slug}}/contact" class="theme-text-secondary hover:text-white transition-colors {{#if rates_content.footer_padding_enhanced}}px-4 py-2{{else}}px-2 py-1{{/if}} rounded hover:bg-gray-700">Contact</a>
-                {{#if calendarEnabled}}
-                <a href="/{{model.slug}}/calendar" class="theme-text-secondary hover:text-white transition-colors {{#if rates_content.footer_padding_enhanced}}px-4 py-2{{else}}px-2 py-1{{/if}} rounded hover:bg-gray-700">Calendar</a>
-                {{/if}}
-            </div>
-            
-            <!-- Footer Bottom -->
-            <div class="border-t theme-border-light pt-6">
-                <p class="theme-text-subtle text-sm">
-                    {{#if rates_content.footer_copyright}}{{rates_content.footer_copyright}}{{else}}&copy; {{currentYear}} {{model.name}}. All rights reserved.{{/if}}
-                </p>
-                <p class="theme-text-subtle text-xs mt-2 opacity-75">
-                    All arrangements are for companionship and social time only.
-                </p>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- Custom Styles for Rates Page -->
 <style>
-.rates-table {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+/* Dark Boudoir Rates Page Styles */
+@keyframes silk-float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    25% { transform: translateY(-15px) rotate(2deg); }
+    50% { transform: translateY(-25px) rotate(0deg); }
+    75% { transform: translateY(-15px) rotate(-2deg); }
 }
 
-.rates-table-header {
-    padding: 1.5rem;
-    text-align: center;
-    font-weight: bold;
-    font-size: 1.5rem;
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
-.rates-table-header.incall {
-    background: #2563eb;
-    color: white;
+/* Boudoir Sub Navigation Styles */
+#boudoir-sub-nav a:hover {
+    background: rgba(232, 180, 203, 0.1) !important;
+    color: var(--theme-accent) !important;
 }
 
-.rates-table-header.outcall {
-    background: #fef3c7;
-    color: #92400e;
+#boudoir-sub-nav a.active {
+    background: rgba(232, 180, 203, 0.2) !important;
+    color: var(--theme-accent) !important;
+    font-weight: 600 !important;
 }
 
-.rate-item {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.rate-item:last-child {
-    border-bottom: none;
-}
-
-.rate-service {
-    font-weight: 600;
-    color: #111827;
-}
-
-.rate-duration {
-    font-size: 0.875rem;
-    color: #6b7280;
-}
-
-.rate-price {
-    font-size: 1.25rem;
-    font-weight: bold;
-}
-
-.rate-price.incall {
-    color: #2563eb;
-}
-
-.rate-price.outcall {
-    color: #b45309;
-}
-
-/* Sticky Navigation Styles */
-.sticky-nav-active {
-    opacity: 1 !important;
-    transform: translateY(0) !important;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.nav-link.active, .nav-link-mobile.active {
-    color: #2563EB !important;
-    background-color: rgba(37, 99, 235, 0.1) !important;
-}
-
+/* Responsive adjustments */
 @media (max-width: 768px) {
-    .grid-cols-1.lg\\:grid-cols-2 {
-        gap: 1rem;
+    .boudoir-container {
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
     
-    .rate-item {
-        padding: 0.75rem 1rem;
+    .boudoir-container > div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
     }
     
-    .rate-price {
-        font-size: 1.125rem;
+    .boudoir-container nav {
+        gap: 1rem !important;
+        padding: 0.75rem 0 !important;
+    }
+    
+    #boudoir-sticky-nav a {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .boudoir-container div[style*="display: flex"] {
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    
+    #contact-section {
+        margin: 2rem 1rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .boudoir-container > div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+    
+    .boudoir-card,
+    .boudoir-card-luxury {
+        padding: 1.5rem !important;
     }
 }
 </style>
 
-<!-- Sticky Navigation and Smooth Scroll JavaScript -->
+<!-- Boudoir Static Navigation and Smooth Scroll JavaScript -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const stickyNav = document.getElementById('sticky-nav');
-    const navLinks = document.querySelectorAll('.nav-link, .nav-link-mobile');
+    const subNav = document.getElementById('boudoir-sub-nav');
+    const navLinks = subNav ? subNav.querySelectorAll('a[href^="#"]') : [];
     const sections = document.querySelectorAll('section[id]');
-    
-    // Sticky navigation behavior
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.target.id === 'rates-section') {
-                if (!entry.isIntersecting) {
-                    stickyNav.classList.add('sticky-nav-active');
-                } else {
-                    stickyNav.classList.remove('sticky-nav-active');
-                }
-            }
-        });
-    }, {
-        rootMargin: '0px 0px -90% 0px'
-    });
-    
-    // Observe the first section to trigger sticky nav
-    const ratesSection = document.getElementById('rates-section');
-    if (ratesSection) {
-        observer.observe(ratesSection);
-    }
     
     // Smooth scrolling for navigation links
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
+            const href = this.getAttribute('href') || '';
+            if (!href.startsWith('#')) return;
+
             e.preventDefault();
-            
-            const targetId = this.getAttribute('href').substring(1);
+            const targetId = href.substring(1);
             const targetSection = document.getElementById(targetId);
-            
             if (targetSection) {
-                // Calculate offset for both main nav (64px) and sticky nav
-                const navHeight = window.innerWidth >= 768 ? (stickyNav ? stickyNav.offsetHeight : 0) : 60;
-                const mainNavHeight = 64;
-                const targetPosition = targetSection.offsetTop - mainNavHeight - navHeight - 20;
-                
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
-                
-                // Update active nav link for both desktop and mobile
+                const navHeight = subNav.offsetHeight || 0;
+                const targetPosition = targetSection.offsetTop - navHeight - 20;
+                window.scrollTo({ top: targetPosition, behavior: 'smooth' });
                 navLinks.forEach(nl => nl.classList.remove('active'));
                 this.classList.add('active');
-                
-                // Also update the corresponding link in the other nav (desktop/mobile)
-                const correspondingLinks = document.querySelectorAll(`[href="${this.getAttribute('href')}"]`);
-                correspondingLinks.forEach(cl => cl.classList.add('active'));
             }
         });
     });

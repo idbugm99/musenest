@@ -1,76 +1,160 @@
-<!-- Glamour Theme Footer -->
-<footer class="glamour-footer">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Glamour Footer - Elegant and Professional -->
+<footer class="relative mt-20" 
+        style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)); color: white;">
+    
+    <!-- Decorative Top Wave -->
+    <div class="absolute top-0 left-0 right-0 h-16 -mt-16 overflow-hidden">
+        <svg class="absolute bottom-0 left-0 right-0 h-16 w-full" 
+             viewBox="0 0 1200 120" 
+             preserveAspectRatio="none">
+            <path d="M0,60 C300,120 900,0 1200,60 L1200,120 L0,120 Z" 
+                  fill="url(#footerGradient)"/>
+            <defs>
+                <linearGradient id="footerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:var(--theme-primary);stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:var(--theme-secondary);stop-opacity:1" />
+                </linearGradient>
+            </defs>
+        </svg>
+    </div>
+    
+    <!-- Main Footer Content -->
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            
             <!-- Brand Section -->
-            <div class="text-center md:text-left">
-                <h3 class="text-2xl font-bold mb-4">{{siteName}}</h3>
-                <p class="glamour-footer-text mb-4">{{tagline}}</p>
-                {{#if socialLinks}}
-                <div class="flex justify-center md:justify-start space-x-4">
-                    {{#each socialLinks}}
-                    <a href="{{this.url}}" class="glamour-footer-text glamour-footer-link" aria-label="{{this.platform}}">
-                        <i class="fab fa-{{this.icon}} text-xl"></i>
-                    </a>
-                    {{/each}}
+            <div class="lg:col-span-2">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-gem mr-3 text-2xl" style="color: var(--theme-accent);"></i>
+                    <h3 class="text-2xl font-bold" style="font-family: var(--font-display);">
+                        {{siteName}}
+                    </h3>
                 </div>
-                {{/if}}
+                <p class="text-white/80 text-lg leading-relaxed mb-6 max-w-md">
+                    Elegance, sophistication, and discretion. Creating memorable experiences with the highest standards of professionalism.
+                </p>
+                <div class="flex space-x-4">
+                    <a href="/{{modelSlug}}/calendar{{previewParam}}" 
+                       class="inline-flex items-center px-6 py-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all duration-300 text-white font-medium">
+                        <i class="fas fa-calendar-alt mr-2"></i>
+                        Schedule Consultation
+                    </a>
+                </div>
             </div>
             
             <!-- Quick Links -->
-            <div class="text-center">
-                <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
-                <div class="flex flex-wrap justify-center gap-x-6 gap-y-2">
+            <div>
+                <h4 class="text-lg font-semibold mb-4" style="font-family: var(--font-display);">
+                    Quick Links
+                </h4>
+                <ul class="space-y-3">
                     {{#each navigation}}
-                    <a href="{{this.url}}" class="glamour-footer-text glamour-footer-link">
-                        {{this.name}}
-                    </a>
+                    <li>
+                        <a href="{{this.url}}" 
+                           class="text-white/80 hover:text-white transition-colors duration-300 flex items-center">
+                            <i class="fas fa-chevron-right mr-2 text-xs opacity-60"></i>
+                            {{this.name}}
+                        </a>
+                    </li>
                     {{/each}}
-                </div>
+                </ul>
             </div>
             
             <!-- Contact Info -->
-            <div class="text-center md:text-right">
-                <h4 class="text-lg font-semibold mb-4">Contact</h4>
-                {{#if contactEmail}}
-                <p class="glamour-footer-text mb-2">
-                    <i class="fas fa-envelope mr-2"></i>
-                    <a href="mailto:{{contactEmail}}" class="glamour-footer-link">
-                        {{contactEmail}}
-                    </a>
-                </p>
-                {{/if}}
-                {{#if contactPhone}}
-                <p class="glamour-footer-text mb-2">
-                    <i class="fas fa-phone mr-2"></i>
-                    <a href="tel:{{contactPhone}}" class="glamour-footer-link">
-                        {{contactPhone}}
-                    </a>
-                </p>
-                {{/if}}
-                {{#if location}}
-                <p class="glamour-footer-text">
-                    <i class="fas fa-map-marker-alt mr-2"></i>
-                    {{location}}
-                </p>
-                {{/if}}
-            </div>
-        </div>
-        
-        <!-- Bottom Bar -->
-        <div class="glamour-footer-border mt-8 pt-8 text-center">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <p class="glamour-footer-text text-sm mb-4 md:mb-0">
-                    © {{currentYear}} {{siteName}}. All rights reserved.
-                </p>
-                <div class="flex space-x-6">
-                    <a href="/privacy" class="glamour-footer-text glamour-footer-link text-sm">Privacy Policy</a>
-                    <a href="/terms" class="glamour-footer-text glamour-footer-link text-sm">Terms of Service</a>
-                    {{#if disclaimer}}
-                    <a href="/disclaimer" class="glamour-footer-text glamour-footer-link text-sm">Disclaimer</a>
+            <div>
+                <h4 class="text-lg font-semibold mb-4" style="font-family: var(--font-display);">
+                    Get in Touch
+                </h4>
+                <div class="space-y-4">
+                    {{#if contactEmail}}
+                    <div class="flex items-start">
+                        <i class="fas fa-envelope mt-1 mr-3 text-white/60"></i>
+                        <a href="mailto:{{contactEmail}}" 
+                           class="text-white/80 hover:text-white transition-colors duration-300">
+                            {{contactEmail}}
+                        </a>
+                    </div>
                     {{/if}}
+                    
+                    {{#if contactPhone}}
+                    <div class="flex items-start">
+                        <i class="fas fa-phone mt-1 mr-3 text-white/60"></i>
+                        <a href="tel:{{contactPhone}}" 
+                           class="text-white/80 hover:text-white transition-colors duration-300">
+                            {{contactPhone}}
+                        </a>
+                    </div>
+                    {{/if}}
+                    
+                    {{#if location}}
+                    <div class="flex items-start">
+                        <i class="fas fa-map-marker-alt mt-1 mr-3 text-white/60"></i>
+                        <span class="text-white/80">{{location}}</span>
+                    </div>
+                    {{/if}}
+                    
+                    <div class="flex items-start">
+                        <i class="fas fa-shield-alt mt-1 mr-3 text-white/60"></i>
+                        <span class="text-white/80 text-sm">Confidential & Discreet</span>
+                    </div>
                 </div>
             </div>
         </div>
+        
+        <!-- Divider -->
+        <hr class="my-8 border-white/20">
+        
+        <!-- Bottom Section -->
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <div class="text-white/60 text-sm mb-4 md:mb-0">
+                &copy; {{year}} {{siteName}}. All rights reserved.
+            </div>
+            
+            <div class="flex items-center space-x-6 text-white/60 text-sm">
+                <a href="/{{modelSlug}}/etiquette{{previewParam}}" 
+                   class="hover:text-white transition-colors duration-300">
+                    Guidelines
+                </a>
+                <span class="text-white/40">•</span>
+                <a href="/{{modelSlug}}/contact{{previewParam}}" 
+                   class="hover:text-white transition-colors duration-300">
+                    Privacy
+                </a>
+                <span class="text-white/40">•</span>
+                <span class="text-xs">
+                    Professional Services
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Subtle Background Pattern -->
+    <div class="absolute inset-0 opacity-10 pointer-events-none">
+        <div class="absolute top-10 left-10 w-32 h-32 border border-white/20 rounded-full"></div>
+        <div class="absolute top-32 right-20 w-24 h-24 border border-white/20 rounded-full"></div>
+        <div class="absolute bottom-20 left-1/3 w-16 h-16 border border-white/20 rounded-full"></div>
     </div>
 </footer>
+
+<style>
+/* Footer-specific animations */
+footer a {
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+footer a:hover {
+    transform: translateX(2px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    footer .grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    footer .flex.items-start {
+        justify-content: center;
+    }
+}
+</style>

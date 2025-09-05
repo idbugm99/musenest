@@ -1,398 +1,322 @@
-<!-- Hero Section -->
-{{#if content.hero_section_visible}}
-<section class="relative {{#if heroBackgroundImageUrl}}bg-cover bg-center bg-fixed{{else}}bg-primary text-white{{/if}} py-20" 
-         {{#if heroBackgroundImageUrl}}style="background-image: url('{{heroBackgroundImageUrl}}')"{{/if}}>
-    {{#if heroBackgroundImageUrl}}
-    <!-- Dynamic overlay for better text contrast -->
-    <div class="absolute inset-0 bg-black" style="opacity: {{#if content.hero_background_opacity}}{{content.hero_background_opacity}}{{else}}0.6{{/if}};"></div>
+<!-- Dark Sophisticated Boudoir Home Page -->
+<!-- Hero Section Only -->
+<section class="boudoir-hero" style="{{#if content.heroBackgroundImageUrl}}background: var(--theme-bg);{{else}}background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));{{/if}}">
+    <!-- Boudoir Background Decorations -->
+    <div style="position: absolute; top: 15%; left: 8%; opacity: 0.4; z-index: 1;">
+        <svg width="64" height="64" viewBox="0 0 80 80" style="animation: silk-float 8s ease-in-out infinite; color: var(--theme-accent);">
+            <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.8"/>
+        </svg>
+    </div>
+    <div style="position: absolute; top: 25%; right: 12%; opacity: 0.3; z-index: 1;">
+        <svg width="48" height="48" viewBox="0 0 80 80" style="animation: silk-float 10s ease-in-out infinite; animation-delay: 3s; color: var(--theme-primary);">
+            <rect x="30" y="30" width="20" height="20" fill="currentColor" opacity="0.7"/>
+        </svg>
+    </div>
+    <div style="position: absolute; bottom: 30%; left: 75%; opacity: 0.5; z-index: 1;">
+        <svg width="32" height="32" viewBox="0 0 80 80" style="animation: silk-float 12s ease-in-out infinite; animation-delay: 6s; color: var(--theme-secondary);">
+            <circle cx="40" cy="40" r="5" fill="currentColor" opacity="0.9"/>
+        </svg>
+    </div>
+
+    <!-- Load luxury parallax background if specified -->
+    {{#if content.heroBackgroundImageUrl}}
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('{{content.heroBackgroundImageUrl}}'); background-size: cover; background-position: center; background-attachment: fixed; opacity: {{#if content.hero_background_opacity}}{{content.hero_background_opacity}}{{else}}0.6{{/if}}; z-index: 0;"></div>
     {{/if}}
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 {{#if heroBackgroundImageUrl}}relative z-10{{/if}}">
-        <div class="text-center">
-            <h1 class="text-5xl font-bold mb-6 leading-tight">
-                {{#if content.hero_title}}{{content.hero_title}}{{else}}{{siteName}}{{/if}}
+
+    <div class="boudoir-container" style="position: relative; z-index: 2; width: 100%;">
+        <!-- Hero Section -->
+        <div style="text-align: center;">
+            <div style="margin-bottom: 3rem;">
+                <svg width="80" height="80" viewBox="0 0 80 80" style="color: var(--theme-accent); animation: pulse 4s ease-in-out infinite;">
+                    <defs>
+                        <linearGradient id="boudoir-crown-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--theme-accent);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:var(--theme-primary);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="40" cy="40" r="35" fill="none" stroke="url(#boudoir-crown-gradient)" stroke-width="2" opacity="0.8"/>
+                    <circle cx="40" cy="40" r="25" fill="none" stroke="url(#boudoir-crown-gradient)" stroke-width="1.5" opacity="0.6"/>
+                    <circle cx="40" cy="40" r="8" fill="url(#boudoir-crown-gradient)" opacity="0.9"/>
+                </svg>
+            </div>
+            
+            <h1 style="font-size: clamp(3rem, 8vw, 6rem); background: linear-gradient(45deg, var(--theme-accent), var(--theme-text), var(--theme-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 2rem;">
+                {{#if content.hero_title}}{{content.hero_title}}{{else}}{{#if model.name}}{{model.name}}{{else}}{{modelName}}{{/if}}{{/if}}
             </h1>
-            <p class="text-lg mb-8 max-w-3xl mx-auto leading-relaxed" style="color: rgba(255, 255, 255, 0.8);">
-                {{#if content.hero_subtitle}}{{content.hero_subtitle}}{{else}}{{#if content.tagline}}{{content.tagline}}{{else}}Elegance and sophistication with discretion{{/if}}{{/if}}
+            
+            {{#if content.hero_subtitle}}
+            <p style="font-size: 1.5rem; color: var(--theme-text-subtle); max-width: 800px; margin: 0 auto 1.5rem; line-height: 1.6;">
+                {{content.hero_subtitle}}
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <!-- Primary Button -->
+            {{else}}
+            <p style="font-size: 1.5rem; color: var(--theme-text-subtle); max-width: 800px; margin: 0 auto 1.5rem; line-height: 1.6;">
+                {{#if tagline}}{{tagline}}{{else}}Sophisticated evening elegance with discretion and luxury{{/if}}
+            </p>
+            {{/if}}
+            
+            {{#if content.hero_description}}
+            <div style="font-size: 1.1rem; color: var(--theme-text); max-width: 700px; margin: 0 auto 3rem; line-height: 1.6;">
+                {{{content.hero_description}}}
+            </div>
+            {{else}}
+            <div style="margin-bottom: 3rem;"></div>
+            {{/if}}
+            
+            <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
                 {{#if content.hero_button_1_text}}
-                    {{#if (eq content.hero_button_1_link 'calendar')}}
-                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="{{#if heroBackgroundImageUrl}}bg-primary text-white hover:bg-primary-700{{else}}bg-white text-primary hover:bg-gray-100{{/if}} px-4 py-2 rounded-full font-semibold transition-colors" style="height: 44px; display: flex; align-items: center; justify-content: center;">{{content.hero_button_1_text}}</a>
-                    {{else if (eq content.hero_button_1_link 'contact')}}
-                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="{{#if heroBackgroundImageUrl}}bg-primary text-white hover:bg-primary-700{{else}}bg-white text-primary hover:bg-gray-100{{/if}} px-4 py-2 rounded-full font-semibold transition-colors" style="height: 44px; display: flex; align-items: center; justify-content: center;">{{content.hero_button_1_text}}</a>
-                    {{else if (eq content.hero_button_1_link 'about')}}
-                        <a href="/{{modelSlug}}/about{{previewParam}}" class="{{#if heroBackgroundImageUrl}}bg-primary text-white hover:bg-primary-700{{else}}bg-white text-primary hover:bg-gray-100{{/if}} px-4 py-2 rounded-full font-semibold transition-colors" style="height: 44px; display: flex; align-items: center; justify-content: center;">{{content.hero_button_1_text}}</a>
-                    {{else if (eq content.hero_button_1_link 'rates')}}
-                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="{{#if heroBackgroundImageUrl}}bg-primary text-white hover:bg-primary-700{{else}}bg-white text-primary hover:bg-gray-100{{/if}} px-4 py-2 rounded-full font-semibold transition-colors" style="height: 44px; display: flex; align-items: center; justify-content: center;">{{content.hero_button_1_text}}</a>
-                    {{else if (eq content.hero_button_1_link 'gallery')}}
-                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="{{#if heroBackgroundImageUrl}}bg-primary text-white hover:bg-primary-700{{else}}bg-white text-primary hover:bg-gray-100{{/if}} px-4 py-2 rounded-full font-semibold transition-colors" style="height: 44px; display: flex; align-items: center; justify-content: center;">{{content.hero_button_1_text}}</a>
-                    {{else}}
-                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="{{#if heroBackgroundImageUrl}}bg-primary text-white hover:bg-primary-700{{else}}bg-white text-primary hover:bg-gray-100{{/if}} px-4 py-2 rounded-full font-semibold transition-colors" style="height: 44px; display: flex; align-items: center; justify-content: center;">{{content.hero_button_1_text}}</a>
-                    {{/if}}
+                <a href="{{#if content.hero_button_1_link}}/{{modelSlug}}/{{content.hero_button_1_link}}{{previewParam}}{{else}}/{{modelSlug}}/contact{{previewParam}}{{/if}}" class="boudoir-btn boudoir-btn-primary" style="font-size: 1.2rem; padding: 1.2rem 2.5rem;">
+                    {{content.hero_button_1_text}}
+                </a>
                 {{else}}
-                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="{{#if heroBackgroundImageUrl}}bg-primary text-white hover:bg-primary-700{{else}}bg-white text-primary hover:bg-gray-100{{/if}} px-4 py-2 rounded-full font-semibold transition-colors" style="height: 44px; display: flex; align-items: center; justify-content: center;">View Calendar</a>
+                <a href="/{{modelSlug}}/contact{{previewParam}}" class="boudoir-btn boudoir-btn-primary" style="font-size: 1.2rem; padding: 1.2rem 2.5rem;">
+                    Get In Touch
+                </a>
                 {{/if}}
                 
-                <!-- Secondary Outline Button - Always show -->
                 {{#if content.hero_button_2_text}}
-                    {{#if (eq content.hero_button_2_link 'calendar')}}
-                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="{{#if heroBackgroundImageUrl}}border-primary text-primary hover:bg-indigo-50{{else}}border-white text-white hover:bg-indigo-50 hover:text-primary{{/if}} px-4 py-2 rounded-full font-semibold transition-colors" style="height: 44px; display: flex; align-items: center; justify-content: center; border-width: 1.5px;">{{content.hero_button_2_text}}</a>
-                    {{else if (eq content.hero_button_2_link 'contact')}}
-                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="{{#if heroBackgroundImageUrl}}border-primary text-primary hover:bg-indigo-50{{else}}border-white text-white hover:bg-indigo-50 hover:text-primary{{/if}} px-4 py-2 rounded-full font-semibold transition-colors" style="height: 44px; display: flex; align-items: center; justify-content: center; border-width: 1.5px;">{{content.hero_button_2_text}}</a>
-                    {{else if (eq content.hero_button_2_link 'about')}}
-                        <a href="/{{modelSlug}}/about{{previewParam}}" class="{{#if heroBackgroundImageUrl}}border-primary text-primary hover:bg-indigo-50{{else}}border-white text-white hover:bg-indigo-50 hover:text-primary{{/if}} px-4 py-2 rounded-full font-semibold transition-colors" style="height: 44px; display: flex; align-items: center; justify-content: center; border-width: 1.5px;">{{content.hero_button_2_text}}</a>
-                    {{else if (eq content.hero_button_2_link 'rates')}}
-                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="{{#if heroBackgroundImageUrl}}border-primary text-primary hover:bg-indigo-50{{else}}border-white text-white hover:bg-indigo-50 hover:text-primary{{/if}} px-4 py-2 rounded-full font-semibold transition-colors" style="height: 44px; display: flex; align-items: center; justify-content: center; border-width: 1.5px;">{{content.hero_button_2_text}}</a>
-                    {{else if (eq content.hero_button_2_link 'gallery')}}
-                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="{{#if heroBackgroundImageUrl}}border-primary text-primary hover:bg-indigo-50{{else}}border-white text-white hover:bg-indigo-50 hover:text-primary{{/if}} px-4 py-2 rounded-full font-semibold transition-colors" style="height: 44px; display: flex; align-items: center; justify-content: center; border-width: 1.5px;">{{content.hero_button_2_text}}</a>
-                    {{else}}
-                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="{{#if heroBackgroundImageUrl}}border-primary text-primary hover:bg-indigo-50{{else}}border-white text-white hover:bg-indigo-50 hover:text-primary{{/if}} px-4 py-2 rounded-full font-semibold transition-colors" style="height: 44px; display: flex; align-items: center; justify-content: center; border-width: 1.5px;">{{content.hero_button_2_text}}</a>
-                    {{/if}}
+                <a href="{{#if content.hero_button_2_link}}/{{modelSlug}}/{{content.hero_button_2_link}}{{previewParam}}{{else}}/{{modelSlug}}/about{{previewParam}}{{/if}}" class="boudoir-btn boudoir-btn-outline" style="font-size: 1.2rem; padding: 1.2rem 2.5rem;">
+                    {{content.hero_button_2_text}}
+                </a>
                 {{else}}
-                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="{{#if heroBackgroundImageUrl}}border-primary text-primary hover:bg-indigo-50{{else}}border-white text-white hover:bg-indigo-50 hover:text-primary{{/if}} px-4 py-2 rounded-full font-semibold transition-colors" style="height: 44px; display: flex; align-items: center; justify-content: center; border-width: 1.5px;">Contact Me</a>
+                <a href="/{{modelSlug}}/about{{previewParam}}" class="boudoir-btn boudoir-btn-outline" style="font-size: 1.2rem; padding: 1.2rem 2.5rem;">
+                    Learn More About Me
+                </a>
                 {{/if}}
             </div>
         </div>
     </div>
 </section>
-{{/if}}
 
-<!-- About Preview -->
-{{#if content.about_section_visible}}
-<section class="py-16 theme-section-alt">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {{#if content.portrait_section_visible}}
-        <div class="grid lg:grid-cols-2 gap-12 items-center">
-            <div style="max-width: 560px;">
-                <h2 class="text-3xl font-bold mb-6 theme-header">
+<!-- Content Section -->
+<section class="boudoir-section" style="padding: 5rem 0; background: var(--theme-bg);">
+    <div class="boudoir-container">
+        <!-- About Preview Section -->
+        {{#if content.about_section_visible}}
+        <div class="boudoir-card-luxury" style="margin-bottom: 4rem;">
+            {{#if content.portrait_section_visible}}
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;">
+                <div>
+                    <h2 style="color: var(--theme-accent); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.8rem; font-family: var(--font-display);">
+                        <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                            <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                        </svg>
+                        {{#if content.about_title}}{{content.about_title}}{{else}}About {{siteName}}{{/if}}
+                    </h2>
+                    {{#if content.about_paragraph_1}}
+                    <p style="color: var(--theme-text-subtle); line-height: 1.6; margin-bottom: 1.5rem;">{{content.about_paragraph_1}}</p>
+                    {{/if}}
+                    {{#if content.about_paragraph_2}}
+                    <p style="color: var(--theme-text-subtle); line-height: 1.6; margin-bottom: 2rem;">{{content.about_paragraph_2}}</p>
+                    {{/if}}
+                    {{#unless content.about_paragraph_1}}
+                    <p style="color: var(--theme-text-subtle); line-height: 1.6; margin-bottom: 1.5rem;">Welcome to my world of elegance and sophistication. I am a professional companion who values discretion, intelligence, and genuine connection.</p>
+                    <p style="color: var(--theme-text-subtle); line-height: 1.6; margin-bottom: 2rem;">With years of experience in providing exceptional companionship services, I pride myself on creating memorable experiences tailored to each client's unique needs.</p>
+                    {{/unless}}
+                    {{#if content.about_link_text}}
+                        {{#eq content.about_link_destination 'about'}}
+                            <a href="/{{modelSlug}}/about{{previewParam}}" class="boudoir-btn boudoir-btn-outline">
+                                {{content.about_link_text}}
+                            </a>
+                        {{/eq}}
+                        {{#eq content.about_link_destination 'contact'}}
+                            <a href="/{{modelSlug}}/contact{{previewParam}}" class="boudoir-btn boudoir-btn-primary">
+                                {{content.about_link_text}}
+                            </a>
+                        {{/eq}}
+                    {{else}}
+                        <a href="/{{modelSlug}}/about{{previewParam}}" class="boudoir-btn boudoir-btn-outline">
+                            Learn More About Me
+                        </a>
+                    {{/if}}
+                </div>
+                <div style="border-radius: var(--radius-lg); overflow: hidden; aspect-ratio: 4/5; background: var(--theme-surface);">
+                    {{#if content.portrait_image_url}}
+                        <img src="{{content.portrait_image_url}}" 
+                             alt="{{#if content.portrait_alt}}{{content.portrait_alt}}{{else}}Professional Portrait{{/if}}"
+                             style="width: 100%; height: 100%; object-fit: cover;">
+                    {{else}}
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--theme-text-subtle);">
+                            {{#if content.portrait_alt}}{{content.portrait_alt}}{{else}}Professional portrait coming soon{{/if}}
+                        </div>
+                    {{/if}}
+                </div>
+            </div>
+            {{else}}
+            <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+                <h2 style="color: var(--theme-accent); margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem; font-family: var(--font-display);">
+                    <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                        <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                    </svg>
                     {{#if content.about_title}}{{content.about_title}}{{else}}About {{siteName}}{{/if}}
                 </h2>
                 {{#if content.about_paragraph_1}}
-                <p class="text-base leading-relaxed mb-6 theme-muted-text">{{content.about_paragraph_1}}</p>
+                <p style="color: var(--theme-text-subtle); line-height: 1.6; margin-bottom: 1.5rem;">{{content.about_paragraph_1}}</p>
                 {{/if}}
                 {{#if content.about_paragraph_2}}
-                <p class="text-base leading-relaxed mb-6 theme-muted-text">{{content.about_paragraph_2}}</p>
+                <p style="color: var(--theme-text-subtle); line-height: 1.6; margin-bottom: 2rem;">{{content.about_paragraph_2}}</p>
                 {{/if}}
-                {{#unless content.about_paragraph_1}}
-                <p class="text-base leading-relaxed mb-6 theme-muted-text">Welcome to my world of elegance and sophistication. I am a professional companion who values discretion, intelligence, and genuine connection.</p>
-                <p class="text-base leading-relaxed mb-6 theme-muted-text">With years of experience in providing exceptional companionship services, I pride myself on creating memorable experiences tailored to each client's unique needs.</p>
-                {{/unless}}
                 {{#if content.about_link_text}}
-                    {{#eq content.about_link_destination 'about'}}
-                        <a href="/{{modelSlug}}/about{{previewParam}}" class="border-primary text-primary px-4 py-2 rounded-full font-semibold hover:bg-indigo-50 transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center; border-width: 1.5px;">{{content.about_link_text}}</a>
-                    {{/eq}}
-                    {{#eq content.about_link_destination 'contact'}}
-                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="border-primary text-primary px-4 py-2 rounded-full font-semibold hover:bg-indigo-50 transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center; border-width: 1.5px;">{{content.about_link_text}}</a>
-                    {{/eq}}
-                    {{#eq content.about_link_destination 'gallery'}}
-                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="border-primary text-primary px-4 py-2 rounded-full font-semibold hover:bg-indigo-50 transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center; border-width: 1.5px;">{{content.about_link_text}}</a>
-                    {{/eq}}
-                    {{#eq content.about_link_destination 'rates'}}
-                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="border-primary text-primary px-4 py-2 rounded-full font-semibold hover:bg-indigo-50 transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center; border-width: 1.5px;">{{content.about_link_text}}</a>
-                    {{/eq}}
-                    {{#eq content.about_link_destination 'calendar'}}
-                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="border-primary text-primary px-4 py-2 rounded-full font-semibold hover:bg-indigo-50 transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center; border-width: 1.5px;">{{content.about_link_text}}</a>
-                    {{/eq}}
+                    <a href="/{{modelSlug}}/about{{previewParam}}" style="color: var(--theme-accent); font-weight: 600;">{{content.about_link_text}} →</a>
                 {{else}}
-                    <a href="/{{modelSlug}}/about{{previewParam}}" class="border-primary text-primary px-4 py-2 rounded-full font-semibold hover:bg-indigo-50 transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center; border-width: 1.5px;">Learn More</a>
+                    <a href="/{{modelSlug}}/about{{previewParam}}" style="color: var(--theme-accent); font-weight: 600;">Learn More About Me →</a>
                 {{/if}}
             </div>
-            <div class="bg-gray-200 h-96 rounded-lg flex items-center justify-center overflow-hidden">
-                {{#if content.portrait_image_url}}
-                    <img src="{{content.portrait_image_url}}" 
-                         alt="{{#if content.portrait_alt}}{{content.portrait_alt}}{{else}}Professional Portrait{{/if}}"
-                         class="w-full h-full object-cover object-center" style="object-position: 50% 20%;">
-                {{else}}
-                    <p class="text-gray-500">{{#if content.portrait_alt}}{{content.portrait_alt}}{{else}}Professional portrait coming soon{{/if}}</p>
-                {{/if}}
-            </div>
-        </div>
-        {{else}}
-        <div class="max-w-4xl mx-auto text-center">
-            <h2 class="text-3xl font-bold mb-6">
-                {{#if content.about_title}}{{content.about_title}}{{else}}About {{siteName}}{{/if}}
-            </h2>
-            {{#if content.about_paragraph_1}}
-            <p class="text-lg text-gray-600 mb-6">{{content.about_paragraph_1}}</p>
-            {{/if}}
-            {{#if content.about_paragraph_2}}
-            <p class="text-lg text-gray-600 mb-6">{{content.about_paragraph_2}}</p>
-            {{/if}}
-            {{#unless content.about_paragraph_1}}
-            <p class="text-lg text-gray-600 mb-6">Welcome to my world of elegance and sophistication. I am a professional companion who values discretion, intelligence, and genuine connection.</p>
-            <p class="text-lg text-gray-600 mb-6">With years of experience in providing exceptional companionship services, I pride myself on creating memorable experiences tailored to each client's unique needs.</p>
-            {{/unless}}
-            {{#if content.about_link_text}}
-                {{#eq content.about_link_destination 'about'}}
-                    <a href="/{{modelSlug}}/about{{previewParam}}" class="text-blue-600 hover:text-blue-800 font-semibold">{{content.about_link_text}}</a>
-                {{/eq}}
-                {{#eq content.about_link_destination 'contact'}}
-                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="text-blue-600 hover:text-blue-800 font-semibold">{{content.about_link_text}}</a>
-                {{/eq}}
-                {{#eq content.about_link_destination 'gallery'}}
-                    <a href="/{{modelSlug}}/gallery{{previewParam}}" class="text-blue-600 hover:text-blue-800 font-semibold">{{content.about_link_text}}</a>
-                {{/eq}}
-                {{#eq content.about_link_destination 'rates'}}
-                    <a href="/{{modelSlug}}/rates{{previewParam}}" class="text-blue-600 hover:text-blue-800 font-semibold">{{content.about_link_text}}</a>
-                {{/eq}}
-                {{#eq content.about_link_destination 'calendar'}}
-                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="text-blue-600 hover:text-blue-800 font-semibold">{{content.about_link_text}}</a>
-                {{/eq}}
-            {{else}}
-                <a href="/{{modelSlug}}/about{{previewParam}}" class="text-blue-600 hover:text-blue-800 font-semibold">Learn More About Me →</a>
             {{/if}}
         </div>
         {{/if}}
-    </div>
-</section>
-{{/if}}
 
-<!-- Gallery Preview -->
-{{#if content.gallery_section_visible}}
-<section class="py-16 theme-section">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-bold text-center mb-12 theme-header">
-            {{#if content.gallery_section_title}}{{content.gallery_section_title}}{{else}}Gallery{{/if}}
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {{#each galleryImages}}
-            <div class="aspect-square overflow-hidden bg-gray-200" style="border-radius: 12px;">
-                <img src="/uploads/{{../modelSlug}}/public/gallery/{{this.filename}}" 
-                     alt="{{#if this.caption}}{{this.caption}}{{else}}Gallery image{{/if}}" 
-                     class="w-full h-full object-cover">
-            </div>
-            {{else}}
-            {{#times 5}}
-            <div class="bg-gray-200 aspect-square flex items-center justify-center" style="border-radius: 12px;">
-                <p class="text-gray-500 text-sm">Photo</p>
-            </div>
-            {{/times}}
-            {{/each}}
-        </div>
-        <div class="text-center mt-8">
-            <a href="/{{modelSlug}}/gallery{{previewParam}}" class="bg-primary text-white px-4 py-2 rounded-full font-semibold hover:bg-primary-700 transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center;">
-                {{#if content.gallery_button_text}}{{content.gallery_button_text}}{{else}}View Full Gallery{{/if}}
-            </a>
-        </div>
-    </div>
-</section>
-{{/if}}
-
-<!-- Location Availability -->
-{{#if content.travel_section_visible}}
-<section class="py-16 theme-section-alt">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-bold text-center mb-12 theme-header">
-            {{#if content.travel_section_title}}{{content.travel_section_title}}{{else}}Location Availability{{/if}}
-        </h2>
-        {{#if upcomingEvents}}
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {{#each upcomingEvents}}
-            <div class="theme-card p-6 hover:shadow-lg transition-shadow">
-                <div class="text-center mb-4">
-                    <div class="inline-flex items-center justify-center text-primary rounded-full mb-3 theme-bg-secondary" style="width: 40px; height: 40px;">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        <!-- Gallery Preview -->
+        {{#if content.gallery_section_visible}}
+        {{#if galleryImages}}
+        <div class="boudoir-card-luxury" style="margin-bottom: 4rem;">
+            <h2 style="text-align: center; color: var(--theme-accent); margin-bottom: 3rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem; font-family: var(--font-display);">
+                <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                    <rect x="25" y="25" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+                    <rect x="20" y="20" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+                </svg>
+                {{#if content.gallery_section_title}}{{content.gallery_section_title}}{{else}}Gallery Preview{{/if}}
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                {{#each galleryImages}}
+                <div style="position: relative; aspect-ratio: 1; border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-md);">
+                    <img src="/uploads/{{../modelSlug}}/public/gallery/{{this.filename}}" alt="{{#if this.caption}}{{this.caption}}{{else}}Gallery image{{/if}}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="position: absolute; inset: 0; background: var(--theme-overlay); opacity: 0; transition: opacity 0.3s ease; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
+                        <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-text);">
+                            <path d="M6 6v6h2V8h4V6H6zm16 0v2h4v4h2V6h-6zm4 16v-4h-2v6h-6v2h6v-6zM8 22v-4H6v6h6v-2H8z" fill="currentColor"/>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-bold mb-2 theme-text-primary">{{this.location}}</h3>
-                    <div class="text-base font-medium mb-3 theme-text-muted">
+                </div>
+                {{/each}}
+            </div>
+            <div style="text-align: center;">
+                <a href="/{{modelSlug}}/gallery{{previewParam}}" class="boudoir-btn boudoir-btn-primary">
+                    View Complete Gallery
+                </a>
+            </div>
+        </div>
+        {{/if}}
+        {{/if}}
+
+
+        <!-- Location Availability -->
+        {{#if content.travel_section_visible}}
+        <div class="boudoir-card-luxury" style="margin-bottom: 4rem;">
+            <h2 style="text-align: center; color: var(--theme-accent); margin-bottom: 3rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem; font-family: var(--font-display);">
+                <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                    <path d="M40 10c-11 0-20 9-20 20 0 15 20 40 20 40s20-25 20-40c0-11-9-20-20-20zm0 27c-4 0-7-3-7-7s3-7 7-7 7 3 7 7-3 7-7 7z" fill="currentColor" opacity="0.8"/>
+                </svg>
+                {{#if content.travel_section_title}}{{content.travel_section_title}}{{else}}Location Availability{{/if}}
+            </h2>
+            {{#if upcomingEvents}}
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+                {{#each upcomingEvents}}
+                <div style="text-align: center; padding: 2rem; background: var(--theme-surface); border: 1px solid var(--theme-border); border-radius: var(--radius-lg); transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+                    <div style="margin-bottom: 1.5rem;">
+                        <svg width="48" height="48" viewBox="0 0 80 80" style="color: var(--theme-primary);">
+                            <path d="M40 10c-11 0-20 9-20 20 0 15 20 40 20 40s20-25 20-40c0-11-9-20-20-20zm0 27c-4 0-7-3-7-7s3-7 7-7 7 3 7 7-3 7-7 7z" fill="currentColor" opacity="0.9"/>
+                        </svg>
+                    </div>
+                    <h3 style="color: var(--theme-text); font-size: 1.25rem; margin-bottom: 1rem; font-family: var(--font-display);">{{this.location}}</h3>
+                    <div style="color: var(--theme-text-subtle); margin-bottom: 1.5rem; font-weight: 500;">
                         {{#if this.dateRange}}
                             {{this.dateRange}}
                         {{else}}
                             {{formatDate this.date}}
                         {{/if}}
                     </div>
-                </div>
-                <div class="text-center">
-                    <span class="text-white px-3 py-1 rounded-full text-sm font-bold" style="background-color: #22C55E;">Available</span>
+                    <span style="background: linear-gradient(135deg, var(--theme-success), var(--theme-primary)); color: var(--theme-bg); padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 600;">Available</span>
                     {{#if this.notes}}
-                    <p class="text-xs leading-relaxed mt-2 theme-text-subtle">{{this.notes}}</p>
+                    <p style="color: var(--theme-text-subtle); font-size: 0.875rem; margin-top: 1rem; line-height: 1.4;">{{this.notes}}</p>
                     {{/if}}
                 </div>
+                {{/each}}
             </div>
-            {{/each}}
-        </div>
-        <div class="text-center mt-8">
-            <a href="/{{modelSlug}}/{{#if content.travel_cta_link}}{{content.travel_cta_link}}{{else}}calendar{{/if}}{{previewParam}}" class="bg-primary text-white px-4 py-2 rounded-full font-semibold hover:bg-primary-700 transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center;">
-                {{#if content.travel_cta_text}}{{content.travel_cta_text}}{{else}}View Full Calendar{{/if}}
-            </a>
-        </div>
-        {{else}}
-        <div class="text-center">
-            <div class="theme-card p-12">
-                <div class="w-16 h-16 mx-auto mb-6 bg-primary flex items-center justify-center" style="border-radius: 12px;">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-semibold mb-4 theme-text-primary">Check My Calendar</h3>
-                <p class="mb-6 theme-text-muted">View available dates and book your appointment</p>
-                <a href="/{{modelSlug}}/calendar{{previewParam}}" class="bg-primary text-white px-4 py-2 rounded-full font-semibold hover:bg-primary-700 transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center;">
-                    View Calendar
+            <div style="text-align: center;">
+                <a href="/{{modelSlug}}/{{#if content.travel_cta_link}}{{content.travel_cta_link}}{{else}}calendar{{/if}}{{previewParam}}" class="boudoir-btn boudoir-btn-primary">
+                    {{#if content.travel_cta_text}}{{content.travel_cta_text}}{{else}}View Full Calendar{{/if}}
                 </a>
+            </div>
+            {{else}}
+            <div style="text-align: center;">
+                <div style="background: var(--theme-surface); padding: 3rem; border-radius: var(--radius-lg); border: 1px solid var(--theme-border); max-width: 500px; margin: 0 auto;">
+                    <div style="width: 4rem; height: 4rem; margin: 0 auto 1.5rem; background: var(--theme-accent); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
+                        <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-bg);">
+                            <path d="M40 10c-11 0-20 9-20 20 0 15 20 40 20 40s20-25 20-40c0-11-9-20-20-20zm0 27c-4 0-7-3-7-7s3-7 7-7 7 3 7 7-3 7-7 7z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <h3 style="color: var(--theme-text); font-size: 1.25rem; margin-bottom: 1rem; font-family: var(--font-display);">Check My Calendar</h3>
+                    <p style="color: var(--theme-text-subtle); margin-bottom: 2rem;">View available dates and book your appointment</p>
+                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="boudoir-btn boudoir-btn-primary">
+                        View Calendar
+                    </a>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+        {{/if}}
+
+        <!-- Testimonials -->
+        {{#if content.testimonials_section_visible}}
+        <div class="boudoir-card-luxury" style="margin-bottom: 4rem; background: linear-gradient(135deg, var(--theme-surface), var(--theme-bg-alt)); position: relative; overflow: hidden;">
+            <div style="position: absolute; top: -30px; right: -30px; opacity: 0.2; z-index: 1;">
+                <svg style="width: 150px; height: 150px; color: var(--theme-accent);" viewBox="0 0 80 80">
+                    <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+                    <circle cx="40" cy="40" r="15" fill="currentColor" opacity="0.3"/>
+                </svg>
+            </div>
+            
+            <div style="position: relative; z-index: 2;">
+                <h2 style="text-align: center; color: var(--theme-text); margin-bottom: 3rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem; font-family: var(--font-display);">
+                    <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                        <path d="M40 10l-3 18h6l-3-18zm-15 30l15-15-5 23 5-8zm30 0l-5 8 5-23-15 15z" fill="currentColor" opacity="0.8"/>
+                    </svg>
+                    {{#if content.testimonials_section_title}}{{content.testimonials_section_title}}{{else}}Client Testimonials{{/if}}
+                </h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                    {{#each testimonials}}
+                    {{#if (lt @index (or ../content.testimonials_display_count 3))}}
+                    <div style="background: rgba(245, 241, 232, 0.1); padding: 2rem; border-radius: var(--radius-md); backdrop-filter: blur(10px);">
+                        <div style="color: var(--theme-accent); margin-bottom: 1rem; display: flex;">
+                            {{#times this.rating}}
+                            <svg style="width: 16px; height: 16px; fill: currentColor;" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            {{/times}}
+                        </div>
+                        <div style="color: var(--theme-text); font-style: italic; margin-bottom: 1rem; line-height: 1.6;">
+                            "{{this.text}}"
+                        </div>
+                        <div style="color: var(--theme-accent); font-weight: 600; text-align: right;">
+                            — {{this.name}}
+                        </div>
+                    </div>
+                    {{/if}}
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+        {{/if}}
+
+        <!-- Final CTA Section -->
+        {{#if content.cta_section_visible}}
+        <div class="boudoir-card-luxury" style="text-align: center; background: linear-gradient(135deg, var(--theme-bg-alt), var(--theme-surface));">
+            <div style="max-width: 700px; margin: 0 auto;">
+                <h2 style="color: var(--theme-accent); margin-bottom: 2rem; font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem);">
+                    {{#if content.cta_title}}{{content.cta_title}}{{else}}Ready to Connect?{{/if}}
+                </h2>
+                <p style="color: var(--theme-text-subtle); font-size: 1.1rem; line-height: 1.6; margin-bottom: 3rem;">
+                    {{#if content.cta_description}}{{content.cta_description}}{{else}}Take the first step towards an exceptional experience. I look forward to our conversation.{{/if}}
+                </p>
+                <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="boudoir-btn boudoir-btn-primary" style="font-size: 1.1rem; padding: 1.2rem 2.5rem;">
+                        {{#if content.cta_button_1_text}}{{content.cta_button_1_text}}{{else}}Get In Touch{{/if}}
+                    </a>
+                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="boudoir-btn boudoir-btn-outline" style="font-size: 1.1rem; padding: 1.2rem 2.5rem;">
+                        {{#if content.cta_button_2_text}}{{content.cta_button_2_text}}{{else}}View Calendar{{/if}}
+                    </a>
+                </div>
             </div>
         </div>
         {{/if}}
     </div>
 </section>
-{{/if}}
-
-<!-- Testimonials -->
-{{#if content.testimonials_section_visible}}
-<section class="py-16 theme-section">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-bold text-center mb-12 theme-header">
-            {{#if content.testimonials_section_title}}{{content.testimonials_section_title}}{{else}}What Clients Say{{/if}}
-        </h2>
-        <!-- First row: Up to specified count -->
-        <div class="grid md:grid-cols-3 gap-6 mb-6">
-            {{#each testimonials}}
-            {{#if (lt @index (or ../content.testimonials_display_count 3))}}
-            <div class="theme-card p-6 shadow">
-                <div class="flex mb-4" style="color: #F59E0B;">
-                    {{#times this.rating}}
-                    <svg class="fill-current" style="width: 14px; height: 14px;" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                    </svg>
-                    {{/times}}
-                </div>
-                <p class="text-base leading-relaxed mb-4 theme-body-text">"{{this.text}}"</p>
-                <p class="text-xs font-bold uppercase tracking-wide theme-text-subtle" style="letter-spacing: 0.05em;">{{this.name}}</p>
-            </div>
-            {{/if}}
-            {{else}}
-            <!-- Default testimonials if none provided - respect display count -->
-            {{#times (or content.testimonials_display_count 3)}}
-            {{#if (eq this 1)}}
-            <div class="theme-card p-6 shadow">
-                <div class="flex mb-4" style="color: #F59E0B;">
-                    {{#times 5}}
-                    <svg class="fill-current" style="width: 14px; height: 14px;" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                    </svg>
-                    {{/times}}
-                </div>
-                <p class="text-base leading-relaxed mb-4 theme-body-text">"She is absolutely wonderful. Professional, elegant, and truly caring. An unforgettable experience."</p>
-                <p class="text-xs font-bold uppercase tracking-wide theme-text-subtle" style="letter-spacing: 0.05em;">MICHAEL D.</p>
-            </div>
-            {{else if (eq this 2)}}
-            <div class="theme-card p-6 shadow">
-                <div class="flex mb-4" style="color: #F59E0B;">
-                    {{#times 5}}
-                    <svg class="fill-current" style="width: 14px; height: 14px;" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                    </svg>
-                    {{/times}}
-                </div>
-                <p class="text-base leading-relaxed mb-4 theme-body-text">"She is intelligent, sophisticated, and absolutely captivating. A truly remarkable companion."</p>
-                <p class="text-xs font-bold uppercase tracking-wide theme-text-subtle" style="letter-spacing: 0.05em;">DAVID L.</p>
-            </div>
-            {{else if (eq this 3)}}
-            <div class="theme-card p-6 shadow">
-                <div class="flex mb-4" style="color: #F59E0B;">
-                    {{#times 5}}
-                    <svg class="fill-current" style="width: 14px; height: 14px;" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                    </svg>
-                    {{/times}}
-                </div>
-                <p class="text-base leading-relaxed mb-4 theme-body-text">"Exceptional service and genuine warmth. Highly recommended for discerning clients."</p>
-                <p class="text-xs font-bold uppercase tracking-wide theme-text-subtle" style="letter-spacing: 0.05em;">ROBERT T.</p>
-            </div>
-            {{/if}}
-            {{/times}}
-            {{/each}}
-        </div>
-    </div>
-</section>
-{{/if}}
-
-<!-- Bottom CTA Band -->
-{{#if content.cta_section_visible}}
-<section class="py-16 bg-primary text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-3xl font-bold mb-6">
-            {{#if content.cta_section_title}}{{content.cta_section_title}}{{else}}Ready to Meet?{{/if}}
-        </h2>
-        <p class="text-xl mb-8">
-            {{#if content.cta_section_subtitle}}{{content.cta_section_subtitle}}{{else}}Experience elegance and sophistication with professional companionship services{{/if}}
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <!-- Primary Button (Calendar) -->
-            {{#if content.cta_button_1_text}}
-                {{#if (eq content.cta_button_1_link 'calendar')}}
-                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="bg-white text-primary px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center;">{{content.cta_button_1_text}}</a>
-                {{else if (eq content.cta_button_1_link 'contact')}}
-                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="bg-white text-primary px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center;">{{content.cta_button_1_text}}</a>
-                {{else if (eq content.cta_button_1_link 'gallery')}}
-                    <a href="/{{modelSlug}}/gallery{{previewParam}}" class="bg-white text-primary px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center;">{{content.cta_button_1_text}}</a>
-                {{else if (eq content.cta_button_1_link 'rates')}}
-                    <a href="/{{modelSlug}}/rates{{previewParam}}" class="bg-white text-primary px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center;">{{content.cta_button_1_text}}</a>
-                {{else if (eq content.cta_button_1_link 'about')}}
-                    <a href="/{{modelSlug}}/about{{previewParam}}" class="bg-white text-primary px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center;">{{content.cta_button_1_text}}</a>
-                {{else}}
-                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="bg-white text-primary px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center;">{{content.cta_button_1_text}}</a>
-                {{/if}}
-            {{else}}
-                <a href="/{{modelSlug}}/calendar{{previewParam}}" class="bg-white text-primary px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center;">Calendar</a>
-            {{/if}}
-            
-            <!-- Secondary Outline Button (Contact) -->
-            {{#if content.cta_button_2_text}}
-                {{#if (eq content.cta_button_2_link 'calendar')}}
-                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="border-white text-white px-4 py-2 rounded-full font-semibold hover:bg-indigo-50 hover:text-primary transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center; border-width: 1.5px;">{{content.cta_button_2_text}}</a>
-                {{else if (eq content.cta_button_2_link 'contact')}}
-                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="border-white text-white px-4 py-2 rounded-full font-semibold hover:bg-indigo-50 hover:text-primary transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center; border-width: 1.5px;">{{content.cta_button_2_text}}</a>
-                {{else if (eq content.cta_button_2_link 'gallery')}}
-                    <a href="/{{modelSlug}}/gallery{{previewParam}}" class="border-white text-white px-4 py-2 rounded-full font-semibold hover:bg-indigo-50 hover:text-primary transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center; border-width: 1.5px;">{{content.cta_button_2_text}}</a>
-                {{else if (eq content.cta_button_2_link 'rates')}}
-                    <a href="/{{modelSlug}}/rates{{previewParam}}" class="border-white text-white px-4 py-2 rounded-full font-semibold hover:bg-indigo-50 hover:text-primary transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center; border-width: 1.5px;">{{content.cta_button_2_text}}</a>
-                {{else if (eq content.cta_button_2_link 'about')}}
-                    <a href="/{{modelSlug}}/about{{previewParam}}" class="border-white text-white px-4 py-2 rounded-full font-semibold hover:bg-indigo-50 hover:text-primary transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center; border-width: 1.5px;">{{content.cta_button_2_text}}</a>
-                {{else}}
-                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="border-white text-white px-4 py-2 rounded-full font-semibold hover:bg-indigo-50 hover:text-primary transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center; border-width: 1.5px;">{{content.cta_button_2_text}}</a>
-                {{/if}}
-            {{else}}
-                <a href="/{{modelSlug}}/contact{{previewParam}}" class="border-white text-white px-4 py-2 rounded-full font-semibold hover:bg-indigo-50 hover:text-primary transition-colors" style="height: 44px; display: inline-flex; align-items: center; justify-content: center; border-width: 1.5px;">Contact</a>
-            {{/if}}
-        </div>
-    </div>
-</section>
-{{/if}}
-
-<!-- Mobile Sticky CTA -->
-<div id="mobile-sticky-cta" class="fixed bottom-0 left-0 right-0 bg-primary text-white p-4 z-50 hidden sm:hidden" style="box-shadow: 0 -4px 20px rgba(0,0,0,0.1);">
-    <div class="max-w-sm mx-auto">
-        <a href="/{{modelSlug}}/contact{{previewParam}}" class="block w-full bg-white text-primary px-4 py-3 rounded-full font-semibold text-center hover:bg-gray-100 transition-colors">
-            Contact Me
-        </a>
-    </div>
-</div>
-
-<script>
-// Mobile sticky CTA logic
-document.addEventListener('DOMContentLoaded', function() {
-    const hero = document.querySelector('[class*="bg-primary"]');
-    const stickyCTA = document.getElementById('mobile-sticky-cta');
-    
-    if (hero && stickyCTA && window.innerWidth < 640) {
-        const observer = new IntersectionObserver(
-            function(entries) {
-                entries.forEach(function(entry) {
-                    if (!entry.isIntersecting) {
-                        stickyCTA.classList.remove('hidden');
-                    } else {
-                        stickyCTA.classList.add('hidden');
-                    }
-                });
-            },
-            { threshold: 0 }
-        );
-        
-        observer.observe(hero);
-    }
-});
-</script>

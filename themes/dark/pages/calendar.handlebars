@@ -1,139 +1,211 @@
-{{!-- Basic Theme - Calendar Page with Visual Monthly Grid --}}
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-    <div class="container mx-auto px-4 py-8">
-        {{!-- Page Header --}}
-        <div class="text-center mb-12">
-            <h1 class="text-4xl font-bold mb-4" style="color: var(--basic-primary);">
-                My Calendar
+<!-- Dark Sophisticated Boudoir Calendar Page - Hero Section -->
+<section class="boudoir-section" style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)); min-height: 60vh; display: flex; align-items: center; justify-content: center; padding: 4rem 0; position: relative; overflow: hidden;">
+    <!-- Boudoir Decorative Elements -->
+    <div style="position: absolute; top: 10%; left: 5%; opacity: 0.3; z-index: 1;">
+        <svg width="40" height="40" viewBox="0 0 80 80" style="animation: silk-float 9s ease-in-out infinite; color: var(--theme-accent);">
+            <circle cx="40" cy="40" r="5" fill="currentColor" opacity="0.9"/>
+        </svg>
+    </div>
+    <div style="position: absolute; top: 60%; right: 8%; opacity: 0.4; z-index: 1;">
+        <svg width="32" height="32" viewBox="0 0 80 80" style="animation: silk-float 7s ease-in-out infinite; animation-delay: 3s; color: var(--theme-accent);">
+            <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.8"/>
+        </svg>
+    </div>
+    <div style="position: absolute; bottom: 15%; left: 90%; opacity: 0.5; z-index: 1;">
+        <svg width="32" height="32" viewBox="0 0 80 80" style="animation: silk-float 11s ease-in-out infinite; animation-delay: 5s; color: var(--theme-primary);">
+            <rect x="30" y="30" width="20" height="20" fill="currentColor" opacity="0.7"/>
+        </svg>
+    </div>
+
+    <div class="boudoir-container" style="position: relative; z-index: 2; width: 100%;">
+        <!-- Page Header -->
+        <div style="text-align: center;">
+            <div style="margin-bottom: 2rem;">
+                <svg width="80" height="80" viewBox="0 0 80 80" style="color: var(--theme-accent); animation: pulse 3s ease-in-out infinite;">
+                    <defs>
+                        <linearGradient id="calendar-crown-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--theme-accent);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:var(--theme-primary);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="40" cy="40" r="35" fill="none" stroke="url(#calendar-crown-gradient)" stroke-width="3" opacity="0.8"/>
+                    <circle cx="40" cy="40" r="12" fill="url(#calendar-crown-gradient)" opacity="0.9"/>
+                </svg>
+            </div>
+            <h1 style="background: linear-gradient(45deg, var(--theme-accent), var(--theme-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5rem);">
+                {{#if calendar_content.page_title}}{{calendar_content.page_title}}{{else}}My Calendar{{/if}}
             </h1>
-            <p class="text-lg text-slate-600 max-w-3xl mx-auto">
-                View my current location and availability. Check where I'm traveling and when I'm available for appointments.
+            <p style="font-size: 1.2rem; color: var(--theme-text-subtle); max-width: 700px; margin: 0 auto;">
+                {{#if calendar_content.page_subtitle}}{{calendar_content.page_subtitle}}{{else}}View my current location and availability. Check where I'm traveling and when I'm available for appointments.{{/if}}
             </p>
         </div>
+    </div>
+</section>
 
-        {{!-- Calendar Container --}}
-        <div class="max-w-6xl mx-auto">
-            {{!-- View Toggle (Mobile First) --}}
-            <div class="flex justify-center mb-6 md:hidden">
-                <div class="bg-white rounded-lg border border-gray-200 p-1 shadow-sm">
-                    <button id="list-view-btn" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors active">
+<!-- Calendar Content Section with Boudoir Background -->
+<section style="padding: 5rem 0; background: var(--theme-bg);">
+    <div class="boudoir-container">
+        <!-- Calendar Container -->
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <!-- View Toggle (Mobile) -->
+            <div style="display: flex; justify-content: center; margin-bottom: 2rem;" class="md:hidden">
+                <div class="boudoir-card" style="padding: 0.25rem; display: flex; gap: 0;">
+                    <button id="boudoir-list-view-btn" style="padding: 0.75rem 1.5rem; border-radius: var(--radius-sm); font-weight: 600; transition: all 0.3s ease; background: var(--theme-accent); color: var(--theme-bg); border: none; cursor: pointer;">
                         List
                     </button>
-                    <button id="month-view-btn" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    <button id="boudoir-month-view-btn" style="padding: 0.75rem 1.5rem; border-radius: var(--radius-sm); font-weight: 600; transition: all 0.3s ease; background: transparent; color: var(--theme-text); border: none; cursor: pointer;">
                         Month
                     </button>
                 </div>
             </div>
-            
-            {{!-- Calendar Navigation --}}
-            <div class="flex justify-between items-center mb-8">
-                <button id="prev-month" class="px-4 py-2 border-2 border-blue-600 text-blue-600 rounded-lg font-medium transition-colors hover:bg-blue-600 hover:text-white">
-                    ← Previous
+
+            <!-- Calendar Navigation -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <button id="boudoir-prev-month" class="boudoir-btn boudoir-btn-outline" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <svg style="width: 1rem; height: 1rem; color: var(--theme-accent);" viewBox="0 0 80 80">
+                        <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                    </svg>
+                    Previous
                 </button>
-                <h2 id="month-title" class="text-xl font-semibold text-center" style="font-size: 22px; line-height: 28px;"></h2>
-                <button id="next-month" class="px-4 py-2 border-2 border-blue-600 text-blue-600 rounded-lg font-medium transition-colors hover:bg-blue-600 hover:text-white">
-                    Next →
+                <h2 id="boudoir-month-title" style="color: var(--theme-accent); font-size: 1.5rem; font-weight: bold; text-align: center; min-width: 200px; font-family: var(--font-display);"></h2>
+                <button id="boudoir-next-month" class="boudoir-btn boudoir-btn-outline" style="display: flex; align-items: center; gap: 0.5rem;">
+                    Next
+                    <svg style="width: 1rem; height: 1rem; color: var(--theme-accent);" viewBox="0 0 80 80">
+                        <rect x="30" y="30" width="20" height="20" fill="currentColor" opacity="0.7"/>
+                    </svg>
                 </button>
             </div>
 
-            {{!-- Calendar Grid --}}
-            <div id="calendar-container" class="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
-                {{!-- Calendar Header --}}
-                <div class="grid grid-cols-7 bg-slate-50">
-                    <div class="p-4 text-center font-semibold text-slate-700 border-r border-slate-200">Sun</div>
-                    <div class="p-4 text-center font-semibold text-slate-700 border-r border-slate-200">Mon</div>
-                    <div class="p-4 text-center font-semibold text-slate-700 border-r border-slate-200">Tue</div>
-                    <div class="p-4 text-center font-semibold text-slate-700 border-r border-slate-200">Wed</div>
-                    <div class="p-4 text-center font-semibold text-slate-700 border-r border-slate-200">Thu</div>
-                    <div class="p-4 text-center font-semibold text-slate-700 border-r border-slate-200">Fri</div>
-                    <div class="p-4 text-center font-semibold text-slate-700">Sat</div>
+            <!-- Calendar Grid -->
+            <div id="boudoir-calendar-container" class="boudoir-card-luxury" style="overflow: hidden; margin-bottom: 2rem;">
+                <!-- Calendar Header -->
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));">
+                    <div style="padding: 1rem; text-align: center; font-weight: bold; color: var(--theme-text); border-right: 1px solid rgba(255,255,255,0.2);">Sun</div>
+                    <div style="padding: 1rem; text-align: center; font-weight: bold; color: var(--theme-text); border-right: 1px solid rgba(255,255,255,0.2);">Mon</div>
+                    <div style="padding: 1rem; text-align: center; font-weight: bold; color: var(--theme-text); border-right: 1px solid rgba(255,255,255,0.2);">Tue</div>
+                    <div style="padding: 1rem; text-align: center; font-weight: bold; color: var(--theme-text); border-right: 1px solid rgba(255,255,255,0.2);">Wed</div>
+                    <div style="padding: 1rem; text-align: center; font-weight: bold; color: var(--theme-text); border-right: 1px solid rgba(255,255,255,0.2);">Thu</div>
+                    <div style="padding: 1rem; text-align: center; font-weight: bold; color: var(--theme-text); border-right: 1px solid rgba(255,255,255,0.2);">Fri</div>
+                    <div style="padding: 1rem; text-align: center; font-weight: bold; color: var(--theme-text);">Sat</div>
                 </div>
                 
-                {{!-- Calendar Body --}}
-                <div id="calendar-grid">
-                    <div class="text-center py-12 text-slate-500">
-                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-400 mx-auto mb-4"></div>
-                        Loading calendar...
-                    </div>
-                </div>
-            </div>
-            
-            {{!-- List View --}}
-            <div id="list-container" class="bg-white rounded-lg shadow-lg p-6 mb-8 hidden">
-                <div id="list-view">
-                    <div class="text-center py-12 text-slate-500">
-                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-400 mx-auto mb-4"></div>
-                        Loading events...
+                <!-- Calendar Body -->
+                <div id="boudoir-calendar-grid" style="background: var(--theme-surface);">
+                    <div style="text-align: center; padding: 3rem; color: var(--theme-text-subtle);">
+                        <div style="display: inline-block; width: 2rem; height: 2rem; border: 3px solid var(--theme-accent); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem;"></div>
+                        <div>Loading boudoir calendar...</div>
                     </div>
                 </div>
             </div>
 
-            {{!-- Legend --}}
-            <div class="flex flex-wrap justify-center gap-6 mb-8">
-                <div class="flex items-center">
-                    <div class="w-2.5 h-2.5 rounded-full mr-2" style="background-color: #22C55E;"></div>
-                    <span class="text-sm font-medium" style="font-size: 14px; line-height: 20px;">Available</span>
-                </div>
-                <div class="flex items-center">
-                    <div class="w-2.5 h-2.5 rounded-full mr-2" style="background-color: #3B82F6;"></div>
-                    <span class="text-sm font-medium" style="font-size: 14px; line-height: 20px;">Travel</span>
-                </div>
-                <div class="flex items-center">
-                    <div class="w-2.5 h-2.5 rounded-full mr-2" style="background-color: #F59E0B;"></div>
-                    <span class="text-sm font-medium" style="font-size: 14px; line-height: 20px;">Vacation</span>
-                </div>
-                <div class="flex items-center">
-                    <div class="w-2.5 h-2.5 rounded-full mr-2" style="background-color: #94A3B8;"></div>
-                    <span class="text-sm font-medium" style="font-size: 14px; line-height: 20px;">Unavailable</span>
+            <!-- List View (Mobile) -->
+            <div id="boudoir-list-container" class="boudoir-card-luxury" style="padding: 1.5rem; margin-bottom: 2rem; display: none;">
+                <div id="boudoir-list-view">
+                    <div style="text-align: center; padding: 3rem; color: var(--theme-text-subtle);">
+                        <div style="display: inline-block; width: 2rem; height: 2rem; border: 3px solid var(--theme-accent); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem;"></div>
+                        <div>Loading events...</div>
+                    </div>
                 </div>
             </div>
 
-            {{!-- Contact Call-to-Action --}}
-            <div class="bg-white border border-gray-200 rounded-lg p-8 text-center">
-                <a href="/{{modelSlug}}/contact{{previewParam}}" 
-                   class="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold transition-colors hover:bg-blue-700">
-                    Contact Me
-                </a>
+            <!-- Legend -->
+            <div style="display: flex; flex-wrap: true; justify-content: center; gap: 1.5rem; margin-bottom: 2rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 0.75rem; height: 0.75rem; border-radius: 50%; background: var(--theme-success, #10b981);"></div>
+                    <span style="color: var(--theme-text); font-weight: 600; font-size: 0.9rem;">Available</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 0.75rem; height: 0.75rem; border-radius: 50%; background: var(--theme-accent);"></div>
+                    <span style="color: var(--theme-text); font-weight: 600; font-size: 0.9rem;">Travel</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 0.75rem; height: 0.75rem; border-radius: 50%; background: var(--theme-warning, #f59e0b);"></div>
+                    <span style="color: var(--theme-text); font-weight: 600; font-size: 0.9rem;">Vacation</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 0.75rem; height: 0.75rem; border-radius: 50%; background: var(--theme-text-subtle);"></div>
+                    <span style="color: var(--theme-text); font-weight: 600; font-size: 0.9rem;">Unavailable</span>
+                </div>
+            </div>
+
+            <!-- Contact CTA -->
+            <div class="boudoir-card-luxury" style="text-align: center; background: linear-gradient(135deg, var(--theme-surface), var(--theme-bg-alt)); position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -30px; right: -30px; opacity: 0.2; z-index: 1;">
+                    <svg style="width: 120px; height: 120px; color: var(--theme-accent);" viewBox="0 0 80 80">
+                        <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+                        <circle cx="40" cy="40" r="15" fill="currentColor" opacity="0.3"/>
+                    </svg>
+                </div>
+                
+                <div style="position: relative; z-index: 2;">
+                    <h3 style="color: var(--theme-text); margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem; font-family: var(--font-display); font-size: 1.8rem;">
+                        <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                            <rect x="25" y="25" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+                        </svg>
+                        Ready to Schedule?
+                    </h3>
+                    <p style="color: var(--theme-text); margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto;">
+                        Contact me directly to arrange your exclusive appointment. Discretion and elegance guaranteed.
+                    </p>
+                    <a href="/{{model.slug}}/contact{{previewParam}}" class="boudoir-btn boudoir-btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                        Contact Me
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
-{{!-- Calendar JavaScript --}}
+<!-- Boudoir Calendar JavaScript -->
 <script>
 (function() {
-    const slug = {{{json modelSlug}}};
+    const slug = {{{json model.slug}}};
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth() + 1;
     
-    const calendarGrid = document.getElementById('calendar-grid');
-    const monthTitle = document.getElementById('month-title');
-    const prevButton = document.getElementById('prev-month');
-    const nextButton = document.getElementById('next-month');
+    const calendarGrid = document.getElementById('boudoir-calendar-grid');
+    const monthTitle = document.getElementById('boudoir-month-title');
+    const prevButton = document.getElementById('boudoir-prev-month');
+    const nextButton = document.getElementById('boudoir-next-month');
     
-    async function loadCalendar(year = currentYear, month = currentMonth) {
+    // Boudoir theme colors
+    const boudeiroColors = {
+        available: 'var(--theme-success, #10b981)',
+        travel: 'var(--theme-accent)',
+        vacation: 'var(--theme-warning, #f59e0b)', 
+        unavailable: 'var(--theme-text-subtle)'
+    };
+    
+    const boudeiroTextColors = {
+        available: 'white',
+        travel: 'var(--theme-bg)',
+        vacation: 'var(--theme-bg)',
+        unavailable: 'white'
+    };
+    
+    async function loadBoudeiroCalendar(year = currentYear, month = currentMonth) {
         try {
             const response = await fetch(`/api/model-calendar/${slug}?year=${year}&month=${month}`);
             const data = await response.json();
             
             if (!data.success) {
-                throw new Error(data.error || 'Failed to load calendar');
+                throw new Error(data.error || 'Failed to load boudoir calendar');
             }
             
             const calendar = data.data.calendar;
             currentYear = year;
             currentMonth = month;
             
-            // Update month title
+            // Update month title with boudoir styling
             monthTitle.textContent = `${calendar.monthName} ${calendar.year}`;
             
-            // Generate calendar grid
+            // Generate boudoir calendar grid
             let gridHtml = '';
             
             const cellHeights = {
-                desktop: 92,
-                tablet: 64,
-                mobile: 56
+                desktop: 100,
+                tablet: 70,
+                mobile: 60
             };
             
             const screenWidth = window.innerWidth;
@@ -141,18 +213,22 @@
                              screenWidth >= 768 ? cellHeights.tablet : cellHeights.mobile;
             
             calendar.weeks.forEach((week, weekIndex) => {
-                gridHtml += `<div class="grid grid-cols-7 border-t border-slate-200 relative" style="min-height: ${cellHeight + (week.spans.length * 28)}px;">`;
+                gridHtml += `<div style="display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid var(--theme-border); position: relative; min-height: ${cellHeight + (week.spans.length * 32)}px;">`;
                 
-                // Day cells
+                // Day cells with boudoir styling
                 week.days.forEach((day, dayIndex) => {
                     const isToday = day === new Date().getDate() && 
                                   currentMonth === (new Date().getMonth() + 1) && 
                                   currentYear === new Date().getFullYear();
                     
+                    const todayStyle = isToday ? 
+                        'background: linear-gradient(45deg, var(--theme-accent), var(--theme-primary)); color: var(--theme-bg); border-radius: 50%; width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; font-weight: bold;' : 
+                        'color: var(--theme-text);';
+                    
                     gridHtml += `
-                        <div class="p-2 border-r border-slate-200 ${day === 0 ? 'bg-slate-50' : ''} relative" style="min-height: ${cellHeight}px;">
+                        <div style="padding: 0.75rem; border-right: 1px solid var(--theme-border); ${day === 0 ? 'background: var(--theme-bg);' : 'background: var(--theme-surface);'} position: relative; min-height: ${cellHeight}px;">
                             ${day > 0 ? `
-                                <div class="text-sm font-semibold mb-2 ${isToday ? 'text-blue-600' : 'text-slate-700'} relative z-10">
+                                <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; ${todayStyle} position: relative; z-index: 10;">
                                     ${day}
                                 </div>
                             ` : ''}
@@ -160,37 +236,18 @@
                     `;
                 });
                 
-                // Add availability spans positioned absolutely over the week
+                // Add boudoir availability spans
                 week.spans.forEach((span, spanIndex) => {
-                    const eventColors = {
-                        'available': '#22C55E',
-                        'travel': '#3B82F6',
-                        'vacation': '#F59E0B', 
-                        'unavailable': '#94A3B8'
-                    };
-                    
-                    const textColors = {
-                        'available': 'white',
-                        'travel': 'white',
-                        'vacation': '#1F2937',
-                        'unavailable': 'white'
-                    };
-                    
-                    const bgColor = eventColors[span.status] || span.color;
-                    const textColor = textColors[span.status] || 'white';
+                    const bgColor = boudeiroColors[span.status] || span.color;
+                    const textColor = boudeiroTextColors[span.status] || 'white';
                     
                     gridHtml += `
-                        <div class="absolute text-xs px-2 py-1 z-10 flex items-center justify-center font-medium shadow-sm"
-                             style="background-color: ${bgColor};
-                                    color: ${textColor};
-                                    border-radius: 8px;
-                                    left: ${span.start_pos * 14.285714}%; 
-                                    width: ${span.width * 14.285714}%;
-                                    top: ${32 + (spanIndex * 28)}px; 
-                                    height: 24px;
-                                    margin-left: 1px;
-                                    margin-right: 1px;">
-                            <span class="truncate text-xs overflow-hidden text-ellipsis whitespace-nowrap">
+                        <div style="position: absolute; font-size: 0.75rem; padding: 0.25rem 0.5rem; z-index: 10; display: flex; align-items: center; justify-content: center; font-weight: 600; 
+                                   background: ${bgColor}; color: ${textColor}; border-radius: var(--radius-sm);
+                                   left: ${span.start_pos * 14.285714}%; width: ${span.width * 14.285714}%;
+                                   top: ${36 + (spanIndex * 32)}px; height: 28px; margin: 0 1px;
+                                   box-shadow: 0 2px 8px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.2);">
+                            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;">
                                 ${span.location}
                                 ${span.status === 'vacation' ? ' - Vacation' : ''}
                             </span>
@@ -201,26 +258,28 @@
                 gridHtml += '</div>';
             });
             
-            // Generate list view
-            generateListView(calendar);
+            // Generate boudoir list view
+            generateBoudeiroListView(calendar);
             
             calendarGrid.innerHTML = gridHtml;
             
         } catch (error) {
-            console.error('Error loading calendar:', error);
-            calendarGrid.innerHTML = `
-                <div class="text-center py-12 text-red-500">
-                    <div class="text-4xl mb-4">⚠️</div>
-                    <h3 class="text-lg font-semibold mb-2">Unable to Load Calendar</h3>
-                    <p>Please contact me directly for availability information.</p>
+            console.error('Error loading boudoir calendar:', error);
+            const errorHtml = `
+                <div style="text-align: center; padding: 3rem; color: var(--theme-text);">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">✨</div>
+                    <h3 style="font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem; color: var(--theme-accent);">Calendar Unavailable</h3>
+                    <p style="color: var(--theme-text-subtle); margin-bottom: 2rem;">Please contact me directly for availability information.</p>
+                    <a href="/{{model.slug}}/contact{{previewParam}}" class="boudoir-btn boudoir-btn-primary">Contact Me</a>
                 </div>
             `;
-            document.getElementById('list-view').innerHTML = calendarGrid.innerHTML;
+            calendarGrid.innerHTML = errorHtml;
+            document.getElementById('boudoir-list-view').innerHTML = errorHtml;
         }
     }
     
-    function generateListView(calendar) {
-        const listView = document.getElementById('list-view');
+    function generateBoudeiroListView(calendar) {
+        const listView = document.getElementById('boudoir-list-view');
         if (!listView) return;
         
         let listHtml = '';
@@ -242,16 +301,9 @@
         // Sort events by date
         events.sort((a, b) => a.date - b.date);
         
-        const eventColors = {
-            'available': '#22C55E',
-            'travel': '#3B82F6',
-            'vacation': '#F59E0B',
-            'unavailable': '#94A3B8'
-        };
-        
-        // Generate list items
+        // Generate boudoir list items
         if (events.length === 0) {
-            listHtml = '<div class="text-center py-8 text-gray-500">No events this month</div>';
+            listHtml = '<div style="text-align: center; padding: 2rem; color: var(--theme-text-subtle);">No appointments this month</div>';
         } else {
             events.forEach(event => {
                 const dateStr = event.date.toLocaleDateString('en-US', { 
@@ -260,16 +312,19 @@
                     day: 'numeric' 
                 });
                 
+                const statusDisplay = event.status.charAt(0).toUpperCase() + event.status.slice(1);
+                const bgColor = boudeiroColors[event.status];
+                
                 listHtml += `
-                    <div class="flex items-center justify-between py-3 border-b border-gray-200 last:border-b-0">
-                        <div class="flex items-center">
-                            <div class="w-3 h-3 rounded-full mr-3" style="background-color: ${eventColors[event.status]}"></div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--theme-border);">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div style="width: 0.75rem; height: 0.75rem; border-radius: 50%; background: ${bgColor}; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
                             <div>
-                                <div class="font-medium text-gray-900">${dateStr}</div>
-                                <div class="text-sm text-gray-600">${event.status.charAt(0).toUpperCase() + event.status.slice(1)}</div>
+                                <div style="font-weight: 600; color: var(--theme-text);">${dateStr}</div>
+                                <div style="font-size: 0.9rem; color: var(--theme-text-subtle);">${statusDisplay}</div>
                             </div>
                         </div>
-                        <div class="text-sm font-medium text-gray-700">
+                        <div style="font-weight: 600; color: var(--theme-accent);">
                             ${event.location}
                         </div>
                     </div>
@@ -280,7 +335,7 @@
         listView.innerHTML = listHtml;
     }
     
-    // Navigation event listeners
+    // Boudoir navigation event listeners
     prevButton.addEventListener('click', () => {
         if (currentMonth === 1) {
             currentMonth = 12;
@@ -288,7 +343,7 @@
         } else {
             currentMonth--;
         }
-        loadCalendar(currentYear, currentMonth);
+        loadBoudeiroCalendar(currentYear, currentMonth);
     });
     
     nextButton.addEventListener('click', () => {
@@ -298,10 +353,10 @@
         } else {
             currentMonth++;
         }
-        loadCalendar(currentYear, currentMonth);
+        loadBoudeiroCalendar(currentYear, currentMonth);
     });
     
-    // Keyboard support
+    // Boudoir keyboard support
     document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowLeft') {
             e.preventDefault();
@@ -312,74 +367,95 @@
         }
     });
     
-    // View toggle functionality
-    const listViewBtn = document.getElementById('list-view-btn');
-    const monthViewBtn = document.getElementById('month-view-btn');
-    const calendarContainer = document.getElementById('calendar-container');
-    const listContainer = document.getElementById('list-container');
+    // Boudoir view toggle functionality
+    const listViewBtn = document.getElementById('boudoir-list-view-btn');
+    const monthViewBtn = document.getElementById('boudoir-month-view-btn');
+    const calendarContainer = document.getElementById('boudoir-calendar-container');
+    const listContainer = document.getElementById('boudoir-list-container');
     
-    let currentView = window.innerWidth <= 640 ? 'list' : 'month';
+    let currentView = window.innerWidth <= 768 ? 'list' : 'month';
     
-    function switchView(view) {
+    function switchBoudeiroView(view) {
         currentView = view;
         
         if (view === 'list') {
-            calendarContainer.classList.add('hidden');
-            listContainer.classList.remove('hidden');
-            listViewBtn.classList.add('active');
-            monthViewBtn.classList.remove('active');
+            calendarContainer.style.display = 'none';
+            listContainer.style.display = 'block';
+            listViewBtn.style.background = 'var(--theme-accent)';
+            listViewBtn.style.color = 'var(--theme-bg)';
+            monthViewBtn.style.background = 'transparent';
+            monthViewBtn.style.color = 'var(--theme-text)';
         } else {
-            calendarContainer.classList.remove('hidden');
-            listContainer.classList.add('hidden');
-            monthViewBtn.classList.add('active');
-            listViewBtn.classList.remove('active');
+            calendarContainer.style.display = 'block';
+            listContainer.style.display = 'none';
+            monthViewBtn.style.background = 'var(--theme-accent)';
+            monthViewBtn.style.color = 'var(--theme-bg)';
+            listViewBtn.style.background = 'transparent';
+            listViewBtn.style.color = 'var(--theme-text)';
         }
     }
     
     if (listViewBtn && monthViewBtn) {
-        listViewBtn.addEventListener('click', () => switchView('list'));
-        monthViewBtn.addEventListener('click', () => switchView('month'));
+        listViewBtn.addEventListener('click', () => switchBoudeiroView('list'));
+        monthViewBtn.addEventListener('click', () => switchBoudeiroView('month'));
     }
     
-    // Set initial view
-    switchView(currentView);
+    // Set initial boudoir view
+    switchBoudeiroView(currentView);
     
-    // Load initial calendar
-    loadCalendar();
+    // Load initial boudoir calendar
+    loadBoudeiroCalendar();
 })();
 </script>
 
+<!-- Boudoir Calendar Styles -->
 <style>
-#list-view-btn.active,
-#month-view-btn.active {
-    background-color: #2563EB;
-    color: white;
+@keyframes silk-float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
 }
 
-#list-view-btn,
-#month-view-btn {
-    background-color: transparent;
-    color: #64748B;
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
-#list-view-btn:hover,
-#month-view-btn:hover {
-    background-color: #F1F5F9;
-    color: #2563EB;
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-@media (min-width: 641px) {
-    #list-container {
+/* Boudoir calendar responsive design */
+@media (max-width: 768px) {
+    #boudoir-calendar-container {
         display: none !important;
     }
-}
-
-@media (max-width: 640px) {
-    #calendar-container {
-        display: none !important;
-    }
-    #list-container {
+    
+    #boudoir-list-container {
         display: block !important;
     }
+    
+    .boudoir-container > div[style*="flex"] {
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+}
+
+@media (min-width: 769px) {
+    #boudoir-list-container {
+        display: none !important;
+    }
+}
+
+/* Boudoir button hover effects */
+.boudoir-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(232, 180, 203, 0.3);
+}
+
+/* Boudoir calendar grid hover effects */
+#boudoir-calendar-grid > div:hover {
+    background: rgba(232, 180, 203, 0.05) !important;
+    transition: background 0.3s ease;
 }
 </style>

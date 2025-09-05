@@ -1,0 +1,329 @@
+<!-- Dark Sophisticated Boudoir Home Page -->
+{{#if content.hero_section_visible}}
+<section class="boudoir-hero boudoir-section" 
+         style="{{#if heroBackgroundImageUrl}}background: var(--theme-bg);{{else}}background: linear-gradient(135deg, var(--theme-bg), var(--theme-bg-alt));{{/if}}">
+    
+    <!-- Silk Decorative Background Elements -->
+    <div class="silk-accent silk-accent-1" data-parallax="0.3"></div>
+    <div class="silk-accent silk-accent-2" data-parallax="0.5"></div>
+    <div class="silk-accent silk-accent-3" data-parallax="0.4"></div>
+
+    <!-- Parallax Background Image -->
+    {{#if heroBackgroundImageUrl}}
+    <div class="boudoir-hero-backdrop" 
+         style="background-image: url('{{heroBackgroundImageUrl}}'); opacity: {{#if content.hero_background_opacity}}{{content.hero_background_opacity}}{{else}}0.6{{/if}};"
+         data-parallax="0.5"></div>
+    <div class="boudoir-hero-overlay"></div>
+    {{/if}}
+
+    <div class="boudoir-container">
+        <div class="boudoir-hero-content">
+            <!-- Elegant Icon -->
+            <div class="mb-lg" data-aos="fade-up" data-aos-duration="1200">
+                <svg width="80" height="80" viewBox="0 0 80 80" style="color: var(--theme-primary); opacity: 0.8;">
+                    <defs>
+                        <linearGradient id="boudeir-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--theme-primary);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:var(--theme-accent);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="40" cy="40" r="35" fill="none" stroke="url(#boudeir-gradient)" stroke-width="2" opacity="0.6"/>
+                    <circle cx="40" cy="40" r="25" fill="none" stroke="url(#boudeir-gradient)" stroke-width="1.5" opacity="0.4"/>
+                    <circle cx="40" cy="40" r="15" fill="none" stroke="url(#boudeir-gradient)" stroke-width="1" opacity="0.3"/>
+                    <circle cx="40" cy="40" r="5" fill="url(#boudeir-gradient)" opacity="0.8"/>
+                </svg>
+            </div>
+            
+            <!-- Hero Title -->
+            <h1 class="boudoir-title mb-md" 
+                style="font-size: clamp(3rem, 8vw, 6rem); margin-bottom: var(--space-lg);"
+                data-aos="fade-up" data-aos-delay="200">
+                {{#if content.hero_title}}{{content.hero_title}}{{else}}{{siteName}}{{/if}}
+            </h1>
+            
+            <!-- Hero Subtitle -->
+            <p style="font-size: clamp(1.25rem, 3vw, 1.75rem); color: var(--theme-text-subtle); max-width: 800px; margin: 0 auto var(--space-xl); line-height: 1.6;"
+               data-aos="fade-up" data-aos-delay="400">
+                {{#if content.hero_subtitle}}{{content.hero_subtitle}}{{else}}{{#if content.tagline}}{{content.tagline}}{{else}}Sophisticated evening elegance with discretion and luxury{{/if}}{{/if}}
+            </p>
+            
+            <!-- Hero Buttons -->
+            <div style="display: flex; gap: var(--space-md); justify-content: center; flex-wrap: wrap;" 
+                 data-aos="fade-up" data-aos-delay="600">
+                <!-- Primary CTA -->
+                {{#if content.hero_button_1_text}}
+                    {{#if (eq content.hero_button_1_link 'calendar')}}
+                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="boudoir-btn boudoir-btn-primary">
+                            {{content.hero_button_1_text}}
+                        </a>
+                    {{else if (eq content.hero_button_1_link 'contact')}}
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="boudoir-btn boudoir-btn-primary">
+                            {{content.hero_button_1_text}}
+                        </a>
+                    {{else if (eq content.hero_button_1_link 'about')}}
+                        <a href="/{{modelSlug}}/about{{previewParam}}" class="boudoir-btn boudoir-btn-primary">
+                            {{content.hero_button_1_text}}
+                        </a>
+                    {{else if (eq content.hero_button_1_link 'rates')}}
+                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="boudoir-btn boudoir-btn-primary">
+                            {{content.hero_button_1_text}}
+                        </a>
+                    {{else}}
+                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="boudoir-btn boudoir-btn-primary">
+                            {{content.hero_button_1_text}}
+                        </a>
+                    {{/if}}
+                {{else}}
+                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="boudoir-btn boudoir-btn-primary">
+                        View Calendar
+                    </a>
+                {{/if}}
+                
+                <!-- Secondary CTA -->
+                {{#if content.hero_button_2_text}}
+                    {{#if (eq content.hero_button_2_link 'contact')}}
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="boudoir-btn boudoir-btn-secondary">
+                            {{content.hero_button_2_text}}
+                        </a>
+                    {{else if (eq content.hero_button_2_link 'about')}}
+                        <a href="/{{modelSlug}}/about{{previewParam}}" class="boudoir-btn boudoir-btn-secondary">
+                            {{content.hero_button_2_text}}
+                        </a>
+                    {{else if (eq content.hero_button_2_link 'rates')}}
+                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="boudoir-btn boudoir-btn-secondary">
+                            {{content.hero_button_2_text}}
+                        </a>
+                    {{else}}
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="boudoir-btn boudoir-btn-secondary">
+                            {{content.hero_button_2_text}}
+                        </a>
+                    {{/if}}
+                {{else}}
+                    <a href="/{{modelSlug}}/about{{previewParam}}" class="boudoir-btn boudoir-btn-outline">
+                        Learn More
+                    </a>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- About Preview Section -->
+{{#if content.about_section_visible}}
+<section class="boudoir-section" style="background: var(--theme-bg-alt);">
+    <div class="boudoir-container">
+        <div class="boudoir-grid boudoir-grid-2" style="align-items: center; gap: var(--space-3xl);">
+            
+            <!-- Portrait Image -->
+            {{#if portraitImageUrl}}
+            <div data-aos="fade-right" data-aos-duration="800">
+                <div style="position: relative; border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-xl);">
+                    <img src="{{portraitImageUrl}}" 
+                         alt="{{portraitAlt}}" 
+                         style="width: 100%; height: 600px; object-fit: cover;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, transparent 0%, rgba(212, 175, 55, 0.1) 100%);"></div>
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- About Content -->
+            <div {{#unless portraitImageUrl}}style="grid-column: 1 / -1; text-align: center;"{{/unless}} data-aos="fade-left" data-aos-duration="800">
+                <div class="boudoir-card-luxury" style="padding: var(--space-2xl);">
+                    <h2 class="boudoir-title mb-lg" style="font-size: clamp(2.5rem, 5vw, 3.5rem);">
+                        {{#if content.about_section_title}}{{content.about_section_title}}{{else}}About {{siteName}}{{/if}}
+                    </h2>
+                    
+                    <p style="font-size: 1.1rem; line-height: 1.8; color: var(--theme-text-subtle); margin-bottom: var(--space-xl);">
+                        {{#if content.about_section_description}}{{content.about_section_description}}{{else}}Experience the perfect blend of sophistication and elegance in an upscale, discreet environment where luxury meets refined taste.{{/if}}
+                    </p>
+                    
+                    <!-- Quick Facts -->
+                    {{#if content.quick_facts_visible}}
+                    <div class="boudoir-grid boudoir-grid-2 mb-xl" style="gap: var(--space-sm);">
+                        {{#each quickFacts}}
+                        <div class="boudoir-card" style="padding: var(--space-md); text-align: center;">
+                            <h4 style="color: var(--theme-primary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-xs);">{{question}}</h4>
+                            <p style="color: var(--theme-text); font-weight: 500; font-size: 1rem;">{{answer}}</p>
+                        </div>
+                        {{/each}}
+                    </div>
+                    {{/if}}
+                    
+                    <a href="/{{modelSlug}}/about{{previewParam}}" class="boudoir-btn boudoir-btn-outline">
+                        <span>Discover More</span>
+                        <svg width="16" height="16" viewBox="0 0 16 16" style="margin-left: var(--space-xs);" fill="currentColor">
+                            <path d="M8 0L6.59 1.41L12.17 7H0V9H12.17L6.59 14.59L8 16L16 8L8 0Z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Services Section -->
+{{#if content.services_section_visible}}
+<section class="boudoir-section" style="background: var(--theme-bg);">
+    <div class="boudoir-container">
+        <div style="text-align: center; margin-bottom: var(--space-3xl);" data-aos="fade-up">
+            <span class="boudoir-script" style="font-size: 1.5rem; display: block; margin-bottom: var(--space-sm);">Premium</span>
+            <h2 class="boudoir-title" style="font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: var(--space-md);">
+                {{#if content.services_section_title}}{{content.services_section_title}}{{else}}Exclusive Services{{/if}}
+            </h2>
+            <p style="font-size: 1.1rem; color: var(--theme-text-subtle); max-width: 600px; margin: 0 auto;">
+                {{#if content.services_section_description}}{{content.services_section_description}}{{else}}Curated experiences designed for the discerning individual who appreciates luxury and discretion{{/if}}
+            </p>
+        </div>
+        
+        {{#if services}}
+        <div class="boudoir-grid boudoir-grid-3">
+            {{#each services}}
+            <div class="boudoir-pricing-card {{#if @first}}boudoir-pricing-featured{{/if}}" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-lg);">
+                    <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--theme-text); margin: 0;">{{name}}</h3>
+                    <div style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent)); color: var(--theme-bg); padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-md); font-weight: 700; font-size: 0.9rem;">
+                        ${{price}}
+                    </div>
+                </div>
+                
+                <p style="color: var(--theme-text-subtle); line-height: 1.6; margin-bottom: var(--space-lg);">
+                    {{description}}
+                </p>
+                
+                <div style="display: flex; align-items: center; justify-content: center; color: var(--theme-text-subtle); font-size: 0.9rem;">
+                    <svg width="16" height="16" viewBox="0 0 16 16" style="margin-right: var(--space-xs);" fill="currentColor">
+                        <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm3.5 9L7 10.5v-5h1.5v4.2l2.8 1.3-.8 1.5z"/>
+                    </svg>
+                    {{duration}} {{#if duration_unit}}{{duration_unit}}{{else}}hour{{/if}}{{#if (gt duration 1)}}s{{/if}}
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        {{/if}}
+    </div>
+</section>
+{{/if}}
+
+<!-- Gallery Preview Section -->
+{{#if content.gallery_section_visible}}
+<section class="boudoir-section" style="background: var(--theme-surface);">
+    <div class="boudoir-container">
+        <div style="text-align: center; margin-bottom: var(--space-3xl);" data-aos="fade-up">
+            <span class="boudoir-script" style="font-size: 1.5rem; display: block; margin-bottom: var(--space-sm);">Exclusive</span>
+            <h2 class="boudoir-title" style="font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: var(--space-md);">
+                {{#if content.gallery_section_title}}{{content.gallery_section_title}}{{else}}Private Gallery{{/if}}
+            </h2>
+            <p style="font-size: 1.1rem; color: var(--theme-text-subtle);">
+                {{#if content.gallery_section_description}}{{content.gallery_section_description}}{{else}}A curated collection of moments captured with elegance{{/if}}
+            </p>
+        </div>
+        
+        {{#if galleryImages}}
+        <div class="boudoir-gallery" style="margin-bottom: var(--space-xl);">
+            {{#each galleryImages}}
+            <div class="boudoir-gallery-item" data-aos="zoom-in" data-aos-delay="{{multiply @index 100}}">
+                <img src="{{imageUrl}}" alt="Gallery image {{add @index 1}}" loading="lazy">
+                <div class="boudoir-gallery-overlay">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="white">
+                        <path d="M14 9V2L5 11h7z M19 9V2l9 9h-7z M18 14v7l9-9h-7z M14 21v7l-9-9h7z"/>
+                    </svg>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        {{/if}}
+        
+        <div style="text-align: center;">
+            <a href="/{{modelSlug}}/gallery{{previewParam}}" class="boudoir-btn boudoir-btn-primary">
+                <span>View Complete Gallery</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" style="margin-left: var(--space-xs);" fill="currentColor">
+                    <path d="M8 0L6.59 1.41L12.17 7H0V9H12.17L6.59 14.59L8 16L16 8L8 0Z"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Testimonials Section -->
+{{#if content.testimonials_section_visible}}
+<section class="boudoir-section" style="background: var(--theme-bg-alt);">
+    <div class="boudoir-container">
+        <div style="text-align: center; margin-bottom: var(--space-3xl);" data-aos="fade-up">
+            <span class="boudoir-script" style="font-size: 1.5rem; display: block; margin-bottom: var(--space-sm);">Testimonials</span>
+            <h2 class="boudoir-title" style="font-size: clamp(2.5rem, 5vw, 4rem);">
+                {{#if content.testimonials_section_title}}{{content.testimonials_section_title}}{{else}}Client Experiences{{/if}}
+            </h2>
+        </div>
+        
+        {{#if testimonials}}
+        <div class="boudoir-grid boudoir-grid-3">
+            {{#each testimonials}}
+            {{#if (lt @index (or ../content.testimonials_display_count 3))}}
+            <div class="boudoir-testimonial" data-aos="fade-up" data-aos-delay="{{multiply @index 150}}">
+                <div class="boudoir-testimonial-content">
+                    {{content}}
+                </div>
+                
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div class="boudoir-testimonial-author">
+                        <div class="boudoir-testimonial-avatar">
+                            {{#if name}}{{name}}{{else}}?{{/if}}
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--theme-text); margin-bottom: 2px;">{{name}}</div>
+                            <div style="font-size: 0.9rem; color: var(--theme-text-subtle);">{{location}}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; color: var(--theme-primary);">
+                        {{#repeat rating}}
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="margin-left: 2px;">
+                            <path d="M8 12.4l-4.2 2.2.8-4.7L.9 6.2l4.7-.7L8 1l2.4 4.5 4.7.7-3.7 3.7.8 4.7z"/>
+                        </svg>
+                        {{/repeat}}
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+            {{/each}}
+        </div>
+        {{/if}}
+    </div>
+</section>
+{{/if}}
+
+<!-- CTA Section -->
+{{#if content.cta_section_visible}}
+<section class="boudoir-section" style="background: linear-gradient(135deg, var(--theme-bg), var(--theme-surface)); position: relative; overflow: hidden;">
+    
+    <!-- Background Decorations -->
+    <div class="silk-accent silk-accent-1" style="top: 10%; left: 5%;"></div>
+    <div class="silk-accent silk-accent-2" style="bottom: 10%; right: 5%;"></div>
+    
+    <div class="boudoir-container" style="position: relative; z-index: 10;">
+        <div style="text-align: center; max-width: 800px; margin: 0 auto;" data-aos="zoom-in">
+            <div class="boudoir-card-luxury" style="padding: var(--space-3xl);">
+                <h2 class="boudoir-title" style="font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: var(--space-md);">
+                    {{#if content.cta_title}}{{content.cta_title}}{{else}}Ready to Connect?{{/if}}
+                </h2>
+                
+                <p style="font-size: 1.2rem; color: var(--theme-text-subtle); margin-bottom: var(--space-xl); line-height: 1.6;">
+                    {{#if content.cta_description}}{{content.cta_description}}{{else}}Take the first step towards an exceptional experience. Reach out to begin our conversation.{{/if}}
+                </p>
+                
+                <div style="display: flex; gap: var(--space-md); justify-content: center; flex-wrap: wrap;">
+                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="boudoir-btn boudoir-btn-primary" style="font-size: 1.1rem; padding: var(--space-md) var(--space-xl);">
+                        Get In Touch
+                    </a>
+                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="boudoir-btn boudoir-btn-secondary" style="font-size: 1.1rem; padding: var(--space-md) var(--space-xl);">
+                        View Availability
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{{/if}}

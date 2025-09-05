@@ -614,7 +614,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             try {
                 // Load content_templates data for header fields
-                const response = await fetch(`/api/model-content/${this.currentModelSlug}/pages/5`);
+                const response = await fetch(`/api/model-rates/${this.currentModelSlug}/page-content`);
                 const data = await response.json();
                 const items = (data && (data.items || (data.data && data.data.items))) || [];
                 const content = {};
@@ -707,8 +707,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const save = async () => {
                     if (statusEl){ statusEl.textContent = 'Saving...'; statusEl.className = 'save-status saving'; }
                     const value = field.value;
-                    await fetch(`/api/model-content/${this.currentModelSlug}/pages/5/${encodeURIComponent(key)}`, {
-                        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content_value: value })
+                    await fetch(`/api/model-rates/${this.currentModelSlug}/page-content`, {
+                        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ [key]: value })
                     }).then(r=>r.json()).then(d => {
                         if (statusEl){ statusEl.textContent = d.success ? 'Saved' : 'Error'; statusEl.className = 'save-status ' + (d.success ? 'saved':'error'); }
                     }).catch(()=>{ if (statusEl){ statusEl.textContent = 'Error'; statusEl.className = 'save-status error'; }});
@@ -739,7 +739,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const save = async () => {
                     const value = field.value;
                     try {
-                        await fetch(`/api/model-content/${this.currentModelSlug}/pages/5/${encodeURIComponent(key)}`, {
+                        await fetch(`/api/model-rates/${this.currentModelSlug}/page-content`, {
                             method: 'PUT', 
                             headers: { 'Content-Type': 'application/json' }, 
                             body: JSON.stringify({ content_value: value })
@@ -809,7 +809,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Load original template defaults from content_templates table
             let defaults = {};
             try {
-                const templateResponse = await fetch(`/api/model-content/${this.currentModelSlug}/pages/5`);
+                const templateResponse = await fetch(`/api/model-rates/${this.currentModelSlug}/page-content`);
                 const templateResult = await templateResponse.json();
                 
                 if (templateResult.success && templateResult.data && templateResult.data.items) {

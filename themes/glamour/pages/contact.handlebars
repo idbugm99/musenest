@@ -1,37 +1,69 @@
-<!-- Professional Contact Hero Section -->
-<section class="glamour-contact-hero" data-aos="fade-in">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center">
-            {{#if contact_content.contact_header_visible}}
-            <h1 class="glamour-hero-title" data-aos="fade-up" data-aos-delay="200">
-                {{#if contact_content.page_title}}{{contact_content.page_title}}{{else}}Contact {{siteName}}{{/if}}
-            </h1>
-            <p class="glamour-hero-subtitle" data-aos="fade-up" data-aos-delay="400">
-                {{#if contact_content.page_subtitle}}{{contact_content.page_subtitle}}{{else}}Let's connect and create something extraordinary together{{/if}}
-            </p>
-            {{/if}}
+<!-- Contact Header -->
+{{#if content.contact_header_visible}}
+<section class="relative py-32 overflow-hidden" style="background: var(--glamour-gradient); color: white;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="mb-8">
+            <i class="fas fa-envelope text-6xl mb-6 text-white/80"></i>
         </div>
+        <h1 class="text-5xl md:text-6xl font-bold mb-6" style="font-family: var(--font-display);">
+            {{#if content.page_title}}{{content.page_title}}{{else}}Contact{{/if}}
+        </h1>
+        {{#if content.page_subtitle}}
+        <p class="text-xl text-white/90 max-w-3xl mx-auto">
+            {{content.page_subtitle}}
+        </p>
+        {{/if}}
+        {{#if content.page_subtext}}
+        <p class="text-lg text-white/80 max-w-2xl mx-auto mt-4">
+            {{content.page_subtext}}
+        </p>
+        {{/if}}
+    </div>
+    <div class="absolute inset-0 opacity-10 pointer-events-none">
+        <div class="absolute top-20 left-20 w-32 h-32 border border-white/20 rounded-full"></div>
+        <div class="absolute bottom-32 right-16 w-24 h-24 border border-white/20 rounded-full"></div>
     </div>
 </section>
+{{else}}
+<!-- Default Header if not visible -->
+<section class="relative py-32 overflow-hidden" style="background: var(--glamour-gradient); color: white;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="mb-8">
+            <i class="fas fa-envelope text-6xl mb-6 text-white/80"></i>
+        </div>
+        <h1 class="text-5xl md:text-6xl font-bold mb-6" style="font-family: var(--font-display);">
+            Contact
+        </h1>
+        <p class="text-xl text-white/90 max-w-3xl mx-auto">
+            Let's discuss how we can create an unforgettable experience together.
+        </p>
+    </div>
+</section>
+{{/if}}
 
-<!-- Professional Contact Layout -->
-<section class="glamour-contact-main">
+<!-- Main Contact Section -->
+<section class="py-20" style="background-color: var(--theme-bg);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="glamour-contact-layout">
-            <!-- Professional Info Panel -->
-            {{#if contact_content.contact_direct_visible}}
-            <div class="glamour-info-panel" data-aos="fade-right">
-                <h2 class="glamour-info-title">
-                    {{#if contact_content.direct_title}}{{contact_content.direct_title}}{{else}}Let's Connect{{/if}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            
+            <!-- Direct Contact Information -->
+            {{#if content.contact_direct_visible}}
+            <div>
+                <h2 class="text-3xl font-bold mb-8" style="color: var(--theme-text); font-family: var(--font-display);">
+                    {{#if content.direct_title}}{{content.direct_title}}{{else}}Direct Contact{{/if}}
                 </h2>
                 
-                <div class="glamour-info-list">
+                <div class="space-y-6">
                     {{#if contactEmail}}
-                    <div class="glamour-info-row">
-                        <i class="fas fa-envelope glamour-info-icon"></i>
-                        <div class="glamour-info-content">
-                            <div class="glamour-info-label">{{#if contact_content.direct_email_label}}{{contact_content.direct_email_label}}{{else}}Email{{/if}}</div>
-                            <a href="mailto:{{contactEmail}}" class="glamour-info-value glamour-info-link">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: var(--glamour-gradient);">
+                            <i class="fas fa-envelope text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold mb-2" style="color: var(--theme-text);">
+                                {{#if content.direct_email_label}}{{content.direct_email_label}}{{else}}Email{{/if}}
+                            </h3>
+                            <a href="mailto:{{contactEmail}}" style="color: var(--theme-link);" class="hover:underline">
                                 {{contactEmail}}
                             </a>
                         </div>
@@ -39,199 +71,330 @@
                     {{/if}}
                     
                     {{#if contactPhone}}
-                    <div class="glamour-info-row">
-                        <i class="fas fa-phone glamour-info-icon"></i>
-                        <div class="glamour-info-content">
-                            <div class="glamour-info-label">{{#if contact_content.direct_phone_label}}{{contact_content.direct_phone_label}}{{else}}Phone{{/if}}</div>
-                            <a href="tel:{{contactPhone}}" class="glamour-info-value glamour-info-link">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: var(--glamour-gradient);">
+                            <i class="fas fa-phone text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold mb-2" style="color: var(--theme-text);">
+                                {{#if content.direct_phone_label}}{{content.direct_phone_label}}{{else}}Phone{{/if}}
+                            </h3>
+                            <a href="tel:{{contactPhone}}" style="color: var(--theme-link);" class="hover:underline">
                                 {{contactPhone}}
                             </a>
                         </div>
                     </div>
                     {{/if}}
                     
-                    {{#if location}}
-                    <div class="glamour-info-row">
-                        <i class="fas fa-map-marker-alt glamour-info-icon"></i>
-                        <div class="glamour-info-content">
-                            <div class="glamour-info-label">{{#if contact_content.location_title}}{{contact_content.location_title}}{{else}}Location{{/if}}</div>
-                            <div class="glamour-info-value">{{location}}</div>
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: var(--glamour-gradient);">
+                            <i class="fas fa-clock text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold mb-2" style="color: var(--theme-text);">
+                                {{#if content.direct_response_label}}{{content.direct_response_label}}{{else}}Response Time{{/if}}
+                            </h3>
+                            <p style="color: var(--theme-text-subtle);">
+                                {{#if content.direct_response_text}}{{content.direct_response_text}}{{else}}Within 24 hours{{/if}}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: var(--glamour-gradient);">
+                            <i class="fas fa-shield-alt text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold mb-2" style="color: var(--theme-text);">
+                                Privacy
+                            </h3>
+                            <p style="color: var(--theme-text-subtle);">
+                                All communications are confidential and discreet.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-12">
+                    <a href="/{{modelSlug}}/calendar{{previewParam}}" class="glamour-btn">
+                        <i class="fas fa-calendar-alt"></i>
+                        View Availability
+                    </a>
+                </div>
+            </div>
+            {{else}}
+            <!-- Default Contact Info if section not visible -->
+            <div>
+                <h2 class="text-3xl font-bold mb-8" style="color: var(--theme-text); font-family: var(--font-display);">
+                    Let's Connect
+                </h2>
+                
+                <div class="space-y-6">
+                    {{#if contactEmail}}
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: var(--glamour-gradient);">
+                            <i class="fas fa-envelope text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold mb-2" style="color: var(--theme-text);">Email</h3>
+                            <a href="mailto:{{contactEmail}}" style="color: var(--theme-link);" class="hover:underline">
+                                {{contactEmail}}
+                            </a>
                         </div>
                     </div>
                     {{/if}}
                     
-                    {{#if workingHours}}
-                    <div class="glamour-info-row">
-                        <i class="fas fa-clock glamour-info-icon"></i>
-                        <div class="glamour-info-content">
-                            <div class="glamour-info-label">{{#if contact_content.direct_response_label}}{{contact_content.direct_response_label}}{{else}}Availability{{/if}}</div>
-                            <div class="glamour-info-value">{{workingHours}}</div>
+                    {{#if contactPhone}}
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: var(--glamour-gradient);">
+                            <i class="fas fa-phone text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold mb-2" style="color: var(--theme-text);">Phone</h3>
+                            <a href="tel:{{contactPhone}}" style="color: var(--theme-link);" class="hover:underline">
+                                {{contactPhone}}
+                            </a>
                         </div>
                     </div>
                     {{/if}}
                 </div>
-                
-                <!-- Social Links -->
-                {{#if socialLinks}}
-                <div class="mt-12">
-                    <h3 class="text-xl font-semibold mb-6 glamour-heading" style="color: {{theme.colors.text-light}};">Follow Me</h3>
-                    <div class="flex space-x-4">
-                        {{#each socialLinks}}
-                        <a href="{{this.url}}" class="w-12 h-12 rounded-full flex items-center justify-center hover:shadow-lg transition-all duration-300 transform hover:scale-110 border-2" style="border-color: {{theme.colors.accent}}; color: {{theme.colors.accent}};">
-                            <i class="fab fa-{{this.icon}}"></i>
-                        </a>
-                        {{/each}}
-                    </div>
-                </div>
-                {{/if}}
             </div>
             {{/if}}
             
             <!-- Contact Form -->
-            {{#if contact_content.contact_form_visible}}
-            <div class="glamour-contact-form" data-aos="fade-left">
-                <div class="glamour-form-container">
-                    <h2 class="glamour-form-title">
-                        {{#if contact_content.form_title}}{{contact_content.form_title}}{{else}}Send a Message{{/if}}
-                    </h2>
+            {{#if content.contact_form_visible}}
+            <div class="glamour-card p-8">
+                <h3 class="text-2xl font-bold mb-6" style="color: var(--theme-text); font-family: var(--font-display);">
+                    {{#if content.form_title}}{{content.form_title}}{{else}}Send a Message{{/if}}
+                </h3>
+                
+                <form method="POST" id="contactForm" class="space-y-6">
+                    <!-- Honeypot field for spam prevention -->
+                    <input type="text" name="website" style="display: none;" tabindex="-1" autocomplete="off">
                     
-                    <form id="contactForm" class="glamour-form">
-                        <div class="glamour-form-row">
-                            <div class="glamour-form-field">
-                                <label for="firstName" class="glamour-form-label">
-                                    {{#if contact_content.form_name_label}}{{contact_content.form_name_label}}{{else}}First Name{{/if}} *
-                                </label>
-                                <input type="text" id="firstName" name="firstName" required class="glamour-form-input">
-                            </div>
-                            <div class="glamour-form-field">
-                                <label for="lastName" class="glamour-form-label">
-                                    Last Name *
-                                </label>
-                                <input type="text" id="lastName" name="lastName" required class="glamour-form-input">
-                            </div>
-                        </div>
-                        
-                        <div class="glamour-form-field">
-                            <label for="email" class="glamour-form-label">
-                                {{#if contact_content.form_email_label}}{{contact_content.form_email_label}}{{else}}Email Address{{/if}} *
-                            </label>
-                            <input type="email" id="email" name="email" required class="glamour-form-input">
-                        </div>
-                        
-                        <div class="glamour-form-field">
-                            <label for="phone" class="glamour-form-label">
-                                {{#if contact_content.form_phone_label}}{{contact_content.form_phone_label}}{{else}}Phone Number{{/if}}
-                            </label>
-                            <input type="tel" id="phone" name="phone" class="glamour-form-input">
-                        </div>
-                        
-                        <div class="glamour-form-field">
-                            <label for="subject" class="glamour-form-label">
-                                Subject *
-                            </label>
-                            <select id="subject" name="subject" required class="glamour-form-input glamour-form-select">
-                                <option value="">Select a subject</option>
-                                <option value="general">General Inquiry</option>
-                                <option value="booking">Booking Request</option>
-                                <option value="rates">Services & Rates</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        
-                        <div class="glamour-form-field">
-                            <label for="message" class="glamour-form-label">
-                                {{#if contact_content.form_message_label}}{{contact_content.form_message_label}}{{else}}Message{{/if}} *
-                            </label>
-                            <textarea id="message" name="message" required class="glamour-form-textarea" placeholder="{{#if contact_content.form_message_placeholder}}{{contact_content.form_message_placeholder}}{{else}}Please include any specific requests or questions...{{/if}}"></textarea>
-                        </div>
-                        
-                        <div class="glamour-form-field">
-                            <button type="submit" class="glamour-form-submit">
-                                <i class="fas fa-paper-plane"></i>
-                                {{#if contact_content.form_button_text}}{{contact_content.form_button_text}}{{else}}Send Message{{/if}}
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    <div>
+                        <label for="name" class="block text-sm font-medium mb-2" style="color: var(--theme-text);">
+                            {{#if content.form_name_label}}{{content.form_name_label}}{{else}}Your Name{{/if}} *
+                        </label>
+                        <input type="text" id="name" name="name" required 
+                               class="w-full px-4 py-3 rounded-lg border transition-colors focus:outline-none focus:ring-2"
+                               style="border-color: var(--theme-border); focus:ring-color: var(--theme-focus);">
+                    </div>
+                    
+                    <div>
+                        <label for="email" class="block text-sm font-medium mb-2" style="color: var(--theme-text);">
+                            {{#if content.form_email_label}}{{content.form_email_label}}{{else}}Email Address{{/if}} *
+                        </label>
+                        <input type="email" id="email" name="email" required 
+                               class="w-full px-4 py-3 rounded-lg border transition-colors focus:outline-none focus:ring-2"
+                               style="border-color: var(--theme-border); focus:ring-color: var(--theme-focus);">
+                    </div>
+                    
+                    {{#if content.form_phone_label}}
+                    <div>
+                        <label for="phone" class="block text-sm font-medium mb-2" style="color: var(--theme-text);">
+                            {{content.form_phone_label}}
+                        </label>
+                        <input type="tel" id="phone" name="phone" 
+                               class="w-full px-4 py-3 rounded-lg border transition-colors focus:outline-none focus:ring-2"
+                               style="border-color: var(--theme-border); focus:ring-color: var(--theme-focus);">
+                    </div>
+                    {{/if}}
+                    
+                    {{#if content.form_date_label}}
+                    <div>
+                        <label for="preferred_date" class="block text-sm font-medium mb-2" style="color: var(--theme-text);">
+                            {{content.form_date_label}}
+                        </label>
+                        <input type="date" id="preferred_date" name="preferred_date" 
+                               class="w-full px-4 py-3 rounded-lg border transition-colors focus:outline-none focus:ring-2"
+                               style="border-color: var(--theme-border); focus:ring-color: var(--theme-focus);">
+                    </div>
+                    {{/if}}
+                    
+                    {{#if content.form_duration_label}}
+                    <div>
+                        <label for="duration" class="block text-sm font-medium mb-2" style="color: var(--theme-text);">
+                            {{content.form_duration_label}}
+                        </label>
+                        <select id="duration" name="duration" 
+                                class="w-full px-4 py-3 rounded-lg border transition-colors focus:outline-none focus:ring-2"
+                                style="border-color: var(--theme-border); focus:ring-color: var(--theme-focus);">
+                            {{#if content.form_duration_options}}
+                                {{#each (parseJSON content.form_duration_options)}}
+                                <option value="{{this.value}}">{{this.label}}</option>
+                                {{/each}}
+                            {{else}}
+                                <option value="1">1 Hour</option>
+                                <option value="2">2 Hours</option>
+                                <option value="4">4 Hours</option>
+                                <option value="dinner">Dinner Date</option>
+                                <option value="overnight">Overnight</option>
+                            {{/if}}
+                        </select>
+                    </div>
+                    {{/if}}
+                    
+                    <div>
+                        <label for="message" class="block text-sm font-medium mb-2" style="color: var(--theme-text);">
+                            {{#if content.form_message_label}}{{content.form_message_label}}{{else}}Message{{/if}} *
+                        </label>
+                        <textarea id="message" name="message" rows="6" required 
+                                  class="w-full px-4 py-3 rounded-lg border transition-colors focus:outline-none focus:ring-2 resize-vertical"
+                                  style="border-color: var(--theme-border); focus:ring-color: var(--theme-focus);"
+                                  placeholder="{{#if content.form_message_placeholder}}{{content.form_message_placeholder}}{{else}}Please tell me about yourself and what you're looking for...{{/if}}"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="glamour-btn w-full">
+                        <i class="fas fa-paper-plane"></i>
+                        {{#if content.form_button_text}}{{content.form_button_text}}{{else}}Send Message{{/if}}
+                    </button>
+                </form>
+            </div>
+            {{else}}
+            <!-- Default Contact Form if not visible -->
+            <div class="glamour-card p-8">
+                <h3 class="text-2xl font-bold mb-6" style="color: var(--theme-text); font-family: var(--font-display);">
+                    Send a Message
+                </h3>
+                
+                <form id="contact-form" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2" style="color: var(--theme-text);">Name</label>
+                        <input type="text" name="name" required 
+                               class="w-full px-4 py-3 rounded-lg border transition-colors focus:outline-none focus:ring-2"
+                               style="border-color: var(--theme-border); focus:ring-color: var(--theme-focus);">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2" style="color: var(--theme-text);">Email</label>
+                        <input type="email" name="email" required 
+                               class="w-full px-4 py-3 rounded-lg border transition-colors focus:outline-none focus:ring-2"
+                               style="border-color: var(--theme-border); focus:ring-color: var(--theme-focus);">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2" style="color: var(--theme-text);">Subject</label>
+                        <input type="text" name="subject" required 
+                               class="w-full px-4 py-3 rounded-lg border transition-colors focus:outline-none focus:ring-2"
+                               style="border-color: var(--theme-border); focus:ring-color: var(--theme-focus);">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2" style="color: var(--theme-text);">Message</label>
+                        <textarea name="message" rows="6" required 
+                                  class="w-full px-4 py-3 rounded-lg border transition-colors focus:outline-none focus:ring-2 resize-vertical"
+                                  style="border-color: var(--theme-border); focus:ring-color: var(--theme-focus);"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="glamour-btn w-full">
+                        <i class="fas fa-paper-plane"></i>
+                        Send Message
+                    </button>
+                </form>
             </div>
             {{/if}}
-            
-            <!-- Additional Sections Column -->
-            <div class="glamour-additional-sections">
-                <!-- Location Section -->
-                {{#if contact_content.contact_location_visible}}
-                <div class="glamour-info-panel mb-8" data-aos="fade-up" data-aos-delay="300">
-                    <h3 class="glamour-info-title mb-4">
-                        {{#if contact_content.location_title}}{{contact_content.location_title}}{{else}}Location & Services{{/if}}
-                    </h3>
-                    <div class="space-y-3">
-                        {{#if contact_content.location_area_text}}
-                        <p class="glamour-info-value">{{contact_content.location_area_text}}</p>
-                        {{/if}}
-                        {{#if contact_content.location_services_text}}
-                        <p class="glamour-info-value">{{contact_content.location_services_text}}</p>
-                        {{/if}}
-                        {{#if contact_content.location_travel_text}}
-                        <p class="glamour-info-value">{{contact_content.location_travel_text}}</p>
-                        {{/if}}
-                    </div>
-                </div>
-                {{/if}}
-                
-                <!-- Privacy Notice Section -->
-                {{#if contact_content.contact_privacy_visible}}
-                <div class="glamour-privacy-panel" data-aos="fade-up" data-aos-delay="400">
-                    <h3 class="glamour-privacy-title">
-                        {{#if contact_content.privacy_title}}{{contact_content.privacy_title}}{{else}}Privacy & Discretion{{/if}}
-                    </h3>
-                    <p class="glamour-privacy-text">
-                        {{#if contact_content.privacy_text}}{{contact_content.privacy_text}}{{else}}All communications are handled with the utmost discretion and confidentiality. Your privacy is my priority, and I expect the same level of respect and professionalism in return.{{/if}}
-                    </p>
-                </div>
-                {{/if}}
-            </div>
         </div>
     </div>
 </section>
 
-<!-- What to Expect Section -->
-{{#if contact_content.contact_guidelines_visible}}
-<section class="glamour-expectations-section">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16" data-aos="fade-up">
-            <h2 class="glamour-expectations-title">
-                {{#if contact_content.guidelines_title}}{{contact_content.guidelines_title}}{{else}}What to Expect{{/if}}
-            </h2>
+<!-- Contact Guidelines -->
+{{#if content.contact_guidelines_visible}}
+<section class="py-20" style="background-color: var(--theme-bg-alt);">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="glamour-card p-12">
+            <h3 class="text-2xl font-bold mb-8 text-center" style="color: var(--theme-text); font-family: var(--font-display);">
+                {{#if content.guidelines_title}}{{content.guidelines_title}}{{else}}Contact Guidelines{{/if}}
+            </h3>
+            <ul class="space-y-4 max-w-2xl mx-auto">
+                {{#if content.guideline_1}}
+                <li class="flex items-start space-x-3">
+                    <i class="fas fa-check-circle mt-1" style="color: var(--theme-accent);"></i>
+                    <span style="color: var(--theme-text-subtle);">{{content.guideline_1}}</span>
+                </li>
+                {{/if}}
+                {{#if content.guideline_2}}
+                <li class="flex items-start space-x-3">
+                    <i class="fas fa-check-circle mt-1" style="color: var(--theme-accent);"></i>
+                    <span style="color: var(--theme-text-subtle);">{{content.guideline_2}}</span>
+                </li>
+                {{/if}}
+                {{#if content.guideline_3}}
+                <li class="flex items-start space-x-3">
+                    <i class="fas fa-check-circle mt-1" style="color: var(--theme-accent);"></i>
+                    <span style="color: var(--theme-text-subtle);">{{content.guideline_3}}</span>
+                </li>
+                {{/if}}
+                {{#if content.guideline_4}}
+                <li class="flex items-start space-x-3">
+                    <i class="fas fa-check-circle mt-1" style="color: var(--theme-accent);"></i>
+                    <span style="color: var(--theme-text-subtle);">{{content.guideline_4}}</span>
+                </li>
+                {{/if}}
+                {{#if content.guideline_5}}
+                <li class="flex items-start space-x-3">
+                    <i class="fas fa-check-circle mt-1" style="color: var(--theme-accent);"></i>
+                    <span style="color: var(--theme-text-subtle);">{{content.guideline_5}}</span>
+                </li>
+                {{/if}}
+                
+                {{#unless content.guideline_1}}
+                <!-- Default guidelines if none are set -->
+                <li class="flex items-start space-x-3">
+                    <i class="fas fa-check-circle mt-1" style="color: var(--theme-accent);"></i>
+                    <span style="color: var(--theme-text-subtle);">Please introduce yourself politely and professionally</span>
+                </li>
+                <li class="flex items-start space-x-3">
+                    <i class="fas fa-check-circle mt-1" style="color: var(--theme-accent);"></i>
+                    <span style="color: var(--theme-text-subtle);">Include your preferred date, time, and duration</span>
+                </li>
+                <li class="flex items-start space-x-3">
+                    <i class="fas fa-check-circle mt-1" style="color: var(--theme-accent);"></i>
+                    <span style="color: var(--theme-text-subtle);">Allow 24-48 hours for a response</span>
+                </li>
+                <li class="flex items-start space-x-3">
+                    <i class="fas fa-check-circle mt-1" style="color: var(--theme-accent);"></i>
+                    <span style="color: var(--theme-text-subtle);">All communications are kept strictly confidential</span>
+                </li>
+                {{/unless}}
+            </ul>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Location Information -->
+{{#if content.contact_location_visible}}
+<section class="py-20" style="background-color: var(--theme-bg);">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h3 class="text-3xl font-bold mb-6" style="color: var(--theme-text); font-family: var(--font-display);">
+                {{#if content.location_title}}{{content.location_title}}{{else}}Service Areas{{/if}}
+            </h3>
         </div>
         
-        <div class="glamour-expectations-grid">
-            {{#if contact_content.guideline_1}}
-            <div class="glamour-expectations-card" data-aos="fade-up" data-aos-delay="0">
-                <div class="glamour-expectations-icon">
-                    <i class="fas fa-reply"></i>
-                </div>
-                <h3 class="glamour-expectations-card-title">{{#if contact_content.direct_response_label}}{{contact_content.direct_response_label}}{{else}}Swift Response{{/if}}</h3>
-                <p class="glamour-expectations-card-text">{{contact_content.guideline_1}}</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {{#if content.location_area_text}}
+            <div class="glamour-card p-8 text-center">
+                <i class="fas fa-map-marker-alt text-4xl mb-4" style="color: var(--theme-primary);"></i>
+                <h4 class="text-xl font-semibold mb-4" style="color: var(--theme-text);">Service Area</h4>
+                <p style="color: var(--theme-text-subtle);">{{content.location_area_text}}</p>
             </div>
             {{/if}}
             
-            {{#if contact_content.guideline_2}}
-            <div class="glamour-expectations-card" data-aos="fade-up" data-aos-delay="100">
-                <div class="glamour-expectations-icon">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <h3 class="glamour-expectations-card-title">{{#if contact_content.privacy_title}}{{contact_content.privacy_title}}{{else}}Complete Discretion{{/if}}</h3>
-                <p class="glamour-expectations-card-text">{{contact_content.guideline_2}}</p>
+            {{#if content.location_services_text}}
+            <div class="glamour-card p-8 text-center">
+                <i class="fas fa-concierge-bell text-4xl mb-4" style="color: var(--theme-primary);"></i>
+                <h4 class="text-xl font-semibold mb-4" style="color: var(--theme-text);">Services Available</h4>
+                <p style="color: var(--theme-text-subtle);">{{content.location_services_text}}</p>
             </div>
             {{/if}}
             
-            {{#if contact_content.guideline_3}}
-            <div class="glamour-expectations-card" data-aos="fade-up" data-aos-delay="200">
-                <div class="glamour-expectations-icon">
-                    <i class="fas fa-gem"></i>
-                </div>
-                <h3 class="glamour-expectations-card-title">Professional Service</h3>
-                <p class="glamour-expectations-card-text">{{contact_content.guideline_3}}</p>
+            {{#if content.location_travel_text}}
+            <div class="glamour-card p-8 text-center">
+                <i class="fas fa-plane text-4xl mb-4" style="color: var(--theme-primary);"></i>
+                <h4 class="text-xl font-semibold mb-4" style="color: var(--theme-text);">Travel Information</h4>
+                <p style="color: var(--theme-text-subtle);">{{content.location_travel_text}}</p>
             </div>
             {{/if}}
         </div>
@@ -239,452 +402,76 @@
 </section>
 {{/if}}
 
-<!-- Professional Contact Styles -->
-<style>
-/* Contact Professional Variables */
-:root {
-    --glamour-primary: {{theme.colors.accent}};
-    --glamour-primary-hover: {{theme.colors.btn-bg-hover}};
-    --glamour-card-bg: {{theme.colors.card-bg}};
-    --glamour-input-bg: {{theme.colors.input-bg}};
-    --glamour-text-primary: {{theme.colors.text-light}};
-    --glamour-text-secondary: {{theme.colors.text}};
-    --glamour-border: {{theme.colors.border-light}};
-    --glamour-border-focus: {{theme.colors.focus-ring}};
-    --glamour-focus-shadow: {{theme.colors.focus-ring}};
-}
-
-/* Professional Contact Hero */
-.glamour-contact-hero {
-    position: relative;
-    min-height: 60vh;
-    background: linear-gradient(160deg, {{theme.colors.bg-dark}} 0%, {{theme.colors.card-bg}} 45%, {{theme.colors.surface}} 100%);
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    color: var(--glamour-text-primary);
-}
-
-.glamour-hero-title {
-    font-size: 48px;
-    line-height: 56px;
-    font-weight: 800;
-    color: var(--glamour-text-primary);
-    text-align: center;
-    margin-bottom: 1.5rem;
-    background: linear-gradient(45deg, var(--glamour-text-primary) 30%, var(--glamour-primary) 70%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 0 0 50px {{theme.colors.focus-ring}};
-}
-
-.glamour-hero-subtitle {
-    font-size: 18px;
-    line-height: 28px;
-    color: {{theme.colors.text}};
-    text-align: center;
-    font-weight: 400;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-/* Professional Contact Layout */
-.glamour-contact-main {
-    background: linear-gradient(180deg, {{theme.colors.bg-dark}} 0%, {{theme.colors.surface}} 100%);
-    padding: 4rem 0;
-}
-
-.glamour-contact-layout {
-    display: grid;
-    grid-template-columns: 33% 67%;
-    gap: 4rem;
-    align-items: start;
-}
-
-.glamour-additional-sections {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin-top: 3rem;
-}
-
-/* Professional Info Panel */
-.glamour-info-panel {
-    background: var(--glamour-card-bg);
-    border-radius: 16px;
-    padding: 2.5rem;
-    box-shadow: 0 8px 32px {{theme.colors.card-shadow}};
-    border: 1px solid var(--glamour-border);
-    height: fit-content;
-}
-
-.glamour-info-title {
-    font-size: 24px;
-    line-height: 32px;
-    font-weight: 600;
-    color: var(--glamour-text-primary);
-    margin-bottom: 2rem;
-    letter-spacing: -0.01em;
-}
-
-.glamour-info-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-}
-
-.glamour-info-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    height: 56px;
-    padding: 0 0.5rem;
-    transition: all 0.2s ease;
-}
-
-.glamour-info-row:hover {
-    background: {{theme.colors.table-row-hover}};
-    border-radius: 8px;
-}
-
-.glamour-info-icon {
-    width: 24px;
-    height: 24px;
-    color: var(--glamour-primary);
-    font-size: 20px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.glamour-info-content {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    flex: 1;
-}
-
-.glamour-info-label {
-    font-size: 12px;
-    line-height: 16px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--glamour-text-secondary);
-    font-weight: 500;
-}
-
-.glamour-info-value {
-    font-size: 16px;
-    line-height: 24px;
-    color: var(--glamour-text-primary);
-    font-weight: 500;
-}
-
-.glamour-info-link {
-    color: var(--glamour-text-primary);
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-.glamour-info-link:hover {
-    color: var(--glamour-primary);
-    text-decoration: underline;
-}
-
-/* Professional Contact Form */
-.glamour-contact-form {
-    flex: 1;
-}
-
-.glamour-form-container {
-    background: var(--glamour-card-bg);
-    border-radius: 16px;
-    padding: 2.5rem;
-    box-shadow: 0 8px 32px {{theme.colors.card-shadow}};
-    border: 1px solid var(--glamour-border);
-}
-
-.glamour-form-title {
-    font-size: 24px;
-    line-height: 32px;
-    font-weight: 600;
-    color: var(--glamour-text-primary);
-    margin-bottom: 2rem;
-    letter-spacing: -0.01em;
-}
-
-.glamour-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.glamour-form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-}
-
-.glamour-form-field {
-    display: flex;
-    flex-direction: column;
-}
-
-.glamour-form-label {
-    font-size: 14px;
-    line-height: 20px;
-    font-weight: 500;
-    color: var(--glamour-text-primary);
-    margin-bottom: 8px;
-}
-
-.glamour-form-input,
-.glamour-form-select,
-.glamour-form-textarea {
-    height: 44px;
-    border-radius: 12px;
-    background: var(--glamour-input-bg);
-    border: 1px solid var(--glamour-border);
-    color: var(--glamour-text-primary);
-    padding: 0 16px;
-    font-size: 16px;
-    line-height: 24px;
-    transition: all 0.2s ease;
-    font-family: inherit;
-}
-
-.glamour-form-input:focus,
-.glamour-form-select:focus,
-.glamour-form-textarea:focus {
-    outline: none;
-    border-color: var(--glamour-border-focus);
-    box-shadow: 0 0 0 3px var(--glamour-focus-shadow);
-}
-
-.glamour-form-textarea {
-    height: auto;
-    min-height: 160px;
-    padding: 12px 16px;
-    resize: vertical;
-    line-height: 1.5;
-}
-
-.glamour-form-select {
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='{{theme.colors.accent}}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 16px;
-    padding-right: 40px;
-    cursor: pointer;
-}
-
-.glamour-form-submit {
-    height: 44px;
-    border-radius: 22px;
-    background: var(--glamour-primary);
-    color: {{theme.colors.text-dark}};
-    border: none;
-    padding: 0 24px;
-    font-size: 16px;
-    line-height: 1;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 0.5rem;
-}
-
-.glamour-form-submit:hover {
-    background: var(--glamour-primary-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px {{theme.colors.focus-ring}};
-}
-
-/* Privacy Panel Styles */
-.glamour-privacy-panel {
-    background: linear-gradient(135deg, {{theme.colors.card-bg}} 0%, {{theme.colors.surface}} 100%);
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 8px 32px {{theme.colors.card-shadow}};
-    border: 1px solid {{theme.colors.border-light}};
-    position: relative;
-    overflow: hidden;
-}
-
-.glamour-privacy-panel::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--glamour-primary) 0%, {{theme.colors.btn-bg-hover}} 100%);
-}
-
-.glamour-privacy-title {
-    font-size: 20px;
-    line-height: 28px;
-    font-weight: 600;
-    color: var(--glamour-text-primary);
-    margin-bottom: 1rem;
-    letter-spacing: -0.01em;
-}
-
-.glamour-privacy-text {
-    font-size: 14px;
-    line-height: 22px;
-    color: var(--glamour-text-secondary);
-    margin: 0;
-}
-
-/* Professional Expectations Section */
-.glamour-expectations-section {
-    background: {{theme.colors.bg-dark}};
-    padding: 4rem 0;
-}
-
-.glamour-expectations-title {
-    font-size: 32px;
-    line-height: 40px;
-    font-weight: 600;
-    color: var(--glamour-text-primary);
-    text-align: center;
-    margin-bottom: 0;
-    letter-spacing: -0.01em;
-}
-
-.glamour-expectations-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.glamour-expectations-card {
-    background: var(--glamour-card-bg);
-    border-radius: 16px;
-    padding: 2rem;
-    text-align: center;
-    box-shadow: 0 8px 32px {{theme.colors.card-shadow}};
-    border: 1px solid var(--glamour-border);
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 260px;
-    justify-content: center;
-}
-
-.glamour-expectations-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 48px {{theme.colors.card-shadow}};
-}
-
-.glamour-expectations-icon {
-    width: 56px;
-    height: 56px;
-    background: var(--glamour-primary);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 4px 16px {{theme.colors.focus-ring}};
-}
-
-.glamour-expectations-icon i {
-    font-size: 28px;
-    color: {{theme.colors.text-dark}};
-}
-
-.glamour-expectations-card-title {
-    font-size: 18px;
-    line-height: 24px;
-    font-weight: 600;
-    color: var(--glamour-text-primary);
-    margin-bottom: 1rem;
-    letter-spacing: -0.01em;
-}
-
-.glamour-expectations-card-text {
-    font-size: 14px;
-    line-height: 22px;
-    color: var(--glamour-text-secondary);
-    text-align: center;
-    margin: 0;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .glamour-contact-layout {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-    }
-    
-    .glamour-info-panel {
-        order: 1;
-    }
-    
-    .glamour-contact-form {
-        order: 2;
-    }
-    
-    .glamour-additional-sections {
-        order: 3;
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-        margin-top: 2rem;
-    }
-    
-    .glamour-form-row {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    .glamour-expectations-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-    
-    .glamour-hero-title {
-        font-size: 36px;
-        line-height: 42px;
-    }
-}
-
-@media (max-width: 640px) {
-    .glamour-info-panel,
-    .glamour-form-container {
-        padding: 2rem;
-    }
-    
-    .glamour-expectations-card {
-        padding: 1.5rem;
-        min-height: 220px;
-    }
-}
-</style>
+<!-- Privacy Section -->
+{{#if content.contact_privacy_visible}}
+<section class="py-16" style="background-color: var(--theme-bg-alt);">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="glamour-card p-12">
+            <i class="fas fa-shield-alt text-5xl mb-6" style="color: var(--theme-primary);"></i>
+            <h3 class="text-2xl font-bold mb-6" style="color: var(--theme-text); font-family: var(--font-display);">
+                {{#if content.privacy_title}}{{content.privacy_title}}{{else}}Your Privacy Matters{{/if}}
+            </h3>
+            <p class="text-lg leading-relaxed" style="color: var(--theme-text-subtle);">
+                {{#if content.privacy_text}}{{content.privacy_text}}{{else}}All personal information and communications are kept strictly confidential. Your privacy and discretion are my highest priorities, and you can trust that our correspondence will remain completely secure.{{/if}}
+            </p>
+        </div>
+    </div>
+</section>
+{{/if}}
 
 <script>
-document.getElementById('contactForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+// Contact form handling
+document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.getElementById('contactForm') || document.getElementById('contact-form');
     
-    // Get form data
-    const formData = new FormData(this);
-    const data = Object.fromEntries(formData.entries());
-    
-    // Here you would typically send the data to your backend
-    console.log('Contact form submitted:', data);
-    
-    // Show success message (replace with actual implementation)
-    alert('Thank you for your message! I will get back to you soon.');
-    this.reset();
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            submitBtn.disabled = true;
+            
+            // Collect form data
+            const formData = new FormData(this);
+            const formObject = {};
+            formData.forEach((value, key) => {
+                formObject[key] = value;
+            });
+            
+            // Add model information
+            formObject.modelSlug = '{{modelSlug}}';
+            formObject.formType = 'contact';
+            
+            // Submit form
+            fetch('/api/contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formObject)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    this.innerHTML = '<div class="text-center py-8"><i class="fas fa-check-circle text-green-500 text-4xl mb-4"></i><h3 class="text-xl font-bold mb-2" style="color: var(--theme-text);">Message Sent Successfully!</h3><p style="color: var(--theme-text-subtle);">Thank you for reaching out. I will respond within 24 hours.</p></div>';
+                } else {
+                    throw new Error(data.message || 'Failed to send message');
+                }
+            })
+            .catch(error => {
+                console.error('Contact form error:', error);
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                
+                // Show error message
+                alert('There was an issue sending your message. Please try again or contact me directly.');
+            });
+        });
+    }
 });
 </script>

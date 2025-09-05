@@ -1,0 +1,637 @@
+/* 🌙 DARK SOPHISTICATED BOUDOIR THEME 🌙 */
+/* Upscale evening elegance with silk, gold accents, and midnight luxury */
+
+/* =============================================================================
+   CSS VARIABLES MAPPING - Following Royal Gem Gold Standard
+   ============================================================================= */
+
+:root {
+    /* Core Theme Color Variables - EXACT mapping from database tokens */
+    --theme-primary: #D4AF37;           /* Rich Gold - silk accents */
+    --theme-secondary: #2D1B69;         /* Deep Midnight Purple - evening elegance */
+    --theme-accent: #E8B4CB;            /* Soft Rose Gold - silk highlights */
+    --theme-bg: #0A0A0F;                /* Rich Black - silk dress depth */
+    --theme-bg-alt: #1A1625;            /* Charcoal - layered silk */
+    --theme-surface: #2A2438;           /* Dark Plum - boudoir shadows */
+    --theme-overlay: rgba(42, 36, 56, 0.9); /* Surface overlay */
+    --theme-text: #F5F1E8;              /* Cream Silk - readable elegance */
+    --theme-text-subtle: #C9B991;       /* Muted Gold - secondary text */
+    --theme-link: #E8B4CB;              /* Rose Gold - links */
+    --theme-link-hover: #D4AF37;        /* Gold - link hover */
+    --theme-focus: #D4AF37;             /* Gold - focus states */
+    --theme-success: #22C55E;           /* Success green */
+    --theme-warning: #F59E0B;           /* Warning amber */
+    --theme-error: #EF4444;             /* Error red */
+    --theme-border: #3D3447;            /* Dark Bronze - refined lines */
+    --theme-border-muted: #2A2438;      /* Muted border */
+
+    /* Typography Scale - Google Fonts */
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-accent: 'Dancing Script', cursive;
+    
+    /* Spacing Scale */
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2rem;
+    --space-xl: 3rem;
+    --space-2xl: 4rem;
+    --space-3xl: 6rem;
+    
+    /* Border Radius Scale */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+    
+    /* Shadow Scale */
+    --shadow-sm: 0 1px 3px rgba(212, 175, 55, 0.1);
+    --shadow-md: 0 4px 12px rgba(212, 175, 55, 0.15);
+    --shadow-lg: 0 8px 24px rgba(212, 175, 55, 0.2);
+    --shadow-xl: 0 16px 48px rgba(212, 175, 55, 0.25);
+}
+
+/* =============================================================================
+   GOOGLE FONTS IMPORT
+   ============================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Dancing+Script:wght@400;500;600;700&display=swap');
+
+/* =============================================================================
+   BASE STYLES
+   ============================================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--theme-bg);
+    color: var(--theme-text);
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* =============================================================================
+   TYPOGRAPHY SYSTEM
+   ============================================================================= */
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--theme-text);
+    margin-bottom: var(--space-md);
+}
+
+h1 { font-size: clamp(2.5rem, 6vw, 4rem); }
+h2 { font-size: clamp(2rem, 5vw, 3rem); }
+h3 { font-size: clamp(1.5rem, 4vw, 2rem); }
+h4 { font-size: 1.5rem; }
+h5 { font-size: 1.25rem; }
+h6 { font-size: 1.125rem; }
+
+.boudoir-title {
+    font-family: var(--font-display);
+    background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent), var(--theme-primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+}
+
+.boudoir-script {
+    font-family: var(--font-accent);
+    color: var(--theme-accent);
+    font-weight: 500;
+}
+
+/* =============================================================================
+   LAYOUT COMPONENTS
+   ============================================================================= */
+
+.boudoir-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-md);
+}
+
+.boudoir-section {
+    padding: var(--space-3xl) 0;
+    position: relative;
+}
+
+.boudoir-grid {
+    display: grid;
+    gap: var(--space-lg);
+}
+
+.boudoir-grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.boudoir-grid-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.boudoir-grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+/* =============================================================================
+   BUTTON SYSTEM
+   ============================================================================= */
+
+.boudoir-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border: none;
+    outline: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.boudoir-btn:focus-visible {
+    outline: 2px solid var(--theme-focus);
+    outline-offset: 2px;
+}
+
+.boudoir-btn-primary {
+    background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent));
+    color: var(--theme-bg);
+    box-shadow: var(--shadow-md);
+}
+
+.boudoir-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.boudoir-btn-secondary {
+    background: var(--theme-surface);
+    color: var(--theme-text);
+    border: 2px solid var(--theme-border);
+}
+
+.boudoir-btn-secondary:hover {
+    background: var(--theme-bg-alt);
+    border-color: var(--theme-primary);
+}
+
+.boudoir-btn-outline {
+    background: transparent;
+    color: var(--theme-primary);
+    border: 2px solid var(--theme-primary);
+}
+
+.boudoir-btn-outline:hover {
+    background: var(--theme-primary);
+    color: var(--theme-bg);
+}
+
+/* =============================================================================
+   CARD SYSTEM
+   ============================================================================= */
+
+.boudoir-card {
+    background: var(--theme-surface);
+    border: 1px solid var(--theme-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.boudoir-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--theme-primary);
+}
+
+.boudoir-card-luxury {
+    background: linear-gradient(135deg, var(--theme-surface), var(--theme-bg-alt));
+    border: 1px solid var(--theme-primary);
+    position: relative;
+}
+
+.boudoir-card-luxury::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--theme-primary), var(--theme-accent), var(--theme-primary));
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+/* =============================================================================
+   HERO SECTION STYLES
+   ============================================================================= */
+
+.boudoir-hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: linear-gradient(135deg, var(--theme-bg), var(--theme-bg-alt));
+    overflow: hidden;
+}
+
+.boudoir-hero-content {
+    text-align: center;
+    position: relative;
+    z-index: 10;
+}
+
+.boudoir-hero-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.boudoir-hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--theme-overlay);
+    z-index: 5;
+}
+
+/* =============================================================================
+   SILK DECORATIVE ELEMENTS
+   ============================================================================= */
+
+.silk-accent {
+    position: absolute;
+    opacity: 0.1;
+    z-index: 1;
+}
+
+.silk-accent-1 {
+    top: 20%;
+    left: 10%;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, var(--theme-primary), transparent);
+    border-radius: 50%;
+    filter: blur(40px);
+    animation: silk-float 8s ease-in-out infinite;
+}
+
+.silk-accent-2 {
+    bottom: 30%;
+    right: 15%;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, var(--theme-accent), transparent);
+    border-radius: 50%;
+    filter: blur(30px);
+    animation: silk-float 10s ease-in-out infinite reverse;
+}
+
+.silk-accent-3 {
+    top: 60%;
+    left: 70%;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, var(--theme-secondary), transparent);
+    border-radius: 50%;
+    filter: blur(35px);
+    animation: silk-float 12s ease-in-out infinite;
+}
+
+@keyframes silk-float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-20px) scale(1.1); }
+}
+
+/* =============================================================================
+   TESTIMONIAL CARDS
+   ============================================================================= */
+
+.boudoir-testimonial {
+    background: var(--theme-surface);
+    border: 1px solid var(--theme-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.boudoir-testimonial:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--theme-accent);
+}
+
+.boudoir-testimonial::before {
+    content: '"';
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    font-size: 4rem;
+    font-family: var(--font-display);
+    color: var(--theme-primary);
+    opacity: 0.3;
+}
+
+.boudoir-testimonial-content {
+    font-style: italic;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--theme-text-subtle);
+    margin-bottom: var(--space-md);
+}
+
+.boudoir-testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.boudoir-testimonial-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--theme-bg);
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+/* =============================================================================
+   GALLERY STYLES
+   ============================================================================= */
+
+.boudoir-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-md);
+}
+
+.boudoir-gallery-item {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    aspect-ratio: 1;
+    background: var(--theme-surface);
+    transition: all 0.3s ease;
+}
+
+.boudoir-gallery-item:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-xl);
+}
+
+.boudoir-gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.boudoir-gallery-item:hover img {
+    transform: scale(1.1);
+}
+
+.boudoir-gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent));
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+}
+
+.boudoir-gallery-item:hover .boudoir-gallery-overlay {
+    opacity: 0.8;
+}
+
+/* =============================================================================
+   PRICING CARDS
+   ============================================================================= */
+
+.boudoir-pricing-card {
+    background: var(--theme-surface);
+    border: 2px solid var(--theme-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-2xl);
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.boudoir-pricing-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--theme-primary);
+    box-shadow: var(--shadow-xl);
+}
+
+.boudoir-pricing-featured {
+    border-color: var(--theme-primary);
+    background: linear-gradient(135deg, var(--theme-surface), var(--theme-bg-alt));
+    transform: scale(1.05);
+}
+
+.boudoir-pricing-featured::before {
+    content: 'Most Popular';
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent));
+    color: var(--theme-bg);
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.boudoir-price {
+    font-size: 3rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--theme-primary);
+    margin: var(--space-md) 0;
+}
+
+/* =============================================================================
+   ANIMATION EFFECTS
+   ============================================================================= */
+
+.boudoir-fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease;
+}
+
+.boudoir-fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.boudoir-scale-hover:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+/* =============================================================================
+   FORM STYLES
+   ============================================================================= */
+
+.boudoir-form-group {
+    margin-bottom: var(--space-md);
+}
+
+.boudoir-label {
+    display: block;
+    font-weight: 600;
+    color: var(--theme-text);
+    margin-bottom: var(--space-xs);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.boudoir-input,
+.boudoir-textarea,
+.boudoir-select {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--theme-surface);
+    border: 2px solid var(--theme-border);
+    border-radius: var(--radius-md);
+    color: var(--theme-text);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.boudoir-input:focus,
+.boudoir-textarea:focus,
+.boudoir-select:focus {
+    outline: none;
+    border-color: var(--theme-primary);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+}
+
+.boudoir-textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================= */
+
+@media (max-width: 768px) {
+    .boudoir-container {
+        padding: 0 var(--space-sm);
+    }
+    
+    .boudoir-section {
+        padding: var(--space-2xl) 0;
+    }
+    
+    .boudoir-grid-2,
+    .boudoir-grid-3,
+    .boudoir-grid-4 {
+        grid-template-columns: 1fr;
+    }
+    
+    .boudoir-hero {
+        min-height: 80vh;
+    }
+    
+    .silk-accent {
+        display: none; /* Hide decorative elements on mobile */
+    }
+    
+    .boudoir-pricing-featured {
+        transform: none;
+    }
+}
+
+/* =============================================================================
+   ACCESSIBILITY ENHANCEMENTS
+   ============================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .silk-accent {
+        animation: none;
+    }
+}
+
+/* =============================================================================
+   UTILITY CLASSES
+   ============================================================================= */
+
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mb-0 { margin-bottom: 0; }
+.mb-sm { margin-bottom: var(--space-sm); }
+.mb-md { margin-bottom: var(--space-md); }
+.mb-lg { margin-bottom: var(--space-lg); }
+.mb-xl { margin-bottom: var(--space-xl); }
+
+.mt-0 { margin-top: 0; }
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+.mt-xl { margin-top: var(--space-xl); }
+
+.opacity-50 { opacity: 0.5; }
+.opacity-75 { opacity: 0.75; }
+
+.relative { position: relative; }
+.absolute { position: absolute; }
+
+/* =============================================================================
+   THEME-SPECIFIC UNIVERSAL GALLERY OVERRIDES
+   ============================================================================= */
+
+.universal-gallery * {
+    background: var(--theme-bg) !important;
+}
+
+.gallery-hero {
+    background: var(--theme-bg) !important;
+}
+
+.universal-gallery-section {
+    background: var(--theme-surface) !important;
+    border: 1px solid var(--theme-border) !important;
+}

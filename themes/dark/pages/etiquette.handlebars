@@ -1,128 +1,257 @@
-<!-- Etiquette Page - RoseMastos Style Structure -->
-<section class="py-16 theme-section etiquette-section theme-text-primary">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+<!-- Dark Sophisticated Boudoir Etiquette Page - Universal System Integration -->
+<section class="boudoir-section" style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)); min-height: 60vh; display: flex; align-items: center; justify-content: center; padding: 4rem 0; position: relative; overflow: hidden;">
+    <!-- Boudoir Decorative Elements -->
+    <div style="position: absolute; top: 10%; left: 5%; opacity: 0.3; z-index: 1;">
+        <svg width="40" height="40" viewBox="0 0 80 80" style="animation: silk-float 9s ease-in-out infinite; color: var(--theme-accent);">
+            <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+        </svg>
+    </div>
+    <div style="position: absolute; top: 60%; right: 8%; opacity: 0.4; z-index: 1;">
+        <svg width="32" height="32" viewBox="0 0 80 80" style="animation: silk-float 7s ease-in-out infinite; animation-delay: 3s; color: var(--theme-accent);">
+            <path d="M40 10c-11 0-20 9-20 20 0 15 20 40 20 40s20-25 20-40c0-11-9-20-20-20zm0 27c-4 0-7-3-7-7s3-7 7-7 7 3 7 7-3 7-7 7z" fill="currentColor" opacity="0.8"/>
+        </svg>
+    </div>
+    <div style="position: absolute; bottom: 15%; left: 90%; opacity: 0.5; z-index: 1;">
+        <svg width="32" height="32" viewBox="0 0 80 80" style="animation: silk-float 11s ease-in-out infinite; animation-delay: 5s; color: var(--theme-primary);">
+            <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+            <circle cx="40" cy="40" r="15" fill="currentColor" opacity="0.3"/>
+        </svg>
+    </div>
+
+    <div class="boudoir-container" style="position: relative; z-index: 2; width: 100%;">
         <!-- Page Header -->
         {{#if etiquette_content.etiquette_header_visible}}
-        <div class="text-center mb-12" data-aos="fade-up">
-            <h1 class="text-4xl font-bold mb-6 theme-accent etiquette-header">
+        <div style="text-align: center;">
+            <div style="margin-bottom: 2rem;">
+                <svg width="80" height="80" viewBox="0 0 80 80" style="color: var(--theme-accent); animation: pulse 3s ease-in-out infinite;">
+                    <defs>
+                        <linearGradient id="etiquette-crown-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--theme-accent);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:var(--theme-primary);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="40" cy="40" r="35" fill="none" stroke="url(#etiquette-crown-gradient)" stroke-width="3" opacity="0.8"/>
+                    <circle cx="40" cy="40" r="12" fill="url(#etiquette-crown-gradient)" opacity="0.9"/>
+                </svg>
+            </div>
+            <h1 style="background: linear-gradient(45deg, var(--theme-accent), var(--theme-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5rem);">
                 {{#if etiquette_content.page_title}}{{etiquette_content.page_title}}{{else}}Etiquette & Guidelines{{/if}}
             </h1>
             {{#if etiquette_content.page_subtitle}}
-            <p class="text-xl theme-text-secondary max-w-3xl mx-auto">
+            <p style="font-size: 1.2rem; color: var(--theme-text-subtle); max-width: 700px; margin: 0 auto;">
                 {{etiquette_content.page_subtitle}}
             </p>
             {{/if}}
         </div>
+        {{else}}
+        <!-- Default Header -->
+        <div style="text-align: center; margin-bottom: 4rem;">
+            <div style="margin-bottom: 2rem;">
+                <svg width="80" height="80" viewBox="0 0 80 80" style="color: var(--theme-accent); animation: pulse 3s ease-in-out infinite;">
+                    <defs>
+                        <linearGradient id="etiquette-default-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--theme-accent);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:var(--theme-primary);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="40" cy="40" r="35" fill="none" stroke="url(#etiquette-default-gradient)" stroke-width="3" opacity="0.8"/>
+                    <circle cx="40" cy="40" r="12" fill="url(#etiquette-default-gradient)" opacity="0.9"/>
+                </svg>
+            </div>
+            <h1 style="background: linear-gradient(45deg, var(--theme-accent), var(--theme-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5rem);">
+                Etiquette & Guidelines
+            </h1>
+            <p style="font-size: 1.2rem; color: var(--theme-text-subtle); max-width: 700px; margin: 0 auto;">
+                Guidelines to ensure our time together is respectful, comfortable, and memorable for both of us.
+            </p>
+        </div>
         {{/if}}
-        
+    </div>
+</section>
+
+<!-- Etiquette Content Section with Boudoir Background -->
+<section style="padding: 5rem 0; background: var(--theme-bg);">
+    <div class="boudoir-container">
         <!-- 2x2 Grid Layout -->
-        <div class="grid md:grid-cols-2 gap-8 mb-12">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+            
             <!-- Booking & Screening -->
             {{#if etiquette_content.etiquette_booking_visible}}
-            <div class="theme-card p-8 rounded-2xl shadow-lg" data-aos="fade-up" data-aos-delay="100">
-                <div class="inline-block px-3 py-1 rounded-full text-xs uppercase font-medium tracking-wide mb-4 theme-text-muted theme-border-light" style="border: 1px solid; font-size: 10px;">Planning</div>
-                <h2 class="font-semibold mb-6 theme-text-primary" style="font-size: 22px; line-height: 28px;">
-                    {{#if etiquette_content.booking_title}}{{etiquette_content.booking_title}}{{else}}Booking & Screening{{/if}}
-                </h2>
-                <div class="space-y-4">
-                    <div>
-                        <h3 class="font-bold mb-2 theme-text-primary" style="font-size: 14px; line-height: 22px;">
-                            {{#if etiquette_content.booking_initial_contact_title}}{{etiquette_content.booking_initial_contact_title}}{{else}}Initial Contact{{/if}}
-                        </h3>
-                        <p class="theme-text-secondary" style="font-size: 16px; line-height: 26px;">
-                            {{#if etiquette_content.booking_initial_contact_text}}{{etiquette_content.booking_initial_contact_text}}{{else}}Please introduce yourself politely and include your desired date, time, and duration when reaching out.{{/if}}
-                        </p>
+            <div class="boudoir-card-luxury" style="background: linear-gradient(135deg, var(--theme-surface), var(--theme-bg-alt)); position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; opacity: 0.2; z-index: 1;">
+                    <svg style="width: 80px; height: 80px; color: var(--theme-accent);" viewBox="0 0 80 80">
+                        <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.8"/>
+                    </svg>
+                </div>
+                
+                <div style="position: relative; z-index: 2;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--theme-accent);">
+                        <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                            <path d="M40 10c-11 0-20 9-20 20 0 15 20 40 20 40s20-25 20-40c0-11-9-20-20-20zm0 27c-4 0-7-3-7-7s3-7 7-7 7 3 7 7-3 7-7 7z" fill="currentColor" opacity="0.8"/>
+                        </svg>
+                        <h2 style="color: var(--theme-accent); font-size: 1.5rem; font-family: var(--font-display);">
+                            {{#if etiquette_content.booking_title}}{{etiquette_content.booking_title}}{{else}}Booking & Screening{{/if}}
+                        </h2>
                     </div>
-                    <div>
-                        <h3 class="font-bold mb-2 theme-text-primary" style="font-size: 14px; line-height: 22px;">
-                            {{#if etiquette_content.booking_screening_title}}{{etiquette_content.booking_screening_title}}{{else}}Screening Process{{/if}}
-                        </h3>
-                        <p class="theme-text-secondary" style="font-size: 16px; line-height: 26px;">
-                            {{#if etiquette_content.booking_screening_text}}{{etiquette_content.booking_screening_text}}{{else}}For everyone's safety, a brief screening process is required for all new clients. This includes basic verification and references.{{/if}}
-                        </p>
-                    </div>
-                    <div>
-                        <h3 class="font-bold mb-2 theme-text-primary" style="font-size: 14px; line-height: 22px;">
-                            {{#if etiquette_content.booking_advance_title}}{{etiquette_content.booking_advance_title}}{{else}}Advance Booking{{/if}}
-                        </h3>
-                        <p class="theme-text-secondary" style="font-size: 16px; line-height: 26px;">
-                            {{#if etiquette_content.booking_advance_text}}{{etiquette_content.booking_advance_text}}{{else}}I prefer bookings made at least 24 hours in advance. Same-day appointments may be available with an additional fee.{{/if}}
-                        </p>
+                    
+                    <div style="display: grid; gap: 1.5rem;">
+                        <div>
+                            <h3 style="color: var(--theme-text); font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <svg style="width: 1rem; height: 1rem; color: var(--theme-accent);" viewBox="0 0 80 80">
+                                    <circle cx="40" cy="40" r="5" fill="currentColor" opacity="0.9"/>
+                                </svg>
+                                {{#if etiquette_content.booking_initial_contact_title}}{{etiquette_content.booking_initial_contact_title}}{{else}}Initial Contact{{/if}}
+                            </h3>
+                            <p style="color: var(--theme-text); line-height: 1.6; margin: 0;">
+                                {{#if etiquette_content.booking_initial_contact_text}}{{etiquette_content.booking_initial_contact_text}}{{else}}Please introduce yourself politely and include your desired date, time, and duration when reaching out.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 style="color: var(--theme-text); font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <svg style="width: 1rem; height: 1rem; color: var(--theme-accent);" viewBox="0 0 80 80">
+                                    <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.8"/>
+                                </svg>
+                                {{#if etiquette_content.booking_screening_title}}{{etiquette_content.booking_screening_title}}{{else}}Screening Process{{/if}}
+                            </h3>
+                            <p style="color: var(--theme-text); line-height: 1.6; margin: 0;">
+                                {{#if etiquette_content.booking_screening_text}}{{etiquette_content.booking_screening_text}}{{else}}For everyone's safety, a brief screening process is required for all new clients. This includes basic verification and references.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 style="color: var(--theme-text); font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <svg style="width: 1rem; height: 1rem; color: var(--theme-accent);" viewBox="0 0 80 80">
+                                    <rect x="30" y="30" width="20" height="20" fill="currentColor" opacity="0.7"/>
+                                </svg>
+                                {{#if etiquette_content.booking_advance_title}}{{etiquette_content.booking_advance_title}}{{else}}Advance Booking{{/if}}
+                            </h3>
+                            <p style="color: var(--theme-text); line-height: 1.6; margin: 0;">
+                                {{#if etiquette_content.booking_advance_text}}{{etiquette_content.booking_advance_text}}{{else}}I prefer bookings made at least 24 hours in advance. Same-day appointments may be available with an additional fee.{{/if}}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
             {{/if}}
             
-            <!-- Respect & Boundaries - Changed to white card -->
+            <!-- Respect & Boundaries -->
             {{#if etiquette_content.etiquette_respect_visible}}
-            <div class="theme-card p-8 rounded-2xl shadow-lg" data-aos="fade-up" data-aos-delay="200">
-                <div class="inline-block px-3 py-1 rounded-full text-xs uppercase font-medium tracking-wide mb-4 theme-text-muted theme-border-light" style="border: 1px solid; font-size: 10px;">Mutual Understanding</div>
-                <h2 class="font-semibold mb-6 theme-text-primary" style="font-size: 22px; line-height: 28px;">
-                    {{#if etiquette_content.respect_title}}{{etiquette_content.respect_title}}{{else}}Respect & Boundaries{{/if}}
-                </h2>
-                <div class="space-y-4">
-                    <div>
-                        <h3 class="font-bold mb-2 theme-text-primary" style="font-size: 14px; line-height: 22px;">
-                            {{#if etiquette_content.respect_mutual_title}}{{etiquette_content.respect_mutual_title}}{{else}}Mutual Respect{{/if}}
-                        </h3>
-                        <p class="theme-text-secondary" style="font-size: 16px; line-height: 26px;">
-                            {{#if etiquette_content.respect_mutual_text}}{{etiquette_content.respect_mutual_text}}{{else}}I treat all clients with respect and kindness, and I expect the same in return. Rude or disrespectful behavior will not be tolerated.{{/if}}
-                        </p>
+            <div class="boudoir-card-luxury" style="background: linear-gradient(135deg, var(--theme-surface), var(--theme-bg-alt)); position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; opacity: 0.2; z-index: 1;">
+                    <svg style="width: 80px; height: 80px; color: var(--theme-accent);" viewBox="0 0 80 80">
+                        <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+                        <circle cx="40" cy="40" r="15" fill="currentColor" opacity="0.3"/>
+                    </svg>
+                </div>
+                
+                <div style="position: relative; z-index: 2;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--theme-accent);">
+                        <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                            <path d="M40 10c-11 0-20 9-20 20 0 15 20 40 20 40s20-25 20-40c0-11-9-20-20-20zm0 27c-4 0-7-3-7-7s3-7 7-7 7 3 7 7-3 7-7 7z" fill="currentColor" opacity="0.8"/>
+                        </svg>
+                        <h2 style="color: var(--theme-accent); font-size: 1.5rem; font-family: var(--font-display);">
+                            {{#if etiquette_content.respect_title}}{{etiquette_content.respect_title}}{{else}}Respect & Boundaries{{/if}}
+                        </h2>
                     </div>
-                    <div>
-                        <h3 class="font-bold mb-2 theme-text-primary" style="font-size: 14px; line-height: 22px;">
-                            {{#if etiquette_content.respect_boundaries_title}}{{etiquette_content.respect_boundaries_title}}{{else}}Professional Boundaries{{/if}}
-                        </h3>
-                        <p class="theme-text-secondary" style="font-size: 16px; line-height: 26px;">
-                            {{#if etiquette_content.respect_boundaries_text}}{{etiquette_content.respect_boundaries_text}}{{else}}Our time together is for companionship and social interaction. Please respect all boundaries and guidelines.{{/if}}
-                        </p>
-                    </div>
-                    <div>
-                        <h3 class="font-bold mb-2 theme-text-primary" style="font-size: 14px; line-height: 22px;">
-                            {{#if etiquette_content.respect_personal_title}}{{etiquette_content.respect_personal_title}}{{else}}Personal Information{{/if}}
-                        </h3>
-                        <p class="theme-text-secondary" style="font-size: 16px; line-height: 26px;">
-                            {{#if etiquette_content.respect_personal_text}}{{etiquette_content.respect_personal_text}}{{else}}Please do not ask for personal information beyond what is shared publicly. Discretion works both ways.{{/if}}
-                        </p>
+                    
+                    <div style="display: grid; gap: 1.5rem;">
+                        <div>
+                            <h3 style="color: var(--theme-text); font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <svg style="width: 1rem; height: 1rem; color: var(--theme-accent);" viewBox="0 0 80 80">
+                                    <rect x="25" y="25" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+                                </svg>
+                                {{#if etiquette_content.respect_mutual_title}}{{etiquette_content.respect_mutual_title}}{{else}}Mutual Respect{{/if}}
+                            </h3>
+                            <p style="color: var(--theme-text); line-height: 1.6; margin: 0;">
+                                {{#if etiquette_content.respect_mutual_text}}{{etiquette_content.respect_mutual_text}}{{else}}I treat all clients with respect and kindness, and I expect the same in return. Rude or disrespectful behavior will not be tolerated.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 style="color: var(--theme-text); font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <svg style="width: 1rem; height: 1rem; color: var(--theme-accent);" viewBox="0 0 80 80">
+                                    <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                                </svg>
+                                {{#if etiquette_content.respect_boundaries_title}}{{etiquette_content.respect_boundaries_title}}{{else}}Professional Boundaries{{/if}}
+                            </h3>
+                            <p style="color: var(--theme-text); line-height: 1.6; margin: 0;">
+                                {{#if etiquette_content.respect_boundaries_text}}{{etiquette_content.respect_boundaries_text}}{{else}}Our time together is for companionship and social interaction. Please respect all boundaries and guidelines.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 style="color: var(--theme-text); font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <svg style="width: 1rem; height: 1rem; color: var(--theme-accent);" viewBox="0 0 80 80">
+                                    <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                                </svg>
+                                {{#if etiquette_content.respect_personal_title}}{{etiquette_content.respect_personal_title}}{{else}}Personal Information{{/if}}
+                            </h3>
+                            <p style="color: var(--theme-text); line-height: 1.6; margin: 0;">
+                                {{#if etiquette_content.respect_personal_text}}{{etiquette_content.respect_personal_text}}{{else}}Please do not ask for personal information beyond what is shared publicly. Discretion works both ways.{{/if}}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
             {{/if}}
-        </div>
-        
-        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            
             <!-- Hygiene & Presentation -->
             {{#if etiquette_content.etiquette_hygiene_visible}}
-            <div class="theme-card p-8 rounded-2xl shadow-lg" data-aos="fade-up" data-aos-delay="300">
-                <div class="inline-block px-3 py-1 rounded-full text-xs uppercase font-medium tracking-wide mb-4 theme-text-muted theme-border-light" style="border: 1px solid; font-size: 10px;">Standards</div>
-                <h2 class="font-semibold mb-6 theme-text-primary" style="font-size: 22px; line-height: 28px;">
-                    {{#if etiquette_content.hygiene_title}}{{etiquette_content.hygiene_title}}{{else}}Hygiene & Presentation{{/if}}
-                </h2>
-                <div class="space-y-4">
-                    <div>
-                        <h3 class="font-bold mb-2 theme-text-primary" style="font-size: 14px; line-height: 22px;">
-                            {{#if etiquette_content.hygiene_personal_title}}{{etiquette_content.hygiene_personal_title}}{{else}}Personal Hygiene{{/if}}
-                        </h3>
-                        <p class="theme-text-secondary" style="font-size: 16px; line-height: 26px;">
-                            {{#if etiquette_content.hygiene_personal_text}}{{etiquette_content.hygiene_personal_text}}{{else}}Please arrive freshly showered and well-groomed. Good personal hygiene is essential for a comfortable experience.{{/if}}
-                        </p>
+            <div class="boudoir-card-luxury" style="background: linear-gradient(135deg, var(--theme-surface), var(--theme-bg-alt)); position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; opacity: 0.2; z-index: 1;">
+                    <svg style="width: 80px; height: 80px; color: var(--theme-accent);" viewBox="0 0 80 80">
+                        <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+                        <circle cx="40" cy="40" r="15" fill="currentColor" opacity="0.3"/>
+                    </svg>
+                </div>
+                
+                <div style="position: relative; z-index: 2;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--theme-accent);">
+                        <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                            <rect x="30" y="30" width="20" height="20" fill="currentColor" opacity="0.7"/>
+                        </svg>
+                        <h2 style="color: var(--theme-accent); font-size: 1.5rem; font-family: var(--font-display);">
+                            {{#if etiquette_content.hygiene_title}}{{etiquette_content.hygiene_title}}{{else}}Hygiene & Presentation{{/if}}
+                        </h2>
                     </div>
-                    <div>
-                        <h3 class="font-bold mb-2 theme-text-primary" style="font-size: 14px; line-height: 22px;">
-                            {{#if etiquette_content.hygiene_attire_title}}{{etiquette_content.hygiene_attire_title}}{{else}}Attire{{/if}}
-                        </h3>
-                        <p class="theme-text-secondary" style="font-size: 16px; line-height: 26px;">
-                            {{#if etiquette_content.hygiene_attire_text}}{{etiquette_content.hygiene_attire_text}}{{else}}Dress appropriately for our planned activities. I'll always be well-dressed and expect the same consideration.{{/if}}
-                        </p>
-                    </div>
-                    <div>
-                        <h3 class="font-bold mb-2 theme-text-primary" style="font-size: 14px; line-height: 22px;">
-                            {{#if etiquette_content.hygiene_substances_title}}{{etiquette_content.hygiene_substances_title}}{{else}}Substances{{/if}}
-                        </h3>
-                        <p class="theme-text-secondary" style="font-size: 16px; line-height: 26px;">
-                            {{#if etiquette_content.hygiene_substances_text}}{{etiquette_content.hygiene_substances_text}}{{else}}Please do not arrive under the influence of alcohol or other substances. Light social drinking during our time is acceptable.{{/if}}
-                        </p>
+                    
+                    <div style="display: grid; gap: 1.5rem;">
+                        <div>
+                            <h3 style="color: var(--theme-text); font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <svg style="width: 1rem; height: 1rem; color: var(--theme-accent);" viewBox="0 0 80 80">
+                                    <circle cx="40" cy="40" r="5" fill="currentColor" opacity="0.9"/>
+                                </svg>
+                                {{#if etiquette_content.hygiene_personal_title}}{{etiquette_content.hygiene_personal_title}}{{else}}Personal Hygiene{{/if}}
+                            </h3>
+                            <p style="color: var(--theme-text); line-height: 1.6; margin: 0;">
+                                {{#if etiquette_content.hygiene_personal_text}}{{etiquette_content.hygiene_personal_text}}{{else}}Please arrive freshly showered and well-groomed. Good personal hygiene is essential for a comfortable experience.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 style="color: var(--theme-text); font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <svg style="width: 1rem; height: 1rem; color: var(--theme-accent);" viewBox="0 0 80 80">
+                                    <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.8"/>
+                                </svg>
+                                {{#if etiquette_content.hygiene_attire_title}}{{etiquette_content.hygiene_attire_title}}{{else}}Attire{{/if}}
+                            </h3>
+                            <p style="color: var(--theme-text); line-height: 1.6; margin: 0;">
+                                {{#if etiquette_content.hygiene_attire_text}}{{etiquette_content.hygiene_attire_text}}{{else}}Dress appropriately for our planned activities. I'll always be well-dressed and expect the same consideration.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 style="color: var(--theme-text); font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <svg style="width: 1rem; height: 1rem; color: var(--theme-accent);" viewBox="0 0 80 80">
+                                    <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                                </svg>
+                                {{#if etiquette_content.hygiene_substances_title}}{{etiquette_content.hygiene_substances_title}}{{else}}Substances{{/if}}
+                            </h3>
+                            <p style="color: var(--theme-text); line-height: 1.6; margin: 0;">
+                                {{#if etiquette_content.hygiene_substances_text}}{{etiquette_content.hygiene_substances_text}}{{else}}Please do not arrive under the influence of alcohol or other substances. Light social drinking during our time is acceptable.{{/if}}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -130,141 +259,191 @@
             
             <!-- Cancellation Policy -->
             {{#if etiquette_content.etiquette_cancellation_visible}}
-            <div class="theme-card p-8 rounded-2xl shadow-lg" data-aos="fade-up" data-aos-delay="400">
-                <div class="inline-block px-3 py-1 rounded-full text-xs uppercase font-medium tracking-wide mb-4 theme-text-muted theme-border-light" style="border: 1px solid; font-size: 10px;">Policies</div>
-                <h2 class="font-semibold mb-6 theme-text-primary" style="font-size: 22px; line-height: 28px;">
-                    {{#if etiquette_content.cancellation_title}}{{etiquette_content.cancellation_title}}{{else}}Cancellation Policy{{/if}}
-                </h2>
-                <div class="space-y-4">
-                    <div>
-                        <h3 class="font-bold mb-2 theme-text-primary" style="font-size: 14px; line-height: 22px;">
-                            {{#if etiquette_content.cancellation_advance_title}}{{etiquette_content.cancellation_advance_title}}{{else}}Advance Notice{{/if}}
-                        </h3>
-                        <p class="theme-text-secondary" style="font-size: 16px; line-height: 26px;">
-                            {{#if etiquette_content.cancellation_advance_text}}{{etiquette_content.cancellation_advance_text}}{{else}}Please provide at least 2 hours notice for cancellations. Last-minute cancellations may result in a cancellation fee.{{/if}}
-                        </p>
+            <div class="boudoir-card-luxury" style="background: linear-gradient(135deg, var(--theme-surface), var(--theme-bg-alt)); position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; opacity: 0.2; z-index: 1;">
+                    <svg style="width: 80px; height: 80px; color: var(--theme-accent);" viewBox="0 0 80 80">
+                        <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                    </svg>
+                </div>
+                
+                <div style="position: relative; z-index: 2;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--theme-accent);">
+                        <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                            <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+                            <circle cx="40" cy="40" r="12" fill="currentColor" opacity="0.9"/>
+                        </svg>
+                        <h2 style="color: var(--theme-accent); font-size: 1.5rem; font-family: var(--font-display);">
+                            {{#if etiquette_content.cancellation_title}}{{etiquette_content.cancellation_title}}{{else}}Cancellation Policy{{/if}}
+                        </h2>
                     </div>
-                    <div>
-                        <h3 class="font-bold mb-2 theme-text-primary" style="font-size: 14px; line-height: 22px;">
-                            {{#if etiquette_content.cancellation_noshow_title}}{{etiquette_content.cancellation_noshow_title}}{{else}}No-Shows{{/if}}
-                        </h3>
-                        <p class="theme-text-secondary" style="font-size: 16px; line-height: 26px;">
-                            {{#if etiquette_content.cancellation_noshow_text}}{{etiquette_content.cancellation_noshow_text}}{{else}}No-shows without notice will result in being blacklisted from future bookings.{{/if}}
-                        </p>
-                    </div>
-                    <div>
-                        <h3 class="font-bold mb-2 theme-text-primary" style="font-size: 14px; line-height: 22px;">
-                            {{#if etiquette_content.cancellation_my_title}}{{etiquette_content.cancellation_my_title}}{{else}}My Cancellations{{/if}}
-                        </h3>
-                        <p class="theme-text-secondary" style="font-size: 16px; line-height: 26px;">
-                            {{#if etiquette_content.cancellation_my_text}}{{etiquette_content.cancellation_my_text}}{{else}}In the rare event I need to cancel, I'll provide as much notice as possible and offer to reschedule.{{/if}}
-                        </p>
+                    
+                    <div style="display: grid; gap: 1.5rem;">
+                        <div>
+                            <h3 style="color: var(--theme-text); font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <svg style="width: 1rem; height: 1rem; color: var(--theme-accent);" viewBox="0 0 80 80">
+                                    <rect x="25" y="25" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+                                </svg>
+                                {{#if etiquette_content.cancellation_advance_title}}{{etiquette_content.cancellation_advance_title}}{{else}}Advance Notice{{/if}}
+                            </h3>
+                            <p style="color: var(--theme-text); line-height: 1.6; margin: 0;">
+                                {{#if etiquette_content.cancellation_advance_text}}{{etiquette_content.cancellation_advance_text}}{{else}}Please provide at least 2 hours notice for cancellations. Last-minute cancellations may result in a cancellation fee.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 style="color: var(--theme-text); font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <svg style="width: 1rem; height: 1rem; color: var(--theme-accent);" viewBox="0 0 80 80">
+                                    <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                                </svg>
+                                {{#if etiquette_content.cancellation_noshow_title}}{{etiquette_content.cancellation_noshow_title}}{{else}}No-Shows{{/if}}
+                            </h3>
+                            <p style="color: var(--theme-text); line-height: 1.6; margin: 0;">
+                                {{#if etiquette_content.cancellation_noshow_text}}{{etiquette_content.cancellation_noshow_text}}{{else}}No-shows without notice will result in being blacklisted from future bookings.{{/if}}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 style="color: var(--theme-text); font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <svg style="width: 1rem; height: 1rem; color: var(--theme-accent);" viewBox="0 0 80 80">
+                                    <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+                                    <circle cx="40" cy="40" r="15" fill="currentColor" opacity="0.3"/>
+                                </svg>
+                                {{#if etiquette_content.cancellation_my_title}}{{etiquette_content.cancellation_my_title}}{{else}}My Cancellations{{/if}}
+                            </h3>
+                            <p style="color: var(--theme-text); line-height: 1.6; margin: 0;">
+                                {{#if etiquette_content.cancellation_my_text}}{{etiquette_content.cancellation_my_text}}{{else}}In the rare event I need to cancel, I'll provide as much notice as possible and offer to reschedule.{{/if}}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
             {{/if}}
         </div>
-        
-        <!-- Safety & Discretion -->
+
+        <!-- Safety & Discretion (Full Width) -->
         {{#if etiquette_content.etiquette_safety_visible}}
-        <div class="theme-accent-bg theme-text-inverted p-8 rounded-2xl shadow-lg mb-12" data-aos="fade-up" data-aos-delay="500">
-            <div class="inline-block px-3 py-1 rounded-full text-xs uppercase font-medium tracking-wide mb-4 text-center w-full" style="color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.3); font-size: 10px;">Security</div>
-            <h2 class="font-semibold mb-6 text-center theme-text-inverted" style="font-size: 22px; line-height: 28px;">
-                {{#if etiquette_content.safety_title}}{{etiquette_content.safety_title}}{{else}}Safety & Discretion{{/if}}
-            </h2>
-            <div class="grid md:grid-cols-3 gap-6">
-                <div class="text-center">
-                    <div class="rounded-full flex items-center justify-center mx-auto mb-4" style="width: 24px; height: 24px; background-color: rgba(255,255,255,0.2);">
-                        <svg style="width: 24px; height: 24px; color: rgba(255,255,255,0.9);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                        </svg>
+        <div class="boudoir-card-luxury" style="background: linear-gradient(135deg, var(--theme-surface), var(--theme-bg-alt)); position: relative; overflow: hidden; margin-bottom: 3rem;">
+            <div style="position: absolute; top: -50px; right: -50px; opacity: 0.1; z-index: 1;">
+                <svg style="width: 200px; height: 200px; color: var(--theme-accent);" viewBox="0 0 80 80">
+                    <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+                    <circle cx="40" cy="40" r="15" fill="currentColor" opacity="0.3"/>
+                </svg>
+            </div>
+            
+            <div style="position: relative; z-index: 2; text-align: center;">
+                <h2 style="color: var(--theme-text); margin-bottom: 3rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem; font-size: 1.8rem; font-family: var(--font-display);">
+                    <svg width="64" height="64" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                        <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                    </svg>
+                    {{#if etiquette_content.safety_title}}{{etiquette_content.safety_title}}{{else}}Safety & Discretion{{/if}}
+                </h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+                    <div style="text-align: center; padding: 1.5rem;">
+                        <div style="margin-bottom: 1.5rem;">
+                            <svg width="64" height="64" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                                <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                            </svg>
+                        </div>
+                        <h3 style="color: var(--theme-text); font-size: 1.2rem; margin-bottom: 1rem; font-family: var(--font-display);">
+                            {{#if etiquette_content.safety_confidentiality_title}}{{etiquette_content.safety_confidentiality_title}}{{else}}Confidentiality{{/if}}
+                        </h3>
+                        <p style="color: var(--theme-text); line-height: 1.6; margin: 0;">
+                            {{#if etiquette_content.safety_confidentiality_text}}{{etiquette_content.safety_confidentiality_text}}{{else}}Your privacy is paramount. All interactions remain strictly confidential.{{/if}}
+                        </p>
                     </div>
-                    <h3 class="font-bold mb-2 theme-text-inverted" style="font-size: 14px; line-height: 22px;">
-                        {{#if etiquette_content.safety_confidentiality_title}}{{etiquette_content.safety_confidentiality_title}}{{else}}Confidentiality{{/if}}
-                    </h3>
-                    <p class="theme-text-inverted opacity-90" style="font-size: 16px; line-height: 26px;">
-                        {{#if etiquette_content.safety_confidentiality_text}}{{etiquette_content.safety_confidentiality_text}}{{else}}Your privacy is paramount. All interactions remain strictly confidential.{{/if}}
-                    </p>
-                </div>
-                <div class="text-center">
-                    <div class="rounded-full flex items-center justify-center mx-auto mb-4" style="width: 24px; height: 24px; background-color: rgba(255,255,255,0.2);">
-                        <svg style="width: 24px; height: 24px; color: rgba(255,255,255,0.9);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
+                    
+                    <div style="text-align: center; padding: 1.5rem;">
+                        <div style="margin-bottom: 1.5rem;">
+                            <svg width="64" height="64" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                                <path d="M40 10c-11 0-20 9-20 20 0 15 20 40 20 40s20-25 20-40c0-11-9-20-20-20zm0 27c-4 0-7-3-7-7s3-7 7-7 7 3 7 7-3 7-7 7z" fill="currentColor" opacity="0.8"/>
+                            </svg>
+                        </div>
+                        <h3 style="color: var(--theme-text); font-size: 1.2rem; margin-bottom: 1rem; font-family: var(--font-display);">
+                            {{#if etiquette_content.safety_environment_title}}{{etiquette_content.safety_environment_title}}{{else}}Safe Environment{{/if}}
+                        </h3>
+                        <p style="color: var(--theme-text); line-height: 1.6; margin: 0;">
+                            {{#if etiquette_content.safety_environment_text}}{{etiquette_content.safety_environment_text}}{{else}}I maintain a safe, clean, and welcoming environment for all meetings.{{/if}}
+                        </p>
                     </div>
-                    <h3 class="font-bold mb-2 theme-text-inverted" style="font-size: 14px; line-height: 22px;">
-                        {{#if etiquette_content.safety_environment_title}}{{etiquette_content.safety_environment_title}}{{else}}Safe Environment{{/if}}
-                    </h3>
-                    <p class="theme-text-inverted opacity-90" style="font-size: 16px; line-height: 26px;">
-                        {{#if etiquette_content.safety_environment_text}}{{etiquette_content.safety_environment_text}}{{else}}I maintain a safe, clean, and welcoming environment for all meetings.{{/if}}
-                    </p>
-                </div>
-                <div class="text-center">
-                    <div class="rounded-full flex items-center justify-center mx-auto mb-4" style="width: 24px; height: 24px; background-color: rgba(255,255,255,0.2);">
-                        <svg style="width: 24px; height: 24px; color: rgba(255,255,255,0.9);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                        </svg>
+                    
+                    <div style="text-align: center; padding: 1.5rem;">
+                        <div style="margin-bottom: 1.5rem;">
+                            <svg width="64" height="64" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                                <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+                                <circle cx="40" cy="40" r="15" fill="currentColor" opacity="0.3"/>
+                            </svg>
+                        </div>
+                        <h3 style="color: var(--theme-text); font-size: 1.2rem; margin-bottom: 1rem; font-family: var(--font-display);">
+                            {{#if etiquette_content.safety_communication_title}}{{etiquette_content.safety_communication_title}}{{else}}Professional Communication{{/if}}
+                        </h3>
+                        <p style="color: var(--theme-text); line-height: 1.6; margin: 0;">
+                            {{#if etiquette_content.safety_communication_text}}{{etiquette_content.safety_communication_text}}{{else}}All communications are handled professionally and discreetly.{{/if}}
+                        </p>
                     </div>
-                    <h3 class="font-bold mb-2 theme-text-inverted" style="font-size: 14px; line-height: 22px;">
-                        {{#if etiquette_content.safety_communication_title}}{{etiquette_content.safety_communication_title}}{{else}}Professional Communication{{/if}}
-                    </h3>
-                    <p class="theme-text-inverted opacity-90" style="font-size: 16px; line-height: 26px;">
-                        {{#if etiquette_content.safety_communication_text}}{{etiquette_content.safety_communication_text}}{{else}}All communications are handled professionally and discreetly.{{/if}}
-                    </p>
                 </div>
             </div>
         </div>
         {{/if}}
-        
-        <!-- Questions Block -->
+
+        <!-- Questions/Contact CTA Section -->
         {{#if etiquette_content.etiquette_questions_visible}}
-        <div class="text-center theme-card p-8 rounded-2xl shadow-lg" data-aos="fade-up" data-aos-delay="700">
-            <div class="inline-block px-3 py-1 rounded-full text-xs uppercase font-medium tracking-wide mb-4 theme-text-muted theme-border-light" style="border: 1px solid; font-size: 10px;">Need Help</div>
-            <h3 class="font-semibold mb-4 theme-text-primary" style="font-size: 22px; line-height: 28px;">
-                {{#if etiquette_content.questions_title}}{{etiquette_content.questions_title}}{{else}}Questions?{{/if}}
-            </h3>
-            <p class="mb-6 theme-text-secondary" style="font-size: 16px; line-height: 26px;">
-                {{#if etiquette_content.questions_text}}{{etiquette_content.questions_text}}{{else}}If you have any questions about these guidelines or need clarification, please don't hesitate to reach out.{{/if}}
-            </p>
-            <a href="/{{model.slug}}/{{#if etiquette_content.questions_button_link}}{{etiquette_content.questions_button_link}}{{else}}contact{{/if}}" 
-               class="theme-accent-bg theme-text-inverted px-4 py-2 rounded-full font-semibold hover:opacity-90 transition-all" style="height: 44px; display: inline-flex; align-items: center; justify-content: center;">
-                {{#if etiquette_content.questions_button_text}}{{etiquette_content.questions_button_text}}{{else}}Contact Me{{/if}}
-            </a>
+        <div class="boudoir-card-luxury" style="background: linear-gradient(135deg, var(--theme-surface), var(--theme-bg-alt)); position: relative; overflow: hidden;">
+            <div style="position: absolute; top: -30px; right: -30px; opacity: 0.2; z-index: 1;">
+                <svg style="width: 120px; height: 120px; color: var(--theme-accent);" viewBox="0 0 80 80">
+                    <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+                    <circle cx="40" cy="40" r="15" fill="currentColor" opacity="0.3"/>
+                </svg>
+            </div>
+            
+            <div style="position: relative; z-index: 2; text-align: center;">
+                <h2 style="color: var(--theme-text); margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem; font-family: var(--font-display); font-size: 1.8rem;">
+                    <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                        <rect x="25" y="25" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+                    </svg>
+                    {{#if etiquette_content.questions_title}}{{etiquette_content.questions_title}}{{else}}Questions About Etiquette?{{/if}}
+                </h2>
+                <p style="color: var(--theme-text); line-height: 1.7; font-size: 1.1rem; max-width: 600px; margin: 0 auto 2rem;">
+                    {{#if etiquette_content.questions_text}}{{etiquette_content.questions_text}}{{else}}If you have any questions about these guidelines or need clarification on any policies, please don't hesitate to reach out.{{/if}}
+                </p>
+                <div style="margin-top: 2rem;">
+                    <a href="/{{model.slug}}/{{#if etiquette_content.questions_button_link}}{{etiquette_content.questions_button_link}}{{else}}contact{{/if}}{{previewParam}}" class="boudoir-btn boudoir-btn-primary" style="font-size: 1.1rem; padding: 1.2rem 2rem;">
+                        {{#if etiquette_content.questions_button_text}}{{etiquette_content.questions_button_text}}{{else}}Contact Me{{/if}}
+                    </a>
+                </div>
+            </div>
         </div>
         {{/if}}
     </div>
 </section>
 
+<!-- Boudoir decorative animations -->
 <style>
-/* Custom styles for etiquette page */
-.prose h3 {
-    color: inherit;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
+@keyframes silk-float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
 }
 
-.prose p {
-    margin-bottom: 1rem;
-}
-
-.prose-invert h3 {
-    color: white;
-}
-
-/* Animation adjustments for better performance */
-[data-aos] {
-    transition-property: transform, opacity;
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .grid.md\\:grid-cols-2 {
-        gap: 1.5rem;
+    .boudoir-container > div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
     }
     
-    .grid.md\\:grid-cols-3 {
-        grid-template-columns: 1fr;
-        gap: 2rem;
+    .boudoir-container h1 {
+        font-size: 2.5rem !important;
+    }
+    
+    .boudoir-container h2 {
+        font-size: 1.5rem !important;
+        flex-direction: column !important;
+        gap: 0.5rem !important;
     }
 }
 </style>

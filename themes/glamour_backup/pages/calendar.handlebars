@@ -1,0 +1,878 @@
+<!-- Calendar Hero Section with Glamour Treatment -->
+<section class="glamour-calendar-hero" data-aos="fade-in">
+    <!-- Spotlight Background Effects -->
+    <div class="glamour-hero-spotlight-container">
+        <div class="glamour-hero-spotlight glamour-hero-spotlight-1"></div>
+        <div class="glamour-hero-spotlight glamour-hero-spotlight-2"></div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="glamour-calendar-title" data-aos="fade-up">
+                {{#if calendar_content.page_title}}{{calendar_content.page_title}}{{else}}My Calendar{{/if}}
+            </h1>
+            
+            <!-- Optional Divider -->
+            <div class="mb-6" data-aos="fade-up" data-aos-delay="100">
+                <i class="fas fa-calendar-alt text-3xl text-glamour-gold opacity-80"></i>
+            </div>
+            
+            <p class="glamour-calendar-subtitle" data-aos="fade-up" data-aos-delay="200">
+                {{#if calendar_content.page_subtitle}}{{calendar_content.page_subtitle}}{{else}}View my current location and availability. Check where I'm traveling and when I'm available for exclusive appointments.{{/if}}
+            </p>
+        </div>
+    </div>
+    
+    <!-- Minimal Floating Elements -->
+    <div class="glamour-calendar-stars" aria-hidden="true">
+        <div class="glamour-star glamour-star-calendar-1">✦</div>
+    </div>
+</section>
+
+<!-- Main Calendar Section -->
+<section class="glamour-calendar-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+        <!-- Calendar Navigation -->
+        <div class="glamour-calendar-nav" data-aos="fade-up">
+            <button id="prev-month" class="glamour-nav-btn glamour-nav-btn-prev">
+                <i class="fas fa-chevron-left"></i>
+                <span>Previous</span>
+            </button>
+            <h2 id="month-title" class="glamour-month-title"></h2>
+            <button id="next-month" class="glamour-nav-btn glamour-nav-btn-next">
+                <span>Next</span>
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- Mobile View Toggle -->
+        <div class="glamour-mobile-toggle" data-aos="fade-up" data-aos-delay="50">
+            <div class="glamour-toggle-container">
+                <button id="list-view-btn" class="glamour-toggle-btn" data-view="list">
+                    <i class="fas fa-list"></i>
+                    <span>List</span>
+                </button>
+                <button id="month-view-btn" class="glamour-toggle-btn glamour-toggle-active" data-view="month">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Month</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Calendar Grid -->
+        <div class="glamour-calendar-container" data-aos="fade-up" data-aos-delay="100">
+            <!-- Calendar Header -->
+            <div class="glamour-calendar-header">
+                <div class="glamour-day-header">Sun</div>
+                <div class="glamour-day-header">Mon</div>
+                <div class="glamour-day-header">Tue</div>
+                <div class="glamour-day-header">Wed</div>
+                <div class="glamour-day-header">Thu</div>
+                <div class="glamour-day-header">Fri</div>
+                <div class="glamour-day-header glamour-day-header-last">Sat</div>
+            </div>
+            
+            <!-- Calendar Body -->
+            <div id="calendar-grid" class="glamour-calendar-body">
+                <div class="glamour-loading">
+                    <div class="glamour-spinner"></div>
+                    <p class="glamour-loading-text">Loading calendar...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- List View (Hidden by default) -->
+        <div id="list-view" class="glamour-list-view" style="display: none;" data-aos="fade-up" data-aos-delay="100">
+            <div class="glamour-list-loading">
+                <div class="glamour-spinner"></div>
+                <p class="glamour-loading-text">Loading calendar...</p>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="glamour-legend" data-aos="fade-up" data-aos-delay="200">
+            <div class="glamour-legend-item">
+                <div class="glamour-legend-dot glamour-legend-available"></div>
+                <span>Available</span>
+            </div>
+            <div class="glamour-legend-item">
+                <div class="glamour-legend-dot glamour-legend-travel"></div>
+                <span>Travel</span>
+            </div>
+            <div class="glamour-legend-item">
+                <div class="glamour-legend-dot glamour-legend-vacation"></div>
+                <span>Vacation</span>
+            </div>
+            <div class="glamour-legend-item">
+                <div class="glamour-legend-dot glamour-legend-unavailable"></div>
+                <span>Unavailable</span>
+            </div>
+        </div>
+
+        <!-- Contact Call-to-Action -->
+        <div class="glamour-calendar-cta" data-aos="fade-up" data-aos-delay="300">
+            <div class="glamour-cta-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <h3 class="glamour-cta-title">
+                {{#if calendar_content.cta_title}}{{calendar_content.cta_title}}{{else}}Ready for an Exclusive Experience?{{/if}}
+            </h3>
+            <p class="glamour-cta-text">
+                {{#if calendar_content.cta_text}}{{calendar_content.cta_text}}{{else}}Contact me to schedule an exclusive appointment when I'm in your area.{{/if}}
+            </p>
+            <a href="/{{modelSlug}}/contact{{previewParam}}" class="glamour-btn glamour-btn-gold">
+                <i class="fas fa-envelope mr-2"></i>
+                {{#if calendar_content.cta_button_text}}{{calendar_content.cta_button_text}}{{else}}Contact Me{{/if}}
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Glamour Calendar Styles -->
+<style>
+/* Refined Glamour Theme Variables */
+:root {
+    --glamour-gold: {{theme.colors.accent}};
+    --glamour-rose-gold: {{theme.colors.secondary}};
+    --glamour-deep-purple: {{theme.colors.bg-dark}};
+    --glamour-neutral: {{theme.colors.surface}};
+    --glamour-champagne: {{theme.colors.text-light}};
+    --glamour-black: {{theme.colors.text-dark}};
+    --glamour-white: {{theme.colors.text-light}};
+    --glamour-card: {{theme.colors.card-bg}};
+    --glamour-border: rgba(235, 203, 139, 0.15);
+}
+
+/* Calendar Hero Section */
+.glamour-calendar-hero {
+    position: relative;
+    padding: 8rem 0 6rem;
+    background: linear-gradient(135deg, {{theme.colors.bg-dark}} 0%, {{theme.colors.card-bg}} 50%, {{theme.colors.primary}} 100%);
+    overflow: hidden;
+}
+
+.glamour-hero-spotlight-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.glamour-hero-spotlight {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(235, 203, 139, 0.08) 0%, rgba(235, 203, 139, 0.03) 40%, transparent 70%);
+    filter: blur(20px);
+    animation: glamourCalendarSpotlight 15s infinite ease-in-out;
+}
+
+.glamour-hero-spotlight-1 {
+    top: 10%;
+    left: 15%;
+    animation-delay: 0s;
+}
+
+.glamour-hero-spotlight-2 {
+    bottom: 20%;
+    right: 20%;
+    animation-delay: 8s;
+}
+
+@keyframes glamourCalendarSpotlight {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.6; }
+    50% { transform: scale(1.2) rotate(180deg); opacity: 0.8; }
+}
+
+.glamour-calendar-title {
+    font-size: 4rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    letter-spacing: -0.02em;
+    background: linear-gradient(45deg, var(--glamour-white) 30%, var(--glamour-gold) 70%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(235, 203, 139, 0.2);
+}
+
+.glamour-calendar-subtitle {
+    font-size: 1.125rem;
+    color: var(--glamour-champagne);
+    text-align: center;
+    font-weight: 400;
+    line-height: 1.55;
+    max-width: 600px;
+    margin: 0 auto;
+    opacity: 0.9;
+}
+
+/* Minimal Floating Elements */
+.glamour-calendar-stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.glamour-star-calendar-1 {
+    position: absolute;
+    top: 25%;
+    right: 8%;
+    color: var(--glamour-gold);
+    font-size: 1.5rem;
+    opacity: 0.3;
+    animation: glamourCalendarFloat 12s infinite ease-in-out;
+}
+
+@keyframes glamourCalendarFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+    50% { transform: translateY(-10px) rotate(180deg); opacity: 0.5; }
+}
+
+/* Calendar Main Section */
+.glamour-calendar-section {
+    background: var(--glamour-neutral);
+    min-height: calc(100vh - 400px);
+}
+
+/* Calendar Navigation */
+.glamour-calendar-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+}
+
+.glamour-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--glamour-card);
+    color: var(--glamour-champagne);
+    border: 1px solid var(--glamour-border);
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-size: 0.9375rem;
+}
+
+.glamour-nav-btn:hover {
+    background: var(--glamour-gold);
+    color: var(--glamour-black);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(235, 203, 139, 0.2);
+}
+
+.glamour-month-title {
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 600;
+    color: var(--glamour-white);
+    text-align: center;
+    letter-spacing: -0.01em;
+}
+
+/* Calendar Container */
+.glamour-calendar-container {
+    background: var(--glamour-card);
+    border: 1px solid var(--glamour-border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    margin-bottom: 3rem;
+}
+
+/* Calendar Header */
+.glamour-calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: #2A2039;
+}
+
+.glamour-day-header {
+    padding: 1.5rem 1rem;
+    text-align: center;
+    font-weight: 600;
+    color: #F3EFE7;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9375rem;
+}
+
+.glamour-day-header-last {
+    border-right: none;
+}
+
+/* Calendar Body */
+.glamour-calendar-body {
+    background: var(--glamour-white);
+    min-height: 400px;
+}
+
+/* Loading State */
+.glamour-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+}
+
+.glamour-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--glamour-border);
+    border-top: 4px solid var(--glamour-gold);
+    border-radius: 50%;
+    animation: glamourSpin 1s linear infinite;
+    margin-bottom: 1.5rem;
+}
+
+@keyframes glamourSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.glamour-loading-text {
+    color: var(--glamour-neutral);
+    font-size: 1.125rem;
+    font-weight: 500;
+}
+
+/* Legend */
+.glamour-legend {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+
+.glamour-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--glamour-champagne);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.glamour-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.glamour-legend-available { background-color: {{theme.colors.success}}; }
+.glamour-legend-travel { background-color: {{theme.colors.primary}}; }
+.glamour-legend-vacation { background-color: {{theme.colors.warning}}; }
+.glamour-legend-unavailable { background-color: {{theme.colors.disabled-text}}; }
+
+/* Call to Action */
+.glamour-calendar-cta {
+    background: var(--glamour-card);
+    border: 1px solid var(--glamour-border);
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glamour-calendar-cta:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+}
+
+.glamour-cta-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--glamour-gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    font-size: 1.5rem;
+    color: var(--glamour-black);
+    box-shadow: 0 4px 16px rgba(235, 203, 139, 0.2);
+}
+
+.glamour-cta-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--glamour-white);
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.01em;
+}
+
+.glamour-cta-text {
+    font-size: 1.125rem;
+    color: var(--glamour-champagne);
+    line-height: 1.55;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Button Styles */
+.glamour-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 28px;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+    line-height: 1.55;
+}
+
+.glamour-btn-gold {
+    background: var(--glamour-gold);
+    color: var(--glamour-black);
+    box-shadow: 0 4px 16px rgba(235, 203, 139, 0.2);
+}
+
+.glamour-btn-gold:hover {
+    background: {{theme.colors.btn-bg-hover}};
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(235, 203, 139, 0.3);
+    text-decoration: none;
+    color: var(--glamour-black);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .glamour-calendar-title {
+        font-size: 3rem;
+    }
+    
+    .glamour-calendar-nav {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .glamour-month-title {
+        font-size: 1.5rem;
+        order: -1;
+    }
+    
+    .glamour-legend {
+        gap: 1rem;
+        justify-content: center;
+    }
+    
+    .glamour-legend-item {
+        font-size: 0.875rem;
+    }
+    
+    .glamour-day-header {
+        padding: 1rem 0.5rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Mobile View Toggle */
+.glamour-mobile-toggle {
+    display: none;
+    margin-bottom: 2rem;
+    justify-content: center;
+}
+
+.glamour-toggle-container {
+    background: var(--glamour-card);
+    border: 1px solid var(--glamour-border);
+    border-radius: 8px;
+    padding: 4px;
+    display: flex;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.glamour-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: var(--glamour-champagne);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.glamour-toggle-btn:hover {
+    background: rgba(233, 199, 122, 0.1);
+    color: var(--glamour-gold);
+}
+
+.glamour-toggle-btn.glamour-toggle-active {
+    background: var(--glamour-gold);
+    color: var(--glamour-black);
+    box-shadow: 0 1px 4px rgba(235, 203, 139, 0.3);
+}
+
+/* Calendar Grid Updates */
+.glamour-calendar-body .grid > div {
+    min-height: 72px;
+    max-height: 88px;
+}
+
+/* Event Bar Colors */
+.calendar-event-available {
+    background-color: {{theme.colors.success}} !important;
+    color: white !important;
+}
+
+.calendar-event-travel {
+    background-color: {{theme.colors.primary}} !important;
+    color: white !important;
+}
+
+.calendar-event-vacation {
+    background-color: {{theme.colors.warning}} !important;
+    color: {{theme.colors.text-dark}} !important;
+}
+
+.calendar-event-unavailable {
+    background-color: {{theme.colors.disabled-text}} !important;
+    color: {{theme.colors.text-dark}} !important;
+}
+
+/* List View */
+.glamour-list-view {
+    background: var(--glamour-card);
+    border: 1px solid var(--glamour-border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.glamour-list-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+}
+
+.glamour-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--glamour-border);
+}
+
+.glamour-list-item:last-child {
+    border-bottom: none;
+}
+
+.glamour-list-date {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--glamour-white);
+    min-width: 80px;
+}
+
+.glamour-list-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    margin-left: 1rem;
+}
+
+.glamour-list-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.glamour-list-status-text {
+    font-size: 14px;
+    color: var(--glamour-champagne);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .glamour-mobile-toggle {
+        display: flex;
+    }
+    
+    .glamour-calendar-container {
+        display: block;
+    }
+    
+    .glamour-toggle-btn span {
+        display: none;
+    }
+    
+    .glamour-toggle-btn {
+        padding: 8px 12px;
+    }
+    
+    /* Default to list view on mobile */
+    .glamour-calendar-container {
+        display: none;
+    }
+    
+    .glamour-list-view {
+        display: block !important;
+    }
+    
+    .glamour-toggle-btn[data-view="list"] {
+        background: var(--glamour-gold);
+        color: var(--glamour-black);
+        box-shadow: 0 1px 4px rgba(235, 203, 139, 0.3);
+    }
+    
+    .glamour-toggle-btn[data-view="month"] {
+        background: transparent;
+        color: var(--glamour-champagne);
+    }
+}
+</style>
+
+<!-- Calendar JavaScript -->
+<script>
+(function() {
+    const slug = {{{json modelSlug}}};
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth() + 1;
+    let currentView = window.innerWidth <= 768 ? 'list' : 'month';
+    
+    const calendarGrid = document.getElementById('calendar-grid');
+    const listView = document.getElementById('list-view');
+    const monthTitle = document.getElementById('month-title');
+    const prevButton = document.getElementById('prev-month');
+    const nextButton = document.getElementById('next-month');
+    const listViewBtn = document.getElementById('list-view-btn');
+    const monthViewBtn = document.getElementById('month-view-btn');
+    
+    // Event color mapping
+    const eventColors = {
+        'available': '{{theme.colors.success}}',
+        'travel': '{{theme.colors.primary}}', 
+        'vacation': '{{theme.colors.warning}}',
+        'unavailable': '{{theme.colors.disabled-text}}'
+    };
+    
+    const eventTextColors = {
+        'available': 'white',
+        'travel': 'white',
+        'vacation': '{{theme.colors.text-dark}}', 
+        'unavailable': '{{theme.colors.text-dark}}'
+    };
+    
+    async function loadCalendar(year = currentYear, month = currentMonth) {
+        try {
+            const response = await fetch(`/api/model-calendar/${slug}?year=${year}&month=${month}`);
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to load calendar');
+            }
+            
+            const calendar = data.data.calendar;
+            currentYear = year;
+            currentMonth = month;
+            
+            // Update month title
+            monthTitle.textContent = `${calendar.monthName} ${calendar.year}`;
+            
+            // Generate calendar grid
+            let gridHtml = '';
+            
+            calendar.weeks.forEach((week, weekIndex) => {
+                gridHtml += `<div class="grid grid-cols-7 border-t border-gray-200 relative" style="min-height: ${96 + (week.spans.length * 28)}px;">`;
+                
+                // Day cells
+                week.days.forEach((day, dayIndex) => {
+                    const isToday = day === new Date().getDate() && 
+                                  currentMonth === (new Date().getMonth() + 1) && 
+                                  currentYear === new Date().getFullYear();
+                    
+                    gridHtml += `
+                        <div class="p-2 border-r border-gray-200 ${day === 0 ? 'bg-gray-50' : ''} relative min-h-24">
+                            ${day > 0 ? `
+                                <div class="text-sm font-semibold mb-2 ${isToday ? 'text-pink-600' : 'text-gray-700'} relative z-10">
+                                    ${day}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+                
+                // Add availability spans positioned absolutely over the week
+                week.spans.forEach((span, spanIndex) => {
+                    const bgColor = eventColors[span.status] || span.color;
+                    const textColor = eventTextColors[span.status] || 'white';
+                    
+                    gridHtml += `
+                        <div class="absolute text-xs rounded px-2 py-1 z-10 flex items-center justify-center font-medium shadow-lg calendar-event-${span.status}"
+                             style="background-color: ${bgColor}; 
+                                    color: ${textColor};
+                                    left: ${span.start_pos * 14.285714}%; 
+                                    width: ${span.width * 14.285714}%;
+                                    top: ${32 + (spanIndex * 28)}px; 
+                                    height: 24px;
+                                    margin-left: 1px;
+                                    margin-right: 1px;">
+                            <span class="truncate text-xs">
+                                ${span.location}
+                                ${span.status === 'vacation' ? ' - Vacation' : ''}
+                            </span>
+                        </div>
+                    `;
+                });
+                
+                gridHtml += '</div>';
+            });
+            
+            calendarGrid.innerHTML = gridHtml;
+            
+            // Generate list view if needed
+            if (currentView === 'list') {
+                generateListView(calendar);
+            }
+            
+        } catch (error) {
+            console.error('Error loading calendar:', error);
+            calendarGrid.innerHTML = `
+                <div class="text-center py-16 text-red-500">
+                    <div class="text-6xl mb-6">⚠️</div>
+                    <h3 class="text-2xl font-semibold mb-4">Unable to Load Calendar</h3>
+                    <p class="text-lg">Please contact me directly for availability information.</p>
+                </div>
+            `;
+        }
+    }
+    
+    function generateListView(calendar) {
+        if (!listView) return;
+        
+        let listHtml = '';
+        const events = [];
+        
+        // Collect all events from calendar data
+        calendar.weeks.forEach(week => {
+            week.spans.forEach(span => {
+                const startDate = new Date(calendar.year, calendar.month - 1, span.start_day);
+                events.push({
+                    date: startDate,
+                    status: span.status,
+                    location: span.location,
+                    duration: span.duration || 1
+                });
+            });
+        });
+        
+        // Sort events by date
+        events.sort((a, b) => a.date - b.date);
+        
+        // Generate list items
+        if (events.length === 0) {
+            listHtml = '<div class="text-center py-8 text-gray-500">No events this month</div>';
+        } else {
+            events.forEach(event => {
+                const dateStr = event.date.toLocaleDateString('en-US', { 
+                    weekday: 'short', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                listHtml += `
+                    <div class="glamour-list-item">
+                        <div class="glamour-list-date">${dateStr}</div>
+                        <div class="glamour-list-status">
+                            <div class="glamour-list-status-dot" style="background-color: ${eventColors[event.status]}"></div>
+                            <span class="glamour-list-status-text">
+                                ${event.status.charAt(0).toUpperCase() + event.status.slice(1)} 
+                                ${event.location ? `- ${event.location}` : ''}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        listView.innerHTML = listHtml;
+    }
+    
+    function switchView(newView) {
+        currentView = newView;
+        
+        if (newView === 'list') {
+            calendarGrid.parentElement.style.display = 'none';
+            listView.style.display = 'block';
+            listViewBtn.classList.add('glamour-toggle-active');
+            monthViewBtn.classList.remove('glamour-toggle-active');
+        } else {
+            calendarGrid.parentElement.style.display = 'block';
+            listView.style.display = 'none';
+            monthViewBtn.classList.add('glamour-toggle-active');
+            listViewBtn.classList.remove('glamour-toggle-active');
+        }
+        
+        // Reload calendar data for current view
+        loadCalendar(currentYear, currentMonth);
+    }
+    
+    // View toggle event listeners
+    if (listViewBtn && monthViewBtn) {
+        listViewBtn.addEventListener('click', () => switchView('list'));
+        monthViewBtn.addEventListener('click', () => switchView('month'));
+    }
+    
+    // Set initial view based on screen size
+    if (window.innerWidth <= 768) {
+        currentView = 'list';
+        if (listViewBtn) listViewBtn.classList.add('glamour-toggle-active');
+        if (monthViewBtn) monthViewBtn.classList.remove('glamour-toggle-active');
+    }
+    
+    // Navigation event listeners
+    prevButton.addEventListener('click', () => {
+        if (currentMonth === 1) {
+            currentMonth = 12;
+            currentYear--;
+        } else {
+            currentMonth--;
+        }
+        loadCalendar(currentYear, currentMonth);
+    });
+    
+    nextButton.addEventListener('click', () => {
+        if (currentMonth === 12) {
+            currentMonth = 1;
+            currentYear++;
+        } else {
+            currentMonth++;
+        }
+        loadCalendar(currentYear, currentMonth);
+    });
+    
+    // Load initial calendar
+    loadCalendar();
+})();
+</script>

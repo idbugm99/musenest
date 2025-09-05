@@ -55,7 +55,7 @@ router.get('/:themeSetId/css', async (req, res) => {
 
         const css = await ThemeColorService.getThemeCSS(themeSetId);
         
-        res.setHeader('Content-Type', 'text/html');
+        res.setHeader('Content-Type', 'text/css');
         res.send(css);
     } catch (error) {
         console.error('Error generating theme CSS:', error);

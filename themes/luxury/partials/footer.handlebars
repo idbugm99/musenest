@@ -1,87 +1,584 @@
-<footer class="bg-gradient-to-br from-gray-900 via-purple-900 to-black text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<!-- Luxury Theme Footer -->
+<footer class="luxury-footer relative overflow-hidden">
+    <!-- Background Elements -->
+    <div class="luxury-footer-background">
+        <div class="luxury-footer-overlay"></div>
+    </div>
+    
+    <!-- Content -->
+    <div class="luxury-footer-content">
+        <div class="luxury-footer-grid">
+            
             <!-- Brand Section -->
-            <div class="md:col-span-2">
-                <h3 class="luxury-heading text-3xl mb-4 bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
-                    {{siteName}}
-                </h3>
-                <p class="text-gray-300 mb-6 text-lg leading-relaxed">
-                    {{#if tagline}}
-                    {{tagline}}
+            <div class="luxury-footer-brand">
+                <div class="luxury-footer-brand-header">
+                    {{#if branding.logoUrl}}
+                    <img src="{{branding.logoUrl}}" alt="{{branding.siteName}}" class="luxury-footer-logo">
+                    {{/if}}
+                    <div>
+                        <h3 class="luxury-footer-brand-title">
+                            {{branding.siteName}}{{#unless branding.siteName}}{{siteName}}{{/unless}}
+                        </h3>
+                        {{#if branding.tagline}}
+                        <p class="luxury-footer-tagline">{{branding.tagline}}</p>
+                        {{/if}}
+                    </div>
+                </div>
+                
+                <p class="luxury-footer-description">
+                    {{#if content.footerDescription}}
+                    {{content.footerDescription}}
                     {{else}}
-                    Experience the pinnacle of luxury and sophistication with personalized, exclusive services.
+                    Experience the pinnacle of luxury and sophistication with personalized, exclusive services tailored to discerning clientele.
                     {{/if}}
                 </p>
-                {{#if socialLinks}}
-                <div class="flex space-x-4">
-                    {{#each socialLinks}}
+                
+                <!-- Social Media Links -->
+                {{#if socialMedia}}
+                <div class="luxury-footer-social">
+                    {{#each socialMedia}}
                     <a href="{{this.url}}" 
-                       class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-black hover:shadow-xl transition-all duration-300 transform hover:scale-110">
-                        <i class="fab fa-{{this.icon}}"></i>
+                       class="luxury-social-link group relative w-12 h-12 rounded-full flex items-center justify-center overflow-hidden"
+                       target="_blank" rel="noopener noreferrer"
+                       aria-label="{{this.platform}}">
+                        <div class="absolute inset-0 bg-gradient-to-br from-luxury-primary to-luxury-accent opacity-90 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div class="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-colors duration-300"></div>
+                        <i class="{{this.icon}} relative z-10 text-white text-lg group-hover:scale-110 transition-transform duration-300"></i>
                     </a>
                     {{/each}}
                 </div>
                 {{/if}}
             </div>
             
-            <!-- Quick Links -->
-            <div>
-                <h4 class="luxury-heading text-xl mb-6 text-yellow-400">Quick Links</h4>
-                <ul class="space-y-3">
-                    {{#each navigation}}
+            <!-- Navigation Links -->
+            <div class="luxury-footer-section">
+                <h4 class="luxury-footer-section-title">
+                    <span class="luxury-footer-title-wrapper">
+                        Quick Links
+                        <div class="luxury-footer-title-underline"></div>
+                    </span>
+                </h4>
+                <ul class="luxury-footer-nav-list">
                     <li>
-                        <a href="{{this.url}}" 
-                           class="text-gray-300 hover:text-yellow-400 transition-colors duration-300 flex items-center">
-                            <i class="fas fa-angle-right mr-2"></i>
-                            {{this.name}}
+                        <a href="/{{modelSlug}}" class="luxury-footer-link">
+                            <i class="fas fa-home"></i>
+                            <span>Home</span>
                         </a>
                     </li>
-                    {{/each}}
+                    {{#if pages.about}}
+                    <li>
+                        <a href="/{{modelSlug}}/about" class="luxury-footer-link">
+                            <i class="fas fa-user"></i>
+                            <span>About</span>
+                        </a>
+                    </li>
+                    {{/if}}
+                    {{#if pages.gallery}}
+                    <li>
+                        <a href="/{{modelSlug}}/gallery" class="luxury-footer-link">
+                            <i class="fas fa-images"></i>
+                            <span>Gallery</span>
+                        </a>
+                    </li>
+                    {{/if}}
+                    {{#if pages.rates}}
+                    <li>
+                        <a href="/{{modelSlug}}/rates" class="luxury-footer-link">
+                            <i class="fas fa-tags"></i>
+                            <span>Services</span>
+                        </a>
+                    </li>
+                    {{/if}}
+                    {{#if pages.calendar}}
+                    <li>
+                        <a href="/{{modelSlug}}/calendar" class="luxury-footer-link">
+                            <i class="fas fa-calendar"></i>
+                            <span>Calendar</span>
+                        </a>
+                    </li>
+                    {{/if}}
+                    {{#if pages.contact}}
+                    <li>
+                        <a href="/{{modelSlug}}/contact" class="luxury-footer-link">
+                            <i class="fas fa-envelope"></i>
+                            <span>Contact</span>
+                        </a>
+                    </li>
+                    {{/if}}
                 </ul>
             </div>
             
-            <!-- Contact Info -->
-            <div>
-                <h4 class="luxury-heading text-xl mb-6 text-yellow-400">Contact</h4>
-                <ul class="space-y-4">
-                    {{#if contactEmail}}
-                    <li class="flex items-start">
-                        <i class="fas fa-envelope text-yellow-400 mt-1 mr-3"></i>
-                        <a href="mailto:{{contactEmail}}" 
-                           class="text-gray-300 hover:text-yellow-400 transition-colors duration-300">
-                            {{contactEmail}}
-                        </a>
+            <!-- Contact Information -->
+            <div class="luxury-footer-section">
+                <h4 class="luxury-footer-section-title">
+                    <span class="luxury-footer-title-wrapper">
+                        Contact Info
+                        <div class="luxury-footer-title-underline"></div>
+                    </span>
+                </h4>
+                <ul class="luxury-footer-contact-list">
+                    {{#if contact.email}}
+                    <li class="luxury-contact-item">
+                        <div class="luxury-contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <span class="luxury-contact-label">Email</span>
+                            <a href="mailto:{{contact.email}}" class="luxury-contact-value">
+                                {{contact.email}}
+                            </a>
+                        </div>
                     </li>
                     {{/if}}
-                    {{#if contactPhone}}
-                    <li class="flex items-start">
-                        <i class="fas fa-phone text-yellow-400 mt-1 mr-3"></i>
-                        <a href="tel:{{contactPhone}}" 
-                           class="text-gray-300 hover:text-yellow-400 transition-colors duration-300">
-                            {{contactPhone}}
-                        </a>
+                    {{#if contact.phone}}
+                    <li class="luxury-contact-item">
+                        <div class="luxury-contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div>
+                            <span class="luxury-contact-label">Phone</span>
+                            <a href="tel:{{contact.phone}}" class="luxury-contact-value">
+                                {{contact.phone}}
+                            </a>
+                        </div>
                     </li>
                     {{/if}}
-                    {{#if location}}
-                    <li class="flex items-start">
-                        <i class="fas fa-map-marker-alt text-yellow-400 mt-1 mr-3"></i>
-                        <span class="text-gray-300">{{location}}</span>
+                    {{#if contact.location}}
+                    <li class="luxury-contact-item">
+                        <div class="luxury-contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div>
+                            <span class="luxury-contact-label">Location</span>
+                            <span class="luxury-contact-value">{{contact.location}}</span>
+                        </div>
+                    </li>
+                    {{/if}}
+                    {{#if availability}}
+                    <li class="luxury-contact-item">
+                        <div class="luxury-contact-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <span class="luxury-contact-label">Availability</span>
+                            <span class="luxury-contact-value">{{availability}}</span>
+                        </div>
                     </li>
                     {{/if}}
                 </ul>
+                
+                <!-- CTA Button -->
+                <div class="luxury-footer-cta">
+                    <a href="/{{modelSlug}}/contact" class="luxury-footer-btn">
+                        <i class="fas fa-star"></i>
+                        Book Consultation
+                    </a>
+                </div>
             </div>
         </div>
         
-        <!-- Bottom Bar -->
-        <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p class="text-gray-400 text-sm font-medium">
-                © {{currentYear}} {{siteName}}. All rights reserved. | Privacy & Discretion Guaranteed
-            </p>
-            <div class="flex items-center space-x-3 mt-4 md:mt-0">
-                <span class="text-gray-400 text-sm font-medium">Powered by</span>
-                <span class="luxury-heading text-yellow-400 font-semibold text-base">MuseNest</span>
+        <!-- Divider -->
+        <div class="luxury-footer-divider"></div>
+        
+        <!-- Bottom Section -->
+        <div class="luxury-footer-bottom">
+            <div class="luxury-footer-copyright">
+                <span>© {{currentYear}} {{branding.siteName}}{{#unless branding.siteName}}{{siteName}}{{/unless}}. All rights reserved.</span>
+                <span class="luxury-footer-separator">|</span>
+                <span>Privacy & Discretion Guaranteed</span>
+            </div>
+            
+            <!-- Powered By -->
+            <div class="luxury-footer-credits">
+                <span class="luxury-footer-credits-text">Crafted with</span>
+                <div class="luxury-heart-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <span class="luxury-footer-credits-text">by</span>
+                <a href="https://musenest.com" class="luxury-footer-credits-link">
+                    MuseNest
+                </a>
             </div>
         </div>
     </div>
 </footer>
+
+<style>
+/* Luxury Footer Styles */
+.luxury-footer {
+    position: relative;
+    background: linear-gradient(135deg, #2C1810, #8B4513);
+    color: #F5F5DC;
+}
+
+.luxury-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+}
+
+.luxury-footer-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: rgba(245, 245, 220, 0.8);
+    text-decoration: none;
+    padding: 0.5rem 0;
+    font-weight: 400;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+}
+
+.luxury-footer-link:hover {
+    color: #D4AF37;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
+    padding-left: 0.5rem;
+}
+
+.luxury-footer-link i {
+    width: 1rem;
+    text-align: center;
+    margin-right: 0.75rem;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.luxury-footer-link:hover i {
+    opacity: 1;
+}
+
+.luxury-contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.luxury-contact-icon {
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.2));
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.25rem;
+}
+
+.luxury-contact-icon i {
+    color: #D4AF37;
+    font-size: 0.875rem;
+}
+
+/* Layout Classes */
+.luxury-footer-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.luxury-footer-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.luxury-footer-content {
+    position: relative;
+    z-index: 10;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 1rem;
+}
+
+.luxury-footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+}
+
+@media (min-width: 1024px) {
+    .luxury-footer-grid {
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 3rem;
+    }
+}
+
+.luxury-footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.luxury-footer-brand-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.luxury-footer-logo {
+    height: 4rem;
+    width: auto;
+    object-fit: contain;
+}
+
+.luxury-footer-brand-title {
+    font-size: 1.875rem;
+    font-family: Georgia, serif;
+    font-weight: 700;
+    color: #F5F5DC;
+    margin-bottom: 0.5rem;
+}
+
+.luxury-footer-tagline {
+    color: rgba(245, 245, 220, 0.8);
+    font-style: italic;
+}
+
+.luxury-footer-description {
+    color: rgba(245, 245, 220, 0.8);
+    font-size: 1.125rem;
+    line-height: 1.6;
+    max-width: 28rem;
+}
+
+.luxury-footer-social {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Footer Sections */
+.luxury-footer-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.luxury-footer-section-title {
+    font-size: 1.25rem;
+    font-family: Georgia, serif;
+    font-weight: 600;
+    color: #D4AF37;
+    margin-bottom: 1.5rem;
+}
+
+.luxury-footer-title-wrapper {
+    position: relative;
+}
+
+.luxury-footer-title-underline {
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 3rem;
+    height: 2px;
+    background: linear-gradient(90deg, #D4AF37, #B8941F);
+    border-radius: 2px;
+}
+
+.luxury-footer-nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.luxury-footer-contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.luxury-contact-label {
+    font-size: 0.875rem;
+    color: rgba(245, 245, 220, 0.6);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.luxury-contact-value {
+    color: #F5F5DC;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.luxury-contact-value:hover {
+    color: #D4AF37;
+}
+
+.luxury-footer-cta {
+    padding-top: 1rem;
+}
+
+.luxury-footer-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(45deg, #D4AF37, #B8941F);
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    border-radius: 25px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.luxury-footer-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.luxury-footer-divider {
+    margin: 3rem 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+}
+
+.luxury-footer-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+@media (min-width: 1024px) {
+    .luxury-footer-bottom {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+.luxury-footer-copyright {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: rgba(245, 245, 220, 0.7);
+}
+
+@media (min-width: 640px) {
+    .luxury-footer-copyright {
+        flex-direction: row;
+        gap: 1.5rem;
+    }
+}
+
+.luxury-footer-separator {
+    display: none;
+}
+
+@media (min-width: 640px) {
+    .luxury-footer-separator {
+        display: inline;
+    }
+}
+
+.luxury-footer-credits {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+}
+
+.luxury-footer-credits-text {
+    color: rgba(245, 245, 220, 0.6);
+}
+
+.luxury-footer-credits-link {
+    font-family: Georgia, serif;
+    font-weight: 600;
+    color: #D4AF37;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.luxury-footer-credits-link:hover {
+    color: #F4D03F;
+}
+
+.luxury-heart-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: luxury-heart-pulse 2s ease-in-out infinite;
+}
+
+.luxury-heart-icon i {
+    color: white;
+    font-size: 0.75rem;
+}
+
+@keyframes luxury-heart-pulse {
+    0%, 100% { 
+        transform: scale(1); 
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
+    }
+    50% { 
+        transform: scale(1.05); 
+        box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
+    }
+}
+
+/* Scroll reveal animation for footer */
+.luxury-footer {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: luxury-footer-reveal 0.8s ease-out 0.2s forwards;
+}
+
+@keyframes luxury-footer-reveal {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .luxury-footer .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .luxury-contact-item {
+        align-items: center;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .luxury-footer,
+    .luxury-footer-link,
+    .luxury-heart-icon {
+        animation: none;
+        transition: none;
+    }
+}
+</style>

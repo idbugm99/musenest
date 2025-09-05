@@ -1,7 +1,11 @@
 const express = require('express');
+const axios = require('axios');
 const db = require('../../config/database');
 
 const router = express.Router();
+
+// API Base URL configuration - easily configurable for production
+const API_BASE_URL = process.env.API_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
 
 // Helper function to format location display based on service type
 function formatLocationDisplay(location, serviceType, radiusMiles) {
@@ -30,358 +34,392 @@ function formatLocationDisplay(location, serviceType, radiusMiles) {
     }
 }
 
-// Helper function to get model by slug with theme assignment
+// Helper function to get model by slug using API call instead of direct SQL
 async function getModelBySlug(slug) {
     try {
-        const [models] = await db.execute(`
-            SELECT m.id, m.name, m.slug, m.email, m.phone, m.status, m.theme_set_id, m.active_color_palette_id,
-                   ts.name as theme_name, ts.display_name as theme_display_name, ts.default_palette_id,
-                   cp.name as palette_name, cp.display_name as palette_display_name
-            FROM models m
-            LEFT JOIN theme_sets ts ON m.theme_set_id = ts.id
-            LEFT JOIN color_palettes cp ON m.active_color_palette_id = cp.id
-            WHERE m.slug = ? AND m.status IN ('active', 'trial', 'inactive')
-            LIMIT 1
-        `, [slug]);
-
-        return models.length > 0 ? models[0] : null;
+        const axios = require('axios');
+        const response = await axios.get(`${API_BASE_URL}/api/model-profile/${slug}`);
+        
+        if (response.data.success && response.data.data) {
+            console.log(`🔍 Loaded model profile via API for ${slug}`);
+            return response.data.data;
+        } else {
+            console.log(`⚠️ Model not found via API: ${slug}`);
+            return null;
+        }
     } catch (error) {
-        console.error('Error fetching model:', error);
+        if (error.response && error.response.status === 404) {
+            console.log(`⚠️ Model not found via API: ${slug}`);
+            return null;
+        }
+        console.error(`❌ Error calling model profile API for ${slug}:`, error.message);
         return null;
     }
 }
 
-// Helper function to load dynamic colors from color palette database
-async function loadColorPalette(paletteId, themeId) {
+// Helper function to load dynamic colors using API instead of direct SQL queries
+async function loadColorPalette(paletteId, themeId, modelId = 39) {
     try {
         if (!paletteId && !themeId) {
             console.log('🎨 No palette or theme ID provided, using fallback colors');
             return { primary: '#3B82F6', secondary: '#6B7280', text: '#1F2937', background: '#FFFFFF', accent: '#10B981' };
         }
 
-        // If no explicit palette, try to get theme default palette
-        let targetPaletteId = paletteId;
-        if (!targetPaletteId && themeId) {
-            const [themeRows] = await db.execute(`
-                SELECT default_palette_id FROM theme_sets WHERE id = ? LIMIT 1
-            `, [themeId]);
+        const axios = require('axios');
+        
+        // If we have a specific palette ID (e.g., in preview mode), use the direct palette API
+        // Otherwise use the model-specific API that considers the model's current settings
+        let response;
+        if (paletteId) {
+            console.log(`🎨 Loading direct palette API for palette ${paletteId}`);
+            response = await axios.get(`${API_BASE_URL}/api/color-palettes/${paletteId}`);
+        } else {
+            console.log(`🎨 Loading model palette API for model ${modelId}`);
+            response = await axios.get(`${API_BASE_URL}/api/color-palettes/models/${modelId}/colors`);
+        }
+        
+        // Handle different response structures for different APIs
+        let colors;
+        if (response.data && response.data.data && response.data.data.colors) {
+            // Direct palette API structure
+            colors = response.data.data.colors;
+            console.log(`🎨 Loaded direct palette API colors for palette ${paletteId}`);
+        } else if (response.data && response.data.colors) {
+            // Model palette API structure
+            colors = response.data.colors;
+            console.log(`🎨 Loaded model palette API colors for model ${modelId}`);
+        } else {
+            console.error('❌ No colors found in API response. Response structure:', JSON.stringify(response.data, null, 2));
+            throw new Error('No colors found in API response');
+        }
+        
+        if (colors) {
             
-            if (themeRows.length > 0 && themeRows[0].default_palette_id) {
-                targetPaletteId = themeRows[0].default_palette_id;
-                console.log(`🎨 Using theme default palette ID: ${targetPaletteId}`);
-            }
+            // Apply the same normalization logic as the original function
+            // Normalize legacy/variant token names to canonical schema
+            const aliasToCanonical = {
+                // brand
+                'theme-primary': 'primary', 'brand-primary': 'primary',
+                'theme-secondary': 'secondary',
+                'theme-accent': 'accent', 'highlight': 'accent',
+                // background/surface/overlay
+                'background': 'bg', 'theme-background': 'bg',
+                'surface': 'surface', 'card-background': 'surface', 'theme-surface': 'surface',
+                'bg-primary': 'bg', 'bg-secondary': 'bg-light', 'bg-tertiary': 'surface',
+                'hero-overlay': 'overlay', 'backdrop': 'overlay', 'theme-overlay': 'overlay',
+                // text
+                'theme-text': 'text', 'body-text': 'text',
+                'theme-text-light': 'text-light', 'light-text': 'text-light',
+                'theme-text-dark': 'text-dark', 'dark-text': 'text-dark',
+                'text-default': 'text',
+                // borders
+                'theme-border': 'border', 'border-default': 'border',
+                'theme-border-light': 'border-light',
+                // cards
+                'card-bg': 'card-bg', 'card-text': 'card-text', 'card-border': 'card-border', 'card-shadow': 'card-shadow',
+                // nav/footer
+                'nav-bg': 'nav-bg', 'nav-text': 'nav-text', 'nav-border': 'nav-border',
+                'footer-bg': 'footer-bg', 'footer-text': 'footer-text', 'footer-border': 'footer-border',
+                // buttons
+                'btn-bg': 'btn-bg', 'btn-text': 'btn-text', 'btn-border': 'btn-border',
+                'btn-bg-hover': 'btn-bg-hover', 'btn-text-hover': 'btn-text-hover',
+                'btn-disabled-bg': 'btn-disabled-bg', 'btn-disabled-text': 'btn-disabled-text',
+                // inputs
+                'input-bg': 'input-bg', 'input-text': 'input-text', 'input-border': 'input-border', 'input-placeholder': 'input-placeholder', 'input-focus-ring': 'input-focus-ring',
+                // hero
+                'hero-bg': 'hero-bg', 'hero-text': 'hero-text',
+                // misc
+                'focus-ring': 'focus-ring', 'info': 'info', 'success': 'success', 'warning': 'warning', 'danger': 'danger',
+            };
+
+            const normalized = { ...colors };
+            Object.entries(aliasToCanonical).forEach(([alias, canonical]) => {
+                if (colors[alias] && !normalized[canonical]) {
+                    normalized[canonical] = colors[alias];
+                }
+            });
+
+            // Ensure key canonical tokens exist with sensible fallbacks
+            const std = {
+                primary: normalized['primary'] || '#3B82F6',
+                secondary: normalized['secondary'] || '#6B7280',
+                accent: normalized['accent'] || '#0EA5E9',
+                bg: normalized['bg'] || normalized['surface'] || '#FFFFFF',
+                'bg-light': normalized['bg-light'] || '#F8FAFC',
+                'bg-dark': normalized['bg-dark'] || '#0B0B15',
+                surface: normalized['surface'] || normalized['card-bg'] || '#FFFFFF',
+                overlay: normalized['overlay'] || 'rgba(0,0,0,0.5)',
+                text: normalized['text'] || '#1F2937',
+                'text-light': normalized['text-light'] || '#E9E7F1',
+                'text-dark': normalized['text-dark'] || '#0B0B15',
+                border: normalized['border'] || '#E2E8F0',
+                'border-light': normalized['border-light'] || '#C8D3E1',
+                'card-bg': normalized['card-bg'] || normalized['surface'] || '#FFFFFF',
+                'card-text': normalized['card-text'] || normalized['text'] || '#1F2937',
+                'card-border': normalized['card-border'] || normalized['border'] || '#E2E8F0',
+                'card-shadow': normalized['card-shadow'] || 'rgba(0,0,0,0.1)',
+                'btn-bg': normalized['btn-bg'] || normalized['primary'] || '#3B82F6',
+                'btn-bg-hover': normalized['btn-bg-hover'] || normalized['accent'] || '#2563EB',
+                'btn-text': normalized['btn-text'] || '#FFFFFF',
+                'btn-text-hover': normalized['btn-text-hover'] || '#0B0B15',
+                'btn-border': normalized['btn-border'] || normalized['primary'] || '#3B82F6',
+                'focus-ring': normalized['focus-ring'] || normalized['accent'] || '#3B82F6',
+            };
+
+            // Compose compatible colors used by legacy templates (do not overwrite canonical)
+            const compatibleColors = {
+                primary: std.primary,
+                secondary: std.secondary,
+                text: std.text,
+                background: std.bg,
+                accent: std.accent
+            };
+
+            console.log(`🎨 Loaded color palette via API for model ${modelId}, palette ${response.data.palette.id}`);
+            console.log('🎨 Compatible colors:', compatibleColors);
+
+            // Return full color object with both token-based and compatible colors
+            return { ...normalized, ...std, ...compatibleColors };
         }
 
-        if (!targetPaletteId) {
-            console.log('🎨 No palette ID available, using fallback colors');
-            return { primary: '#3B82F6', secondary: '#6B7280', text: '#1F2937', background: '#FFFFFF', accent: '#10B981' };
-        }
-
-        // Load color values from the palette
-        const [colorRows] = await db.execute(`
-            SELECT token_name, token_value 
-            FROM color_palette_values 
-            WHERE palette_id = ?
-        `, [targetPaletteId]);
-
-        console.log(`🎨 Loaded ${colorRows.length} color tokens from palette ${targetPaletteId}`);
-
-        if (colorRows.length === 0) {
-            console.log('🎨 No colors found in palette, using fallback colors');
-            return { primary: '#3B82F6', secondary: '#6B7280', text: '#1F2937', background: '#FFFFFF', accent: '#10B981' };
-        }
-
-        // Convert to color object and create backwards-compatible structure
-        const colors = {};
-        colorRows.forEach(row => {
-            colors[row.token_name] = row.token_value;
-        });
-
-        // Normalize legacy/variant token names to canonical schema
-        const aliasToCanonical = {
-            // brand
-            'theme-primary': 'primary', 'brand-primary': 'primary',
-            'theme-secondary': 'secondary',
-            'theme-accent': 'accent', 'highlight': 'accent',
-            // background/surface/overlay
-            'background': 'bg', 'theme-background': 'bg',
-            'surface': 'surface', 'card-background': 'surface', 'theme-surface': 'surface',
-            'bg-primary': 'bg', 'bg-secondary': 'bg-light', 'bg-tertiary': 'surface',
-            'hero-overlay': 'overlay', 'backdrop': 'overlay', 'theme-overlay': 'overlay',
-            // text
-            'theme-text': 'text', 'body-text': 'text',
-            'theme-text-light': 'text-light', 'light-text': 'text-light',
-            'theme-text-dark': 'text-dark', 'dark-text': 'text-dark',
-            'text-default': 'text',
-            // borders
-            'theme-border': 'border', 'border-default': 'border',
-            'theme-border-light': 'border-light',
-            // cards
-            'card-bg': 'card-bg', 'card-text': 'card-text', 'card-border': 'card-border', 'card-shadow': 'card-shadow',
-            // nav/footer
-            'nav-bg': 'nav-bg', 'nav-text': 'nav-text', 'nav-border': 'nav-border',
-            'footer-bg': 'footer-bg', 'footer-text': 'footer-text', 'footer-border': 'footer-border',
-            // buttons
-            'btn-bg': 'btn-bg', 'btn-text': 'btn-text', 'btn-border': 'btn-border',
-            'btn-bg-hover': 'btn-bg-hover', 'btn-text-hover': 'btn-text-hover',
-            'btn-disabled-bg': 'btn-disabled-bg', 'btn-disabled-text': 'btn-disabled-text',
-            // inputs
-            'input-bg': 'input-bg', 'input-text': 'input-text', 'input-border': 'input-border', 'input-placeholder': 'input-placeholder', 'input-focus-ring': 'input-focus-ring',
-            // hero
-            'hero-bg': 'hero-bg', 'hero-text': 'hero-text',
-            // misc
-            'focus-ring': 'focus-ring', 'info': 'info', 'success': 'success', 'warning': 'warning', 'danger': 'danger',
-        };
-
-        const normalized = { ...colors };
-        Object.entries(aliasToCanonical).forEach(([alias, canonical]) => {
-            if (colors[alias] && !normalized[canonical]) {
-                normalized[canonical] = colors[alias];
-            }
-        });
-
-        // Ensure key canonical tokens exist with sensible fallbacks
-        const std = {
-            primary: normalized['primary'] || '#3B82F6',
-            secondary: normalized['secondary'] || '#6B7280',
-            accent: normalized['accent'] || '#0EA5E9',
-            bg: normalized['bg'] || normalized['surface'] || '#FFFFFF',
-            'bg-light': normalized['bg-light'] || '#F8FAFC',
-            'bg-dark': normalized['bg-dark'] || '#0B0B15',
-            surface: normalized['surface'] || normalized['card-bg'] || '#FFFFFF',
-            overlay: normalized['overlay'] || 'rgba(0,0,0,0.5)',
-            text: normalized['text'] || '#1F2937',
-            'text-light': normalized['text-light'] || '#E9E7F1',
-            'text-dark': normalized['text-dark'] || '#0B0B15',
-            border: normalized['border'] || '#E2E8F0',
-            'border-light': normalized['border-light'] || '#C8D3E1',
-            'card-bg': normalized['card-bg'] || normalized['surface'] || '#FFFFFF',
-            'card-text': normalized['card-text'] || normalized['text'] || '#1F2937',
-            'card-border': normalized['card-border'] || normalized['border'] || '#E2E8F0',
-            'card-shadow': normalized['card-shadow'] || 'rgba(0,0,0,0.1)',
-            'btn-bg': normalized['btn-bg'] || normalized['primary'] || '#3B82F6',
-            'btn-bg-hover': normalized['btn-bg-hover'] || normalized['accent'] || '#2563EB',
-            'btn-text': normalized['btn-text'] || '#FFFFFF',
-            'btn-text-hover': normalized['btn-text-hover'] || '#0B0B15',
-            'btn-border': normalized['btn-border'] || normalized['primary'] || '#3B82F6',
-            'focus-ring': normalized['focus-ring'] || normalized['accent'] || '#3B82F6',
-        };
-
-        // Compose compatible colors used by legacy templates (do not overwrite canonical)
-        const compatibleColors = {
-            primary: std.primary,
-            secondary: std.secondary,
-            text: std.text,
-            background: std.bg,
-            accent: std.accent
-        };
-
-        console.log('🎨 Compatible colors:', compatibleColors);
-
-        // Return full color object with both token-based and compatible colors
-        return { ...normalized, ...std, ...compatibleColors };
+        console.log('🎨 No colors found via API, using fallback colors');
+        return { primary: '#3B82F6', secondary: '#6B7280', text: '#1F2937', background: '#FFFFFF', accent: '#10B981' };
 
     } catch (error) {
-        console.error('Error loading color palette:', error);
+        console.error(`❌ Error calling color palette API:`, error.message);
         return { primary: '#3B82F6', secondary: '#6B7280', text: '#1F2937', background: '#FFFFFF', accent: '#10B981' };
     }
 }
 
-// Helper function to get model content for a specific page type from dedicated tables
-async function getModelContent(modelId, pageType) {
+// Helper function to get content with modelexample fallback
+async function getContentWithFallback(modelSlug, pageType) {
+    try {
+        // First try to get content for the current model
+        let content = await getModelContent(modelSlug, pageType);
+        
+        // If no content or empty content, fall back to modelexample
+        if (!content || Object.keys(content).length === 0) {
+            if (modelSlug !== 'modelexample') {
+                console.log(`📋 No ${pageType} content for ${modelSlug}, using modelexample fallback`);
+                content = await getModelContent('modelexample', pageType);
+                
+                // Apply current model's specific data overrides
+                if (content && Object.keys(content).length > 0) {
+                    content = applyModelOverrides(content, modelSlug);
+                }
+            }
+        }
+        
+        return content || {};
+    } catch (error) {
+        console.error(`❌ Error getting content with fallback for ${modelSlug}:`, error.message);
+        return {};
+    }
+}
+
+// Helper function to apply model-specific overrides to fallback content
+function applyModelOverrides(content, modelSlug) {
+    if (!content) return content;
+    
+    // Clone the content to avoid modifying the original
+    const overriddenContent = { ...content };
+    
+    // Replace modelexample-specific references with current model
+    const replaceModelReferences = (obj) => {
+        if (typeof obj === 'string') {
+            return obj
+                .replace(/modelexample/g, modelSlug)
+                .replace(/Model Example/g, modelSlug.charAt(0).toUpperCase() + modelSlug.slice(1))
+                .replace(/\/modelexample\//g, `/${modelSlug}/`);
+        } else if (typeof obj === 'object' && obj !== null) {
+            const newObj = Array.isArray(obj) ? [] : {};
+            for (const key in obj) {
+                newObj[key] = replaceModelReferences(obj[key]);
+            }
+            return newObj;
+        }
+        return obj;
+    };
+    
+    const processedContent = replaceModelReferences(overriddenContent);
+    console.log(`🔄 Applied model overrides for ${modelSlug}`);
+    
+    return processedContent;
+}
+
+// Helper function to get model content for a specific page type using dedicated API endpoints
+async function getModelContent(modelSlug, pageType) {
     try {
         let content = {};
         
         if (pageType === 'home') {
-            // Get home page content from model_home_page_content table
-            const [homeRows] = await db.execute(`
-                SELECT * FROM model_home_page_content WHERE model_id = ?
-            `, [modelId]);
-            
-            if (homeRows.length > 0) {
-                content = homeRows[0];
-                
-                // Get site settings for model name and tagline
-                const [siteRows] = await db.execute(`
-                    SELECT site_name, tagline FROM site_settings WHERE model_id = ?
-                `, [modelId]);
-                
-                if (siteRows.length > 0) {
-                    content.site_name = siteRows[0].site_name;
-                    content.tagline = siteRows[0].tagline;
+            // Use model-home.js API
+            try {
+                const axios = require('axios');
+                const response = await axios.get(`${API_BASE_URL}/api/model-home/${modelSlug}/home`);
+                if (response.data.success) {
+                    content = response.data.data;
+                    console.log(`🏠 Loaded home content via API for ${modelSlug}`);
+                } else {
+                    console.log(`⚠️ No home content found via API for ${modelSlug}`);
                 }
+            } catch (error) {
+                console.error(`❌ Error calling model-home API for ${modelSlug}:`, error.message);
             }
         } else if (pageType === 'about') {
-            // Get about page content from model_about_page_content table
-            const [aboutRows] = await db.execute(`
-                SELECT * FROM model_about_page_content WHERE model_id = ?
-            `, [modelId]);
-            
-            if (aboutRows.length > 0) {
-                content = aboutRows[0];
-                
-                // Transform database field names to template field names
-                content.factsVisible = content.quick_facts_visible;
-                content.interestsVisible = content.interests_visible;
-                content.ctaTitle = content.cta_title;
-                content.ctaDescription = content.cta_description;
-                content.ctaButton_1Text = content.cta_button_1_text;
-                content.ctaButton_1Link = content.cta_button_1_link;
-                content.ctaButton_2Text = content.cta_button_2_text;
-                content.ctaButton_2Link = content.cta_button_2_link;
-                content.servicesTitle = content.services_title;
-                content.quickFactsTitle = content.quick_facts_title;
-                // Note: portraitImageUrl will be set later when we have the model slug
-                content.portraitAlt = content.portrait_alt;
-                
-                console.log('🔍 Field mapping - quick_facts_visible:', content.quick_facts_visible);
-                console.log('🔍 Field mapping - factsVisible:', content.factsVisible);
-                
-                // Build Quick Facts array from existing qf_* fields
-                content.quickFacts = [];
-                if (content.qf_location) {
-                    content.quickFacts.push({question: 'Location', answer: content.qf_location});
+            // Use model-about.js API
+            try {
+                const axios = require('axios');
+                const response = await axios.get(`${API_BASE_URL}/api/model-about/${modelSlug}/about`);
+                if (response.data.success && response.data.data) {
+                    // About API returns {success: true, data: {...}}
+                    // Return data directly since template expects about_content: pageContent
+                    content = { ...response.data.data };
+                    console.log(`📖 Loaded about content via API for ${modelSlug}`);
+                } else {
+                    console.log(`⚠️ No about content found via API for ${modelSlug}`);
                 }
-                if (content.qf_languages) {
-                    content.quickFacts.push({question: 'Languages', answer: content.qf_languages});
-                }
-                if (content.qf_education) {
-                    content.quickFacts.push({question: 'Education', answer: content.qf_education});
-                }
-                if (content.qf_specialties) {
-                    content.quickFacts.push({question: 'Specialties', answer: content.qf_specialties});
-                }
-                console.log(`📋 Built ${content.quickFacts.length} quick facts from qf_* fields:`, content.quickFacts);
+            } catch (error) {
+                console.error(`❌ Error calling model-about API for ${modelSlug}:`, error.message);
             }
         } else if (pageType === 'rates') {
-            // Get rates page content from model_rates_page_content table
-            const [ratesRows] = await db.execute(`
-                SELECT * FROM model_rates_page_content WHERE model_id = ?
-            `, [modelId]);
-            
-            if (ratesRows.length > 0) {
-                content = ratesRows[0];
-                console.log(`💰 Loaded rates page content for model ${modelId}`);
-            } else {
-                console.log(`⚠️ No rates page content found for model ${modelId}`);
-                content = {};
+            // Use model-rates.js API (both rates data and page content)
+            try {
+                const axios = require('axios');
+                
+                // Helper function to convert underscore properties to camelCase for template compatibility
+                function transformRatePropertiesToCamelCase(rateArray) {
+                    return rateArray.map(rate => ({
+                        ...rate,  // Keep all original properties
+                        // Add camelCase aliases for template compatibility
+                        serviceName: rate.service_name,
+                        highlightBadge: rate.highlight_badge,
+                        highlightBadgeText: rate.highlight_badge_text,
+                        isMostPopular: rate.is_most_popular,
+                        isVisible: rate.is_visible,
+                        sortOrder: rate.sort_order
+                    }));
+                }
+                
+                // Get rates data
+                const ratesResponse = await axios.get(`${API_BASE_URL}/api/model-rates/${modelSlug}`);
+                
+                // Get page content  
+                const contentResponse = await axios.get(`${API_BASE_URL}/api/model-rates/${modelSlug}/page-content`);
+                
+                if (ratesResponse.data.success && contentResponse.data.success) {
+                    const ratesData = ratesResponse.data.data;
+                    
+                    // Transform rate properties for template compatibility
+                    const transformedRates = {
+                        incall: transformRatePropertiesToCamelCase(ratesData.incall || []),
+                        outcall: transformRatePropertiesToCamelCase(ratesData.outcall || []),
+                        extended: transformRatePropertiesToCamelCase(ratesData.extended || [])
+                    };
+                    
+                    // Combine rates data and page content
+                    content = {
+                        ...contentResponse.data.data,  // rates_content fields from page-content endpoint
+                        rates: transformedRates, // transformed rates data for template compatibility
+                        additionalServices: transformRatePropertiesToCamelCase(ratesData.additional || [])
+                    };
+                    console.log(`💰 Loaded rates content and data via API for ${modelSlug}`, {
+                        incallCount: transformedRates.incall.length,
+                        outcallCount: transformedRates.outcall.length,
+                        extendedCount: transformedRates.extended.length,
+                        sampleIncall: transformedRates.incall[0] ? {
+                            serviceName: transformedRates.incall[0].serviceName,
+                            service_name: transformedRates.incall[0].service_name,
+                            price: transformedRates.incall[0].price
+                        } : 'none'
+                    });
+                } else {
+                    console.log(`⚠️ No rates content found via API for ${modelSlug}`);
+                }
+            } catch (error) {
+                console.error(`❌ Error calling model-rates API for ${modelSlug}:`, error.message);
             }
         } else if (pageType === 'contact') {
-            // Get contact page content from model_contact_page_content table
-            const [contactRows] = await db.execute(`
-                SELECT * FROM model_contact_page_content WHERE model_id = ?
-            `, [modelId]);
-            
-            if (contactRows.length > 0) {
-                const rawContent = contactRows[0];
-                
-                // Convert camelCase field names to snake_case for Handlebars template compatibility
-                content = {};
-                Object.keys(rawContent).forEach(key => {
-                    // Convert camelCase to snake_case (e.g., contactHeaderVisible -> contact_header_visible)
-                    const snakeKey = key.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
-                    content[snakeKey] = rawContent[key];
-                });
-                
-                // Add mapping for glamour theme variables
-                content.location = rawContent.location_area_text || null;
-                content.workingHours = rawContent.direct_response_text || null;
+            // Use model-contact.js API
+            try {
+                const axios = require('axios');
+                const response = await axios.get(`${API_BASE_URL}/api/model-contact/${modelSlug}/content`);
+                if (response.data && (response.data.id || response.data.model_id)) {
+                    // Contact API returns raw data, not wrapped in success/data structure
+                    // Return data directly since template expects contact_content: pageContent
+                    content = { ...response.data };
+                    console.log(`📞 Loaded contact content via API for ${modelSlug}`, Object.keys(content));
+                } else {
+                    console.log(`⚠️ No contact content found via API for ${modelSlug}`);
+                }
+            } catch (error) {
+                console.error(`❌ Error calling model-contact API for ${modelSlug}:`, error.message);
             }
         } else if (pageType === 'etiquette') {
-            // Get etiquette page content from model_etiquette_page_content table
-            const [etiquetteRows] = await db.execute(`
-                SELECT * FROM model_etiquette_page_content WHERE model_id = ?
-            `, [modelId]);
-            
-            if (etiquetteRows.length > 0) {
-                const rawContent = etiquetteRows[0];
-                
-                // Convert camelCase field names to snake_case for Handlebars template compatibility
-                content = {};
-                Object.keys(rawContent).forEach(key => {
-                    // Convert camelCase to snake_case (e.g., etiquetteHeaderVisible -> etiquette_header_visible)
-                    const snakeKey = key.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
-                    content[snakeKey] = rawContent[key];
-                });
+            // Use model-etiquette.js API
+            try {
+                const axios = require('axios');
+                const response = await axios.get(`${API_BASE_URL}/api/model-etiquette/${modelSlug}/content`);
+                if (response.data.success && response.data.data && response.data.data.etiquette_content) {
+                    // Etiquette API returns {success: true, data: {etiquette_content: {...}}}
+                    // Return the nested etiquette_content directly since template expects etiquette_content: pageContent
+                    content = { ...response.data.data.etiquette_content };
+                    console.log(`📋 Loaded etiquette content via API for ${modelSlug}`);
+                } else {
+                    console.log(`⚠️ No etiquette content found via API for ${modelSlug}`);
+                }
+            } catch (error) {
+                console.error(`❌ Error calling model-etiquette API for ${modelSlug}:`, error.message);
             }
         } else if (pageType === "calendar") {
-            // Get calendar page content from model_calendar_page_content table
-            const [calendarRows] = await db.execute(`
-                SELECT * FROM model_calendar_page_content WHERE model_id = ?
-            `, [modelId]);
-            
-            if (calendarRows.length > 0) {
-                const rawContent = calendarRows[0];
-                
-                // Convert camelCase field names to snake_case for Handlebars template compatibility
-                content = {};
-                Object.keys(rawContent).forEach(key => {
-                    // Convert camelCase to snake_case (e.g., pageTitle -> page_title)
-                    const snakeKey = key.replace(/([a-z])([A-Z])/g, "$1_$2").toLowerCase();
-                    content[snakeKey] = rawContent[key];
-                });
-                
-                console.log(`📅 Loaded calendar page content for model ${modelId}`);
-            } else {
-                console.log(`⚠️ No calendar page content found for model ${modelId}`);
-                content = {};
-            }
-        } else if (pageType === 'rates') {
-            // Get rates page content from model_rates_page_content table
-            const [ratesRows] = await db.execute(`
-                SELECT * FROM model_rates_page_content WHERE model_id = ?
-            `, [modelId]);
-            
-            if (ratesRows.length > 0) {
-                content = ratesRows[0];
+            // Use model-calendar.js API
+            try {
+                const axios = require('axios');
+                const response = await axios.get(`${API_BASE_URL}/api/model-calendar/${modelSlug}`);
+                if (response.data.success) {
+                    content = response.data.data;
+                    // Ensure we have the calendar_content prefix for template compatibility
+                    const calendar_content = { ...content };
+                    content = { calendar_content };
+                    console.log(`📅 Loaded calendar content via API for ${modelSlug}`);
+                } else {
+                    console.log(`⚠️ No calendar content found via API for ${modelSlug}`);
+                }
+            } catch (error) {
+                console.error(`❌ Error calling model-calendar API for ${modelSlug}:`, error.message);
             }
         } else if (pageType === 'gallery') {
-            // Get gallery page content for Universal Gallery System
+            // Use model-gallery.js API
             try {
-                // Get gallery page content from model_gallery_page_content table
-                const [pageContentRows] = await db.execute(`
-                    SELECT * FROM model_gallery_page_content WHERE model_id = ?
-                `, [modelId]);
-                
-                if (pageContentRows.length > 0) {
-                    const rawContent = pageContentRows[0];
-                    
-                    // Convert camelCase field names to snake_case for Handlebars template compatibility
-                    Object.keys(rawContent).forEach(key => {
-                        // Convert camelCase to snake_case (e.g., galleryHeaderVisible -> gallery_header_visible)
-                        const snakeKey = key.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
-                        content[snakeKey] = rawContent[key];
-                    });
+                const axios = require('axios');
+                const response = await axios.get(`${API_BASE_URL}/api/model-gallery/${modelSlug}/sections`);
+                if (response.data.success) {
+                    content = response.data.data;
+                    // Ensure we have the gallery_content prefix for template compatibility
+                    const gallery_content = { ...content };
+                    content = { gallery_content };
+                    console.log(`🖼️ Loaded gallery content via API for ${modelSlug}`);
+                } else {
+                    console.log(`⚠️ No gallery content found via API for ${modelSlug}`);
                 }
-                
-                console.log(`🎨 Gallery page content loaded for Universal Gallery System (model ${modelId})`);
-                
             } catch (error) {
-                console.error('Error loading gallery page content:', error);
-                // If there's an error, fallback to empty content
-                content = {};
+                console.error(`❌ Error calling model-gallery API for ${modelSlug}:`, error.message);
             }
         } else {
-            // Fallback to old content_templates system for other page types
-            const [contentRows] = await db.execute(`
-                SELECT ct.content_key, ct.content_value, ct.content_type
-                FROM content_templates ct
-                JOIN page_types pt ON ct.page_type_id = pt.id
-                WHERE ct.model_id = ? AND pt.name = ?
-            `, [modelId, pageType]);
-
-            // Convert to key-value object
-            contentRows.forEach(row => {
-                if (row.content_type === 'json') {
-                    try {
-                        content[row.content_key] = JSON.parse(row.content_value);
-                    } catch (e) {
-                        content[row.content_key] = row.content_value;
-                    }
+            // Fallback to content_templates system via API for other page types
+            try {
+                const axios = require('axios');
+                const response = await axios.get(`${API_BASE_URL}/api/content-templates/${modelSlug}/${pageType}`);
+                
+                if (response.data.success && response.data.data) {
+                    content = { ...response.data.data };
+                    console.log(`📋 Loaded ${pageType} content via content-templates API for ${modelSlug} (${response.data.meta.items_count} items)`);
                 } else {
-                    content[row.content_key] = row.content_value;
+                    console.log(`⚠️ No content-templates found via API for ${modelSlug}/${pageType}`);
                 }
-            });
+            } catch (error) {
+                console.error(`❌ Error calling content-templates API for ${modelSlug}/${pageType}:`, error.message);
+            }
         }
 
 
@@ -430,111 +468,65 @@ router.get('/:slug/:page?', async (req, res) => {
             return res.status(404).send('Page not found');
         }
         
-        // Helper function to build preview URLs with theme and palette parameters
-        function buildPreviewUrl(path = '', previewTheme = null, paletteColors = null) {
-            if (!previewTheme && !paletteColors) return path;
-            
-            const params = new URLSearchParams();
-            if (previewTheme) {
-                params.append('preview_theme', previewTheme.id);
-            }
-            if (paletteColors) {
-                Object.entries(paletteColors).forEach(([key, value]) => {
-                    params.append(`palette_${key}`, value);
-                });
-            }
-            
-            return `${path}?${params.toString()}`;
-        }
         
-        // Check for theme preview parameter (supports both ID and name)
-        const previewThemeParam = req.query.preview_theme;
-        let previewTheme = null;
+        // Simple preview mode - just mask the database fields if URL parameters exist
+        let isPreview = false;
+        let previewThemeName = null;
+        let previewThemeId = null; // Store preview theme ID for template
         
-        if (previewThemeParam) {
-            try {
-                // Check if it's a number (ID) or string (name)
-                const isNumeric = !isNaN(previewThemeParam) && !isNaN(parseFloat(previewThemeParam));
-                
-                let query, params;
-                if (isNumeric) {
-                    // Query by ID (legacy support) - find system palette or any palette as fallback
-                    query = `
-                        SELECT ts.id, ts.name, ts.display_name, ts.default_palette_id,
-                               COALESCE(cp_system.id, cp_any.id) as palette_id,
-                               COALESCE(cp_system.name, cp_any.name) as palette_name,
-                               COALESCE(cp_system.display_name, cp_any.display_name) as palette_display_name
-                        FROM theme_sets ts
-                        LEFT JOIN color_palettes cp_system ON cp_system.theme_set_id = ts.id AND cp_system.is_system_palette = 1
-                        LEFT JOIN color_palettes cp_any ON cp_any.theme_set_id = ts.id
-                        WHERE ts.id = ? AND ts.is_active = 1 
-                        ORDER BY cp_system.id DESC, cp_any.id DESC
-                        LIMIT 1
-                    `;
-                    params = [previewThemeParam];
-                } else {
-                    // Query by name (new support for "royal-gem", etc.) - find system palette or any palette as fallback
-                    query = `
-                        SELECT ts.id, ts.name, ts.display_name, ts.default_palette_id,
-                               COALESCE(cp_system.id, cp_any.id) as palette_id,
-                               COALESCE(cp_system.name, cp_any.name) as palette_name,
-                               COALESCE(cp_system.display_name, cp_any.display_name) as palette_display_name
-                        FROM theme_sets ts
-                        LEFT JOIN color_palettes cp_system ON cp_system.theme_set_id = ts.id AND cp_system.is_system_palette = 1
-                        LEFT JOIN color_palettes cp_any ON cp_any.theme_set_id = ts.id
-                        WHERE ts.name = ? AND ts.is_active = 1
-                        ORDER BY cp_system.id DESC, cp_any.id DESC
-                        LIMIT 1
-                    `;
-                    params = [previewThemeParam];
+        if (req.query.preview_theme) {
+            previewThemeId = parseInt(req.query.preview_theme);
+            if (!isNaN(previewThemeId)) {
+                // Verify theme exists before applying override using API
+                try {
+                    const axios = require('axios');
+                    const response = await axios.get(`${API_BASE_URL}/api/theme-templates/validate/${previewThemeId}`);
+                    
+                    if (response.data.success && response.data.data) {
+                        const themeCheck = response.data.data;
+                        console.log(`🎭 Preview mode: overriding theme ${model.theme_set_id} -> ${previewThemeId} via API`);
+                        model.theme_set_id = previewThemeId;
+                        model.theme_name = themeCheck.name;
+                        model.theme_display_name = themeCheck.display_name;
+                        isPreview = true;
+                        previewThemeName = themeCheck.display_name;
+                        
+                        // If no preview palette specified, use theme's default
+                        if (!req.query.preview_palette && themeCheck.default_palette_id) {
+                            console.log(`🎨 Using theme default palette: ${themeCheck.default_palette_id}`);
+                            model.active_color_palette_id = themeCheck.default_palette_id;
+                        }
+                    } else {
+                        console.log(`❌ Preview theme ${previewThemeId} not found via API, ignoring`);
+                    }
+                } catch (error) {
+                    console.error('❌ Error checking preview theme via API:', error.message);
                 }
-
-                const [previewRows] = await db.execute(query, params);
-                
-                console.log(`📋 Preview query results:`, previewRows);
-                
-                if (previewRows.length > 0) {
-                    previewTheme = previewRows[0];
-                    console.log(`✅ Found preview theme: ${previewTheme.display_name} (${previewTheme.name})`);
-                } else {
-                    console.log(`❌ No preview theme found with parameter: ${previewThemeParam}`);
-                }
-            } catch (error) {
-                console.error('❌ Error loading preview theme:', error);
             }
         }
         
-        // Check for palette color parameters (for custom palette preview)
-
-
-        
-        let paletteColors = null;
-        const paletteParams = ['primary', 'secondary', 'accent', 'background', 'text'];
-        const hasPaletteColors = paletteParams.some(param => {
-            const hasParam = req.query[`palette_${param}`];
-
-            return hasParam;
-        });
-        
-        if (hasPaletteColors) {
-            paletteColors = {};
-            paletteParams.forEach(param => {
-                let colorValue = req.query[`palette_${param}`];
-                // Handle URL encoding - decode if needed
-                if (colorValue && colorValue.includes('%23')) {
-                    colorValue = decodeURIComponent(colorValue);
+        if (req.query.preview_palette) {
+            const previewPaletteId = parseInt(req.query.preview_palette);
+            if (!isNaN(previewPaletteId)) {
+                // Verify palette exists before applying override using API
+                try {
+                    const axios = require('axios');
+                    const response = await axios.get(`${API_BASE_URL}/api/theme-templates/validate-palette/${previewPaletteId}`);
+                    
+                    if (response.data.success && response.data.data) {
+                        const paletteCheck = response.data.data;
+                        console.log(`🎨 Preview mode: overriding palette ${model.active_color_palette_id} -> ${previewPaletteId} via API`);
+                        model.active_color_palette_id = previewPaletteId;
+                        model.palette_name = paletteCheck.name;
+                        model.palette_display_name = paletteCheck.display_name;
+                        isPreview = true;
+                    } else {
+                        console.log(`❌ Preview palette ${previewPaletteId} not found, ignoring`);
+                    }
+                } catch (error) {
+                    console.error('❌ Error checking preview palette:', error);
                 }
-                console.log(`🎨 Raw palette_${param}: ${req.query[`palette_${param}`]} -> Decoded: ${colorValue}`);
-                
-                if (colorValue && /^#[0-9A-Fa-f]{6}$/.test(colorValue)) {
-                    paletteColors[param] = colorValue;
-                    console.log(`🎨 ✅ Processing palette color ${param}: ${colorValue}`);
-                } else {
-                    console.log(`🎨 ❌ Invalid color format for ${param}: ${colorValue}`);
-                }
-            });
-            console.log('🎨 Final custom palette colors:', paletteColors);
-            console.log('🎨 Will override theme colors:', paletteColors ? 'YES' : 'NO');
+            }
         }
         
         // Check publication status for all pages (for both navigation and access control)
@@ -548,32 +540,35 @@ router.get('/:slug/:page?', async (req, res) => {
             contact: true
         };
 
-        // Define page to table mapping
-        const pageTableMap = {
-            home: 'model_home_page_content',
-            about: 'model_about_page_content',
-            gallery: 'model_gallery_page_content',
-            rates: 'model_rates_page_content',
-            etiquette: 'model_etiquette_page_content',
-            calendar: 'model_calendar_page_content',
-            contact: 'model_contact_page_content'
-        };
-
-        // Check publication status for each page
-        for (const [pageName, tableName] of Object.entries(pageTableMap)) {
-            try {
-                const [pageContentRows] = await db.execute(`
-                    SELECT page_published FROM ${tableName} WHERE model_id = ?
-                `, [model.id]);
-                
-                if (pageContentRows.length > 0) {
-                    pageStatus[pageName] = pageContentRows[0].page_published !== 0; // Consider null/undefined as published
-                }
-            } catch (error) {
-                console.error(`Error checking ${pageName} page publish status:`, error);
-                // If there's an error checking, allow the page (fail open)
-                pageStatus[pageName] = true;
+        // Check publication status for all pages using API
+        try {
+            const axios = require('axios');
+            const response = await axios.get(`${API_BASE_URL}/api/page-status/${slug}/status`);
+            
+            if (response.data.success && response.data.data.pages) {
+                Object.assign(pageStatus, response.data.data.pages);
+                console.log(`📄 Loaded page status via API for ${slug}`);
+            } else {
+                console.log(`⚠️ Could not load page status via API for ${slug}, using defaults`);
+                // Default all pages to published if API fails
+                pageStatus.home = true;
+                pageStatus.about = true;
+                pageStatus.gallery = true;
+                pageStatus.rates = true;
+                pageStatus.etiquette = true;
+                pageStatus.calendar = true;
+                pageStatus.contact = true;
             }
+        } catch (error) {
+            console.error(`❌ Error calling page status API for ${slug}:`, error.message);
+            // Default all pages to published if API fails (fail open)
+            pageStatus.home = true;
+            pageStatus.about = true;
+            pageStatus.gallery = true;
+            pageStatus.rates = true;
+            pageStatus.etiquette = true;
+            pageStatus.calendar = true;
+            pageStatus.contact = true;
         }
 
         // If requesting a specific page that's unpublished, return 404
@@ -582,8 +577,8 @@ router.get('/:slug/:page?', async (req, res) => {
             return res.status(404).send(`${page.charAt(0).toUpperCase() + page.slice(1)} page is not available`);
         }
         
-        // Get content for this page
-        const rawContent = await getModelContent(model.id, page);
+        // Get content for this page using API calls with modelexample fallback
+        const rawContent = await getContentWithFallback(slug, page);
         
 
         
@@ -606,247 +601,207 @@ router.get('/:slug/:page?', async (req, res) => {
             'simple-elegance': 'simple-elegance'
         };
         
-        // Use preview theme if available, otherwise use model's assigned theme
-        const activeTheme = previewTheme || model;
-        const activeThemeName = previewTheme ? previewTheme.name : model.theme_name;
+        // Map theme name to handlebars template name
+        const activeThemeName = model.theme_name;
         const themeName = themeMapping[activeThemeName] || 'basic';
         
-        if (previewTheme) {
-
-            console.log(`   - Database theme name: "${activeThemeName}"`);
-            console.log(`   - Mapped to handlebars theme: "${themeName}"`);
-            console.log(`   - Display name: "${previewTheme.display_name}"`);
-        } else {
-            console.log(`🎨 Using assigned theme: ${themeName} (mapped from "${activeThemeName}")`);
+        console.log(`🎨 Using theme: ${themeName} (mapped from "${activeThemeName}")${isPreview ? ' [PREVIEW MODE]' : ''}`);
+        if (isPreview && previewThemeName) {
+            console.log(`   - Preview theme: "${previewThemeName}"`);
         }
         
-        // Load dynamic colors from color palette database (use preview theme palette if available)
-        let paletteId = null;
-        let themeId = null;
+        // Load dynamic colors from color palette database
+        const paletteId = model.active_color_palette_id;
+        const themeId = model.theme_set_id;
+        console.log(`🎨 Using palette ${paletteId}, theme ${themeId}${isPreview ? ' [PREVIEW]' : ''}`);
 
-        if (previewTheme) {
-            // For preview themes, use the theme's palette or default_palette_id as fallback
-            paletteId = previewTheme.palette_id || previewTheme.default_palette_id;
-            themeId = previewTheme.id;
-            console.log(`🎨 Preview mode - using theme ${themeId} (${previewTheme.name}) palette ${paletteId} (${previewTheme.palette_id ? 'found' : 'fallback'})`);
-        } else {
-            // For regular mode, use model's active palette or theme default
-            paletteId = model.active_color_palette_id;
-            themeId = model.theme_set_id;
-            console.log(`🎨 Regular mode - model palette ${paletteId}, theme ${themeId}`);
+        // Build preview query string for navigation links
+        let previewQueryString = '';
+        if (isPreview) {
+            const params = new URLSearchParams();
+            if (req.query.preview_theme) {
+                params.append('preview_theme', req.query.preview_theme);
+            }
+            if (req.query.preview_palette) {
+                params.append('preview_palette', req.query.preview_palette);
+            }
+            previewQueryString = params.toString() ? `?${params.toString()}` : '';
+            console.log(`🔗 Preview query string: ${previewQueryString}`);
         }
 
         // Load dynamic colors from database
         const themeColors = await loadColorPalette(paletteId, themeId);
 
 
-        // Pre-load testimonials data for home pages
+        // Pre-load testimonials data using API
         let testimonialsData = null;
         if (page === 'home') {
             try {
-                const [testimonials] = await db.execute(`
-                    SELECT client_name as name, testimonial_text as text, rating, created_at
-                    FROM testimonials 
-                    WHERE model_id = ? AND is_featured = 1 
-                    ORDER BY created_at DESC
-                    LIMIT 10
-                `, [model.id]);
-                
-                testimonialsData = testimonials || [];
-                console.log(`📣 Loaded ${testimonialsData.length} testimonials for ${model.slug}`);
+                const axios = require('axios');
+                const response = await axios.get(`${API_BASE_URL}/api/model-testimonials/${slug}`);
+                console.log(`🔍 Testimonials API response:`, JSON.stringify(response.data, null, 2));
+                if (response.data.success && response.data.data && response.data.data.testimonials) {
+                    const rawTestimonials = response.data.data.testimonials;
+                    console.log(`🔍 Raw testimonials count: ${rawTestimonials.length}`);
+                    // Transform field names to match template expectations
+                    testimonialsData = rawTestimonials.map(t => ({
+                        name: t.client_name,
+                        text: t.testimonial_text,
+                        rating: t.rating,
+                        date: t.created_at
+                    }));
+                    console.log(`📣 Loaded ${testimonialsData.length} testimonials via API for ${slug}`);
+                } else {
+                    testimonialsData = [];
+                    console.log(`⚠️ No testimonials found in API response for ${slug}`);
+                }
             } catch (error) {
-                console.error('Error loading testimonials:', error);
+                console.error(`❌ Error calling model-testimonials API for ${slug}:`, error.message);
                 testimonialsData = [];
             }
         }
 
-        // Pre-load services/rates data for home pages
+        // Pre-load services/rates data using API
         let servicesData = null;
         if (page === 'home') {
             try {
-                // Use rates data as services for home page preview
-                const [services] = await db.execute(`
-                    SELECT rate_type as name, service_name as description, price, duration
-                    FROM model_rates 
-                    WHERE model_id = ?
-                    ORDER BY sort_order ASC, id ASC
-                    LIMIT 6
-                `, [model.id]);
-                
-                servicesData = services || [];
-                console.log(`💼 Loaded ${servicesData.length} services for ${model.slug}`);
+                const axios = require('axios');
+                const response = await axios.get(`${API_BASE_URL}/api/model-rates/${slug}`);
+                if (response.data.success && response.data.data.rates) {
+                    // Use rates data as services for home page preview
+                    const allRates = [...(response.data.data.rates.incall || []), ...(response.data.data.rates.outcall || [])];
+                    servicesData = allRates.slice(0, 6).map(rate => ({
+                        name: rate.rate_type || rate.serviceName,
+                        description: rate.service_name || rate.description,
+                        price: rate.price,
+                        duration: rate.duration
+                    }));
+                    console.log(`💼 Loaded ${servicesData.length} services via API for ${slug}`);
+                } else {
+                    servicesData = [];
+                }
             } catch (error) {
-                console.error('Error loading services:', error);
+                console.error(`❌ Error calling model-rates API for services on ${slug}:`, error.message);
                 servicesData = [];
             }
         }
 
-        // Pre-load rates data for rates page
+        // Pre-load rates data for rates page using API
         if (page === 'rates' && rawContent) {
             try {
                 if (!model) {
                     throw new Error('Model object is undefined');
                 }
-                const [allRates] = await db.execute(`
-                    SELECT rate_type, service_name, duration, price, sort_order, 
-                           highlight_badge, highlight_badge_text, rate_icon, rate_description,
-                           is_most_popular
-                    FROM model_rates 
-                    WHERE model_id = ? AND is_visible = 1
-                    ORDER BY rate_type, sort_order ASC, id ASC
-                `, [model.id]);
                 
-                // Group rates by type
-                const groupedRates = {
-                    incall: allRates.filter(r => r.rate_type === 'incall'),
-                    outcall: allRates.filter(r => r.rate_type === 'outcall'),
-                    extended: allRates.filter(r => r.rate_type === 'extended')
-                };
+                const axios = require('axios');
+                const response = await axios.get(`${API_BASE_URL}/api/model-rates/${slug}`);
                 
-                // Convert rate field names to camelCase for Handlebars template compatibility
-                const convertRateToHandlebars = (rate) => {
-                    const converted = {};
-                    Object.keys(rate).forEach(key => {
-                        const camelKey = key.replace(/_([a-z])/g, (match, letter) => letter.toUpperCase());
-                        converted[camelKey] = rate[key];
-                    });
-                    return converted;
-                };
+                if (response.data.success && response.data.data) {
+                    // Handle new API format with direct rate type arrays
+                    const ratesData = response.data.data;
+                    const allRates = [
+                        ...(ratesData.incall || []),
+                        ...(ratesData.outcall || []),
+                        ...(ratesData.extended || [])
+                    ];
+                    console.log(`💰 Loaded ${allRates.length} rates via API for ${slug}`);
+                    
+                    // Use existing grouped format from API
+                    const groupedRates = {
+                        incall: ratesData.incall || [],
+                        outcall: ratesData.outcall || [],
+                        extended: ratesData.extended || []
+                    };
+                    
+                    // Convert rate field names to camelCase for Handlebars template compatibility
+                    const convertRateToHandlebars = (rate) => {
+                        const converted = {};
+                        Object.keys(rate).forEach(key => {
+                            const camelKey = key.replace(/_([a-z])/g, (match, letter) => letter.toUpperCase());
+                            converted[camelKey] = rate[key];
+                        });
+                        return converted;
+                    };
 
-                const convertedRates = {
-                    incall: groupedRates.incall.map(convertRateToHandlebars),
-                    outcall: groupedRates.outcall.map(convertRateToHandlebars),
-                    extended: groupedRates.extended.map(convertRateToHandlebars)
-                };
+                    const convertedRates = {
+                        incall: groupedRates.incall.map(convertRateToHandlebars),
+                        outcall: groupedRates.outcall.map(convertRateToHandlebars),
+                        extended: groupedRates.extended.map(convertRateToHandlebars)
+                    };
 
-                // Add rates to content
-                rawContent.rates = convertedRates;
+                    // Add rates to content
+                    rawContent.rates = convertedRates;
+                } else {
+                    console.log(`⚠️ No rates found via API for ${slug}`);
+                    rawContent.rates = { incall: [], outcall: [], extended: [] };
+                }
             } catch (error) {
-                console.error('Error loading rates data:', error);
+                console.error('Error loading rates data via API:', error.message);
                 rawContent.rates = { incall: [], outcall: [], extended: [] };
             }
         }
 
-        // Pre-load gallery images for home page preview
+        // Pre-load gallery images for home page preview using API
         let galleryImages = null;
         if (page === 'home') {
             try {
-                const [images] = await db.execute(`
-                    SELECT gi.filename, gi.caption
-                    FROM gallery_images gi
-                    LEFT JOIN content_moderation cm ON cm.model_id = gi.model_id AND cm.original_path LIKE CONCAT('%', gi.filename)
-                    WHERE gi.model_id = ? AND gi.is_active = 1 
-                    AND (cm.moderation_status = 'approved' OR cm.moderation_status IS NULL)
-                    ORDER BY gi.created_at DESC
-                    LIMIT 5
-                `, [model.id]);
+                const axios = require('axios');
+                const response = await axios.get(`${API_BASE_URL}/api/gallery-images/${slug}/approved?limit=5`);
                 
-                galleryImages = images || [];
-                console.log(`🖼️ Loaded ${galleryImages.length} gallery images for home preview`);
+                if (response.data.success && response.data.data) {
+                    galleryImages = response.data.data || [];
+                    console.log(`🖼️ Loaded ${galleryImages.length} gallery images for home preview via API`);
+                } else {
+                    galleryImages = [];
+                    console.log(`⚠️ No gallery images found via API for home preview`);
+                }
             } catch (error) {
                 console.error('Error loading gallery images:', error);
                 galleryImages = [];
             }
         }
 
-        // Pre-load upcoming calendar events for home pages (configurable count)
+        // Pre-load upcoming calendar events for home pages using API
         let upcomingEvents = null;
         if (page === 'home') {
             try {
                 // Get display count from content settings (default to 3 if not set)
                 const displayCount = parseInt(rawContent.travel_display_count || 3);
                 
-                // Get upcoming calendar events
-                const [events] = await db.execute(`
-                    SELECT 
-                        ce.id,
-                        ce.location,
-                        ce.service_type,
-                        ce.radius_miles,
-                        ce.location_details,
-                        ce.start_date,
-                        ce.end_date,
-                        ce.status,
-                        ce.notes,
-                        (ce.status = 'available') as is_available
-                    FROM calendar_availability ce
-                    WHERE ce.model_id = ? 
-                        AND ce.start_date >= CURDATE() 
-                        AND ce.is_visible = 1
-                    ORDER BY ce.start_date ASC
-                    LIMIT ${displayCount}
-                `, [model.id]);
+                // Use calendar availability API instead of direct SQL
+                const axios = require('axios');
+                const response = await axios.get(`${API_BASE_URL}/api/model-calendar/${model.slug}/availability?days=90&limit=${displayCount}`);
                 
-                // Format individual events for display (no grouping by location)
-                upcomingEvents = events.map(event => {
-                    const displayLocation = formatLocationDisplay(
-                        event.location, 
-                        event.service_type || 'incall', 
-                        event.radius_miles
-                    );
-                    
-                    const startDate = new Date(event.start_date);
-                    const endDate = new Date(event.end_date);
-                    
-                    // Create user-friendly date range display
-                    let dateRange;
-                    if (startDate.toDateString() === endDate.toDateString()) {
-                        // Single day
-                        dateRange = startDate.toLocaleDateString('en-US', { 
-                            month: 'long', 
-                            day: 'numeric',
-                            year: 'numeric'
-                        });
-                    } else {
-                        // Date range - check if same month/year for shorter format
-                        const sameMonth = startDate.getMonth() === endDate.getMonth() && startDate.getFullYear() === endDate.getFullYear();
-                        const sameYear = startDate.getFullYear() === endDate.getFullYear();
-                        
-                        if (sameMonth) {
-                            // Same month: "August 12-13, 2025"
-                            const monthName = startDate.toLocaleDateString('en-US', { month: 'long' });
-                            const year = startDate.getFullYear();
-                            const startDay = startDate.getDate();
-                            const endDay = endDate.getDate();
-                            dateRange = `${monthName} ${startDay}-${endDay}, ${year}`;
-                        } else if (sameYear) {
-                            // Same year, different months: "August 31 - September 2, 2025"
-                            const startStr = startDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-                            const endStr = endDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-                            const year = startDate.getFullYear();
-                            dateRange = `${startStr} - ${endStr}, ${year}`;
-                        } else {
-                            // Different years: "December 30, 2024 - January 2, 2025"
-                            const startStr = startDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-                            const endStr = endDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-                            dateRange = `${startStr} - ${endStr}`;
-                        }
-                    }
-                    
-                    return {
+                if (response.data.success && response.data.data && response.data.data.events) {
+                    // Transform API response events for template compatibility
+                    upcomingEvents = response.data.data.events.map(event => ({
                         id: event.id,
-                        location: displayLocation,
-                        baseLocation: event.location,
+                        location: event.location, // Already formatted by API
+                        baseLocation: event.location_details,
                         service_type: event.service_type,
                         radius_miles: event.radius_miles,
                         location_details: event.location_details,
-                        date: startDate,
-                        start_date: startDate,
-                        end_date: endDate,
-                        dateRange: dateRange,
+                        date: new Date(event.start_date),
+                        start_date: new Date(event.start_date),
+                        end_date: new Date(event.end_date),
+                        dateRange: event.date_range, // Already formatted by API
                         notes: event.notes,
                         is_available: event.is_available,
                         status: event.status
-                    };
-                }); // Show exactly 3 events
-                console.log(`📅 Loaded ${upcomingEvents.length} upcoming calendar events for ${model.slug}`);
-                console.log('📅 Calendar events:', upcomingEvents.map(e => ({ 
-                    location: e.location, 
-                    date: e.date, 
-                    dateRange: e.dateRange
-                })));
+                    }));
+                    
+                    console.log(`📅 Loaded ${upcomingEvents.length} upcoming calendar events for ${model.slug}`);
+                    console.log('📅 Calendar events:', upcomingEvents.map(e => ({ 
+                        location: e.location, 
+                        date: e.date, 
+                        dateRange: e.dateRange
+                    })));
+                } else {
+                    console.log(`⚠️ No calendar events found via API for ${model.slug}`);
+                    upcomingEvents = [];
+                }
             } catch (error) {
-                console.error('Error loading calendar events:', error);
+                console.error(`❌ Error calling calendar availability API for ${model.slug}:`, error.message);
                 upcomingEvents = [];
             }
         }
@@ -871,104 +826,82 @@ router.get('/:slug/:page?', async (req, res) => {
             });
         }
         
-        // Load actual image URLs if IDs are provided (after field name transformation)
+        // Load actual image URLs if IDs are provided using API
         const portraitIdKey = pageContent.portrait_image_id || pageContent.portraitImageId;
         if (portraitIdKey) {
             try {
-                // First, let's check if the image exists at all
-                const [allImages] = await db.execute(`
-                    SELECT id, filename, model_id, is_active FROM gallery_images WHERE id = ?
-                `, [portraitIdKey]);
+                const axios = require('axios');
+                // Get debug info first
+                const debugResponse = await axios.get(`${API_BASE_URL}/api/gallery-images/debug/${portraitIdKey}`);
+                console.log(`🔍 Found ${debugResponse.data.data.length} images with ID ${portraitIdKey} via API:`, debugResponse.data.data);
                 
-                console.log(`🔍 Found ${allImages.length} images with ID ${portraitIdKey}:`, allImages);
+                // Get the actual approved image
+                const response = await axios.get(`${API_BASE_URL}/api/gallery-images/${slug}/image/${portraitIdKey}`);
                 
-                const [portraitImage] = await db.execute(`
-                    SELECT gi.filename FROM gallery_images gi
-                    LEFT JOIN content_moderation cm ON cm.model_id = gi.model_id AND cm.original_path LIKE CONCAT('%', gi.filename)
-                    WHERE gi.id = ? AND gi.model_id = ? AND gi.is_active = 1
-                    AND (cm.moderation_status = 'approved' OR cm.moderation_status IS NULL)
-                    LIMIT 1
-                `, [portraitIdKey, model.id]);
-                
-                console.log(`🔍 Portrait query result: ${portraitImage.length} images found`);
-                if (portraitImage.length > 0) {
+                if (response.data.success && response.data.data) {
+                    const portraitImage = response.data.data;
+                    console.log(`🔍 Portrait API result: image found`);
                     // Set both naming conventions for compatibility
-                    const imageUrl = `/uploads/${model.slug}/public/gallery/${portraitImage[0].filename}`;
+                    const imageUrl = `/uploads/${model.slug}/public/gallery/${portraitImage.filename}`;
                     pageContent.portrait_image_url = imageUrl;
                     pageContent.portraitImageUrl = imageUrl;
-                    console.log(`🖼️ Loaded portrait image: ${imageUrl}`);
+                    console.log(`🖼️ Loaded portrait image via API: ${imageUrl}`);
                 } else {
-                    console.log(`❌ No portrait image found for ID ${portraitIdKey} with model_id ${model.id} and is_active=1`);
+                    console.log(`❌ No portrait image found for ID ${portraitIdKey} via API`);
                 }
             } catch (error) {
-                console.error('Error loading portrait image:', error);
+                console.error('Error loading portrait image via API:', error.message);
             }
         }
         
         const heroIdKey = pageContent.hero_background_image_id || pageContent.heroBackgroundImageId;
         if (heroIdKey) {
             try {
-                const [heroImage] = await db.execute(`
-                    SELECT gi.filename FROM gallery_images gi
-                    LEFT JOIN content_moderation cm ON cm.model_id = gi.model_id AND cm.original_path LIKE CONCAT('%', gi.filename)
-                    WHERE gi.id = ? AND gi.model_id = ? AND gi.is_active = 1
-                    AND (cm.moderation_status = 'approved' OR cm.moderation_status IS NULL)
-                    LIMIT 1
-                `, [heroIdKey, model.id]);
+                const axios = require('axios');
+                const response = await axios.get(`${API_BASE_URL}/api/gallery-images/${slug}/image/${heroIdKey}`);
                 
-                if (heroImage.length > 0) {
+                if (response.data.success && response.data.data) {
+                    const heroImage = response.data.data;
                     // Set both naming conventions for compatibility
-                    const imageUrl = `/uploads/${model.slug}/public/gallery/${heroImage[0].filename}`;
+                    const imageUrl = `/uploads/${model.slug}/public/gallery/${heroImage.filename}`;
                     pageContent.hero_background_image_url = imageUrl;
                     pageContent.heroBackgroundImageUrl = imageUrl;
-                    console.log(`🖼️ Loaded hero background image: ${imageUrl}`);
+                    console.log(`🖼️ Loaded hero background image via API: ${imageUrl}`);
                 }
             } catch (error) {
-                console.error('Error loading hero background image:', error);
+                console.error('Error loading hero background image via API:', error.message);
             }
         }
 
         // Fallback: Use home page hero background for all pages if no specific background is set
         if (!pageContent.heroBackgroundImageUrl) {
             try {
-                const [homeContent] = await db.execute(`
-                    SELECT hero_background_image_id FROM model_home_page_content WHERE model_id = ?
-                `, [model.id]);
+                const axios = require('axios');
+                const response = await axios.get(`${API_BASE_URL}/api/gallery-images/${slug}/hero-background`);
                 
-                if (homeContent.length > 0 && homeContent[0].hero_background_image_id) {
-                    const [heroImage] = await db.execute(`
-                        SELECT gi.filename FROM gallery_images gi
-                        WHERE gi.id = ? AND gi.model_id = ? AND gi.is_active = 1
-                        LIMIT 1
-                    `, [homeContent[0].hero_background_image_id, model.id]);
-                    
-                    if (heroImage.length > 0) {
-                        const imageUrl = `/uploads/${model.slug}/public/gallery/${heroImage[0].filename}`;
-                        pageContent.hero_background_image_url = imageUrl;
-                        pageContent.heroBackgroundImageUrl = imageUrl;
-                        console.log(`🖼️ Loaded fallback hero background image: ${imageUrl}`);
-                    }
+                if (response.data.success && response.data.data) {
+                    const heroData = response.data.data;
+                    const imageUrl = `/uploads/${model.slug}/public/gallery/${heroData.filename}`;
+                    pageContent.hero_background_image_url = imageUrl;
+                    pageContent.heroBackgroundImageUrl = imageUrl;
+                    console.log(`🖼️ Loaded fallback hero background image via API: ${imageUrl}`);
                 }
             } catch (error) {
-                console.error('Error loading fallback hero background image:', error);
+                console.error('Error loading fallback hero background image via API:', error.message);
             }
         }
 
-        // Load portrait image for About page (snake_case field)
+        // Load portrait image for About page (snake_case field) using API
         if (pageContent.portrait_image_id) {
             try {
-                const [portraitImage] = await db.execute(`
-                    SELECT gi.filename FROM gallery_images gi
-                    LEFT JOIN content_moderation cm ON cm.model_id = gi.model_id AND cm.original_path LIKE CONCAT('%', gi.filename)
-                    WHERE gi.id = ? AND gi.model_id = ? AND gi.is_active = 1
-                    AND (cm.moderation_status = 'approved' OR cm.moderation_status IS NULL)
-                    LIMIT 1
-                `, [pageContent.portrait_image_id, model.id]);
+                const axios = require('axios');
+                const response = await axios.get(`${API_BASE_URL}/api/gallery-images/${slug}/image/${pageContent.portrait_image_id}`);
                 
-                console.log(`🔍 About portrait query result: ${portraitImage.length} images found`);
-                if (portraitImage.length > 0) {
-                    pageContent.portraitImageUrl = `/uploads/${model.slug}/public/gallery/${portraitImage[0].filename}`;
-                    console.log(`🖼️ Loaded about portrait image: ${pageContent.portraitImageUrl}`);
+                console.log(`🔍 About portrait API query result: ${response.data.success ? 'found' : 'not found'}`);
+                if (response.data.success && response.data.data) {
+                    const portraitImage = response.data.data;
+                    pageContent.portraitImageUrl = `/uploads/${model.slug}/public/gallery/${portraitImage.filename}`;
+                    console.log(`🖼️ Loaded about portrait image via API: ${pageContent.portraitImageUrl}`);
                 } else {
                     console.log(`❌ No about portrait image found for ID ${pageContent.portrait_image_id} with model_id ${model.id} and is_active=1`);
                 }
@@ -994,40 +927,9 @@ router.get('/:slug/:page?', async (req, res) => {
             ...(page === 'rates' && pageContent.rates ? {
                 rates: pageContent.rates
             } : {}),
-            // Pass home content for home page
+            // Pass home content for home page (with modelexample fallback handled in getContentWithFallback)
             ...(page === 'home' ? { 
-                home_content: pageContent && Object.keys(pageContent).length > 0 ? pageContent : {
-                    hero_section_visible: true,
-                    hero_title: siteName || 'Welcome to Glamour',
-                    hero_subtitle: 'Welcome to my exclusive world',
-                    hero_cta_visible: true,
-                    hero_cta_text: 'Discover More',
-                    hero_cta_link: `/{{modelSlug}}/contact`,
-                    about_section_visible: true,
-                    about_title: 'About Me',
-                    about_description: 'Experience the finest in luxury companionship with professional elegance.',
-                    about_cta_visible: true,
-                    about_cta_text: 'Learn More',
-                    services_section_visible: true,
-                    services_title: 'My Services',
-                    services_subtitle: 'Exclusive experiences tailored for you',
-                    service_1_visible: true,
-                    service_1_title: 'Premium Service',
-                    service_1_description: 'Luxury companionship experience',
-                    service_2_visible: true,
-                    service_2_title: 'Exclusive Experience', 
-                    service_2_description: 'Personalized attention and care',
-                    service_3_visible: true,
-                    service_3_title: 'VIP Treatment',
-                    service_3_description: 'The ultimate premium experience',
-                    services_cta_visible: true,
-                    services_cta_text: 'View All Services',
-                    cta_section_visible: true,
-                    cta_title: 'Ready for the VIP Experience?',
-                    cta_subtitle: 'Let me provide you with an unforgettable experience',
-                    cta_primary_text: 'Book Now',
-                    cta_secondary_text: 'View Rates'
-                }
+                home_content: pageContent
             } : {}),
             // Pass about content for about page
             ...(page === 'about' ? { about_content: pageContent } : {}),
@@ -1052,43 +954,33 @@ router.get('/:slug/:page?', async (req, res) => {
             contactPhone: model.phone || null,
             location: pageContent.location || null,
             workingHours: pageContent.workingHours || null,
-            // Theme colors for CSS variables (from database or palette override)
+            // Theme colors for CSS variables
             theme: {
                 name: themeName,
-                colors: (paletteColors && Object.keys(paletteColors).length > 0) ? paletteColors : themeColors, // Use palette colors if provided and not empty, otherwise theme default
-                isPreview: !!previewTheme,
-                previewThemeId: previewTheme ? previewTheme.id : null,
-                previewThemeName: previewTheme ? previewTheme.display_name : null,
-                hasCustomPalette: !!(paletteColors && Object.keys(paletteColors).length > 0) // Flag to indicate custom palette is applied
+                colors: themeColors,
+                isPreview: isPreview,
+                previewThemeName: previewThemeName
             },
             
-            // Debug log the colors being used
-            ...(() => {
-                const finalColors = (paletteColors && Object.keys(paletteColors).length > 0) ? paletteColors : themeColors;
-                const hasValidPalette = !!(paletteColors && Object.keys(paletteColors).length > 0);
-
-
-                if (hasValidPalette) {
-                    console.log('🎨 Palette colors applied:', paletteColors);
-                }
-                return {};
-            })(),
             
             // Navigation structure
             navigation: [
-                ...(pageStatus.home ? [{ name: 'Home', url: `/${slug}${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'home' }] : []),
-                ...(pageStatus.about ? [{ name: 'About', url: `/${slug}/about${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'about' }] : []),
-                ...(pageStatus.gallery ? [{ name: 'Gallery', url: `/${slug}/gallery${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'gallery' }] : []),
-                ...(pageStatus.rates ? [{ name: 'Rates', url: `/${slug}/rates${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'rates' }] : []),
-                ...(pageStatus.etiquette ? [{ name: 'Etiquette', url: `/${slug}/etiquette${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'etiquette' }] : []),
-                ...(res.locals.calendarEnabled && pageStatus.calendar ? [{ name: 'Calendar', url: `/${slug}/calendar${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'calendar' }] : []),
-                ...(pageStatus.contact ? [{ name: 'Contact', url: `/${slug}/contact${buildPreviewUrl('', previewTheme, paletteColors)}`, active: page === 'contact' }] : [])
+                ...(pageStatus.home ? [{ name: 'Home', url: `/${slug}${previewQueryString}`, active: page === 'home' }] : []),
+                ...(pageStatus.about ? [{ name: 'About', url: `/${slug}/about${previewQueryString}`, active: page === 'about' }] : []),
+                ...(pageStatus.gallery ? [{ name: 'Gallery', url: `/${slug}/gallery${previewQueryString}`, active: page === 'gallery' }] : []),
+                ...(pageStatus.rates ? [{ name: 'Rates', url: `/${slug}/rates${previewQueryString}`, active: page === 'rates' }] : []),
+                ...(pageStatus.etiquette ? [{ name: 'Etiquette', url: `/${slug}/etiquette${previewQueryString}`, active: page === 'etiquette' }] : []),
+                ...(res.locals.calendarEnabled && pageStatus.calendar ? [{ name: 'Calendar', url: `/${slug}/calendar${previewQueryString}`, active: page === 'calendar' }] : []),
+                ...(pageStatus.contact ? [{ name: 'Contact', url: `/${slug}/contact${previewQueryString}`, active: page === 'contact' }] : [])
             ],
             // Current page info
             currentPage: page,
-            siteUrl: `/${slug}${buildPreviewUrl('', previewTheme, paletteColors)}`,
-            // Helper for links that need preview parameter
-            previewParam: buildPreviewUrl('', previewTheme, paletteColors),
+            siteUrl: `/${slug}`,
+            
+            // Theme IDs for template
+            themeId: model.theme_set_id,
+            previewThemeId: isPreview ? previewThemeId : null,
+            previewParam: previewQueryString,
             year: new Date().getFullYear(),
             // Gallery data (pre-loaded for gallery pages)
             galleries: galleryData,
@@ -1104,27 +996,28 @@ router.get('/:slug/:page?', async (req, res) => {
         
         // Render using the assigned theme with layout and theme-specific partials
         
-        // Query for the correct template file from theme_set_pages table
+        // Query for the correct template file using API
         let templatePath = `${themeName}/pages/${page}`;
         try {
-            const [themePageResults] = await db.execute(`
-                SELECT tsp.template_file 
-                FROM theme_set_pages tsp
-                JOIN page_types pt ON tsp.page_type_id = pt.id
-                WHERE tsp.theme_set_id = ? AND pt.name = ?
-                LIMIT 1
-            `, [model.theme_set_id, page]);
+            // Use the model's theme_set_id (which may have been overridden in preview mode)
+            const axios = require('axios');
+            const response = await axios.get(`${API_BASE_URL}/api/theme-templates/${model.theme_set_id}/page/${page}`);
             
-            if (themePageResults.length > 0) {
-                // Remove leading slash, themes/ prefix, and .handlebars extension for templatePath
-                const templateFile = themePageResults[0].template_file;
-                templatePath = templateFile
-                    .replace(/^\//, '')           // Remove leading slash
-                    .replace(/^themes\//, '')     // Remove themes/ prefix 
-                    .replace(/\.handlebars$/, ''); // Remove .handlebars extension
-                console.log(`🎨 Using database template: ${templateFile} -> ${templatePath}`);
+            if (response.data.success && response.data.data) {
+                const templateData = response.data.data;
+                if (templateData.template_file) {
+                    // Remove leading slash, themes/ prefix, and .handlebars extension for templatePath
+                    const templateFile = templateData.template_file;
+                    templatePath = templateFile
+                        .replace(/^\//, '')           // Remove leading slash
+                        .replace(/^themes\//, '')     // Remove themes/ prefix 
+                        .replace(/\.handlebars$/, ''); // Remove .handlebars extension
+                    console.log(`🎨 Using API template: ${templateFile} -> ${templatePath}`);
+                } else {
+                    console.log(`🎨 No API template found for ${page}, using default: ${templatePath}`);
+                }
             } else {
-                console.log(`🎨 No database template found for ${page}, using default: ${templatePath}`);
+                console.log(`🎨 No API template data found for ${page}, using default: ${templatePath}`);
             }
         } catch (error) {
             console.error('❌ Error querying theme template:', error);
@@ -1150,7 +1043,32 @@ router.get('/:slug/:page?', async (req, res) => {
                 lt: (a, b) => a < b,
                 gt: (a, b) => a > b,
                 and: (a, b) => a && b,
+                repeat: (count, block) => {
+                    let result = '';
+                    for (let i = 0; i < count; i++) {
+                        result += block.fn(this);
+                    }
+                    return result;
+                },
+                split: (str, delimiter) => {
+                    return str ? str.split(delimiter) : [];
+                },
+                trim: (str) => {
+                    return str ? str.trim() : '';
+                },
+                parseJSON: (str) => {
+                    try {
+                        return str ? JSON.parse(str) : [];
+                    } catch (e) {
+                        return [];
+                    }
+                },
                 or: (a, b) => a || b,
+                concat: (...args) => {
+                    // Remove the last argument (options object from Handlebars)
+                    const values = args.slice(0, -1);
+                    return values.join('');
+                },
                 json: (context) => JSON.stringify(context),
                 formatDate: (date) => new Date(date).toLocaleDateString(),
                 formatCurrency: (amount) => `$${parseFloat(amount).toFixed(2)}`,

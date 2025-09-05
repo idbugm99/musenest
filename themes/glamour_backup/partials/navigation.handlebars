@@ -1,0 +1,67 @@
+<!-- Glamour Theme Navigation -->
+<nav class="glamour-nav shadow-lg fixed top-0 left-0 right-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <!-- Logo/Brand -->
+            <div class="flex items-center">
+                <a href="/{{modelSlug}}{{previewParam}}" class="glamour-brand">
+                    {{siteName}}
+                </a>
+            </div>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center space-x-8">
+                {{#each navigation}}
+                <a href="{{this.url}}" 
+                   class="glamour-nav-link {{#if this.active}}active{{/if}}">
+                    {{this.name}}
+                </a>
+                {{/each}}
+            </div>
+            
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden">
+                <button type="button" 
+                        class="text-white hover:text-gray-200 focus:outline-none transition-colors p-2"
+                        onclick="toggleMobileMenu()">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="md:hidden hidden bg-black bg-opacity-95 backdrop-blur-md border-t border-white border-opacity-20">
+        <div class="px-2 pt-2 pb-3 space-y-1">
+            {{#each navigation}}
+            <a href="{{this.url}}" 
+               class="glamour-nav-link block {{#if this.active}}active{{/if}}">
+                {{this.name}}
+            </a>
+            {{/each}}
+        </div>
+    </div>
+</nav>
+
+<script>
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    if (menu.classList.contains('hidden')) {
+        menu.classList.remove('hidden');
+    } else {
+        menu.classList.add('hidden');
+    }
+}
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById('mobileMenu');
+    const button = event.target.closest('button');
+    
+    if (!menu.contains(event.target) && !button) {
+        menu.classList.add('hidden');
+    }
+});
+</script>

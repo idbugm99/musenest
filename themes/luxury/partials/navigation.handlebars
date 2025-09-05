@@ -1,64 +1,284 @@
-<nav class="luxury-nav fixed w-full top-0 z-50 transition-all duration-300">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<!-- Luxury Theme Navigation -->
+<nav class="luxury-nav fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-luxury-light shadow-lg z-50">
+    <div class="container mx-auto px-4">
         <div class="flex items-center justify-between h-20">
-            <div class="flex items-center">
-                <a href="/{{modelSlug}}" class="luxury-brand">
-                    {{siteName}}
-                </a>
-            </div>
             
-            <!-- Desktop Navigation -->
-            <div class="hidden md:block">
-                <div class="ml-10 flex items-baseline space-x-8">
-                    {{#each navigation}}
-                    <a href="{{this.url}}" 
-                       class="nav-link px-3 py-2 text-sm {{#if this.active}}active{{/if}}">
-                        {{this.name}}
+            <!-- Logo/Brand -->
+            <div class="flex items-center space-x-3">
+                {{#if headerImage}}
+                <img src="{{headerImage}}" alt="{{siteName}}" class="h-12 w-auto object-contain">
+                {{/if}}
+                <div class="flex flex-col">
+                    <a href="/{{modelSlug}}{{previewParam}}" class="text-2xl font-serif text-luxury-dark font-bold tracking-wide hover:text-luxury-primary transition-colors duration-300">
+                        {{siteName}}
                     </a>
-                    {{/each}}
+                    {{#if tagline}}
+                    <span class="text-sm text-luxury-muted font-light italic">{{tagline}}</span>
+                    {{/if}}
                 </div>
             </div>
-            
-            <!-- Mobile menu button -->
-            <div class="md:hidden">
-                <button type="button" 
-                        class="bg-transparent inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-luxury-primary hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-luxury-primary"
-                        aria-controls="mobile-menu" 
-                        aria-expanded="false"
-                        onclick="toggleMobileMenu()">
-                    <span class="sr-only">Open main menu</span>
-                    <i class="fas fa-bars text-xl" id="menu-icon"></i>
-                </button>
+
+            <!-- Desktop Navigation Links -->
+            <div class="hidden lg:flex items-center space-x-8">
+                {{#each navigation}}
+                <a href="{{url}}" class="luxury-nav-link {{#if active}}active{{/if}}">
+                    <span class="nav-text">{{name}}</span>
+                    <div class="nav-underline"></div>
+                </a>
+                {{/each}}
+
+                <!-- CTA Button -->
+                <a href="/{{modelSlug}}/contact{{previewParam}}" class="luxury-btn luxury-btn-primary ml-4 px-6 py-2.5 text-sm font-medium">
+                    Book Now
+                </a>
             </div>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg bg-luxury-light hover:bg-luxury-primary/10 transition-colors duration-300">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </button>
         </div>
     </div>
-    
+
     <!-- Mobile Navigation Menu -->
-    <div class="md:hidden hidden" id="mobile-menu">
-        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
-            {{#each navigation}}
-            <a href="{{this.url}}" 
-               class="nav-link block px-3 py-2 text-base {{#if this.active}}active{{/if}}">
-                {{this.name}}
-            </a>
-            {{/each}}
+    <div id="mobile-menu" class="lg:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md border-b border-luxury-light shadow-lg transform -translate-y-full opacity-0 transition-all duration-300 ease-out">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex flex-col space-y-4">
+                {{#each navigation}}
+                <a href="{{url}}" class="luxury-mobile-nav-link {{#if active}}active{{/if}}">
+                    <span class="flex items-center space-x-3">
+                        <div class="w-1 h-8 bg-luxury-primary rounded-full opacity-0 transition-opacity duration-200"></div>
+                        <span>{{name}}</span>
+                    </span>
+                </a>
+                {{/each}}
+                
+                <!-- Mobile CTA -->
+                <div class="pt-4 border-t border-luxury-light">
+                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="luxury-btn luxury-btn-primary w-full text-center py-3 text-base font-medium">
+                        Book Now
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </nav>
 
-<script>
-function toggleMobileMenu() {
-    const mobileMenu = document.getElementById('mobile-menu');
-    const menuIcon = document.getElementById('menu-icon');
-    
-    if (mobileMenu.classList.contains('hidden')) {
-        mobileMenu.classList.remove('hidden');
-        menuIcon.classList.remove('fa-bars');
-        menuIcon.classList.add('fa-times');
-    } else {
-        mobileMenu.classList.add('hidden');
-        menuIcon.classList.remove('fa-times');
-        menuIcon.classList.add('fa-bars');
+<!-- Navigation Spacer -->
+<div class="h-20"></div>
+
+<style>
+/* Luxury Navigation Styles */
+.luxury-nav {
+    background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(253,251,247,0.95));
+    transition: all 0.3s ease;
+}
+
+.luxury-nav.scrolled {
+    background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(253,251,247,0.98));
+    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.15);
+}
+
+.luxury-nav-link {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    color: var(--theme-text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    letter-spacing: 0.025em;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.luxury-nav-link:hover {
+    color: var(--theme-accent);
+    background: linear-gradient(135deg, var(--theme-primary)/5, var(--theme-accent)/5);
+}
+
+.luxury-nav-link .nav-text {
+    position: relative;
+    z-index: 2;
+}
+
+.luxury-nav-link .nav-underline {
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--theme-primary), var(--theme-accent));
+    border-radius: 1px;
+    transition: width 0.3s ease;
+}
+
+.luxury-nav-link:hover .nav-underline,
+.luxury-nav-link.active .nav-underline {
+    width: 100%;
+}
+
+.luxury-nav-link.active {
+    color: var(--theme-accent);
+    background: linear-gradient(135deg, var(--theme-primary)/8, var(--theme-accent)/8);
+}
+
+.luxury-mobile-nav-link {
+    display: block;
+    padding: 1rem 0;
+    color: var(--theme-text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.125rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.luxury-mobile-nav-link:hover {
+    color: var(--theme-accent);
+    background: linear-gradient(135deg, var(--theme-primary)/5, var(--theme-accent)/5);
+}
+
+.luxury-mobile-nav-link:hover .w-1 {
+    opacity: 1;
+}
+
+.luxury-mobile-nav-link.active {
+    color: var(--theme-accent);
+}
+
+.luxury-mobile-nav-link.active .w-1 {
+    opacity: 1;
+}
+
+/* Hamburger Menu */
+.hamburger {
+    width: 20px;
+    height: 16px;
+    position: relative;
+    cursor: pointer;
+}
+
+.hamburger span {
+    display: block;
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    background: var(--theme-primary);
+    border-radius: 1px;
+    opacity: 1;
+    left: 0;
+    transform: rotate(0deg);
+    transition: 0.25s ease-in-out;
+}
+
+.hamburger span:nth-child(1) {
+    top: 0px;
+}
+
+.hamburger span:nth-child(2) {
+    top: 7px;
+}
+
+.hamburger span:nth-child(3) {
+    top: 14px;
+}
+
+.hamburger.active span:nth-child(1) {
+    top: 7px;
+    transform: rotate(135deg);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+    left: -60px;
+}
+
+.hamburger.active span:nth-child(3) {
+    top: 7px;
+    transform: rotate(-135deg);
+}
+
+/* Mobile Menu Animation */
+#mobile-menu.active {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Scroll behavior */
+@media (prefers-reduced-motion: reduce) {
+    .luxury-nav,
+    .luxury-nav-link,
+    .hamburger span,
+    #mobile-menu {
+        transition: none;
     }
 }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nav = document.querySelector('.luxury-nav');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const hamburger = mobileMenuButton.querySelector('.hamburger');
+
+    // Mobile menu toggle
+    mobileMenuButton.addEventListener('click', function() {
+        mobileMenu.classList.toggle('active');
+        hamburger.classList.toggle('active');
+    });
+
+    // Close mobile menu when clicking on links
+    const mobileLinks = mobileMenu.querySelectorAll('a');
+    mobileLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            mobileMenu.classList.remove('active');
+            hamburger.classList.remove('active');
+        });
+    });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!nav.contains(event.target)) {
+            mobileMenu.classList.remove('active');
+            hamburger.classList.remove('active');
+        }
+    });
+
+    // Scroll behavior for nav
+    let lastScrollY = window.scrollY;
+    
+    window.addEventListener('scroll', function() {
+        const currentScrollY = window.scrollY;
+        
+        if (currentScrollY > 50) {
+            nav.classList.add('scrolled');
+        } else {
+            nav.classList.remove('scrolled');
+        }
+        
+        lastScrollY = currentScrollY;
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+});
 </script>

@@ -1,67 +1,27 @@
-<!-- Basic Theme Navigation -->
-<nav class="basic-nav fixed top-0 left-0 right-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-            <!-- Logo/Brand -->
-            <div class="flex items-center">
-                <a href="/{{modelSlug}}{{previewParam}}" class="text-xl font-semibold text-white hover:text-gray-200 transition-colors">
-                    {{siteName}}
-                </a>
-            </div>
-            
-            <!-- Desktop Menu -->
-            <div class="hidden md:flex items-center space-x-1">
-                {{#each navigation}}
-                <a href="{{this.url}}" 
-                   class="basic-nav-link rounded {{#if this.active}}active{{/if}}">
-                    {{this.name}}
-                </a>
-                {{/each}}
-            </div>
-            
-            <!-- Mobile Menu Button -->
-            <div class="md:hidden">
-                <button type="button" 
-                        class="text-white hover:text-gray-200 focus:outline-none transition-colors"
-                        onclick="toggleMobileMenu()">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Mobile Menu -->
-    <div id="mobileMenu" class="md:hidden hidden bg-black bg-opacity-20">
-        <div class="px-2 pt-2 pb-3 space-y-1">
-            {{#each navigation}}
-            <a href="{{this.url}}" 
-               class="block px-3 py-2 text-white hover:bg-white hover:bg-opacity-10 rounded transition-colors {{#if this.active}}bg-white bg-opacity-20{{/if}}">
-                {{this.name}}
-            </a>
-            {{/each}}
-        </div>
+<nav style="background: var(--theme-surface); border-bottom: 1px solid var(--theme-border); padding: 1rem 0; position: static; z-index: 100;">
+    <div class="boudoir-container" style="display: flex; align-items: center; justify-content: space-between;">
+        <a href="/" style="display: flex; align-items: center; gap: 0.75rem; color: var(--theme-accent); text-decoration: none; font-family: var(--font-display); font-size: 1.5rem; font-weight: 600;">
+            <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-primary);">
+                <defs>
+                    <linearGradient id="nav-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:var(--theme-primary);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:var(--theme-accent);stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <circle cx="40" cy="40" r="30" fill="none" stroke="url(#nav-gradient)" stroke-width="3" opacity="0.8"/>
+                <circle cx="40" cy="40" r="8" fill="url(#nav-gradient)" opacity="0.9"/>
+            </svg>
+            {{siteName}}
+        </a>
+        
+        <ul style="display: flex; list-style: none; margin: 0; padding: 0; gap: 2rem; align-items: center;">
+            <li><a href="/{{modelSlug}}{{previewParam}}" style="color: var(--theme-text); text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--radius-md); transition: all 0.3s ease; {{#if (eq pageType 'home')}}background: var(--theme-primary); color: var(--theme-bg);{{/if}}" class="{{#if (eq pageType 'home')}}active{{/if}}">Home</a></li>
+            <li><a href="/{{modelSlug}}/about{{previewParam}}" style="color: var(--theme-text); text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--radius-md); transition: all 0.3s ease; {{#if (eq pageType 'about')}}background: var(--theme-primary); color: var(--theme-bg);{{/if}}" class="{{#if (eq pageType 'about')}}active{{/if}}">About</a></li>
+            <li><a href="/{{modelSlug}}/gallery{{previewParam}}" style="color: var(--theme-text); text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--radius-md); transition: all 0.3s ease; {{#if (eq pageType 'gallery')}}background: var(--theme-primary); color: var(--theme-bg);{{/if}}" class="{{#if (eq pageType 'gallery')}}active{{/if}}">Gallery</a></li>
+            <li><a href="/{{modelSlug}}/rates{{previewParam}}" style="color: var(--theme-text); text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--radius-md); transition: all 0.3s ease; {{#if (eq pageType 'rates')}}background: var(--theme-primary); color: var(--theme-bg);{{/if}}" class="{{#if (eq pageType 'rates')}}active{{/if}}">Rates</a></li>
+            <li><a href="/{{modelSlug}}/etiquette{{previewParam}}" style="color: var(--theme-text); text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--radius-md); transition: all 0.3s ease; {{#if (eq pageType 'etiquette')}}background: var(--theme-primary); color: var(--theme-bg);{{/if}}" class="{{#if (eq pageType 'etiquette')}}active{{/if}}">Etiquette</a></li>
+            <li><a href="/{{modelSlug}}/calendar{{previewParam}}" style="color: var(--theme-text); text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--radius-md); transition: all 0.3s ease; {{#if (eq pageType 'calendar')}}background: var(--theme-primary); color: var(--theme-bg);{{/if}}" class="{{#if (eq pageType 'calendar')}}active{{/if}}">Calendar</a></li>
+            <li><a href="/{{modelSlug}}/contact{{previewParam}}" style="color: var(--theme-text); text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--radius-md); transition: all 0.3s ease; {{#if (eq pageType 'contact')}}background: var(--theme-primary); color: var(--theme-bg);{{/if}}" class="{{#if (eq pageType 'contact')}}active{{/if}}">Contact</a></li>
+        </ul>
     </div>
 </nav>
-
-<script>
-function toggleMobileMenu() {
-    const menu = document.getElementById('mobileMenu');
-    if (menu.classList.contains('hidden')) {
-        menu.classList.remove('hidden');
-    } else {
-        menu.classList.add('hidden');
-    }
-}
-
-// Close mobile menu when clicking outside
-document.addEventListener('click', function(event) {
-    const menu = document.getElementById('mobileMenu');
-    const button = event.target.closest('button');
-    
-    if (!menu.contains(event.target) && !button) {
-        menu.classList.add('hidden');
-    }
-});
-</script>

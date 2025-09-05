@@ -1,0 +1,617 @@
+<!-- Rates Hero Section -->
+<section class="theme-accent-bg theme-text-inverted py-16 rates-section" data-aos="fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold mb-6 leading-tight rates-header">
+                {{#if rates_content.page_title}}{{rates_content.page_title}}{{else}}Rates & Donations{{/if}}
+            </h1>
+            
+            <!-- Optional Divider -->
+            {{#if rates_content.hero_divider_visible}}
+            <div class="mb-6">
+                {{#if (eq rates_content.hero_divider_type 'line')}}
+                <div class="w-24 h-1 bg-white opacity-50 mx-auto"></div>
+                {{else}}
+                <i class="{{#if rates_content.hero_divider_icon}}{{rates_content.hero_divider_icon}}{{else}}fas fa-heart{{/if}} text-2xl opacity-75"></i>
+                {{/if}}
+            </div>
+            {{/if}}
+            
+            {{#if rates_content.page_subtitle}}
+            <p class="text-base leading-relaxed max-w-4xl mx-auto theme-text-inverted opacity-90" style="line-height: 26px;">
+                {{rates_content.page_subtitle}}
+            </p>
+            {{/if}}
+        </div>
+    </div>
+</section>
+
+<!-- Sticky Sub-Navigation -->
+<div id="sticky-nav" class="theme-bg-secondary theme-border-light border-b sticky top-16 z-40 transition-all duration-300 opacity-0 translate-y-[-100%] hidden md:block">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="flex justify-center space-x-8 py-4" aria-label="Page navigation">
+            <a href="#rates-section" class="nav-link text-sm font-medium transition-colors px-3 py-2 rounded-lg theme-text-muted">
+                {{#if rates_content.nav_rates_label}}{{rates_content.nav_rates_label}}{{else}}Rates{{/if}}
+            </a>
+            {{#if rates.extended.length}}
+            <a href="#extended-section" class="nav-link text-sm font-medium transition-colors px-3 py-2 rounded-lg theme-text-muted">
+                {{#if rates_content.nav_extended_label}}{{rates_content.nav_extended_label}}{{else}}Extended{{/if}}
+            </a>
+            {{/if}}
+            {{#if rates_content.rates_additional_visible}}
+            <a href="#services-section" class="nav-link text-sm font-medium transition-colors px-3 py-2 rounded-lg theme-text-muted">
+                {{#if rates_content.nav_services_label}}{{rates_content.nav_services_label}}{{else}}Services{{/if}}
+            </a>
+            {{/if}}
+            <a href="#policies-section" class="nav-link text-sm font-medium transition-colors px-3 py-2 rounded-lg theme-text-muted">
+                {{#if rates_content.nav_policies_label}}{{rates_content.nav_policies_label}}{{else}}Policies{{/if}}
+            </a>
+            {{#if rates_content.rates_payment_visible}}
+            <a href="#payment-section" class="nav-link text-sm font-medium transition-colors px-3 py-2 rounded-lg theme-text-muted">
+                {{#if rates_content.nav_payment_label}}{{rates_content.nav_payment_label}}{{else}}Payment{{/if}}
+            </a>
+            {{/if}}
+            {{#if rates_content.cta_visible}}
+            <a href="#contact-section" class="nav-link text-sm font-medium transition-colors px-3 py-2 rounded-lg theme-text-muted">
+                {{#if rates_content.nav_contact_label}}{{rates_content.nav_contact_label}}{{else}}Contact{{/if}}
+            </a>
+            {{/if}}
+        </nav>
+    </div>
+</div>
+
+<!-- Mobile Horizontal Scrollable Tabs -->
+<div class="theme-bg-secondary theme-border-light border-b md:hidden overflow-x-auto">
+    <div class="px-4">
+        <nav class="flex space-x-6 py-4 min-w-max" aria-label="Page navigation">
+            <a href="#rates-section" class="nav-link-mobile text-sm font-medium whitespace-nowrap transition-colors px-3 py-2 rounded-lg theme-text-muted">
+                {{#if rates_content.nav_rates_label}}{{rates_content.nav_rates_label}}{{else}}Rates{{/if}}
+            </a>
+            {{#if rates.extended.length}}
+            <a href="#extended-section" class="nav-link-mobile text-sm font-medium whitespace-nowrap transition-colors px-3 py-2 rounded-lg theme-text-muted">
+                {{#if rates_content.nav_extended_label}}{{rates_content.nav_extended_label}}{{else}}Extended{{/if}}
+            </a>
+            {{/if}}
+            {{#if rates_content.rates_additional_visible}}
+            <a href="#services-section" class="nav-link-mobile text-sm font-medium whitespace-nowrap transition-colors px-3 py-2 rounded-lg theme-text-muted">
+                {{#if rates_content.nav_services_label}}{{rates_content.nav_services_label}}{{else}}Services{{/if}}
+            </a>
+            {{/if}}
+            <a href="#policies-section" class="nav-link-mobile text-sm font-medium whitespace-nowrap transition-colors px-3 py-2 rounded-lg theme-text-muted">
+                {{#if rates_content.nav_policies_label}}{{rates_content.nav_policies_label}}{{else}}Policies{{/if}}
+            </a>
+            {{#if rates_content.rates_payment_visible}}
+            <a href="#payment-section" class="nav-link-mobile text-sm font-medium whitespace-nowrap transition-colors px-3 py-2 rounded-lg theme-text-muted">
+                {{#if rates_content.nav_payment_label}}{{rates_content.nav_payment_label}}{{else}}Payment{{/if}}
+            </a>
+            {{/if}}
+            {{#if rates_content.cta_visible}}
+            <a href="#contact-section" class="nav-link-mobile text-sm font-medium whitespace-nowrap transition-colors px-3 py-2 rounded-lg theme-text-muted">
+                {{#if rates_content.nav_contact_label}}{{rates_content.nav_contact_label}}{{else}}Contact{{/if}}
+            </a>
+            {{/if}}
+        </nav>
+    </div>
+</div>
+
+<!-- Main Rates Section - Two Column Layout -->
+{{#if rates_content.rates_table_visible}}
+<section id="rates-section" class="py-20 theme-section rates-section">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Incall Rates -->
+            {{#if rates_content.rates_incall_visible}}
+            <div class="theme-card rates-table rounded-lg shadow-lg overflow-hidden" data-aos="fade-up" data-aos-delay="0">
+                <div class="theme-accent-bg theme-text-inverted px-6 py-4">
+                    <h2 class="text-2xl font-bold text-center">Incall</h2>
+                </div>
+                <div class="p-6">
+                    {{#each rates.incall}}
+                    <div class="flex items-center border-b last:border-b-0 theme-border-light" style="height: 56px;">
+                        <div class="flex-1 pr-4">
+                            <div class="font-semibold theme-text-primary flex items-center">
+                                {{#if this.serviceName}}{{this.serviceName}}{{else}}{{this.duration}}{{/if}}
+                                {{#if ../rates_content.rates_highlight_badge_visible}}
+                                {{#if this.highlightBadge}}
+                                <span class="ml-2 px-2 py-1 text-xs font-bold uppercase rounded-full" style="background: #F59E0B; color: #111827;">
+                                    {{#if this.highlightBadgeText}}{{this.highlightBadgeText}}{{else}}{{#if ../rates_content.rates_highlight_badge_text}}{{../rates_content.rates_highlight_badge_text}}{{else}}Most Popular{{/if}}{{/if}}
+                                </span>
+                                {{else}}{{#if this.isMostPopular}}
+                                <span class="ml-2 px-2 py-1 text-xs font-bold uppercase rounded-full" style="background: #F59E0B; color: #111827;">
+                                    {{#if ../rates_content.rates_highlight_badge_text}}{{../rates_content.rates_highlight_badge_text}}{{else}}Most Popular{{/if}}
+                                </span>
+                                {{/if}}{{/if}}
+                                {{/if}}
+                            </div>
+                            {{#if this.serviceName}}
+                            <div class="text-sm theme-text-secondary">{{this.duration}}</div>
+                            {{/if}}
+                        </div>
+                        
+                        <div class="text-xl font-bold theme-accent text-right" style="width: 88px;">${{this.price}}</div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+
+            <!-- Outcall Rates -->
+            {{#if rates_content.rates_outcall_visible}}
+            <div class="theme-card rates-table rounded-lg shadow-lg overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+                <div class="theme-bg-light theme-text-primary px-6 py-4" style="background: linear-gradient(135deg, var(--theme-accent-light), var(--theme-accent))">
+                    <h2 class="text-2xl font-bold text-center theme-text-inverted">Outcall</h2>
+                </div>
+                <div class="p-6">
+                    {{#each rates.outcall}}
+                    <div class="flex items-center border-b last:border-b-0 theme-border-light" style="height: 56px;">
+                        <div class="flex-1 pr-4">
+                            <div class="font-semibold theme-text-primary flex items-center">
+                                {{#if this.serviceName}}{{this.serviceName}}{{else}}{{this.duration}}{{/if}}
+                                {{#if ../rates_content.rates_highlight_badge_visible}}
+                                {{#if this.highlightBadge}}
+                                <span class="ml-2 px-2 py-1 text-xs font-bold uppercase rounded-full" style="background: #F59E0B; color: #111827;">
+                                    {{#if this.highlightBadgeText}}{{this.highlightBadgeText}}{{else}}{{#if ../rates_content.rates_highlight_badge_text}}{{../rates_content.rates_highlight_badge_text}}{{else}}Most Popular{{/if}}{{/if}}
+                                </span>
+                                {{else}}{{#if this.isMostPopular}}
+                                <span class="ml-2 px-2 py-1 text-xs font-bold uppercase rounded-full" style="background: #F59E0B; color: #111827;">
+                                    {{#if ../rates_content.rates_highlight_badge_text}}{{../rates_content.rates_highlight_badge_text}}{{else}}Most Popular{{/if}}
+                                </span>
+                                {{/if}}{{/if}}
+                                {{/if}}
+                            </div>
+                            {{#if this.serviceName}}
+                            <div class="text-sm theme-text-secondary">{{this.duration}}</div>
+                            {{/if}}
+                        </div>
+                        
+                        <div class="text-xl font-bold theme-accent text-right" style="width: 88px;">${{this.price}}</div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Extended Engagements Section -->
+{{#if rates_content.rates_extended_visible}}
+{{#if rates.extended.length}}
+<section id="extended-section" class="py-20 theme-section-alt">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-4 basic-heading theme-accent">
+                Extended Engagements
+            </h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {{#each rates.extended}}
+            <div class="theme-card theme-border-light border rounded-lg shadow-sm p-8 text-center" data-aos="fade-up" data-aos-delay="{{multiply @index 100}}">
+                <h3 class="text-xl font-bold mb-4 theme-text-primary">{{this.serviceName}}</h3>
+                {{#if this.price}}
+                <div class="text-2xl font-bold mb-2 leading-8 theme-accent">${{this.price}}</div>
+                {{else}}
+                <div class="text-2xl font-bold mb-2 leading-8 theme-text-muted">Custom</div>
+                {{/if}}
+                <p class="text-sm leading-relaxed theme-text-secondary">{{this.duration}}</p>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+{{/if}}
+{{/if}}
+
+<!-- Detail Sections - Two Column Layout -->
+<section id="services-section" class="py-20 theme-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Additional Services -->
+            {{#if rates_content.rates_additional_visible}}
+            <div class="theme-card rounded-lg shadow-lg p-8" data-aos="fade-up" data-aos-delay="0">
+                <div class="text-center mb-6">
+                    <i class="fas fa-plus-circle text-3xl theme-accent mb-4"></i>
+                    <h3 class="text-2xl font-bold theme-text-primary">Additional Services</h3>
+                </div>
+                
+                {{#if rates_content.additional_services}}
+                    <ul class="space-y-2">
+                        {{#each (split rates_content.additional_services " • ")}}
+                        <li class="flex items-start" style="padding: 4px 0;">
+                            <svg class="w-4 h-4 text-purple-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="theme-text-secondary leading-relaxed">{{this}}</span>
+                        </li>
+                        {{/each}}
+                    </ul>
+                {{else}}
+                    <ul class="space-y-2">
+                        <li class="flex items-start" style="padding: 4px 0;">
+                            <svg class="w-4 h-4 text-purple-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="theme-text-secondary leading-relaxed">Dinner dates: +$100 (restaurant cost separate)</span>
+                        </li>
+                        <li class="flex items-start" style="padding: 4px 0;">
+                            <svg class="w-4 h-4 text-purple-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="theme-text-secondary leading-relaxed">Travel outside city: +$500/day + expenses</span>
+                        </li>
+                    </ul>
+                {{/if}}
+            </div>
+            {{/if}}
+            
+            <!-- Booking Policies -->
+            <div id="policies-section" class="theme-card rounded-lg shadow-lg p-8" data-aos="fade-up" data-aos-delay="100">
+                <div class="text-center mb-6">
+                    <i class="fas fa-calendar-check text-3xl text-green-400 mb-4"></i>
+                    <h3 class="text-2xl font-bold theme-text-primary">Booking Policies</h3>
+                </div>
+                
+                {{#if rates_content.booking_policies}}
+                    <ul class="space-y-2">
+                        {{#each (split rates_content.booking_policies " • ")}}
+                        <li class="flex items-start" style="padding: 4px 0;">
+                            <svg class="w-4 h-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="theme-text-secondary leading-relaxed">{{this}}</span>
+                        </li>
+                        {{/each}}
+                    </ul>
+                {{else}}
+                    <ul class="space-y-2">
+                        <li class="flex items-start" style="padding: 4px 0;">
+                            <svg class="w-4 h-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="theme-text-secondary leading-relaxed">Advance booking recommended</span>
+                        </li>
+                        <li class="flex items-start" style="padding: 4px 0;">
+                            <svg class="w-4 h-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="theme-text-secondary leading-relaxed">Same day booking: +$100</span>
+                        </li>
+                    </ul>
+                {{/if}}
+            </div>
+        </div>
+        
+        <!-- Payment Terms and Terms Grid -->
+        <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Payment Terms -->
+            {{#if rates_content.rates_payment_visible}}
+            <div id="payment-section" class="theme-card rounded-lg shadow-lg p-8" data-aos="fade-up" data-aos-delay="200">
+                <div class="text-center mb-6">
+                    <svg class="w-6 h-6 theme-accent mb-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <h3 class="text-2xl font-bold theme-text-primary">Payment & Additional Information</h3>
+                </div>
+                
+                <div class="space-y-2">
+                    {{#if rates_content.payment_terms}}
+                        {{#each (split rates_content.payment_terms " • ")}}
+                        <div class="flex items-start" style="padding: 4px 0;">
+                            <svg class="w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span class="theme-text-secondary leading-relaxed">{{this}}</span>
+                        </div>
+                        {{/each}}
+                    {{else}}
+                        <div class="flex items-start" style="padding: 4px 0;">
+                            <svg class="w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span class="theme-text-secondary leading-relaxed">Cash or discrete payment methods accepted</span>
+                        </div>
+                        <div class="flex items-start" style="padding: 4px 0;">
+                            <svg class="w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span class="theme-text-secondary leading-relaxed">Payment required at the beginning of our time together</span>
+                        </div>
+                    {{/if}}
+                </div>
+            </div>
+            {{/if}}
+            
+            <!-- Terms & Additional Information -->
+            {{#if rates_content.terms_visible}}
+            <div class="theme-card rounded-lg shadow-lg p-8" data-aos="fade-up" data-aos-delay="300">
+                <div class="text-center mb-6">
+                    <svg class="w-6 h-6 theme-text-muted mb-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <h3 class="text-2xl font-bold theme-text-primary">
+                        {{#if rates_content.terms_title}}{{rates_content.terms_title}}{{else}}Terms & Conditions{{/if}}
+                    </h3>
+                </div>
+                <div class="space-y-2">
+                    {{#each (split rates_content.terms_content " • ")}}
+                    <div class="flex items-start" style="padding: 4px 0;">
+                        <svg class="w-4 h-4 theme-text-muted mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span class="theme-text-secondary leading-relaxed">{{this}}</span>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</section>
+
+<!-- Donations Section -->
+{{#if rates_content.donations_visible}}
+<section class="py-16 theme-section">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <div class="flex items-center justify-center mb-2">
+            <svg class="w-5 h-5 theme-accent mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+            </svg>
+            <h2 class="text-xl font-bold theme-accent">
+                {{#if rates_content.donation_title}}{{rates_content.donation_title}}{{else}}Donations{{/if}}
+            </h2>
+        </div>
+        <p class="text-base leading-relaxed theme-text-secondary">
+            {{#if rates_content.donation_description}}{{rates_content.donation_description}}{{else}}Donations are appreciated to help support my work{{/if}}
+        </p>
+    </div>
+</section>
+{{/if}}
+
+<!-- Contact Info Block -->
+<section class="py-8 theme-section-alt">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <p class="text-base theme-text-secondary mb-4">Questions? Contact first.</p>
+        <a href="/{{modelSlug}}/contact{{previewParam}}" class="inline-flex items-center px-4 py-2 border-2 theme-accent-border theme-accent rounded-lg font-semibold hover:bg-purple-600 hover:text-white transition-colors">
+            Contact Me
+        </a>
+    </div>
+</section>
+
+<!-- Bottom CTA Band -->
+{{#if rates_content.cta_visible}}
+<section id="contact-section" class="py-16 theme-accent-bg theme-text-inverted">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+        <h2 class="text-3xl font-bold mb-6">
+            {{#if rates_content.cta_title}}{{rates_content.cta_title}}{{else}}Ready to Meet?{{/if}}
+        </h2>
+        <p class="text-xl mb-8">
+            {{#if rates_content.cta_description}}{{rates_content.cta_description}}{{else}}Experience elegance and sophistication with professional companionship services{{/if}}
+        </p>
+        {{#if rates_content.cta_secondary_text}}
+        <p class="text-lg mb-8 opacity-75 max-w-xl mx-auto italic">
+            {{rates_content.cta_secondary_text}}
+        </p>
+        {{/if}}
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <!-- Primary Button (Contact Me) -->
+            <a href="/{{modelSlug}}/contact{{previewParam}}" class="bg-white theme-text-inverted px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors" style="color: var(--theme-accent);">
+                Contact Me
+            </a>
+            
+            <!-- Secondary Button (View Calendar) -->
+            <a href="/{{modelSlug}}/calendar{{previewParam}}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white transition-colors" style="hover:color: var(--theme-accent);">
+                View Calendar
+            </a>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Footer Section -->
+<footer class="theme-bg-secondary theme-text-primary {{#if rates_content.footer_border_visible}}border-t-4 theme-accent-border{{/if}} {{#if rates_content.footer_padding_enhanced}}py-16{{else}}py-12{{/if}}">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <div class="mb-8">
+                <h3 class="text-2xl font-bold mb-4 basic-heading theme-text-primary">{{#if rates_content.footer_title}}{{rates_content.footer_title}}{{else}}{{model.name}}{{/if}}</h3>
+                <p class="theme-text-secondary mb-6 max-w-2xl mx-auto">
+                    {{#if rates_content.footer_description}}{{rates_content.footer_description}}{{else}}Professional companionship services with the highest standards of discretion and elegance.{{/if}}
+                </p>
+            </div>
+            
+            <!-- Footer Links -->
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-6 mb-8">
+                <a href="/{{model.slug}}/about" class="theme-text-secondary hover:text-white transition-colors {{#if rates_content.footer_padding_enhanced}}px-4 py-2{{else}}px-2 py-1{{/if}} rounded hover:bg-gray-700">About</a>
+                <a href="/{{model.slug}}/gallery" class="theme-text-secondary hover:text-white transition-colors {{#if rates_content.footer_padding_enhanced}}px-4 py-2{{else}}px-2 py-1{{/if}} rounded hover:bg-gray-700">Gallery</a>
+                <a href="/{{model.slug}}/rates" class="theme-text-secondary hover:text-white transition-colors {{#if rates_content.footer_padding_enhanced}}px-4 py-2{{else}}px-2 py-1{{/if}} rounded hover:bg-gray-700">Rates</a>
+                <a href="/{{model.slug}}/contact" class="theme-text-secondary hover:text-white transition-colors {{#if rates_content.footer_padding_enhanced}}px-4 py-2{{else}}px-2 py-1{{/if}} rounded hover:bg-gray-700">Contact</a>
+                {{#if calendarEnabled}}
+                <a href="/{{model.slug}}/calendar" class="theme-text-secondary hover:text-white transition-colors {{#if rates_content.footer_padding_enhanced}}px-4 py-2{{else}}px-2 py-1{{/if}} rounded hover:bg-gray-700">Calendar</a>
+                {{/if}}
+            </div>
+            
+            <!-- Footer Bottom -->
+            <div class="border-t theme-border-light pt-6">
+                <p class="theme-text-subtle text-sm">
+                    {{#if rates_content.footer_copyright}}{{rates_content.footer_copyright}}{{else}}&copy; {{currentYear}} {{model.name}}. All rights reserved.{{/if}}
+                </p>
+                <p class="theme-text-subtle text-xs mt-2 opacity-75">
+                    All arrangements are for companionship and social time only.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Custom Styles for Rates Page -->
+<style>
+.rates-table {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.rates-table-header {
+    padding: 1.5rem;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.rates-table-header.incall {
+    background: #2563eb;
+    color: white;
+}
+
+.rates-table-header.outcall {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.rate-item {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rate-item:last-child {
+    border-bottom: none;
+}
+
+.rate-service {
+    font-weight: 600;
+    color: #111827;
+}
+
+.rate-duration {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.rate-price {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.rate-price.incall {
+    color: #2563eb;
+}
+
+.rate-price.outcall {
+    color: #b45309;
+}
+
+/* Sticky Navigation Styles */
+.sticky-nav-active {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.nav-link.active, .nav-link-mobile.active {
+    color: #2563EB !important;
+    background-color: rgba(37, 99, 235, 0.1) !important;
+}
+
+@media (max-width: 768px) {
+    .grid-cols-1.lg\\:grid-cols-2 {
+        gap: 1rem;
+    }
+    
+    .rate-item {
+        padding: 0.75rem 1rem;
+    }
+    
+    .rate-price {
+        font-size: 1.125rem;
+    }
+}
+</style>
+
+<!-- Sticky Navigation and Smooth Scroll JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const stickyNav = document.getElementById('sticky-nav');
+    const navLinks = document.querySelectorAll('.nav-link, .nav-link-mobile');
+    const sections = document.querySelectorAll('section[id]');
+    
+    // Sticky navigation behavior
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.target.id === 'rates-section') {
+                if (!entry.isIntersecting) {
+                    stickyNav.classList.add('sticky-nav-active');
+                } else {
+                    stickyNav.classList.remove('sticky-nav-active');
+                }
+            }
+        });
+    }, {
+        rootMargin: '0px 0px -90% 0px'
+    });
+    
+    // Observe the first section to trigger sticky nav
+    const ratesSection = document.getElementById('rates-section');
+    if (ratesSection) {
+        observer.observe(ratesSection);
+    }
+    
+    // Smooth scrolling for navigation links
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const targetId = this.getAttribute('href').substring(1);
+            const targetSection = document.getElementById(targetId);
+            
+            if (targetSection) {
+                // Calculate offset for both main nav (64px) and sticky nav
+                const navHeight = window.innerWidth >= 768 ? (stickyNav ? stickyNav.offsetHeight : 0) : 60;
+                const mainNavHeight = 64;
+                const targetPosition = targetSection.offsetTop - mainNavHeight - navHeight - 20;
+                
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+                
+                // Update active nav link for both desktop and mobile
+                navLinks.forEach(nl => nl.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Also update the corresponding link in the other nav (desktop/mobile)
+                const correspondingLinks = document.querySelectorAll(`[href="${this.getAttribute('href')}"]`);
+                correspondingLinks.forEach(cl => cl.classList.add('active'));
+            }
+        });
+    });
+    
+    // Update active nav link on scroll
+    const scrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const targetId = entry.target.id;
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${targetId}`) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        });
+    }, {
+        rootMargin: '-20% 0px -70% 0px'
+    });
+    
+    // Observe all sections for active nav highlighting
+    sections.forEach(section => {
+        scrollObserver.observe(section);
+    });
+});
+</script>

@@ -176,7 +176,7 @@
   
   async function loadPublishStatus() {
     try {
-      const response = await fetch(`/api/model-content-new/${slug}/etiquette`);
+      const response = await fetch(`/api/model-etiquette/${slug}/content`);
       const data = await response.json();
       if (data.success && data.data) {
         const isPublished = data.data.page_published === true || data.data.page_published === 1 || data.data.page_published === '1';
@@ -240,7 +240,7 @@
     
     try {
       console.log('Auto-saving field:', fieldName, 'with value:', value);
-      const response = await fetch(`/api/model-content-new/${slug}/etiquette`, {
+      const response = await fetch(`/api/model-etiquette/${slug}/content`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ [fieldName]: value })

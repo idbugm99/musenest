@@ -1,0 +1,203 @@
+<!-- Blog Header -->
+<section class="relative py-32 overflow-hidden" style="background: var(--glamour-gradient); color: white;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="mb-8">
+            <i class="fas fa-feather-alt text-6xl mb-6 text-white/80"></i>
+        </div>
+        <h1 class="text-5xl md:text-6xl font-bold mb-6" style="font-family: var(--font-display);">
+            {{#if content.blog_title}}{{content.blog_title}}{{else}}Journal{{/if}}
+        </h1>
+        <p class="text-xl text-white/90 max-w-3xl mx-auto">
+            {{#if content.blog_subtitle}}{{content.blog_subtitle}}{{else}}Thoughts, experiences, and insights from the world of elegance and sophistication.{{/if}}
+        </p>
+    </div>
+    <div class="absolute inset-0 opacity-10 pointer-events-none">
+        <div class="absolute top-24 right-16 w-32 h-32 border border-white/20 rounded-full"></div>
+        <div class="absolute bottom-20 left-20 w-24 h-24 border border-white/20 rounded-full"></div>
+    </div>
+</section>
+
+<!-- Blog Posts -->
+<section class="py-20" style="background-color: var(--theme-bg);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{#if blogPosts}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+            {{#each blogPosts}}
+            <article class="glamour-card overflow-hidden">
+                {{#if this.featured_image}}
+                <div class="aspect-w-16 aspect-h-9">
+                    <img src="{{this.featured_image}}" 
+                         alt="{{this.title}}" 
+                         class="w-full h-64 object-cover">
+                </div>
+                {{/if}}
+                
+                <div class="p-8">
+                    <div class="flex items-center mb-4">
+                        <time class="text-sm" style="color: var(--theme-text-subtle);">
+                            {{formatDate this.published_date}}
+                        </time>
+                        {{#if this.category}}
+                        <span class="mx-2" style="color: var(--theme-text-subtle);">•</span>
+                        <span class="text-sm px-3 py-1 rounded-full" style="background-color: var(--theme-bg-alt); color: var(--theme-primary);">
+                            {{this.category}}
+                        </span>
+                        {{/if}}
+                    </div>
+                    
+                    <h2 class="text-2xl font-bold mb-4" style="color: var(--theme-text); font-family: var(--font-display);">
+                        {{this.title}}
+                    </h2>
+                    
+                    <p class="text-lg mb-6 leading-relaxed" style="color: var(--theme-text-subtle);">
+                        {{truncate this.excerpt 150}}
+                    </p>
+                    
+                    <a href="/{{../modelSlug}}/blog/{{this.slug}}{{../previewParam}}" 
+                       class="inline-flex items-center text-lg font-medium hover:underline" 
+                       style="color: var(--theme-link);">
+                        Read More
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </article>
+            {{/each}}
+        </div>
+        
+        <!-- Pagination -->
+        {{#if pagination}}
+        <div class="flex justify-center space-x-4">
+            {{#if pagination.hasPrev}}
+            <a href="/{{modelSlug}}/blog?page={{pagination.prevPage}}{{previewParam}}" 
+               class="glamour-btn-outline">
+                <i class="fas fa-chevron-left"></i>
+                Previous
+            </a>
+            {{/if}}
+            
+            <span class="flex items-center px-6 py-3 rounded-lg" style="background-color: var(--theme-bg-alt); color: var(--theme-text);">
+                Page {{pagination.currentPage}} of {{pagination.totalPages}}
+            </span>
+            
+            {{#if pagination.hasNext}}
+            <a href="/{{modelSlug}}/blog?page={{pagination.nextPage}}{{previewParam}}" 
+               class="glamour-btn-outline">
+                Next
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            {{/if}}
+        </div>
+        {{/if}}
+        
+        {{else}}
+        <!-- No Posts State -->
+        <div class="text-center py-16">
+            <div class="glamour-card p-12 max-w-2xl mx-auto">
+                <i class="fas fa-feather-alt text-6xl mb-8" style="color: var(--theme-primary);"></i>
+                <h2 class="text-3xl font-bold mb-6" style="color: var(--theme-text); font-family: var(--font-display);">
+                    Coming Soon
+                </h2>
+                <p class="text-lg mb-8" style="color: var(--theme-text-subtle);">
+                    I'm preparing to share insights, experiences, and thoughts on elegance, lifestyle, and the art of sophisticated companionship.
+                </p>
+                <p class="text-sm" style="color: var(--theme-text-subtle);">
+                    Check back soon for new content, or reach out to discuss your interests directly.
+                </p>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+</section>
+
+<!-- Newsletter Signup -->
+{{#if content.newsletter_section_visible}}
+<section class="py-20" style="background-color: var(--theme-bg-alt);">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="glamour-card p-12 text-center">
+            <h2 class="text-3xl font-bold mb-6" style="color: var(--theme-text); font-family: var(--font-display);">
+                Stay Connected
+            </h2>
+            <p class="text-lg mb-8" style="color: var(--theme-text-subtle);">
+                Subscribe to receive updates when new content is published.
+            </p>
+            
+            <form id="newsletter-form" class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                <input type="email" 
+                       name="email" 
+                       placeholder="Your email address" 
+                       required
+                       class="flex-1 px-4 py-3 rounded-lg border transition-colors focus:outline-none focus:ring-2"
+                       style="border-color: var(--theme-border); focus:ring-color: var(--theme-focus);">
+                
+                <button type="submit" class="glamour-btn whitespace-nowrap">
+                    <i class="fas fa-envelope"></i>
+                    Subscribe
+                </button>
+            </form>
+            
+            <p class="text-xs mt-4" style="color: var(--theme-text-subtle);">
+                Privacy respected. Unsubscribe anytime.
+            </p>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Contact CTA -->
+<section class="py-16" style="background-color: var(--theme-bg);">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold mb-6" style="color: var(--theme-text); font-family: var(--font-display);">
+            Let's Connect
+        </h2>
+        <p class="text-lg mb-8" style="color: var(--theme-text-subtle);">
+            Have questions or want to discuss something personally? I'd love to hear from you.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/{{modelSlug}}/contact{{previewParam}}" class="glamour-btn">
+                <i class="fas fa-envelope"></i>
+                Send Message
+            </a>
+            <a href="/{{modelSlug}}/calendar{{previewParam}}" class="glamour-btn-outline">
+                <i class="fas fa-calendar-alt"></i>
+                Schedule Time
+            </a>
+        </div>
+    </div>
+</section>
+
+<script>
+// Newsletter form submission
+document.addEventListener('DOMContentLoaded', function() {
+    const newsletterForm = document.getElementById('newsletter-form');
+    
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const email = formData.get('email');
+            
+            // Simple form handling - would integrate with actual newsletter service
+            fetch('/api/newsletter/subscribe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, modelSlug: '{{modelSlug}}' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.innerHTML = '<div class="text-center py-4"><i class="fas fa-check-circle text-green-500 text-2xl mb-2"></i><p class="text-green-600">Thank you for subscribing!</p></div>';
+                } else {
+                    alert('There was an issue with your subscription. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Newsletter subscription error:', error);
+                alert('Please try again or contact us directly.');
+            });
+        });
+    }
+});
+</script>

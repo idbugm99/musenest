@@ -405,11 +405,20 @@ document.addEventListener('DOMContentLoaded', function() {
                         let response, data;
                         
                         if (pageType === 'rates') {
-                            // Rates page has its own dedicated API
                             response = await fetch(`/api/model-rates/${this.currentModelSlug}/page-content`);
+                        } else if (pageType === 'home') {
+                            response = await fetch(`/api/model-home/${this.currentModelSlug}/home`);
+                        } else if (pageType === 'about') {
+                            response = await fetch(`/api/model-about/${this.currentModelSlug}/about`);
+                        } else if (pageType === 'contact') {
+                            response = await fetch(`/api/model-contact/${this.currentModelSlug}/content`);
+                        } else if (pageType === 'etiquette') {
+                            response = await fetch(`/api/model-etiquette/${this.currentModelSlug}/content`);
+                        } else if (pageType === 'gallery') {
+                            response = await fetch(`/api/model-gallery/${this.currentModelSlug}/sections`);
                         } else {
-                            // Other pages use the generic content API
-                            response = await fetch(`/api/model-content-new/${this.currentModelSlug}/${pageType}`);
+                            console.warn('Unknown page type:', pageType);
+                            response = { json: () => ({ success: false, error: 'Unknown page type' }) };
                         }
                         
                         data = await response.json();

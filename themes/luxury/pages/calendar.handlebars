@@ -1,47 +1,39 @@
-{{!-- Luxury Theme Calendar Page - Royal Appointment Scheduler --}}
+<!-- Luxury Calendar Page - Using Universal Calendar System with Luxury Styling -->
 
-<!-- Dramatic Calendar Hero Section -->
-<section class="luxury-calendar-hero" data-aos="fade-in">
-    <!-- Rich Gradient Background -->
-    <div class="luxury-calendar-hero-bg"></div>
-    
-    <!-- Floating Luxurious Elements -->
+<!-- Luxury Hero Section -->
+<section class="luxury-calendar-hero py-20 relative overflow-hidden" data-aos="fade-in">
+    <!-- Luxury Floating Elements -->
     <div class="luxury-hero-floating-elements">
         <div class="luxury-floating-element luxury-element-calendar">📅</div>
         <div class="luxury-floating-element luxury-element-clock">🕐</div>
         <div class="luxury-floating-element luxury-element-crown">👑</div>
-        <div class="luxury-floating-element luxury-element-scroll">📜</div>
         <div class="luxury-floating-element luxury-element-gem">💎</div>
-        <div class="luxury-floating-element luxury-element-quill">🪶</div>
     </div>
     
-    <!-- Royal Overlay for Text Contrast -->
-    <div class="luxury-hero-overlay"></div>
-    
     <div class="max-w-6xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative z-20">
-        <!-- Imperial Crown Icon -->
-        <div class="luxury-calendar-hero-icon" data-aos="fade-down" data-aos-delay="200">
+        <!-- Luxury Calendar Icon -->
+        <div class="text-6xl mb-8 text-luxury-gold" data-aos="fade-down" data-aos-delay="200">
             <i class="fas fa-calendar-alt"></i>
         </div>
         
-        <!-- Majestic Title -->
-        <h1 class="luxury-calendar-hero-title" data-aos="fade-up" data-aos-delay="400">
+        <!-- Luxury Page Title -->
+        <h1 class="luxury-hero-title text-4xl md:text-6xl font-bold mb-6" data-aos="fade-up" data-aos-delay="400">
             {{#if calendar_content.page_title}}{{calendar_content.page_title}}{{else}}Royal Appointment Calendar{{/if}}
         </h1>
         
-        <!-- Elegant Subtitle -->
+        <!-- Luxury Page Subtitle -->
         {{#if calendar_content.page_subtitle}}
-        <p class="luxury-calendar-hero-subtitle" data-aos="fade-up" data-aos-delay="600">
+        <p class="luxury-hero-subtitle text-xl max-w-3xl mx-auto mb-8" data-aos="fade-up" data-aos-delay="600">
             {{calendar_content.page_subtitle}}
         </p>
         {{else}}
-        <p class="luxury-calendar-hero-subtitle" data-aos="fade-up" data-aos-delay="600">
+        <p class="luxury-hero-subtitle text-xl max-w-3xl mx-auto mb-8" data-aos="fade-up" data-aos-delay="600">
             View my current location and availability. Check where I am traveling and when I am available for exclusive appointments.
         </p>
         {{/if}}
         
-        <!-- Royal Divider with Crown -->
-        <div class="luxury-calendar-hero-divider" data-aos="fade-up" data-aos-delay="800">
+        <!-- Luxury Decorative Divider -->
+        <div class="luxury-hero-divider" data-aos="fade-up" data-aos-delay="800">
             <div class="luxury-divider-line-left"></div>
             <div class="luxury-divider-crown">
                 <i class="fas fa-crown"></i>
@@ -49,61 +41,75 @@
             <div class="luxury-divider-line-right"></div>
         </div>
     </div>
-    
-    <!-- Floating Sparkles -->
-    <div class="luxury-hero-sparkles">
-        <div class="luxury-sparkle luxury-sparkle-1">✨</div>
-        <div class="luxury-sparkle luxury-sparkle-2">✨</div>
-        <div class="luxury-sparkle luxury-sparkle-3">✨</div>
-        <div class="luxury-sparkle luxury-sparkle-4">✨</div>
-    </div>
 </section>
 
-<!-- Main Calendar Palace Section -->
-<section class="luxury-calendar-palace">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<!-- Main Calendar Section -->
+<section class="py-16 luxury-calendar-section">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- View Toggle (Mobile First) -->
+        <div class="flex justify-center mb-6 md:hidden">
+            <div class="luxury-card rounded-lg p-1 shadow-sm">
+                <button id="list-view-btn" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors active luxury-btn-accent">
+                    List
+                </button>
+                <button id="month-view-btn" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors luxury-text-secondary">
+                    Month
+                </button>
+            </div>
+        </div>
         
         <!-- Calendar Navigation -->
-        <div class="luxury-calendar-navigation" data-aos="fade-up">
-            <button id="prev-month" class="luxury-nav-btn luxury-nav-prev">
-                <i class="fas fa-chevron-left"></i>
+        {{#if calendar_content.calendar_navigation_visible}}
+        <div class="flex justify-between items-center mb-8" data-aos="fade-up">
+            <button id="prev-month" class="luxury-nav-btn">
+                <i class="fas fa-chevron-left mr-2"></i>
                 <span>Previous</span>
             </button>
             
-            <h2 id="month-title" class="luxury-month-title"></h2>
+            <h2 id="month-title" class="luxury-month-title text-3xl font-bold text-center"></h2>
             
-            <button id="next-month" class="luxury-nav-btn luxury-nav-next">
+            <button id="next-month" class="luxury-nav-btn">
                 <span>Next</span>
-                <i class="fas fa-chevron-right"></i>
+                <i class="fas fa-chevron-right ml-2"></i>
             </button>
         </div>
+        {{/if}}
 
-        <!-- Royal Calendar Chamber -->
-        <div class="luxury-calendar-chamber" data-aos="fade-up" data-aos-delay="200">
-            <!-- Calendar Days Header -->
-            <div class="luxury-calendar-header-row">
-                <div class="luxury-calendar-day-header">Sun</div>
-                <div class="luxury-calendar-day-header">Mon</div>
-                <div class="luxury-calendar-day-header">Tue</div>
-                <div class="luxury-calendar-day-header">Wed</div>
-                <div class="luxury-calendar-day-header">Thu</div>
-                <div class="luxury-calendar-day-header">Fri</div>
-                <div class="luxury-calendar-day-header">Sat</div>
+        <!-- Calendar Container -->
+        <div id="calendar-container" class="luxury-calendar-container rounded-lg shadow-lg overflow-hidden mb-8">
+            <!-- Calendar Header -->
+            <div class="grid grid-cols-7 luxury-calendar-header">
+                <div class="p-4 text-center font-semibold luxury-day-header border-r luxury-border-light">Sun</div>
+                <div class="p-4 text-center font-semibold luxury-day-header border-r luxury-border-light">Mon</div>
+                <div class="p-4 text-center font-semibold luxury-day-header border-r luxury-border-light">Tue</div>
+                <div class="p-4 text-center font-semibold luxury-day-header border-r luxury-border-light">Wed</div>
+                <div class="p-4 text-center font-semibold luxury-day-header border-r luxury-border-light">Thu</div>
+                <div class="p-4 text-center font-semibold luxury-day-header border-r luxury-border-light">Fri</div>
+                <div class="p-4 text-center font-semibold luxury-day-header">Sat</div>
             </div>
             
-            <!-- Calendar Grid -->
+            <!-- Calendar Body -->
             <div id="calendar-grid" class="luxury-calendar-grid">
-                <div class="luxury-calendar-loading">
-                    <div class="luxury-loading-crown">
-                        <i class="fas fa-crown"></i>
-                    </div>
-                    <p class="luxury-loading-text">Loading Royal Schedule...</p>
+                <div class="text-center py-12 luxury-text-secondary">
+                    <div class="luxury-loading-spinner animate-spin rounded-full h-8 w-8 mx-auto mb-4"></div>
+                    <div class="luxury-loading-text">Loading royal calendar...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- List View -->
+        <div id="list-container" class="luxury-card rounded-lg shadow-lg p-6 mb-8 hidden">
+            <div id="list-view">
+                <div class="text-center py-12 luxury-text-secondary">
+                    <div class="luxury-loading-spinner animate-spin rounded-full h-8 w-8 mx-auto mb-4"></div>
+                    <div class="luxury-loading-text">Loading events...</div>
                 </div>
             </div>
         </div>
 
-        <!-- Royal Legend -->
-        <div class="luxury-calendar-legend" data-aos="fade-up" data-aos-delay="400">
+        <!-- Calendar Legend -->
+        <div class="flex flex-wrap justify-center gap-6 mb-8" data-aos="fade-up" data-aos-delay="400">
             <div class="luxury-legend-item">
                 <div class="luxury-legend-indicator luxury-available"></div>
                 <span class="luxury-legend-label">Available</span>
@@ -122,34 +128,34 @@
             </div>
         </div>
 
-        <!-- Royal CTA Palace -->
-        <div class="luxury-calendar-cta" data-aos="fade-up" data-aos-delay="600">
+        <!-- Luxury Contact Call-to-Action -->
+        {{#if calendar_content.cta_visible}}
+        <div class="luxury-calendar-cta text-center hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="600">
             <div class="luxury-cta-ornament">
                 <i class="fas fa-gem"></i>
             </div>
-            <h3 class="luxury-cta-title">
+            <h3 class="luxury-cta-title text-2xl font-bold mb-4">
                 {{#if calendar_content.cta_title}}{{calendar_content.cta_title}}{{else}}Schedule an Imperial Appointment{{/if}}
             </h3>
-            <p class="luxury-cta-description">
+            <p class="luxury-cta-description mb-8 max-w-2xl mx-auto leading-relaxed">
                 {{#if calendar_content.cta_text}}{{calendar_content.cta_text}}{{else}}Contact me to schedule an exclusive appointment when I am in your area.{{/if}}
             </p>
-            <div class="luxury-cta-buttons">
+            <div class="luxury-cta-buttons flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto">
                 <a href="/{{modelSlug}}/contact{{previewParam}}" class="luxury-btn luxury-btn-primary">
-                    <i class="fas fa-scroll mr-2"></i>
+                    <i class="fas fa-envelope mr-2"></i>
                     <span>{{#if calendar_content.cta_button_text}}{{calendar_content.cta_button_text}}{{else}}Contact Me{{/if}}</span>
-                    <div class="luxury-btn-glow"></div>
                 </a>
                 <a href="/{{modelSlug}}/rates{{previewParam}}" class="luxury-btn luxury-btn-secondary">
-                    <i class="fas fa-crown mr-2"></i>
+                    <i class="fas fa-star mr-2"></i>
                     <span>View Services</span>
-                    <div class="luxury-btn-shine"></div>
                 </a>
             </div>
         </div>
+        {{/if}}
     </div>
 </section>
 
-{{!-- Calendar JavaScript --}}
+<!-- Calendar JavaScript -->
 <script>
 (function() {
     const slug = {{{json modelSlug}}};
@@ -180,8 +186,18 @@
             // Generate calendar grid
             let gridHtml = '';
             
+            const cellHeights = {
+                desktop: 92,
+                tablet: 64,
+                mobile: 56
+            };
+            
+            const screenWidth = window.innerWidth;
+            const cellHeight = screenWidth >= 1024 ? cellHeights.desktop : 
+                             screenWidth >= 768 ? cellHeights.tablet : cellHeights.mobile;
+            
             calendar.weeks.forEach((week, weekIndex) => {
-                gridHtml += `<div class="grid grid-cols-7 border-t border-white border-opacity-10 relative" style="min-height: ${96 + (week.spans.length * 28)}px;">`;
+                gridHtml += `<div class="grid grid-cols-7 border-t luxury-border-light relative" style="min-height: ${cellHeight + (week.spans?.length * 28 || 0)}px;">`;
                 
                 // Day cells
                 week.days.forEach((day, dayIndex) => {
@@ -190,9 +206,9 @@
                                   currentYear === new Date().getFullYear();
                     
                     gridHtml += `
-                        <div class="p-3 border-r border-white border-opacity-10 ${day === 0 ? 'bg-black bg-opacity-20' : ''} relative min-h-24">
+                        <div class="p-2 border-r luxury-border-light ${day === 0 ? 'luxury-bg-muted' : ''} luxury-calendar-day relative" style="min-height: ${cellHeight}px;">
                             ${day > 0 ? `
-                                <div class="text-sm font-light mb-2 ${isToday ? 'text-yellow-400' : 'text-slate-200'} relative z-10 tracking-wide">
+                                <div class="text-sm font-semibold mb-2 ${isToday ? 'luxury-today-number' : 'luxury-day-number'} relative z-10">
                                     ${day}
                                 </div>
                             ` : ''}
@@ -201,62 +217,207 @@
                 });
                 
                 // Add availability spans positioned absolutely over the week
-                week.spans.forEach((span, spanIndex) => {
-                    gridHtml += `
-                        <div class="absolute text-xs rounded px-2 py-1 z-10 flex items-center justify-center font-medium shadow-2xl text-white"
-                             style="background-color: ${span.color}; 
-                                    left: ${span.start_pos * 14.285714}%; 
-                                    width: ${span.width * 14.285714}%;
-                                    top: ${36 + (spanIndex * 28)}px; 
-                                    height: 24px;
-                                    margin-left: 1px;
-                                    margin-right: 1px;
-                                    backdrop-filter: blur(4px);">
-                            <span class="truncate text-xs font-light tracking-wide">
-                                ${span.location}
-                                ${span.status === 'vacation' ? ' - Vacation' : ''}
-                            </span>
-                        </div>
-                    `;
-                });
+                if (week.spans) {
+                    week.spans.forEach((span, spanIndex) => {
+                        const eventColors = {
+                            'available': '#28a745',
+                            'travel': '#D4AF37',
+                            'vacation': '#ffc107', 
+                            'unavailable': '#6c757d'
+                        };
+                        
+                        const textColors = {
+                            'available': 'white',
+                            'travel': '#2C1810',
+                            'vacation': '#2C1810',
+                            'unavailable': 'white'
+                        };
+                        
+                        const bgColor = eventColors[span.status] || span.color;
+                        const textColor = textColors[span.status] || 'white';
+                        
+                        gridHtml += `
+                            <div class="absolute text-xs px-2 py-1 z-10 flex items-center justify-center font-medium luxury-event-span rounded"
+                                 style="background-color: ${bgColor};
+                                        color: ${textColor};
+                                        left: ${span.start_pos * 14.285714}%; 
+                                        width: ${span.width * 14.285714}%;
+                                        top: ${32 + (spanIndex * 28)}px; 
+                                        height: 24px;
+                                        margin-left: 1px;
+                                        margin-right: 1px;">
+                                <span class="truncate text-xs overflow-hidden text-ellipsis whitespace-nowrap">
+                                    ${span.location}
+                                    ${span.status === 'vacation' ? ' - Vacation' : ''}
+                                </span>
+                            </div>
+                        `;
+                    });
+                }
                 
                 gridHtml += '</div>';
             });
+            
+            // Generate list view
+            generateListView(calendar);
             
             calendarGrid.innerHTML = gridHtml;
             
         } catch (error) {
             console.error('Error loading calendar:', error);
             calendarGrid.innerHTML = `
-                <div class="text-center py-20 text-red-300">
-                    <div class="text-6xl mb-8 opacity-50">⚠️</div>
-                    <h3 class="text-2xl font-light mb-4">Calendar Unavailable</h3>
-                    <p class="text-lg">Please contact me directly for scheduling.</p>
+                <div class="text-center py-12 luxury-error">
+                    <div class="text-4xl mb-4">👑</div>
+                    <h3 class="text-lg font-semibold mb-2 luxury-error-title">Royal Calendar Unavailable</h3>
+                    <p class="luxury-error-text">Please contact me directly for availability information.</p>
                 </div>
             `;
+            document.getElementById('list-view').innerHTML = calendarGrid.innerHTML;
         }
     }
     
-    // Navigation event listeners
-    prevButton.addEventListener('click', () => {
-        if (currentMonth === 1) {
-            currentMonth = 12;
-            currentYear--;
+    function generateListView(calendar) {
+        const listView = document.getElementById('list-view');
+        if (!listView) return;
+        
+        let listHtml = '';
+        const events = [];
+        
+        // Collect all events from calendar data
+        calendar.weeks.forEach(week => {
+            if (week.spans) {
+                week.spans.forEach(span => {
+                    const startDate = new Date(calendar.year, calendar.month - 1, span.start_day);
+                    events.push({
+                        date: startDate,
+                        status: span.status,
+                        location: span.location,
+                        duration: span.duration || 1
+                    });
+                });
+            }
+        });
+        
+        // Sort events by date
+        events.sort((a, b) => a.date - b.date);
+        
+        const eventColors = {
+            'available': '#28a745',
+            'travel': '#D4AF37',
+            'vacation': '#ffc107',
+            'unavailable': '#6c757d'
+        };
+        
+        // Generate list items
+        if (events.length === 0) {
+            listHtml = '<div class="text-center py-8 luxury-text-secondary">No royal appointments this month</div>';
         } else {
-            currentMonth--;
+            events.forEach(event => {
+                const dateStr = event.date.toLocaleDateString('en-US', { 
+                    weekday: 'short', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                listHtml += `
+                    <div class="luxury-list-item flex items-center justify-between py-3 border-b luxury-border-light last:border-b-0">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 rounded-full mr-3" style="background-color: ${eventColors[event.status]}"></div>
+                            <div>
+                                <div class="font-medium luxury-list-date">${dateStr}</div>
+                                <div class="text-sm luxury-list-status">${event.status.charAt(0).toUpperCase() + event.status.slice(1)}</div>
+                            </div>
+                        </div>
+                        <div class="text-sm font-medium luxury-list-location">
+                            ${event.location}
+                        </div>
+                    </div>
+                `;
+            });
         }
-        loadCalendar(currentYear, currentMonth);
+        
+        listView.innerHTML = listHtml;
+    }
+    
+    // Navigation event listeners
+    if (prevButton) {
+        prevButton.addEventListener('click', () => {
+            if (currentMonth === 1) {
+                currentMonth = 12;
+                currentYear--;
+            } else {
+                currentMonth--;
+            }
+            loadCalendar(currentYear, currentMonth);
+        });
+    }
+    
+    if (nextButton) {
+        nextButton.addEventListener('click', () => {
+            if (currentMonth === 12) {
+                currentMonth = 1;
+                currentYear++;
+            } else {
+                currentMonth++;
+            }
+            loadCalendar(currentYear, currentMonth);
+        });
+    }
+    
+    // Keyboard support
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            prevButton?.click();
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            nextButton?.click();
+        }
     });
     
-    nextButton.addEventListener('click', () => {
-        if (currentMonth === 12) {
-            currentMonth = 1;
-            currentYear++;
+    // View toggle functionality
+    const listViewBtn = document.getElementById('list-view-btn');
+    const monthViewBtn = document.getElementById('month-view-btn');
+    const calendarContainer = document.getElementById('calendar-container');
+    const listContainer = document.getElementById('list-container');
+    
+    let currentView = window.innerWidth <= 640 ? 'list' : 'month';
+    
+    function switchView(view) {
+        currentView = view;
+        
+        if (view === 'list') {
+            calendarContainer.classList.add('hidden');
+            listContainer.classList.remove('hidden');
+            if (listViewBtn) {
+                listViewBtn.classList.add('active', 'luxury-btn-accent');
+                listViewBtn.classList.remove('luxury-text-secondary');
+            }
+            if (monthViewBtn) {
+                monthViewBtn.classList.remove('active', 'luxury-btn-accent');
+                monthViewBtn.classList.add('luxury-text-secondary');
+            }
         } else {
-            currentMonth++;
+            calendarContainer.classList.remove('hidden');
+            listContainer.classList.add('hidden');
+            if (monthViewBtn) {
+                monthViewBtn.classList.add('active', 'luxury-btn-accent');
+                monthViewBtn.classList.remove('luxury-text-secondary');
+            }
+            if (listViewBtn) {
+                listViewBtn.classList.remove('active', 'luxury-btn-accent');
+                listViewBtn.classList.add('luxury-text-secondary');
+            }
         }
-        loadCalendar(currentYear, currentMonth);
-    });
+    }
+    
+    if (listViewBtn && monthViewBtn) {
+        listViewBtn.addEventListener('click', () => switchView('list'));
+        monthViewBtn.addEventListener('click', () => switchView('month'));
+    }
+    
+    // Set initial view
+    switchView(currentView);
     
     // Load initial calendar
     loadCalendar();
@@ -265,52 +426,16 @@
 
 <!-- Luxury Calendar Styling -->
 <style>
-/* CSS Variables for Luxury Calendar - canonical tokens only */
-:root {
-    --luxury-marble-white: var(--theme-bg-secondary);
-    --luxury-marble-cream: var(--theme-bg-tertiary);
-    --luxury-pearl: var(--theme-text-primary);
-    --luxury-gold: var(--theme-accent);
-    --luxury-rich-gold: var(--theme-accent-hover);
-    --luxury-rose-gold: var(--theme-accent-light);
-    --luxury-deep-burgundy: var(--theme-text);
-    --luxury-royal-purple: var(--theme-secondary, var(--theme-accent-hover));
-    --luxury-obsidian: var(--theme-bg-primary);
-    --luxury-text: var(--theme-text);
-}
-
-/* Dramatic Calendar Hero Section */
+/* Luxury Calendar Hero Styles */
 .luxury-calendar-hero {
+    background: linear-gradient(135deg, #2C1810 0%, #8B4513 25%, #D4AF37 50%, #B8860B 75%, #8B4513 100%);
     position: relative;
-    min-height: 100vh;
+    min-height: 40vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 8rem 0 6rem;
-    overflow: hidden;
 }
 
-.luxury-calendar-hero-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, var(--theme-bg-primary) 0%, var(--theme-secondary, var(--theme-accent-hover)) 25%, var(--theme-error) 50%, var(--theme-accent) 75%, var(--theme-secondary, var(--theme-accent-hover)) 100%);
-    opacity: 0.95;
-}
-
-.luxury-hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(ellipse at center, var(--bg-dark) 0%, var(--bg-dark) 100%); filter: opacity(0.1);
-    z-index: 5;
-}
-
-/* Floating Elements */
 .luxury-hero-floating-elements {
     position: absolute;
     top: 0;
@@ -343,31 +468,17 @@
 }
 
 .luxury-element-crown {
-    top: 45%;
+    top: 65%;
     left: 5%;
     animation-delay: 3s;
     font-size: 2.8rem;
 }
 
-.luxury-element-scroll {
-    top: 65%;
-    right: 8%;
-    animation-delay: 4.5s;
-    font-size: 2.6rem;
-}
-
 .luxury-element-gem {
     bottom: 20%;
-    left: 15%;
+    right: 15%;
     animation-delay: 6s;
     font-size: 2rem;
-}
-
-.luxury-element-quill {
-    bottom: 35%;
-    right: 20%;
-    animation-delay: 7.5s;
-    font-size: 2.4rem;
 }
 
 @keyframes luxury-hero-float {
@@ -389,61 +500,24 @@
     }
 }
 
-/* Hero Content */
-.luxury-calendar-hero-icon {
-    font-size: 5rem;
-    color: var(--theme-accent);
-    margin-bottom: 2.5rem;
-    filter: drop-shadow(0 0 30px var(--card-shadow));
-    animation: luxury-hero-crown-pulse 4s infinite ease-in-out;
-}
-
-@keyframes luxury-hero-crown-pulse {
-    0%, 100% { 
-        transform: scale(1);
-        filter: drop-shadow(0 0 30px var(--card-shadow));
-    }
-    50% { 
-        transform: scale(1.15);
-        filter: drop-shadow(0 0 50px var(--shadow-hover));
-    }
-}
-
-.luxury-calendar-hero-title {
-    font-size: 5.5rem;
-    font-weight: 900;
-    text-align: center;
-    margin-bottom: 2rem;
-    color: var(--theme-text-primary);
-    text-shadow: 
-        0 0 20px var(--theme-accent),
-        0 4px 15px var(--theme-bg-primary);
-        0 2px 30px var(--card-shadow);
+.luxury-hero-title {
+    color: #F5F5DC;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(212, 175, 55, 0.3);
     letter-spacing: 3px;
-    font-family: 'Playfair Display', serif;
-    line-height: 1.1;
-    background: linear-gradient(45deg, var(--theme-text-primary) 0%, var(--theme-accent) 50%, var(--theme-text-primary) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-family: Georgia, serif;
 }
 
-.luxury-calendar-hero-subtitle {
-    font-size: 1.6rem;
-    color: var(--theme-text-primary); filter: opacity(0.95);
-    text-align: center;
-    margin-bottom: 3rem;
+.luxury-hero-subtitle {
+    color: rgba(245, 245, 220, 0.9);
     font-weight: 400;
     letter-spacing: 1px;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
     line-height: 1.7;
-    text-shadow: 0 2px 10px var(--bg-dark); filter: opacity(0.3);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     font-style: italic;
+    font-family: Georgia, serif;
 }
 
-.luxury-calendar-hero-divider {
+.luxury-hero-divider {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -455,15 +529,15 @@
 .luxury-divider-line-right {
     width: 120px;
     height: 3px;
-    background: linear-gradient(90deg, transparent, var(--theme-accent), var(--theme-text-primary)); filter: opacity(0.8);
+    background: linear-gradient(90deg, transparent, #D4AF37, #F5F5DC);
     border-radius: 2px;
 }
 
 .luxury-divider-crown {
     font-size: 2rem;
-    color: var(--theme-accent);
+    color: #D4AF37;
     animation: luxury-divider-crown-glow 3s infinite ease-in-out;
-    filter: drop-shadow(0 0 15px var(--card-shadow));
+    filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.4));
 }
 
 @keyframes luxury-divider-crown-glow {
@@ -477,259 +551,167 @@
     }
 }
 
-/* Floating Sparkles */
-.luxury-hero-sparkles {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 15;
+/* Luxury Calendar Section */
+.luxury-calendar-section {
+    background: linear-gradient(180deg, #F5F5DC 0%, rgba(245, 245, 220, 0.9) 100%);
 }
 
-.luxury-sparkle {
-    position: absolute;
-    font-size: 1.5rem;
-    opacity: 0.8;
-    animation: luxury-sparkle-twinkle 4s ease-in-out infinite;
-}
-
-.luxury-sparkle-1 {
-    top: 20%;
-    left: 25%;
-    animation-delay: 0s;
-}
-
-.luxury-sparkle-2 {
-    top: 35%;
-    right: 30%;
-    animation-delay: 1s;
-}
-
-.luxury-sparkle-3 {
-    bottom: 25%;
-    left: 35%;
-    animation-delay: 2s;
-}
-
-.luxury-sparkle-4 {
-    bottom: 40%;
-    right: 25%;
-    animation-delay: 3s;
-}
-
-@keyframes luxury-sparkle-twinkle {
-    0%, 100% { 
-        opacity: 0.3;
-        transform: scale(0.5) rotate(0deg);
-    }
-    50% { 
-        opacity: 1;
-        transform: scale(1.2) rotate(180deg);
-    }
-}
-
-/* Calendar Palace Section */
-.luxury-calendar-palace {
-    padding: 6rem 0;
-    background: linear-gradient(180deg, var(--luxury-pearl) 0%, var(--luxury-marble-cream) 100%);
-}
-
-/* Calendar Navigation */
-.luxury-calendar-navigation {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 4rem;
-    padding: 0 2rem;
-}
-
+/* Navigation Buttons */
 .luxury-nav-btn {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     padding: 1rem 2rem;
-    background: linear-gradient(135deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 100%);
-    color: var(--luxury-obsidian);
+    background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+    color: #2C1810;
     border: none;
     border-radius: 50px;
     font-weight: 600;
     font-size: 1.1rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 8px 25px var(--card-shadow);
+    box-shadow: 0 8px 25px rgba(44, 24, 16, 0.2);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    font-family: Georgia, serif;
 }
 
 .luxury-nav-btn:hover {
     transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 12px 35px var(--shadow-hover);
+    box-shadow: 0 12px 35px rgba(212, 175, 55, 0.3);
 }
 
 .luxury-month-title {
-    font-size: 3rem;
-    font-weight: 700;
-    background: linear-gradient(45deg, var(--luxury-rich-gold) 0%, var(--luxury-gold) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 0 2px 8px var(--card-shadow);
-    font-family: 'Playfair Display', serif;
+    color: #D4AF37;
+    font-family: Georgia, serif;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(212, 175, 55, 0.3);
+    -webkit-text-fill-color: #D4AF37;
     letter-spacing: 1px;
 }
 
-/* Royal Calendar Chamber */
-.luxury-calendar-chamber {
-    background: linear-gradient(145deg, var(--theme-text-primary), var(--theme-bg-secondary)); filter: opacity(0.9);
-    border-radius: 25px;
-    box-shadow: 0 25px 60px var(--theme-bg-primary); filter: opacity(0.1);
-    border: 2px solid var(--theme-accent); filter: opacity(0.2);
-    overflow: hidden;
-    margin-bottom: 4rem;
+/* Calendar Container */
+.luxury-calendar-container {
+    background: linear-gradient(145deg, #F5F5DC, rgba(245, 245, 220, 0.9));
+    box-shadow: 0 25px 60px rgba(44, 24, 16, 0.1);
+    border: 2px solid rgba(212, 175, 55, 0.2);
 }
 
-.luxury-calendar-header-row {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    background: linear-gradient(135deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 100%);
-    border-bottom: 2px solid var(--theme-accent); filter: opacity(0.3);
+.luxury-calendar-header {
+    background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+    border-bottom: 2px solid rgba(212, 175, 55, 0.3);
 }
 
-.luxury-calendar-day-header {
-    padding: 1.5rem;
-    text-align: center;
+.luxury-day-header {
+    color: #2C1810;
+    font-family: Georgia, serif;
     font-weight: 700;
-    color: var(--luxury-obsidian);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border-right: 1px solid var(--theme-bg-primary); filter: opacity(0.1);
-    font-size: 0.95rem;
 }
 
-.luxury-calendar-day-header:last-child {
-    border-right: none;
+.luxury-border-light {
+    border-color: rgba(44, 24, 16, 0.1);
 }
 
-.luxury-calendar-grid {
-    padding: 2rem;
-    min-height: 400px;
+.luxury-calendar-day {
+    background: rgba(245, 245, 220, 0.7);
+    transition: all 0.3s ease;
 }
 
-/* Calendar Loading State */
-.luxury-calendar-loading {
-    text-align: center;
-    padding: 4rem 0;
+.luxury-calendar-day:hover {
+    background: rgba(212, 175, 55, 0.1);
+    transform: scale(1.02);
 }
 
-.luxury-loading-crown {
-    font-size: 3rem;
-    color: var(--luxury-gold);
-    margin-bottom: 1.5rem;
-    animation: luxury-loading-spin 2s linear infinite;
+.luxury-day-number {
+    color: #2C1810;
+    font-family: Georgia, serif;
 }
 
-@keyframes luxury-loading-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+.luxury-today-number {
+    color: #D4AF37;
+    font-family: Georgia, serif;
+    font-weight: bold;
+    background: linear-gradient(45deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.1));
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.luxury-bg-muted {
+    background: rgba(245, 245, 220, 0.3);
+}
+
+.luxury-event-span {
+    box-shadow: 0 2px 8px rgba(44, 24, 16, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
+}
+
+/* Loading States */
+.luxury-loading-spinner {
+    border: 3px solid #D4AF37;
+    border-top-color: transparent;
 }
 
 .luxury-loading-text {
-    font-size: 1.2rem;
-    color: var(--luxury-deep-burgundy);
+    color: #2C1810;
+    font-family: Georgia, serif;
     font-weight: 500;
     letter-spacing: 0.5px;
 }
 
-/* Calendar Day Cells */
-.calendar-day {
-    aspect-ratio: 1;
-    border: 1px solid var(--accent); filter: opacity(0.2);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 0.75rem;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    background: var(--text-light); filter: opacity(0.7);
+.luxury-text-secondary {
+    color: rgba(44, 24, 16, 0.7);
+    font-family: Georgia, serif;
 }
 
-.calendar-day:hover {
-    background: var(--accent); filter: opacity(0.1);
-    transform: scale(1.02);
-    box-shadow: 0 4px 15px var(--card-shadow);
-}
-
-.calendar-day-number {
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: var(--luxury-obsidian);
-}
-
-.calendar-day-status {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 12px;
-    text-align: center;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Royal Legend */
-.luxury-calendar-legend {
-    display: flex;
-    justify-content: center;
-    gap: 3rem;
-    margin-bottom: 4rem;
-    flex-wrap: wrap;
-}
-
+/* Legend */
 .luxury-legend-item {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     padding: 1rem 1.5rem;
-    background: var(--text-light); filter: opacity(0.8);
+    background: rgba(245, 245, 220, 0.8);
     border-radius: 50px;
-    border: 1px solid var(--accent); filter: opacity(0.3);
-    box-shadow: 0 4px 15px var(--card-shadow);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 15px rgba(44, 24, 16, 0.2);
 }
 
 .luxury-legend-indicator {
     width: 16px;
     height: 16px;
     border-radius: 4px;
-    box-shadow: 0 2px 8px var(--bg-dark); filter: opacity(0.2);
+    box-shadow: 0 2px 8px rgba(44, 24, 16, 0.2);
 }
 
-.luxury-available { background: linear-gradient(135deg, var(--success), var(--success-dark)); }
-.luxury-travel { background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-hover)); }
-.luxury-vacation { background: linear-gradient(135deg, var(--theme-warning), var(--theme-accent-light)); }
-.luxury-unavailable { background: linear-gradient(135deg, var(--theme-border-primary), var(--theme-border-light)); }
+.luxury-available { background: linear-gradient(135deg, #28a745, #1e7e34); }
+.luxury-travel { background: linear-gradient(135deg, #D4AF37, #B8860B); }
+.luxury-vacation { background: linear-gradient(135deg, #ffc107, rgba(212, 175, 55, 0.8)); }
+.luxury-unavailable { background: linear-gradient(135deg, #6c757d, #495057); }
 
 .luxury-legend-label {
     font-weight: 600;
-    color: var(--luxury-obsidian);
+    color: #2C1810;
     font-size: 1rem;
     letter-spacing: 0.5px;
+    font-family: Georgia, serif;
 }
 
-/* Royal CTA Palace */
+/* CTA Section */
 .luxury-calendar-cta {
-    background: linear-gradient(145deg, var(--theme-accent) 0%, var(--theme-accent-light) 100%); filter: opacity(0.1);
-    border: 2px solid var(--theme-accent); filter: opacity(0.3);
+    background: linear-gradient(145deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%);
+    border: 2px solid rgba(212, 175, 55, 0.3);
     border-radius: 30px;
     padding: 4rem 3rem;
-    text-align: center;
     position: relative;
     overflow: hidden;
 }
 
 .luxury-cta-ornament {
     font-size: 3rem;
-    color: var(--luxury-gold);
+    color: #D4AF37;
     margin-bottom: 2rem;
     animation: luxury-cta-ornament-glow 4s infinite ease-in-out;
 }
@@ -740,25 +722,16 @@
 }
 
 .luxury-cta-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: linear-gradient(45deg, var(--luxury-rich-gold) 0%, var(--luxury-gold) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 1.5rem;
-    font-family: 'Playfair Display', serif;
+    color: #D4AF37;
+    font-family: Georgia, serif;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 2px 10px rgba(212, 175, 55, 0.2);
+    -webkit-text-fill-color: #D4AF37;
     letter-spacing: 1px;
 }
 
 .luxury-cta-description {
-    font-size: 1.2rem;
-    color: var(--luxury-deep-burgundy);
-    margin-bottom: 3rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.7;
+    color: #2C1810;
+    font-family: Georgia, serif;
     font-weight: 400;
 }
 
@@ -769,6 +742,7 @@
     flex-wrap: wrap;
 }
 
+/* Luxury Buttons */
 .luxury-btn {
     position: relative;
     display: inline-flex;
@@ -784,75 +758,97 @@
     overflow: hidden;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    font-family: Georgia, serif;
 }
 
 .luxury-btn-primary {
-    background: linear-gradient(135deg, var(--luxury-gold) 0%, var(--luxury-rich-gold) 100%);
-    color: var(--luxury-obsidian);
-    box-shadow: 0 8px 25px var(--card-shadow);
+    background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+    color: #2C1810;
+    box-shadow: 0 8px 25px rgba(44, 24, 16, 0.2);
 }
 
 .luxury-btn-primary:hover {
     transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 15px 40px var(--shadow-hover);
+    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.3);
 }
 
 .luxury-btn-secondary {
     background: transparent;
-    color: var(--luxury-gold);
-    border: 2px solid var(--luxury-gold);
-    box-shadow: 0 8px 25px var(--card-shadow);
+    color: #D4AF37;
+    border: 2px solid #D4AF37;
+    box-shadow: 0 8px 25px rgba(44, 24, 16, 0.2);
 }
 
 .luxury-btn-secondary:hover {
-    background: var(--luxury-gold);
-    color: var(--luxury-obsidian);
+    background: #D4AF37;
+    color: #2C1810;
     transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 15px 40px var(--card-shadow);
+    box-shadow: 0 15px 40px rgba(44, 24, 16, 0.2);
 }
 
-.luxury-btn-glow,
-.luxury-btn-shine {
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, var(--text-light), transparent); filter: opacity(0.3);
-    transition: left 0.6s;
+.luxury-btn-accent {
+    background: #D4AF37;
+    color: #2C1810;
 }
 
-.luxury-btn:hover .luxury-btn-glow,
-.luxury-btn:hover .luxury-btn-shine {
-    left: 100%;
+/* List View Styles */
+.luxury-list-item {
+    transition: all 0.3s ease;
 }
 
-/* --- Remove overlays/dimming on Calendar page --- */
-.luxury-hero-overlay { display: none !important; background: transparent !important; }
-.luxury-calendar-hero-bg { opacity: 1 !important; filter: none !important; }
-/* Disable any pseudo-overlay shine on buttons */
-.luxury-btn-glow, .luxury-btn-shine { display: none !important; }
+.luxury-list-item:hover {
+    background: rgba(212, 175, 55, 0.05);
+}
+
+.luxury-list-date,
+.luxury-list-location {
+    color: #2C1810;
+    font-family: Georgia, serif;
+}
+
+.luxury-list-status {
+    color: rgba(44, 24, 16, 0.7);
+    font-family: Georgia, serif;
+}
+
+/* Card Styles */
+.luxury-card {
+    background: rgba(245, 245, 220, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    box-shadow: 0 4px 15px rgba(44, 24, 16, 0.1);
+}
+
+/* Error States */
+.luxury-error {
+    color: #2C1810;
+}
+
+.luxury-error-title {
+    color: #D4AF37;
+    font-family: Georgia, serif;
+}
+
+.luxury-error-text {
+    color: rgba(44, 24, 16, 0.7);
+    font-family: Georgia, serif;
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {
     .luxury-calendar-hero {
-        min-height: 70vh;
-        padding: 6rem 0 4rem;
+        min-height: 35vh;
+        padding: 4rem 0 3rem;
     }
     
-    .luxury-calendar-hero-title {
+    .luxury-hero-title {
         font-size: 3.5rem;
         letter-spacing: 2px;
     }
     
-    .luxury-calendar-hero-subtitle {
+    .luxury-hero-subtitle {
         font-size: 1.2rem;
         padding: 0 1rem;
-    }
-    
-    .luxury-calendar-hero-icon {
-        font-size: 4rem;
-        margin-bottom: 2rem;
     }
     
     .luxury-floating-element {
@@ -863,28 +859,13 @@
         font-size: 2.5rem;
     }
     
-    .luxury-hero-sparkles .luxury-sparkle {
-        font-size: 1.2rem;
-    }
-    
     .luxury-month-title {
         font-size: 2rem;
-    }
-    
-    .luxury-calendar-navigation {
-        flex-direction: column;
-        gap: 1.5rem;
-        padding: 0 1rem;
     }
     
     .luxury-nav-btn {
         padding: 0.75rem 1.5rem;
         font-size: 1rem;
-    }
-    
-    .luxury-calendar-legend {
-        gap: 1.5rem;
-        padding: 0 1rem;
     }
     
     .luxury-cta-title {
@@ -905,23 +886,18 @@
 
 @media (max-width: 480px) {
     .luxury-calendar-hero {
-        min-height: 60vh;
-        padding: 4rem 0 3rem;
+        min-height: 30vh;
+        padding: 3rem 0 2rem;
     }
     
-    .luxury-calendar-hero-title {
+    .luxury-hero-title {
         font-size: 2.8rem;
         letter-spacing: 1px;
     }
     
-    .luxury-calendar-hero-subtitle {
+    .luxury-hero-subtitle {
         font-size: 1.1rem;
         padding: 0 1.5rem;
-    }
-    
-    .luxury-calendar-hero-icon {
-        font-size: 3.5rem;
-        margin-bottom: 1.5rem;
     }
     
     .luxury-floating-element {
@@ -937,15 +913,73 @@
         width: 80px;
     }
     
-    .luxury-calendar-legend {
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-    }
-    
     .luxury-calendar-cta {
         padding: 3rem 1.5rem;
         margin: 0 1rem;
+    }
+}
+
+/* Calendar view toggle styles */
+#list-view-btn.active,
+#month-view-btn.active {
+    background: #D4AF37;
+    color: #2C1810;
+}
+
+#list-view-btn,
+#month-view-btn {
+    font-family: Georgia, serif;
+    font-weight: 600;
+}
+
+#list-view-btn:hover,
+#month-view-btn:hover {
+    opacity: 0.8;
+}
+
+/* Responsive behavior */
+@media (min-width: 641px) {
+    #list-container {
+        display: none !important;
+    }
+}
+
+@media (max-width: 640px) {
+    #calendar-container {
+        display: none !important;
+    }
+    #list-container {
+        display: block !important;
+    }
+}
+
+/* Loading animation */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Calendar responsiveness */
+@media (max-width: 768px) {
+    .grid.grid-cols-7 {
+        font-size: 0.875rem;
+    }
+    
+    #month-title {
+        font-size: 1.5rem;
+    }
+    
+    #prev-month, #next-month {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    #prev-month span, #next-month span {
+        display: none;
     }
 }
 </style>

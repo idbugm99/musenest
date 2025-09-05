@@ -1,222 +1,313 @@
-<!-- Contact Page - RoseMastos Style Structure -->
-<section class="py-16 bg-gray-50 text-gray-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+<!-- Dark Sophisticated Boudoir Contact Page - Comprehensive Contact System -->
+<section class="boudoir-section" style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)); min-height: 60vh; display: flex; align-items: center; justify-content: center; padding: 4rem 0; position: relative; overflow: hidden;">
+    <!-- Boudoir Decorative Elements -->
+    <div style="position: absolute; top: 15%; left: 12%; opacity: 0.4; z-index: 1;">
+        <svg width="64" height="64" viewBox="0 0 80 80" style="animation: silk-float 6s ease-in-out infinite; color: var(--theme-accent);">
+            <rect x="25" y="25" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+        </svg>
+    </div>
+    <div style="position: absolute; top: 50%; right: 10%; opacity: 0.3; z-index: 1;">
+        <svg width="32" height="32" viewBox="0 0 80 80" style="animation: silk-float 8s ease-in-out infinite; animation-delay: 4s; color: var(--theme-accent);">
+            <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.8"/>
+        </svg>
+    </div>
+    <div style="position: absolute; bottom: 20%; left: 80%; opacity: 0.5; z-index: 1;">
+        <svg width="32" height="32" viewBox="0 0 80 80" style="animation: silk-float 10s ease-in-out infinite; animation-delay: 2s; color: var(--theme-primary);">
+            <circle cx="40" cy="40" r="5" fill="currentColor" opacity="0.9"/>
+        </svg>
+    </div>
+
+    <div class="boudoir-container" style="position: relative; z-index: 2; width: 100%;">
         <!-- Page Header -->
         {{#if contact_content.contact_header_visible}}
-        <div class="text-center mb-12" data-aos="fade-up">
-            <h1 class="text-4xl font-bold mb-6 text-basic-primary">
+        <div style="text-align: center;">
+            <div style="margin-bottom: 2rem;">
+                <svg width="80" height="80" viewBox="0 0 80 80" style="color: var(--theme-accent); animation: pulse 3s ease-in-out infinite;">
+                    <defs>
+                        <linearGradient id="contact-crown-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--theme-accent);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:var(--theme-primary);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="40" cy="40" r="35" fill="none" stroke="url(#contact-crown-gradient)" stroke-width="3" opacity="0.8"/>
+                    <circle cx="40" cy="40" r="12" fill="url(#contact-crown-gradient)" opacity="0.9"/>
+                </svg>
+            </div>
+            <h1 style="background: linear-gradient(45deg, var(--theme-accent), var(--theme-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5rem);">
                 {{#if contact_content.page_title}}{{contact_content.page_title}}{{else}}Contact Me{{/if}}
             </h1>
             {{#if contact_content.page_subtitle}}
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p style="font-size: 1.2rem; color: var(--theme-text-subtle); max-width: 700px; margin: 0 auto;">
                 {{contact_content.page_subtitle}}
             </p>
             {{/if}}
         </div>
+        {{else}}
+        <!-- Default Header -->
+        <div style="text-align: center; margin-bottom: 4rem;">
+            <div style="margin-bottom: 2rem;">
+                <svg width="80" height="80" viewBox="0 0 80 80" style="color: var(--theme-accent); animation: pulse 3s ease-in-out infinite;">
+                    <defs>
+                        <linearGradient id="contact-default-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--theme-accent);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:var(--theme-primary);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="40" cy="40" r="35" fill="none" stroke="url(#contact-default-gradient)" stroke-width="3" opacity="0.8"/>
+                    <circle cx="40" cy="40" r="12" fill="url(#contact-default-gradient)" opacity="0.9"/>
+                </svg>
+            </div>
+            <h1 style="background: linear-gradient(45deg, var(--theme-accent), var(--theme-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5rem);">
+                Contact Me
+            </h1>
+            <p style="font-size: 1.2rem; color: var(--theme-text-subtle); max-width: 700px; margin: 0 auto;">
+                Begin your journey into elegance and sophistication. Reach out with discretion and respect.
+            </p>
+        </div>
         {{/if}}
-        
-        <div class="grid md:grid-cols-2 gap-12">
+    </div>
+</section>
+
+<!-- Contact Content Section with Boudoir Background -->
+<section style="padding: 5rem 0; background: var(--theme-bg);">
+    <div class="boudoir-container">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; margin-bottom: 4rem;">
             <!-- Contact Form -->
             {{#if contact_content.contact_form_visible}}
-            <div class="bg-white p-8 rounded-2xl shadow-lg" data-aos="fade-up" data-aos-delay="100">
-                <h2 class="text-2xl font-bold mb-6 text-basic-primary">
-                    {{#if contact_content.form_title}}{{contact_content.form_title}}{{else}}Send a Message{{/if}}
-                </h2>
-                
-                <form method="POST" class="space-y-6" id="contactForm">
-                    <!-- Honeypot field -->
-                    <input type="text" name="website" style="display: none;" tabindex="-1" autocomplete="off">
+            <div style="order: 1;">
+                <div class="boudoir-card-luxury">
+                    <h2 style="color: var(--theme-accent); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.8rem; font-family: var(--font-display);">
+                        <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                            <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+                            <circle cx="40" cy="40" r="15" fill="currentColor" opacity="0.3"/>
+                        </svg>
+                        {{#if contact_content.form_title}}{{contact_content.form_title}}{{else}}Send a Message{{/if}}
+                    </h2>
                     
-                    <div>
-                        <label for="name" class="block font-medium mb-2" style="font-size: 12px; line-height: 16px; color: #64748B;">
-                            {{#if contact_content.form_name_label}}{{contact_content.form_name_label}}{{else}}Your Name{{/if}}<span style="color: #EF4444;">*</span>
-                        </label>
-                        <input type="text" id="name" name="name" required 
-                               class="w-full px-4 border contact-input" style="height: 44px; border-radius: 12px; border-color: #E5E7EB;">
-                        <div class="error-message hidden" style="font-size: 12px; line-height: 16px; color: #EF4444; margin-top: 4px;"></div>
-                    </div>
-                    
-                    <div>
-                        <label for="email" class="block font-medium mb-2" style="font-size: 12px; line-height: 16px; color: #64748B;">
-                            {{#if contact_content.form_email_label}}{{contact_content.form_email_label}}{{else}}Email Address{{/if}}<span style="color: #EF4444;">*</span>
-                        </label>
-                        <input type="email" id="email" name="email" required 
-                               class="w-full px-4 border contact-input" style="height: 44px; border-radius: 12px; border-color: #E5E7EB;">
-                        <div class="error-message hidden" style="font-size: 12px; line-height: 16px; color: #EF4444; margin-top: 4px;"></div>
-                    </div>
-                    
-                    <div>
-                        <label for="phone" class="block font-medium mb-2" style="font-size: 12px; line-height: 16px; color: #64748B;">
-                            {{#if contact_content.form_phone_label}}{{contact_content.form_phone_label}}{{else}}Phone Number (Optional){{/if}}
-                        </label>
-                        <input type="tel" id="phone" name="phone" 
-                               class="w-full px-4 border contact-input" style="height: 44px; border-radius: 12px; border-color: #E5E7EB;">
-                        <div class="error-message hidden" style="font-size: 12px; line-height: 16px; color: #EF4444; margin-top: 4px;"></div>
-                    </div>
-                    
-                    <div>
-                        <label for="date" class="block font-medium mb-2" style="font-size: 12px; line-height: 16px; color: #64748B;">
-                            {{#if contact_content.form_date_label}}{{contact_content.form_date_label}}{{else}}Preferred Date{{/if}}
-                        </label>
-                        <input type="date" id="date" name="date" 
-                               class="w-full px-4 border contact-input" style="height: 44px; border-radius: 12px; border-color: #E5E7EB;">
-                        <div class="error-message hidden" style="font-size: 12px; line-height: 16px; color: #EF4444; margin-top: 4px;"></div>
-                    </div>
-                    
-                    <div>
-                        <label for="duration" class="block font-medium mb-2" style="font-size: 12px; line-height: 16px; color: #64748B;">
-                            {{#if contact_content.form_duration_label}}{{contact_content.form_duration_label}}{{else}}Duration{{/if}}
-                        </label>
-                        <select id="duration" name="duration" 
-                                class="w-full px-4 border contact-input" style="height: 44px; border-radius: 12px; border-color: #E5E7EB;">
-                            <option value="">Select duration</option>
-                            {{#each (split (or contact_content.form_duration_options "1 Hour,90 Minutes,2 Hours,3 Hours,Overnight,Extended (please specify)") ",")}}
-                                <option value="{{trim this}}">{{trim this}}</option>
-                            {{/each}}
-                        </select>
-                        <div class="error-message hidden" style="font-size: 12px; line-height: 16px; color: #EF4444; margin-top: 4px;"></div>
-                    </div>
-                    
-                    <div>
-                        <label for="message" class="block font-medium mb-2" style="font-size: 12px; line-height: 16px; color: #64748B;">
-                            {{#if contact_content.form_message_label}}{{contact_content.form_message_label}}{{else}}Message{{/if}}<span style="color: #EF4444;">*</span>
-                        </label>
-                        <textarea id="message" name="message" rows="5" required 
-                                  class="w-full px-4 py-3 border contact-input" style="border-radius: 12px; border-color: #E5E7EB;"
-                                  placeholder="{{#if contact_content.form_message_placeholder}}{{contact_content.form_message_placeholder}}{{else}}Please include any specific requests or questions...{{/if}}"></textarea>
-                        <div class="error-message hidden" style="font-size: 12px; line-height: 16px; color: #EF4444; margin-top: 4px;"></div>
-                    </div>
-                    
-                    <button type="submit" id="submitBtn"
-                            class="w-full md:w-auto bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span class="button-text">{{#if contact_content.form_button_text}}{{contact_content.form_button_text}}{{else}}Send Message{{/if}}</span>
-                        <span class="spinner hidden">Sending...</span>
-                    </button>
-                </form>
+                    <form method="POST" id="boudoir-contact-form" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <!-- Honeypot field for spam protection -->
+                        <input type="text" name="website" style="display: none;" tabindex="-1" autocomplete="off">
+                        
+                        <div>
+                            <label style="display: block; color: var(--theme-text); font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                {{#if contact_content.form_name_label}}{{contact_content.form_name_label}}{{else}}Your Name{{/if}}<span style="color: var(--theme-error, #ef4444);"> *</span>
+                            </label>
+                            <input type="text" id="boudoir-name" name="name" required 
+                                   class="boudoir-input"
+                                   style="width: 100%; padding: 1rem; background: var(--theme-bg-alt); border: 2px solid var(--theme-border); border-radius: var(--radius-sm); color: var(--theme-text); font-family: var(--font-body); transition: all 0.3s ease;">
+                            <div class="boudoir-error-message" style="display: none; font-size: 0.8rem; color: var(--theme-error, #ef4444); margin-top: 0.25rem;"></div>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; color: var(--theme-text); font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                {{#if contact_content.form_email_label}}{{contact_content.form_email_label}}{{else}}Email Address{{/if}}<span style="color: var(--theme-error, #ef4444);"> *</span>
+                            </label>
+                            <input type="email" id="boudoir-email" name="email" required 
+                                   class="boudoir-input"
+                                   style="width: 100%; padding: 1rem; background: var(--theme-bg-alt); border: 2px solid var(--theme-border); border-radius: var(--radius-sm); color: var(--theme-text); font-family: var(--font-body); transition: all 0.3s ease;">
+                            <div class="boudoir-error-message" style="display: none; font-size: 0.8rem; color: var(--theme-error, #ef4444); margin-top: 0.25rem;"></div>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; color: var(--theme-text-subtle); font-weight: 500; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                {{#if contact_content.form_phone_label}}{{contact_content.form_phone_label}}{{else}}Phone Number (Optional){{/if}}
+                            </label>
+                            <input type="tel" id="boudoir-phone" name="phone" 
+                                   class="boudoir-input"
+                                   style="width: 100%; padding: 1rem; background: var(--theme-bg-alt); border: 2px solid var(--theme-border); border-radius: var(--radius-sm); color: var(--theme-text); font-family: var(--font-body); transition: all 0.3s ease;">
+                            <div class="boudoir-error-message" style="display: none; font-size: 0.8rem; color: var(--theme-error, #ef4444); margin-top: 0.25rem;"></div>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; color: var(--theme-text-subtle); font-weight: 500; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                {{#if contact_content.form_date_label}}{{contact_content.form_date_label}}{{else}}Preferred Date{{/if}}
+                            </label>
+                            <input type="date" id="boudoir-date" name="date" 
+                                   class="boudoir-input"
+                                   style="width: 100%; padding: 1rem; background: var(--theme-bg-alt); border: 2px solid var(--theme-border); border-radius: var(--radius-sm); color: var(--theme-text); font-family: var(--font-body); transition: all 0.3s ease;">
+                            <div class="boudoir-error-message" style="display: none; font-size: 0.8rem; color: var(--theme-error, #ef4444); margin-top: 0.25rem;"></div>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; color: var(--theme-text-subtle); font-weight: 500; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                {{#if contact_content.form_duration_label}}{{contact_content.form_duration_label}}{{else}}Duration{{/if}}
+                            </label>
+                            <select id="boudoir-duration" name="duration" 
+                                    class="boudoir-input"
+                                    style="width: 100%; padding: 1rem; background: var(--theme-bg-alt); border: 2px solid var(--theme-border); border-radius: var(--radius-sm); color: var(--theme-text); font-family: var(--font-body); transition: all 0.3s ease;">
+                                <option value="">Select duration</option>
+                                {{#each (split (or contact_content.form_duration_options "1 Hour,90 Minutes,2 Hours,3 Hours,Overnight,Extended (please specify)") ",")}}
+                                    <option value="{{trim this}}">{{trim this}}</option>
+                                {{/each}}
+                            </select>
+                            <div class="boudoir-error-message" style="display: none; font-size: 0.8rem; color: var(--theme-error, #ef4444); margin-top: 0.25rem;"></div>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; color: var(--theme-text); font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                {{#if contact_content.form_message_label}}{{contact_content.form_message_label}}{{else}}Message{{/if}}<span style="color: var(--theme-error, #ef4444);"> *</span>
+                            </label>
+                            <textarea id="boudoir-message" name="message" rows="6" required 
+                                      class="boudoir-input"
+                                      placeholder="{{#if contact_content.form_message_placeholder}}{{contact_content.form_message_placeholder}}{{else}}Please introduce yourself and describe what type of encounter you're seeking...{{/if}}"
+                                      style="width: 100%; padding: 1rem; background: var(--theme-bg-alt); border: 2px solid var(--theme-border); border-radius: var(--radius-sm); color: var(--theme-text); font-family: var(--font-body); resize: vertical; transition: all 0.3s ease;"></textarea>
+                            <div class="boudoir-error-message" style="display: none; font-size: 0.8rem; color: var(--theme-error, #ef4444); margin-top: 0.25rem;"></div>
+                        </div>
+                        
+                        <button type="submit" id="boudoir-submit-btn" class="boudoir-btn boudoir-btn-primary" style="align-self: flex-start; font-size: 1.1rem; padding: 1.2rem 2rem; position: relative;">
+                            <span class="boudoir-button-text">
+                                {{#if contact_content.form_button_text}}{{contact_content.form_button_text}}{{else}}Send Message{{/if}}
+                            </span>
+                            <span class="boudoir-spinner" style="display: none;">
+                                <div style="display: inline-block; width: 1rem; height: 1rem; border: 2px solid var(--theme-bg); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 0.8rem;"></div>
+                                Sending...
+                            </span>
+                        </button>
+                    </form>
+                </div>
             </div>
             {{/if}}
-            
+
             <!-- Contact Information Sections -->
-            <div class="space-y-8">
+            <div style="order: 2; display: flex; flex-direction: column; gap: 2rem;">
                 <!-- Direct Contact -->
                 {{#if contact_content.contact_direct_visible}}
-                <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200" data-aos="fade-up" data-aos-delay="200">
-                    <h2 class="text-2xl font-bold mb-6 text-blue-600">
+                <div class="boudoir-card-luxury">
+                    <h2 style="color: var(--theme-accent); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.8rem; font-family: var(--font-display);">
+                        <svg width="32" height="32" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                            <path d="M40 10c-11 0-20 9-20 20 0 15 20 40 20 40s20-25 20-40c0-11-9-20-20-20zm0 27c-4 0-7-3-7-7s3-7 7-7 7 3 7 7-3 7-7 7z" fill="currentColor" opacity="0.8"/>
+                        </svg>
                         {{#if contact_content.direct_title}}{{contact_content.direct_title}}{{else}}Direct Contact{{/if}}
                     </h2>
-                    <div class="space-y-4">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(232, 180, 203, 0.05); border-radius: var(--radius-sm); border: 1px solid rgba(232, 180, 203, 0.2);">
+                            <svg width="24" height="24" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                                <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
                             </svg>
                             <div>
-                                <p class="font-medium text-gray-900">
+                                <div style="color: var(--theme-text); font-weight: 600; font-size: 0.9rem;">
                                     {{#if contact_content.direct_email_label}}{{contact_content.direct_email_label}}{{else}}Email{{/if}}
-                                </p>
-                                <p class="text-gray-600">
-                                    <a href="mailto:{{contactEmail}}" class="text-blue-600 hover:underline">{{contactEmail}}</a>
-                                </p>
+                                </div>
+                                <a href="mailto:{{contactEmail}}" style="color: var(--theme-accent); text-decoration: none; font-weight: 500;">{{contactEmail}}</a>
                             </div>
                         </div>
                         
                         {{#if contactPhone}}
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(232, 180, 203, 0.05); border-radius: var(--radius-sm); border: 1px solid rgba(232, 180, 203, 0.2);">
+                            <svg width="24" height="24" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                                <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.8"/>
                             </svg>
                             <div>
-                                <p class="font-medium text-gray-900">
+                                <div style="color: var(--theme-text); font-weight: 600; font-size: 0.9rem;">
                                     {{#if contact_content.direct_phone_label}}{{contact_content.direct_phone_label}}{{else}}Phone{{/if}}
-                                </p>
-                                <p class="text-gray-600">
-                                    <a href="tel:{{contactPhone}}" class="text-blue-600 hover:underline">{{contactPhone}}</a>
-                                </p>
+                                </div>
+                                <a href="tel:{{contactPhone}}" style="color: var(--theme-accent); text-decoration: none; font-weight: 500;">{{contactPhone}}</a>
                             </div>
                         </div>
                         {{/if}}
                         
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(232, 180, 203, 0.05); border-radius: var(--radius-sm); border: 1px solid rgba(232, 180, 203, 0.2);">
+                            <svg width="24" height="24" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                                <rect x="30" y="30" width="20" height="20" fill="currentColor" opacity="0.7"/>
                             </svg>
                             <div>
-                                <p class="font-medium text-gray-900" style="font-size: 12px; line-height: 18px;">
+                                <div style="color: var(--theme-text); font-weight: 600; font-size: 0.9rem;">Response Time</div>
+                                <div style="color: var(--theme-text-subtle); font-size: 0.9rem;">
                                     {{#if contact_content.direct_response_text}}{{contact_content.direct_response_text}}{{else}}I typically respond within 2-4 hours{{/if}}
-                                </p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 {{/if}}
-                
+
                 <!-- Booking Guidelines -->
                 {{#if contact_content.contact_guidelines_visible}}
-                <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200" data-aos="fade-up" data-aos-delay="300">
-                    <h3 class="text-xl font-bold mb-4 text-blue-600">
+                <div class="boudoir-card-luxury">
+                    <h3 style="color: var(--theme-accent); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem; font-size: 1.2rem; font-family: var(--font-display);">
+                        <svg width="24" height="24" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                            <rect x="25" y="25" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+                        </svg>
                         {{#if contact_content.guidelines_title}}{{contact_content.guidelines_title}}{{else}}Booking Guidelines{{/if}}
                     </h3>
-                    <div class="space-y-2 text-gray-700">
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                         {{#if contact_content.guideline_1}}
-                        <div class="flex items-start">
-                            <span class="text-blue-600 mr-2 mt-1">•</span>
-                            <span>{{contact_content.guideline_1}}</span>
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <div style="width: 0.5rem; height: 0.5rem; background: var(--theme-accent); border-radius: 50%; margin-top: 0.5rem; flex-shrink: 0;"></div>
+                            <span style="color: var(--theme-text); line-height: 1.6;">{{contact_content.guideline_1}}</span>
                         </div>
                         {{/if}}
                         {{#if contact_content.guideline_2}}
-                        <div class="flex items-start">
-                            <span class="text-blue-600 mr-2 mt-1">•</span>
-                            <span>{{contact_content.guideline_2}}</span>
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <div style="width: 0.5rem; height: 0.5rem; background: var(--theme-accent); border-radius: 50%; margin-top: 0.5rem; flex-shrink: 0;"></div>
+                            <span style="color: var(--theme-text); line-height: 1.6;">{{contact_content.guideline_2}}</span>
                         </div>
                         {{/if}}
                         {{#if contact_content.guideline_3}}
-                        <div class="flex items-start">
-                            <span class="text-blue-600 mr-2 mt-1">•</span>
-                            <span>{{contact_content.guideline_3}}</span>
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <div style="width: 0.5rem; height: 0.5rem; background: var(--theme-accent); border-radius: 50%; margin-top: 0.5rem; flex-shrink: 0;"></div>
+                            <span style="color: var(--theme-text); line-height: 1.6;">{{contact_content.guideline_3}}</span>
                         </div>
                         {{/if}}
                         {{#if contact_content.guideline_4}}
-                        <div class="flex items-start">
-                            <span class="text-blue-600 mr-2 mt-1">•</span>
-                            <span>{{contact_content.guideline_4}}</span>
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <div style="width: 0.5rem; height: 0.5rem; background: var(--theme-accent); border-radius: 50%; margin-top: 0.5rem; flex-shrink: 0;"></div>
+                            <span style="color: var(--theme-text); line-height: 1.6;">{{contact_content.guideline_4}}</span>
                         </div>
                         {{/if}}
                     </div>
                 </div>
                 {{/if}}
-                
+
                 <!-- Location & Services -->
                 {{#if contact_content.contact_location_visible}}
-                <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200" data-aos="fade-up" data-aos-delay="400">
-                    <h3 class="text-xl font-bold mb-4 text-blue-600">
+                <div class="boudoir-card-luxury">
+                    <h3 style="color: var(--theme-accent); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem; font-size: 1.2rem; font-family: var(--font-display);">
+                        <svg width="24" height="24" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                            <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+                            <circle cx="40" cy="40" r="12" fill="currentColor" opacity="0.9"/>
+                        </svg>
                         {{#if contact_content.location_title}}{{contact_content.location_title}}{{else}}Location & Services{{/if}}
                     </h3>
-                    <div class="space-y-2 text-gray-700">
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                         {{#if contact_content.location_area_text}}
-                        <div class="flex items-start">
-                            <span class="text-blue-600 mr-2 mt-1">•</span>
-                            <span>{{contact_content.location_area_text}}</span>
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <div style="width: 0.5rem; height: 0.5rem; background: var(--theme-accent); border-radius: 50%; margin-top: 0.5rem; flex-shrink: 0;"></div>
+                            <span style="color: var(--theme-text); line-height: 1.6;">{{contact_content.location_area_text}}</span>
                         </div>
                         {{/if}}
                         {{#if contact_content.location_services_text}}
-                        <div class="flex items-start">
-                            <span class="text-blue-600 mr-2 mt-1">•</span>
-                            <span>{{contact_content.location_services_text}}</span>
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <div style="width: 0.5rem; height: 0.5rem; background: var(--theme-accent); border-radius: 50%; margin-top: 0.5rem; flex-shrink: 0;"></div>
+                            <span style="color: var(--theme-text); line-height: 1.6;">{{contact_content.location_services_text}}</span>
                         </div>
                         {{/if}}
                     </div>
                 </div>
                 {{/if}}
-                
+
                 <!-- Privacy & Discretion -->
                 {{#if contact_content.contact_privacy_visible}}
-                <div class="bg-gray-900 text-white p-6 rounded-2xl shadow-lg" data-aos="fade-up" data-aos-delay="500">
-                    <h3 class="text-lg font-bold mb-3">
-                        {{#if contact_content.privacy_title}}{{contact_content.privacy_title}}{{else}}Privacy & Discretion{{/if}}
-                    </h3>
-                    <p class="text-gray-300 text-sm leading-relaxed">
-                        {{#if contact_content.privacy_text}}{{contact_content.privacy_text}}{{else}}All communications are handled with the utmost discretion and confidentiality. Your privacy is my priority.{{/if}}
-                    </p>
+                <div class="boudoir-card-luxury" style="background: linear-gradient(135deg, var(--theme-surface), var(--theme-bg-alt)); position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: -20px; right: -20px; opacity: 0.3; z-index: 1;">
+                        <svg style="width: 80px; height: 80px; color: var(--theme-accent);" viewBox="0 0 80 80">
+                            <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+                            <circle cx="40" cy="40" r="15" fill="currentColor" opacity="0.3"/>
+                        </svg>
+                    </div>
+                    
+                    <div style="position: relative; z-index: 2;">
+                        <h3 style="color: var(--theme-text); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.8rem; font-size: 1.2rem; font-family: var(--font-display);">
+                            <svg width="24" height="24" viewBox="0 0 80 80" style="color: var(--theme-accent);">
+                                <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.9"/>
+                            </svg>
+                            {{#if contact_content.privacy_title}}{{contact_content.privacy_title}}{{else}}Privacy & Discretion{{/if}}
+                        </h3>
+                        <p style="color: var(--theme-text); line-height: 1.6; font-size: 0.95rem;">
+                            {{#if contact_content.privacy_text}}{{contact_content.privacy_text}}{{else}}All communications are handled with the utmost discretion and confidentiality. Your privacy is my priority.{{/if}}
+                        </p>
+                    </div>
                 </div>
                 {{/if}}
             </div>
@@ -224,18 +315,19 @@
     </div>
 </section>
 
+<!-- Boudoir Contact JavaScript -->
 <script>
-// Contact form handling with spam protection
-let lastSubmitTime = 0;
-const SUBMIT_COOLDOWN = 5000; // 5 seconds
+// Boudoir contact form handling with spam protection
+let boudeiroLastSubmitTime = 0;
+const BOUDEIRO_SUBMIT_COOLDOWN = 5000; // 5 seconds
 
-document.getElementById('contactForm')?.addEventListener('submit', function(e) {
+document.getElementById('boudoir-contact-form')?.addEventListener('submit', function(e) {
     e.preventDefault();
     
     // Throttle submissions
     const now = Date.now();
-    if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
-        showError('Please wait before submitting again.');
+    if (now - boudeiroLastSubmitTime < BOUDEIRO_SUBMIT_COOLDOWN) {
+        showBoudeiroError('Please wait before submitting again.');
         return;
     }
     
@@ -250,120 +342,217 @@ document.getElementById('contactForm')?.addEventListener('submit', function(e) {
     }
     
     // Clear previous errors
-    clearErrors();
+    clearBoudeiroErrors();
     
     // Validate required fields
     let hasErrors = false;
     
     if (!data.name?.trim()) {
-        showFieldError('name', 'Name is required.');
+        showBoudeiroFieldError('boudoir-name', 'Name is required.');
         hasErrors = true;
     }
     
     if (!data.email?.trim()) {
-        showFieldError('email', 'Email is required.');
+        showBoudeiroFieldError('boudoir-email', 'Email is required.');
         hasErrors = true;
-    } else if (!isValidEmail(data.email)) {
-        showFieldError('email', 'Please enter a valid email address.');
+    } else if (!isValidBoudeiroEmail(data.email)) {
+        showBoudeiroFieldError('boudoir-email', 'Please enter a valid email address.');
         hasErrors = true;
     }
     
     if (!data.message?.trim()) {
-        showFieldError('message', 'Message is required.');
+        showBoudeiroFieldError('boudoir-message', 'Message is required.');
         hasErrors = true;
     }
     
     if (hasErrors) return;
     
     // Show loading state
-    const submitBtn = document.getElementById('submitBtn');
-    const buttonText = submitBtn.querySelector('.button-text');
-    const spinner = submitBtn.querySelector('.spinner');
+    const submitBtn = document.getElementById('boudoir-submit-btn');
+    const buttonText = submitBtn.querySelector('.boudoir-button-text');
+    const spinner = submitBtn.querySelector('.boudoir-spinner');
     
     submitBtn.disabled = true;
-    buttonText.classList.add('hidden');
-    spinner.classList.remove('hidden');
+    submitBtn.style.opacity = '0.7';
+    buttonText.style.display = 'none';
+    spinner.style.display = 'inline-flex';
     
-    // Simulate form submission
+    // Simulate form submission (in real implementation, this would send to backend)
     setTimeout(() => {
-        lastSubmitTime = now;
+        boudeiroLastSubmitTime = now;
         
         // Reset button state
         submitBtn.disabled = false;
-        buttonText.classList.remove('hidden');
-        spinner.classList.add('hidden');
+        submitBtn.style.opacity = '1';
+        buttonText.style.display = 'inline-flex';
+        spinner.style.display = 'none';
         
-        // Show success message
-        alert('Thank you for your message! I will get back to you soon.');
+        // Show success message with boudoir styling
+        showBoudeiroSuccess('Thank you for your message! I will get back to you within 2-4 hours.');
         
         // Reset form
         this.reset();
     }, 2000);
 });
 
-function showFieldError(fieldName, message) {
-    const field = document.getElementById(fieldName);
-    const errorDiv = field.parentElement.querySelector('.error-message');
+function showBoudeiroFieldError(fieldId, message) {
+    const field = document.getElementById(fieldId);
+    const errorDiv = field.parentElement.querySelector('.boudoir-error-message');
     
-    field.style.borderColor = '#EF4444';
+    field.style.borderColor = 'var(--theme-error, #ef4444)';
+    field.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.2)';
     errorDiv.textContent = message;
-    errorDiv.classList.remove('hidden');
+    errorDiv.style.display = 'block';
 }
 
-function clearErrors() {
-    document.querySelectorAll('.contact-input').forEach(input => {
-        input.style.borderColor = '#E5E7EB';
+function clearBoudeiroErrors() {
+    document.querySelectorAll('.boudoir-input').forEach(input => {
+        input.style.borderColor = 'var(--theme-border)';
+        input.style.boxShadow = 'none';
     });
-    document.querySelectorAll('.error-message').forEach(error => {
-        error.classList.add('hidden');
+    document.querySelectorAll('.boudoir-error-message').forEach(error => {
+        error.style.display = 'none';
     });
 }
 
-function showError(message) {
-    alert(message);
+function showBoudeiroError(message) {
+    // Create boudoir styled error notification
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        background: var(--theme-error, #ef4444);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: var(--radius-sm);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        z-index: 9999;
+        font-weight: 600;
+        animation: slideInRight 0.3s ease;
+    `;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
 }
 
-function isValidEmail(email) {
+function showBoudeiroSuccess(message) {
+    // Create boudoir styled success notification
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        background: linear-gradient(45deg, var(--theme-accent), var(--theme-primary));
+        color: var(--theme-bg);
+        padding: 1rem 1.5rem;
+        border-radius: var(--radius-sm);
+        box-shadow: 0 8px 32px rgba(232, 180, 203, 0.4);
+        z-index: 9999;
+        font-weight: 600;
+        animation: slideInRight 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    `;
+    notification.innerHTML = `
+        <svg style="width: 1.25rem; height: 1.25rem;" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+            <circle cx="40" cy="40" r="12" fill="currentColor" opacity="0.9"/>
+        </svg>
+        ${message}
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 6000);
+}
+
+function isValidBoudeiroEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
+
+// Boudoir input focus effects
+document.querySelectorAll('.boudoir-input').forEach(input => {
+    input.addEventListener('focus', function() {
+        this.style.borderColor = 'var(--theme-accent)';
+        this.style.boxShadow = '0 0 0 3px rgba(232, 180, 203, 0.2)';
+    });
+    
+    input.addEventListener('blur', function() {
+        if (!this.parentElement.querySelector('.boudoir-error-message').style.display === 'block') {
+            this.style.borderColor = 'var(--theme-border)';
+            this.style.boxShadow = 'none';
+        }
+    });
+});
 </script>
 
+<!-- Boudoir Contact Styles -->
 <style>
+@keyframes silk-float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes slideInRight {
+    0% { transform: translateX(100%); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+/* Boudoir form styling */
+.boudoir-input:focus {
+    outline: none;
+}
+
+.boudoir-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(232, 180, 203, 0.3);
+}
+
+.boudoir-btn:disabled {
+    cursor: not-allowed;
+}
+
 /* Responsive adjustments */
-@media (max-width: 768px) {
-    .grid.md\\:grid-cols-2 {
-        gap: 1.5rem;
+@media (max-width: 968px) {
+    .boudoir-container > div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
     }
     
-    .space-y-8 > * + * {
-        margin-top: 1.5rem;
+    .boudoir-container > div[style*="grid-template-columns"] > div {
+        order: initial !important;
     }
 }
 
-/* Contact form styles */
-.contact-input {
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.contact-input:focus {
-    border-color: #2563EB !important;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
-}
-
-.contact-input.error {
-    border-color: #EF4444 !important;
-}
-
-@media (max-width: 768px) {
-    #submitBtn {
-        width: 100%;
+@media (max-width: 640px) {
+    .boudoir-container {
+        padding: 0 1rem !important;
     }
-}
-
-/* Button styles */
-#submitBtn:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    
+    .boudoir-card,
+    .boudoir-card-luxury {
+        padding: 1.5rem !important;
+    }
+    
+    .boudoir-btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
 }
 </style>

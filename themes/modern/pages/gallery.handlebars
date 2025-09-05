@@ -1,3 +1,21 @@
+<!-- Standardized Modern Hero Section -->
+<section class="hero-section" style="min-height: 40vh; background: {{theme.colors.hero-bg}}; display: flex; align-items: center; position: relative; z-index: 10;">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h1 style="font-size: 3.75rem; font-weight: 800; margin-bottom: 1.5rem; color: {{theme.colors.hero-text}};">
+      {{#if gallery_content.page_title}}{{gallery_content.page_title}}{{else}}My Gallery{{/if}}
+    </h1>
+    {{#if gallery_content.page_subtitle}}
+    <p style="font-size: 1.25rem; color: {{theme.colors.hero-subtext}}; max-width: 42rem; margin: 0 auto;">
+      {{gallery_content.page_subtitle}}
+    </p>
+    {{else}}
+    <p style="font-size: 1.25rem; color: {{theme.colors.hero-subtext}}; max-width: 42rem; margin: 0 auto;">
+      Browse my professional photo collection featuring elegant portraits and sophisticated imagery.
+    </p>
+    {{/if}}
+  </div>
+</section>
+
 <!-- Universal Gallery System for Modern Theme -->
 {{{renderUniversalGallery modelSlug previewTheme=previewThemeId}}}
 
@@ -9,35 +27,50 @@
 
 <style>
 :root {
-    --gallery-primary: #6366f1;
-    --gallery-primary-hover: #4f46e5;
-    --gallery-secondary: #06b6d4;
-    --gallery-accent: #10b981;
-    --gallery-background: linear-gradient(135deg, #f8fafc, #ffffff);
-    --gallery-surface: rgba(255, 255, 255, 0.95);
-    --gallery-text: #0f172a;
-    --gallery-text-muted: #64748b;
-    --gallery-border: rgba(99, 102, 241, 0.1);
-    --gallery-shadow: rgba(99, 102, 241, 0.1);
-    --gallery-shadow-hover: rgba(99, 102, 241, 0.2);
+    /* Modern Contemporary API-Loaded Colors */
+    --gallery-primary: {{theme.colors.primary}};
+    --gallery-primary-hover: {{theme.colors.btn-bg-hover}};
+    --gallery-secondary: {{theme.colors.secondary}};
+    --gallery-accent: {{theme.colors.accent}};
+    --gallery-background: {{theme.colors.hero-bg}};
+    --gallery-surface: {{theme.colors.surface}};
+    --gallery-text: {{theme.colors.text}};
+    --gallery-text-muted: {{theme.colors.text-light}};
+    --gallery-border: {{theme.colors.border}};
+    --gallery-shadow: {{theme.colors.card-shadow}};
+    --gallery-shadow-hover: {{theme.colors.card-shadow}};
     
-    --gallery-border-radius: 16px;
-    --gallery-border-radius-large: 20px;
+    --gallery-border-radius: 12px;
+    --gallery-border-radius-large: 16px;
     --gallery-grid-columns-desktop: 3;
-    --gallery-transition-duration: 0.4s;
+    --gallery-transition-duration: 0.3s;
     --gallery-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
-    --gallery-hover-lift: -8px;
+    --gallery-hover-lift: -4px;
     --gallery-hover-scale: 1.02;
 }
 </style>
 
 <!-- Modern Gallery Page Styling -->
 <style>
+/* Hide Universal Gallery System's built-in header to prevent conflicts */
+.gallery-header,
+.universal-gallery-header,
+.ug-header {
+    display: none !important;
+}
+
+/* Ensure our hero section takes precedence */
+.hero-section {
+    position: relative;
+    z-index: 100 !important;
+}
+
 /* Modern Gallery Hero Section */
 .modern-gallery-hero {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    background: {{theme.colors.hero-bg}};
     position: relative;
     overflow: hidden;
+    min-height: 40vh;
 }
 
 .modern-gallery-gradient-layer-1 {

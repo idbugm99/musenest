@@ -1,0 +1,1340 @@
+<!-- Hero Section with Identical Home Style -->
+{{#if about_content.page_title_visible}}
+<section class="glamour-hero" data-aos="fade-in">
+    <!-- Spotlight Background Effects -->
+    <div class="glamour-spotlight-container">
+        <div class="glamour-spotlight glamour-spotlight-1"></div>
+        <div class="glamour-spotlight glamour-spotlight-2"></div>
+        <div class="glamour-spotlight glamour-spotlight-3"></div>
+    </div>
+    
+    <!-- Hero Content -->
+    <div class="glamour-hero-content">
+        <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+            <h1 class="glamour-hero-title" data-aos="fade-up" data-aos-delay="200">
+                {{#if about_content.page_title}}{{about_content.page_title}}{{else}}About {{siteName}}{{/if}}
+            </h1>
+            <div class="glamour-title-underline" data-aos="fade-up" data-aos-delay="400"></div>
+            {{#if about_content.page_subtitle}}
+            <p class="glamour-hero-subtitle" data-aos="fade-up" data-aos-delay="600">
+                {{about_content.page_subtitle}}
+            </p>
+            {{/if}}
+        </div>
+    </div>
+    
+    <!-- Floating Glamour Elements -->
+    <div class="glamour-floating-elements" aria-hidden="true">
+        <div class="glamour-star glamour-star-1">✦</div>
+        <div class="glamour-star glamour-star-2">✧</div>
+        <div class="glamour-star glamour-star-3">✦</div>
+        <div class="glamour-star glamour-star-4">✧</div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Portrait + Bio Section -->
+{{#if about_content.main_content_visible}}
+<section class="glamour-main-content" data-aos="fade-in">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12 items-start">
+            
+            <!-- Left Column: Portrait + Quick Facts + Interests -->
+            <div class="glamour-left-column">
+                <!-- Portrait with Clean Frame -->
+                {{#if about_content.portrait_visible}}
+                <div class="glamour-portrait-container" data-aos="fade-right">
+                    <div class="glamour-portrait-frame" onclick="openPortraitPreview('{{about_content.portrait_image_url}}', '{{#if about_content.portrait_alt}}{{about_content.portrait_alt}}{{else}}Professional Portrait{{/if}}')">
+                        {{#if about_content.portrait_image_url}}
+                        <img src="{{about_content.portrait_image_url}}" 
+                             alt="{{#if about_content.portrait_alt}}{{about_content.portrait_alt}}{{else}}Professional Portrait{{/if}}"
+                             class="glamour-portrait-image">
+                        {{else}}
+                        <div class="glamour-portrait-placeholder">
+                            <i class="fas fa-camera glamour-icon-large"></i>
+                            <p>Professional Portrait</p>
+                        </div>
+                        {{/if}}
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Quick Facts with Consistent Design -->
+                {{#if about_content.quick_facts_visible}}
+                <div class="glamour-facts-section" data-aos="fade-up" data-aos-delay="300">
+                    <h3 class="glamour-facts-title">
+                        {{#if about_content.quick_facts_title}}{{about_content.quick_facts_title}}{{else}}Quick Facts{{/if}}
+                    </h3>
+                    <div class="glamour-facts-list">
+                        {{#if about_content.qf_location}}
+                        <div class="glamour-fact-row">
+                            <i class="fas fa-map-marker-alt glamour-fact-icon"></i>
+                            <div class="glamour-fact-info">
+                                <div class="glamour-fact-label">LOCATION</div>
+                                <div class="glamour-fact-value">{{about_content.qf_location}}</div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        
+                        {{#if about_content.qf_languages}}
+                        <div class="glamour-fact-row">
+                            <i class="fas fa-language glamour-fact-icon"></i>
+                            <div class="glamour-fact-info">
+                                <div class="glamour-fact-label">LANGUAGES</div>
+                                <div class="glamour-fact-value">{{about_content.qf_languages}}</div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        
+                        {{#if about_content.qf_education}}
+                        <div class="glamour-fact-row">
+                            <i class="fas fa-graduation-cap glamour-fact-icon"></i>
+                            <div class="glamour-fact-info">
+                                <div class="glamour-fact-label">EDUCATION</div>
+                                <div class="glamour-fact-value">{{about_content.qf_education}}</div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        
+                        {{#if about_content.qf_specialties}}
+                        <div class="glamour-fact-row">
+                            <i class="fas fa-star glamour-fact-icon"></i>
+                            <div class="glamour-fact-info">
+                                <div class="glamour-fact-label">SPECIALTIES</div>
+                                <div class="glamour-fact-value">{{about_content.qf_specialties}}</div>
+                            </div>
+                        </div>
+                        {{/if}}
+                    </div>
+                </div>
+                {{/if}}
+                
+                <!-- Interests Pills -->
+                {{#if about_content.interests_visible}}
+                {{#if about_content.interests}}
+                <div class="glamour-interests-section" data-aos="fade-up" data-aos-delay="500">
+                    <h3 class="glamour-interests-title">
+                        {{#if about_content.interests_title}}{{about_content.interests_title}}{{else}}My Interests{{/if}}
+                    </h3>
+                    <div class="glamour-interests-pills">
+                        {{#each (split about_content.interests ',')}}
+                        <span class="glamour-interest-pill">{{trim this}}</span>
+                        {{/each}}
+                    </div>
+                </div>
+                {{/if}}
+                {{/if}}
+            </div>
+            
+            <!-- Right Column: Bio Content -->
+            <div class="glamour-bio-column" data-aos="fade-left">
+                <div class="glamour-bio-card">
+                    <h2 class="glamour-bio-title">
+                        {{#if about_content.bio_title}}{{about_content.bio_title}}{{else}}About {{siteName}}{{/if}}
+                    </h2>
+                    <div class="glamour-bio-content">
+                        {{#if about_content.main_paragraph_1}}
+                        <p class="glamour-bio-paragraph">{{about_content.main_paragraph_1}}</p>
+                        {{/if}}
+                        
+                        {{#if about_content.main_paragraph_2}}
+                        <p class="glamour-bio-paragraph">{{about_content.main_paragraph_2}}</p>
+                        {{/if}}
+                        
+                        {{#if about_content.main_paragraph_3}}
+                        <p class="glamour-bio-paragraph">{{about_content.main_paragraph_3}}</p>
+                        {{/if}}
+                        
+                        {{#if about_content.main_paragraph_4}}
+                        <p class="glamour-bio-paragraph">{{about_content.main_paragraph_4}}</p>
+                        {{/if}}
+                        
+                        {{#unless about_content.main_paragraph_1}}
+                        <p class="glamour-bio-paragraph">Welcome to my world of elegance and sophistication. I am a professional companion who values discretion, intelligence, and genuine connection.</p>
+                        <p class="glamour-bio-paragraph">With years of experience in providing exceptional companionship services, I pride myself on creating memorable experiences tailored to each client's unique needs.</p>
+                        {{/unless}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Services Grid - Six Cards -->
+{{#if about_content.services_visible}}
+<section class="glamour-services-section" data-aos="fade-in">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="glamour-section-title">
+                {{#if about_content.services_title}}{{about_content.services_title}}{{else}}My Services{{/if}}
+            </h2>
+            <div class="glamour-title-underline mx-auto"></div>
+        </div>
+        
+        <div class="glamour-services-six-grid">
+            {{#if about_content.service_1}}
+            <div class="glamour-service-matte-card" data-aos="fade-up" data-aos-delay="100">
+                <i class="fas fa-star glamour-service-star"></i>
+                <h3 class="glamour-service-title">{{about_content.service_1}}</h3>
+            </div>
+            {{/if}}
+            {{#if about_content.service_2}}
+            <div class="glamour-service-matte-card" data-aos="fade-up" data-aos-delay="200">
+                <i class="fas fa-star glamour-service-star"></i>
+                <h3 class="glamour-service-title">{{about_content.service_2}}</h3>
+            </div>
+            {{/if}}
+            {{#if about_content.service_3}}
+            <div class="glamour-service-matte-card" data-aos="fade-up" data-aos-delay="300">
+                <i class="fas fa-star glamour-service-star"></i>
+                <h3 class="glamour-service-title">{{about_content.service_3}}</h3>
+            </div>
+            {{/if}}
+            {{#if about_content.service_4}}
+            <div class="glamour-service-matte-card" data-aos="fade-up" data-aos-delay="400">
+                <i class="fas fa-star glamour-service-star"></i>
+                <h3 class="glamour-service-title">{{about_content.service_4}}</h3>
+            </div>
+            {{/if}}
+            {{#if about_content.service_5}}
+            <div class="glamour-service-matte-card" data-aos="fade-up" data-aos-delay="500">
+                <i class="fas fa-star glamour-service-star"></i>
+                <h3 class="glamour-service-title">{{about_content.service_5}}</h3>
+            </div>
+            {{/if}}
+            {{#if about_content.service_6}}
+            <div class="glamour-service-matte-card" data-aos="fade-up" data-aos-delay="600">
+                <i class="fas fa-star glamour-service-star"></i>
+                <h3 class="glamour-service-title">{{about_content.service_6}}</h3>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Bottom CTA - Same as Home -->
+{{#if about_content.about_cta_visible}}
+<section class="glamour-cta-section" data-aos="fade-in">
+    <!-- Red Carpet Background Effect -->
+    <div class="glamour-red-carpet-bg"></div>
+    
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <h2 class="glamour-cta-title" data-aos="fade-up">
+            {{#if about_content.cta_title}}{{about_content.cta_title}}{{else}}Ready for the VIP Experience?{{/if}}
+        </h2>
+        
+        <p class="glamour-cta-subtitle" data-aos="fade-up" data-aos-delay="200">
+            {{#if about_content.cta_description}}{{about_content.cta_description}}{{else}}Let's create something extraordinary together.{{/if}}
+        </p>
+        
+        <div class="glamour-cta-buttons" data-aos="fade-up" data-aos-delay="400">
+            <a href="/{{modelSlug}}/{{#if about_content.cta_button_1_link}}{{about_content.cta_button_1_link}}{{else}}contact{{/if}}{{previewParam}}" 
+               class="glamour-btn glamour-btn-primary glamour-sparkle-effect">
+                <span>{{#if about_content.cta_button_1_text}}{{about_content.cta_button_1_text}}{{else}}Contact Me{{/if}}</span>
+                <div class="glamour-btn-shine"></div>
+            </a>
+            
+            <a href="/{{modelSlug}}/{{#if about_content.cta_button_2_link}}{{about_content.cta_button_2_link}}{{else}}gallery{{/if}}{{previewParam}}" 
+               class="glamour-btn glamour-btn-secondary glamour-glass-effect">
+                <span>{{#if about_content.cta_button_2_text}}{{about_content.cta_button_2_text}}{{else}}View Gallery{{/if}}</span>
+            </a>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Additional Content Section (if needed) -->
+{{#if about_content.additional_content_visible}}
+<section class="glamour-additional-content" data-aos="fade-in">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="glamour-content-card">
+            <div class="glamour-card-glow"></div>
+            {{#if about_content.additional_title}}
+            <h3 class="glamour-additional-title">{{about_content.additional_title}}</h3>
+            {{/if}}
+            {{#if about_content.additional_description}}
+            <div class="glamour-additional-text">
+                <p>{{about_content.additional_description}}</p>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Portrait Preview Modal -->
+<div id="portrait-preview-modal" class="glamour-modal-overlay">
+    <div class="glamour-modal-container">
+        <!-- Close button -->
+        <button onclick="closePortraitPreview()" class="glamour-modal-close">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <!-- Image container -->
+        <div class="glamour-modal-image-container">
+            <img id="portrait-preview-image" 
+                 src="" 
+                 alt="" 
+                 class="glamour-modal-image">
+        </div>
+        
+        <!-- Image caption -->
+        <div class="glamour-modal-caption">
+            <p id="portrait-preview-caption"></p>
+        </div>
+    </div>
+</div>
+
+<!-- Glamour About Page Styles -->
+<style>
+/* About Page Variables */
+:root {
+    --glamour-gold: #E9C77A;
+    --glamour-rose-gold: #D4B5B8;
+    --glamour-deep-purple: #2d1b3d;
+    --glamour-burgundy: #8b1538;
+    --glamour-champagne: #f7e7ce;
+    --glamour-black: #1a1a1a;
+    --glamour-white: #ffffff;
+    --glamour-page-bg: #14101D;
+    --glamour-card-dark: #221A31;
+    --glamour-text-light: #F3EFE7;
+}
+
+/* 48px Gold Underline */
+.glamour-title-underline {
+    width: 48px;
+    height: 2px;
+    background: var(--glamour-gold);
+    margin: 0 auto;
+}
+
+/* Main Content */
+.glamour-main-content {
+    padding: 8rem 0;
+    background: var(--glamour-page-bg);
+    color: var(--glamour-text-light);
+}
+
+/* Portrait Frame - 20px radius, thin inner stroke */
+.glamour-portrait-container {
+    position: relative;
+}
+
+.glamour-portrait-frame {
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    background: var(--glamour-card-dark);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glamour-portrait-image {
+    width: 100%;
+    height: 480px; /* slightly taller to reduce crop severity */
+    object-fit: cover;
+    object-position: top center; /* prioritize the face; avoids cutting off the head */
+    transition: transform 0.3s ease;
+}
+
+.glamour-portrait-frame:hover .glamour-portrait-image {
+    transform: scale(1.02);
+}
+
+.glamour-portrait-placeholder {
+    height: 480px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--glamour-text-light);
+    opacity: 0.6;
+}
+
+.glamour-icon-large {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--glamour-gold);
+}
+
+/* Bio Card - Max width 640px, 17/28 typography */
+.glamour-bio-column {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.glamour-bio-card {
+    max-width: 640px;
+    background: var(--glamour-card-dark);
+    border: 1px solid rgba(233, 199, 122, 0.15);
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.glamour-bio-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--glamour-text-light);
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.glamour-bio-paragraph {
+    font-size: 17px;
+    line-height: 28px;
+    color: var(--glamour-text-light);
+    margin-bottom: 1.5rem;
+    opacity: 0.9;
+}
+
+.glamour-bio-paragraph:last-child {
+    margin-bottom: 0;
+}
+
+/* Left Column Layout */
+.glamour-left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+/* Quick Facts - 56px row height, consistent styling */
+.glamour-facts-section {
+    background: var(--glamour-card-dark);
+    border: 1px solid rgba(233, 199, 122, 0.15);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.glamour-facts-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--glamour-text-light);
+    margin-bottom: 1.5rem;
+}
+
+.glamour-facts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.glamour-fact-row {
+    display: flex;
+    align-items: center;
+    height: 56px;
+    padding: 0 1rem;
+    background: #201833;
+    border-radius: 8px;
+    margin-bottom: 4px;
+}
+
+.glamour-fact-row:last-child {
+    margin-bottom: 0;
+}
+
+.glamour-fact-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--glamour-gold);
+    margin-right: 16px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.glamour-fact-info {
+    flex: 1;
+}
+
+.glamour-fact-label {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--glamour-gold);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.glamour-fact-value {
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--glamour-text-light);
+    font-weight: 400;
+}
+
+/* Interests Pills - 12px radius, specific styling */
+.glamour-interests-section {
+    background: var(--glamour-card-dark);
+    border: 1px solid rgba(233, 199, 122, 0.15);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.glamour-interests-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--glamour-text-light);
+    margin-bottom: 1.5rem;
+}
+
+.glamour-interests-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.glamour-interest-pill {
+    background: #2A1F3A;
+    color: var(--glamour-gold);
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: 500;
+    text-transform: capitalize;
+    border: none;
+    box-shadow: none;
+}
+
+/* Services Grid - Six Cards, Same Height, Matte Style */
+.glamour-services-section {
+    padding: 6rem 0;
+    background: var(--glamour-page-bg);
+}
+
+.glamour-section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--glamour-text-light);
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.glamour-services-six-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.glamour-service-matte-card {
+    background: var(--glamour-card-dark);
+    border: 1px solid rgba(233, 199, 122, 0.15);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    transition: transform 0.3s ease;
+}
+
+.glamour-service-matte-card:hover {
+    transform: translateY(-4px);
+}
+
+.glamour-service-star {
+    font-size: 18px;
+    color: var(--glamour-gold);
+    margin-bottom: 1rem;
+}
+
+.glamour-service-title {
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 600;
+    color: var(--glamour-text-light);
+    text-align: center;
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .glamour-main-content {
+        padding: 4rem 0;
+    }
+    
+    .glamour-left-column {
+        gap: 2rem;
+    }
+    
+    .glamour-portrait-image {
+        height: 360px;
+        object-position: top center;
+    }
+    
+    .glamour-portrait-placeholder {
+        height: 360px;
+    }
+    
+    .glamour-services-six-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .glamour-service-matte-card {
+        min-height: 140px;
+        padding: 2rem 1.5rem;
+    }
+    
+    .glamour-interests-pills {
+        gap: 6px;
+    }
+    
+    .glamour-interest-pill {
+        font-size: 11px;
+        padding: 6px 10px;
+    }
+    
+    .glamour-fact-row {
+        height: 48px;
+        padding: 0 0.75rem;
+    }
+    
+    .glamour-fact-icon {
+        width: 20px;
+        height: 20px;
+        font-size: 14px;
+        margin-right: 12px;
+    }
+    
+    .glamour-bio-card {
+        max-width: 100%;
+        padding: 2rem;
+    }
+    
+    .glamour-bio-paragraph {
+        font-size: 16px;
+        line-height: 26px;
+    }
+}
+
+
+/* Content Title */
+.glamour-content-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--glamour-white);
+    margin-bottom: 1rem;
+    background: linear-gradient(45deg, var(--glamour-white) 20%, var(--glamour-gold) 50%, var(--glamour-rose-gold) 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.glamour-content-subtitle {
+    font-size: 1.2rem;
+    color: var(--glamour-champagne);
+    margin-bottom: 2rem;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+.glamour-content-block {
+    position: relative;
+    padding: 2rem;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.glamour-text-spotlight {
+    position: absolute;
+    top: -20px;
+    left: 20px;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(15px);
+}
+
+.glamour-main-text {
+    position: relative;
+    z-index: 2;
+}
+
+.glamour-main-text p {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: var(--glamour-champagne);
+    margin: 0 0 1.5rem 0;
+}
+
+.glamour-main-paragraph {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--glamour-white) !important;
+}
+
+/* Services Section */
+.glamour-services-section {
+    background: linear-gradient(145deg, rgba(212, 175, 55, 0.05) 0%, rgba(232, 180, 184, 0.05) 100%);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    border: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.glamour-services-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--glamour-white);
+    margin-bottom: 2rem;
+    background: linear-gradient(45deg, var(--glamour-gold) 0%, var(--glamour-white) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.glamour-services-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.glamour-service-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+    border-radius: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glamour-service-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.1);
+}
+
+.glamour-service-icon {
+    color: var(--glamour-gold);
+    font-size: 1.2rem;
+    margin-right: 1rem;
+    margin-top: 0.2rem;
+    text-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+}
+
+.glamour-service-text {
+    font-size: 1.1rem;
+    color: var(--glamour-white);
+    font-weight: 500;
+}
+
+/* Interests Section */
+.glamour-interests-section {
+    background: linear-gradient(145deg, rgba(139, 21, 56, 0.05) 0%, rgba(45, 27, 61, 0.05) 100%);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    border: 1px solid rgba(139, 21, 56, 0.15);
+}
+
+.glamour-interests-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--glamour-white);
+    margin-bottom: 2rem;
+    background: linear-gradient(45deg, var(--glamour-rose-gold) 0%, var(--glamour-white) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.glamour-interests-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.glamour-interest-tag {
+    background: linear-gradient(45deg, var(--glamour-gold) 0%, var(--glamour-rose-gold) 100%);
+    color: var(--glamour-black);
+    padding: 0.7rem 1.5rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+}
+
+.glamour-interest-tag:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+}
+
+/* Full-Width Services Section */
+.glamour-services-full-section {
+    padding: 8rem 0;
+    background: linear-gradient(180deg, var(--glamour-black) 0%, var(--glamour-deep-purple) 100%);
+}
+
+.glamour-services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.glamour-service-card {
+    background: linear-gradient(145deg, rgba(212, 175, 55, 0.08) 0%, rgba(232, 180, 184, 0.08) 100%);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.glamour-service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.glamour-service-card:hover::before {
+    left: 100%;
+}
+
+.glamour-service-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(212, 175, 55, 0.2);
+    border-color: rgba(212, 175, 55, 0.4);
+}
+
+.glamour-service-icon-large {
+    font-size: 3rem;
+    color: var(--glamour-gold);
+    margin-bottom: 1.5rem;
+    text-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+    position: relative;
+    z-index: 2;
+}
+
+.glamour-service-card-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--glamour-white);
+    margin: 0;
+    position: relative;
+    z-index: 2;
+}
+
+/* Full-Width CTA Section */
+.glamour-cta-full-section {
+    position: relative;
+    padding: 8rem 0;
+    background: linear-gradient(45deg, var(--glamour-burgundy) 0%, var(--glamour-deep-purple) 50%, var(--glamour-black) 100%);
+    overflow: hidden;
+}
+
+.glamour-cta-red-carpet {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        repeating-linear-gradient(
+            90deg,
+            transparent 0px,
+            rgba(139, 21, 56, 0.1) 50px,
+            transparent 100px
+        ),
+        radial-gradient(ellipse at center, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+    animation: glamourRedCarpetFlow 15s infinite linear;
+}
+
+.glamour-cta-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--glamour-white);
+    margin-bottom: 2rem;
+    background: linear-gradient(45deg, var(--glamour-white) 30%, var(--glamour-gold) 70%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
+}
+
+.glamour-cta-subtitle {
+    font-size: 1.4rem;
+    color: var(--glamour-champagne);
+    margin-bottom: 3rem;
+    line-height: 1.6;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.glamour-particles-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.glamour-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--glamour-gold);
+    border-radius: 50%;
+    animation: glamourParticleFloat 8s infinite ease-in-out;
+}
+
+.glamour-particle:nth-child(1) {
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.glamour-particle:nth-child(2) {
+    top: 60%;
+    right: 15%;
+    animation-delay: 2s;
+}
+
+.glamour-particle:nth-child(3) {
+    bottom: 30%;
+    left: 70%;
+    animation-delay: 4s;
+}
+
+@keyframes glamourParticleFloat {
+    0%, 100% { 
+        transform: translateY(0px) scale(1); 
+        opacity: 0.3; 
+    }
+    50% { 
+        transform: translateY(-30px) scale(1.5); 
+        opacity: 1; 
+    }
+}
+
+@keyframes glamourRedCarpetFlow {
+    0% { transform: translateX(0px); }
+    100% { transform: translateX(100px); }
+}
+
+/* Quick Facts Section */
+.glamour-facts-section {
+    background: linear-gradient(145deg, rgba(212, 175, 55, 0.05) 0%, rgba(232, 180, 184, 0.05) 100%);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    border: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.glamour-facts-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--glamour-white);
+    text-align: center;
+    margin-bottom: 2rem;
+    background: linear-gradient(45deg, var(--glamour-gold) 0%, var(--glamour-white) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.glamour-facts-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.glamour-fact-item {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glamour-fact-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.15);
+}
+
+.glamour-fact-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(45deg, var(--glamour-gold) 0%, var(--glamour-rose-gold) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.2rem;
+    color: var(--glamour-black);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+}
+
+.glamour-fact-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.glamour-fact-label {
+    font-size: 0.9rem;
+    color: var(--glamour-gold);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.25rem;
+}
+
+.glamour-fact-value {
+    font-size: 1.1rem;
+    color: var(--glamour-white);
+    font-weight: 500;
+}
+
+/* About CTA */
+.glamour-about-cta {
+    position: relative;
+    text-align: center;
+    margin-top: 2rem;
+    background: linear-gradient(145deg, rgba(139, 21, 56, 0.1) 0%, rgba(45, 27, 61, 0.1) 100%);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    border: 1px solid rgba(139, 21, 56, 0.2);
+}
+
+.glamour-cta-content {
+    position: relative;
+    z-index: 2;
+}
+
+.glamour-cta-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--glamour-white);
+    margin-bottom: 1rem;
+    background: linear-gradient(45deg, var(--glamour-white) 30%, var(--glamour-gold) 70%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.glamour-cta-description {
+    font-size: 1.2rem;
+    color: var(--glamour-champagne);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.glamour-cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.glamour-cta-backdrop {
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background: radial-gradient(ellipse at center, rgba(139, 21, 56, 0.1) 0%, transparent 70%);
+    border-radius: 50px;
+    filter: blur(20px);
+}
+
+.glamour-btn-premier {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 40px;
+    background: linear-gradient(45deg, var(--glamour-gold) 0%, #ffdc73 50%, var(--glamour-rose-gold) 100%);
+    color: var(--glamour-black);
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.glamour-btn-premier:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 20px 40px rgba(212, 175, 55, 0.5);
+}
+
+.glamour-btn-shimmer {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    transition: left 0.6s ease;
+}
+
+.glamour-btn-premier:hover .glamour-btn-shimmer {
+    left: 100%;
+}
+
+.glamour-btn-secondary {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 40px;
+    background: transparent;
+    border: 2px solid var(--glamour-gold);
+    color: var(--glamour-gold);
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.glamour-btn-secondary:hover {
+    background: var(--glamour-gold);
+    color: var(--glamour-black);
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 20px 40px rgba(212, 175, 55, 0.4);
+}
+
+/* Portrait Preview Modal */
+.glamour-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.glamour-modal-overlay.active {
+    display: flex;
+}
+
+.glamour-modal-container {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+}
+
+.glamour-modal-close {
+    position: absolute;
+    top: -50px;
+    right: 0;
+    background: none;
+    border: none;
+    color: var(--glamour-gold);
+    font-size: 2rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    z-index: 1001;
+}
+
+.glamour-modal-close:hover {
+    color: var(--glamour-white);
+}
+
+.glamour-modal-image-container {
+    position: relative;
+}
+
+.glamour-modal-image {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 15px;
+    box-shadow: 0 25px 50px rgba(212, 175, 55, 0.3);
+}
+
+.glamour-modal-caption {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    background: linear-gradient(45deg, var(--glamour-black) 0%, rgba(45, 27, 61, 0.9) 100%);
+    color: var(--glamour-champagne);
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.glamour-modal-caption p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .glamour-page-title {
+        font-size: 3rem;
+    }
+    
+    .glamour-page-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .glamour-content-title {
+        font-size: 2.2rem;
+    }
+    
+    .glamour-main-portrait,
+    .glamour-portrait-placeholder-large {
+        height: 400px;
+    }
+    
+    .glamour-facts-title,
+    .glamour-services-title,
+    .glamour-interests-title {
+        font-size: 1.5rem;
+    }
+    
+    .glamour-fact-item,
+    .glamour-service-item {
+        padding: 1rem;
+    }
+    
+    .glamour-content-block,
+    .glamour-services-section,
+    .glamour-interests-section {
+        padding: 1.5rem;
+    }
+    
+    .glamour-cta-title {
+        font-size: 1.8rem;
+    }
+    
+    .glamour-cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .glamour-btn-premier,
+    .glamour-btn-secondary {
+        padding: 16px 32px;
+        font-size: 1rem;
+    }
+    
+    .glamour-interest-tag {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+    
+    .glamour-services-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .glamour-service-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .glamour-service-icon-large {
+        font-size: 2.5rem;
+    }
+    
+    .glamour-service-card-title {
+        font-size: 1.2rem;
+    }
+    
+    .glamour-cta-title {
+        font-size: 2.5rem;
+    }
+    
+    .glamour-cta-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .glamour-left-column {
+        gap: 2rem;
+    }
+}
+</style>
+
+<!-- Portrait Preview JavaScript -->
+<script>
+function openPortraitPreview(imageUrl, altText) {
+    const modal = document.getElementById('portrait-preview-modal');
+    const image = document.getElementById('portrait-preview-image');
+    const caption = document.getElementById('portrait-preview-caption');
+    
+    if (modal && image && caption && imageUrl) {
+        image.src = imageUrl;
+        image.alt = altText;
+        caption.textContent = altText;
+        
+        modal.classList.add('active');
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+        
+        // Close on escape key
+        document.addEventListener('keydown', handleEscapeKey);
+        
+        // Close on background click
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closePortraitPreview();
+            }
+        });
+    }
+}
+
+function closePortraitPreview() {
+    const modal = document.getElementById('portrait-preview-modal');
+    
+    if (modal) {
+        modal.classList.remove('active');
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
+        
+        // Remove event listeners
+        document.removeEventListener('keydown', handleEscapeKey);
+    }
+}
+
+function handleEscapeKey(e) {
+    if (e.key === 'Escape') {
+        closePortraitPreview();
+    }
+}
+</script>

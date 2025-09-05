@@ -53,6 +53,156 @@ All model pages follow the pattern: `/{modelSlug}/{page}?preview_theme={themeId}
 - **Preview Mode:** Optional theme override via URL parameter
 - **Dynamic Colors:** Loaded from `color_palettes` and `color_palette_values` tables
 
+## 🚨 CRITICAL: Theme Preview System Requirements
+
+**IMPORTANT**: All themes must be compatible with the preview system to enable proper theme testing and selection.
+
+### Preview System Database Requirements
+
+Every theme must have proper database configuration:
+
+1. **Theme Set Registration:** Entry in `theme_sets` table with `is_active = 1`
+2. **Color Palette Association:** At least one palette in `color_palettes` table linked to theme
+3. **Fallback Palette:** `default_palette_id` should be set in `theme_sets` table
+
+### Preview Query Logic (TECHNICAL)
+
+The preview system uses this query structure (DO NOT MODIFY):
+
+```sql
+SELECT ts.id, ts.name, ts.display_name, ts.default_palette_id,
+       COALESCE(cp_system.id, cp_any.id) as palette_id,
+       COALESCE(cp_system.name, cp_any.name) as palette_name
+FROM theme_sets ts
+LEFT JOIN color_palettes cp_system ON cp_system.theme_set_id = ts.id AND cp_system.is_system_palette = 1
+LEFT JOIN color_palettes cp_any ON cp_any.theme_set_id = ts.id
+WHERE ts.name = ? AND ts.is_active = 1
+ORDER BY cp_system.id DESC, cp_any.id DESC
+LIMIT 1
+```
+
+This query ensures:
+- **Primary:** System palettes (`is_system_palette = 1`) are preferred
+- **Fallback:** Any palette for the theme if no system palette exists
+- **Final Fallback:** `default_palette_id` from theme_sets table
+
+### Common Preview Issues and Solutions
+
+❌ **Problem:** `?preview_theme=22` shows wrong colors
+✅ **Solution:** Ensure theme has palette with `theme_set_id = 22` 
+
+❌ **Problem:** Preview theme not found
+✅ **Solution:** Check `theme_sets.is_active = 1` and `theme_sets.name` matches
+
+❌ **Problem:** Colors don't change in preview
+✅ **Solution:** Verify `color_palette_values` exist for the palette
+
+### Theme Development Testing Workflow
+
+1. **Create Theme:** Register in `theme_sets` table
+2. **Create Palette:** Add to `color_palettes` with `theme_set_id`
+3. **Add Colors:** Populate `color_palette_values` 
+4. **Test Preview:** Use `?preview_theme=theme-name` URL parameter
+5. **Verify Override:** Confirm model's colors are overridden properly
+
+## 🎨 CRITICAL: Color Palette Consistency Requirements
+
+### Background Color Standardization
+
+**IMPORTANT**: All themes must use consistent background color variables to prevent visual inconsistencies.
+
+#### Required Color Variables
+```css
+:root {
+  /* Primary background - main page background */
+  --theme-bg: #{theme.colors.bg};           /* USE THIS for main content sections */
+  
+  /* Secondary backgrounds */
+  --theme-bg-light: #{theme.colors.bg-light}; /* For subtle variations only */
+  --theme-surface: #{theme.colors.surface};    /* For cards/components only */
+}
+```
+
+#### Background Usage Rules
+
+✅ **CORRECT**: Use `var(--theme-bg)` for main content sections
+```handlebars
+<section style="padding: 5rem 0; background: var(--theme-bg);">
+  <!-- Main content -->
+</section>
+```
+
+❌ **INCORRECT**: Using `var(--theme-bg-alt)` or `var(--theme-surface)` for main content
+```handlebars
+<section style="background: var(--theme-surface);"> <!-- Creates inconsistent colors -->
+```
+
+### Gradient Containment Pattern (CRITICAL)
+
+**Issue**: Full-page gradients create inconsistent color schemes across different pages.
+**Solution**: Contain gradients to hero sections only.
+
+#### Proper Implementation Pattern
+```handlebars
+<!-- Hero Section: Gradients allowed -->
+<section class="hero" style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)); padding: 5rem 0;">
+  <div class="hero-content">
+    <!-- Hero content -->
+  </div>
+</section>
+
+<!-- Content Section: Use consistent background -->
+<section style="padding: 5rem 0; background: var(--theme-bg);">
+  <div class="content">
+    <!-- Page content -->
+  </div>
+</section>
+```
+
+#### Anti-Pattern (DO NOT DO)
+```handlebars
+<!-- WRONG: Full page gradient -->
+<section style="background: linear-gradient(...); min-height: 100vh;">
+  <!-- This creates inconsistent color schemes -->
+</section>
+```
+
+### Button Styling Consistency
+
+All themes must use consistent button styling patterns:
+
+✅ **CORRECT**: Use theme's standard button classes
+```handlebars
+<button class="royal-btn">Contact Me</button>
+<button class="royal-btn secondary">Secondary Action</button>
+```
+
+❌ **INCORRECT**: Custom gradient overrides per button
+```handlebars
+<button style="background: linear-gradient(45deg, var(--theme-secondary), var(--theme-primary));">
+  <!-- Creates visual inconsistencies -->
+</button>
+```
+
+### Universal Gallery System Integration
+
+When implementing gallery pages, themes should override Universal Gallery colors consistently:
+
+```css
+/* Theme-specific gallery overrides */
+.universal-gallery * {
+  background: var(--theme-bg) !important;
+}
+
+.gallery-hero {
+  background: var(--theme-bg) !important;
+}
+
+.universal-gallery-section {
+  background: var(--theme-bg) !important;
+}
+```
+
 ---
 
 ## Universal Page Structure
@@ -2164,3 +2314,122 @@ Themes should define these CSS variables for consistency:
 5. **Use semantic HTML structure** for accessibility
 6. **Implement responsive design patterns** for mobile compatibility
 7. **Follow the established naming conventions** for CSS classes and variables
+
+---
+
+## 🔧 TROUBLESHOOTING: Theme Preview & Color Issues
+
+### Common Problems and Diagnostic Steps
+
+#### Problem: Preview Theme Not Loading (`?preview_theme=X` has no effect)
+
+**Check 1**: Verify theme exists in database
+```sql
+SELECT id, name, display_name, is_active FROM theme_sets WHERE name = 'theme-name';
+-- Should return 1 row with is_active = 1
+```
+
+**Check 2**: Verify theme has associated color palette
+```sql
+SELECT cp.id, cp.name, cp.theme_set_id, cp.is_system_palette 
+FROM color_palettes cp 
+WHERE cp.theme_set_id = [THEME_ID];
+-- Should return at least 1 row
+```
+
+**Check 3**: Check server logs for preview theme query results
+Look for: `📋 Preview query results:` in server console
+
+#### Problem: Colors Not Changing in Preview Mode
+
+**Check 1**: Verify color palette values exist
+```sql
+SELECT token_name, token_value 
+FROM color_palette_values 
+WHERE palette_id = [PALETTE_ID];
+-- Should return multiple rows with color tokens
+```
+
+**Check 2**: Verify CSS variable injection
+Check browser DevTools → Elements → `:root` should show:
+```css
+:root {
+  --theme-primary: #value;
+  --theme-secondary: #value;
+  /* etc... */
+}
+```
+
+**Check 3**: Check template is using CSS variables correctly
+```handlebars
+<!-- WRONG: Hardcoded colors -->
+<div style="background-color: #3B82F6;">
+
+<!-- CORRECT: CSS variables -->
+<div style="background-color: var(--theme-primary);">
+```
+
+#### Problem: Some Pages Show Wrong Theme/Colors
+
+**Check 1**: Verify all page templates include `{{previewParam}}`
+```handlebars
+<!-- Navigation links must include preview parameter -->
+<a href="/{{modelSlug}}/about{{previewParam}}">About</a>
+<a href="/{{modelSlug}}/rates{{previewParam}}">Rates</a>
+```
+
+**Check 2**: Check for hardcoded theme references
+Search for hardcoded paths like `/basic/` or `/luxury/` in templates
+
+#### Problem: Gallery/Universal Elements Show Default Colors
+
+**Check 1**: Verify Universal Gallery CSS overrides are applied
+```css
+.universal-gallery-section {
+  background: var(--theme-bg) !important;
+}
+```
+
+**Check 2**: Check if `renderUniversalGallery` includes preview parameter
+```handlebars
+{{{renderUniversalGallery modelSlug previewTheme=previewThemeId}}}
+```
+
+### Debug Mode Console Logs
+
+When debugging theme preview issues, look for these console messages:
+
+```
+🎨 Preview mode - using theme [ID] ([NAME]) palette [PALETTE_ID] (found|fallback)
+🎨 Regular mode - model palette [ID], theme [ID]  
+🎨 Loaded [N] color tokens from palette [ID]
+🎨 Compatible colors: {primary: "#...", secondary: "#..."}
+```
+
+### Manual Database Fixes
+
+#### Fix Missing Default Palette
+```sql
+UPDATE theme_sets 
+SET default_palette_id = (
+  SELECT id FROM color_palettes 
+  WHERE theme_set_id = theme_sets.id 
+  LIMIT 1
+) 
+WHERE default_palette_id IS NULL;
+```
+
+#### Create System Palette for Theme
+```sql
+UPDATE color_palettes 
+SET is_system_palette = 1 
+WHERE theme_set_id = [THEME_ID] 
+AND id = [PREFERRED_PALETTE_ID];
+```
+
+### Code File References for Advanced Debugging
+
+- **Preview Logic**: `/src/routes/model_sites.js` lines 450-640
+- **Color Loading**: `/src/routes/model_sites.js` function `loadColorPalette()`
+- **Theme Query**: `/src/routes/model_sites.js` lines 460-490
+- **Color Injection**: Browser DevTools → Elements → `<style>` tags

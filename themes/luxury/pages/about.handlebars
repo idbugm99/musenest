@@ -1,18 +1,46 @@
-<!-- Luxury Theme About Page - Universal System Integration -->
+<!-- Luxury Theme About Page -->
 
-<!-- Page Title Hero Section -->
+<!-- Hero Section with Parallax -->
 {{#if about_content.page_title_visible}}
-<section class="universal-hero">
-    <div class="universal-hero-content">
-        <div class="max-w-5xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-            <h1 class="universal-hero-title">
-                {{#if about_content.page_title}}{{about_content.page_title}}{{else}}About {{model.name}}{{/if}}
-            </h1>
-            {{#if about_content.page_subtitle}}
-            <p class="universal-hero-subtitle">
-                {{about_content.page_subtitle}}
-            </p>
-            {{/if}}
+<section class="luxury-about-hero relative min-h-screen flex items-center justify-center overflow-hidden animate-on-scroll"
+         style="{{#if about_content.heroBackgroundImageUrl}}background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('{{about_content.heroBackgroundImageUrl}}') center/cover;{{else}}background: var(--luxury-gradient);{{/if}}">
+    
+    <!-- Parallax Background -->
+    {{#if about_content.heroBackgroundImageUrl}}
+    <div class="parallax-bg absolute inset-0" style="background-image: url('{{about_content.heroBackgroundImageUrl}}'); background-attachment: fixed;">
+        <div class="luxury-parallax-overlay"></div>
+    </div>
+    {{/if}}
+    
+    <!-- Decorative Elements -->
+    <div class="absolute top-1/4 left-10 w-32 h-32 bg-luxury-accent/20 rounded-full blur-3xl animate-luxury-float"></div>
+    <div class="absolute bottom-1/3 right-10 w-24 h-24 bg-luxury-primary/30 rounded-full blur-2xl animate-luxury-float" style="animation-delay: 1s;"></div>
+    
+    <!-- Hero Content -->
+    <div class="relative z-10 container mx-auto px-4 text-center text-white">
+        <div class="luxury-hero-badge mb-8">
+            <i class="fas fa-crown text-3xl"></i>
+        </div>
+        
+        <h1 class="text-5xl md:text-7xl font-serif font-bold mb-6 animate-luxury-fade-up">
+            {{#if about_content.page_title}}{{about_content.page_title}}{{else}}About {{siteName}}{{/if}}
+        </h1>
+        
+        {{#if about_content.page_subtitle}}
+        <p class="text-xl md:text-2xl font-light leading-relaxed max-w-3xl mx-auto mb-8 animate-luxury-fade-up" style="animation-delay: 0.2s;">
+            {{about_content.page_subtitle}}
+        </p>
+        {{/if}}
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center animate-luxury-fade-up" style="animation-delay: 0.4s;">
+            <a href="#about-content" class="luxury-btn luxury-btn-primary luxury-btn-glow">
+                <i class="fas fa-arrow-down mr-2"></i>
+                Learn More
+            </a>
+            <a href="/{{modelSlug}}/contact{{previewParam}}" class="luxury-btn luxury-btn-outline-white">
+                <i class="fas fa-envelope mr-2"></i>
+                Get In Touch
+            </a>
         </div>
     </div>
 </section>
@@ -20,153 +48,356 @@
 
 <!-- Main About Content -->
 {{#if about_content.main_content_visible}}
-<section class="universal-about-section">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <!-- About Content Grid -->
-        <div class="universal-about-grid">
-            <!-- About Image/Visual -->
+<section id="about-content" class="luxury-about-content relative py-20 overflow-hidden">
+    <!-- Background Elements -->
+    <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-radial from-luxury-primary/10 to-transparent rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 w-64 h-64 bg-gradient-radial from-luxury-accent/10 to-transparent rounded-full blur-2xl"></div>
+    
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+            
+            <!-- Visual Column -->
             {{#if about_content.portrait_visible}}
-            <div class="universal-about-visual">
+            <div class="luxury-about-visual animate-on-scroll">
                 {{#if about_content.portraitImageUrl}}
-                <div class="universal-about-image">
-                    <img src="{{about_content.portraitImageUrl}}" alt="{{model.name}}" class="universal-image">
+                <div class="luxury-about-portrait relative group">
+                    <div class="luxury-portrait-frame">
+                        <img src="{{about_content.portraitImageUrl}}" alt="{{#if about_content.portrait_alt}}{{about_content.portrait_alt}}{{else}}{{siteName}}{{/if}}" class="luxury-portrait-image">
+                        <div class="luxury-portrait-overlay">
+                            <div class="luxury-portrait-border"></div>
+                        </div>
+                    </div>
                 </div>
                 {{/if}}
                 
-                <!-- Quick Facts -->
-                {{#if about_content.quick_facts_visible}}
-                <div class="universal-about-stats">
-                    {{#if quickFacts}}
-                    {{#each quickFacts}}
-                    <div class="universal-stat-card">
-                        <div class="universal-stat-number"><i class="fas fa-map-marker-alt"></i></div>
-                        <div class="universal-stat-text">{{this.question}}</div>
-                        <div class="universal-feature-description">{{this.answer}}</div>
+                <!-- Quick Facts Cards -->
+                {{#if about_content.facts_visible}}
+                <div class="luxury-about-facts grid grid-cols-2 gap-4 mt-8">
+                    {{#if about_content.quickFacts}}
+                    {{#each about_content.quickFacts}}
+                    <div class="luxury-fact-card group">
+                        <div class="luxury-fact-icon">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <div class="luxury-fact-content">
+                            <h4 class="luxury-fact-label">{{this.question}}</h4>
+                            <p class="luxury-fact-value">{{this.answer}}</p>
+                        </div>
                     </div>
                     {{/each}}
+                    {{else}}
+                    <!-- Default facts -->
+                    <div class="luxury-fact-card group">
+                        <div class="luxury-fact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="luxury-fact-content">
+                            <h4 class="luxury-fact-label">Location</h4>
+                            <p class="luxury-fact-value">{{contact.location}}{{#unless contact.location}}Available Worldwide{{/unless}}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="luxury-fact-card group">
+                        <div class="luxury-fact-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="luxury-fact-content">
+                            <h4 class="luxury-fact-label">Experience</h4>
+                            <p class="luxury-fact-value">Premium Companion</p>
+                        </div>
+                    </div>
+                    
+                    <div class="luxury-fact-card group">
+                        <div class="luxury-fact-icon">
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <div class="luxury-fact-content">
+                            <h4 class="luxury-fact-label">Languages</h4>
+                            <p class="luxury-fact-value">English & More</p>
+                        </div>
+                    </div>
+                    
+                    <div class="luxury-fact-card group">
+                        <div class="luxury-fact-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="luxury-fact-content">
+                            <h4 class="luxury-fact-label">Availability</h4>
+                            <p class="luxury-fact-value">By Appointment</p>
+                        </div>
+                    </div>
                     {{/if}}
                 </div>
                 {{/if}}
                 
-                <!-- Interests as Tags -->
+                <!-- Interests Tags -->
                 {{#if about_content.interests_visible}}
-                <div class="universal-about-interests">
-                    {{#if about_content.interests_title}}
-                    <h4>{{about_content.interests_title}}</h4>
-                    {{/if}}
-                    <div class="interest-tags">
-                        <span class="interest-tag">Fine Arts</span>
-                        <span class="interest-tag">Classical Music</span>
-                        <span class="interest-tag">Literature</span>
-                        <span class="interest-tag">Travel</span>
-                        <span class="interest-tag">Fine Dining</span>
-                        <span class="interest-tag">Theater</span>
-                        <span class="interest-tag">Philosophy</span>
+                <div class="luxury-about-interests mt-8">
+                    <h4 class="luxury-interests-title">
+                        {{#if about_content.interests_title}}{{about_content.interests_title}}{{else}}My Interests{{/if}}
+                    </h4>
+                    <div class="luxury-interests-tags">
+                        {{#if about_content.interests}}
+                            {{#each (split about_content.interests ",")}}
+                            <span class="luxury-interest-tag">{{trim this}}</span>
+                            {{/each}}
+                        {{else}}
+                        <span class="luxury-interest-tag">Fine Arts</span>
+                        <span class="luxury-interest-tag">Classical Music</span>
+                        <span class="luxury-interest-tag">Literature</span>
+                        <span class="luxury-interest-tag">Travel</span>
+                        <span class="luxury-interest-tag">Fine Dining</span>
+                        <span class="luxury-interest-tag">Theater</span>
+                        <span class="luxury-interest-tag">Philosophy</span>
+                        <span class="luxury-interest-tag">Art Galleries</span>
+                        {{/if}}
                     </div>
                 </div>
                 {{/if}}
             </div>
             {{/if}}
             
-            <!-- About Text Content -->
-            <div class="universal-about-content">
-                <div class="universal-about-description">
+            <!-- Content Column -->
+            <div class="luxury-about-text animate-on-scroll">
+                <div class="luxury-section-header mb-8">
+                    <h2 class="luxury-section-title">About Me</h2>
+                    <div class="luxury-section-underline"></div>
+                </div>
+                
+                <div class="luxury-about-description space-y-6">
                     {{#if about_content.main_paragraph_1}}
-                    <p>{{{about_content.main_paragraph_1}}}</p>
+                    <p class="luxury-text-paragraph">{{{about_content.main_paragraph_1}}}</p>
+                    {{else}}
+                    <p class="luxury-text-paragraph">Welcome to my world of sophistication and elegance. I am a refined companion who believes in creating meaningful connections through shared experiences and genuine conversation.</p>
                     {{/if}}
+                    
                     {{#if about_content.main_paragraph_2}}
-                    <p>{{{about_content.main_paragraph_2}}}</p>
+                    <p class="luxury-text-paragraph">{{{about_content.main_paragraph_2}}}</p>
+                    {{else}}
+                    <p class="luxury-text-paragraph">With a passion for the finer things in life, I enjoy exploring art galleries, attending cultural events, and discovering exquisite dining experiences. My education and travels have shaped me into a cultured individual who appreciates both intellectual discourse and lighthearted moments.</p>
                     {{/if}}
+                    
                     {{#if about_content.main_paragraph_3}}
-                    <p>{{{about_content.main_paragraph_3}}}</p>
+                    <p class="luxury-text-paragraph">{{{about_content.main_paragraph_3}}}</p>
+                    {{else}}
+                    <p class="luxury-text-paragraph">I understand the importance of discretion, professionalism, and creating a comfortable atmosphere where you can be yourself. Whether accompanying you to a business dinner, cultural event, or private gathering, I adapt to any social setting with grace and poise.</p>
                     {{/if}}
+                    
                     {{#if about_content.main_paragraph_4}}
-                    <p>{{{about_content.main_paragraph_4}}}</p>
+                    <p class="luxury-text-paragraph">{{{about_content.main_paragraph_4}}}</p>
                     {{/if}}
                 </div>
+                
+                <!-- Personal Highlight Quote -->
+                <div class="luxury-quote-section mt-10">
+                    <div class="luxury-quote-card">
+                        <div class="luxury-quote-mark">
+                            <i class="fas fa-quote-left"></i>
+                        </div>
+                        <blockquote class="luxury-quote-text">
+                            {{#if about_content.personal_quote}}{{about_content.personal_quote}}{{else}}"Elegance is not about being noticed, it's about being remembered."{{/if}}
+                        </blockquote>
+                        <div class="luxury-quote-author">
+                            - {{siteName}}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <!-- Services Section -->
-        {{#if about_content.services_visible}}
-        <div class="universal-services-section">
-            <div class="universal-section-header">
-                <h2 class="universal-section-title">My Services</h2>
-            </div>
-            <div class="universal-services-grid">
-                {{#if about_content.service_1}}
-                <div class="universal-service-card">
-                    <div class="universal-service-icon">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <h3 class="universal-service-title">Dinner Companionship</h3>
-                    <p class="universal-service-description">{{about_content.service_1}}</p>
-                </div>
-                {{/if}}
-                {{#if about_content.service_2}}
-                <div class="universal-service-card">
-                    <div class="universal-service-icon">
-                        <i class="fas fa-calendar"></i>
-                    </div>
-                    <h3 class="universal-service-title">Social Events</h3>
-                    <p class="universal-service-description">{{about_content.service_2}}</p>
-                </div>
-                {{/if}}
-                {{#if about_content.service_3}}
-                <div class="universal-service-card">
-                    <div class="universal-service-icon">
-                        <i class="fas fa-plane"></i>
-                    </div>
-                    <h3 class="universal-service-title">Travel Companion</h3>
-                    <p class="universal-service-description">{{about_content.service_3}}</p>
-                </div>
-                {{/if}}
-                {{#if about_content.service_4}}
-                <div class="universal-service-card">
-                    <div class="universal-service-icon">
-                        <i class="fas fa-theater-masks"></i>
-                    </div>
-                    <h3 class="universal-service-title">Cultural Experiences</h3>
-                    <p class="universal-service-description">{{about_content.service_4}}</p>
-                </div>
-                {{/if}}
-                {{#if about_content.service_5}}
-                <div class="universal-service-card">
-                    <div class="universal-service-icon">
-                        <i class="fas fa-cocktail"></i>
-                    </div>
-                    <h3 class="universal-service-title">Weekend Getaways</h3>
-                    <p class="universal-service-description">{{about_content.service_5}}</p>
-                </div>
-                {{/if}}
-            </div>
-        </div>
-        {{/if}}
     </div>
 </section>
 {{/if}}
 
-<!-- Universal CTA Section -->
-{{#if about_content.about_cta_visible}}
-<section class="universal-cta-section">
-    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 py-16">
-        <h2 class="universal-cta-title">
-            {{#if about_content.cta_title}}{{about_content.cta_title}}{{else}}Ready to Connect?{{/if}}
-        </h2>
-        {{#if about_content.cta_description}}
-        <p class="universal-cta-description">
-            {{about_content.cta_description}}
-        </p>
-        {{/if}}
-        <div class="universal-cta-buttons">
-            <a href="/{{model.slug}}/contact{{previewParam}}" class="universal-btn universal-btn-primary">
-                {{#if about_content.cta_button_text}}{{about_content.cta_button_text}}{{else}}Contact Me{{/if}}
-            </a>
-            {{#if about_content.cta_secondary_button_text}}
-            <a href="/{{model.slug}}/gallery{{previewParam}}" class="universal-btn universal-btn-secondary">
-                {{about_content.cta_secondary_button_text}}
-            </a>
+<!-- Services Section -->
+{{#if about_content.services_visible}}
+<section class="luxury-services-section relative py-20">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 bg-gradient-to-br from-luxury-light/30 to-luxury-secondary/20"></div>
+    
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="text-center mb-16 animate-on-scroll">
+            <div class="luxury-section-badge mb-4">
+                <i class="fas fa-sparkles"></i>
+            </div>
+            <h2 class="luxury-section-title">{{#if about_content.services_title}}{{about_content.services_title}}{{else}}Exclusive Services{{/if}}</h2>
+            <div class="luxury-section-underline mx-auto mb-6"></div>
+            <p class="luxury-section-subtitle max-w-2xl mx-auto">
+                Crafted experiences designed to exceed your expectations and create unforgettable moments.
+            </p>
+        </div>
+        
+        <div class="luxury-services-grid">
+            {{#if about_content.service_1}}
+            <div class="luxury-service-card animate-on-scroll">
+                <div class="luxury-service-icon-wrapper">
+                    <div class="luxury-service-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                </div>
+                <h3 class="luxury-service-title">Dinner Companionship</h3>
+                <p class="luxury-service-description">{{about_content.service_1}}</p>
+                <div class="luxury-service-highlight"></div>
+            </div>
             {{/if}}
+            
+            {{#if about_content.service_2}}
+            <div class="luxury-service-card animate-on-scroll" style="animation-delay: 0.1s;">
+                <div class="luxury-service-icon-wrapper">
+                    <div class="luxury-service-icon">
+                        <i class="fas fa-champagne-glasses"></i>
+                    </div>
+                </div>
+                <h3 class="luxury-service-title">Social Events</h3>
+                <p class="luxury-service-description">{{about_content.service_2}}</p>
+                <div class="luxury-service-highlight"></div>
+            </div>
+            {{/if}}
+            
+            {{#if about_content.service_3}}
+            <div class="luxury-service-card animate-on-scroll" style="animation-delay: 0.2s;">
+                <div class="luxury-service-icon-wrapper">
+                    <div class="luxury-service-icon">
+                        <i class="fas fa-plane-departure"></i>
+                    </div>
+                </div>
+                <h3 class="luxury-service-title">Travel Companion</h3>
+                <p class="luxury-service-description">{{about_content.service_3}}</p>
+                <div class="luxury-service-highlight"></div>
+            </div>
+            {{/if}}
+            
+            {{#if about_content.service_4}}
+            <div class="luxury-service-card animate-on-scroll" style="animation-delay: 0.3s;">
+                <div class="luxury-service-icon-wrapper">
+                    <div class="luxury-service-icon">
+                        <i class="fas fa-theater-masks"></i>
+                    </div>
+                </div>
+                <h3 class="luxury-service-title">Cultural Experiences</h3>
+                <p class="luxury-service-description">{{about_content.service_4}}</p>
+                <div class="luxury-service-highlight"></div>
+            </div>
+            {{/if}}
+            
+            {{#if about_content.service_5}}
+            <div class="luxury-service-card animate-on-scroll" style="animation-delay: 0.4s;">
+                <div class="luxury-service-icon-wrapper">
+                    <div class="luxury-service-icon">
+                        <i class="fas fa-spa"></i>
+                    </div>
+                </div>
+                <h3 class="luxury-service-title">Weekend Getaways</h3>
+                <p class="luxury-service-description">{{about_content.service_5}}</p>
+                <div class="luxury-service-highlight"></div>
+            </div>
+            {{/if}}
+            
+            <!-- Default service if none provided -->
+            {{#unless about_content.service_1}}
+            <div class="luxury-service-card animate-on-scroll">
+                <div class="luxury-service-icon-wrapper">
+                    <div class="luxury-service-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                </div>
+                <h3 class="luxury-service-title">Dinner Companionship</h3>
+                <p class="luxury-service-description">Sophisticated dining experiences at the finest restaurants, engaging conversation over exceptional cuisine.</p>
+                <div class="luxury-service-highlight"></div>
+            </div>
+            
+            <div class="luxury-service-card animate-on-scroll" style="animation-delay: 0.1s;">
+                <div class="luxury-service-icon-wrapper">
+                    <div class="luxury-service-icon">
+                        <i class="fas fa-champagne-glasses"></i>
+                    </div>
+                </div>
+                <h3 class="luxury-service-title">Social Events</h3>
+                <p class="luxury-service-description">Grace any occasion with poise, from corporate functions to exclusive galas and private parties.</p>
+                <div class="luxury-service-highlight"></div>
+            </div>
+            
+            <div class="luxury-service-card animate-on-scroll" style="animation-delay: 0.2s;">
+                <div class="luxury-service-icon-wrapper">
+                    <div class="luxury-service-icon">
+                        <i class="fas fa-plane-departure"></i>
+                    </div>
+                </div>
+                <h3 class="luxury-service-title">Travel Companion</h3>
+                <p class="luxury-service-description">Discover new destinations together, from luxury resorts to cultural adventures around the world.</p>
+                <div class="luxury-service-highlight"></div>
+            </div>
+            {{/unless}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+<!-- Call to Action Section -->
+{{#if about_content.about_cta_visible}}
+<section class="luxury-cta-section relative py-20 overflow-hidden">
+    <!-- Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-luxury-dark via-luxury-secondary to-luxury-dark">
+        <div class="absolute inset-0 bg-black/40"></div>
+    </div>
+    
+    <!-- Decorative Elements -->
+    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-48 bg-gradient-radial from-luxury-accent/30 to-transparent rounded-full blur-3xl animate-luxury-pulse"></div>
+    
+    <div class="container mx-auto px-4 relative z-10 text-center">
+        <div class="max-w-4xl mx-auto animate-on-scroll">
+            <div class="luxury-cta-badge mb-6">
+                <i class="fas fa-envelope-open-text text-2xl"></i>
+            </div>
+            
+            <h2 class="text-4xl md:text-5xl font-serif font-bold text-white mb-6">
+                {{#if about_content.cta_title}}{{about_content.cta_title}}{{else}}Ready to Begin Our Journey?{{/if}}
+            </h2>
+            
+            <p class="text-xl text-white/90 leading-relaxed max-w-2xl mx-auto mb-10">
+                {{#if about_content.cta_description}}{{about_content.cta_description}}{{else}}I invite you to discover the difference that genuine connection and refined companionship can make. Let's create extraordinary memories together.{{/if}}
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                {{#if about_content.cta_button_1_text}}
+                <a href="/{{modelSlug}}/{{#if about_content.cta_button_1_link}}{{about_content.cta_button_1_link}}{{else}}contact{{/if}}{{previewParam}}" class="luxury-btn luxury-btn-primary luxury-btn-glow luxury-btn-large">
+                    <i class="fas fa-paper-plane mr-3"></i>
+                    {{about_content.cta_button_1_text}}
+                </a>
+                {{else}}
+                <a href="/{{modelSlug}}/contact{{previewParam}}" class="luxury-btn luxury-btn-primary luxury-btn-glow luxury-btn-large">
+                    <i class="fas fa-paper-plane mr-3"></i>
+                    Start Conversation
+                </a>
+                {{/if}}
+                
+                {{#if about_content.cta_button_2_text}}
+                <a href="/{{modelSlug}}/{{#if about_content.cta_button_2_link}}{{about_content.cta_button_2_link}}{{else}}gallery{{/if}}{{previewParam}}" class="luxury-btn luxury-btn-outline-white luxury-btn-large">
+                    <i class="fas fa-images mr-3"></i>
+                    {{about_content.cta_button_2_text}}
+                </a>
+                {{else}}
+                <a href="/{{modelSlug}}/gallery{{previewParam}}" class="luxury-btn luxury-btn-outline-white luxury-btn-large">
+                    <i class="fas fa-images mr-3"></i>
+                    View Gallery
+                </a>
+                {{/if}}
+            </div>
+            
+            <!-- Trust indicators -->
+            <div class="luxury-trust-indicators mt-12 flex flex-wrap justify-center gap-6 text-white/70">
+                <div class="luxury-trust-item">
+                    <i class="fas fa-shield-alt mr-2"></i>
+                    <span>Completely Discreet</span>
+                </div>
+                <div class="luxury-trust-item">
+                    <i class="fas fa-user-check mr-2"></i>
+                    <span>Verified Profile</span>
+                </div>
+                <div class="luxury-trust-item">
+                    <i class="fas fa-clock mr-2"></i>
+                    <span>Flexible Scheduling</span>
+                </div>
+            </div>
         </div>
     </div>
 </section>
