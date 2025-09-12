@@ -10,6 +10,7 @@ router.get('/:modelSlug/profile', async (req, res) => {
         // Get model profile with theme and palette data using the same query as getModelBySlug
         const modelResult = await query(`
             SELECT m.id, m.name, m.slug, m.email, m.phone, m.status, m.theme_set_id, m.active_color_palette_id,
+                   m.chat_enabled, m.online_status, m.chat_welcome_message, m.chat_away_message,
                    ts.name as theme_name, ts.display_name as theme_display_name, ts.default_palette_id,
                    cp.name as palette_name, cp.display_name as palette_display_name
             FROM models m
@@ -71,6 +72,7 @@ router.get('/:modelSlug', async (req, res) => {
         
         const modelResult = await query(`
             SELECT m.id, m.name, m.slug, m.email, m.phone, m.status, m.theme_set_id, m.active_color_palette_id,
+                   m.chat_enabled, m.online_status, m.chat_welcome_message, m.chat_away_message,
                    ts.name as theme_name, ts.display_name as theme_display_name, ts.default_palette_id,
                    cp.name as palette_name, cp.display_name as palette_display_name
             FROM models m

@@ -181,7 +181,9 @@
             currentMonth = month;
             
             // Update month title
-            monthTitle.textContent = `${calendar.monthName} ${calendar.year}`;
+            if (monthTitle) {
+                monthTitle.textContent = `${calendar.monthName} ${calendar.year}`;
+            }
             
             // Generate calendar grid
             let gridHtml = '';
@@ -261,18 +263,28 @@
             // Generate list view
             generateListView(calendar);
             
-            calendarGrid.innerHTML = gridHtml;
+            if (calendarGrid) {
+                calendarGrid.innerHTML = gridHtml;
+            }
             
         } catch (error) {
             console.error('Error loading calendar:', error);
-            calendarGrid.innerHTML = `
+            const errorHtml = `
                 <div class="text-center py-12 luxury-error">
                     <div class="text-4xl mb-4">👑</div>
                     <h3 class="text-lg font-semibold mb-2 luxury-error-title">Royal Calendar Unavailable</h3>
                     <p class="luxury-error-text">Please contact me directly for availability information.</p>
                 </div>
             `;
-            document.getElementById('list-view').innerHTML = calendarGrid.innerHTML;
+            
+            if (calendarGrid) {
+                calendarGrid.innerHTML = errorHtml;
+            }
+            
+            const listView = document.getElementById('list-view');
+            if (listView) {
+                listView.innerHTML = errorHtml;
+            }
         }
     }
     

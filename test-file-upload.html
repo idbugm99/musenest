@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat File Upload Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .upload-area { border: 2px dashed #ccc; padding: 20px; text-align: center; margin: 20px 0; }
+        .upload-area.dragover { border-color: #007bff; background: #f8f9fa; }
+        .file-list { margin: 20px 0; }
+        .file-item { padding: 10px; border: 1px solid #ddd; margin: 5px 0; background: #f9f9f9; }
+        .error { color: red; }
+        .success { color: green; }
+        button { padding: 10px 20px; margin: 5px; }
+        input[type="number"] { width: 100px; }
+        select { padding: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Chat File Upload Test</h1>
+    
+    <div>
+        <label>Conversation ID: <input type="number" id="conversationId" value="9" required></label>
+        <label>Uploader Type: 
+            <select id="uploaderType">
+                <option value="contact">Contact</option>
+                <option value="model">Model</option>
+            </select>
+        </label>
+    </div>
+
+    <div class="upload-area" id="uploadArea">
+        <input type="file" id="fileInput" multiple accept="image/*,application/pdf,text/*">
+        <p>Click to select files or drag and drop here</p>
+        <p>Supported: Images, PDF, Text files</p>
+    </div>
+
+    <button onclick="uploadFiles()">Upload Files</button>
+    <button onclick="getConversationFiles()">Get Files</button>
+    <button onclick="getStats()">Get Stats</button>
+
+    <div id="results"></div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const results = document.getElementById('results');
+
+        // Drag and drop handling
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            fileInput.files = e.dataTransfer.files;
+            displaySelectedFiles();
+        });
+
+        fileInput.addEventListener('change', displaySelectedFiles);
+
+        function displaySelectedFiles() {
+            const files = fileInput.files;
+            let html = '<h3>Selected Files:</h3>';
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                html += `<div class="file-item">
+                    <strong>${file.name}</strong> - ${(file.size / 1024).toFixed(1)} KB - ${file.type}
+                </div>`;
+            }
+            results.innerHTML = html;
+        }
+
+        async function uploadFiles() {
+            const conversationId = document.getElementById('conversationId').value;
+            const uploaderType = document.getElementById('uploaderType').value;
+            const files = fileInput.files;
+
+            if (!conversationId) {
+                results.innerHTML = '<div class="error">Please enter a conversation ID</div>';
+                return;
+            }
+
+            if (files.length === 0) {
+                results.innerHTML = '<div class="error">Please select files to upload</div>';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('uploader_type', uploaderType);
+
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files', files[i]);
+            }
+
+            try {
+                results.innerHTML = '<div>Uploading files...</div>';
+                
+                const response = await fetch(`/api/chat-files/upload/${conversationId}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    let html = '<div class="success">Upload successful!</div>';
+                    html += `<p>Uploaded ${data.uploaded} files</p>`;
+                    
+                    if (data.files) {
+                        html += '<h3>Uploaded Files:</h3>';
+                        data.files.forEach(file => {
+                            html += `<div class="file-item">
+                                <strong>${file.originalFilename}</strong><br>
+                                Type: ${file.fileType} | Size: ${(file.fileSize / 1024).toFixed(1)} KB<br>
+                                Status: ${file.isApproved ? 'Auto-approved' : 'Pending approval'}<br>
+                                ID: ${file.id}
+                            </div>`;
+                        });
+                    }
+
+                    if (data.errors && data.errors.length > 0) {
+                        html += '<h3 class="error">Errors:</h3>';
+                        data.errors.forEach(error => {
+                            html += `<div class="error">${error.filename}: ${error.error}</div>`;
+                        });
+                    }
+                    
+                    results.innerHTML = html;
+                } else {
+                    results.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                results.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            }
+        }
+
+        async function getConversationFiles() {
+            const conversationId = document.getElementById('conversationId').value;
+            
+            if (!conversationId) {
+                results.innerHTML = '<div class="error">Please enter a conversation ID</div>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/chat-files/conversation/${conversationId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    let html = '<h3>Conversation Files:</h3>';
+                    if (data.files.length === 0) {
+                        html += '<p>No files found</p>';
+                    } else {
+                        data.files.forEach(file => {
+                            html += `<div class="file-item">
+                                <strong>${file.original_filename}</strong><br>
+                                Type: ${file.file_type} | Size: ${(file.file_size / 1024).toFixed(1)} KB<br>
+                                Uploaded: ${new Date(file.uploaded_at).toLocaleString()}<br>
+                                Status: ${file.is_approved ? 'Approved' : 'Pending'}<br>
+                                By: ${file.uploaded_by}<br>
+                                <button onclick="downloadFile(${file.id})">Download</button>
+                                ${file.file_type === 'image' ? `<button onclick="viewThumbnail(${file.id})">Thumbnail</button>` : ''}
+                            </div>`;
+                        });
+                    }
+                    results.innerHTML = html;
+                } else {
+                    results.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                results.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            }
+        }
+
+        async function getStats() {
+            const modelId = 'modelexample'; // Using default model for testing
+            
+            try {
+                const response = await fetch(`/api/chat-files/stats/${modelId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    let html = '<h3>File Statistics:</h3>';
+                    html += `<div class="file-item">
+                        Total Files: ${data.stats.total_files}<br>
+                        Approved Files: ${data.stats.approved_files}<br>
+                        Pending Files: ${data.stats.pending_files}<br>
+                        Total Size: ${(data.stats.total_size / (1024*1024)).toFixed(2)} MB<br>
+                        Conversations with Files: ${data.stats.conversations_with_files}
+                    </div>`;
+                    
+                    if (data.type_breakdown.length > 0) {
+                        html += '<h4>By File Type:</h4>';
+                        data.type_breakdown.forEach(type => {
+                            html += `<div>${type.file_type}: ${type.count} files (${(type.total_size / (1024*1024)).toFixed(2)} MB)</div>`;
+                        });
+                    }
+                    
+                    results.innerHTML = html;
+                } else {
+                    results.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                results.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            }
+        }
+
+        function downloadFile(attachmentId) {
+            window.open(`/api/chat-files/download/${attachmentId}?viewer_type=contact`, '_blank');
+        }
+
+        function viewThumbnail(attachmentId) {
+            window.open(`/api/chat-files/thumbnail/${attachmentId}?size=300`, '_blank');
+        }
+    </script>
+</body>
+</html>

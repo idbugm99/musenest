@@ -29,7 +29,7 @@
     <!-- Rose Icons Sprite Preload -->
     <script>
     (function(){
-        var url = '/themes/rose/assets/icons/sprite.svg';
+        var url = '/themes/rose/assets/svg/sprite.svg';
         if (!document.getElementById('rose-sprite')) {
             fetch(url).then(function(r){return r.text()}).then(function(txt){
                 var div = document.createElement('div');
@@ -545,6 +545,9 @@
             color: var(--theme-text-subtle);
         }
     </style>
+    
+    <!-- Dynamic theme color CSS - Load AFTER inline styles so variables override -->
+    <link rel="stylesheet" href="/api/theme-colors/{{#if previewThemeId}}{{previewThemeId}}{{else}}{{themeId}}{{/if}}/css?v={{timestamp}}&force=1{{#if preview.previewPaletteId}}&preview_palette={{preview.previewPaletteId}}{{/if}}">
 </head>
 <body>
     <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:bg-white focus:text-black focus:px-3 focus:py-2 focus:rounded focus:z-50">Skip to main content</a>

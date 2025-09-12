@@ -20,7 +20,7 @@ class ThemeColorService {
             host: process.env.DB_HOST || 'localhost',
             user: process.env.DB_USER || 'root',
             password: process.env.DB_PASSWORD || '',
-            database: process.env.DB_DATABASE || 'musenest'
+            database: process.env.DB_NAME || 'musenest'
         });
     }
 
@@ -29,7 +29,16 @@ class ThemeColorService {
      * @param {number} themeSetId - Theme set ID
      * @returns {Promise<Array>} Array of color overrides
      */
-    async getThemeColors(themeSetId) {
+    async getThemeColors(themeSetId, previewPaletteId = null) {
+        // Debug logging
+        console.log(`🔍 ThemeColorService.getThemeColors called with themeSetId=${themeSetId}, previewPaletteId=${previewPaletteId}`);
+        
+        // If preview palette is specified, use it directly instead of theme colors
+        if (previewPaletteId) {
+            console.log(`🎨 Using preview palette ${previewPaletteId} for theme ${themeSetId}`);
+            return await this.getPaletteColors(previewPaletteId);
+        }
+
         const cacheKey = `theme_${themeSetId}`;
         
         // Check cache first
@@ -179,8 +188,8 @@ class ThemeColorService {
      * @param {number} themeSetId - Theme set ID
      * @returns {Promise<string>} CSS custom properties string
      */
-    async generateThemeCSS(themeSetId) {
-        const colors = await this.getThemeColors(themeSetId);
+    async generateThemeCSS(themeSetId, previewPaletteId = null) {
+        const colors = await this.getThemeColors(themeSetId, previewPaletteId);
         
         if (!colors || colors.length === 0) {
             return '';
@@ -244,15 +253,81 @@ class ThemeColorService {
         return css;
     }
 
+    async getPaletteColors(paletteId) {
+        try {
+            const db = await this.getConnection();
+            const [tokens] = await db.execute(
+                `SELECT token_name, token_value FROM color_palette_values WHERE palette_id = ? ORDER BY token_name`,
+                [paletteId]
+            );
+            await db.end();
+            if (!tokens || tokens.length === 0) return [];
+
+            const themeVariables = [];
+            let displayOrder = 1;
+            tokens.forEach(token => {
+                const variableName = this.mapTokenToThemeVariable(token.token_name);
+                const category = this.getVariableCategory(variableName);
+                themeVariables.push({
+                    variable_name: variableName,
+                    variable_value: token.token_value,
+                    variable_category: category,
+                    variable_description: `${token.token_name} from preview palette ${paletteId}`,
+                    display_order: displayOrder++
+                });
+            });
+            return themeVariables;
+        } catch (e) {
+            console.error('Error loading palette colors:', e);
+            return [];
+        }
+    }
+
+    async generateThemeCSSFromVariables(variables) {
+        if (!variables || variables.length === 0) return '';
+        let css = '/* 🎨 Database-Generated Theme Colors */\n:root {\n';
+        const categories = { primary: [], secondary: [], accent: [], background: [], text: [], border: [] };
+        variables.forEach(color => {
+            categories[color.variable_category] = categories[color.variable_category] || [];
+            categories[color.variable_category].push(color);
+        });
+        Object.keys(categories).forEach(category => {
+            if (categories[category].length > 0) {
+                css += `\n    /* ${category.charAt(0).toUpperCase() + category.slice(1)} Colors */\n`;
+                categories[category].forEach(color => {
+                    css += `    ${color.variable_name}: ${color.variable_value}; /* ${color.variable_description || category} */\n`;
+                });
+            }
+        });
+        css += '\n}\n';
+        return css;
+    }
+
     /**
      * Get complete theme CSS for injection into HTML
      * @param {number} themeSetId - Theme set ID
      * @returns {Promise<string>} Complete CSS for theme
      */
-    async getThemeCSS(themeSetId) {
-        const themeColors = await this.generateThemeCSS(themeSetId);
+    async getThemeCSS(themeSetId, paletteId = null) {
+        // If a preview palette is specified, build CSS from that palette directly
+        if (paletteId) {
+            const variables = await this.getPaletteColors(paletteId);
+            const themeColors = await this.generateThemeCSSFromVariables(variables);
+            // Utilities should still refer to the same variable set
+            let utilityCss = '';
+            variables.forEach(color => {
+                const className = color.variable_name.replace('--', '').replace(/-/g, '-');
+                const varName = color.variable_name;
+                utilityCss += `.text-${className} { color: var(${varName}) !important; }\n`;
+                utilityCss += `.bg-${className} { background-color: var(${varName}) !important; }\n`;
+                utilityCss += `.border-${className} { border-color: var(${varName}) !important; }\n`;
+            });
+            return `${themeColors}${utilityCss}`;
+        }
+
+        // Default behavior: use theme overrides (with fallback to theme default palette)
+        const themeColors = await this.generateThemeCSS(themeSetId, paletteId);
         const utilityClasses = await this.generateUtilityCSS(themeSetId);
-        
         return `${themeColors}${utilityClasses}`; 
     }
 

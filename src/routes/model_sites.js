@@ -7,6 +7,29 @@ const router = express.Router();
 // API Base URL configuration - easily configurable for production
 const API_BASE_URL = process.env.API_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
 
+// Request-level cache to prevent duplicate API calls within the same request
+class RequestCache {
+    constructor() {
+        this.cache = new Map();
+    }
+    
+    async get(key, fetchFn) {
+        if (this.cache.has(key)) {
+            console.log(`📦 Cache hit for: ${key}`);
+            return this.cache.get(key);
+        }
+        
+        console.log(`🌐 Cache miss, fetching: ${key}`);
+        const result = await fetchFn();
+        this.cache.set(key, result);
+        return result;
+    }
+    
+    clear() {
+        this.cache.clear();
+    }
+}
+
 // Helper function to format location display based on service type
 function formatLocationDisplay(location, serviceType, radiusMiles) {
     if (!location) return 'Location TBD';
@@ -58,7 +81,7 @@ async function getModelBySlug(slug) {
 }
 
 // Helper function to load dynamic colors using API instead of direct SQL queries
-async function loadColorPalette(paletteId, themeId, modelId = 39) {
+async function loadColorPalette(paletteId, themeId, modelId = 39, requestCache = null) {
     try {
         if (!paletteId && !themeId) {
             console.log('🎨 No palette or theme ID provided, using fallback colors');
@@ -72,10 +95,14 @@ async function loadColorPalette(paletteId, themeId, modelId = 39) {
         let response;
         if (paletteId) {
             console.log(`🎨 Loading direct palette API for palette ${paletteId}`);
-            response = await axios.get(`${API_BASE_URL}/api/color-palettes/${paletteId}`);
+            response = requestCache 
+                ? await requestCache.get(`color-palette-${paletteId}`, () => axios.get(`${API_BASE_URL}/api/color-palettes/${paletteId}`))
+                : await axios.get(`${API_BASE_URL}/api/color-palettes/${paletteId}`);
         } else {
             console.log(`🎨 Loading model palette API for model ${modelId}`);
-            response = await axios.get(`${API_BASE_URL}/api/color-palettes/models/${modelId}/colors`);
+            response = requestCache 
+                ? await requestCache.get(`model-colors-${modelId}`, () => axios.get(`${API_BASE_URL}/api/color-palettes/models/${modelId}/colors`))
+                : await axios.get(`${API_BASE_URL}/api/color-palettes/models/${modelId}/colors`);
         }
         
         // Handle different response structures for different APIs
@@ -175,7 +202,9 @@ async function loadColorPalette(paletteId, themeId, modelId = 39) {
                 accent: std.accent
             };
 
-            console.log(`🎨 Loaded color palette via API for model ${modelId}, palette ${response.data.palette.id}`);
+            // Log palette loading success with safe property access
+            const paletteInfo = response.data?.palette?.id || response.data?.data?.palette?.id || paletteId || 'direct';
+            console.log(`🎨 Loaded color palette via API for model ${modelId}, palette ${paletteInfo}`);
             console.log('🎨 Compatible colors:', compatibleColors);
 
             // Return full color object with both token-based and compatible colors
@@ -192,16 +221,16 @@ async function loadColorPalette(paletteId, themeId, modelId = 39) {
 }
 
 // Helper function to get content with modelexample fallback
-async function getContentWithFallback(modelSlug, pageType) {
+async function getContentWithFallback(modelSlug, pageType, requestCache = null) {
     try {
         // First try to get content for the current model
-        let content = await getModelContent(modelSlug, pageType);
+        let content = await getModelContent(modelSlug, pageType, requestCache);
         
         // If no content or empty content, fall back to modelexample
         if (!content || Object.keys(content).length === 0) {
             if (modelSlug !== 'modelexample') {
                 console.log(`📋 No ${pageType} content for ${modelSlug}, using modelexample fallback`);
-                content = await getModelContent('modelexample', pageType);
+                content = await getModelContent('modelexample', pageType, requestCache);
                 
                 // Apply current model's specific data overrides
                 if (content && Object.keys(content).length > 0) {
@@ -248,7 +277,7 @@ function applyModelOverrides(content, modelSlug) {
 }
 
 // Helper function to get model content for a specific page type using dedicated API endpoints
-async function getModelContent(modelSlug, pageType) {
+async function getModelContent(modelSlug, pageType, requestCache = null) {
     try {
         let content = {};
         
@@ -301,8 +330,11 @@ async function getModelContent(modelSlug, pageType) {
                     }));
                 }
                 
-                // Get rates data
-                const ratesResponse = await axios.get(`${API_BASE_URL}/api/model-rates/${modelSlug}`);
+                // Get rates data (use cache if available)
+                console.log(`🔍 DEBUG: About to call rates API for ${modelSlug} in getModelContent, cache exists: ${!!requestCache}`);
+                const ratesResponse = requestCache 
+                    ? await requestCache.get(`model-rates-${modelSlug}`, () => axios.get(`${API_BASE_URL}/api/model-rates/${modelSlug}`))
+                    : await axios.get(`${API_BASE_URL}/api/model-rates/${modelSlug}`);
                 
                 // Get page content  
                 const contentResponse = await axios.get(`${API_BASE_URL}/api/model-rates/${modelSlug}/page-content`);
@@ -436,7 +468,8 @@ router.get('/:slug/:page?', async (req, res) => {
     try {
         const { slug, page = 'home' } = req.params;
 
-
+        // Initialize request-level cache to prevent duplicate API calls
+        const requestCache = new RequestCache();
         
         // Skip admin route
         if (slug === 'admin') {
@@ -578,7 +611,7 @@ router.get('/:slug/:page?', async (req, res) => {
         }
         
         // Get content for this page using API calls with modelexample fallback
-        const rawContent = await getContentWithFallback(slug, page);
+        const rawContent = await getContentWithFallback(slug, page, requestCache);
         
 
         
@@ -630,7 +663,7 @@ router.get('/:slug/:page?', async (req, res) => {
         }
 
         // Load dynamic colors from database
-        const themeColors = await loadColorPalette(paletteId, themeId);
+        const themeColors = await loadColorPalette(paletteId, themeId, model?.id || 39, requestCache);
 
 
         // Pre-load testimonials data using API
@@ -666,7 +699,9 @@ router.get('/:slug/:page?', async (req, res) => {
         if (page === 'home') {
             try {
                 const axios = require('axios');
-                const response = await axios.get(`${API_BASE_URL}/api/model-rates/${slug}`);
+                const response = await requestCache.get(`model-rates-${slug}`, () => 
+                    axios.get(`${API_BASE_URL}/api/model-rates/${slug}`)
+                );
                 if (response.data.success && response.data.data.rates) {
                     // Use rates data as services for home page preview
                     const allRates = [...(response.data.data.rates.incall || []), ...(response.data.data.rates.outcall || [])];
@@ -693,8 +728,11 @@ router.get('/:slug/:page?', async (req, res) => {
                     throw new Error('Model object is undefined');
                 }
                 
+                console.log(`🔍 DEBUG: About to call rates API for ${slug} in rates page handler, cache exists: ${!!requestCache}`);
                 const axios = require('axios');
-                const response = await axios.get(`${API_BASE_URL}/api/model-rates/${slug}`);
+                const response = await requestCache.get(`model-rates-${slug}`, () => 
+                    axios.get(`${API_BASE_URL}/api/model-rates/${slug}`)
+                );
                 
                 if (response.data.success && response.data.data) {
                     // Handle new API format with direct rate type arrays
@@ -980,7 +1018,14 @@ router.get('/:slug/:page?', async (req, res) => {
             // Theme IDs for template
             themeId: model.theme_set_id,
             previewThemeId: isPreview ? previewThemeId : null,
+            previewPaletteId: isPreview && req.query.preview_palette ? parseInt(req.query.preview_palette) : null,
             previewParam: previewQueryString,
+            // Preview object for template
+            preview: {
+                previewThemeId: isPreview ? previewThemeId : null,
+                previewThemeName: previewThemeName,
+                previewPaletteId: isPreview && req.query.preview_palette ? parseInt(req.query.preview_palette) : null
+            },
             year: new Date().getFullYear(),
             // Gallery data (pre-loaded for gallery pages)
             galleries: galleryData,

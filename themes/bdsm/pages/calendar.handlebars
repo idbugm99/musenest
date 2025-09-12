@@ -188,7 +188,9 @@
             currentMonth = month;
             
             // Update month title
-            monthTitle.textContent = `${calendar.monthName} ${calendar.year}`;
+            if (monthTitle) {
+                monthTitle.textContent = `${calendar.monthName} ${calendar.year}`;
+            }
             
             // Generate calendar grid
             let gridHtml = '';
@@ -268,7 +270,9 @@
             // Generate list view
             generateListView(calendar);
             
-            calendarGrid.innerHTML = gridHtml;
+            if (calendarGrid) {
+                calendarGrid.innerHTML = gridHtml;
+            }
             
         } catch (error) {
             console.error('Error loading calendar:', error);

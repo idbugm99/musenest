@@ -152,6 +152,11 @@ app.get('/admin/media-queue-review.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin', 'media-queue-review.html'));
 });
 
+// Serve the file upload test page
+app.get('/test-file-upload', (req, res) => {
+    res.sendFile(path.join(__dirname, 'test-file-upload.html'));
+});
+
 // Redirect old admin paths to system admin
 app.get('/admin/musenest-business-manager.html', (req, res) => res.redirect('/sysadmin'));
 
@@ -264,7 +269,8 @@ app.engine('handlebars', engine({
         split: (str, delimiter) => {
             if (!str) return [];
             return str.split(delimiter);
-        }
+        },
+        
     }
 }));
 app.set('view engine', 'handlebars');
@@ -2677,6 +2683,16 @@ app.get('/admin/site-configuration-enhanced.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin', 'site-configuration-enhanced.html'));
 });
 
+// SMS Management admin page
+app.get('/admin/sms-management.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin', 'sms-management.html'));
+});
+
+// SMS Management shortcut route
+app.get('/admin/sms', (req, res) => {
+    res.redirect('/admin/sms-management.html');
+});
+
 // Admin Dashboard (main admin index)
 app.get('/admin/', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin', 'index.html'));
@@ -2809,6 +2825,14 @@ app.use('/api/model-dashboard', require('./routes/api/admin-system'));
 app.use('/api/media-preview', require('./routes/api/media-preview'));
 app.use('/api/theme-colors', require('./routes/api/theme-colors'));
 app.use('/api/color-palettes', require('./routes/api/color-palettes'));
+
+// Contact management system
+app.use('/api/contact', require('./routes/api/contact'));
+app.use('/api/chat', require('./routes/api/chat'));
+app.use('/api/chat-files', require('./routes/api/chat-files'));
+app.use('/api/conversations', require('./routes/api/conversations'));
+app.use('/api/sms', require('./routes/api/sms'));
+app.use('/api/email', require('./routes/api/email'));
 
 // Consolidated sysadmin API namespace (keeps legacy mounts above for back-compat)
 app.use('/api/sysadmin', require('./routes/api/admin-system'));
@@ -3669,11 +3693,30 @@ async function startServer() {
                 return a * b;
             });
             
+            // Register the chatWidget helper for universal chat widget
+            const ChatWidgetHelper = require('./services/ChatWidgetHelper');
+            handlebars.registerHelper('chatWidget', ChatWidgetHelper.createHandlebarsHelper());
+            
             console.log('✅ Universal Gallery System initialized successfully');
         } catch (error) {
             console.error('❌ Failed to initialize Universal Gallery System:', error.message);
             console.warn('⚠️  Gallery system disabled, falling back to legacy helpers');
         }
+        
+        // Test route for chat widget
+        app.get('/test-chat-widget.html', (req, res) => {
+            res.sendFile(path.join(__dirname, 'test-chat-widget.html'));
+        });
+
+        // Quick API to enable chat for testing
+        app.post('/api/enable-chat-test', async (req, res) => {
+            try {
+                await db.execute("UPDATE models SET chat_enabled = 1 WHERE slug = 'modelexample'");
+                res.json({ success: true, message: 'Chat enabled for modelexample' });
+            } catch (error) {
+                res.json({ success: false, error: error.message });
+            }
+        });
         
         app.listen(PORT, () => {
             console.log('🚀 MuseNest Server Started');

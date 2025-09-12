@@ -1,0 +1,598 @@
+<!-- SMS Configuration Component -->
+<!-- Telnyx SMS service configuration interface with test mode and monitoring -->
+<!-- Dependencies: Bootstrap 5, Font Awesome, Auto-Save Input Component -->
+
+<div class="sms-configuration-container">
+    <!-- SMS Service Status Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="metric-icon" id="sms-status-icon" style="background-color: rgba(156, 163, 175, 0.1);">
+                    <i class="fas fa-mobile-alt" style="color: #9ca3af;"></i>
+                </div>
+                <div class="metric-value" id="sms-service-status">Unknown</div>
+                <div class="metric-label">SMS Service Status</div>
+                <div class="metric-trend" id="sms-status-details">
+                    <i class="fas fa-circle" id="status-indicator"></i> Loading...
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="metric-icon" style="background-color: rgba(34, 197, 94, 0.1);">
+                    <i class="fas fa-paper-plane" style="color: #22c55e;"></i>
+                </div>
+                <div class="metric-value" id="messages-sent-metric">0</div>
+                <div class="metric-label">Messages Sent Today</div>
+                <div class="metric-trend trend-up" id="messages-trend">
+                    <i class="fas fa-arrow-up"></i> +0 this hour
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="metric-icon" style="background-color: rgba(239, 68, 68, 0.1);">
+                    <i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i>
+                </div>
+                <div class="metric-value" id="failed-messages-metric">0</div>
+                <div class="metric-label">Failed Messages</div>
+                <div class="metric-trend trend-down" id="failed-trend">
+                    <i class="fas fa-arrow-down"></i> 0% failure rate
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="metric-icon" style="background-color: rgba(59, 130, 246, 0.1);">
+                    <i class="fas fa-clock" style="color: #3b82f6;"></i>
+                </div>
+                <div class="metric-value" id="avg-delivery-metric">N/A</div>
+                <div class="metric-label">Avg Delivery Time</div>
+                <div class="metric-trend" id="delivery-trend">
+                    <i class="fas fa-info-circle"></i> Real-time
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configuration Settings -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cog me-2"></i>
+                        Telnyx Configuration
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="sms-config-form">
+                        <div class="mb-3">
+                            <label for="telnyx-api-key" class="form-label">
+                                API Key
+                                <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" 
+                                   title="Your Telnyx API key from the dashboard"></i>
+                            </label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="telnyx-api-key" 
+                                       placeholder="Enter your Telnyx API key">
+                                <button type="button" class="btn btn-outline-secondary" id="toggle-api-key">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="form-text">Keep this secure - it provides full access to your Telnyx account</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="telnyx-from-number" class="form-label">
+                                From Phone Number
+                                <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" 
+                                   title="Your Telnyx phone number in E.164 format (+1234567890)"></i>
+                            </label>
+                            <input type="tel" class="form-control" id="telnyx-from-number" 
+                                   placeholder="+15551234567" pattern="^\+[1-9]\d{1,14}$">
+                            <div class="form-text">Must be in E.164 format (e.g., +15551234567)</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="telnyx-webhook-url" class="form-label">
+                                Webhook URL (Optional)
+                                <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" 
+                                   title="URL for receiving delivery reports and incoming messages"></i>
+                            </label>
+                            <input type="url" class="form-control" id="telnyx-webhook-url" 
+                                   placeholder="https://yourdomain.com/api/sms/webhook">
+                            <div class="form-text">Leave empty to use default webhook handling</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="test-mode-toggle">
+                                <label class="form-check-label" for="test-mode-toggle">
+                                    <strong>Test Mode</strong>
+                                </label>
+                            </div>
+                            <div class="form-text">Enable to simulate SMS sending without using API credits</div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Save Configuration
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" id="test-connection-btn">
+                                <i class="fas fa-plug me-1"></i>Test Connection
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-vial me-2"></i>
+                        Test SMS Sending
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="test-sms-form">
+                        <div class="mb-3">
+                            <label for="test-phone-number" class="form-label">Test Phone Number</label>
+                            <input type="tel" class="form-control" id="test-phone-number" 
+                                   placeholder="+15551234567" pattern="^\+[1-9]\d{1,14}$" required>
+                            <div class="form-text">Enter a phone number to receive the test message</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="test-message" class="form-label">Test Message</label>
+                            <textarea class="form-control" id="test-message" rows="3" 
+                                      placeholder="Test message from MuseNest SMS system" maxlength="1600" required></textarea>
+                            <div class="form-text">
+                                <span id="message-char-count">0</span>/1600 characters
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success" id="send-test-sms-btn">
+                            <i class="fas fa-paper-plane me-1"></i>Send Test SMS
+                        </button>
+                    </form>
+
+                    <!-- Test Results -->
+                    <div id="test-results" class="mt-3" style="display: none;">
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-1"></i>Test Results</h6>
+                            <pre id="test-results-content"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Status Check -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-heartbeat me-2"></i>
+                        Service Health Check
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Configuration Status</span>
+                        <span class="badge" id="config-status-badge">Unknown</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>API Connection</span>
+                        <span class="badge" id="api-connection-badge">Not Tested</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Last Test</span>
+                        <span class="text-muted" id="last-test-time">Never</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent SMS Activity -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>
+                        Recent SMS Activity
+                    </h5>
+                    <div class="btn-group btn-group-sm">
+                        <button type="button" class="btn btn-outline-secondary active" data-filter="all">All</button>
+                        <button type="button" class="btn btn-outline-secondary" data-filter="sent">Sent</button>
+                        <button type="button" class="btn btn-outline-secondary" data-filter="failed">Failed</button>
+                        <button type="button" class="btn btn-outline-secondary" data-filter="test">Test</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="sms-activity-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>To</th>
+                                    <th>Message</th>
+                                    <th>Status</th>
+                                    <th>Type</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sms-activity-tbody">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                                        Loading SMS activity...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <nav aria-label="SMS activity pagination">
+                        <ul class="pagination pagination-sm justify-content-end mb-0" id="sms-pagination">
+                            <li class="page-item disabled">
+                                <span class="page-link">Previous</span>
+                            </li>
+                            <li class="page-item active">
+                                <span class="page-link">1</span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">Next</span>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success/Error Messages -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1050">
+    <div id="sms-toast" class="toast align-items-center" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="sms-toast-message">
+                Message content
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+<script>
+class SmsConfiguration {
+    constructor() {
+        this.initializeEventListeners();
+        this.loadConfiguration();
+        this.loadSmsActivity();
+        this.startStatusPolling();
+        this.initializeTooltips();
+    }
+
+    initializeEventListeners() {
+        // Form submissions
+        document.getElementById('sms-config-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.saveConfiguration();
+        });
+
+        document.getElementById('test-sms-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.sendTestSms();
+        });
+
+        // Toggle API key visibility
+        document.getElementById('toggle-api-key').addEventListener('click', () => {
+            const input = document.getElementById('telnyx-api-key');
+            const icon = document.querySelector('#toggle-api-key i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        });
+
+        // Test connection button
+        document.getElementById('test-connection-btn').addEventListener('click', () => {
+            this.testConnection();
+        });
+
+        // Character count for test message
+        document.getElementById('test-message').addEventListener('input', (e) => {
+            document.getElementById('message-char-count').textContent = e.target.value.length;
+        });
+
+        // Activity filter buttons
+        document.querySelectorAll('[data-filter]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                this.filterSmsActivity(e.target.dataset.filter);
+            });
+        });
+    }
+
+    initializeTooltips() {
+        // Initialize Bootstrap tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    }
+
+    async loadConfiguration() {
+        try {
+            const response = await fetch('/api/sms/config');
+            if (response.ok) {
+                const config = await response.json();
+                this.populateConfigForm(config);
+                this.updateServiceStatus(config);
+            }
+        } catch (error) {
+            console.error('Failed to load SMS configuration:', error);
+            this.updateServiceStatus({ enabled: false, error: 'Configuration load failed' });
+        }
+    }
+
+    populateConfigForm(config) {
+        document.getElementById('telnyx-api-key').value = config.apiKey ? '••••••••••••••••' : '';
+        document.getElementById('telnyx-from-number').value = config.fromNumber || '';
+        document.getElementById('telnyx-webhook-url').value = config.webhookUrl || '';
+        document.getElementById('test-mode-toggle').checked = config.testMode || false;
+    }
+
+    updateServiceStatus(config) {
+        const statusElement = document.getElementById('sms-service-status');
+        const statusIcon = document.getElementById('sms-status-icon');
+        const statusDetails = document.getElementById('sms-status-details');
+        const indicator = document.getElementById('status-indicator');
+
+        if (config.enabled) {
+            statusElement.textContent = config.testMode ? 'Test Mode' : 'Active';
+            statusIcon.style.backgroundColor = 'rgba(34, 197, 94, 0.1)';
+            statusIcon.querySelector('i').style.color = '#22c55e';
+            statusDetails.innerHTML = `<i class="fas fa-circle text-success"></i> ${config.testMode ? 'Simulated SMS' : 'Live SMS'}`;
+            
+            // Update config status badge
+            document.getElementById('config-status-badge').className = 'badge bg-success';
+            document.getElementById('config-status-badge').textContent = 'Configured';
+        } else {
+            statusElement.textContent = 'Disabled';
+            statusIcon.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+            statusIcon.querySelector('i').style.color = '#ef4444';
+            statusDetails.innerHTML = `<i class="fas fa-circle text-danger"></i> ${config.error || 'Not configured'}`;
+            
+            // Update config status badge
+            document.getElementById('config-status-badge').className = 'badge bg-danger';
+            document.getElementById('config-status-badge').textContent = 'Not Configured';
+        }
+    }
+
+    async saveConfiguration() {
+        const formData = {
+            apiKey: document.getElementById('telnyx-api-key').value,
+            fromNumber: document.getElementById('telnyx-from-number').value,
+            webhookUrl: document.getElementById('telnyx-webhook-url').value,
+            testMode: document.getElementById('test-mode-toggle').checked
+        };
+
+        try {
+            const response = await fetch('/api/sms/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                this.showToast('Configuration saved successfully!', 'success');
+                this.loadConfiguration(); // Refresh status
+            } else {
+                this.showToast('Failed to save configuration: ' + result.error, 'error');
+            }
+        } catch (error) {
+            this.showToast('Error saving configuration: ' + error.message, 'error');
+        }
+    }
+
+    async testConnection() {
+        const btn = document.getElementById('test-connection-btn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Testing...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/sms/test-connection');
+            const result = await response.json();
+            
+            const badge = document.getElementById('api-connection-badge');
+            document.getElementById('last-test-time').textContent = new Date().toLocaleString();
+            
+            if (result.success) {
+                badge.className = 'badge bg-success';
+                badge.textContent = 'Connected';
+                this.showToast('Connection test successful!', 'success');
+            } else {
+                badge.className = 'badge bg-danger';
+                badge.textContent = 'Failed';
+                this.showToast('Connection test failed: ' + result.error, 'error');
+            }
+        } catch (error) {
+            document.getElementById('api-connection-badge').className = 'badge bg-danger';
+            document.getElementById('api-connection-badge').textContent = 'Error';
+            this.showToast('Connection test error: ' + error.message, 'error');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    async sendTestSms() {
+        const btn = document.getElementById('send-test-sms-btn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Sending...';
+        btn.disabled = true;
+
+        const phoneNumber = document.getElementById('test-phone-number').value;
+        const message = document.getElementById('test-message').value;
+
+        try {
+            const response = await fetch('/api/sms/send-test', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phoneNumber, message })
+            });
+
+            const result = await response.json();
+            
+            // Show test results
+            document.getElementById('test-results-content').textContent = JSON.stringify(result, null, 2);
+            document.getElementById('test-results').style.display = 'block';
+            
+            if (result.success) {
+                this.showToast('Test SMS sent successfully!', 'success');
+                this.loadSmsActivity(); // Refresh activity
+            } else {
+                this.showToast('Test SMS failed: ' + result.error, 'error');
+            }
+        } catch (error) {
+            this.showToast('Error sending test SMS: ' + error.message, 'error');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    async loadSmsActivity() {
+        try {
+            const response = await fetch('/api/sms/activity');
+            if (response.ok) {
+                const data = await response.json();
+                this.populateSmsActivity(data.messages || []);
+                this.updateActivityMetrics(data.metrics || {});
+            }
+        } catch (error) {
+            console.error('Failed to load SMS activity:', error);
+        }
+    }
+
+    populateSmsActivity(messages) {
+        const tbody = document.getElementById('sms-activity-tbody');
+        
+        if (messages.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                        No SMS activity yet
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = messages.map(msg => `
+            <tr>
+                <td><small>${new Date(msg.created_at).toLocaleString()}</small></td>
+                <td><code>${this.maskPhoneNumber(msg.to_number)}</code></td>
+                <td>
+                    <span class="text-truncate d-inline-block" style="max-width: 200px;" 
+                          title="${msg.message_preview}">
+                        ${msg.message_preview}
+                    </span>
+                </td>
+                <td>
+                    <span class="badge ${this.getStatusBadgeClass(msg.status)}">
+                        ${msg.status}
+                    </span>
+                </td>
+                <td>
+                    <span class="badge ${msg.is_test ? 'bg-secondary' : 'bg-primary'}">
+                        ${msg.is_test ? 'Test' : 'Live'}
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-outline-secondary" 
+                            onclick="window.smsConfig.showMessageDetails('${msg.id}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    updateActivityMetrics(metrics) {
+        document.getElementById('messages-sent-metric').textContent = metrics.sentToday || 0;
+        document.getElementById('failed-messages-metric').textContent = metrics.failedToday || 0;
+        
+        const failureRate = metrics.sentToday > 0 ? 
+            ((metrics.failedToday / metrics.sentToday) * 100).toFixed(1) : 0;
+        document.getElementById('failed-trend').innerHTML = 
+            `<i class="fas fa-arrow-down"></i> ${failureRate}% failure rate`;
+    }
+
+    filterSmsActivity(filter) {
+        // Implementation for filtering SMS activity table
+        console.log('Filtering SMS activity by:', filter);
+        // This would filter the table rows based on the selected filter
+    }
+
+    maskPhoneNumber(phoneNumber) {
+        if (!phoneNumber || phoneNumber.length < 4) return phoneNumber;
+        return phoneNumber.slice(0, -4).replace(/./g, '•') + phoneNumber.slice(-4);
+    }
+
+    getStatusBadgeClass(status) {
+        switch (status?.toLowerCase()) {
+            case 'sent':
+            case 'delivered':
+                return 'bg-success';
+            case 'failed':
+            case 'undelivered':
+                return 'bg-danger';
+            case 'queued':
+            case 'sending':
+                return 'bg-warning';
+            default:
+                return 'bg-secondary';
+        }
+    }
+
+    showMessageDetails(messageId) {
+        // Show detailed message information in a modal
+        console.log('Show details for message:', messageId);
+    }
+
+    startStatusPolling() {
+        // Poll for status updates every 30 seconds
+        setInterval(() => {
+            this.loadConfiguration();
+        }, 30000);
+    }
+
+    showToast(message, type = 'info') {
+        const toast = document.getElementById('sms-toast');
+        const toastBody = document.getElementById('sms-toast-message');
+        
+        toastBody.textContent = message;
+        toast.className = `toast align-items-center text-bg-${type === 'error' ? 'danger' : type}`;
+        
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+    }
+}
+
+// Initialize SMS Configuration when component loads
+document.addEventListener('DOMContentLoaded', () => {
+    window.smsConfig = new SmsConfiguration();
+});
+</script>

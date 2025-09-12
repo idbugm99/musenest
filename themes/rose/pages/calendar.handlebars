@@ -15,7 +15,7 @@
         <!-- Enhanced Calendar Icon with Rose -->
         <div class="text-6xl mb-8 theme-accent relative" data-aos="fade-down" data-aos-delay="200">
             <i class="fas fa-calendar-alt"></i>
-            <img class="absolute -top-2 -right-2 rose-svg rose-svg--sm" src="/themes/rose/assets/icons/rose-10.svg" alt="Rose" style="animation-delay: 0.5s;" />
+            <img class="absolute -top-2 -right-2 rose-svg rose-svg--sm" src="/themes/rose/assets/svg/rose-10.svg" alt="Rose" style="animation-delay: 0.5s;" />
         </div>
         
         <!-- Page Title -->
@@ -67,7 +67,7 @@
             <div class="relative">
                 <h2 id="month-title" class="text-3xl font-bold theme-header text-center"></h2>
                 <!-- Themed rose accent near title -->
-                <img class="absolute -top-2 -right-8 rose-svg rose-svg--sm" src="/themes/rose/assets/icons/rose-10.svg" alt="Rose" style="animation-delay: 1s;" />
+                <img class="absolute -top-2 -right-8 rose-svg rose-svg--sm" src="/themes/rose/assets/svg/rose-10.svg" alt="Rose" style="animation-delay: 1s;" />
             </div>
             
             <button id="next-month" class="rose-button px-6 py-3 border-2 theme-border-accent theme-accent rounded-lg font-semibold transition-colors hover:theme-accent-bg hover:theme-text-inverted">
@@ -80,7 +80,7 @@
         <!-- Calendar Container -->
         <div id="calendar-container" class="theme-card rose-enhanced rounded-lg shadow-lg overflow-hidden mb-8 relative">
             <!-- Themed rose accent -->
-            <img class="absolute -top-3 -right-3 rose-svg rose-svg--lg" src="/themes/rose/assets/icons/rose-10.svg" alt="Rose" style="animation-delay: 0.5s;" />
+            <img class="absolute -top-3 -right-3 rose-svg rose-svg--lg" src="/themes/rose/assets/svg/rose-10.svg" alt="Rose" style="animation-delay: 0.5s;" />
             <!-- Calendar Header -->
             <div class="grid grid-cols-7 theme-bg-secondary">
                 <div class="p-4 text-center font-semibold theme-text-primary border-r theme-border-light">Sun</div>
@@ -104,7 +104,7 @@
         <!-- List View -->
         <div id="list-container" class="theme-card rose-enhanced rounded-lg shadow-lg p-6 mb-8 hidden relative">
             <!-- Themed rose accent -->
-            <img class="absolute -top-3 -right-3 rose-svg rose-svg--lg" src="/themes/rose/assets/icons/rose-10.svg" alt="Rose" style="animation-delay: 1.5s;" />
+            <img class="absolute -top-3 -right-3 rose-svg rose-svg--lg" src="/themes/rose/assets/svg/rose-10.svg" alt="Rose" style="animation-delay: 1.5s;" />
             <div id="list-view">
                 <div class="text-center py-12 theme-text-secondary">
                     <div class="animate-spin rounded-full h-8 w-8 border-b-2 theme-border-accent mx-auto mb-4"></div>
@@ -137,7 +137,7 @@
         {{#if calendar_content.cta_visible}}
         <div class="theme-card rose-enhanced p-8 text-center hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="600">
             <!-- Themed rose accent -->
-            <img class="absolute -top-3 -right-3 rose-svg rose-svg--lg" src="/themes/rose/assets/icons/rose-10.svg" alt="Rose" style="animation-delay: 2s;" />
+            <img class="absolute -top-3 -right-3 rose-svg rose-svg--lg" src="/themes/rose/assets/svg/rose-10.svg" alt="Rose" style="animation-delay: 2s;" />
             <div class="theme-accent w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center">
                 <i class="fas fa-calendar-check text-2xl theme-text-inverted"></i>
             </div>
@@ -190,7 +190,9 @@
             currentMonth = month;
             
             // Update month title
-            monthTitle.textContent = `${calendar.monthName} ${calendar.year}`;
+            if (monthTitle) {
+                monthTitle.textContent = `${calendar.monthName} ${calendar.year}`;
+            }
             
             // Generate calendar grid
             let gridHtml = '';
@@ -270,18 +272,28 @@
             // Generate list view
             generateListView(calendar);
             
-            calendarGrid.innerHTML = gridHtml;
+            if (calendarGrid) {
+                calendarGrid.innerHTML = gridHtml;
+            }
             
         } catch (error) {
             console.error('Error loading calendar:', error);
-            calendarGrid.innerHTML = `
+            const errorHtml = `
                 <div class="text-center py-12 text-red-500">
                     <div class="text-4xl mb-4">⚠️</div>
                     <h3 class="text-lg font-semibold mb-2">Unable to Load Calendar</h3>
                     <p>Please contact me directly for availability information.</p>
                 </div>
             `;
-            document.getElementById('list-view').innerHTML = calendarGrid.innerHTML;
+            
+            if (calendarGrid) {
+                calendarGrid.innerHTML = errorHtml;
+            }
+            
+            const listView = document.getElementById('list-view');
+            if (listView) {
+                listView.innerHTML = errorHtml;
+            }
         }
     }
     
@@ -428,8 +440,13 @@
     // Set initial view
     switchView(currentView);
     
-    // Load initial calendar
-    loadCalendar();
+    // Only initialize calendar if essential elements exist
+    if (calendarGrid) {
+        // Load initial calendar
+        loadCalendar();
+    } else {
+        console.warn('Calendar elements not found, calendar initialization skipped');
+    }
 })();
 </script>
 

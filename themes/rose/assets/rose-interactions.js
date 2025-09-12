@@ -7,11 +7,26 @@ class RoseThemeEnhancements {
     }
     
     init() {
+        this.initHeroBackgrounds();
         this.addFloatingPetals();
         this.addFloatingRoses();
         this.addInteractiveRoses();
         this.addScrollEffects();
         this.addHoverEffects();
+    }
+    
+    // Initialize hero background with opacity control
+    initHeroBackgrounds() {
+        const heroSections = document.querySelectorAll('.hero-with-bg[data-bg-image]');
+        heroSections.forEach(section => {
+            const bgImage = section.getAttribute('data-bg-image');
+            const bgOpacity = section.getAttribute('data-bg-opacity') || '0.6';
+            
+            if (bgImage) {
+                section.style.setProperty('--hero-bg-image', `url('${bgImage}')`);
+                section.style.setProperty('--hero-bg-opacity', bgOpacity);
+            }
+        });
     }
     
     // Add dynamic floating petals
@@ -89,7 +104,7 @@ class RoseThemeEnhancements {
 
         for (let i = 0; i < roseCount; i++) {
             const img = document.createElement('img');
-            img.src = '/themes/rose/assets/icons/rose-10.svg';
+            img.src = '/themes/rose/assets/svg/rose-10.svg';
             img.alt = 'Rose';
             img.setAttribute('data-rose-float', 'true');
             img.className = 'rose-svg';

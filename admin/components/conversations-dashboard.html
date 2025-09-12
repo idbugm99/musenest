@@ -1,0 +1,560 @@
+<!-- Contact/Conversations Management Dashboard -->
+<div class="conversations-dashboard">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-comments me-2"></i>
+                    Contact Management
+                </h5>
+                <div class="header-actions">
+                    <button class="btn btn-light btn-sm me-2" onclick="conversationManager.refreshData()" title="Refresh">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <select id="statusFilter" class="form-select form-select-sm" style="width: auto;" onchange="conversationManager.filterByStatus(this.value)">
+                        <option value="">All Status</option>
+                        <option value="new">New</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="resolved">Resolved</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            <!-- Summary Stats -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-danger text-white">
+                        <div class="card-body text-center">
+                            <h3 id="newCount" class="mb-0">-</h3>
+                            <small>New Messages</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body text-center">
+                            <h3 id="inProgressCount" class="mb-0">-</h3>
+                            <small>In Progress</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body text-center">
+                            <h3 id="resolvedCount" class="mb-0">-</h3>
+                            <small>Resolved</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-secondary text-white">
+                        <div class="card-body text-center">
+                            <h3 id="totalCount" class="mb-0">-</h3>
+                            <small>Total</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search and Filters -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search by name, email, or message..." onkeyup="conversationManager.search(this.value)">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select id="modelFilter" class="form-select" onchange="conversationManager.filterByModel(this.value)">
+                        <option value="">All Models</option>
+                        <!-- Models will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select id="priorityFilter" class="form-select" onchange="conversationManager.filterByPriority(this.value)">
+                        <option value="">All Priority</option>
+                        <option value="low">Low</option>
+                        <option value="normal">Normal</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Conversations Table -->
+            <div class="table-responsive">
+                <table class="table table-hover" id="conversationsTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th width="5%">
+                                <input type="checkbox" id="selectAll" onchange="conversationManager.toggleSelectAll()">
+                            </th>
+                            <th width="15%">Contact</th>
+                            <th width="20%">Subject</th>
+                            <th width="10%">Model</th>
+                            <th width="10%">Status</th>
+                            <th width="10%">Priority</th>
+                            <th width="15%">Created</th>
+                            <th width="15%">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="conversationsTableBody">
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="mt-2">Loading conversations...</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div>
+                    <span id="paginationInfo">Loading...</span>
+                </div>
+                <nav>
+                    <ul class="pagination pagination-sm mb-0" id="paginationNav">
+                        <!-- Pagination will be generated dynamically -->
+                    </ul>
+                </nav>
+            </div>
+            
+            <!-- Bulk Actions -->
+            <div class="mt-3 p-3 bg-light rounded d-none" id="bulkActions">
+                <div class="d-flex align-items-center">
+                    <span class="me-3" id="selectedCount">0 selected</span>
+                    <button class="btn btn-warning btn-sm me-2" onclick="conversationManager.bulkUpdateStatus('in_progress')">
+                        Mark In Progress
+                    </button>
+                    <button class="btn btn-success btn-sm me-2" onclick="conversationManager.bulkUpdateStatus('resolved')">
+                        Mark Resolved
+                    </button>
+                    <button class="btn btn-secondary btn-sm me-2" onclick="conversationManager.bulkUpdateStatus('closed')">
+                        Close
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" onclick="conversationManager.bulkDelete()">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Conversation Detail Modal -->
+<div class="modal fade" id="conversationModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-comment me-2"></i>
+                    Conversation Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="conversationModalBody">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="me-auto">
+                    <select id="modalStatus" class="form-select form-select-sm d-inline-block" style="width: auto;">
+                        <option value="new">New</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="resolved">Resolved</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                    <select id="modalPriority" class="form-select form-select-sm d-inline-block ms-2" style="width: auto;">
+                        <option value="low">Low</option>
+                        <option value="normal">Normal</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                    <button class="btn btn-primary btn-sm ms-2" onclick="conversationManager.updateConversation()">
+                        Update
+                    </button>
+                </div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Conversation Manager
+class ConversationManager {
+    constructor() {
+        this.conversations = [];
+        this.filteredConversations = [];
+        this.currentPage = 1;
+        this.itemsPerPage = 10;
+        this.selectedIds = new Set();
+        this.currentConversationId = null;
+        
+        // Initialize on DOM ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.init());
+        } else {
+            this.init();
+        }
+    }
+    
+    async init() {
+        await this.loadConversations();
+        this.setupEventListeners();
+    }
+    
+    async loadConversations() {
+        try {
+            const response = await fetch('/api/conversations');
+            if (response.ok) {
+                const data = await response.json();
+                this.conversations = data.conversations || [];
+                this.filteredConversations = [...this.conversations];
+                this.updateStats();
+                this.renderTable();
+                this.populateModelFilter();
+            } else {
+                this.showError('Failed to load conversations');
+            }
+        } catch (error) {
+            console.error('Error loading conversations:', error);
+            this.showError('Error loading conversations');
+        }
+    }
+    
+    updateStats() {
+        const stats = this.conversations.reduce((acc, conv) => {
+            acc.total++;
+            acc[conv.status] = (acc[conv.status] || 0) + 1;
+            return acc;
+        }, { total: 0, new: 0, in_progress: 0, resolved: 0, closed: 0 });
+        
+        document.getElementById('totalCount').textContent = stats.total;
+        document.getElementById('newCount').textContent = stats.new;
+        document.getElementById('inProgressCount').textContent = stats.in_progress;
+        document.getElementById('resolvedCount').textContent = stats.resolved;
+    }
+    
+    renderTable() {
+        const tbody = document.getElementById('conversationsTableBody');
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = start + this.itemsPerPage;
+        const pageData = this.filteredConversations.slice(start, end);
+        
+        if (pageData.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center py-4 text-muted">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <div>No conversations found</div>
+                    </td>
+                </tr>
+            `;
+            this.renderPagination();
+            return;
+        }
+        
+        tbody.innerHTML = pageData.map(conv => `
+            <tr data-id="${conv.id}" class="conversation-row ${conv.status === 'new' ? 'table-warning' : ''}">
+                <td>
+                    <input type="checkbox" class="conversation-checkbox" value="${conv.id}" 
+                           onchange="conversationManager.toggleSelect(${conv.id}, this.checked)">
+                </td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="me-2">
+                            <i class="fas fa-user-circle fa-lg text-muted"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold">${this.escapeHtml(conv.contact_name)}</div>
+                            <small class="text-muted">${this.escapeHtml(conv.contact_email)}</small>
+                            ${conv.contact_phone ? `<br><small class="text-muted">${this.escapeHtml(conv.contact_phone)}</small>` : ''}
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="fw-bold">${this.escapeHtml(conv.subject || 'No Subject')}</div>
+                    <small class="text-muted">${this.truncate(conv.message || '', 60)}</small>
+                </td>
+                <td>
+                    <span class="badge bg-info">${this.escapeHtml(conv.model_id || 'General')}</span>
+                </td>
+                <td>
+                    <span class="badge bg-${this.getStatusColor(conv.status)}">${this.formatStatus(conv.status)}</span>
+                </td>
+                <td>
+                    <span class="badge bg-${this.getPriorityColor(conv.priority)}">${this.formatPriority(conv.priority)}</span>
+                </td>
+                <td>
+                    <div>${this.formatDate(conv.created_at)}</div>
+                    <small class="text-muted">${this.formatTime(conv.created_at)}</small>
+                </td>
+                <td>
+                    <button class="btn btn-primary btn-sm me-1" onclick="conversationManager.viewConversation(${conv.id})" title="View Details">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-success btn-sm me-1" onclick="conversationManager.quickReply(${conv.id})" title="Quick Reply">
+                        <i class="fas fa-reply"></i>
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="conversationManager.deleteConversation(${conv.id})" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+        
+        this.renderPagination();
+    }
+    
+    renderPagination() {
+        const totalPages = Math.ceil(this.filteredConversations.length / this.itemsPerPage);
+        const nav = document.getElementById('paginationNav');
+        const info = document.getElementById('paginationInfo');
+        
+        const start = (this.currentPage - 1) * this.itemsPerPage + 1;
+        const end = Math.min(this.currentPage * this.itemsPerPage, this.filteredConversations.length);
+        const total = this.filteredConversations.length;
+        
+        info.textContent = `Showing ${start}-${end} of ${total} conversations`;
+        
+        if (totalPages <= 1) {
+            nav.innerHTML = '';
+            return;
+        }
+        
+        let paginationHtml = '';
+        
+        // Previous button
+        paginationHtml += `
+            <li class="page-item ${this.currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="conversationManager.goToPage(${this.currentPage - 1})">Previous</a>
+            </li>
+        `;
+        
+        // Page numbers
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= this.currentPage - 2 && i <= this.currentPage + 2)) {
+                paginationHtml += `
+                    <li class="page-item ${i === this.currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="conversationManager.goToPage(${i})">${i}</a>
+                    </li>
+                `;
+            } else if (i === this.currentPage - 3 || i === this.currentPage + 3) {
+                paginationHtml += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+            }
+        }
+        
+        // Next button
+        paginationHtml += `
+            <li class="page-item ${this.currentPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="conversationManager.goToPage(${this.currentPage + 1})">Next</a>
+            </li>
+        `;
+        
+        nav.innerHTML = paginationHtml;
+    }
+    
+    goToPage(page) {
+        const totalPages = Math.ceil(this.filteredConversations.length / this.itemsPerPage);
+        if (page >= 1 && page <= totalPages) {
+            this.currentPage = page;
+            this.renderTable();
+        }
+    }
+    
+    async viewConversation(id) {
+        this.currentConversationId = id;
+        const modal = new bootstrap.Modal(document.getElementById('conversationModal'));
+        
+        try {
+            const response = await fetch(`/api/conversations/${id}`);
+            if (response.ok) {
+                const data = await response.json();
+                this.renderConversationDetails(data);
+                modal.show();
+            } else {
+                this.showError('Failed to load conversation details');
+            }
+        } catch (error) {
+            console.error('Error loading conversation:', error);
+            this.showError('Error loading conversation details');
+        }
+    }
+    
+    renderConversationDetails(conversation) {
+        const modalBody = document.getElementById('conversationModalBody');
+        const modalStatus = document.getElementById('modalStatus');
+        const modalPriority = document.getElementById('modalPriority');
+        
+        modalStatus.value = conversation.status;
+        modalPriority.value = conversation.priority;
+        
+        modalBody.innerHTML = `
+            <div class="conversation-details">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6>Contact Information</h6>
+                        <table class="table table-sm table-borderless">
+                            <tr><td><strong>Name:</strong></td><td>${this.escapeHtml(conversation.contact_name)}</td></tr>
+                            <tr><td><strong>Email:</strong></td><td><a href="mailto:${conversation.contact_email}">${this.escapeHtml(conversation.contact_email)}</a></td></tr>
+                            ${conversation.contact_phone ? `<tr><td><strong>Phone:</strong></td><td><a href="tel:${conversation.contact_phone}">${this.escapeHtml(conversation.contact_phone)}</a></td></tr>` : ''}
+                            <tr><td><strong>Preferred Contact:</strong></td><td>${this.escapeHtml(conversation.preferred_contact)}</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Conversation Info</h6>
+                        <table class="table table-sm table-borderless">
+                            <tr><td><strong>Created:</strong></td><td>${this.formatDateTime(conversation.created_at)}</td></tr>
+                            <tr><td><strong>Model:</strong></td><td><span class="badge bg-info">${this.escapeHtml(conversation.model_id || 'General')}</span></td></tr>
+                            <tr><td><strong>Status:</strong></td><td><span class="badge bg-${this.getStatusColor(conversation.status)}">${this.formatStatus(conversation.status)}</span></td></tr>
+                            <tr><td><strong>Priority:</strong></td><td><span class="badge bg-${this.getPriorityColor(conversation.priority)}">${this.formatPriority(conversation.priority)}</span></td></tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <h6>Messages</h6>
+                <div class="messages-container" style="max-height: 400px; overflow-y: auto;">
+                    ${conversation.messages.map(msg => `
+                        <div class="message-item p-3 mb-3 border rounded">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <strong>${this.escapeHtml(msg.sender_name || 'Unknown')}</strong>
+                                    <span class="badge bg-${this.getMessageTypeColor(msg.message_type)} ms-2">${this.formatMessageType(msg.message_type)}</span>
+                                </div>
+                                <small class="text-muted">${this.formatDateTime(msg.created_at)}</small>
+                            </div>
+                            ${msg.subject ? `<div class="fw-bold mb-2">${this.escapeHtml(msg.subject)}</div>` : ''}
+                            <div class="message-content">${this.escapeHtml(msg.message).replace(/\n/g, '<br>')}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <h6 class="mt-4">Consent Information</h6>
+                <div class="row">
+                    ${conversation.consents.map(consent => `
+                        <div class="col-md-4">
+                            <span class="badge bg-${consent.consent_given ? 'success' : 'secondary'}">${consent.consent_type}: ${consent.consent_given ? 'Yes' : 'No'}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    // Utility methods
+    escapeHtml(unsafe) {
+        return (unsafe || '').toString()
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+    
+    truncate(str, length) {
+        return str.length > length ? str.substring(0, length) + '...' : str;
+    }
+    
+    formatDate(dateString) {
+        return new Date(dateString).toLocaleDateString();
+    }
+    
+    formatTime(dateString) {
+        return new Date(dateString).toLocaleTimeString();
+    }
+    
+    formatDateTime(dateString) {
+        return new Date(dateString).toLocaleString();
+    }
+    
+    formatStatus(status) {
+        return status.replace('_', ' ').toUpperCase();
+    }
+    
+    formatPriority(priority) {
+        return priority.toUpperCase();
+    }
+    
+    formatMessageType(type) {
+        return type.replace('_', ' ').toUpperCase();
+    }
+    
+    getStatusColor(status) {
+        const colors = {
+            'new': 'danger',
+            'in_progress': 'warning',
+            'resolved': 'success',
+            'closed': 'secondary'
+        };
+        return colors[status] || 'secondary';
+    }
+    
+    getPriorityColor(priority) {
+        const colors = {
+            'low': 'secondary',
+            'normal': 'primary',
+            'high': 'warning',
+            'urgent': 'danger'
+        };
+        return colors[priority] || 'primary';
+    }
+    
+    getMessageTypeColor(type) {
+        const colors = {
+            'contact_form': 'primary',
+            'email_in': 'info',
+            'email_out': 'success',
+            'sms_in': 'warning',
+            'sms_out': 'warning',
+            'internal_note': 'secondary'
+        };
+        return colors[type] || 'secondary';
+    }
+    
+    showError(message) {
+        // Simple alert for now - could be enhanced with toast notifications
+        alert('Error: ' + message);
+    }
+    
+    showSuccess(message) {
+        // Simple alert for now - could be enhanced with toast notifications
+        alert('Success: ' + message);
+    }
+    
+    // Additional methods would go here for filtering, searching, bulk actions, etc.
+    search(term) {
+        // Implement search functionality
+    }
+    
+    filterByStatus(status) {
+        // Implement status filtering
+    }
+    
+    filterByModel(model) {
+        // Implement model filtering
+    }
+    
+    filterByPriority(priority) {
+        // Implement priority filtering
+    }
+    
+    async refreshData() {
+        await this.loadConversations();
+        this.showSuccess('Data refreshed');
+    }
+}
+
+// Initialize conversation manager
+const conversationManager = new ConversationManager();
+</script>

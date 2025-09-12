@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Widget Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>Universal Chat Widget Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Configuration</h2>
+        <p>Testing chat widget with model: <strong>modelexample</strong></p>
+        <div id="configStatus" class="status info">Loading chat configuration...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Widget Status</h2>
+        <div id="widgetStatus" class="status info">Checking widget initialization...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>File Upload Test</h2>
+        <input type="file" id="testFile" accept="image/*,application/pdf">
+        <button onclick="testFileUpload()">Test File Upload API</button>
+        <div id="fileTestResult"></div>
+    </div>
+
+    <!-- This will load the chat widget -->
+    <script>
+    // Load chat widget dynamically after checking model settings
+    (async function() {
+        const configStatus = document.getElementById('configStatus');
+        const widgetStatus = document.getElementById('widgetStatus');
+        
+        try {
+            // Check if model has chat enabled via API
+            configStatus.textContent = 'Checking model chat settings...';
+            const response = await fetch('/api/model-profile/modelexample');
+            const data = await response.json();
+            
+            if (data.success && data.model && data.model.chat_enabled) {
+                configStatus.className = 'status success';
+                configStatus.textContent = `✓ Chat enabled for ${data.model.name || 'modelexample'}`;
+                
+                // Load CSS
+                const cssLink = document.createElement('link');
+                cssLink.rel = 'stylesheet';
+                cssLink.href = '/public/universal-chat-widget.css';
+                document.head.appendChild(cssLink);
+                
+                // Set configuration
+                window.modelChatConfig = {
+                    enabled: true,
+                    modelId: data.model.id,
+                    modelSlug: data.model.slug || 'modelexample',
+                    modelName: data.model.name || '',
+                    onlineStatus: data.model.online_status || 'offline',
+                    welcomeMessage: data.model.chat_welcome_message || '',
+                    awayMessage: data.model.chat_away_message || ''
+                };
+                
+                // Load JS
+                const jsScript = document.createElement('script');
+                jsScript.src = '/public/universal-chat-widget.js';
+                jsScript.onload = () => {
+                    widgetStatus.className = 'status success';
+                    widgetStatus.textContent = '✓ Chat widget loaded successfully! Look for the floating chat icon in bottom-right.';
+                };
+                jsScript.onerror = () => {
+                    widgetStatus.className = 'status error';
+                    widgetStatus.textContent = '✗ Failed to load chat widget JavaScript';
+                };
+                document.body.appendChild(jsScript);
+            } else {
+                configStatus.className = 'status error';
+                configStatus.textContent = '✗ Chat not enabled for this model';
+                widgetStatus.className = 'status info';
+                widgetStatus.textContent = 'Chat widget not loaded (chat disabled)';
+                window.modelChatConfig = { enabled: false, reason: 'Chat disabled' };
+            }
+        } catch (error) {
+            console.error('Failed to load chat widget:', error);
+            configStatus.className = 'status error';
+            configStatus.textContent = `✗ Error loading chat config: ${error.message}`;
+            widgetStatus.className = 'status error';
+            widgetStatus.textContent = '✗ Chat widget failed to load';
+            window.modelChatConfig = { enabled: false, reason: 'Load error' };
+        }
+    })();
+
+    async function testFileUpload() {
+        const fileInput = document.getElementById('testFile');
+        const resultDiv = document.getElementById('fileTestResult');
+        
+        if (!fileInput.files.length) {
+            resultDiv.innerHTML = '<div class="status error">Please select a file first</div>';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('uploader_type', 'contact');
+        formData.append('files', fileInput.files[0]);
+
+        try {
+            resultDiv.innerHTML = '<div class="status info">Testing file upload...</div>';
+            
+            // Test with conversation ID 9 (existing conversation)
+            const response = await fetch('/api/chat-files/upload/9', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                resultDiv.innerHTML = `
+                    <div class="status success">
+                        ✓ File uploaded successfully!<br>
+                        Uploaded: ${data.uploaded} files<br>
+                        File ID: ${data.files[0]?.id}
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `<div class="status error">✗ Upload failed: ${data.error}</div>`;
+            }
+        } catch (error) {
+            resultDiv.innerHTML = `<div class="status error">✗ Network error: ${error.message}</div>`;
+        }
+    }
+    </script>
+</body>
+</html>

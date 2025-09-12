@@ -53,7 +53,11 @@ router.get('/:themeSetId/css', async (req, res) => {
             });
         }
 
-        const css = await ThemeColorService.getThemeCSS(themeSetId);
+        // Optional palette override for previews
+        const paletteIdParam = req.query.paletteId || req.query.preview_palette;
+        const paletteId = paletteIdParam ? parseInt(paletteIdParam) : null;
+
+        const css = await ThemeColorService.getThemeCSS(themeSetId, paletteId);
         
         res.setHeader('Content-Type', 'text/css');
         res.send(css);

@@ -235,12 +235,15 @@
 }
 
 .rose-section-header .header-text {
-    background: var(--theme-bg-primary);
+    background: transparent;
     padding: 0 2rem;
     position: relative;
     z-index: 2;
     font-weight: bold;
-    color: var(--theme-header-color, var(--theme-text-primary));
+    color: var(--theme-primary);
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8), 
+                 1px 1px 2px rgba(255, 255, 255, 0.9),
+                 0 0 8px rgba(255, 255, 255, 0.6);
 }
 
 .rose-section-header .header-text::after {
@@ -363,4 +366,48 @@
     .rose-section-header .header-text::after {
         font-size: 1em;
     }
+}
+
+/* Hero section with background image opacity control */
+.hero-with-bg[data-bg-image] {
+    position: relative;
+}
+
+.hero-with-bg[data-bg-image]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    z-index: 1;
+}
+
+/* Dynamic background image and opacity using CSS custom properties */
+.hero-with-bg[data-bg-image] {
+    background-image: none !important;
+}
+
+.hero-with-bg[data-bg-image]::before {
+    background-image: var(--hero-bg-image);
+    opacity: var(--hero-bg-opacity, 0.6);
+}
+
+/* Ensure content is above the background */
+.hero-with-bg .max-w-7xl {
+    position: relative;
+    z-index: 2;
+}
+
+/* Gallery divider rose emoji styling */
+.rose-divider__icon {
+    font-size: 2.4em; /* Double the typical emoji size */
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

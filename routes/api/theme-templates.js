@@ -84,17 +84,17 @@ router.get('/validate-palette/:paletteId', async (req, res) => {
     try {
         const { paletteId } = req.params;
         
-        // Verify palette exists and is active
+        // Verify palette exists
         const paletteCheck = await query(`
             SELECT id, name, display_name 
             FROM color_palettes 
-            WHERE id = ? AND is_active = 1
+            WHERE id = ?
         `, [paletteId]);
         
         if (paletteCheck.length === 0) {
             return res.status(404).json({
                 success: false,
-                message: 'Color palette not found or inactive'
+                message: 'Color palette not found'
             });
         }
         

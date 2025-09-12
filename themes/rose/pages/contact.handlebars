@@ -30,14 +30,16 @@
         <div class="grid md:grid-cols-2 gap-12">
             <!-- Contact Form -->
             {{#if contact_content.contact_form_visible}}
-            <div class="theme-card rose-enhanced p-8 hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="100">
+            <div class="theme-card rose-enhanced p-8 mx-4 hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="100">
                 <h2 class="rose-section-header text-2xl font-bold mb-6 theme-header">
                     <span class="header-text">{{#if contact_content.form_title}}{{contact_content.form_title}}{{else}}🌹 Send a Message{{/if}}</span>
                 </h2>
                 
                 <form method="POST" class="space-y-6" id="contactForm">
-                    <!-- Honeypot field -->
+                    <!-- Honeypot fields -->
                     <input type="text" name="website" style="display: none;" tabindex="-1" autocomplete="off">
+                    <input type="text" name="company" style="display: none;" tabindex="-1" autocomplete="off">
+                    <input type="tel" name="phone_alt" style="display: none;" tabindex="-1" autocomplete="off">
                     
                     <div>
                         <label for="name" class="block text-sm font-medium mb-2 theme-text-subtle">
@@ -76,15 +78,24 @@
                     </div>
                     
                     <div>
-                        <label for="duration" class="block text-sm font-medium mb-2 theme-text-subtle">
-                            {{#if contact_content.form_duration_label}}{{contact_content.form_duration_label}}{{else}}Duration{{/if}}
+                        <label for="subject" class="block text-sm font-medium mb-2 theme-text-subtle">
+                            {{#if contact_content.form_subject_label}}{{contact_content.form_subject_label}}{{else}}Subject{{/if}}
                         </label>
-                        <select id="duration" name="duration" 
+                        <input type="text" id="subject" name="subject" 
+                               class="contact-input w-full px-4 py-3 rounded-lg border theme-border-primary theme-bg-primary theme-text-primary focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                               placeholder="Brief description of your inquiry">
+                        <div class="error-message hidden text-sm text-red-500 mt-1"></div>
+                    </div>
+                    
+                    <div>
+                        <label for="preferred_contact" class="block text-sm font-medium mb-2 theme-text-subtle">
+                            {{#if contact_content.form_contact_preference_label}}{{contact_content.form_contact_preference_label}}{{else}}Preferred Contact Method{{/if}}
+                        </label>
+                        <select id="preferred_contact" name="preferred_contact" 
                                 class="contact-input w-full px-4 py-3 rounded-lg border theme-border-primary theme-bg-primary theme-text-primary focus:outline-none focus:ring-2 focus:ring-opacity-50">
-                            <option value="">Select duration</option>
-                            {{#each (split (or contact_content.form_duration_options "1 Hour,90 Minutes,2 Hours,3 Hours,Overnight,Extended (please specify)") ",")}}
-                                <option value="{{trim this}}">{{trim this}}</option>
-                            {{/each}}
+                            <option value="email">Email</option>
+                            <option value="phone">Phone</option>
+                            <option value="either">Either</option>
                         </select>
                         <div class="error-message hidden text-sm text-red-500 mt-1"></div>
                     </div>
@@ -99,17 +110,48 @@
                         <div class="error-message hidden text-sm text-red-500 mt-1"></div>
                     </div>
                     
+                    <!-- Consent checkboxes -->
+                    <div class="space-y-3 border-t theme-border-primary pt-6">
+                        <h4 class="text-sm font-medium theme-text-primary">Privacy & Consent</h4>
+                        
+                        <div class="flex items-start space-x-3">
+                            <input type="checkbox" id="consent_contact" name="consent_contact" required
+                                   class="mt-1 h-4 w-4 theme-accent rounded border-gray-300 focus:ring-2 focus:ring-offset-2">
+                            <label for="consent_contact" class="text-sm theme-text-secondary">
+                                I consent to being contacted regarding my inquiry <span class="text-red-500">*</span>
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-start space-x-3">
+                            <input type="checkbox" id="consent_marketing" name="consent_marketing"
+                                   class="mt-1 h-4 w-4 theme-accent rounded border-gray-300 focus:ring-2 focus:ring-offset-2">
+                            <label for="consent_marketing" class="text-sm theme-text-secondary">
+                                I would like to receive updates and promotional communications (optional)
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-start space-x-3">
+                            <input type="checkbox" id="consent_analytics" name="consent_analytics"
+                                   class="mt-1 h-4 w-4 theme-accent rounded border-gray-300 focus:ring-2 focus:ring-offset-2">
+                            <label for="consent_analytics" class="text-sm theme-text-secondary">
+                                I consent to analytics tracking to improve the website experience (optional)
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Turnstile widget placeholder -->
+                    <div id="turnstile-widget" class="flex justify-center"></div>
+                    
                     <button type="submit" id="submitBtn"
                             class="rose-button w-full md:w-auto theme-accent-bg theme-text-inverted py-3 px-6 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
                         <span class="button-text">{{#if contact_content.form_button_text}}{{contact_content.form_button_text}}{{else}}Send Message{{/if}}</span>
-                        <span class="spinner hidden">Sending...</span>
                     </button>
                 </form>
             </div>
             {{/if}}
             
             <!-- Contact Information Sections -->
-            <div class="space-y-8">
+            <div class="space-y-8 mx-4">
                 <!-- Direct Contact -->
                 {{#if contact_content.contact_direct_visible}}
                 <div class="theme-card rose-enhanced p-8 hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="200">
@@ -241,40 +283,174 @@
     </div>
 </section>
 
+<!-- Turnstile Script -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
 <!-- Contact Form JavaScript -->
 <script>
-// Contact form handling with spam protection
+// Contact form handling with enhanced security and API integration
 let lastSubmitTime = 0;
+let turnstileToken = null;
 const SUBMIT_COOLDOWN = 5000; // 5 seconds
 
-document.getElementById('contactForm')?.addEventListener('submit', function(e) {
-    e.preventDefault();
+// Initialize Turnstile when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    initializeTurnstile();
+    initializeFormHandling();
+    initializeFocusStyles();
+});
+
+function initializeTurnstile() {
+    // Only initialize if Turnstile script is available and site key is configured
+    const siteKey = '{{TURNSTILE_SITE_KEY}}';
+    const hasSiteKey = siteKey && siteKey !== '{{TURNSTILE_SITE_KEY}}' && siteKey.trim() !== '';
     
-    // Throttle submissions
-    const now = Date.now();
-    if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
-        showError('Please wait before submitting again.');
-        return;
+    if (typeof turnstile !== 'undefined' && hasSiteKey) {
+        turnstile.render('#turnstile-widget', {
+            sitekey: siteKey,
+            callback: function(token) {
+                turnstileToken = token;
+            },
+            'expired-callback': function() {
+                turnstileToken = null;
+            },
+            'error-callback': function() {
+                turnstileToken = null;
+                showError('Security verification failed. Please refresh the page.');
+            }
+        });
+    } else {
+        // Hide Turnstile widget if not configured
+        const widget = document.getElementById('turnstile-widget');
+        if (widget) {
+            widget.style.display = 'none';
+        }
+        // Set flag that Turnstile is not required
+        window.turnstileRequired = false;
     }
+}
+
+function initializeFormHandling() {
+    const form = document.getElementById('contactForm');
+    if (!form) return;
     
-    // Get form data
-    const formData = new FormData(this);
-    const data = Object.fromEntries(formData);
-    
-    // Check honeypot
-    if (data.website) {
-        // Silent fail for bots
-        return;
-    }
-    
-    // Clear previous errors
-    clearErrors();
-    
-    // Validate required fields
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Throttle submissions
+        const now = Date.now();
+        if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
+            showError('Please wait before submitting again.');
+            return;
+        }
+        
+        // Get form data
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+        
+        // Check honeypot fields
+        if (data.website || data.company || data.phone_alt) {
+            // Silent fail for bots
+            return;
+        }
+        
+        // Clear previous errors
+        clearErrors();
+        
+        // Validate form
+        if (!validateForm(data)) {
+            return;
+        }
+        
+        // Add Turnstile token (only if Turnstile is actually required and configured)
+        if (window.turnstileRequired !== false) {
+            if (typeof turnstile !== 'undefined' && turnstileToken) {
+                data['cf-turnstile-response'] = turnstileToken;
+            } else if (typeof turnstile !== 'undefined') {
+                showError('Please complete the security verification.');
+                return;
+            }
+        }
+        // If Turnstile is not required (turnstileRequired === false), continue without it
+        
+        // Add model context if available
+        const modelId = window.modelId || document.querySelector('meta[name="model-id"]')?.content;
+        if (modelId) {
+            data.model_id = modelId;
+        }
+        
+        // Convert checkbox values to booleans
+        data.consent_contact = document.getElementById('consent_contact').checked;
+        data.consent_marketing = document.getElementById('consent_marketing').checked;
+        data.consent_analytics = document.getElementById('consent_analytics').checked;
+        
+        // Show loading state
+        const submitBtn = document.getElementById('submitBtn');
+        const buttonText = submitBtn.querySelector('.button-text');
+        const originalText = buttonText.textContent;
+        
+        submitBtn.disabled = true;
+        buttonText.textContent = 'Sending...';
+        
+        try {
+            // Submit to API endpoint
+            const response = await fetch('/api/contact/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                lastSubmitTime = now;
+                
+                // Show success message
+                showSuccess('Thank you for your message! I will get back to you soon.');
+                
+                // Reset form
+                this.reset();
+                
+                // Reset Turnstile
+                if (typeof turnstile !== 'undefined' && window.turnstileRequired !== false) {
+                    const widget = document.getElementById('turnstile-widget');
+                    if (widget && widget.firstChild) {
+                        turnstile.reset(widget.firstChild);
+                    }
+                    turnstileToken = null;
+                }
+            } else {
+                // Handle validation errors
+                if (result.details) {
+                    handleValidationErrors(result.details);
+                } else {
+                    showError(result.error || 'An error occurred. Please try again.');
+                }
+            }
+            
+        } catch (error) {
+            console.error('Contact form error:', error);
+            showError('Sorry, there was an error sending your message. Please try again.');
+            
+        } finally {
+            // Reset button state
+            submitBtn.disabled = false;
+            buttonText.textContent = originalText;
+        }
+    });
+}
+
+function validateForm(data) {
     let hasErrors = false;
     
+    // Required field validation
     if (!data.name?.trim()) {
         showFieldError('name', 'Name is required.');
+        hasErrors = true;
+    } else if (data.name.length < 2) {
+        showFieldError('name', 'Name must be at least 2 characters.');
         hasErrors = true;
     }
     
@@ -289,63 +465,48 @@ document.getElementById('contactForm')?.addEventListener('submit', function(e) {
     if (!data.message?.trim()) {
         showFieldError('message', 'Message is required.');
         hasErrors = true;
+    } else if (data.message.length < 10) {
+        showFieldError('message', 'Message must be at least 10 characters.');
+        hasErrors = true;
     }
     
-    if (hasErrors) return;
+    // Phone validation (if provided)
+    if (data.phone && data.phone.trim() && !isValidPhone(data.phone)) {
+        showFieldError('phone', 'Please enter a valid phone number.');
+        hasErrors = true;
+    }
     
-    // Show loading state
-    const submitBtn = document.getElementById('submitBtn');
-    const buttonText = submitBtn.querySelector('.button-text');
-    const spinner = submitBtn.querySelector('.spinner');
+    // Consent validation
+    if (!document.getElementById('consent_contact').checked) {
+        showError('You must consent to being contacted to submit this form.');
+        hasErrors = true;
+    }
     
-    submitBtn.disabled = true;
-    buttonText.classList.add('hidden');
-    spinner.classList.remove('hidden');
-    
-    // Submit form to backend
-    fetch(window.location.pathname, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        if (response.ok) {
-            return response.json();
+    return !hasErrors;
+}
+
+function handleValidationErrors(errors) {
+    errors.forEach(error => {
+        const fieldName = error.path?.[0];
+        if (fieldName && document.getElementById(fieldName)) {
+            showFieldError(fieldName, error.message);
+        } else {
+            showError(error.message);
         }
-        throw new Error('Network response was not ok');
-    })
-    .then(result => {
-        lastSubmitTime = now;
-        
-        // Reset button state
-        submitBtn.disabled = false;
-        buttonText.classList.remove('hidden');
-        spinner.classList.add('hidden');
-        
-        // Show success message
-        alert('Thank you for your message! I will get back to you soon.');
-        
-        // Reset form
-        this.reset();
-    })
-    .catch(error => {
-        // Reset button state
-        submitBtn.disabled = false;
-        buttonText.classList.remove('hidden');
-        spinner.classList.add('hidden');
-        
-        // Show error message
-        showError('Sorry, there was an error sending your message. Please try again.');
     });
-});
+}
 
 function showFieldError(fieldName, message) {
     const field = document.getElementById(fieldName);
+    if (!field) return;
+    
     const errorDiv = field.parentElement.querySelector('.error-message');
     
-    field.classList.add('border-red-500');
-    field.classList.add('focus:ring-red-500');
-    errorDiv.textContent = message;
-    errorDiv.classList.remove('hidden');
+    field.classList.add('border-red-500', 'focus:ring-red-500');
+    if (errorDiv) {
+        errorDiv.textContent = message;
+        errorDiv.classList.remove('hidden');
+    }
 }
 
 function clearErrors() {
@@ -358,20 +519,78 @@ function clearErrors() {
 }
 
 function showError(message) {
-    alert(message);
+    // Create or update error notification
+    const existingError = document.getElementById('error-notification');
+    if (existingError) {
+        existingError.remove();
+    }
+    
+    const notification = document.createElement('div');
+    notification.id = 'error-notification';
+    notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 max-w-sm';
+    notification.innerHTML = `
+        <div class="flex items-center justify-between">
+            <span>${message}</span>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+                </svg>
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 5000);
+}
+
+function showSuccess(message) {
+    // Create success notification
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 max-w-sm';
+    notification.innerHTML = `
+        <div class="flex items-center justify-between">
+            <span>${message}</span>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+                </svg>
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 5000);
 }
 
 function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-// Enhanced focus styles using theme accent color
-document.addEventListener('DOMContentLoaded', function() {
-    const inputs = document.querySelectorAll('.contact-input');
+function isValidPhone(phone) {
+    // Basic international phone validation
+    return /^[\+]?[1-9][\d]{0,15}$/.test(phone.replace(/[\s\-\(\)]/g, ''));
+}
+
+function initializeFocusStyles() {
+    const inputs = document.querySelectorAll('.contact-input, input[type="checkbox"]');
     inputs.forEach(input => {
         input.addEventListener('focus', function() {
-            this.style.borderColor = 'var(--theme-accent)';
-            this.style.boxShadow = `0 0 0 3px color-mix(in srgb, var(--theme-accent), transparent 75%)`;
+            if (!this.classList.contains('border-red-500')) {
+                this.style.borderColor = 'var(--theme-accent)';
+                this.style.boxShadow = `0 0 0 3px color-mix(in srgb, var(--theme-accent), transparent 75%)`;
+            }
         });
         
         input.addEventListener('blur', function() {
@@ -381,7 +600,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-});
+}
 </script>
 
 <!-- Contact Form Styles -->
@@ -427,3 +646,6 @@ document.addEventListener('DOMContentLoaded', function() {
     100% { transform: rotate(360deg); }
 }
 </style>
+
+<!-- Universal Chat Widget (only shows if model has chat enabled) -->
+{{{chatWidget modelSlug}}}

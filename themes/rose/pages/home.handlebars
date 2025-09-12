@@ -4,15 +4,10 @@
 
 <!-- Enhanced Hero Section with Rose Garden -->
 {{#if content.hero_section_visible}}
-<section class="relative {{#if content.heroBackgroundImageUrl}}bg-cover bg-center bg-fixed{{else}}theme-accent-bg theme-text-inverted{{/if}} rose-garden-bg py-20 overflow-hidden" 
-         {{#if content.heroBackgroundImageUrl}}style="background-image: url('{{content.heroBackgroundImageUrl}}')"{{/if}}>
+<section class="relative {{#unless content.heroBackgroundImageUrl}}theme-accent-bg theme-text-inverted{{/unless}} rose-garden-bg py-20 overflow-hidden hero-with-bg" 
+         {{#if content.heroBackgroundImageUrl}}data-bg-image="{{content.heroBackgroundImageUrl}}" data-bg-opacity="{{content.hero_background_opacity}}"{{/if}}>
     <!-- Sprite-based subtle icon row -->
     <!-- Removed auto sprite row -->
-    
-    {{#if content.heroBackgroundImageUrl}}
-    <!-- Dynamic overlay for better text contrast (DB-driven) -->
-    <div class="absolute inset-0 bg-black" style="opacity: {{#if content.hero_background_opacity}}{{content.hero_background_opacity}}{{else}}{{#if hero_background_opacity}}{{hero_background_opacity}}{{else}}0.6{{/if}}{{/if}};"></div>
-    {{/if}}
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 {{#if content.heroBackgroundImageUrl}}relative z-10{{/if}}">
         <div class="text-center">
             <!-- Rose Section Header -->
@@ -21,7 +16,7 @@
                     {{#if content.hero_title}}{{content.hero_title}}{{else}}{{siteName}}{{/if}}
                 </span>
             </div>
-            <p class="text-lg mb-8 max-w-3xl mx-auto leading-relaxed {{#if content.heroBackgroundImageUrl}}text-white opacity-80{{else}}theme-text-inverted opacity-90{{/if}}">
+            <p class="text-lg mb-8 max-w-3xl mx-auto leading-relaxed {{#if content.heroBackgroundImageUrl}}text-gray-800 font-medium{{else}}theme-text-inverted opacity-90{{/if}}">
                 {{#if content.hero_subtitle}}{{content.hero_subtitle}}{{else}}{{#if content.tagline}}{{content.tagline}}{{else}}Elegance and sophistication with discretion{{/if}}{{/if}}
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
@@ -47,20 +42,20 @@
                 <!-- Secondary Outline Button -->
                 {{#if content.hero_button_2_text}}
                     {{#if (eq content.hero_button_2_link 'calendar')}}
-                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-white text-white hover:bg-white hover:text-gray-900{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_2_text}}</a>
+                        <a href="/{{modelSlug}}/calendar{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_2_text}}</a>
                     {{else if (eq content.hero_button_2_link 'contact')}}
-                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-white text-white hover:bg-white hover:text-gray-900{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_2_text}}</a>
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_2_text}}</a>
                     {{else if (eq content.hero_button_2_link 'about')}}
-                        <a href="/{{modelSlug}}/about{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-white text-white hover:bg-white hover:text-gray-900{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_2_text}}</a>
+                        <a href="/{{modelSlug}}/about{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_2_text}}</a>
                     {{else if (eq content.hero_button_2_link 'rates')}}
-                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-white text-white hover:bg-white hover:text-gray-900{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_2_text}}</a>
+                        <a href="/{{modelSlug}}/rates{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_2_text}}</a>
                     {{else if (eq content.hero_button_2_link 'gallery')}}
-                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-white text-white hover:bg-white hover:text-gray-900{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_2_text}}</a>
+                        <a href="/{{modelSlug}}/gallery{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_2_text}}</a>
                     {{else}}
-                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-white text-white hover:bg-white hover:text-gray-900{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_2_text}}</a>
+                        <a href="/{{modelSlug}}/contact{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">{{content.hero_button_2_text}}</a>
                     {{/if}}
                 {{else}}
-                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-white text-white hover:bg-white hover:text-gray-900{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">Contact Me</a>
+                    <a href="/{{modelSlug}}/contact{{previewParam}}" class="{{#if content.heroBackgroundImageUrl}}border-2 border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white{{else}}theme-accent-border border-2 theme-accent hover:theme-accent-bg hover:theme-text-inverted{{/if}} rose-button px-6 py-3 rounded-full font-semibold transition-all duration-300 inline-flex items-center justify-center min-h-12">Contact Me</a>
                 {{/if}}
             </div>
         </div>
