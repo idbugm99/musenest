@@ -1,0 +1,621 @@
+/* Rose Theme - Comprehensive Responsive Design */
+/* Mobile-first approach with tablet and desktop enhancements */
+
+/* ============================================
+   MOBILE FIRST BASE STYLES (320px+)
+   ============================================ */
+
+/* Ensure proper mobile viewport */
+html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+/* Mobile-friendly containers */
+.container,
+.max-w-7xl,
+.max-w-6xl,
+.max-w-5xl {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    width: 100%;
+}
+
+/* Mobile typography */
+h1 {
+    font-size: clamp(1.75rem, 5vw, 3rem);
+    line-height: 1.2;
+}
+
+h2 {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    line-height: 1.3;
+}
+
+h3 {
+    font-size: clamp(1.25rem, 3.5vw, 2rem);
+    line-height: 1.4;
+}
+
+p {
+    font-size: clamp(0.875rem, 2.5vw, 1.125rem);
+    line-height: 1.6;
+}
+
+/* ============================================
+   NAVIGATION - MOBILE
+   ============================================ */
+
+/* Mobile menu button */
+.mobile-menu-button {
+    display: block !important;
+    z-index: 1000;
+}
+
+/* Mobile navigation */
+@media (max-width: 768px) {
+    nav {
+        position: relative;
+    }
+
+    nav ul {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--theme-bg-primary, #fff);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        flex-direction: column;
+        padding: 1rem 0;
+        z-index: 999;
+    }
+
+    nav ul.mobile-menu-open {
+        display: flex !important;
+    }
+
+    nav li {
+        width: 100%;
+        text-align: center;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    nav a {
+        display: block;
+        padding: 0.5rem;
+        font-size: 1.125rem;
+    }
+}
+
+/* ============================================
+   HERO SECTION - RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .hero-section,
+    .hero-with-bg {
+        min-height: 60vh !important;
+        padding: 2rem 1rem !important;
+    }
+
+    .hero-content {
+        padding: 2rem 1rem !important;
+    }
+
+    .hero-title {
+        font-size: 2rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem !important;
+        line-height: 1.6 !important;
+    }
+
+    /* Reduce parallax effect on mobile */
+    .hero-with-bg[data-bg-image]::before {
+        background-attachment: scroll !important;
+    }
+}
+
+/* ============================================
+   BUTTONS - TOUCH-FRIENDLY
+   ============================================ */
+
+@media (max-width: 768px) {
+    .btn,
+    button,
+    .theme-accent-bg,
+    .rose-button {
+        min-height: 44px !important; /* Apple touch target guideline */
+        padding: 0.75rem 1.5rem !important;
+        font-size: 1rem !important;
+    }
+
+    /* Stack buttons vertically on mobile */
+    .button-group {
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+
+    .button-group > * {
+        width: 100% !important;
+    }
+}
+
+/* ============================================
+   CARDS & GRID LAYOUTS
+   ============================================ */
+
+@media (max-width: 480px) {
+    /* Single column on small mobile */
+    .grid,
+    .grid-cols-2,
+    .grid-cols-3,
+    .grid-cols-4 {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    /* Two columns on large mobile/small tablet */
+    .grid-cols-3,
+    .grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem !important;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    /* Tablet: 2-3 columns depending on original layout */
+    .grid-cols-4 {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+
+    .grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* Card spacing and sizing */
+@media (max-width: 768px) {
+    .card,
+    .theme-card,
+    .rose-enhanced {
+        margin-bottom: 1.5rem;
+        padding: 1rem !important;
+    }
+
+    /* Reduce card shadows on mobile for performance */
+    .theme-card.rose-enhanced {
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important;
+    }
+
+    .theme-card.rose-enhanced:hover {
+        transform: translateY(-4px) scale(1.01) !important;
+    }
+}
+
+/* ============================================
+   GALLERY - RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    /* Gallery grid */
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+        gap: 0.5rem !important;
+    }
+
+    /* Gallery filters */
+    .gallery-filters {
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+    }
+
+    .gallery-filter-btn {
+        flex: 1 1 calc(50% - 0.5rem) !important;
+        min-width: 120px !important;
+        font-size: 0.875rem !important;
+    }
+
+    /* Gallery lightbox/modal */
+    .gallery-modal,
+    .lightbox {
+        padding: 1rem !important;
+    }
+
+    .gallery-modal-content {
+        max-width: 95vw !important;
+        max-height: 85vh !important;
+    }
+
+    /* Gallery section headers */
+    .rose-section-header {
+        margin: 2rem 0 1rem 0 !important;
+    }
+
+    .rose-section-header .header-text {
+        padding: 0 1rem !important;
+        font-size: 1.25rem !important;
+    }
+}
+
+/* ============================================
+   RATES/PRICING - RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .rates-container,
+    .pricing-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+
+    .rate-card,
+    .pricing-card {
+        padding: 1.5rem 1rem !important;
+    }
+
+    .rate-amount,
+    .price {
+        font-size: 1.75rem !important;
+    }
+
+    .rate-duration {
+        font-size: 0.875rem !important;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table thead {
+        display: none; /* Hide headers on mobile, use card layout instead */
+    }
+
+    table tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 8px;
+        padding: 1rem;
+    }
+
+    table td {
+        display: block;
+        text-align: left !important;
+        padding: 0.5rem 0 !important;
+        border: none !important;
+    }
+
+    table td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: inline-block;
+        width: 100px;
+        margin-right: 1rem;
+    }
+}
+
+/* ============================================
+   CONTACT FORMS - MOBILE
+   ============================================ */
+
+@media (max-width: 768px) {
+    form {
+        padding: 1rem !important;
+    }
+
+    .form-row,
+    .form-group {
+        flex-direction: column !important;
+    }
+
+    .form-row > *,
+    .form-group > * {
+        width: 100% !important;
+        margin-bottom: 1rem !important;
+    }
+
+    input,
+    textarea,
+    select {
+        width: 100% !important;
+        padding: 0.75rem !important;
+        font-size: 1rem !important;
+        min-height: 44px !important;
+    }
+
+    textarea {
+        min-height: 120px !important;
+    }
+
+    label {
+        font-size: 0.875rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+}
+
+/* ============================================
+   CALENDAR - RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .calendar-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .calendar-grid {
+        min-width: 280px;
+        font-size: 0.875rem !important;
+    }
+
+    .calendar-day {
+        min-height: 60px !important;
+        padding: 0.25rem !important;
+    }
+
+    .calendar-event {
+        font-size: 0.75rem !important;
+        padding: 0.25rem !important;
+    }
+}
+
+/* ============================================
+   TESTIMONIALS - RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .testimonials-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+
+    .testimonial-card {
+        padding: 1.5rem 1rem !important;
+    }
+
+    .testimonial-text {
+        font-size: 0.9375rem !important;
+        line-height: 1.6 !important;
+    }
+
+    .testimonial-author {
+        font-size: 0.875rem !important;
+    }
+}
+
+/* ============================================
+   FOOTER - RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    footer {
+        padding: 2rem 1rem !important;
+    }
+
+    .footer-columns {
+        flex-direction: column !important;
+        gap: 2rem !important;
+    }
+
+    .footer-column {
+        width: 100% !important;
+        text-align: center !important;
+    }
+
+    .footer-links {
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    .social-icons {
+        justify-content: center !important;
+        margin-top: 1rem !important;
+    }
+}
+
+/* ============================================
+   IMAGES - RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .profile-image,
+    .portrait-image {
+        max-width: 200px !important;
+        margin: 0 auto !important;
+    }
+
+    .hero-image {
+        max-width: 100% !important;
+        height: auto !important;
+        object-fit: cover;
+    }
+}
+
+/* ============================================
+   ROSE DECORATIVE ELEMENTS - MOBILE
+   ============================================ */
+
+@media (max-width: 768px) {
+    /* Simplify or hide decorative elements on mobile for performance */
+    .rose-petals {
+        display: none !important; /* Hide floating petals on mobile */
+    }
+
+    .rose-flower {
+        width: 24px !important;
+        height: 24px !important;
+    }
+
+    .rose-svg--sm {
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    .rose-svg--lg {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    /* Reduce animations on mobile */
+    @media (prefers-reduced-motion: no-preference) {
+        .rose-flower,
+        .accent-orb {
+            animation-duration: 6s !important; /* Slower animations */
+        }
+    }
+
+    /* Disable complex gradients and shadows on low-end devices */
+    .rose-garden-bg {
+        background: linear-gradient(135deg, var(--rose-blush) 0%, var(--rose-pale) 100%) !important;
+        background-image: none !important; /* Remove complex pattern on mobile */
+    }
+}
+
+/* ============================================
+   UTILITY CLASSES - RESPONSIVE
+   ============================================ */
+
+/* Hide on mobile */
+.hide-mobile {
+    display: none !important;
+}
+
+/* Show only on mobile */
+.show-mobile {
+    display: block !important;
+}
+
+@media (min-width: 769px) {
+    .hide-mobile {
+        display: block !important;
+    }
+
+    .show-mobile {
+        display: none !important;
+    }
+}
+
+/* Text alignment */
+@media (max-width: 768px) {
+    .text-center-mobile {
+        text-align: center !important;
+    }
+
+    .text-left-mobile {
+        text-align: left !important;
+    }
+}
+
+/* ============================================
+   TABLET SPECIFIC (769px - 1024px)
+   ============================================ */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+
+    /* Tablet-optimized grid */
+    .grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Tablet hero */
+    .hero-section {
+        min-height: 70vh !important;
+    }
+
+    /* Tablet typography */
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    h2 {
+        font-size: 2rem;
+    }
+}
+
+/* ============================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================ */
+
+@media (max-width: 768px) {
+    /* Disable expensive effects on mobile */
+    * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Reduce motion for better performance */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+}
+
+/* ============================================
+   LANDSCAPE MOBILE (COMMON ISSUE)
+   ============================================ */
+
+@media (max-width: 768px) and (orientation: landscape) {
+    .hero-section,
+    .hero-with-bg {
+        min-height: 100vh !important;
+    }
+
+    nav ul {
+        max-height: 50vh;
+        overflow-y: auto;
+    }
+}
+
+/* ============================================
+   ACCESSIBILITY IMPROVEMENTS
+   ============================================ */
+
+@media (max-width: 768px) {
+    /* Larger touch targets */
+    a,
+    button,
+    input,
+    select,
+    textarea {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Better focus indicators on mobile */
+    a:focus,
+    button:focus,
+    input:focus,
+    select:focus,
+    textarea:focus {
+        outline: 3px solid var(--theme-accent);
+        outline-offset: 2px;
+    }
+}
