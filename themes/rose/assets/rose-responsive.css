@@ -615,24 +615,73 @@ p {
         display: block !important;
     }
 
-    /* Ensure month navigation is visible and functional */
+    /* Force navigation section to be visible even if conditional hides it */
+    .flex.justify-between.items-center.mb-8 {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 1rem !important;
+    }
+
+    /* Ensure month title is visible and centered */
     #month-title {
         display: block !important;
         font-size: 1.5rem !important;
+        text-align: center !important;
+        width: 100% !important;
+        order: 1 !important;
+        margin-bottom: 1rem !important;
     }
 
-    #prev-month,
-    #next-month {
+    /* Position Previous button on the left */
+    #prev-month {
         display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         min-height: 44px !important;
         padding: 0.75rem 1rem !important;
+        order: 2 !important;
+    }
+
+    /* Position Next button on the right */
+    #next-month {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-height: 44px !important;
+        padding: 0.75rem 1rem !important;
+        order: 3 !important;
     }
 
     /* Hide button text on phones, show icons only for space */
-    #prev-month span:not(.fas),
-    #next-month span:not(.fas) {
+    #prev-month span:not(.fas):not(.fa-chevron-left),
+    #next-month span:not(.fas):not(.fa-chevron-right) {
         display: none;
     }
+
+    /* Hide the rose SVG decoration in navigation */
+    #month-title + img.rose-svg {
+        display: none !important;
+    }
+}
+
+/* Fix toggle button text visibility (all screen sizes) */
+#list-view-btn,
+#month-view-btn {
+    color: var(--theme-text-primary) !important;
+    background-color: transparent !important;
+}
+
+#list-view-btn.active,
+#month-view-btn.active {
+    background-color: var(--theme-accent) !important;
+    color: white !important;
+}
+
+#list-view-btn:not(.active),
+#month-view-btn:not(.active) {
+    color: var(--theme-accent) !important;
+    background-color: transparent !important;
 }
 
 /* ============================================
