@@ -1,0 +1,500 @@
+/* Universal Responsive Design - Shared Across All Themes */
+/* Mobile-first approach for Phoenix4GE */
+
+/* ============================================
+   CORE MOBILE BASE (320px+)
+   ============================================ */
+
+html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+/* Mobile containers */
+.container,
+.max-w-7xl,
+.max-w-6xl,
+.max-w-5xl,
+.max-w-4xl {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    width: 100%;
+}
+
+/* Responsive typography */
+h1 { font-size: clamp(1.75rem, 5vw, 3.75rem); line-height: 1.2; }
+h2 { font-size: clamp(1.5rem, 4vw, 2.5rem); line-height: 1.3; }
+h3 { font-size: clamp(1.25rem, 3.5vw, 1.875rem); line-height: 1.4; }
+h4 { font-size: clamp(1.125rem, 3vw, 1.5rem); line-height: 1.5; }
+p { font-size: clamp(0.875rem, 2.5vw, 1.125rem); line-height: 1.6; }
+
+/* ============================================
+   NAVIGATION - UNIVERSAL
+   ============================================ */
+
+@media (max-width: 768px) {
+    nav, .nav, .navbar {
+        position: relative;
+    }
+
+    nav ul, .nav ul, .navbar ul {
+        flex-direction: column !important;
+    }
+
+    nav li, .nav li, .navbar li {
+        width: 100%;
+        text-align: center;
+        padding: 0.75rem 1rem;
+    }
+
+    nav a, .nav a, .navbar a {
+        display: block;
+        padding: 0.75rem 1rem;
+        font-size: 1.125rem;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* ============================================
+   HERO SECTIONS
+   ============================================ */
+
+@media (max-width: 768px) {
+    .hero, .hero-section, [class*="hero"] {
+        min-height: 60vh !important;
+        padding: 2rem 1rem !important;
+    }
+
+    .hero-content, [class*="hero-content"] {
+        padding: 2rem 1rem !important;
+    }
+
+    .hero-title, [class*="hero-title"], .hero h1 {
+        font-size: 2rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .hero-subtitle, [class*="hero-subtitle"], .hero h2 {
+        font-size: 1rem !important;
+    }
+
+    /* Fix parallax on mobile */
+    [style*="background-attachment: fixed"] {
+        background-attachment: scroll !important;
+    }
+}
+
+/* ============================================
+   BUTTONS - TOUCH FRIENDLY
+   ============================================ */
+
+@media (max-width: 768px) {
+    button, .btn, [class*="button"], a.btn {
+        min-height: 44px !important;
+        padding: 0.75rem 1.5rem !important;
+        font-size: 1rem !important;
+    }
+
+    .button-group, [class*="btn-group"] {
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+
+    .button-group > *, [class*="btn-group"] > * {
+        width: 100% !important;
+    }
+}
+
+/* ============================================
+   GRID LAYOUTS
+   ============================================ */
+
+/* Small mobile: single column */
+@media (max-width: 480px) {
+    .grid, [class*="grid-cols"], [class*="gallery-grid"] {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+}
+
+/* Large mobile: 2 columns */
+@media (min-width: 481px) and (max-width: 768px) {
+    [class*="grid-cols-3"], [class*="grid-cols-4"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem !important;
+    }
+}
+
+/* Tablet: 2-3 columns */
+@media (min-width: 769px) and (max-width: 1024px) {
+    [class*="grid-cols-4"] {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+
+    [class*="grid-cols-3"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+
+@media (max-width: 768px) {
+    .card, [class*="card"], .theme-card {
+        margin-bottom: 1.5rem;
+        padding: 1rem !important;
+    }
+
+    .card:hover, [class*="card"]:hover {
+        transform: translateY(-4px) scale(1.01) !important;
+    }
+}
+
+/* ============================================
+   GALLERY
+   ============================================ */
+
+@media (max-width: 768px) {
+    .gallery-grid, [class*="gallery"] [class*="grid"] {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+        gap: 0.5rem !important;
+    }
+
+    .gallery-filters, [class*="gallery-filter"] {
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+    }
+
+    .gallery-filter-btn, [class*="filter-btn"] {
+        flex: 1 1 calc(50% - 0.5rem) !important;
+        min-width: 120px !important;
+        font-size: 0.875rem !important;
+    }
+
+    .gallery-modal, .lightbox, [class*="modal"] {
+        padding: 1rem !important;
+    }
+
+    .gallery-modal-content, [class*="modal-content"] {
+        max-width: 95vw !important;
+        max-height: 85vh !important;
+    }
+}
+
+/* ============================================
+   FORMS
+   ============================================ */
+
+@media (max-width: 768px) {
+    form {
+        padding: 1rem !important;
+    }
+
+    .form-row, .form-group, [class*="form-"] {
+        flex-direction: column !important;
+    }
+
+    .form-row > *, .form-group > * {
+        width: 100% !important;
+        margin-bottom: 1rem !important;
+    }
+
+    input, textarea, select {
+        width: 100% !important;
+        padding: 0.75rem !important;
+        font-size: 1rem !important;
+        min-height: 44px !important;
+    }
+
+    textarea {
+        min-height: 120px !important;
+    }
+
+    label {
+        font-size: 0.875rem !important;
+        margin-bottom: 0.5rem !important;
+        display: block !important;
+    }
+}
+
+/* ============================================
+   TABLES - RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Card-style table for mobile */
+    table.mobile-cards thead {
+        display: none;
+    }
+
+    table.mobile-cards tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 8px;
+        padding: 1rem;
+    }
+
+    table.mobile-cards td {
+        display: block;
+        text-align: left !important;
+        padding: 0.5rem 0 !important;
+        border: none !important;
+    }
+
+    table.mobile-cards td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: inline-block;
+        width: 100px;
+        margin-right: 1rem;
+    }
+}
+
+/* ============================================
+   PRICING / RATES
+   ============================================ */
+
+@media (max-width: 768px) {
+    .rates-container, .pricing-grid, [class*="pricing"] {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+
+    .rate-card, .pricing-card {
+        padding: 1.5rem 1rem !important;
+    }
+
+    .rate-amount, .price, [class*="price"] {
+        font-size: 1.75rem !important;
+    }
+}
+
+/* ============================================
+   TESTIMONIALS
+   ============================================ */
+
+@media (max-width: 768px) {
+    .testimonials-grid, [class*="testimonial"] [class*="grid"] {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+
+    .testimonial-card, [class*="testimonial-card"] {
+        padding: 1.5rem 1rem !important;
+    }
+}
+
+/* ============================================
+   CALENDAR
+   ============================================ */
+
+@media (max-width: 768px) {
+    .calendar-container, [class*="calendar"] {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .calendar-grid {
+        min-width: 280px;
+        font-size: 0.875rem !important;
+    }
+
+    .calendar-day {
+        min-height: 60px !important;
+        padding: 0.25rem !important;
+    }
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+
+@media (max-width: 768px) {
+    footer {
+        padding: 2rem 1rem !important;
+    }
+
+    .footer-columns, footer [class*="grid"], footer [class*="flex"] {
+        flex-direction: column !important;
+        gap: 2rem !important;
+    }
+
+    .footer-column, footer [class*="col"] {
+        width: 100% !important;
+        text-align: center !important;
+    }
+
+    .social-icons, [class*="social"] {
+        justify-content: center !important;
+        margin-top: 1rem !important;
+    }
+}
+
+/* ============================================
+   IMAGES
+   ============================================ */
+
+@media (max-width: 768px) {
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .profile-image, .portrait-image, [class*="profile"], [class*="portrait"] {
+        max-width: 200px !important;
+        margin: 0 auto !important;
+    }
+}
+
+/* ============================================
+   SPACING - MOBILE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .section, [class*="section"] {
+        padding-top: 3rem !important;
+        padding-bottom: 3rem !important;
+    }
+
+    .py-12, .py-16, .py-20, .py-24 {
+        padding-top: 3rem !important;
+        padding-bottom: 3rem !important;
+    }
+
+    .px-8, .px-12, .px-16 {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    .gap-8, .gap-12, .gap-16 {
+        gap: 1rem !important;
+    }
+
+    .space-y-8 > * + *, .space-y-12 > * + *, .space-y-16 > * + * {
+        margin-top: 2rem !important;
+    }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.hide-mobile { display: none !important; }
+.show-mobile { display: block !important; }
+
+@media (min-width: 769px) {
+    .hide-mobile { display: block !important; }
+    .show-mobile { display: none !important; }
+}
+
+@media (max-width: 768px) {
+    .text-center-mobile { text-align: center !important; }
+    .text-left-mobile { text-align: left !important; }
+    .w-full-mobile { width: 100% !important; }
+    .flex-col-mobile { flex-direction: column !important; }
+}
+
+/* ============================================
+   TABLET SPECIFIC (769px - 1024px)
+   ============================================ */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+
+    h1 { font-size: 2.5rem; }
+    h2 { font-size: 2rem; }
+    h3 { font-size: 1.75rem; }
+}
+
+/* ============================================
+   LANDSCAPE MOBILE
+   ============================================ */
+
+@media (max-width: 768px) and (orientation: landscape) {
+    .hero, .hero-section {
+        min-height: 100vh !important;
+    }
+
+    nav ul {
+        max-height: 50vh;
+        overflow-y: auto;
+    }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+@media (max-width: 768px) {
+    a, button, input, select, textarea, [role="button"] {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    a:focus, button:focus, input:focus, select:focus, textarea:focus {
+        outline: 3px solid var(--theme-accent, #3b82f6);
+        outline-offset: 2px;
+    }
+}
+
+/* ============================================
+   PERFORMANCE
+   ============================================ */
+
+@media (max-width: 768px) {
+    * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+}
+
+/* ============================================
+   TAILWIND/BOOTSTRAP OVERRIDES
+   ============================================ */
+
+@media (max-width: 640px) {
+    .sm\:hidden { display: none !important; }
+    .sm\:block { display: block !important; }
+    .sm\:flex { display: flex !important; }
+    .sm\:grid { display: grid !important; }
+}
+
+@media (max-width: 768px) {
+    .md\:hidden { display: none !important; }
+    .md\:block { display: block !important; }
+    .md\:flex { display: flex !important; }
+    .md\:grid { display: grid !important; }
+}
+
+@media (max-width: 1024px) {
+    .lg\:hidden { display: none !important; }
+    .lg\:block { display: block !important; }
+    .lg\:flex { display: flex !important; }
+    .lg\:grid { display: grid !important; }
+}
