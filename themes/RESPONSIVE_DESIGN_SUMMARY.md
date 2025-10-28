@@ -190,9 +190,10 @@ Or manually:
 ### Rose Theme (Theme 17) - Calendar Page
 - Fixed red-on-red button visibility issue in List/Month toggle
   - Improved button contrast with white text on active state
-  - Hidden calendar view toggle on mobile (≤768px)
-  - Force list-only view on mobile devices (calendar grid not practical on small screens)
-  - Calendar navigation buttons show icons only on mobile
+  - Hidden calendar view toggle on phones only (≤640px)
+  - Force list-only view on mobile phones (calendar grid not practical on small screens)
+  - Calendar grid fully functional on tablets and desktop (>640px)
+  - Calendar navigation buttons show icons only on phones
 
 ## Maintenance
 - Update `responsive-universal.css` for global changes
