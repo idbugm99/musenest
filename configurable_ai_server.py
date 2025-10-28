@@ -551,7 +551,7 @@ def update_config():
 
 @app.route('/config/<usage_intent>', methods=['GET'])
 def get_config_by_usage_intent(usage_intent):
-    """Get configuration for specific usage intent (MuseNest compatibility)"""
+    """Get configuration for specific usage intent (phoenix4ge compatibility)"""
     return jsonify({
         'success': True,
         'usage_intent': usage_intent,
@@ -562,17 +562,17 @@ def get_config_by_usage_intent(usage_intent):
 
 @app.route('/api-keys', methods=['GET'])
 def get_api_keys():
-    """API keys endpoint (MuseNest compatibility)"""
+    """API keys endpoint (phoenix4ge compatibility)"""
     return jsonify({
         'success': True,
         'message': 'AI server uses request-based configuration',
-        'api_keys_location': 'handled_by_musenest_server',
+        'api_keys_location': 'handled_by_phoenix4ge_server',
         'note': 'Configuration is sent with each /analyze request'
     })
 
 @app.route('/configuration', methods=['GET'])
 def get_configuration():
-    """Configuration endpoint (MuseNest compatibility)"""
+    """Configuration endpoint (phoenix4ge compatibility)"""
     return jsonify({
         'success': True,
         'active_config': api.config_manager.active_config,

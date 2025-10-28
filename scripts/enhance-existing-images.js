@@ -14,7 +14,7 @@
 const path = require('path');
 const fs = require('fs').promises;
 
-// Import MuseNest services
+// Import phoenix4ge services
 const db = require('../config/database');
 const VeniceAIService = require('../src/services/VeniceAIService');
 const ContentModerationService = require('../src/services/ContentModerationService');

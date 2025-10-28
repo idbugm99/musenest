@@ -7,7 +7,7 @@
 
 ## 🎯 Project Overview
 
-**MISSION ACCOMPLISHED:** Successfully transformed MuseNest's flat "Blurred & Approved Images" page into a comprehensive **model-centric dashboard** with enterprise-grade features.
+**MISSION ACCOMPLISHED:** Successfully transformed phoenix4ge's flat "Blurred & Approved Images" page into a comprehensive **model-centric dashboard** with enterprise-grade features.
 
 ### What We Built:
 - **Model Card Interface**: Visual overview of all models with statistics

@@ -1,4 +1,4 @@
-# MuseNest Media Library: Developer's "How To" Guide
+# phoenix4ge Media Library: Developer's "How To" Guide
 
 **Last Updated:** August 9, 2025  
 **Audience:** Developers, System Administrators, Technical Staff  
@@ -21,7 +21,7 @@
 
 ### **What You Need to Know**
 
-The MuseNest Media Library is a comprehensive, enterprise-grade media management system built with:
+The phoenix4ge Media Library is a comprehensive, enterprise-grade media management system built with:
 - **Backend:** Node.js, Express.js, MySQL
 - **Frontend:** Bootstrap 5.3, Vanilla JavaScript (ES6+)
 - **Image Processing:** Sharp library
@@ -100,8 +100,8 @@ The system is organized into logical service groups:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/musenest.git
-cd musenest
+git clone https://github.com/your-org/phoenix4ge.git
+cd phoenix4ge
 
 # Install dependencies
 npm install
@@ -118,8 +118,8 @@ Create `.env` file with required configuration:
 # Database Configuration
 DB_HOST=localhost
 DB_PORT=3306
-DB_NAME=musenest_db
-DB_USER=musenest_user
+DB_NAME=phoenix4ge_db
+DB_USER=phoenix4ge_user
 DB_PASSWORD=secure_password
 
 # Redis Configuration
@@ -315,7 +315,7 @@ router.post('/:modelSlug/:mediaId/blur', async (req, res) => {
 **Step 3:** Add frontend support in `media-library.js`
 
 ```javascript
-// Add method to MuseNestMediaLibrary class
+// Add method to phoenix4geMediaLibrary class
 async applyBlur(mediaId, blurAmount = 1) {
     try {
         const response = await fetch(
@@ -698,11 +698,11 @@ async processImage(inputPath, outputPath, operations) {
 
 ```javascript
 // Set debug environment variable
-DEBUG=musenest:* npm run dev
+DEBUG=phoenix4ge:* npm run dev
 
 // Or in code:
 const debug = require('debug');
-const log = debug('musenest:media');
+const log = debug('phoenix4ge:media');
 
 log('Processing file:', filename);
 log('Options:', options);
@@ -1118,16 +1118,16 @@ sudo systemctl enable redis-server
 sudo npm install -g pm2
 
 # Create application user
-sudo useradd -m -s /bin/bash musenest
-sudo usermod -aG sudo musenest
+sudo useradd -m -s /bin/bash phoenix4ge
+sudo usermod -aG sudo phoenix4ge
 
 # Setup application directory
-sudo mkdir -p /var/www/musenest
-sudo chown musenest:musenest /var/www/musenest
+sudo mkdir -p /var/www/phoenix4ge
+sudo chown phoenix4ge:phoenix4ge /var/www/phoenix4ge
 
 # Setup log directory
-sudo mkdir -p /var/log/musenest
-sudo chown musenest:musenest /var/log/musenest
+sudo mkdir -p /var/log/phoenix4ge
+sudo chown phoenix4ge:phoenix4ge /var/log/phoenix4ge
 ```
 
 #### **2. Application Configuration**
@@ -1136,7 +1136,7 @@ sudo chown musenest:musenest /var/log/musenest
 // ecosystem.config.js - PM2 configuration
 module.exports = {
     apps: [{
-        name: 'musenest-media',
+        name: 'phoenix4ge-media',
         script: './server.js',
         instances: 'max',
         exec_mode: 'cluster',
@@ -1149,9 +1149,9 @@ module.exports = {
             PORT: 3000,
             LOG_LEVEL: 'warn'
         },
-        log_file: '/var/log/musenest/combined.log',
-        out_file: '/var/log/musenest/out.log',
-        error_file: '/var/log/musenest/error.log',
+        log_file: '/var/log/phoenix4ge/combined.log',
+        out_file: '/var/log/phoenix4ge/out.log',
+        error_file: '/var/log/phoenix4ge/error.log',
         log_date_format: 'YYYY-MM-DD HH:mm:ss',
         merge_logs: true,
         max_memory_restart: '1G',
@@ -1192,7 +1192,7 @@ log_queries_not_using_indexes = 1
 #### **4. Nginx Configuration**
 
 ```nginx
-# /etc/nginx/sites-available/musenest
+# /etc/nginx/sites-available/phoenix4ge
 server {
     listen 80;
     server_name your-domain.com www.your-domain.com;
@@ -1215,7 +1215,7 @@ server {
 
     # Static files
     location /uploads/ {
-        alias /var/www/musenest/public/uploads/;
+        alias /var/www/phoenix4ge/public/uploads/;
         expires 1y;
         add_header Cache-Control "public, immutable";
         
@@ -1294,7 +1294,7 @@ router.get('/health', async (req, res) => {
 
     // Check disk space
     try {
-        const stats = await fs.statvfs('/var/www/musenest/public/uploads');
+        const stats = await fs.statvfs('/var/www/phoenix4ge/public/uploads');
         const freeSpacePercent = (stats.bavail * stats.bsize) / (stats.blocks * stats.bsize) * 100;
         health.services.disk = {
             status: freeSpacePercent > 10 ? 'healthy' : 'warning',
@@ -1315,16 +1315,16 @@ module.exports = router;
 
 ```bash
 #!/bin/bash
-# /etc/logrotate.d/musenest
+# /etc/logrotate.d/phoenix4ge
 
-/var/log/musenest/*.log {
+/var/log/phoenix4ge/*.log {
     daily
     missingok
     rotate 30
     compress
     delaycompress
     notifempty
-    create 644 musenest musenest
+    create 644 phoenix4ge phoenix4ge
     postrotate
         pm2 reloadLogs
     endscript
@@ -1335,11 +1335,11 @@ module.exports = router;
 
 ```bash
 #!/bin/bash
-# backup-musenest.sh
+# backup-phoenix4ge.sh
 
-BACKUP_DIR="/backup/musenest"
-DB_NAME="musenest_db"
-UPLOADS_DIR="/var/www/musenest/public/uploads"
+BACKUP_DIR="/backup/phoenix4ge"
+DB_NAME="phoenix4ge_db"
+UPLOADS_DIR="/var/www/phoenix4ge/public/uploads"
 DATE=$(date +%Y%m%d_%H%M%S)
 
 # Create backup directory
@@ -1424,9 +1424,9 @@ npm run db:seed              # Seed database with test data
 
 # Production
 pm2 start ecosystem.config.js --env production
-pm2 logs musenest-media      # View logs
-pm2 restart musenest-media   # Restart application
-pm2 stop musenest-media      # Stop application
+pm2 logs phoenix4ge-media      # View logs
+pm2 restart phoenix4ge-media   # Restart application
+pm2 stop phoenix4ge-media      # Stop application
 ```
 
 ### **Getting Help**
@@ -1441,4 +1441,4 @@ If you encounter issues:
 
 ---
 
-*This guide covers the essential aspects of working with the MuseNest Media Library system. For specific technical questions or advanced customization needs, refer to the source code and comprehensive documentation provided.*
+*This guide covers the essential aspects of working with the phoenix4ge Media Library system. For specific technical questions or advanced customization needs, refer to the source code and comprehensive documentation provided.*

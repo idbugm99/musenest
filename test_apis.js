@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * MuseNest API Testing Script
+ * phoenix4ge API Testing Script
  * 
  * This script tests all the REST API endpoints to ensure they're working correctly.
  * Run with: node test_apis.js
@@ -347,7 +347,7 @@ async function testTestimonialsAPI() {
 
 // Main test runner
 async function runAllTests() {
-    console.log('🚀 MuseNest API Testing Started');
+    console.log('🚀 phoenix4ge API Testing Started');
     console.log(`📍 Testing server at: ${BASE_URL}`);
     
     try {
@@ -378,7 +378,7 @@ async function runAllTests() {
         console.log('   - FAQ API: Questions/answers CRUD ✅');
         console.log('   - Settings API: Site configuration ✅');
         console.log('   - Testimonials API: Client reviews ✅');
-        console.log('\n🎉 MuseNest REST APIs are ready for production!');
+        console.log('\n🎉 phoenix4ge REST APIs are ready for production!');
         
     } catch (error) {
         console.error('❌ Test runner error:', error);

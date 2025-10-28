@@ -12,17 +12,17 @@ async function migrateTestimonials() {
             host: process.env.DB_HOST || 'localhost',
             user: process.env.DB_USER || 'root',
             password: process.env.DB_PASSWORD || '',
-            database: process.env.DB_NAME || 'musenest'
+            database: process.env.DB_NAME || 'phoenix4ge'
         });
-        console.log('🔗 Connected to MuseNest database');
+        console.log('🔗 Connected to phoenix4ge database');
 
-        // Get model mapping from RoseMastos ID to MuseNest ID
+        // Get model mapping from RoseMastos ID to phoenix4ge ID
         const modelMapping = {};
-        const musenestModels = await targetDb.execute('SELECT id, slug FROM models');
+        const phoenix4geModels = await targetDb.execute('SELECT id, slug FROM models');
         
-        for (const model of musenestModels[0]) {
-            // Assuming the first model in MuseNest corresponds to the RoseMastos data
-            modelMapping[1] = model.id; // Map RoseMastos model_id 1 to MuseNest model
+        for (const model of phoenix4geModels[0]) {
+            // Assuming the first model in phoenix4ge corresponds to the RoseMastos data
+            modelMapping[1] = model.id; // Map RoseMastos model_id 1 to phoenix4ge model
             break;
         }
 
@@ -52,8 +52,8 @@ async function migrateTestimonials() {
 
         for (const testimonial of testimonials) {
             try {
-                const musenestModelId = modelMapping[testimonial.model_id];
-                if (!musenestModelId) {
+                const phoenix4geModelId = modelMapping[testimonial.model_id];
+                if (!phoenix4geModelId) {
                     console.log(`⚠️  Skipping testimonial ${testimonial.id} - no model mapping for model_id ${testimonial.model_id}`);
                     continue;
                 }
@@ -63,14 +63,14 @@ async function migrateTestimonials() {
                     ? testimonial.name.split(' ').map(part => part[0]).join('').toUpperCase()
                     : 'A.N.';
 
-                // Insert into MuseNest
+                // Insert into phoenix4ge
                 await targetDb.execute(`
                     INSERT INTO testimonials (
                         model_id, client_name, client_initial, testimonial_text, 
                         rating, is_featured, is_active, created_at
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 `, [
-                    musenestModelId,
+                    phoenix4geModelId,
                     testimonial.name,
                     clientInitial,
                     testimonial.text,
@@ -99,7 +99,7 @@ async function migrateTestimonials() {
             [Object.values(modelMapping)[0]]
         );
         
-        console.log(`📋 Verification: ${verifyResult[0].count} testimonials now in MuseNest`);
+        console.log(`📋 Verification: ${verifyResult[0].count} testimonials now in phoenix4ge`);
 
         // Show sample of migrated data
         const [sampleData] = await targetDb.execute(
@@ -123,5 +123,5 @@ async function migrateTestimonials() {
 }
 
 // Run migration
-console.log('🚀 Starting testimonials migration from RoseMastos to MuseNest...');
+console.log('🚀 Starting testimonials migration from RoseMastos to phoenix4ge...');
 migrateTestimonials();

@@ -23,7 +23,7 @@ async function testModerationService() {
     const moderationService = new ContentModerationService(mockDb);
     
     // Test image path
-    const testImagePath = '/Users/programmer/Projects/musenest/public/uploads/escort-example/originals/1753575572332_20250622_003419.jpg';
+    const testImagePath = '/Users/programmer/Projects/phoenix4ge/public/uploads/escort-example/originals/1753575572332_20250622_003419.jpg';
     
     console.log('📸 Test Image:', testImagePath);
     console.log('🔍 Testing enhanced API connection to:', '52.15.235.216:5000');

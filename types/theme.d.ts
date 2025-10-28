@@ -1,5 +1,5 @@
 /**
- * MuseNest Theme Gallery Configuration Types
+ * Phoenix4Ge Theme Gallery Configuration Types
  * Generated from ThemeConfigSchema.json v1.0.0
  * 
  * These types define the contract for theme-specific gallery configurations

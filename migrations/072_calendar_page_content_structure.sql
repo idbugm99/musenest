@@ -1,4 +1,4 @@
--- MuseNest Calendar Page Content Structure
+-- phoenix4ge Calendar Page Content Structure
 -- Migration: 072_calendar_page_content_structure.sql
 -- Creates the model_calendar_page_content table for database-driven calendar page content
 
@@ -78,4 +78,4 @@ ON DUPLICATE KEY UPDATE
     cta_button_text = VALUES(cta_button_text);
 
 -- Grant permissions (if needed)
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.model_calendar_page_content TO 'your_user'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.model_calendar_page_content TO 'your_user'@'localhost';

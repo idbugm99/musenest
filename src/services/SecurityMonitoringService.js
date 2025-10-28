@@ -59,10 +59,10 @@ class SecurityMonitoringService extends EventEmitter {
                 notificationMethods: config.response?.notificationMethods || ['email', 'webhook', 'sms']
             },
             storage: {
-                securityDir: config.storage?.securityDir || '/tmp/musenest-security',
-                logsDir: config.storage?.logsDir || '/tmp/musenest-security/logs',
-                quarantineDir: config.storage?.quarantineDir || '/tmp/musenest-security/quarantine',
-                reportsDir: config.storage?.reportsDir || '/tmp/musenest-security/reports'
+                securityDir: config.storage?.securityDir || '/tmp/phoenix4ge-security',
+                logsDir: config.storage?.logsDir || '/tmp/phoenix4ge-security/logs',
+                quarantineDir: config.storage?.quarantineDir || '/tmp/phoenix4ge-security/quarantine',
+                reportsDir: config.storage?.reportsDir || '/tmp/phoenix4ge-security/reports'
             }
         };
 

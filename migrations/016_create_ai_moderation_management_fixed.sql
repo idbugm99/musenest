@@ -1,7 +1,7 @@
 -- Migration 016: Create AI Moderation Management System (Fixed)
 -- Multi-server, multi-industry white-label platform management
 
-USE musenest;
+USE phoenix4ge;
 
 -- Drop existing tables if they exist (development only)
 -- DROP TABLE IF EXISTS server_health_logs;

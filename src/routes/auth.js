@@ -26,8 +26,7 @@ router.post('/register', [
         // Check validation errors
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({
-                error: 'Validation failed',
+            return res.fail(400, 'Validation failed', {
                 message: 'Please check your input',
                 details: errors.array()
             });
@@ -42,8 +41,7 @@ router.post('/register', [
         );
 
         if (existingUsers.length > 0) {
-            return res.status(409).json({
-                error: 'User exists',
+            return res.fail(409, 'User exists', {
                 message: 'An account with this email already exists'
             });
         }
@@ -109,8 +107,7 @@ router.post('/register', [
 
     } catch (error) {
         console.error('Registration error:', error);
-        res.status(500).json({
-            error: 'Registration failed',
+        res.fail(500, 'Registration failed', {
             message: 'Unable to create account. Please try again.'
         });
     }
@@ -130,8 +127,7 @@ router.post('/login', [
         // Check validation errors
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({
-                error: 'Validation failed',
+            return res.fail(400, 'Validation failed', {
                 message: 'Please check your input',
                 details: errors.array()
             });
@@ -146,8 +142,7 @@ router.post('/login', [
         );
 
         if (users.length === 0) {
-            return res.status(401).json({
-                error: 'Invalid credentials',
+            return res.fail(401, 'Invalid credentials', {
                 message: 'Email or password is incorrect'
             });
         }
@@ -155,8 +150,7 @@ router.post('/login', [
         const user = users[0];
 
         if (!user.is_active) {
-            return res.status(401).json({
-                error: 'Account disabled',
+            return res.fail(401, 'Account disabled', {
                 message: 'Your account has been disabled. Please contact support.'
             });
         }
@@ -164,8 +158,7 @@ router.post('/login', [
         // Verify password
         const isPasswordValid = await bcrypt.compare(password, user.password_hash);
         if (!isPasswordValid) {
-            return res.status(401).json({
-                error: 'Invalid credentials',
+            return res.fail(401, 'Invalid credentials', {
                 message: 'Email or password is incorrect'
             });
         }
@@ -194,8 +187,7 @@ router.post('/login', [
 
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({
-            error: 'Login failed',
+        res.fail(500, 'Login failed', {
             message: 'Unable to login. Please try again.'
         });
     }
@@ -256,8 +248,7 @@ router.get('/me', authenticateToken, async (req, res) => {
 
     } catch (error) {
         console.error('Profile fetch error:', error);
-        res.status(500).json({
-            error: 'Profile fetch failed',
+        res.fail(500, 'Profile fetch failed', {
             message: 'Unable to fetch user profile'
         });
     }
@@ -279,8 +270,7 @@ router.post('/change-password', [
         // Check validation errors
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({
-                error: 'Validation failed',
+            return res.fail(400, 'Validation failed', {
                 message: 'Please check your input',
                 details: errors.array()
             });
@@ -295,8 +285,7 @@ router.post('/change-password', [
         );
 
         if (users.length === 0) {
-            return res.status(404).json({
-                error: 'User not found',
+            return res.fail(404, 'User not found', {
                 message: 'Unable to find user account'
             });
         }
@@ -304,8 +293,7 @@ router.post('/change-password', [
         // Verify current password
         const isCurrentPasswordValid = await bcrypt.compare(currentPassword, users[0].password_hash);
         if (!isCurrentPasswordValid) {
-            return res.status(401).json({
-                error: 'Invalid password',
+            return res.fail(401, 'Invalid password', {
                 message: 'Current password is incorrect'
             });
         }
@@ -326,8 +314,7 @@ router.post('/change-password', [
 
     } catch (error) {
         console.error('Password change error:', error);
-        res.status(500).json({
-            error: 'Password change failed',
+        res.fail(500, 'Password change failed', {
             message: 'Unable to change password. Please try again.'
         });
     }

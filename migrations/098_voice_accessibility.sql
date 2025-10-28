@@ -2,7 +2,7 @@
 -- Adds comprehensive tables for voice interface capabilities, accessibility preferences,
 -- user accessibility profiles, voice command history, and accessibility analytics
 
-USE musenest;
+USE phoenix4ge;
 
 -- User accessibility profiles and preferences
 CREATE TABLE IF NOT EXISTS user_accessibility_profiles (
@@ -540,10 +540,10 @@ ALTER TABLE accessibility_feature_usage ADD INDEX idx_feature_impact (task_compl
 
 -- Grant permissions for voice and accessibility service
 -- Note: In production, create dedicated service users
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.user_accessibility_profiles TO 'accessibility_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.voice_command_history TO 'accessibility_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.speech_synthesis_history TO 'accessibility_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.StartVoiceInterfaceSession TO 'accessibility_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.GetAccessibilityAnalytics TO 'accessibility_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.user_accessibility_profiles TO 'accessibility_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.voice_command_history TO 'accessibility_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.speech_synthesis_history TO 'accessibility_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.StartVoiceInterfaceSession TO 'accessibility_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.GetAccessibilityAnalytics TO 'accessibility_service'@'localhost';
 
 SELECT 'Voice Interface and Accessibility Features system migration completed successfully' as status;

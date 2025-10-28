@@ -321,7 +321,7 @@ class AlertingService extends EventEmitter {
                     threshold: alert.threshold,
                     resolved: alert.resolved || false
                 },
-                service: 'MuseNest',
+                service: 'phoenix4ge',
                 environment: process.env.NODE_ENV || 'development'
             };
 
@@ -363,7 +363,7 @@ class AlertingService extends EventEmitter {
 
         try {
             // Would integrate with SMS provider (Twilio, AWS SNS, etc.)
-            const message = `MuseNest Alert [${alert.level.toUpperCase()}]: ${alert.message}`;
+            const message = `phoenix4ge Alert [${alert.level.toUpperCase()}]: ${alert.message}`;
             
             console.log(`📱 SMS alert sent to ${this.config.sms.recipients.length} recipients`);
             console.log(`📱 SMS content: ${message}`);
@@ -396,7 +396,7 @@ class AlertingService extends EventEmitter {
             
             const payload = {
                 channel: this.config.slack.channel,
-                username: 'MuseNest Monitor',
+                username: 'phoenix4ge Monitor',
                 text: alert.resolved ? 
                     `✅ Alert Resolved: ${alert.type}` : 
                     `${emoji} Alert: ${alert.type}`,

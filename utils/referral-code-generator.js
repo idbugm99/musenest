@@ -1,6 +1,6 @@
 /**
  * Referral Code Generator Utility
- * Generates clean, readable referral codes for MuseNest
+ * Generates clean, readable referral codes for Phoenix4Ge
  * 
  * Features:
  * - Avoids confusing characters (0, O, I, 1, etc.)

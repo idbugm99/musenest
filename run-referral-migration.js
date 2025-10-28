@@ -3,7 +3,7 @@
 /**
  * Referral System Migration Runner
  * 
- * This script applies the referral tracking system migration to your MuseNest database.
+ * This script applies the referral tracking system migration to your phoenix4ge database.
  * It will create the necessary tables, columns, and sample data for the referral system.
  * 
  * Usage:

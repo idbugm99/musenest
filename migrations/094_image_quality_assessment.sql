@@ -2,7 +2,7 @@
 -- Adds comprehensive tables for automated image quality analysis,
 -- technical assessment, aesthetic evaluation, and enhancement recommendations
 
-USE musenest;
+USE phoenix4ge;
 
 -- Image quality assessment results and scoring
 CREATE TABLE IF NOT EXISTS image_quality_assessments (
@@ -592,10 +592,10 @@ ALTER TABLE image_enhancement_recommendations ADD INDEX idx_recommendation_prior
 
 -- Grant permissions for image quality assessment service
 -- Note: In production, create a dedicated quality service user
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.image_quality_assessments TO 'quality_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.image_technical_analysis TO 'quality_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.image_aesthetic_analysis TO 'quality_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.GetQualityAnalytics TO 'quality_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.UpdateQualityAssessment TO 'quality_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.image_quality_assessments TO 'quality_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.image_technical_analysis TO 'quality_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.image_aesthetic_analysis TO 'quality_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.GetQualityAnalytics TO 'quality_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.UpdateQualityAssessment TO 'quality_service'@'localhost';
 
 SELECT 'Image Quality Assessment and Computer Vision migration completed successfully' as status;

@@ -1,7 +1,7 @@
 -- AI Performance Prediction System Migration
 -- Adds tables and infrastructure for machine learning-based performance prediction
 
-USE musenest;
+USE phoenix4ge;
 
 -- Performance prediction models tracking
 CREATE TABLE IF NOT EXISTS ml_models (
@@ -328,12 +328,12 @@ ALTER TABLE optimization_recommendations ADD INDEX idx_priority_status (priority
 
 -- Grant permissions for ML service
 -- Note: In production, create a dedicated ML service user
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.ml_* TO 'ml_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.performance_* TO 'ml_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.optimization_* TO 'ml_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.scaling_* TO 'ml_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.UpdateModelAccuracy TO 'ml_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.CleanupExpiredPredictions TO 'ml_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.GetModelTrainingStatus TO 'ml_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.ml_* TO 'ml_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.performance_* TO 'ml_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.optimization_* TO 'ml_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.scaling_* TO 'ml_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.UpdateModelAccuracy TO 'ml_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.CleanupExpiredPredictions TO 'ml_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.GetModelTrainingStatus TO 'ml_service'@'localhost';
 
 SELECT 'AI Performance Prediction System migration completed successfully' as status;

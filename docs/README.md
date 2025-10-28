@@ -1,4 +1,4 @@
-# MuseNest Documentation Index
+# phoenix4ge Documentation Index
 
 - Roadmap & Status: `docs/ROADMAP_STATUS.md`
 - Admin Surfaces: `docs/ADMIN_SURFACES.md`

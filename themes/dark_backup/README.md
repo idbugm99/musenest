@@ -92,7 +92,7 @@ themes/dark/
 
 ## CSS Architecture
 
-Follows MuseNest guidelines with proper CSS variable mapping:
+Follows phoenix4ge guidelines with proper CSS variable mapping:
 - All colors use `var(--theme-*)` variables
 - No hardcoded hex values beyond token mapping
 - Universal Gallery integration included

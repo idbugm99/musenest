@@ -1,10 +1,10 @@
 /**
- * MuseNest Media Library JavaScript
+ * phoenix4ge Media Library JavaScript
  * Part of Phase 3: Frontend Components Development
- * Enhanced from RoseMastos with MuseNest integration
+ * Enhanced from RoseMastos with phoenix4ge integration
  */
 
-class MuseNestMediaLibrary {
+class phoenix4geMediaLibrary {
     constructor(modelSlug) {
         this.modelSlug = modelSlug;
         this.selectedMedia = new Set();
@@ -28,7 +28,7 @@ class MuseNestMediaLibrary {
      * Initialize the media library
      */
     init() {
-        console.log(`🎬 Initializing MuseNest Media Library for model: ${this.modelSlug}`);
+        console.log(`🎬 Initializing phoenix4ge Media Library for model: ${this.modelSlug}`);
         this.bindEvents();
         this.loadMedia();
         this.loadCategories();
@@ -778,7 +778,7 @@ let mediaLibrary = null;
 document.addEventListener('DOMContentLoaded', function() {
     const modelSlug = window.location.pathname.split('/')[1]; // Extract slug from URL
     if (modelSlug && document.getElementById('media-grid')) {
-        mediaLibrary = new MuseNestMediaLibrary(modelSlug);
-        console.log('🚀 MuseNest Media Library initialized');
+        mediaLibrary = new phoenix4geMediaLibrary(modelSlug);
+        console.log('🚀 phoenix4ge Media Library initialized');
     }
 });

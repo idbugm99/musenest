@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MuseNest AI Content Moderation Service
+phoenix4ge AI Content Moderation Service
 Multi-layer AI analysis for context-aware content moderation
 """
 
@@ -81,7 +81,7 @@ class ContentModerator:
             'host': os.getenv('DB_HOST', 'localhost'),
             'user': os.getenv('DB_USER', 'root'),
             'password': os.getenv('DB_PASSWORD', ''),
-            'database': os.getenv('DB_NAME', 'musenest'),
+            'database': os.getenv('DB_NAME', 'phoenix4ge'),
             'port': int(os.getenv('DB_PORT', 3306))
         }
         

@@ -145,6 +145,6 @@ INSERT INTO gallery_migration_log (migration_name, migration_version, affected_r
 ));
 
 -- Grant necessary permissions (adjust as needed for your setup)
--- GRANT SELECT, INSERT, UPDATE ON gallery_system_defaults TO 'musenest_app'@'%';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON theme_config_cache TO 'musenest_app'@'%';
--- GRANT SELECT ON gallery_migration_log TO 'musenest_app'@'%';
+-- GRANT SELECT, INSERT, UPDATE ON gallery_system_defaults TO 'phoenix4ge_app'@'%';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON theme_config_cache TO 'phoenix4ge_app'@'%';
+-- GRANT SELECT ON gallery_migration_log TO 'phoenix4ge_app'@'%';

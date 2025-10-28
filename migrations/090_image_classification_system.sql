@@ -1,7 +1,7 @@
 -- AI-Powered Image Classification and Auto-Tagging System Migration
 -- Adds tables and infrastructure for automated image analysis, classification, and intelligent tagging
 
-USE musenest;
+USE phoenix4ge;
 
 -- Image classification results and analysis
 CREATE TABLE IF NOT EXISTS image_classification_results (
@@ -548,10 +548,10 @@ ALTER TABLE image_visual_similarity ADD INDEX idx_similarity_method_score (simil
 
 -- Grant permissions for image classification service
 -- Note: In production, create a dedicated image classification service user
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.image_* TO 'image_classification_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.tag_* TO 'image_classification_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.model_* TO 'image_classification_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.GetImageClassificationStats TO 'image_classification_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.AnalyzeTaggingPerformance TO 'image_classification_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.image_* TO 'image_classification_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.tag_* TO 'image_classification_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.model_* TO 'image_classification_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.GetImageClassificationStats TO 'image_classification_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.AnalyzeTaggingPerformance TO 'image_classification_service'@'localhost';
 
 SELECT 'AI-Powered Image Classification and Auto-Tagging System migration completed successfully' as status;

@@ -6,6 +6,8 @@ const router = express.Router();
 
 // Database connection - use existing database module
 const { query } = require('../../config/database');
+const ClientResolverService = require('../../services/ClientResolverService');
+const clientResolver = new ClientResolverService();
 
 // Rate limiting - 5 submissions per 15 minutes per IP
 const contactRateLimit = rateLimit({
@@ -134,7 +136,7 @@ async function sendNotifications(contactData, conversationId) {
     });
 
     // Send notification to admin
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@musenest.com';
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@phoenix4ge.com';
     const modelInfo = contactData.model_id ? ` for model ${contactData.model_id}` : '';
     
     await transporter.sendMail({
@@ -176,7 +178,7 @@ async function sendNotifications(contactData, conversationId) {
           ${contactData.message.replace(/\n/g, '<br>')}
         </div>
         <p>Reference ID: ${conversationId}</p>
-        <p>Best regards,<br>MuseNest Team</p>
+        <p>Best regards,<br>phoenix4ge Team</p>
       `
     });
 
@@ -399,9 +401,9 @@ router.post('/submit', contactRateLimit, async (req, res) => {
       const conversationResult = await query(`
         INSERT INTO conversations (
           contact_id, subject, model_id, contact_model_interaction_id, 
-          is_live_chat, chat_status, last_seen_by_contact
+          is_live_chat, chat_status, last_seen_by_contact, client_model_interaction_id
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `, [
         contactId,
         data.subject || `Contact from ${data.name}`,
@@ -409,7 +411,13 @@ router.post('/submit', contactRateLimit, async (req, res) => {
         contactModelInteractionId,
         isLiveChatEnabled,
         isLiveChatEnabled ? 'pending' : 'email_only',
-        new Date() // Contact has seen their own message
+        new Date(), // Contact has seen their own message
+        (await clientResolver.resolveOrCreateClient({
+          modelId: data.model_id,
+          name: data.name,
+          email: data.email,
+          phone: data.phone
+        })).interactionId
       ]);
 
       conversationId = conversationResult.insertId;

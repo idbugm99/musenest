@@ -187,7 +187,7 @@ class RealDataMigrator {
     }
 
     async run() {
-        console.log('🚀 Starting Real Data Migration from RoseMastos to MuseNest\n');
+        console.log('🚀 Starting Real Data Migration from RoseMastos to phoenix4ge\n');
         
         try {
             // Clear existing test data

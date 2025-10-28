@@ -56,7 +56,7 @@ curl -X POST http://18.221.22.72:5000/analyze \
 - ✅ Single unified server (no separate config API)
 - ✅ Request-based configuration parsing
 - ✅ Component filtering (breast, genitalia, face detection)
-- ✅ MuseNest compatibility endpoints
+- ✅ phoenix4ge compatibility endpoints
 - ✅ Child protection always active
 - ✅ All 404 errors fixed
 

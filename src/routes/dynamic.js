@@ -96,10 +96,9 @@ router.get('/:slug/', optionalAuth, async (req, res) => {
         // Get model
         const model = await getModelBySlug(slug);
         if (!model) {
-            return res.status(404).json({
-                error: 'Model not found',
-                message: 'The requested model does not exist or is not active'
-            });
+            return res.fail(404, 'Model not found', {
+            message: 'The requested model does not exist or is not active'
+        });
         }
 
         // Get homepage content
@@ -167,8 +166,7 @@ router.get('/:slug/', optionalAuth, async (req, res) => {
 
     } catch (error) {
         console.error('Model homepage error:', error);
-        res.status(500).json({
-            error: 'Internal server error',
+        res.fail(500, 'Internal server error', {
             message: 'Unable to load model page'
         });
     }
@@ -182,10 +180,9 @@ router.get('/:slug/:page', optionalAuth, async (req, res) => {
         // Get model
         const model = await getModelBySlug(slug);
         if (!model) {
-            return res.status(404).json({
-                error: 'Model not found',
-                message: 'The requested model does not exist or is not active'
-            });
+            return res.fail(404, 'Model not found', {
+            message: 'The requested model does not exist or is not active'
+        });
         }
 
         // Build base template context
@@ -303,10 +300,9 @@ router.get('/:slug/:page', optionalAuth, async (req, res) => {
                 `, [model.id, page]);
 
                 if (customPage.length === 0) {
-                    return res.status(404).json({
-                        error: 'Page not found',
-                        message: 'The requested page does not exist'
-                    });
+                    return res.fail(404, 'Page not found', {
+            message: 'The requested page does not exist'
+        });
                 }
 
                 const customSections = await db.query(`
@@ -333,8 +329,7 @@ router.get('/:slug/:page', optionalAuth, async (req, res) => {
 
     } catch (error) {
         console.error('Model page error:', error);
-        res.status(500).json({
-            error: 'Internal server error',
+        res.fail(500, 'Internal server error', {
             message: 'Unable to load page'
         });
     }

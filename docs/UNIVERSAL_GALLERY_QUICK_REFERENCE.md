@@ -310,14 +310,14 @@ redis-cli INFO memory
 ## 📞 Emergency Contacts
 
 ### Escalation Path
-1. **Level 1**: System Administrator (`admin@musenest.com`)
-2. **Level 2**: DevOps Team (`devops@musenest.com`)  
-3. **Level 3**: Development Team (`dev-team@musenest.com`)
+1. **Level 1**: System Administrator (`admin@phoenix4ge.com`)
+2. **Level 2**: DevOps Team (`devops@phoenix4ge.com`)  
+3. **Level 3**: Development Team (`dev-team@phoenix4ge.com`)
 4. **Level 4**: Emergency Hotline (`+1-XXX-XXX-XXXX`)
 
 ### Alert Channels
-- **Slack**: `#musenest-alerts`
-- **Email**: `alerts@musenest.com`
+- **Slack**: `#phoenix4ge-alerts`
+- **Email**: `alerts@phoenix4ge.com`
 - **PagerDuty**: Critical alerts only
 - **SMS**: Emergency escalation
 

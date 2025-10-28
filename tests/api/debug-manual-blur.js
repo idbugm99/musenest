@@ -6,8 +6,8 @@ async function manualBlurTest() {
         console.log('=== Manual Blur Test ===');
         console.log('Replicating the exact same blur operation from the logs...');
         
-        const originalPath = '/Users/programmer/Projects/musenest/public/uploads/escortexample/originals/1753687362085_BlowJob.jpg';
-        const outputPath = '/Users/programmer/Projects/musenest/manual-blur-test.jpg';
+        const originalPath = '/Users/programmer/Projects/phoenix4ge/public/uploads/escortexample/originals/1753687362085_BlowJob.jpg';
+        const outputPath = '/Users/programmer/Projects/phoenix4ge/manual-blur-test.jpg';
         
         // From the logs: coordinates 416,463 with 121x139 dimensions
         const coordinates = { x: 416, y: 463, width: 121, height: 139 };
@@ -53,7 +53,7 @@ async function manualBlurTest() {
         console.log('Output saved to:', outputPath);
         
         // Also save just the blurred region for inspection
-        const regionPath = '/Users/programmer/Projects/musenest/manual-blur-region.jpg';
+        const regionPath = '/Users/programmer/Projects/phoenix4ge/manual-blur-region.jpg';
         await sharp(blurredRegion).jpeg().toFile(regionPath);
         console.log('Blurred region saved to:', regionPath);
         

@@ -1,17 +1,17 @@
 #!/bin/bash
 
-# CLIP NSFW Installation Script for MuseNest
+# CLIP NSFW Installation Script for Phoenix4Ge
 # This script sets up the complete CLIP-based NSFW image description system
 
 set -e  # Exit on error
 
-echo "🚀 CLIP NSFW Installation for MuseNest"
+echo "🚀 CLIP NSFW Installation for Phoenix4Ge"
 echo "======================================"
 echo
 
 # Check if we're in the right directory
 if [[ ! -d "admin" ]] || [[ ! -f "package.json" ]]; then
-    echo "❌ Error: Please run this script from the MuseNest root directory"
+    echo "❌ Error: Please run this script from the Phoenix4Ge root directory"
     echo "Current directory: $(pwd)"
     exit 1
 fi

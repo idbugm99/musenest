@@ -16,7 +16,7 @@
 ### 1. Ensure Phase 1 is Complete
 Make sure you've already completed Phase 1 setup:
 ```bash
-cd /Users/programmer/Projects/musenest
+cd /Users/programmer/Projects/phoenix4ge
 npm install
 npm run migrate
 npm run migrate-data
@@ -146,18 +146,18 @@ After changing themes, refresh the page to see the new design!
 ### No Data Showing
 ```bash
 # Verify data migration worked
-mysql -u root -p musenest -e "SELECT COUNT(*) FROM gallery_images;"
-mysql -u root -p musenest -e "SELECT COUNT(*) FROM faq_items;"
-mysql -u root -p musenest -e "SELECT COUNT(*) FROM testimonials;"
+mysql -u root -p phoenix4ge -e "SELECT COUNT(*) FROM gallery_images;"
+mysql -u root -p phoenix4ge -e "SELECT COUNT(*) FROM faq_items;"
+mysql -u root -p phoenix4ge -e "SELECT COUNT(*) FROM testimonials;"
 
 # Check model exists and is active
-mysql -u root -p musenest -e "SELECT id, name, slug, status FROM models;"
+mysql -u root -p phoenix4ge -e "SELECT id, name, slug, status FROM models;"
 ```
 
 ### Theme Not Applied
 ```bash
 # Check model has theme assigned
-mysql -u root -p musenest -e "
+mysql -u root -p phoenix4ge -e "
 SELECT m.name, t.name as theme, mt.is_active 
 FROM models m 
 LEFT JOIN model_themes mt ON m.id = mt.model_id 
@@ -172,13 +172,13 @@ WHERE mt.is_active = true;
 ### Images Not Loading
 ```bash
 # Check uploads directory exists
-ls -la /Users/programmer/Projects/musenest/public/uploads/
+ls -la /Users/programmer/Projects/phoenix4ge/public/uploads/
 
 # Check image paths in database
-mysql -u root -p musenest -e "SELECT filename FROM gallery_images LIMIT 5;"
+mysql -u root -p phoenix4ge -e "SELECT filename FROM gallery_images LIMIT 5;"
 
 # Copy images from RoseMastos if needed
-cp -r /Users/programmer/Projects/rosemastos/app/static/images/* /Users/programmer/Projects/musenest/public/uploads/
+cp -r /Users/programmer/Projects/rosemastos/app/static/images/* /Users/programmer/Projects/phoenix4ge/public/uploads/
 ```
 
 ---

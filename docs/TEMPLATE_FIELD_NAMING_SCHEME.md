@@ -1,8 +1,8 @@
-# MuseNest Template Field Naming Scheme Documentation
+# phoenix4ge Template Field Naming Scheme Documentation
 
 ## Overview
 
-This document defines the comprehensive field naming conventions and database integration patterns used throughout the MuseNest theme system to ensure 100% consistency between database structure and Handlebars template usage.
+This document defines the comprehensive field naming conventions and database integration patterns used throughout the phoenix4ge theme system to ensure 100% consistency between database structure and Handlebars template usage.
 
 ## Core Naming Principles
 
@@ -223,5 +223,5 @@ For any page template, verify:
 ---
 
 **Last Updated**: August 13, 2025
-**System Version**: MuseNest Basic Theme v2.0
+**System Version**: phoenix4ge Basic Theme v2.0
 **Compliance Status**: 100% for implemented page types

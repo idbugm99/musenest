@@ -84,9 +84,9 @@ CREATE TABLE IF NOT EXISTS analysis_config_audit (
     FOREIGN KEY (config_id) REFERENCES analysis_configurations(id) ON DELETE SET NULL
 );
 
--- Default API key for MuseNest (you can change this)
+-- Default API key for phoenix4ge (you can change this)
 INSERT IGNORE INTO api_keys (key_name, api_key, permissions, is_active, created_by) VALUES (
-    'musenest_config_manager',
+    'phoenix4ge_config_manager',
     'mns_config_2025_secure_key_change_me_immediately',
     JSON_OBJECT(
         'analysis_config', JSON_ARRAY('read', 'write', 'delete'),

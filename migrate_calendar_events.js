@@ -12,17 +12,17 @@ async function migrateCalendarEvents() {
             host: process.env.DB_HOST || 'localhost',
             user: process.env.DB_USER || 'root',
             password: process.env.DB_PASSWORD || '',
-            database: process.env.DB_NAME || 'musenest'
+            database: process.env.DB_NAME || 'phoenix4ge'
         });
-        console.log('🔗 Connected to MuseNest database');
+        console.log('🔗 Connected to phoenix4ge database');
 
-        // Get model mapping from RoseMastos ID to MuseNest ID
+        // Get model mapping from RoseMastos ID to phoenix4ge ID
         const modelMapping = {};
-        const musenestModels = await targetDb.execute('SELECT id, slug FROM models');
+        const phoenix4geModels = await targetDb.execute('SELECT id, slug FROM models');
         
-        for (const model of musenestModels[0]) {
-            // Assuming the first model in MuseNest corresponds to the RoseMastos data
-            modelMapping[1] = model.id; // Map RoseMastos model_id 1 to MuseNest model
+        for (const model of phoenix4geModels[0]) {
+            // Assuming the first model in phoenix4ge corresponds to the RoseMastos data
+            modelMapping[1] = model.id; // Map RoseMastos model_id 1 to phoenix4ge model
             break;
         }
 
@@ -54,8 +54,8 @@ async function migrateCalendarEvents() {
 
         for (const event of calendarEvents) {
             try {
-                const musenestModelId = modelMapping[event.model_id];
-                if (!musenestModelId) {
+                const phoenix4geModelId = modelMapping[event.model_id];
+                if (!phoenix4geModelId) {
                     console.log(`⚠️  Skipping event ${event.id} - no model mapping for model_id ${event.model_id}`);
                     continue;
                 }
@@ -67,7 +67,7 @@ async function migrateCalendarEvents() {
                     ? `Vacation - ${event.location}`
                     : `${event.status} - ${event.location}`;
 
-                // Insert into MuseNest
+                // Insert into phoenix4ge
                 await targetDb.execute(`
                     INSERT INTO calendar_events (
                         model_id, title, description, start_date, end_date, 
@@ -76,7 +76,7 @@ async function migrateCalendarEvents() {
                         created_at, updated_at
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 `, [
-                    musenestModelId,
+                    phoenix4geModelId,
                     title,
                     event.notes || `${title} - migrated from RoseMastos`,
                     event.start_date,
@@ -113,7 +113,7 @@ async function migrateCalendarEvents() {
             [Object.values(modelMapping)[0]]
         );
         
-        console.log(`📋 Verification: ${verifyResult[0].count} calendar events now in MuseNest`);
+        console.log(`📋 Verification: ${verifyResult[0].count} calendar events now in phoenix4ge`);
 
     } catch (error) {
         console.error('💥 Migration failed:', error);
@@ -126,5 +126,5 @@ async function migrateCalendarEvents() {
 }
 
 // Run migration
-console.log('🚀 Starting calendar events migration from RoseMastos to MuseNest...');
+console.log('🚀 Starting calendar events migration from RoseMastos to phoenix4ge...');
 migrateCalendarEvents();

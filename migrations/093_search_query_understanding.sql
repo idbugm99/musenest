@@ -2,7 +2,7 @@
 -- Adds comprehensive tables for natural language processing, semantic search,
 -- query understanding, and intelligent search analytics
 
-USE musenest;
+USE phoenix4ge;
 
 -- Search query processing and understanding results
 CREATE TABLE IF NOT EXISTS search_query_understanding (
@@ -636,10 +636,10 @@ ALTER TABLE search_autocomplete_suggestions ADD INDEX idx_type_score_active (sug
 
 -- Grant permissions for search query understanding service
 -- Note: In production, create a dedicated search service user
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.search_query_understanding TO 'search_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.search_semantic_embeddings TO 'search_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.search_result_interactions TO 'search_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.GetSearchAnalytics TO 'search_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.AnalyzeSearchTrends TO 'search_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.search_query_understanding TO 'search_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.search_semantic_embeddings TO 'search_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.search_result_interactions TO 'search_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.GetSearchAnalytics TO 'search_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.AnalyzeSearchTrends TO 'search_service'@'localhost';
 
 SELECT 'Search Query Understanding and NLP migration completed successfully' as status;

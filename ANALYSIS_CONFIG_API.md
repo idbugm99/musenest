@@ -4,7 +4,7 @@ This system allows remote management of NudeNet/BLIP detection settings per usag
 
 ## Features
 
-- **Remote Configuration**: Change analysis settings from MuseNest without server access
+- **Remote Configuration**: Change analysis settings from phoenix4ge without server access
 - **Usage Intent Based**: Different rules for `public_site`, `paysite`, `store`, `private`
 - **Model Overrides**: Specific models can have custom settings
 - **Granular Control**: Enable/disable specific body part detection
@@ -280,9 +280,9 @@ Use the validate endpoint to check configuration before saving:
 POST /api/v1/analysis/config/validate
 ```
 
-## Integration with MuseNest
+## Integration with phoenix4ge
 
-From MuseNest, you can:
+From phoenix4ge, you can:
 1. Store configurations locally in your database
 2. Push changes to the analysis server via API
 3. Track what settings are active for each usage intent

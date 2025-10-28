@@ -1,4 +1,4 @@
--- MuseNest Admin Reconstruction: Dedicated Page Content Tables
+-- phoenix4ge Admin Reconstruction: Dedicated Page Content Tables
 -- This migration replaces the generic content system with dedicated page content tables
 -- similar to RoseMastos's proven architecture
 

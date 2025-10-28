@@ -1,4 +1,4 @@
--- MuseNest Database Migration 001
+-- phoenix4ge Database Migration 001
 -- Initial normalized schema migration
 -- Run date: 2025-07-24
 

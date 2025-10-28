@@ -22,7 +22,7 @@ module.exports = {
         host: process.env.TEST_DB_HOST || 'localhost',
         user: process.env.TEST_DB_USER || 'root',
         password: process.env.TEST_DB_PASSWORD || '',
-        database: process.env.TEST_DB_NAME || 'musenest_test',
+        database: process.env.TEST_DB_NAME || 'phoenix4ge_test',
         port: process.env.TEST_DB_PORT || 3306,
         charset: 'utf8mb4',
         // Auto-create and cleanup test database

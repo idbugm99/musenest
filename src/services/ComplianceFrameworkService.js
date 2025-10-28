@@ -57,10 +57,10 @@ class ComplianceFrameworkService extends EventEmitter {
                 executiveReportsEnabled: config.reporting?.executiveReportsEnabled !== false
             },
             storage: {
-                complianceDir: config.storage?.complianceDir || '/tmp/musenest-compliance',
-                auditLogsDir: config.storage?.auditLogsDir || '/tmp/musenest-compliance/audit-logs',
-                reportsDir: config.storage?.reportsDir || '/tmp/musenest-compliance/reports',
-                policiesDir: config.storage?.policiesDir || '/tmp/musenest-compliance/policies'
+                complianceDir: config.storage?.complianceDir || '/tmp/phoenix4ge-compliance',
+                auditLogsDir: config.storage?.auditLogsDir || '/tmp/phoenix4ge-compliance/audit-logs',
+                reportsDir: config.storage?.reportsDir || '/tmp/phoenix4ge-compliance/reports',
+                policiesDir: config.storage?.policiesDir || '/tmp/phoenix4ge-compliance/policies'
             }
         };
 

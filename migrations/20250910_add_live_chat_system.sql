@@ -51,8 +51,8 @@ CREATE TABLE IF NOT EXISTS chat_sessions (
 
 -- Insert some sample models with chat enabled
 INSERT IGNORE INTO models (id, name, email, chat_enabled, chat_welcome_message, online_status) VALUES 
-('modelexample', 'Model Example', 'modelexample@musenest.com', TRUE, 'Hi! I\'m online and ready to chat. How can I help you today?', 'online'),
-('secondmodel', 'Second Model', 'secondmodel@musenest.com', FALSE, NULL, 'offline');
+('modelexample', 'Model Example', 'modelexample@phoenix4ge.com', TRUE, 'Hi! I\'m online and ready to chat. How can I help you today?', 'online'),
+('secondmodel', 'Second Model', 'secondmodel@phoenix4ge.com', FALSE, NULL, 'offline');
 
 -- Update the conversation_details view to include chat information
 DROP VIEW IF EXISTS conversation_details;

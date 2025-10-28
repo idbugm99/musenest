@@ -1,8 +1,8 @@
-# MuseNest Template Creative Flexibility Guidelines
+# phoenix4ge Template Creative Flexibility Guidelines
 
 ## Overview
 
-This document establishes clear boundaries between **required database-driven functionality** and **acceptable creative flexibility** in MuseNest theme development. It ensures consistency while allowing theme designers creative freedom within defined parameters.
+This document establishes clear boundaries between **required database-driven functionality** and **acceptable creative flexibility** in phoenix4ge theme development. It ensures consistency while allowing theme designers creative freedom within defined parameters.
 
 ## Core Principles
 
@@ -352,5 +352,5 @@ This example demonstrates:
 ---
 
 **Last Updated**: August 13, 2025  
-**System Version**: MuseNest Basic Theme v2.0  
+**System Version**: phoenix4ge Basic Theme v2.0  
 **Compliance Level**: Production Ready

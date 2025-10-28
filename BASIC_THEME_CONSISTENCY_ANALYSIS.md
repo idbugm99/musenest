@@ -177,7 +177,7 @@ After conducting a comprehensive review of all 7 pages in the Basic Theme, I've 
 
 ### Each Page Implementation Includes:
 - Database migration for `[page]_content` table
-- API routes for content management using clean MuseNest naming
+- API routes for content management using clean phoenix4ge naming
 - Admin editor component
 - Template updates for consistent data patterns
 - Testing across both Basic and Luxury themes

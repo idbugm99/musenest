@@ -3,9 +3,7 @@
  * Provides unified interface for admin media moderation with thumbnails and review actions
  */
 
-// DEBUG: Test if this file is even being loaded
-const fs = require('fs');
-fs.appendFileSync('/tmp/blur_debug.log', `Media review queue API loaded at ${new Date()}\n`);
+// DEBUG: Test if this file is even being loaded removed for production
 
 const express = require('express');
 const path = require('path');

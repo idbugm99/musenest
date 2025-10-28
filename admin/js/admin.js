@@ -1,5 +1,5 @@
 /**
- * MuseNest Admin Dashboard - Main Controller
+ * phoenix4ge Admin Dashboard - Main Controller
  */
 if (window.ComponentRegistryClient) {
     window.ComponentRegistryClient.register('admin-dashboard', 'admin/js/admin.js');
@@ -8,13 +8,9 @@ if (window.ComponentRegistryClient) {
 class AdminDashboard {
     constructor() {
         this.currentUser = null;
-        this.authToken = localStorage.getItem('musenest_token');
-        // Force HTTP in development to avoid HTTPS issues
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            this.baseURL = `http://${window.location.hostname}:${window.location.port || 3000}`;
-        } else {
-            this.baseURL = window.location.origin;
-        }
+        this.authToken = localStorage.getItem('phoenix4ge_token');
+        // Use current protocol and host
+        this.baseURL = window.location.origin;
         this.currentTab = 'dashboard';
         this.isRedirecting = false;
         
@@ -455,7 +451,7 @@ class AdminDashboard {
     async logout() {
         try {
             // Call server logout endpoint to invalidate session
-            const token = localStorage.getItem('musenest_token');
+            const token = localStorage.getItem('phoenix4ge_token');
             if (token) {
                 try {
                     await sysFetch('/api/auth/logout', {
@@ -479,9 +475,9 @@ class AdminDashboard {
 
     performCompleteLogout() {
         // Clear all localStorage items related to authentication
-        localStorage.removeItem('musenest_token');
-        localStorage.removeItem('musenest_user');
-        localStorage.removeItem('musenest_session');
+        localStorage.removeItem('phoenix4ge_token');
+        localStorage.removeItem('phoenix4ge_user');
+        localStorage.removeItem('phoenix4ge_session');
         localStorage.removeItem('currentUser');
         localStorage.removeItem('userRole');
         localStorage.removeItem('impersonation_data');

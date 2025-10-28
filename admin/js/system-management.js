@@ -32,7 +32,7 @@ class SystemManagement {
 
     async checkSystemAccessPermission() {
         try {
-            const token = localStorage.getItem('musenest_token');
+            const token = localStorage.getItem('phoenix4ge_token');
             if (!token) {
                 this.redirectToLogin();
                 return;
@@ -71,7 +71,7 @@ class SystemManagement {
 
     redirectToLogin() {
         // Clear all authentication data
-        localStorage.removeItem('musenest_token');
+        localStorage.removeItem('phoenix4ge_token');
         sessionStorage.clear();
         window.location.href = 'login.html';
     }
@@ -958,7 +958,7 @@ class SystemManagement {
         if (confirm('Are you sure you want to logout?')) {
             try {
                 // Call server logout endpoint to invalidate session
-                const token = localStorage.getItem('musenest_token');
+                const token = localStorage.getItem('phoenix4ge_token');
                 if (token) {
                     try {
                         await sysFetch('/api/auth/logout', {
@@ -983,9 +983,9 @@ class SystemManagement {
 
     performCompleteLogout() {
         // Clear all localStorage items related to authentication
-        localStorage.removeItem('musenest_token');
-        localStorage.removeItem('musenest_user');
-        localStorage.removeItem('musenest_session');
+        localStorage.removeItem('phoenix4ge_token');
+        localStorage.removeItem('phoenix4ge_user');
+        localStorage.removeItem('phoenix4ge_session');
         localStorage.removeItem('currentUser');
         localStorage.removeItem('userRole');
         localStorage.removeItem('impersonation_data');

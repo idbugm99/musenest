@@ -100,7 +100,7 @@ npm run report:visual             # Visual regression performance
 TEST_DB_HOST=localhost
 TEST_DB_USER=root
 TEST_DB_PASSWORD=
-TEST_DB_NAME=musenest_test
+TEST_DB_NAME=phoenix4ge_test
 TEST_DB_PORT=3306
 
 # Test server configuration

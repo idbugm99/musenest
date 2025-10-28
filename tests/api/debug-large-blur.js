@@ -4,8 +4,8 @@ async function testLargeBlur() {
     try {
         console.log('=== Large Blur Visibility Test ===');
         
-        const originalPath = '/Users/programmer/Projects/musenest/public/uploads/escortexample/originals/1753687362085_BlowJob.jpg';
-        const outputPath = '/Users/programmer/Projects/musenest/large-blur-test.jpg';
+        const originalPath = '/Users/programmer/Projects/phoenix4ge/public/uploads/escortexample/originals/1753687362085_BlowJob.jpg';
+        const outputPath = '/Users/programmer/Projects/phoenix4ge/large-blur-test.jpg';
         
         // Create a much larger blur region in the center to make it clearly visible
         const metadata = await sharp(originalPath).metadata();

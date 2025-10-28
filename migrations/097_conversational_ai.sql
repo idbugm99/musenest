@@ -2,7 +2,7 @@
 -- Adds comprehensive tables for conversational AI, chat history, intent management,
 -- knowledge base, customer support workflows, and AI learning systems
 
-USE musenest;
+USE phoenix4ge;
 
 -- Conversation management and state tracking
 CREATE TABLE IF NOT EXISTS conversation_sessions (
@@ -566,10 +566,10 @@ ALTER TABLE intent_classifications ADD INDEX idx_classification_performance (cla
 
 -- Grant permissions for conversational AI service
 -- Note: In production, create a dedicated AI service user
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.conversation_sessions TO 'ai_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.conversation_turns TO 'ai_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.ai_knowledge_base TO 'ai_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.StartConversationSession TO 'ai_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.GetConversationAnalytics TO 'ai_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.conversation_sessions TO 'ai_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.conversation_turns TO 'ai_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.ai_knowledge_base TO 'ai_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.StartConversationSession TO 'ai_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.GetConversationAnalytics TO 'ai_service'@'localhost';
 
 SELECT 'Conversational AI and Customer Support system migration completed successfully' as status;

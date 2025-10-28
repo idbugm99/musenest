@@ -1,6 +1,6 @@
-# MuseNest Database Schema (Initial Migrations 001-004)
+# phoenix4ge Database Schema (Initial Migrations 001-004)
 
-This document lists the tables and their columns as defined in the first four SQL migrations found in `musenest/database/migrations/`.  Later migrations add additional structures, but this serves as the core starting point of the schema.
+This document lists the tables and their columns as defined in the first four SQL migrations found in `phoenix4ge/database/migrations/`.  Later migrations add additional structures, but this serves as the core starting point of the schema.
 
 ---
 

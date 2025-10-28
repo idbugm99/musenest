@@ -1,12 +1,12 @@
 /**
- * MuseNest System Admin Dashboard - Main Controller
+ * phoenix4ge System Admin Dashboard - Main Controller
  * Comprehensive system administration interface
  */
 
 class SystemAdminDashboard {
     constructor() {
         this.currentUser = null;
-        this.authToken = localStorage.getItem('musenest_token');
+        this.authToken = localStorage.getItem('phoenix4ge_token');
         this.currentTab = 'overview';
         this.isRedirecting = false;
         
@@ -1350,9 +1350,9 @@ class SystemAdminDashboard {
 
     performCompleteLogout() {
         // Clear all authentication data
-        localStorage.removeItem('musenest_token');
-        localStorage.removeItem('musenest_user');
-        localStorage.removeItem('musenest_session');
+        localStorage.removeItem('phoenix4ge_token');
+        localStorage.removeItem('phoenix4ge_user');
+        localStorage.removeItem('phoenix4ge_session');
         sessionStorage.clear();
         
         // Clear cookies
@@ -1369,7 +1369,7 @@ class SystemAdminDashboard {
         if (this.isRedirecting) return;
         this.isRedirecting = true;
         
-        localStorage.removeItem('musenest_token');
+        localStorage.removeItem('phoenix4ge_token');
         const timestamp = new Date().getTime();
         window.location.href = `login.html?t=${timestamp}`;
     }
@@ -2460,7 +2460,7 @@ class SystemAdminDashboard {
     getWebPath(absolutePath) {
         if (!absolutePath) return '/placeholder-image.jpg';
         // Convert absolute path to web-accessible path
-        return absolutePath.replace('/Users/programmer/Projects/musenest/public', '');
+        return absolutePath.replace('/Users/programmer/Projects/phoenix4ge/public', '');
     }
 
     closeBlurToolModal() {

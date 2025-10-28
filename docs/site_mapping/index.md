@@ -1,6 +1,6 @@
 # Admin UI → Database Field Mapping
 
-This documentation catalogues how every editable field in the MuseNest admin interface is persisted to the database.
+This documentation catalogues how every editable field in the phoenix4ge admin interface is persisted to the database.
 
 ## Why this exists
 1. Designers can see exactly which database columns a theme can surface or style.

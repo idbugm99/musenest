@@ -5,6 +5,8 @@
  */
 
 const { query } = require('../config/database');
+const ClientResolverService = require('./ClientResolverService');
+const clientResolver = new ClientResolverService();
 
 class ConversationService {
     
@@ -138,6 +140,18 @@ class ConversationService {
         userAgent = null
     }) {
         try {
+            // Ensure conversation has client_model_interaction_id
+            try {
+                const resolver = await clientResolver.resolveOrCreateClient({
+                    modelId: recipientName || recipientEmail.split('@')[0],
+                    name: senderName,
+                    email: senderEmail
+                });
+                await query(`UPDATE conversations SET client_model_interaction_id = ? WHERE id = ? AND client_model_interaction_id IS NULL`, [resolver.interactionId, conversationId]);
+            } catch (e) {
+                console.error('Email resolver failed (non-fatal):', e.message);
+            }
+
             const result = await query(`
                 INSERT INTO messages (
                     conversation_id, message_type, message_type_extended, subject, message,
@@ -159,8 +173,8 @@ class ConversationService {
                 emailMessageId,
                 ipAddress,
                 userAgent,
-                messageType === 'email_out', // Sender has read their own message
-                messageType === 'email_in',  // For incoming emails, model hasn't read yet
+                messageType === 'email_out',
+                messageType === 'email_in',
                 messageType === 'email_out' ? new Date() : null,
                 messageType === 'email_in' ? null : new Date()
             ]);

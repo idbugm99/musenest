@@ -1,4 +1,4 @@
-# MuseNest Media Library API Documentation
+# phoenix4ge Media Library API Documentation
 
 **Version:** 2.0  
 **Last Updated:** August 9, 2025  
@@ -527,7 +527,7 @@ GET /api/model-media-library/{modelSlug}/{mediaId}/history
         "height": 600
       },
       "processing_time": 145,
-      "admin_user": "admin@musenest.com"
+      "admin_user": "admin@phoenix4ge.com"
     },
     {
       "id": 2,
@@ -538,7 +538,7 @@ GET /api/model-media-library/{modelSlug}/{mediaId}/history
         "contrast": 1.2
       },
       "processing_time": 89,
-      "admin_user": "admin@musenest.com"
+      "admin_user": "admin@phoenix4ge.com"
     }
   ]
 }
@@ -758,8 +758,8 @@ For large file uploads, the API supports progress tracking:
 ### **JavaScript/Node.js**
 
 ```javascript
-// Initialize MuseNest Media API client
-class MuseNestMediaAPI {
+// Initialize phoenix4ge Media API client
+class phoenix4geMediaAPI {
   constructor(baseUrl, apiKey) {
     this.baseUrl = baseUrl;
     this.headers = {
@@ -800,7 +800,7 @@ class MuseNestMediaAPI {
 }
 
 // Usage
-const api = new MuseNestMediaAPI('https://api.musenest.com', 'your-api-key');
+const api = new phoenix4geMediaAPI('https://api.phoenix4ge.com', 'your-api-key');
 
 const uploadResult = await api.uploadMedia('jane-doe', files, {
   apply_watermark: true,
@@ -821,7 +821,7 @@ import requests
 import json
 from typing import List, Dict, Any
 
-class MuseNestMediaAPI:
+class phoenix4geMediaAPI:
     def __init__(self, base_url: str, api_key: str):
         self.base_url = base_url
         self.headers = {
@@ -851,7 +851,7 @@ class MuseNestMediaAPI:
         return response.json()
 
 # Usage
-api = MuseNestMediaAPI('https://api.musenest.com', 'your-api-key')
+api = phoenix4geMediaAPI('https://api.phoenix4ge.com', 'your-api-key')
 
 upload_result = api.upload_media('jane-doe', files, apply_watermark=True, category_id=5)
 media_list = api.get_media('jane-doe', page=1, limit=12, status='approved')
@@ -889,7 +889,7 @@ media_list = api.get_media('jane-doe', page=1, limit=12, status='approved')
 ### **Postman Collection**
 
 A comprehensive Postman collection is available at:
-`/docs/postman/MuseNest_Media_API_Collection.json`
+`/docs/postman/phoenix4ge_Media_API_Collection.json`
 
 ---
 
@@ -898,7 +898,7 @@ A comprehensive Postman collection is available at:
 For API support and technical questions:
 - **Documentation:** `/docs/API_DOCUMENTATION.md`
 - **GitHub Issues:** Create an issue in the repository
-- **Email Support:** support@musenest.com
+- **Email Support:** support@phoenix4ge.com
 
 ---
 

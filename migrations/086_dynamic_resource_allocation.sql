@@ -1,7 +1,7 @@
 -- Dynamic Resource Allocation System Migration
 -- Adds tables and infrastructure for intelligent resource management and allocation
 
-USE musenest;
+USE phoenix4ge;
 
 -- Resource pools configuration and current allocation
 CREATE TABLE IF NOT EXISTS resource_pools (
@@ -504,9 +504,9 @@ ALTER TABLE resource_scaling_events ADD INDEX idx_scaling_performance (pool_name
 
 -- Grant permissions for dynamic resource allocation service
 -- Note: In production, create a dedicated resource management service user
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.resource_* TO 'resource_manager'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.AnalyzeResourceUtilization TO 'resource_manager'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.OptimizeResourceAllocation TO 'resource_manager'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.ValidateResourceConstraints TO 'resource_manager'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.resource_* TO 'resource_manager'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.AnalyzeResourceUtilization TO 'resource_manager'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.OptimizeResourceAllocation TO 'resource_manager'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.ValidateResourceConstraints TO 'resource_manager'@'localhost';
 
 SELECT 'Dynamic Resource Allocation System migration completed successfully' as status;

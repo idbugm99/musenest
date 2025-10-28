@@ -15,7 +15,14 @@ function shouldSkipLogging(pathname) {
     pathname.startsWith('/uploads/') ||
     // Reduce noise from autosave traffic to content APIs
     pathname.startsWith('/api/model-content/') ||
-    pathname.startsWith('/api/model-content-new/')
+    pathname.startsWith('/api/model-content-new/') ||
+    // Skip logging common bot/scanner requests
+    pathname.includes('wp-admin') ||
+    pathname.includes('wordpress') ||
+    pathname.includes('.php') ||
+    pathname.includes('phpmyadmin') ||
+    pathname.includes('admin.php') ||
+    pathname.includes('config.php')
   );
 }
 

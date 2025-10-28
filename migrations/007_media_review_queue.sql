@@ -1,7 +1,7 @@
 -- Migration: Create media_review_queue table for Media Governance Flow
 -- This table consolidates all media moderation data for seamless admin review
 
-USE musenest;
+USE phoenix4ge;
 
 -- Create media_review_queue table
 CREATE TABLE IF NOT EXISTS media_review_queue (

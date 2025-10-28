@@ -52,7 +52,7 @@ class AutomatedReportingService extends EventEmitter {
                         user: config.notifications?.email?.user || process.env.SMTP_USER,
                         pass: config.notifications?.email?.pass || process.env.SMTP_PASS
                     },
-                    from: config.notifications?.email?.from || process.env.SMTP_FROM || 'musenest@localhost'
+                    from: config.notifications?.email?.from || process.env.SMTP_FROM || 'phoenix4ge@localhost'
                 },
                 webhook: {
                     enabled: config.notifications?.webhook?.enabled !== false,
@@ -66,10 +66,10 @@ class AutomatedReportingService extends EventEmitter {
                 }
             },
             storage: {
-                reportsDir: config.storage?.reportsDir || '/tmp/musenest-reports',
-                alertsDir: config.storage?.alertsDir || '/tmp/musenest-alerts',
-                archiveDir: config.storage?.archiveDir || '/tmp/musenest-archive',
-                tempDir: config.storage?.tempDir || '/tmp/musenest-temp'
+                reportsDir: config.storage?.reportsDir || '/tmp/phoenix4ge-reports',
+                alertsDir: config.storage?.alertsDir || '/tmp/phoenix4ge-alerts',
+                archiveDir: config.storage?.archiveDir || '/tmp/phoenix4ge-archive',
+                tempDir: config.storage?.tempDir || '/tmp/phoenix4ge-temp'
             }
         };
 
@@ -545,7 +545,7 @@ class AutomatedReportingService extends EventEmitter {
                 </div>
                 
                 <div class="footer">
-                    <p>This is an automated message from MuseNest Reporting System.</p>
+                    <p>This is an automated message from phoenix4ge Reporting System.</p>
                     <p>Generated at ${new Date().toISOString()}</p>
                 </div>
             </body>
@@ -870,7 +870,7 @@ class AutomatedReportingService extends EventEmitter {
                 </div>
                 
                 <div class="footer">
-                    <p>This is an automated alert from MuseNest Monitoring System.</p>
+                    <p>This is an automated alert from phoenix4ge Monitoring System.</p>
                     <p>Please acknowledge this alert or take appropriate action.</p>
                 </div>
             </body>

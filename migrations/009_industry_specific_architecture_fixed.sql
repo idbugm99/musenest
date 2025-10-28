@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS business_page_sets (
 
 -- Check if columns already exist before adding them
 SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-    WHERE TABLE_SCHEMA = 'musenest' AND TABLE_NAME = 'page_types' AND COLUMN_NAME = 'business_type_id');
+    WHERE TABLE_SCHEMA = 'phoenix4ge' AND TABLE_NAME = 'page_types' AND COLUMN_NAME = 'business_type_id');
 
 -- Add business_type_id to existing page_types table if it doesn't exist
 SET @sql = IF(@col_exists = 0, 
@@ -82,7 +82,7 @@ DEALLOCATE PREPARE stmt;
 
 -- Check if theme_sets columns already exist
 SET @theme_col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-    WHERE TABLE_SCHEMA = 'musenest' AND TABLE_NAME = 'theme_sets' AND COLUMN_NAME = 'business_type_id');
+    WHERE TABLE_SCHEMA = 'phoenix4ge' AND TABLE_NAME = 'theme_sets' AND COLUMN_NAME = 'business_type_id');
 
 -- Add industry variant support to theme_sets table if it doesn't exist
 SET @sql = IF(@theme_col_exists = 0,
@@ -100,7 +100,7 @@ DEALLOCATE PREPARE stmt;
 
 -- Check if models columns already exist
 SET @model_col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-    WHERE TABLE_SCHEMA = 'musenest' AND TABLE_NAME = 'models' AND COLUMN_NAME = 'business_type_id');
+    WHERE TABLE_SCHEMA = 'phoenix4ge' AND TABLE_NAME = 'models' AND COLUMN_NAME = 'business_type_id');
 
 -- Add business type to models table if it doesn't exist
 SET @sql = IF(@model_col_exists = 0,
@@ -274,7 +274,7 @@ INSERT IGNORE INTO theme_sets (name, display_name, description, category, defaul
 
 -- Add constraints if they don't exist
 SET @constraint_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
-    WHERE CONSTRAINT_SCHEMA = 'musenest' AND TABLE_NAME = 'business_page_sets' AND CONSTRAINT_NAME = 'unique_business_page_set');
+    WHERE CONSTRAINT_SCHEMA = 'phoenix4ge' AND TABLE_NAME = 'business_page_sets' AND CONSTRAINT_NAME = 'unique_business_page_set');
 
 SET @sql = IF(@constraint_exists = 0,
     'ALTER TABLE business_page_sets ADD CONSTRAINT unique_business_page_set UNIQUE (business_type_id, name)',

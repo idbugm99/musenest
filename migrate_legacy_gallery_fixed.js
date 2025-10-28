@@ -10,7 +10,7 @@ async function migrateLegacyGalleryDataFixed() {
     host: 'localhost', 
     user: 'root', 
     password: '', 
-    database: 'musenest'
+    database: 'phoenix4ge'
   });
   
   try {

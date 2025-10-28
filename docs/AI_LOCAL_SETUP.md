@@ -1,15 +1,15 @@
-# AI Local Setup (BLIP + NudeNet) for MuseNest
+# AI Local Setup (BLIP + NudeNet) for phoenix4ge
 
-This guide runs the Python moderation API locally (BLIP captions, NudeNet NSFW, optional pose) and integrates it with MuseNest.
+This guide runs the Python moderation API locally (BLIP captions, NudeNet NSFW, optional pose) and integrates it with phoenix4ge.
 
 ## Requirements
 - Python 3.9+ (Apple Silicon supported)
 - Virtualenv
-- Node.js (for MuseNest)
+- Node.js (for phoenix4ge)
 
 ## 1) Create venv and install requirements
 ```bash
-cd musenest
+cd phoenix4ge
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements_v3.txt
@@ -26,19 +26,19 @@ python enhanced_moderation_api_v2.py --port 5005
 ```
 The service should listen on `http://localhost:5005` and expose `/health`.
 
-## 3) Configure MuseNest to use AI
-Create/update `.env` in musenest:
+## 3) Configure phoenix4ge to use AI
+Create/update `.env` in phoenix4ge:
 ```
 AI_SERVER_URL=http://localhost:5005
 ```
 
-## 4) Start MuseNest
+## 4) Start phoenix4ge
 ```bash
 npm run dev
 ```
 
 ## 5) Verify health
-- MuseNest: `http://localhost:3000/health`
+- phoenix4ge: `http://localhost:3000/health`
 - AI: `http://localhost:5005/health`
 - Proxy (dev): `http://localhost:3000/_ai/health` (added by server)
 

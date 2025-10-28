@@ -287,10 +287,10 @@ INSERT IGNORE INTO admin_notification_thresholds (
     model_id, threshold_type, threshold_value, time_period_hours, 
     notification_enabled, alert_email
 ) VALUES
-(NULL, 'daily_violations', 5, 24, TRUE, 'admin@musenest.com'),
-(NULL, 'weekly_violations', 20, 168, TRUE, 'admin@musenest.com'),
-(NULL, 'pending_items', 50, 24, TRUE, 'admin@musenest.com'),
-(NULL, 'high_severity_rate', 3, 24, TRUE, 'admin@musenest.com');
+(NULL, 'daily_violations', 5, 24, TRUE, 'admin@phoenix4ge.com'),
+(NULL, 'weekly_violations', 20, 168, TRUE, 'admin@phoenix4ge.com'),
+(NULL, 'pending_items', 50, 24, TRUE, 'admin@phoenix4ge.com'),
+(NULL, 'high_severity_rate', 3, 24, TRUE, 'admin@phoenix4ge.com');
 
 -- Initialize dashboard stats for existing models
 CALL UpdateModelDashboardStats(NULL);

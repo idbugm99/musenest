@@ -14,7 +14,7 @@ class CLIPNSFWTester {
     public function __construct() {
         // Test configuration
         $config = [
-            'python_env' => '/Users/programmer/Projects/musenest/admin/python/clip_env/bin/python',
+            'python_env' => '/Users/programmer/Projects/phoenix4ge/admin/python/clip_env/bin/python',
             'timeout' => 30,
             'debug' => true,
             'cache_enabled' => false // Disable cache for testing

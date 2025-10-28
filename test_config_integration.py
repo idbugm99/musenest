@@ -5,7 +5,7 @@ Test Configuration Integration - Verify the configuration system works
 
 import sys
 import os
-sys.path.append('/Users/programmer/Projects/musenest')
+sys.path.append('/Users/programmer/Projects/phoenix4ge')
 
 # Test the ConfigurableAnalysisComponents class
 class MockRequest:

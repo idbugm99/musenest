@@ -1,5 +1,5 @@
 /**
- * MuseNest Admin Dashboard - Settings Management
+ * phoenix4ge Admin Dashboard - Settings Management
  */
 if (window.ComponentRegistryClient) {
     window.ComponentRegistryClient.register('admin-settings', 'admin/js/settings.js');

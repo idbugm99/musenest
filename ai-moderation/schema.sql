@@ -1,5 +1,5 @@
 -- Content Moderation Database Schema
--- Add this to your existing MuseNest database
+-- Add this to your existing phoenix4ge database
 
 CREATE TABLE IF NOT EXISTS content_moderation (
     id INT PRIMARY KEY AUTO_INCREMENT,

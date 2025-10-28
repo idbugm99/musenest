@@ -1,4 +1,4 @@
-# MuseNest Backend Infrastructure Documentation
+# phoenix4ge Backend Infrastructure Documentation
 
 **Version:** 1.0  
 **Date:** August 2, 2025  
@@ -8,7 +8,7 @@
 
 ## 🏗️ Architecture Overview
 
-MuseNest is a comprehensive AI moderation platform with built-in subscription management and business intelligence. The backend infrastructure provides enterprise-grade AI configuration control, real-time monitoring, and automated billing integration.
+phoenix4ge is a comprehensive AI moderation platform with built-in subscription management and business intelligence. The backend infrastructure provides enterprise-grade AI configuration control, real-time monitoring, and automated billing integration.
 
 ### **Core Technology Stack**
 - **Runtime:** Node.js v22.17.0
@@ -137,19 +137,19 @@ POST   /api/site-configuration/sites/:id/deploy-with-validation  // Subscription
 #### **Configuration Translation System**
 ```javascript
 // NudeNet Configuration Translation
-function translateNudenetConfigToServer(museNestConfig) {
+function translateNudenetConfigToServer(phoenix4geConfig) {
     const serverConfig = {};
-    if (museNestConfig.detection_threshold !== undefined) {
-        const threshold = Math.round(museNestConfig.detection_threshold * 100);
+    if (phoenix4geConfig.detection_threshold !== undefined) {
+        const threshold = Math.round(phoenix4geConfig.detection_threshold * 100);
         serverConfig.public_gallery_threshold = Math.max(threshold - 5, 15);
         serverConfig.private_share_threshold = threshold + 10;
         serverConfig.default_threshold = threshold;
     }
     
     // Body parts mapping
-    if (museNestConfig.body_parts) {
+    if (phoenix4geConfig.body_parts) {
         serverConfig.body_parts = {
-            nudity_score_threshold: Math.round(museNestConfig.detection_threshold * 0.75 * 100),
+            nudity_score_threshold: Math.round(phoenix4geConfig.detection_threshold * 0.75 * 100),
             detected_parts_enabled: true,
             part_location_tracking: true
         };
@@ -159,15 +159,15 @@ function translateNudenetConfigToServer(museNestConfig) {
 }
 
 // BLIP Configuration Translation  
-function translateBlipConfigToServer(museNestConfig) {
+function translateBlipConfigToServer(phoenix4geConfig) {
     return {
         max_length: 150,
         min_length: 20,
         num_beams: 8,
         temperature: 0.7,
         cache_days: 7,
-        child_safety_keywords: expandKeywords(museNestConfig.child_keywords),
-        child_risk_threshold: Math.round(museNestConfig.risk_multiplier * 20) + 5,
+        child_safety_keywords: expandKeywords(phoenix4geConfig.child_keywords),
+        child_risk_threshold: Math.round(phoenix4geConfig.risk_multiplier * 20) + 5,
         high_risk_threshold: 90
     };
 }
@@ -494,7 +494,7 @@ Encoding: utf8mb4 for international support
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=
-DB_NAME=musenest
+DB_NAME=phoenix4ge
 DB_PORT=3306
 
 # Application
@@ -563,4 +563,4 @@ SMTP_HOST=smtp.sendgrid.net
 
 **Status: Production Ready** 🚀
 
-The MuseNest backend infrastructure represents a complete, enterprise-grade AI moderation platform with integrated subscription management and business intelligence. The system is designed for scale, built for reliability, and optimized for revenue generation.
+The phoenix4ge backend infrastructure represents a complete, enterprise-grade AI moderation platform with integrated subscription management and business intelligence. The system is designed for scale, built for reliability, and optimized for revenue generation.

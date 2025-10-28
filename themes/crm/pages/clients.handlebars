@@ -64,7 +64,7 @@
     <div class="card-body p-0">
         {{#if clients.length}}
         <div class="table-responsive">
-            <table class="table table-hover mb-0">
+            <table class="table table-hover mb-0" id="clientsTable">
                 <thead>
                     <tr>
                         <th>Client</th>
@@ -78,14 +78,14 @@
                 </thead>
                 <tbody>
                     {{#each clients}}
-                    <tr>
+                    <tr data-interaction-id="{{client_model_interaction_id}}">
                         <td>
                             <div class="d-flex align-items-center">
                                 <div class="avatar-sm me-2">
                                     <i class="fas fa-user"></i>
                                 </div>
                                 <div>
-                                    <div class="fw-bold">{{client_identifier}}</div>
+                                    <div class="fw-bold">{{client_identifier}} {{#if unread_count}}<span class="badge bg-danger ms-2">{{unread_count}}</span>{{/if}}</div>
                                     <small class="text-muted">Added {{formatDate created_at 'MMM DD, YYYY'}}</small>
                                 </div>
                             </div>
@@ -264,6 +264,61 @@
     </div>
 </div>
 
+<div class="mt-3 d-flex gap-2">
+	<button class="btn btn-outline-secondary btn-sm" id="openScreeningBtn" disabled>
+		<i class="fas fa-shield-alt me-1"></i> Screening / References
+	</button>
+	<button class="btn btn-outline-primary btn-sm" id="openMessagesBtn" disabled>
+		<i class="fas fa-comments me-1"></i> Messages
+	</button>
+</div>
+
+<!-- Screening Modal -->
+<div class="modal fade" id="screeningModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-shield-alt me-2"></i>Screening & References</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="screeningMethods" class="list-group mb-3"></div>
+        <div class="border rounded p-3">
+          <label class="form-label">Upload screening files</label>
+          <input type="file" id="screeningFiles" class="form-control" multiple>
+          <div class="form-text">Images/PDFs are stored per client for audit.</div>
+          <ul id="screeningFilesList" class="mt-2 mb-0"></ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button class="btn btn-primary" id="saveScreeningBtn">
+          <i class="fas fa-save me-1"></i>Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Messages Modal -->
+<div class="modal fade" id="messagesModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-comments me-2"></i>Messages</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body d-flex flex-column" style="max-height: 70vh;">
+        <div id="messageThread" class="flex-grow-1 overflow-auto border rounded p-3 bg-light"></div>
+        <div class="mt-3 d-flex gap-2">
+          <textarea id="messageText" class="form-control" rows="2" placeholder="Type a message..."></textarea>
+          <button class="btn btn-primary" id="sendMessageBtn"><i class="fas fa-paper-plane"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
     $(document).ready(function() {
         // Handle form submission
@@ -290,6 +345,18 @@
         $('#searchInput').on('input', function() {
             // Will implement search once database is set up
             console.log('Search:', $(this).val());
+        });
+
+        // Row selection to activate actions
+        $('#clientsTable tbody tr').on('click', function(){
+            const id = $(this).data('interaction-id');
+            if (id) {
+                window.location.href = `/{{model.modelSlug}}/crm/clients/${id}`;
+                return;
+            }
+            CRM.selectInteraction(id);
+            $('#clientsTable tbody tr').removeClass('table-active');
+            $(this).addClass('table-active');
         });
     });
     
@@ -321,4 +388,112 @@
             $('.alert').fadeOut();
         }, 5000);
     }
+</script>
+
+<script>
+(function(){
+	let selectedInteractionId = null;
+	// TODO: wire selection in clients table to set selectedInteractionId
+	function enableActions(id){
+		selectedInteractionId = id;
+		$('#openScreeningBtn').prop('disabled', !id);
+		$('#openMessagesBtn').prop('disabled', !id);
+	}
+	window.CRM = window.CRM || {};
+	window.CRM.selectInteraction = enableActions;
+
+	function renderScreening(methods){
+		const $list = $('#screeningMethods').empty();
+		methods.forEach(m => {
+			const item = $(`
+				<label class="list-group-item">
+					<div class="d-flex align-items-start gap-3">
+						<input class="form-check-input mt-1" type="checkbox" ${m.checked ? 'checked' : ''} data-slug="${m.slug || m.method_slug}">
+						<div class="flex-grow-1">
+							<div class="fw-semibold">${m.label || m.method_label || m.slug}</div>
+							<textarea class="form-control form-control-sm mt-2" rows="2" placeholder="Notes...">${m.notes || ''}</textarea>
+						</div>
+					</div>
+				</label>`);
+			$list.append(item);
+		});
+	}
+
+	async function listScreeningFiles(){
+		const res = await fetch(`/api/crm/{{model.modelSlug}}/screening/${selectedInteractionId}/files`);
+		const data = await res.json();
+		const $ul = $('#screeningFilesList').empty();
+		(data.files || []).forEach(f => {
+			$ul.append(`<li><a href="${f.file_path}" target="_blank">${f.original_name || 'file'}</a> <small class="text-muted">${new Date(f.created_at).toLocaleString()}</small></li>`);
+		});
+	}
+
+	$('#openScreeningBtn').on('click', async function(){
+		if(!selectedInteractionId) return;
+		const res = await fetch(`/api/crm/{{model.modelSlug}}/screening/${selectedInteractionId}`);
+		const data = await res.json();
+		if(!data.success){ alert('Failed to load screening'); return; }
+		renderScreening(data.data);
+		await listScreeningFiles();
+		new bootstrap.Modal(document.getElementById('screeningModal')).show();
+	});
+
+	$('#saveScreeningBtn').on('click', async function(){
+		const methods = [];
+		$('#screeningMethods .list-group-item').each(function(){
+			const $row = $(this);
+			const checked = $row.find('input[type=checkbox]').is(':checked');
+			const slug = $row.find('input[type=checkbox]').data('slug');
+			const notes = $row.find('textarea').val();
+			const label = $row.find('.fw-semibold').text();
+			methods.push({ slug, label, checked, notes });
+		});
+		const res = await fetch(`/api/crm/{{model.modelSlug}}/screening/${selectedInteractionId}`, {
+			method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ methods })
+		});
+		const out = await res.json();
+		if(!out.success){ alert('Save failed'); return; }
+		const files = document.getElementById('screeningFiles').files;
+		if(files.length){
+			const form = new FormData();
+			for(const f of files) form.append('files', f);
+			await fetch(`/api/crm/{{model.modelSlug}}/screening/${selectedInteractionId}/upload`, { method:'POST', body: form });
+			await listScreeningFiles();
+		}
+		bootstrap.Modal.getInstance(document.getElementById('screeningModal')).hide();
+	});
+
+	$('#openMessagesBtn').on('click', async function(){
+		if(!selectedInteractionId) return;
+		const res = await fetch(`/api/crm/{{model.modelSlug}}/messages/${selectedInteractionId}`);
+		const data = await res.json();
+		if(!data.success){ alert('Failed to load messages'); return; }
+		const $thread = $('#messageThread').empty();
+		(data.data || []).reverse().forEach(m => {
+			const who = m.sender_name || (m.message_type === 'internal_note' ? 'Model' : 'Contact');
+			$thread.append(`<div class="mb-2"><div class="small text-muted">${who} • ${new Date(m.created_at).toLocaleString()}</div><div class="p-2 bg-white border rounded">${(m.message || '').replace(/</g,'&lt;')}</div></div>`);
+		});
+		$('#messageText').val('');
+		new bootstrap.Modal(document.getElementById('messagesModal')).show();
+	});
+
+	$('#sendMessageBtn').on('click', async function(){
+		const text = $('#messageText').val().trim();
+		if(!text) return;
+		const res = await fetch(`/api/crm/{{model.modelSlug}}/messages/${selectedInteractionId}`, {
+			method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text })
+		});
+		const out = await res.json();
+		if(!out.success){ alert('Send failed'); return; }
+		const list = await fetch(`/api/crm/{{model.modelSlug}}/messages/${selectedInteractionId}`).then(r=>r.json());
+		if(list.success){
+			const $thread = $('#messageThread').empty();
+			(list.data || []).reverse().forEach(m => {
+				const who = m.sender_name || (m.message_type === 'internal_note' ? 'Model' : 'Contact');
+				$thread.append(`<div class=\"mb-2\"><div class=\"small text-muted\">${who} • ${new Date(m.created_at).toLocaleString()}</div><div class=\"p-2 bg-white border rounded\">${(m.message || '').replace(/</g,'&lt;')}</div></div>`);
+			});
+		}
+		$('#messageText').val('');
+	});
+})();
 </script>

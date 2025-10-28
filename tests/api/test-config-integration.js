@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Test Analysis Configuration Integration
- * Verifies that MuseNest can load and use analysis configurations
+ * Verifies that phoenix4ge can load and use analysis configurations
  */
 
 const ContentModerationService = require('./src/services/ContentModerationService');

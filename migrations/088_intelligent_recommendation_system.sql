@@ -1,7 +1,7 @@
 -- Intelligent Content Recommendation System Migration
 -- Adds tables and infrastructure for AI-powered content recommendations with collaborative filtering
 
-USE musenest;
+USE phoenix4ge;
 
 -- User interaction tracking for recommendation algorithms
 CREATE TABLE IF NOT EXISTS user_interactions (
@@ -597,12 +597,12 @@ ALTER TABLE user_similarity_matrix ADD INDEX idx_similarity_confidence (similari
 
 -- Grant permissions for intelligent recommendation service
 -- Note: In production, create a dedicated recommendation service user
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.user_interactions TO 'recommendation_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.user_preference_profiles TO 'recommendation_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.item_feature_vectors TO 'recommendation_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.generated_recommendations TO 'recommendation_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.recommendation_interactions TO 'recommendation_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.UpdateUserPreferenceProfile TO 'recommendation_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.CalculateItemPopularity TO 'recommendation_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.user_interactions TO 'recommendation_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.user_preference_profiles TO 'recommendation_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.item_feature_vectors TO 'recommendation_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.generated_recommendations TO 'recommendation_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.recommendation_interactions TO 'recommendation_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.UpdateUserPreferenceProfile TO 'recommendation_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.CalculateItemPopularity TO 'recommendation_service'@'localhost';
 
 SELECT 'Intelligent Content Recommendation System migration completed successfully' as status;

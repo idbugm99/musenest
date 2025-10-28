@@ -1,4 +1,4 @@
-# MuseNest Component Library
+# phoenix4ge Component Library
 
 **Version:** 1.0  
 **Date:** August 2, 2025  
@@ -10,8 +10,8 @@
 
 ### **Business Manager Components**
 
-#### **MuseNest Business Manager**
-- **Files:** `/admin/musenest-business-manager.html`
+#### **phoenix4ge Business Manager**
+- **Files:** `/admin/phoenix4ge-business-manager.html`
 - **Purpose:** Main CRM interface with comprehensive business management tools
 - **Dependencies:** Bootstrap 5, Font Awesome
 - **Features:**

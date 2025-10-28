@@ -9,7 +9,7 @@ const db = await mysql.createConnection({
   host: 'localhost',
   user: 'root', 
   password: '',
-  database: 'musenest'
+  database: 'phoenix4ge'
 });
 
 console.log('🎨 Populating database with palette defaults...');

@@ -10,6 +10,10 @@ const { query } = require('../../config/database');
 const TelnyxSmsService = require('../../services/TelnyxSmsService');
 const smsService = new TelnyxSmsService();
 
+// Client resolver for associating messages with client interactions
+const ClientResolverService = require('../../services/ClientResolverService');
+const clientResolver = new ClientResolverService();
+
 // Rate limiting for chat messages - more generous than contact forms
 const chatRateLimit = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
@@ -60,6 +64,21 @@ router.post('/send-message', chatRateLimit, async (req, res) => {
     }
 
     const conv = conversation[0];
+
+    // Ensure conversation has client_model_interaction_id populated
+    if (!conv.client_model_interaction_id) {
+      try {
+        const resolved = await clientResolver.resolveOrCreateClient({
+          modelId: conv.model_id,
+          name: null,
+          email: conv.contact_email || null,
+          phone: null
+        });
+        await query(`UPDATE conversations SET client_model_interaction_id = ? WHERE id = ?`, [resolved.interactionId, conversation_id]);
+      } catch (e) {
+        console.error('Failed to resolve client interaction for chat:', e);
+      }
+    }
 
     // Insert the message
     const messageResult = await query(`

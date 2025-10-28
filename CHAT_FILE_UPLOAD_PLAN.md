@@ -1,4 +1,4 @@
-# MuseNest Enhanced Chat System with File Upload
+# phoenix4ge Enhanced Chat System with File Upload
 **Hybrid Approach: Extend Existing Chat + Organized File Management**
 
 ## Overview
@@ -182,7 +182,7 @@ CREATE TABLE chat_attachments (
 ```javascript
 {
   "uploads": {
-    "tempDirectory": "/tmp/musenest-uploads",
+    "tempDirectory": "/tmp/phoenix4ge-uploads",
     "maxConcurrentUploads": 3,
     "cleanupInterval": "24h",
     "thumbnailSizes": [150, 300, 800]

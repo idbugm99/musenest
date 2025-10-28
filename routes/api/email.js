@@ -71,9 +71,9 @@ router.post('/webhook/incoming', emailWebhookRateLimit, async (req, res) => {
         const emailData = validationResult.data;
         const { from, to, subject, textBody, htmlBody, messageId, headers } = emailData;
 
-        // Extract model from the recipient email (e.g., modelexample@musenest.com)
+        // Extract model from the recipient email (e.g., modelexample@phoenix4ge.com)
         const modelRecipient = to.find(recipient => 
-            recipient.email.includes('@musenest.com') || 
+            recipient.email.includes('@phoenix4ge.com') || 
             recipient.email.includes('your-domain.com') // Add your actual domain
         );
 
@@ -201,7 +201,7 @@ router.post('/send', async (req, res) => {
             subject: subject,
             message: message,
             senderName: modelId, // Model is sending
-            senderEmail: `${modelId}@musenest.com`,
+            senderEmail: `${modelId}@phoenix4ge.com`,
             recipientName: recipientName || recipientEmail,
             recipientEmail: recipientEmail,
             emailMessageId: `out-${Date.now()}-${Math.random()}`,
@@ -211,7 +211,7 @@ router.post('/send', async (req, res) => {
 
         // TODO: Integrate with actual email service (SendGrid, Mailgun, etc.)
         console.log('📧 Email would be sent:', {
-            from: `${modelId}@musenest.com`,
+            from: `${modelId}@phoenix4ge.com`,
             to: recipientEmail,
             subject: subject,
             message: message.substring(0, 100) + '...'

@@ -8,7 +8,7 @@ async function testNullInsert() {
             host: 'localhost',
             user: 'root', 
             password: '',
-            database: 'musenest'
+            database: 'phoenix4ge'
         });
         
         console.log('Testing explicit NULL insert...');

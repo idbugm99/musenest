@@ -10,7 +10,7 @@ async function testIsolated() {
             host: 'localhost',
             user: 'root',
             password: '',
-            database: 'musenest',
+            database: 'phoenix4ge',
             port: 3306
         });
         

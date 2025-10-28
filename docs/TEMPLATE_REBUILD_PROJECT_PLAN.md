@@ -1,4 +1,4 @@
-# MuseNest Template Rebuild Project Plan
+# phoenix4ge Template Rebuild Project Plan
 
 ## Overview
 
@@ -10,11 +10,11 @@ This comprehensive plan outlines the phased approach to rebuild 7 new templates 
 Before starting any template development, complete review of:
 - [ ] `TEMPLATE_FIELD_NAMING_SCHEME.md` - Field naming, database integration
 - [ ] `TEMPLATE_CREATIVE_FLEXIBILITY_GUIDELINES.md` - Fixed vs. creative elements
-- [ ] `MUSENEST_TEMPLATE_REBUILD_CHECKLIST.md` - Step-by-step process, QA requirements
+- [ ] `phoenix4ge_TEMPLATE_REBUILD_CHECKLIST.md` - Step-by-step process, QA requirements
 
 ### Development Environment Setup
 - [ ] Access to Basic Template source code (blueprint)
-- [ ] MuseNest development database with test data
+- [ ] phoenix4ge development database with test data
 - [ ] Admin panel access for field management
 - [ ] Testing environment for cross-template compatibility
 

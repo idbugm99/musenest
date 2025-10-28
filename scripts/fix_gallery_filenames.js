@@ -13,7 +13,7 @@ async function fixGalleryFilenames() {
       host: 'localhost',
       user: 'root',
       password: '',
-      database: 'musenest'
+      database: 'phoenix4ge'
     });
 
     console.log('Connected to database');

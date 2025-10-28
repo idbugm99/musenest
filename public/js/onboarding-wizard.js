@@ -454,7 +454,7 @@ class OnboardingWizard {
             
             if (data.success) {
                 // Show detailed success message
-                let successMessage = `🎉 Welcome to MuseNest!\n\n`;
+                let successMessage = `🎉 Welcome to phoenix4ge!\n\n`;
                 successMessage += `✅ Your account has been created successfully\n`;
                 successMessage += `🌐 Website URL: ${data.data.website_url}\n`;
                 successMessage += `📧 Login Email: ${data.data.email}\n`;

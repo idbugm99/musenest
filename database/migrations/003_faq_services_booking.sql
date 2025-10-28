@@ -1,4 +1,4 @@
--- MuseNest Database Migration 003
+-- phoenix4ge Database Migration 003
 -- FAQ, Services, and Booking System
 -- Run date: 2025-07-24
 

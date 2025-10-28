@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * RoseMastos to MuseNest Template Migration Tool
+ * RoseMastos to phoenix4ge Template Migration Tool
  * 
  * This script converts Flask/Jinja2 templates to our Node.js template engine format
  */
@@ -12,9 +12,9 @@ const path = require('path');
 class TemplateMigrator {
     constructor() {
         this.roseMastosPath = '/Users/programmer/Projects/rosemastos/app/templates';
-        this.museNestPath = '/Users/programmer/Projects/musenest/templates';
+        this.phoenix4gePath = '/Users/programmer/Projects/phoenix4ge/templates';
         
-        // Template mapping - maps RoseMastos template names to MuseNest themes
+        // Template mapping - maps RoseMastos template names to phoenix4ge themes
         this.templateMapping = {
             // Glamour theme
             'index_glamour.html': { theme: 'glamour', page: 'index' },
@@ -94,7 +94,7 @@ class TemplateMigrator {
     }
     
     async migrate() {
-        console.log('🔄 Starting RoseMastos → MuseNest Template Migration\\n');
+        console.log('🔄 Starting RoseMastos → phoenix4ge Template Migration\\n');
         
         try {
             // Get list of templates to migrate
@@ -119,7 +119,7 @@ class TemplateMigrator {
     async migrateTemplate(templateFile) {
         const mapping = this.templateMapping[templateFile];
         const sourcePath = path.join(this.roseMastosPath, templateFile);
-        const targetDir = path.join(this.museNestPath, mapping.theme);
+        const targetDir = path.join(this.phoenix4gePath, mapping.theme);
         const targetPath = path.join(targetDir, `${mapping.page}.html`);
         
         try {

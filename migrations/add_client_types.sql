@@ -21,7 +21,7 @@ UPDATE `models` SET `client_type` = 'admin' WHERE `status` = 'admin';
 
 -- Add comments for clarity
 ALTER TABLE `models` MODIFY COLUMN `client_type` ENUM('white_label', 'muse_owned', 'sub_client', 'admin') NOT NULL DEFAULT 'muse_owned' 
-COMMENT 'Type of client: white_label (external agencies), muse_owned (direct MuseNest clients), sub_client (nested under parent), admin (system templates)';
+COMMENT 'Type of client: white_label (external agencies), muse_owned (direct phoenix4ge clients), sub_client (nested under parent), admin (system templates)';
 
 ALTER TABLE `models` MODIFY COLUMN `parent_client_id` INT NULL 
 COMMENT 'Parent client ID for hierarchical relationships (sub_clients reference their parent)';

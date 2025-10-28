@@ -10,7 +10,7 @@ async function testApiResponse() {
     
     return new Promise((resolve, reject) => {
         const form = new FormData();
-        form.append('image', fs.createReadStream('/Users/programmer/Projects/musenest/public/uploads/escort-example/originals/1753575572332_20250622_003419.jpg'));
+        form.append('image', fs.createReadStream('/Users/programmer/Projects/phoenix4ge/public/uploads/escort-example/originals/1753575572332_20250622_003419.jpg'));
         form.append('context_type', 'public_gallery');
         form.append('model_id', '1');
 

@@ -10,7 +10,7 @@ async function testUploadFlow() {
         const service = new ContentModerationService(db);
         
         // Find a test image to use
-        const uploadsDir = '/Users/programmer/Projects/musenest/public/uploads';
+        const uploadsDir = '/Users/programmer/Projects/phoenix4ge/public/uploads';
         let testImagePath = null;
         
         // Look for any existing image in uploads

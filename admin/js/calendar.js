@@ -1,5 +1,5 @@
 /**
- * MuseNest Admin Dashboard - Calendar Management
+ * phoenix4ge Admin Dashboard - Calendar Management
  */
 if (window.ComponentRegistryClient) {
     window.ComponentRegistryClient.register('admin-calendar', 'admin/js/calendar.js');

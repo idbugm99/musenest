@@ -2,7 +2,7 @@
 -- Adds comprehensive tables for AR/VR experiences, 3D content management,
 -- spatial computing, device compatibility, and immersive gallery analytics
 
-USE musenest;
+USE phoenix4ge;
 
 -- AR/VR session management and tracking
 CREATE TABLE IF NOT EXISTS ar_vr_sessions (
@@ -737,10 +737,10 @@ ALTER TABLE ar_vr_interactions ADD INDEX idx_interaction_analytics (interaction_
 
 -- Grant permissions for AR/VR service
 -- Note: In production, create dedicated service users
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.ar_vr_sessions TO 'ar_vr_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.ar_vr_3d_content TO 'ar_vr_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.spatial_anchors TO 'ar_vr_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.StartARVRSession TO 'ar_vr_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.GetARVRAnalytics TO 'ar_vr_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.ar_vr_sessions TO 'ar_vr_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.ar_vr_3d_content TO 'ar_vr_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.spatial_anchors TO 'ar_vr_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.StartARVRSession TO 'ar_vr_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.GetARVRAnalytics TO 'ar_vr_service'@'localhost';
 
 SELECT 'Augmented Reality and Virtual Reality Gallery system migration completed successfully' as status;

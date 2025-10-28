@@ -9,7 +9,7 @@ const fs = require('fs').promises;
 const sharp = require('sharp');
 const crypto = require('crypto');
 
-// Import existing MuseNest services
+// Import existing phoenix4ge services
 const ContentModerationService = require('./ContentModerationService');
 const AdminWatermarkService = require('./AdminWatermarkService');
 const MediaLogger = require('./MediaLogger');
@@ -637,7 +637,7 @@ class MediaUploadService {
                     moderationTrackingId,
                     // Webhook configuration for async results
                     webhookUrl: process.env.MODERATION_WEBHOOK_URL || `${process.env.BASE_URL || 'http://localhost:3000'}/api/moderation-webhooks/result`,
-                    webhookSecret: process.env.MODERATION_WEBHOOK_SECRET || 'musenest_webhook_secret',
+                    webhookSecret: process.env.MODERATION_WEBHOOK_SECRET || 'phoenix4ge_webhook_secret',
                     // Additional context for better moderation
                     fileMetadata: {
                         size: require('fs').statSync(imagePath).size,

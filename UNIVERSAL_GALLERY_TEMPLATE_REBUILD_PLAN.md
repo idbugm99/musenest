@@ -4,7 +4,7 @@
 >
 > 1. `TEMPLATE_FIELD_NAMING_SCHEME.md`
 > 2. `TEMPLATE_CREATIVE_FLEXIBILITY_GUIDELINES.md`
-> 3. `MUSENEST_TEMPLATE_REBUILD_CHECKLIST.md`
+> 3. `phoenix4ge_TEMPLATE_REBUILD_CHECKLIST.md`
 
 This plan operationalizes the must‑fix gaps, clarifications, and future options into concrete phases with deliverables, acceptance criteria, and rollback notes.
 

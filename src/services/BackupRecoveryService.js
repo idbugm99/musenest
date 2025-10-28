@@ -44,7 +44,7 @@ class BackupRecoveryService extends EventEmitter {
             port: config.database?.port || 3306,
             user: config.database?.user || 'root',
             password: config.database?.password || '',
-            database: config.database?.database || 'musenest'
+            database: config.database?.database || 'phoenix4ge'
         };
 
         // Backup tracking and state
@@ -555,7 +555,7 @@ class BackupRecoveryService extends EventEmitter {
                     architecture: process.arch
                 },
                 application: {
-                    name: 'MuseNest',
+                    name: 'phoenix4ge',
                     environment: process.env.NODE_ENV || 'development',
                     version: require('../../package.json').version
                 },
