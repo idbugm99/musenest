@@ -1,6 +1,6 @@
-# MuseNest Media Library System
+# Phoenix Forge (Phoenix4GE) Media Library System
 
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/your-org/musenest)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/idbugm99/phoenix4ge)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-green.svg)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](#)
@@ -88,7 +88,7 @@ templates/
 
 ### Project Structure
 ```
-MuseNest/
+Phoenix4GE/
 ├── config/         # Database and app configuration
 ├── src/            # Application source code
 ├── templates/      # Theme-based HTML templates
@@ -110,8 +110,8 @@ MuseNest/
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/musenest.git
-cd musenest
+git clone https://github.com/idbugm99/phoenix4ge.git
+cd phoenix4ge
 
 # Install dependencies
 npm install
@@ -134,8 +134,8 @@ npm run dev
 # Database Configuration
 DB_HOST=localhost
 DB_PORT=3306
-DB_NAME=musenest_db
-DB_USER=musenest_user
+DB_NAME=phoenix4ge_db
+DB_USER=phoenix4ge_user
 DB_PASSWORD=secure_password
 
 # Redis Configuration  
@@ -190,7 +190,7 @@ npm run docs         # Generate documentation
 ### **Project Structure**
 
 ```
-musenest/
+phoenix4ge/
 ├── admin/                    # Admin interface components
 │   ├── components/          # HTML components
 │   ├── js/                  # Frontend JavaScript
@@ -304,7 +304,7 @@ Copy `.env.example` to `.env` and configure:
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=your_password
-DB_NAME=musenest
+DB_NAME=phoenix4ge
 
 # Server
 PORT=3000
@@ -421,7 +421,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **📖 Documentation** - Check the comprehensive docs folder
 - **🐛 Issues** - Report bugs via GitHub Issues
 - **💬 Discussions** - Join community discussions
-- **📧 Support** - Email support@musenest.com
+- **📧 Support** - Email support@phoenix4ge.com
 
 ### **Common Issues**
 - **Upload failures** - Check file permissions and disk space
@@ -451,6 +451,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**🚀 Ready to transform your media management experience? Get started with MuseNest Media Library today!**
+**🚀 Ready to transform your media management experience? Get started with Phoenix Forge Media Library today!**
 
 *For detailed setup instructions, API documentation, and advanced configuration, please refer to the comprehensive documentation in the `docs/` folder.*
