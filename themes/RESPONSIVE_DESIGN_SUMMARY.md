@@ -180,20 +180,10 @@ Or manually:
 - Royal Gem theme includes additional fixes for button spacing and inline styles
 
 ## Known Issues Fixed
-
-### Royal Gem Theme (Theme 19)
-- Fixed button overlap issue in hero section on mobile (iPhone SE 375px)
+- **Royal Gem Theme**: Fixed button overlap issue in hero section on mobile (iPhone SE 375px)
   - Hero buttons now stack vertically with proper spacing
   - Removed decorative background icons on mobile for better performance
   - Grid layouts properly collapse to single column
-
-### Rose Theme (Theme 17) - Calendar Page
-- Fixed red-on-red button visibility issue in List/Month toggle
-  - Improved button contrast with white text on active state
-  - Hidden calendar view toggle on phones only (≤640px)
-  - Force list-only view on mobile phones (calendar grid not practical on small screens)
-  - Calendar grid fully functional on tablets and desktop (>640px)
-  - Calendar navigation buttons show icons only on phones
 
 ## Maintenance
 - Update `responsive-universal.css` for global changes
