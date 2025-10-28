@@ -1,10 +1,10 @@
 /**
- * MuseNest Gallery Sections JavaScript
+ * phoenix4ge Gallery Sections JavaScript
  * Part of Phase 3: Frontend Components Development
  * Gallery sections management functionality
  */
 
-class MuseNestGallerySections {
+class phoenix4geGallerySections {
     constructor(modelSlug) {
         this.modelSlug = modelSlug;
         this.sections = [];
@@ -19,7 +19,7 @@ class MuseNestGallerySections {
      * Initialize gallery sections manager
      */
     init() {
-        console.log(`🖼️ Initializing MuseNest Gallery Sections for model: ${this.modelSlug}`);
+        console.log(`🖼️ Initializing phoenix4ge Gallery Sections for model: ${this.modelSlug}`);
         this.bindEvents();
         this.loadSections();
     }
@@ -1144,7 +1144,7 @@ let gallerySections = null;
 document.addEventListener('DOMContentLoaded', function() {
     const modelSlug = window.location.pathname.split('/')[1];
     if (modelSlug && document.getElementById('sections-list')) {
-        gallerySections = new MuseNestGallerySections(modelSlug);
-        console.log('🖼️ MuseNest Gallery Sections initialized');
+        gallerySections = new phoenix4geGallerySections(modelSlug);
+        console.log('🖼️ phoenix4ge Gallery Sections initialized');
     }
 });

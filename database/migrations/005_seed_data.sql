@@ -1,4 +1,4 @@
--- MuseNest Database Migration 005
+-- phoenix4ge Database Migration 005
 -- Seed Data for Default Themes and Page Types
 -- Run date: 2025-07-24
 

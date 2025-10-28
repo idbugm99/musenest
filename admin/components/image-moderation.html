@@ -340,7 +340,7 @@
         async function loadMediaFromQueue(id) {
             try {
                 // Get auth token from parent window if in iframe
-                const authToken = window.parent?.localStorage?.getItem('musenest_token') || localStorage.getItem('musenest_token');
+                const authToken = window.parent?.localStorage?.getItem('phoenix4ge_token') || localStorage.getItem('phoenix4ge_token');
                 
                 const response = await fetch(`/api/media-review-queue/item/${id}`, {
                     headers: {
@@ -1770,7 +1770,7 @@
                     content_moderation_id: analysisData.content_moderation_id,
                     blur_settings: blurSettings,
                     admin_notes: adminNotes,
-                    reviewed_by: 'admin@musenest.com'
+                    reviewed_by: 'admin@phoenix4ge.com'
                 };
                 console.log('Request body:', JSON.stringify(requestBody, null, 2));
                 
@@ -1785,7 +1785,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${window.parent?.localStorage?.getItem('musenest_token') || localStorage.getItem('musenest_token')}`
+                        'Authorization': `Bearer ${window.parent?.localStorage?.getItem('phoenix4ge_token') || localStorage.getItem('phoenix4ge_token')}`
                     },
                     body: JSON.stringify(requestBody)
                 });
@@ -1967,7 +1967,7 @@ The blurred version has been saved to the blurred folder.`);
         async function loadMediaQueueImage(imagePath, mediaId) {
             try {
                 // Convert absolute path to web-accessible path
-                const webPath = imagePath.replace('/Users/programmer/Projects/musenest/public', '');
+                const webPath = imagePath.replace('/Users/programmer/Projects/phoenix4ge/public', '');
                 
                 // Create image element
                 const img = new Image();

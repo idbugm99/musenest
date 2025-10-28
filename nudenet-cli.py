@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Simple command-line NudeNet processor for MuseNest
+Simple command-line NudeNet processor for phoenix4ge
 Usage: python3 nudenet-cli.py --image /path/to/image.jpg --context_type public_gallery
 """
 

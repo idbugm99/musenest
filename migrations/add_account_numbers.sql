@@ -17,7 +17,7 @@ CREATE TABLE `client_type_codes` (
 
 -- Insert client type mappings
 INSERT INTO `client_type_codes` (`client_type`, `type_code`, `description`) VALUES
-('muse_owned', 1, 'Direct MuseNest clients'),
+('muse_owned', 1, 'Direct phoenix4ge clients'),
 ('white_label', 2, 'White label agency clients'),
 ('sub_client', 3, 'Sub-clients under parent accounts'),
 ('admin', 9, 'System templates and admin accounts');

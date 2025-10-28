@@ -2,7 +2,7 @@ const sharp = require('sharp');
 const path = require('path');
 
 async function testOrientation() {
-    const imagePath = '/Users/programmer/Projects/musenest/public/uploads/escort-example/originals/1753575429628_20250622_003419.jpg';
+    const imagePath = '/Users/programmer/Projects/phoenix4ge/public/uploads/escort-example/originals/1753575429628_20250622_003419.jpg';
     
     console.log('=== ORIENTATION TEST ===');
     
@@ -27,11 +27,11 @@ async function testOrientation() {
     // Save both versions to compare
     await sharp(imagePath, { autoRotate: false })
         .jpeg({ quality: 90 })
-        .toFile('/Users/programmer/Projects/musenest/test-raw.jpg');
+        .toFile('/Users/programmer/Projects/phoenix4ge/test-raw.jpg');
     
     await sharp(imagePath)
         .jpeg({ quality: 90 })
-        .toFile('/Users/programmer/Projects/musenest/test-auto.jpg');
+        .toFile('/Users/programmer/Projects/phoenix4ge/test-auto.jpg');
     
     console.log('Test images saved: test-raw.jpg and test-auto.jpg');
     

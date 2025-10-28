@@ -31,7 +31,7 @@ This plan addresses visual consistency issues across all Theme 3 pages to create
 - [ ] Unify footer gradient/background (purple fade vs purple-orange)
 - [ ] Align footer text blocks to same baseline grid
 - [ ] Standardize Quick Links order: Home, About, Gallery, Rates, Etiquette, Calendar, Contact
-- [ ] Consistent font size/weight for "Powered by MuseNest" and copyright
+- [ ] Consistent font size/weight for "Powered by phoenix4ge" and copyright
 
 **Implementation approach:**
 1. Define standard footer gradient in CSS variables

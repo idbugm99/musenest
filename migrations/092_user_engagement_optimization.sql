@@ -2,7 +2,7 @@
 -- Adds comprehensive tables for user behavior prediction, personalization,
 -- and engagement optimization with ML-based insights
 
-USE musenest;
+USE phoenix4ge;
 
 -- User engagement scoring and behavior tracking
 CREATE TABLE IF NOT EXISTS user_engagement_scores (
@@ -548,10 +548,10 @@ ALTER TABLE personalization_applications ADD INDEX idx_personalization_success (
 
 -- Grant permissions for engagement optimization service
 -- Note: In production, create a dedicated engagement service user
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.user_engagement_scores TO 'engagement_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.user_behavior_analytics TO 'engagement_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.engagement_predictions TO 'engagement_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.GetUserEngagementAnalytics TO 'engagement_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.UpdateEngagementScore TO 'engagement_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.user_engagement_scores TO 'engagement_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.user_behavior_analytics TO 'engagement_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.engagement_predictions TO 'engagement_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.GetUserEngagementAnalytics TO 'engagement_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.UpdateEngagementScore TO 'engagement_service'@'localhost';
 
 SELECT 'User Engagement Optimization and Personalization migration completed successfully' as status;

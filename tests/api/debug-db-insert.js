@@ -14,7 +14,7 @@ async function debugDatabaseInsert() {
             host: 'localhost',
             user: 'root', 
             password: '',
-            database: 'musenest'
+            database: 'phoenix4ge'
         });
         
         console.log('✅ Database connected');

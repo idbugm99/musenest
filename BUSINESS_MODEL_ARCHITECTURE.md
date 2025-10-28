@@ -1,4 +1,4 @@
-# MuseNest Business Model & Database Architecture
+# phoenix4ge Business Model & Database Architecture
 
 ## Business Model Summary
 

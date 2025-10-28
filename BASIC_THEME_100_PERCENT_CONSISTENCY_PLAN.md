@@ -11,7 +11,7 @@ This plan will systematically migrate all remaining pages to use the proven stru
 - Structured `[page]_content.*` template variables
 - Modern context assignment pattern in `model_sites.js`
 - Section visibility controls (`[page]_content.[section]_visible`)
-- Clean MuseNest-branded admin editors
+- Clean phoenix4ge-branded admin editors
 - Auto-save API endpoints with field-level updates
 - Consistent database schema (`model_[page]_page_content` tables)
 
@@ -152,7 +152,7 @@ This plan will systematically migrate all remaining pages to use the proven stru
 ### **Phase 5: Clean External References** 🧹 **[CLEANUP PRIORITY]**
 **Impact:** Professional Branding - Remove external references  
 **Current Issue:** Contact & Etiquette use external brand references  
-**Target:** Clean MuseNest-only branding
+**Target:** Clean phoenix4ge-only branding
 
 #### **Step 5.1: Contact Editor Cleanup**
 - [ ] Verify `admin/components/contact-page-editor.html` exists and is clean
@@ -165,11 +165,11 @@ This plan will systematically migrate all remaining pages to use the proven stru
 - [ ] Test etiquette admin functionality
 
 #### **Step 5.3: API Route Verification**
-- [ ] Ensure all API routes use clean MuseNest naming
+- [ ] Ensure all API routes use clean phoenix4ge naming
 - [ ] Verify no external brand references in route paths
 - [ ] Test all API endpoints functionality
 
-**Validation:** All admin editors use clean MuseNest branding
+**Validation:** All admin editors use clean phoenix4ge branding
 
 ---
 
@@ -294,7 +294,7 @@ Upon completion, ALL 7 pages will feature:
 1. **Unified Template System** - All pages use `[page]_content.*` variables
 2. **Professional Admin Experience** - Consistent editing interface across all pages
 3. **Flexible Content Management** - Section visibility controls for every page
-4. **Clean Branding** - No external references, pure MuseNest branding
+4. **Clean Branding** - No external references, pure phoenix4ge branding
 5. **Scalable Architecture** - Easy to extend to additional themes
 6. **Auto-Save Functionality** - Professional editing experience
 7. **Maintainable Codebase** - Consistent patterns across entire system

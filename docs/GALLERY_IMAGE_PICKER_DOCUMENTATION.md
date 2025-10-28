@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Gallery Image Picker is a comprehensive image management system for MuseNest, providing advanced multi-select capabilities, public safety enforcement, batch operations, and enterprise-grade performance optimizations.
+The Gallery Image Picker is a comprehensive image management system for phoenix4ge, providing advanced multi-select capabilities, public safety enforcement, batch operations, and enterprise-grade performance optimizations.
 
 ## Table of Contents
 

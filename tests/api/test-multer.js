@@ -32,5 +32,5 @@ app.post('/test-upload', upload.single('file'), (req, res) => {
 
 app.listen(3001, () => {
     console.log('Test server running on port 3001');
-    console.log('Test with: curl -X POST -F "file=@/Users/programmer/Projects/musenest/test-auto.jpg" http://localhost:3001/test-upload');
+    console.log('Test with: curl -X POST -F "file=@/Users/programmer/Projects/phoenix4ge/test-auto.jpg" http://localhost:3001/test-upload');
 });

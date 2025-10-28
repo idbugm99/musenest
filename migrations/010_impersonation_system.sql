@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS active_impersonations (
 
 -- Add impersonation permissions to users table (check if column exists first)
 SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-    WHERE TABLE_SCHEMA = 'musenest' AND TABLE_NAME = 'users' AND COLUMN_NAME = 'can_impersonate');
+    WHERE TABLE_SCHEMA = 'phoenix4ge' AND TABLE_NAME = 'users' AND COLUMN_NAME = 'can_impersonate');
 SET @sql = IF(@col_exists = 0, 
     'ALTER TABLE users ADD COLUMN can_impersonate BOOLEAN DEFAULT FALSE',
     'SELECT "can_impersonate column already exists"');

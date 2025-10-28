@@ -1,4 +1,4 @@
-# MuseNest Referral Tracking System
+# phoenix4ge Referral Tracking System
 
 A comprehensive referral code system that tracks client referrals, supports commission calculations, and provides detailed analytics for future monetization.
 
@@ -6,7 +6,7 @@ A comprehensive referral code system that tracks client referrals, supports comm
 
 ### How the Referral System Works
 
-The MuseNest referral system operates on a multi-layered architecture designed for scalability, accuracy, and future commission payouts:
+The phoenix4ge referral system operates on a multi-layered architecture designed for scalability, accuracy, and future commission payouts:
 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
@@ -53,7 +53,7 @@ The MuseNest referral system operates on a multi-layered architecture designed f
 
 ### 1. Apply the Migration
 ```bash
-cd /Users/programmer/Projects/musenest
+cd /Users/programmer/Projects/phoenix4ge
 node run-referral-migration.js
 ```
 
@@ -131,7 +131,7 @@ Campaign management for promotions:
 The referral system exposes RESTful API endpoints for creating, managing, and tracking referral codes. All endpoints return JSON responses with consistent error handling.
 
 **Base URL**: `/api/`  
-**Authentication**: Uses existing MuseNest authentication middleware  
+**Authentication**: Uses existing phoenix4ge authentication middleware  
 **Content-Type**: `application/json`
 
 ### Error Response Format
@@ -539,7 +539,7 @@ INDEX idx_commission_tracking ON referral_usage_log(commission_eligible, commiss
 - **Pagination Support**: Large result sets handled with LIMIT/OFFSET
 - **Caching Strategy**: Frequently accessed codes cached at application layer
 
-### Integration with MuseNest Business Model
+### Integration with phoenix4ge Business Model
 
 #### Commission Calculation Framework
 ```javascript
@@ -713,7 +713,7 @@ POST /api/clients/123/referral-codes
 ```
 
 #### 2. Client Shares Code
-- **Social Media**: "Join MuseNest with code MAYA2025 for exclusive access!"
+- **Social Media**: "Join phoenix4ge with code MAYA2025 for exclusive access!"
 - **Email Campaigns**: Personalized referral links with embedded codes
 - **Direct Messaging**: Share code with potential clients directly
 - **Business Cards**: Include referral code on marketing materials
@@ -972,4 +972,4 @@ FROM users WHERE referral_code_used IS NOT NULL;
 
 ---
 
-**Built for MuseNest** - Scalable referral tracking that grows with your business 🚀
+**Built for phoenix4ge** - Scalable referral tracking that grows with your business 🚀

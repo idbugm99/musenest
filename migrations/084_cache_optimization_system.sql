@@ -1,7 +1,7 @@
 -- Cache Optimization System Migration
 -- Adds tables and infrastructure for ML-based cache optimization
 
-USE musenest;
+USE phoenix4ge;
 
 -- Cache optimization analysis results
 CREATE TABLE IF NOT EXISTS cache_optimization_analysis (
@@ -464,10 +464,10 @@ ALTER TABLE cache_access_patterns ADD INDEX idx_strategy_predictability (strateg
 
 -- Grant permissions for cache optimization service
 -- Note: In production, create a dedicated cache optimization user
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.cache_* TO 'cache_optimizer'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.AnalyzeCachePerformance TO 'cache_optimizer'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.GenerateOptimizationRecommendation TO 'cache_optimizer'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.UpdateCacheStrategy TO 'cache_optimizer'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.CleanupOldCacheData TO 'cache_optimizer'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.cache_* TO 'cache_optimizer'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.AnalyzeCachePerformance TO 'cache_optimizer'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.GenerateOptimizationRecommendation TO 'cache_optimizer'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.UpdateCacheStrategy TO 'cache_optimizer'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.CleanupOldCacheData TO 'cache_optimizer'@'localhost';
 
 SELECT 'Cache Optimization System migration completed successfully' as status;

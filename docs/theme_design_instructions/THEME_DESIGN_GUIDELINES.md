@@ -1,10 +1,10 @@
-# MuseNest Theme Design Guidelines
+# phoenix4ge Theme Design Guidelines
 
 ## Overview
 
-This comprehensive guide provides complete technical specifications for designing themes in the MuseNest platform. All themes must follow these universal patterns to ensure consistency, maintainability, and proper functionality across all model sites.
+This comprehensive guide provides complete technical specifications for designing themes in the phoenix4ge platform. All themes must follow these universal patterns to ensure consistency, maintainability, and proper functionality across all model sites.
 
-**Target Audience:** Human designers and AI systems creating or modifying MuseNest themes.
+**Target Audience:** Human designers and AI systems creating or modifying phoenix4ge themes.
 
 ---
 

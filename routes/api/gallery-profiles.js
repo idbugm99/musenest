@@ -13,7 +13,7 @@ async function getDbConnection() {
         host: 'localhost',
         user: 'root',
         password: process.env.DB_PASSWORD || '',
-        database: process.env.DB_DATABASE || 'musenest',
+        database: process.env.DB_DATABASE || 'phoenix4ge',
         timezone: '+00:00'
     });
 }

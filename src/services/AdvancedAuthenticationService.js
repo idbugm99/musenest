@@ -45,14 +45,14 @@ class AdvancedAuthenticationService extends EventEmitter {
             },
             mfa: {
                 methods: config.mfa?.methods || ['totp', 'sms', 'email', 'backup_codes'],
-                totpIssuer: config.mfa?.totpIssuer || 'MuseNest',
+                totpIssuer: config.mfa?.totpIssuer || 'phoenix4ge',
                 backupCodesCount: config.mfa?.backupCodesCount || 10,
                 smsProvider: config.mfa?.smsProvider || 'twilio',
                 enforceForRoles: config.mfa?.enforceForRoles || ['admin', 'moderator']
             },
             sessions: {
                 enableSecureCookies: config.sessions?.enableSecureCookies !== false,
-                cookieName: config.sessions?.cookieName || 'musenest_session',
+                cookieName: config.sessions?.cookieName || 'phoenix4ge_session',
                 sameSitePolicy: config.sessions?.sameSitePolicy || 'strict',
                 rotateOnLogin: config.sessions?.rotateOnLogin !== false,
                 fingerprinting: config.sessions?.fingerprinting !== false

@@ -11,7 +11,7 @@ const path = require('path');
 
 class TemplateFixer {
     constructor() {
-        this.templatesPath = '/Users/programmer/Projects/musenest/templates';
+        this.templatesPath = '/Users/programmer/Projects/phoenix4ge/templates';
         this.themes = ['glamour', 'luxury', 'basic'];
         
         // Advanced syntax fixes

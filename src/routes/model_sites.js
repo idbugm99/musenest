@@ -1,11 +1,11 @@
 const express = require('express');
-const axios = require('axios');
+const axios = require('../../config/axios');
 const db = require('../../config/database');
 
 const router = express.Router();
 
-// API Base URL configuration - easily configurable for production
-const API_BASE_URL = process.env.API_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
+// API Base URL configuration - easily configurable for production  
+const API_BASE_URL = process.env.API_BASE_URL || `https://localhost:${process.env.PORT || 443}`;
 
 // Request-level cache to prevent duplicate API calls within the same request
 class RequestCache {
@@ -60,7 +60,7 @@ function formatLocationDisplay(location, serviceType, radiusMiles) {
 // Helper function to get model by slug using API call instead of direct SQL
 async function getModelBySlug(slug) {
     try {
-        const axios = require('axios');
+        const axios = require('../../config/axios');
         const response = await axios.get(`${API_BASE_URL}/api/model-profile/${slug}`);
         
         if (response.data.success && response.data.data) {
@@ -88,7 +88,7 @@ async function loadColorPalette(paletteId, themeId, modelId = 39, requestCache =
             return { primary: '#3B82F6', secondary: '#6B7280', text: '#1F2937', background: '#FFFFFF', accent: '#10B981' };
         }
 
-        const axios = require('axios');
+        const axios = require('../../config/axios');
         
         // If we have a specific palette ID (e.g., in preview mode), use the direct palette API
         // Otherwise use the model-specific API that considers the model's current settings
@@ -284,7 +284,7 @@ async function getModelContent(modelSlug, pageType, requestCache = null) {
         if (pageType === 'home') {
             // Use model-home.js API
             try {
-                const axios = require('axios');
+                const axios = require('../../config/axios');
                 const response = await axios.get(`${API_BASE_URL}/api/model-home/${modelSlug}/home`);
                 if (response.data.success) {
                     content = response.data.data;
@@ -298,7 +298,7 @@ async function getModelContent(modelSlug, pageType, requestCache = null) {
         } else if (pageType === 'about') {
             // Use model-about.js API
             try {
-                const axios = require('axios');
+                const axios = require('../../config/axios');
                 const response = await axios.get(`${API_BASE_URL}/api/model-about/${modelSlug}/about`);
                 if (response.data.success && response.data.data) {
                     // About API returns {success: true, data: {...}}
@@ -314,7 +314,7 @@ async function getModelContent(modelSlug, pageType, requestCache = null) {
         } else if (pageType === 'rates') {
             // Use model-rates.js API (both rates data and page content)
             try {
-                const axios = require('axios');
+                const axios = require('../../config/axios');
                 
                 // Helper function to convert underscore properties to camelCase for template compatibility
                 function transformRatePropertiesToCamelCase(rateArray) {
@@ -374,7 +374,7 @@ async function getModelContent(modelSlug, pageType, requestCache = null) {
         } else if (pageType === 'contact') {
             // Use model-contact.js API
             try {
-                const axios = require('axios');
+                const axios = require('../../config/axios');
                 const response = await axios.get(`${API_BASE_URL}/api/model-contact/${modelSlug}/content`);
                 if (response.data && (response.data.id || response.data.model_id)) {
                     // Contact API returns raw data, not wrapped in success/data structure
@@ -390,7 +390,7 @@ async function getModelContent(modelSlug, pageType, requestCache = null) {
         } else if (pageType === 'etiquette') {
             // Use model-etiquette.js API
             try {
-                const axios = require('axios');
+                const axios = require('../../config/axios');
                 const response = await axios.get(`${API_BASE_URL}/api/model-etiquette/${modelSlug}/content`);
                 if (response.data.success && response.data.data && response.data.data.etiquette_content) {
                     // Etiquette API returns {success: true, data: {etiquette_content: {...}}}
@@ -406,7 +406,7 @@ async function getModelContent(modelSlug, pageType, requestCache = null) {
         } else if (pageType === "calendar") {
             // Use model-calendar.js API
             try {
-                const axios = require('axios');
+                const axios = require('../../config/axios');
                 const response = await axios.get(`${API_BASE_URL}/api/model-calendar/${modelSlug}`);
                 if (response.data.success) {
                     content = response.data.data;
@@ -423,7 +423,7 @@ async function getModelContent(modelSlug, pageType, requestCache = null) {
         } else if (pageType === 'gallery') {
             // Use model-gallery.js API
             try {
-                const axios = require('axios');
+                const axios = require('../../config/axios');
                 const response = await axios.get(`${API_BASE_URL}/api/model-gallery/${modelSlug}/sections`);
                 if (response.data.success) {
                     content = response.data.data;
@@ -440,7 +440,7 @@ async function getModelContent(modelSlug, pageType, requestCache = null) {
         } else {
             // Fallback to content_templates system via API for other page types
             try {
-                const axios = require('axios');
+                const axios = require('../../config/axios');
                 const response = await axios.get(`${API_BASE_URL}/api/content-templates/${modelSlug}/${pageType}`);
                 
                 if (response.data.success && response.data.data) {
@@ -512,7 +512,7 @@ router.get('/:slug/:page?', async (req, res) => {
             if (!isNaN(previewThemeId)) {
                 // Verify theme exists before applying override using API
                 try {
-                    const axios = require('axios');
+                    const axios = require('../../config/axios');
                     const response = await axios.get(`${API_BASE_URL}/api/theme-templates/validate/${previewThemeId}`);
                     
                     if (response.data.success && response.data.data) {
@@ -543,7 +543,7 @@ router.get('/:slug/:page?', async (req, res) => {
             if (!isNaN(previewPaletteId)) {
                 // Verify palette exists before applying override using API
                 try {
-                    const axios = require('axios');
+                    const axios = require('../../config/axios');
                     const response = await axios.get(`${API_BASE_URL}/api/theme-templates/validate-palette/${previewPaletteId}`);
                     
                     if (response.data.success && response.data.data) {
@@ -575,7 +575,7 @@ router.get('/:slug/:page?', async (req, res) => {
 
         // Check publication status for all pages using API
         try {
-            const axios = require('axios');
+            const axios = require('../../config/axios');
             const response = await axios.get(`${API_BASE_URL}/api/page-status/${slug}/status`);
             
             if (response.data.success && response.data.data.pages) {
@@ -670,7 +670,7 @@ router.get('/:slug/:page?', async (req, res) => {
         let testimonialsData = null;
         if (page === 'home') {
             try {
-                const axios = require('axios');
+                const axios = require('../../config/axios');
                 const response = await axios.get(`${API_BASE_URL}/api/model-testimonials/${slug}`);
                 console.log(`🔍 Testimonials API response:`, JSON.stringify(response.data, null, 2));
                 if (response.data.success && response.data.data && response.data.data.testimonials) {
@@ -698,7 +698,7 @@ router.get('/:slug/:page?', async (req, res) => {
         let servicesData = null;
         if (page === 'home') {
             try {
-                const axios = require('axios');
+                const axios = require('../../config/axios');
                 const response = await requestCache.get(`model-rates-${slug}`, () => 
                     axios.get(`${API_BASE_URL}/api/model-rates/${slug}`)
                 );
@@ -729,7 +729,7 @@ router.get('/:slug/:page?', async (req, res) => {
                 }
                 
                 console.log(`🔍 DEBUG: About to call rates API for ${slug} in rates page handler, cache exists: ${!!requestCache}`);
-                const axios = require('axios');
+                const axios = require('../../config/axios');
                 const response = await requestCache.get(`model-rates-${slug}`, () => 
                     axios.get(`${API_BASE_URL}/api/model-rates/${slug}`)
                 );
@@ -783,7 +783,7 @@ router.get('/:slug/:page?', async (req, res) => {
         let galleryImages = null;
         if (page === 'home') {
             try {
-                const axios = require('axios');
+                const axios = require('../../config/axios');
                 const response = await axios.get(`${API_BASE_URL}/api/gallery-images/${slug}/approved?limit=5`);
                 
                 if (response.data.success && response.data.data) {
@@ -807,7 +807,7 @@ router.get('/:slug/:page?', async (req, res) => {
                 const displayCount = parseInt(rawContent.travel_display_count || 3);
                 
                 // Use calendar availability API instead of direct SQL
-                const axios = require('axios');
+                const axios = require('../../config/axios');
                 const response = await axios.get(`${API_BASE_URL}/api/model-calendar/${model.slug}/availability?days=90&limit=${displayCount}`);
                 
                 if (response.data.success && response.data.data && response.data.data.events) {
@@ -868,7 +868,7 @@ router.get('/:slug/:page?', async (req, res) => {
         const portraitIdKey = pageContent.portrait_image_id || pageContent.portraitImageId;
         if (portraitIdKey) {
             try {
-                const axios = require('axios');
+                const axios = require('../../config/axios');
                 // Get debug info first
                 const debugResponse = await axios.get(`${API_BASE_URL}/api/gallery-images/debug/${portraitIdKey}`);
                 console.log(`🔍 Found ${debugResponse.data.data.length} images with ID ${portraitIdKey} via API:`, debugResponse.data.data);
@@ -895,7 +895,7 @@ router.get('/:slug/:page?', async (req, res) => {
         const heroIdKey = pageContent.hero_background_image_id || pageContent.heroBackgroundImageId;
         if (heroIdKey) {
             try {
-                const axios = require('axios');
+                const axios = require('../../config/axios');
                 const response = await axios.get(`${API_BASE_URL}/api/gallery-images/${slug}/image/${heroIdKey}`);
                 
                 if (response.data.success && response.data.data) {
@@ -914,7 +914,7 @@ router.get('/:slug/:page?', async (req, res) => {
         // Fallback: Use home page hero background for all pages if no specific background is set
         if (!pageContent.heroBackgroundImageUrl) {
             try {
-                const axios = require('axios');
+                const axios = require('../../config/axios');
                 const response = await axios.get(`${API_BASE_URL}/api/gallery-images/${slug}/hero-background`);
                 
                 if (response.data.success && response.data.data) {
@@ -932,7 +932,7 @@ router.get('/:slug/:page?', async (req, res) => {
         // Load portrait image for About page (snake_case field) using API
         if (pageContent.portrait_image_id) {
             try {
-                const axios = require('axios');
+                const axios = require('../../config/axios');
                 const response = await axios.get(`${API_BASE_URL}/api/gallery-images/${slug}/image/${pageContent.portrait_image_id}`);
                 
                 console.log(`🔍 About portrait API query result: ${response.data.success ? 'found' : 'not found'}`);
@@ -954,7 +954,7 @@ router.get('/:slug/:page?', async (req, res) => {
                 id: model.id,
                 name: model.name,
                 slug: model.slug,
-                email: model.email || `${model.slug}@musenest.com`
+                email: model.email || `${model.slug}@phoenix4ge.com`
             },
             content: pageContent,
             // Pass gallery sections directly to template context for gallery pages
@@ -988,7 +988,7 @@ router.get('/:slug/:page?', async (req, res) => {
             modelName: model.name,
             modelId: model.id,
             // Contact information for contact page
-            contactEmail: model.email || `${model.slug}@musenest.com`,
+            contactEmail: model.email || `${model.slug}@phoenix4ge.com`,
             contactPhone: model.phone || null,
             location: pageContent.location || null,
             workingHours: pageContent.workingHours || null,
@@ -1045,7 +1045,7 @@ router.get('/:slug/:page?', async (req, res) => {
         let templatePath = `${themeName}/pages/${page}`;
         try {
             // Use the model's theme_set_id (which may have been overridden in preview mode)
-            const axios = require('axios');
+            const axios = require('../../config/axios');
             const response = await axios.get(`${API_BASE_URL}/api/theme-templates/${model.theme_set_id}/page/${page}`);
             
             if (response.data.success && response.data.data) {

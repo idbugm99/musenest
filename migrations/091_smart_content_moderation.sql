@@ -2,7 +2,7 @@
 -- Adds tables and infrastructure for comprehensive automated content violation detection
 -- and policy-based enforcement with appeal processes
 
-USE musenest;
+USE phoenix4ge;
 
 -- Content violation detection results
 CREATE TABLE IF NOT EXISTS content_violations (
@@ -465,10 +465,10 @@ ALTER TABLE moderation_alerts ADD INDEX idx_severity_resolved_date (severity, is
 
 -- Grant permissions for smart content moderation service
 -- Note: In production, create a dedicated smart moderation service user
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.content_violations TO 'smart_moderation_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.moderation_actions TO 'smart_moderation_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.detection_feedback TO 'smart_moderation_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.GetViolationAnalytics TO 'smart_moderation_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.ProcessViolationFeedback TO 'smart_moderation_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.content_violations TO 'smart_moderation_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.moderation_actions TO 'smart_moderation_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.detection_feedback TO 'smart_moderation_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.GetViolationAnalytics TO 'smart_moderation_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.ProcessViolationFeedback TO 'smart_moderation_service'@'localhost';
 
 SELECT 'Smart Content Moderation with ML-Based Violation Detection migration completed successfully' as status;

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 /**
- * MuseNest Content Migration Script
+ * phoenix4ge Content Migration Script
  * 
- * Migrates content data from RoseMastos SQLite database to MuseNest MySQL database
- * Maps RoseMastos models and content to MuseNest content_templates structure
+ * Migrates content data from RoseMastos SQLite database to phoenix4ge MySQL database
+ * Maps RoseMastos models and content to phoenix4ge content_templates structure
  */
 
 const mysql = require('mysql2/promise');
@@ -17,13 +17,13 @@ const MYSQL_CONFIG = {
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'musenest',
+    database: process.env.DB_NAME || 'phoenix4ge',
     port: process.env.DB_PORT || 3306
 };
 
 const ROSEMASTOS_DB_PATH = '/Users/programmer/Projects/rosemastos/instance/models.db';
 
-// Page type mapping from RoseMastos to MuseNest
+// Page type mapping from RoseMastos to phoenix4ge
 const PAGE_TYPE_MAPPING = {
     'home': 1,
     'about': 2,
@@ -168,7 +168,7 @@ class ContentMigrator {
         // Connect to MySQL
         try {
             this.mysqlConnection = await mysql.createConnection(MYSQL_CONFIG);
-            console.log('✅ Connected to MuseNest MySQL database');
+            console.log('✅ Connected to phoenix4ge MySQL database');
         } catch (error) {
             throw new Error(`Failed to connect to MySQL: ${error.message}`);
         }
@@ -207,8 +207,8 @@ class ContentMigrator {
         });
     }
 
-    async findOrCreateMuseNestModel(roseMastosModel) {
-        // Check if model already exists in MuseNest
+    async findOrCreatephoenix4geModel(roseMastosModel) {
+        // Check if model already exists in phoenix4ge
         const [existingModels] = await this.mysqlConnection.execute(
             'SELECT id FROM models WHERE slug = ?',
             [roseMastosModel.slug]
@@ -219,14 +219,14 @@ class ContentMigrator {
             return existingModels[0].id;
         }
 
-        // Create new model in MuseNest
+        // Create new model in phoenix4ge
         const [result] = await this.mysqlConnection.execute(
             `INSERT INTO models (name, slug, email, status, theme_set_id, created_at)
              VALUES (?, ?, ?, ?, 1, NOW())`,
             [
                 roseMastosModel.name,
                 roseMastosModel.slug,
-                `${roseMastosModel.slug}@musenest.com`,
+                `${roseMastosModel.slug}@phoenix4ge.com`,
                 roseMastosModel.status === 'active' ? 'active' : 'inactive'
             ]
         );
@@ -235,7 +235,7 @@ class ContentMigrator {
         return result.insertId;
     }
 
-    async migrateContent(musenestModelId, roseMastosModelId, pageType, contentData) {
+    async migrateContent(phoenix4geModelId, roseMastosModelId, pageType, contentData) {
         const pageTypeId = PAGE_TYPE_MAPPING[pageType];
         if (!pageTypeId) {
             console.warn(`⚠️  Unknown page type: ${pageType}`);
@@ -251,7 +251,7 @@ class ContentMigrator {
         let recordsCreated = 0;
 
         // Process each content field mapping
-        for (const [musenestKey, roseMastosKey] of Object.entries(contentMapping)) {
+        for (const [phoenix4geKey, roseMastosKey] of Object.entries(contentMapping)) {
             let contentValue = null;
 
             if (Array.isArray(roseMastosKey)) {
@@ -269,7 +269,7 @@ class ContentMigrator {
                         const facts = JSON.parse(contentData[roseMastosKey]);
                         contentValue = JSON.stringify(facts);
                     } catch (e) {
-                        console.warn(`⚠️  Invalid JSON in quick_facts for model ${musenestModelId}`);
+                        console.warn(`⚠️  Invalid JSON in quick_facts for model ${phoenix4geModelId}`);
                         contentValue = null;
                     }
                 }
@@ -283,7 +283,7 @@ class ContentMigrator {
                     // Check if content already exists
                     const [existingContent] = await this.mysqlConnection.execute(
                         'SELECT id FROM content_templates WHERE model_id = ? AND page_type_id = ? AND content_key = ?',
-                        [musenestModelId, pageTypeId, musenestKey]
+                        [phoenix4geModelId, pageTypeId, phoenix4geKey]
                     );
 
                     if (existingContent.length > 0) {
@@ -292,24 +292,24 @@ class ContentMigrator {
                             'UPDATE content_templates SET content_value = ?, updated_at = NOW() WHERE id = ?',
                             [contentValue, existingContent[0].id]
                         );
-                        console.log(`📝 Updated ${pageType}.${musenestKey}`);
+                        console.log(`📝 Updated ${pageType}.${phoenix4geKey}`);
                     } else {
                         // Insert new content
                         await this.mysqlConnection.execute(
                             `INSERT INTO content_templates 
                              (model_id, page_type_id, content_key, content_value, content_type, updated_at) 
                              VALUES (?, ?, ?, ?, 'text', NOW())`,
-                            [musenestModelId, pageTypeId, musenestKey, contentValue]
+                            [phoenix4geModelId, pageTypeId, phoenix4geKey, contentValue]
                         );
-                        console.log(`✨ Created ${pageType}.${musenestKey}`);
+                        console.log(`✨ Created ${pageType}.${phoenix4geKey}`);
                         recordsCreated++;
                     }
                 } catch (error) {
-                    console.error(`❌ Error inserting ${pageType}.${musenestKey}:`, error.message);
+                    console.error(`❌ Error inserting ${pageType}.${phoenix4geKey}:`, error.message);
                     this.migrationStats.errors.push({
-                        model_id: musenestModelId,
+                        model_id: phoenix4geModelId,
                         page_type: pageType,
-                        field: musenestKey,
+                        field: phoenix4geKey,
                         error: error.message
                     });
                 }
@@ -323,36 +323,36 @@ class ContentMigrator {
         console.log(`\n🔄 Processing model: ${roseMastosModel.name} (${roseMastosModel.slug})`);
         
         try {
-            // Find or create model in MuseNest
-            const musenestModelId = await this.findOrCreateMuseNestModel(roseMastosModel);
+            // Find or create model in phoenix4ge
+            const phoenix4geModelId = await this.findOrCreatephoenix4geModel(roseMastosModel);
             
             let totalContentCreated = 0;
 
             // Migrate home page content
             const homeContent = await this.getPageContent(roseMastosModel.id, 'home_page_content');
             if (homeContent) {
-                const created = await this.migrateContent(musenestModelId, roseMastosModel.id, 'home', homeContent);
+                const created = await this.migrateContent(phoenix4geModelId, roseMastosModel.id, 'home', homeContent);
                 totalContentCreated += created;
             }
 
             // Migrate about page content
             const aboutContent = await this.getPageContent(roseMastosModel.id, 'about_page_content');
             if (aboutContent) {
-                const created = await this.migrateContent(musenestModelId, roseMastosModel.id, 'about', aboutContent);
+                const created = await this.migrateContent(phoenix4geModelId, roseMastosModel.id, 'about', aboutContent);
                 totalContentCreated += created;
             }
 
             // Migrate contact page content
             const contactContent = await this.getPageContent(roseMastosModel.id, 'contact_page_content');
             if (contactContent) {
-                const created = await this.migrateContent(musenestModelId, roseMastosModel.id, 'contact', contactContent);
+                const created = await this.migrateContent(phoenix4geModelId, roseMastosModel.id, 'contact', contactContent);
                 totalContentCreated += created;
             }
 
             // Migrate etiquette page content
             const etiquetteContent = await this.getPageContent(roseMastosModel.id, 'etiquette_page_content');
             if (etiquetteContent) {
-                const created = await this.migrateContent(musenestModelId, roseMastosModel.id, 'etiquette', etiquetteContent);
+                const created = await this.migrateContent(phoenix4geModelId, roseMastosModel.id, 'etiquette', etiquetteContent);
                 totalContentCreated += created;
             }
 

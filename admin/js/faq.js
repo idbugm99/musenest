@@ -1,5 +1,5 @@
 /**
- * MuseNest Admin Dashboard - FAQ Management
+ * phoenix4ge Admin Dashboard - FAQ Management
  */
 if (window.ComponentRegistryClient) {
     window.ComponentRegistryClient.register('admin-faq', 'admin/js/faq.js');

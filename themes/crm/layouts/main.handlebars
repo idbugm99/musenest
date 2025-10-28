@@ -12,6 +12,9 @@
     <!-- Custom CRM CSS -->
     <link href="/crm/css/crm.css" rel="stylesheet">
     
+    <!-- jQuery must load before page inline scripts in views -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
     <style>
         :root {
             --crm-primary: #6366f1;
@@ -194,8 +197,8 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <!-- CRM Sidebar -->
-            {{#if model}}
+            <!-- CRM Sidebar (only show when authenticated session provides modelSlug) -->
+            {{#if model.modelSlug}}
             <div class="col-md-3 col-lg-2 px-0">
                 <div class="crm-sidebar p-3">
                     <div class="text-center mb-4">
@@ -213,7 +216,7 @@
             
             <!-- CRM Main Content -->
             <div class="col {{#unless model}}col-md-8 mx-auto{{/unless}}">
-                {{#if model}}
+                {{#if model.modelSlug}}
                 <!-- CRM Header -->
                 <div class="crm-header">
                     <div class="d-flex justify-content-between align-items-center">

@@ -1,4 +1,4 @@
-# MuseNest Account Number System
+# phoenix4ge Account Number System
 **Implementation Date:** August 4, 2025  
 **Version:** 1.0  
 **Status:** ✅ Fully Implemented  
@@ -7,13 +7,13 @@
 
 ## 🎯 **System Overview**
 
-MuseNest has implemented a sophisticated **BIN-style account numbering system** inspired by credit card numbering schemes. Each client receives a unique 12-digit account number that encodes business-critical information while appearing randomized to end users.
+phoenix4ge has implemented a sophisticated **BIN-style account numbering system** inspired by credit card numbering schemes. Each client receives a unique 12-digit account number that encodes business-critical information while appearing randomized to end users.
 
 ### **Account Number Format: `[TT][CC][SS][RRRRRR]`**
 
 | Segment | Length | Description | Example Values |
 |---------|--------|-------------|----------------|
-| **TT** | 2 digits | Client Type Code | `01` = MuseNest, `02` = White Label, `03` = Sub-client, `09` = Admin |
+| **TT** | 2 digits | Client Type Code | `01` = phoenix4ge, `02` = White Label, `03` = Sub-client, `09` = Admin |
 | **CC** | 2 digits | Country/Region Code | `01` = US, `44` = UK, `49` = Germany, `99` = International |
 | **SS** | 2 digits | Sales Channel Code | `10` = Website, `20` = Referral, `30` = Manual, `99` = System |
 | **RRRRRR** | 6 digits | Sequential Unique ID | `100001`, `100002`, `100003`... |
@@ -24,7 +24,7 @@ MuseNest has implemented a sophisticated **BIN-style account numbering system** 
 
 | Account Number | Client Type | Region | Sales Channel | Description |
 |----------------|-------------|--------|---------------|-------------|
-| `010110100001` | MuseNest | US | Website | First direct US website signup |
+| `010110100001` | phoenix4ge | US | Website | First direct US website signup |
 | `024420200045` | White Label | UK | Referral | UK agency client from referral |
 | `030130300123` | Sub-client | US | Manual | US sub-client manually created |
 | `099999100002` | Admin | International | System | System template (Escort Example) |
@@ -53,7 +53,7 @@ CREATE TABLE `client_type_codes` (
 ```
 
 **Data:**
-- `muse_owned` → Code `1` (Direct MuseNest clients)
+- `muse_owned` → Code `1` (Direct phoenix4ge clients)
 - `white_label` → Code `2` (White label agency clients)  
 - `sub_client` → Code `3` (Sub-clients under parent accounts)
 - `admin` → Code `9` (System templates)
@@ -165,7 +165,7 @@ POST /api/clients
 ```html
 <td>
     <div class="font-monospace text-primary fw-bold">010110100001</div>
-    <div class="text-muted small">MuseNest • Website</div>
+    <div class="text-muted small">phoenix4ge • Website</div>
 </td>
 ```
 
@@ -178,7 +178,7 @@ POST /api/clients
 ### **Account Number Parsing**
 
 The UI automatically decodes account numbers to show:
-- **Client Type:** MuseNest, White Label, Sub-client, System
+- **Client Type:** phoenix4ge, White Label, Sub-client, System
 - **Sales Channel:** Website, Referral, Manual, API, Partner, System  
 - **Visual Grouping:** Similar account types appear together when sorted
 
@@ -188,7 +188,7 @@ The UI automatically decodes account numbers to show:
 
 ### **1. Instant Visual Recognition**
 - Admins can immediately identify client types from account numbers
-- `01****` = Direct MuseNest customers (revenue-generating)
+- `01****` = Direct phoenix4ge customers (revenue-generating)
 - `02****` = White label agencies (partner revenue)
 - `03****` = Sub-clients (nested accounts)
 - `09****` = System templates (non-revenue)
@@ -228,7 +228,7 @@ Existing accounts without structured numbers display as "Legacy Account" with fu
 
 ### **Search and Filtering**
 - Search by full account number: `010110100001`
-- Search by partial patterns: `0101*` (all MuseNest US website signups)
+- Search by partial patterns: `0101*` (all phoenix4ge US website signups)
 - Filter by client type through account number patterns
 
 ---
@@ -273,4 +273,4 @@ Existing accounts without structured numbers display as "Legacy Account" with fu
 - **Regions:** 7 regions configured
 - **Format Validation:** Full validation implemented
 
-The account number system is now fully operational and ready to support MuseNest's sophisticated multi-tenant business model with clear attribution, analytics capabilities, and future scalability.
+The account number system is now fully operational and ready to support phoenix4ge's sophisticated multi-tenant business model with clear attribution, analytics capabilities, and future scalability.

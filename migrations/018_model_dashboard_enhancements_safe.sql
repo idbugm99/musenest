@@ -5,7 +5,7 @@
 -- Check and add indexes safely (ignore if they exist)
 SET @sql = (SELECT IF(
     (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS 
-     WHERE table_schema = 'musenest' 
+     WHERE table_schema = 'phoenix4ge' 
      AND table_name = 'media_review_queue' 
      AND index_name = 'idx_model_status') = 0,
     'ALTER TABLE media_review_queue ADD INDEX idx_model_status (model_name, review_status, flagged_at)',
@@ -16,7 +16,7 @@ DEALLOCATE PREPARE stmt;
 
 SET @sql = (SELECT IF(
     (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS 
-     WHERE table_schema = 'musenest' 
+     WHERE table_schema = 'phoenix4ge' 
      AND table_name = 'media_review_queue' 
      AND index_name = 'idx_model_priority') = 0,
     'ALTER TABLE media_review_queue ADD INDEX idx_model_priority (model_id, priority, flagged_at)',
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS model_dashboard_stats (
 -- Add new columns to existing tables (safe)
 SET @sql = (SELECT IF(
     (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-     WHERE table_schema = 'musenest' 
+     WHERE table_schema = 'phoenix4ge' 
      AND table_name = 'content_moderation' 
      AND column_name = 'admin_preview_watermarked') = 0,
     'ALTER TABLE content_moderation ADD COLUMN admin_preview_watermarked BOOLEAN DEFAULT FALSE',
@@ -125,7 +125,7 @@ DEALLOCATE PREPARE stmt;
 
 SET @sql = (SELECT IF(
     (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-     WHERE table_schema = 'musenest' 
+     WHERE table_schema = 'phoenix4ge' 
      AND table_name = 'content_moderation' 
      AND column_name = 'watermark_generated_at') = 0,
     'ALTER TABLE content_moderation ADD COLUMN watermark_generated_at TIMESTAMP NULL',
@@ -136,7 +136,7 @@ DEALLOCATE PREPARE stmt;
 
 SET @sql = (SELECT IF(
     (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-     WHERE table_schema = 'musenest' 
+     WHERE table_schema = 'phoenix4ge' 
      AND table_name = 'content_moderation' 
      AND column_name = 'preview_access_count') = 0,
     'ALTER TABLE content_moderation ADD COLUMN preview_access_count INT DEFAULT 0',
@@ -150,10 +150,10 @@ INSERT IGNORE INTO admin_notification_thresholds (
     model_id, threshold_type, threshold_value, time_period_hours, 
     notification_enabled, alert_email
 ) VALUES
-(NULL, 'daily_violations', 5, 24, TRUE, 'admin@musenest.com'),
-(NULL, 'weekly_violations', 20, 168, TRUE, 'admin@musenest.com'),
-(NULL, 'pending_items', 50, 24, TRUE, 'admin@musenest.com'),
-(NULL, 'high_severity_rate', 3, 24, TRUE, 'admin@musenest.com');
+(NULL, 'daily_violations', 5, 24, TRUE, 'admin@phoenix4ge.com'),
+(NULL, 'weekly_violations', 20, 168, TRUE, 'admin@phoenix4ge.com'),
+(NULL, 'pending_items', 50, 24, TRUE, 'admin@phoenix4ge.com'),
+(NULL, 'high_severity_rate', 3, 24, TRUE, 'admin@phoenix4ge.com');
 
 -- Initialize dashboard stats for existing models
 INSERT IGNORE INTO model_dashboard_stats (model_id, model_name)

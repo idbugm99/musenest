@@ -3,7 +3,7 @@ const path = require('path');
 const { query, testConnection } = require('../config/database');
 
 async function runMigrations() {
-    console.log('🚀 Starting MuseNest database migrations...\n');
+    console.log('🚀 Starting phoenix4ge database migrations...\n');
     
     // Test database connection
     const isConnected = await testConnection();

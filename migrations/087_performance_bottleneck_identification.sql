@@ -1,7 +1,7 @@
 -- Performance Bottleneck Identification System Migration
 -- Adds tables and infrastructure for real-time performance monitoring and bottleneck detection
 
-USE musenest;
+USE phoenix4ge;
 
 -- System performance metrics tracking
 CREATE TABLE IF NOT EXISTS system_performance_metrics (
@@ -539,11 +539,11 @@ ALTER TABLE anomaly_detection_results ADD INDEX idx_model_anomaly_time (model_na
 
 -- Grant permissions for performance bottleneck identification service
 -- Note: In production, create a dedicated performance monitoring service user
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.system_performance_* TO 'performance_monitor'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.performance_bottlenecks TO 'performance_monitor'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.bottleneck_* TO 'performance_monitor'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.anomaly_detection_results TO 'performance_monitor'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.AnalyzeBottleneckPatterns TO 'performance_monitor'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.GetBottleneckInsights TO 'performance_monitor'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.system_performance_* TO 'performance_monitor'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.performance_bottlenecks TO 'performance_monitor'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.bottleneck_* TO 'performance_monitor'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.anomaly_detection_results TO 'performance_monitor'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.AnalyzeBottleneckPatterns TO 'performance_monitor'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.GetBottleneckInsights TO 'performance_monitor'@'localhost';
 
 SELECT 'Performance Bottleneck Identification System migration completed successfully' as status;

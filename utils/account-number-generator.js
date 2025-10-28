@@ -1,9 +1,9 @@
 /**
- * MuseNest Account Number Generator
+ * Phoenix4Ge Account Number Generator
  * Implements BIN-style structured account numbering system
  * 
  * Format: [TT][CC][SS][RRRRRR]
- * - TT: Client Type (01=MuseNest, 02=White Label, 03=Sub-client, 09=Admin)
+ * - TT: Client Type (01=Phoenix4Ge, 02=White Label, 03=Sub-client, 09=Admin)
  * - CC: Country/Region Code (01=US, 44=UK, etc.)
  * - SS: Sales Channel (10=Website, 20=Referral, 30=Manual, etc.)
  * - RRRRRR: 6-digit unique sequential ID
@@ -15,7 +15,7 @@ class AccountNumberGenerator {
     
     /**
      * Generate a structured account number
-     * @param {string} clientType - Client type (muse_owned, white_label, sub_client, admin)
+     * @param {string} clientType - Client type (phoenix_owned, white_label, sub_client, admin)
      * @param {number|string} regionId - Region ID or region code
      * @param {number|string} salesChannelId - Sales channel ID or channel code
      * @returns {Promise<string>} Generated account number

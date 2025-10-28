@@ -1,4 +1,4 @@
-# MuseNest Setup Guide - Phase 1 Complete!
+# phoenix4ge Setup Guide - Phase 1 Complete!
 
 ## 🎉 What's Been Completed
 
@@ -15,7 +15,7 @@
 
 ### 1. Install Dependencies
 ```bash
-cd /Users/programmer/Projects/musenest
+cd /Users/programmer/Projects/phoenix4ge
 npm install
 ```
 
@@ -29,14 +29,14 @@ Edit `.env` with your MySQL credentials:
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=your_mysql_password
-DB_NAME=musenest
+DB_NAME=phoenix4ge
 JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
 ```
 
 ### 3. Setup Database
 ```bash
 # Create database
-mysql -u root -p -e "CREATE DATABASE musenest;"
+mysql -u root -p -e "CREATE DATABASE phoenix4ge;"
 
 # Run schema migrations
 npm run migrate
@@ -44,7 +44,7 @@ npm run migrate
 
 ### 4. Migrate Your RoseMastos Data
 ```bash
-# This will copy all your existing data to MuseNest
+# This will copy all your existing data to phoenix4ge
 npm run migrate-data
 ```
 
@@ -162,22 +162,22 @@ This shows exactly what data was migrated from RoseMastos.
 
 ### Check Migrated Models
 ```bash
-mysql -u root -p musenest -e "SELECT id, name, slug, status FROM models;"
+mysql -u root -p phoenix4ge -e "SELECT id, name, slug, status FROM models;"
 ```
 
 ### Check Migrated Users  
 ```bash
-mysql -u root -p musenest -e "SELECT id, email, role FROM users;"  
+mysql -u root -p phoenix4ge -e "SELECT id, email, role FROM users;"  
 ```
 
 ### Check Gallery Images
 ```bash
-mysql -u root -p musenest -e "SELECT COUNT(*) as total_images FROM gallery_images;"
+mysql -u root -p phoenix4ge -e "SELECT COUNT(*) as total_images FROM gallery_images;"
 ```
 
 ### Check FAQ Items
 ```bash
-mysql -u root -p musenest -e "SELECT COUNT(*) as total_faqs FROM faq_items;"
+mysql -u root -p phoenix4ge -e "SELECT COUNT(*) as total_faqs FROM faq_items;"
 ```
 
 ---
@@ -190,7 +190,7 @@ mysql -u root -p musenest -e "SELECT COUNT(*) as total_faqs FROM faq_items;"
 mysql -u root -p -e "SELECT 1;"
 
 # Check if database exists
-mysql -u root -p -e "SHOW DATABASES LIKE 'musenest';"
+mysql -u root -p -e "SHOW DATABASES LIKE 'phoenix4ge';"
 ```
 
 ### Migration Issues
@@ -199,7 +199,7 @@ mysql -u root -p -e "SHOW DATABASES LIKE 'musenest';"
 npm run migrate 2>&1 | tee migration.log
 
 # Reset database if needed
-mysql -u root -p -e "DROP DATABASE IF EXISTS musenest; CREATE DATABASE musenest;"
+mysql -u root -p -e "DROP DATABASE IF EXISTS phoenix4ge; CREATE DATABASE phoenix4ge;"
 npm run migrate
 ```
 
@@ -262,6 +262,6 @@ Now that Phase 1 is complete, you can choose the next focus:
 
 **Phase 1 is COMPLETE! 🎉**
 
-Your MuseNest foundation is ready for development. All your RoseMastos data has been migrated to the new normalized structure, and the authentication system is fully functional.
+Your phoenix4ge foundation is ready for development. All your RoseMastos data has been migrated to the new normalized structure, and the authentication system is fully functional.
 
 Choose your next phase and let's continue building! 🚀

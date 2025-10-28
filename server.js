@@ -1,8 +1,10 @@
 const express = require('express');
+const https = require('https');
 const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
 const helmet = require('helmet');
+const session = require('express-session');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const { engine } = require('express-handlebars');
@@ -18,6 +20,17 @@ const AnalysisConfigAPI = require('./src/routes/analysisConfigApi');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Trust proxy for Cloudflare (specific IP ranges)
+// Cloudflare IP ranges - more secure than 'true'
+app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal', 
+    // Cloudflare IPv4 ranges (partial list)
+    '173.245.48.0/20', '103.21.244.0/22', '103.22.200.0/22',
+    '103.31.4.0/22', '141.101.64.0/18', '108.162.192.0/18',
+    '190.93.240.0/20', '188.114.96.0/20', '197.234.240.0/22',
+    '198.41.128.0/17', '162.158.0.0/15', '104.16.0.0/13',
+    '104.24.0.0/14', '172.64.0.0/13', '131.0.72.0/22'
+]);
 
 // Early ping route to bypass middleware stack for diagnostics
 app.get('/_ping', (_req, res) => res.status(200).send('pong'));
@@ -36,10 +49,13 @@ if (process.env.NODE_ENV === 'production') {
         contentSecurityPolicy: {
             directives: {
                 defaultSrc: ["'self'"],
-                styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
-                scriptSrc: ["'self'", "'unsafe-inline'"],
+                styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
+                scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://code.jquery.com"],
                 imgSrc: ["'self'", "data:", "https:"],
                 fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
+                connectSrc: ["'self'"],
+                // Allow inline script attributes for legacy templates that use inline handlers
+                scriptSrcAttr: ["'self'", "'unsafe-inline'"]
             },
         },
     }));
@@ -81,6 +97,20 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Session middleware (required for CRM)
+app.use(session({
+    name: 'crm.sid',
+    secret: process.env.SESSION_SECRET || process.env.JWT_SECRET || 'replace_this_secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000
+    }
+}));
+
 // Request logging (after body parsing to capture JSON when enabled)
 app.use(require('./middleware/requestLogger'));
 
@@ -94,6 +124,9 @@ app.use(impersonationMiddleware);
 // Static files
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+// CRM theme static assets
+app.use('/crm/css', express.static(path.join(__dirname, 'public/crm/css')));
+app.use('/crm/js', express.static(path.join(__dirname, 'public/crm/js')));
 
 // Serve model-specific system uploads (logos, watermarks, etc.)
 app.use('/:slug/uploads/system', (req, res, next) => {
@@ -158,7 +191,7 @@ app.get('/test-file-upload', (req, res) => {
 });
 
 // Redirect old admin paths to system admin
-app.get('/admin/musenest-business-manager.html', (req, res) => res.redirect('/sysadmin'));
+app.get('/admin/phoenix4ge-business-manager.html', (req, res) => res.redirect('/sysadmin'));
 
 // Test route for system admin Handlebars 
 app.get('/sysadmin/test', (req, res) => {
@@ -295,7 +328,7 @@ function renderSysadmin(res, viewPath, context = {}) {
     const defaults = {
         layout: 'admin/layouts/main',
         pageTitle: 'System Administration',
-        pageSubtitle: 'MuseNest Business Manager',
+        pageSubtitle: 'phoenix4ge Business Manager',
         currentPage: 'dashboard',
         stats: defaultStats,
         recentActivity: [],
@@ -351,7 +384,7 @@ app.get('/sysadmin', async (req, res) => {
 
     const requestedSection = req.query.section;
     renderSysadmin(res, 'admin/pages/dashboard', {
-        pageSubtitle: 'MuseNest Business Manager - Comprehensive CRM',
+        pageSubtitle: 'phoenix4ge Business Manager - Comprehensive CRM',
         stats,
         recentActivity,
         clientCount: stats.totalClients,
@@ -806,7 +839,7 @@ app.get('/:slug/admin/calendar', async (req, res) => {
 // Routes
 app.get('/', (req, res) => {
     res.json({
-        name: 'MuseNest API',
+        name: 'phoenix4ge API',
         version: '1.0.0',
         status: 'Running',
         message: 'Professional model portfolio management system'
@@ -2878,6 +2911,19 @@ try { app.use('/api/data-dump', require('./routes/api/data-dump')); } catch (e) 
 
 // CRM API Routes
 app.use('/api/crm', require('./routes/api/crm/clients'));
+app.use('/api/crm', require('./routes/api/crm/screening'));
+app.use('/api/crm', require('./routes/api/crm/messages'));
+app.use('/api/crm', require('./routes/api/crm/threads'));
+app.use('/api/crm', require('./routes/api/crm/clients-notes'));
+
+// External API v1 Routes (with API key authentication)
+app.use('/api/v1/auth', require('./routes/api/v1/auth'));
+app.use('/api/v1/clients', require('./routes/api/v1/clients'));
+app.use('/api/v1/conversations', require('./routes/api/v1/conversations'));
+app.use('/api/v1/messages', require('./routes/api/v1/messages'));
+app.use('/api/v1/screening', require('./routes/api/v1/screening'));
+app.use('/api/v1/files', require('./routes/api/v1/files'));
+app.use('/api/v1/notes', require('./routes/api/v1/notes'));
 
 // Theme Management API
 app.get('/api/theme-management/models', async (req, res) => {
@@ -3718,11 +3764,17 @@ async function startServer() {
             }
         });
         
-        app.listen(PORT, () => {
-            console.log('🚀 MuseNest Server Started');
+        // HTTPS Configuration
+        const httpsOptions = {
+            key: fs.readFileSync('/etc/ssl/phoenix4ge/origin.key'),
+            cert: fs.readFileSync('/etc/ssl/phoenix4ge/origin.cert')
+        };
+        
+        https.createServer(httpsOptions, app).listen(PORT, () => {
+            console.log('🚀 Phoenix4GE Server Started with HTTPS');
             console.log(`📍 Server running on port ${PORT}`);
             console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-            console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+            console.log(`🔗 Health check: https://localhost:${PORT}/health`);
             console.log('');
             console.log('Next steps:');
             console.log('1. Copy .env.example to .env and configure your database');

@@ -1,4 +1,4 @@
-# MuseNest Media Library: Quick Reference Guide
+# phoenix4ge Media Library: Quick Reference Guide
 
 **Version:** 2.0  
 **Last Updated:** August 9, 2025  
@@ -10,8 +10,8 @@
 
 ```bash
 # Setup
-git clone https://github.com/your-org/musenest.git
-cd musenest
+git clone https://github.com/your-org/phoenix4ge.git
+cd phoenix4ge
 npm install
 cp .env.example .env  # Configure your settings
 npm run db:migrate
@@ -25,7 +25,7 @@ node tests/integration/moderation-workflow-test.js  # Full workflow test
 # Production
 npm run build                        # Build for production
 pm2 start ecosystem.config.js       # Start with PM2
-pm2 logs musenest-media             # View logs
+pm2 logs phoenix4ge-media             # View logs
 ```
 
 ---
@@ -148,7 +148,7 @@ class MyCustomService {
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const modelSlug = 'your-model-slug';
-    window.mediaLibrary = new MuseNestMediaLibrary(modelSlug);
+    window.mediaLibrary = new phoenix4geMediaLibrary(modelSlug);
 });
 </script>
 ```
@@ -230,8 +230,8 @@ CREATE TABLE model_media_categories (
 # Database
 DB_HOST=localhost
 DB_PORT=3306
-DB_NAME=musenest_db
-DB_USER=musenest_user
+DB_NAME=phoenix4ge_db
+DB_USER=phoenix4ge_user
 DB_PASSWORD=secure_password
 
 # Redis
@@ -306,10 +306,10 @@ try {
 ### **Enable Debug Logging**
 ```bash
 # Enable all debug logs
-DEBUG=musenest:* npm run dev
+DEBUG=phoenix4ge:* npm run dev
 
 # Enable specific module logs  
-DEBUG=musenest:media,musenest:upload npm run dev
+DEBUG=phoenix4ge:media,phoenix4ge:upload npm run dev
 ```
 
 ---
@@ -414,10 +414,10 @@ pm2 restart all
 curl http://localhost:3000/api/health
 
 # View recent errors
-pm2 logs musenest-media --err --lines 50
+pm2 logs phoenix4ge-media --err --lines 50
 
 # Database connection test
-mysql -h localhost -u musenest_user -p musenest_db -e "SELECT COUNT(*) FROM model_media_library;"
+mysql -h localhost -u phoenix4ge_user -p phoenix4ge_db -e "SELECT COUNT(*) FROM model_media_library;"
 ```
 
 ### **Rollback Procedures**
@@ -426,10 +426,10 @@ mysql -h localhost -u musenest_user -p musenest_db -e "SELECT COUNT(*) FROM mode
 npm run db:rollback
 
 # Rollback to previous deployment
-pm2 restart musenest-media --update-env
+pm2 restart phoenix4ge-media --update-env
 
 # Restore from backup
-gunzip < /backup/database_latest.sql.gz | mysql musenest_db
+gunzip < /backup/database_latest.sql.gz | mysql phoenix4ge_db
 ```
 
 ---

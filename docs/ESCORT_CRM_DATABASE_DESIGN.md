@@ -221,7 +221,7 @@ CREATE TABLE communication_log (
 
 ### **File Organization**
 ```
-musenest/
+phoenix4ge/
 ├── routes/
 │   ├── crm.js                    # CRM-specific routes
 │   └── api/

@@ -26,8 +26,7 @@ router.get('/', authenticateToken, async (req, res) => {
 
     } catch (error) {
         console.error('Models fetch error:', error);
-        res.status(500).json({
-            error: 'Fetch failed',
+        res.fail(500, 'Fetch failed', {
             message: 'Unable to fetch models'
         });
     }
@@ -49,10 +48,9 @@ router.get('/:slug', authenticateToken, requireModelAccess, async (req, res) => 
         `, [modelId]);
 
         if (modelDetails.length === 0) {
-            return res.status(404).json({
-                error: 'Model not found',
-                message: 'Model does not exist'
-            });
+            return res.fail(404, 'Model not found', {
+            message: 'Model does not exist'
+        });
         }
 
         // Get model themes
@@ -103,8 +101,7 @@ router.get('/:slug', authenticateToken, requireModelAccess, async (req, res) => 
 
     } catch (error) {
         console.error('Model details fetch error:', error);
-        res.status(500).json({
-            error: 'Fetch failed',
+        res.fail(500, 'Fetch failed', {
             message: 'Unable to fetch model details'
         });
     }
@@ -129,8 +126,7 @@ router.put('/:slug', [
         // Check validation errors
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({
-                error: 'Validation failed',  
+            return res.fail(400, 'Validation failed', {  
                 message: 'Please check your input',
                 details: errors.array()
             });
@@ -153,10 +149,9 @@ router.put('/:slug', [
         }
 
         if (updates.length === 0) {
-            return res.status(400).json({
-                error: 'No updates provided',
-                message: 'Please provide fields to update'
-            });
+            return res.fail(400, 'No updates provided', {
+            message: 'Please provide fields to update'
+        });
         }
 
         updates.push('updated_at = NOW()');
@@ -172,8 +167,7 @@ router.put('/:slug', [
 
     } catch (error) {
         console.error('Model update error:', error);
-        res.status(500).json({
-            error: 'Update failed',
+        res.fail(500, 'Update failed', {
             message: 'Unable to update model'
         });
     }
@@ -219,8 +213,7 @@ router.put('/:slug/settings', [
         // Check validation errors
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({
-                error: 'Validation failed',
+            return res.fail(400, 'Validation failed', {
                 message: 'Please check your input',
                 details: errors.array()
             });
@@ -276,10 +269,9 @@ router.put('/:slug/settings', [
         }
 
         if (updates.length === 0) {
-            return res.status(400).json({
-                error: 'No updates provided',
-                message: 'Please provide fields to update'
-            });
+            return res.fail(400, 'No updates provided', {
+            message: 'Please provide fields to update'
+        });
         }
 
         updates.push('updated_at = NOW()');
@@ -314,8 +306,7 @@ router.put('/:slug/settings', [
 
     } catch (error) {
         console.error('Settings update error:', error);
-        res.status(500).json({
-            error: 'Update failed',
+        res.fail(500, 'Update failed', {
             message: 'Unable to update settings'
         });
     }
@@ -334,8 +325,7 @@ router.post('/:slug/theme', [
         // Check validation errors
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({
-                error: 'Validation failed',
+            return res.fail(400, 'Validation failed', {
                 message: 'Please check your input',
                 details: errors.array()
             });
@@ -351,10 +341,9 @@ router.post('/:slug/theme', [
         );
 
         if (themes.length === 0) {
-            return res.status(404).json({
-                error: 'Theme not found',
-                message: 'The specified theme does not exist or is not active'
-            });
+            return res.fail(404, 'Theme not found', {
+            message: 'The specified theme does not exist or is not active'
+        });
         }
 
         // Deactivate all current themes for this model
@@ -389,8 +378,7 @@ router.post('/:slug/theme', [
 
     } catch (error) {
         console.error('Theme application error:', error);
-        res.status(500).json({
-            error: 'Theme application failed',
+        res.fail(500, 'Theme application failed', {
             message: 'Unable to apply theme'
         });
     }
@@ -431,8 +419,7 @@ router.get('/:slug/themes', authenticateToken, requireModelAccess, async (req, r
 
     } catch (error) {
         console.error('Themes fetch error:', error);
-        res.status(500).json({
-            error: 'Fetch failed',
+        res.fail(500, 'Fetch failed', {
             message: 'Unable to fetch themes'
         });
     }
@@ -449,10 +436,9 @@ router.delete('/:slug', [
 
         // Only allow owners to delete
         if (req.modelAccess !== 'owner') {
-            return res.status(403).json({
-                error: 'Insufficient permissions',
-                message: 'Only model owners can delete models'
-            });
+            return res.fail(403, 'Insufficient permissions', {
+            message: 'Only model owners can delete models'
+        });
         }
 
         // Soft delete by setting status to inactive
@@ -467,8 +453,7 @@ router.delete('/:slug', [
 
     } catch (error) {
         console.error('Model deletion error:', error);
-        res.status(500).json({
-            error: 'Deletion failed',
+        res.fail(500, 'Deletion failed', {
             message: 'Unable to delete model'
         });
     }

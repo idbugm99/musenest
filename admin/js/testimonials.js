@@ -1,5 +1,5 @@
 /**
- * MuseNest Admin Dashboard - Testimonials Management
+ * phoenix4ge Admin Dashboard - Testimonials Management
  */
 if (window.ComponentRegistryClient) {
     window.ComponentRegistryClient.register('admin-testimonials', 'admin/js/testimonials.js');

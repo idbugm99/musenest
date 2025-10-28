@@ -1,447 +1,516 @@
-# MuseNest API Documentation
+# Phoenix4GE CRM API Documentation
 
-**Version:** 1.0  
-**Date:** August 2, 2025  
-**Purpose:** Complete inventory of all REST API endpoints with detailed specifications
+## Overview
 
----
+The Phoenix4GE system provides multiple API interfaces:
 
-## 🔌 **API Architecture Overview**
+- **External API (v1)**: Comprehensive REST API for external applications with API key authentication
+- **CRM Internal API**: Web interface backend with session authentication  
+- **Public APIs**: Contact forms and chat with rate limiting
 
-### **Base URL Structure**
-- **Admin Routes:** `/api/`
-- **Public Routes:** `/` (theme-based routing)
-- **Authentication:** JWT-based with middleware protection
-- **Response Format:** JSON with consistent `{ success: boolean, data?: any, error?: string }` structure
+All APIs follow consistent response formats using `{ success: true, data: ... }` envelopes.
 
----
+## Authentication
 
-## 🎯 **Core Business Management APIs**
+### Generate API Key
 
-### **Client Management APIs**
+**POST** `/api/v1/auth/generate-key`
 
-#### **GET /api/clients**
-- **Purpose:** Retrieve paginated list of all clients with filtering and search
-- **Method:** GET
-- **Authentication:** Admin access required
-- **Auto-Save Trigger:** ❌ (Read operation)
-- **Parameters:**
-  - `page` (optional): Page number (default: 1)
-  - `limit` (optional): Items per page (default: 20)
-  - `search` (optional): Search term for email/model name
-  - `status` (optional): Filter by user role/status
-  - `sort` (optional): Sort field (default: created_at)
-- **Response Format:**
+Generate an API key for a model account.
+
 ```json
 {
-  "success": true,
-  "data": [
-    {
-      "id": 8,
-      "email": "client@example.com",
-      "name": "client@example.com",
-      "status": "model",
-      "created_at": "2025-07-26T15:02:31.000Z",
-      "model_id": 5,
-      "model_name": "Client Site",
-      "model_slug": "clientsite"
-    }
-  ],
-  "clients": [...], // Backward compatibility
-  "pagination": {
-    "page": 1,
-    "limit": 20,
-    "total": 25,
-    "pages": 2
-  }
+  "model_slug": "your-model-slug",
+  "password": "your-password"
 }
 ```
 
-#### **GET /api/clients/:id**
-- **Purpose:** Get detailed information for a specific client
-- **Method:** GET
-- **Authentication:** Admin access required
-- **Auto-Save Trigger:** ❌ (Read operation)
-- **Response Format:**
+**Response:**
 ```json
 {
   "success": true,
   "data": {
-    "id": 8,
-    "email": "client@example.com",
-    "name": "client@example.com",
-    "status": "model",
-    "created_at": "2025-07-26T15:02:31.000Z",
-    "model_id": 5,
-    "model_name": "Client Site",
-    "model_slug": "clientsite",
-    "subscription_id": 12,
-    "subscription_tier": "Premium Plan",
-    "subscription_price": "39.95",
-    "subscription_status": "active",
-    "ai_config": {
-      "auto_moderation": true,
-      "ai_chat": true,
-      "moderation_level": "moderate"
-    }
+    "api_key": "pk_abc123...",
+    "model_id": 1,
+    "model_slug": "your-model-slug",
+    "expires": "Never (revoke to disable)",
+    "note": "Store this key securely - it will not be shown again"
   }
 }
 ```
 
-#### **POST /api/clients**
-- **Purpose:** Create new client account with full onboarding setup and referral tracking
-- **Method:** POST
-- **Authentication:** Admin access required
-- **Auto-Save Trigger:** ✅ (Creates new client)
-- **Request Body:**
+### Using API Key
+
+Include the API key in the Authorization header:
+
+```
+Authorization: Bearer pk_abc123...
+```
+
+### Revoke API Key
+
+**POST** `/api/v1/auth/revoke-key`
+
 ```json
 {
-  "name": "Client Name",
-  "email": "client@example.com",
-  "phone": "+1234567890",
-  "business_type": "escort",
-  "description": "Business description",
-  "template_id": 2,
-  "subscription_tier_id": 3,
-  "client_type": "muse_owned",
-  "region_id": 1,
-  "sales_channel_id": 30,
-  "referral_code": "MAYA2025",
-  "ai_config": {
-    "auto_moderation": true,
-    "ai_chat": true,
-    "content_generation": false,
-    "smart_scheduling": false,
-    "moderation_level": "moderate",
-    "ai_personality": "friendly"
-  },
-  "status": "active",
-  "trial_days": 7
-}
-```
-- **Response Format:**
-```json
-{
-  "success": true,
-  "message": "Client created successfully",
-  "data": {
-    "user_id": 15,
-    "model_id": 8,
-    "account_number": "MO-US-30-240001",
-    "subscription_id": 12,
-    "temp_password": "abc123xyz",
-    "login_url": "/login?email=client%40example.com",
-    "site_url": "/clientsite_1722960231",
-    "referral_info": {
-      "code_used": "MAYA2025",
-      "referred_by": "maya@example.com"
-    }
-  }
+  "model_slug": "your-model-slug",
+  "password": "your-password"
 }
 ```
 
-#### **PUT /api/clients/:id**
-- **Purpose:** Update client information and settings
-- **Method:** PUT
-- **Authentication:** Admin access required
-- **Auto-Save Trigger:** ✅ (Updates client data)
-- **Request Body (partial updates supported):**
-```json
-{
-  "name": "Updated Name",
-  "email": "newemail@example.com",
-  "phone": "+1987654321",
-  "status": "active",
-  "business_type": "camgirl",
-  "site_name": "New Site Name",
-  "tagline": "New tagline"
-}
-```
-- **Response Format:**
-```json
-{
-  "success": true,
-  "message": "Client updated successfully"
-}
-```
+## Clients API
 
-#### **GET /api/clients/templates**
-- **Purpose:** Get available templates for client onboarding
-- **Method:** GET
-- **Authentication:** Admin access required
-- **Auto-Save Trigger:** ❌ (Read operation)
-- **Response Format:**
-```json
-{
-  "success": true,
-  "templates": [
-    {
-      "id": 2,
-      "name": "Glamour Elite",
-      "description": "Sophisticated design with elegant animations",
-      "preview_image": "/assets/theme-previews/glamour.jpg",
-      "style": "luxury",
-      "category": "luxury",
-      "business_type": null
-    }
-  ]
-}
-```
+### List Clients
 
-### **Subscription Management APIs** (Enhanced)
+**GET** `/api/v1/clients`
 
-### **Client Management** (`/routes/api/system-management.js`)
+Query parameters:
+- `page` (int): Page number (default: 1)
+- `limit` (int): Items per page (default: 50, max: 100)
+- `search` (string): Search in client identifier, email, phone
+- `status` (string): Filter by status (`all`, `screened`, `unscreened`, `subscriber`)
 
-#### **Get System Statistics**
-- **Endpoint:** `GET /api/system-management/stats`
-- **Purpose:** Dashboard KPIs and system overview
-- **Authentication:** Required
-- **Auto-Save:** N/A (read-only)
-
-#### **List All Clients**
-- **Endpoint:** `GET /api/system-management/clients`
-- **Purpose:** Paginated client list with filtering
-- **Query Parameters:** `page`, `limit`, `status`, `search`
-- **Auto-Save:** N/A (read-only)
-
-#### **Update Client Details**
-- **Endpoint:** `PUT /api/system-management/clients/:id`
-- **Purpose:** Modify client account information
-- **Auto-Save:** ✅ **Triggers on field blur**
-
----
-
-## 🤖 **AI Configuration Management** (`/routes/api/site-configuration.js`)
-
-#### **List All Sites**
-- **Endpoint:** `GET /api/site-configuration/sites`
-- **Purpose:** Multi-tenant site management overview
-- **Auto-Save:** N/A (read-only)
-
-#### **Update Site Configuration**
-- **Endpoint:** `PUT /api/site-configuration/sites/:id/config`
-- **Purpose:** Modify AI detection settings
-- **Auto-Save:** ✅ **Triggers on slider/input change**
-
-#### **Deploy Configuration**
-- **Endpoints:** 
-  - `POST /api/site-configuration/sites/:id/deploy` (standard)
-  - `POST /api/site-configuration/sites/:id/deploy-resilient` (with retry)
-  - `POST /api/site-configuration/sites/:id/deploy-with-validation` (tier-gated)
-- **Purpose:** Deploy AI configuration to live servers
-- **Auto-Save:** N/A (explicit deployment action)
-
-#### **Server Health Check**
-- **Endpoint:** `GET /api/site-configuration/servers/health`
-- **Purpose:** Real-time AI server status monitoring
-- **Auto-Refresh:** ✅ **Updates every 30 seconds**
-
----
-
-## 💳 **Subscription Management** (`/routes/api/site-configuration.js`)
-
-#### **Get All Tiers**
-- **Endpoint:** `GET /api/site-configuration/subscription/tiers`
-- **Purpose:** Available subscription packages
-- **Auto-Save:** N/A (read-only)
-
-#### **Create/Update Tier**
-- **Endpoint:** `POST /api/site-configuration/subscription/tiers`
-- **Purpose:** Tier management (create new or update existing)
-- **Auto-Save:** ✅ **Triggers on form field changes**
-
-#### **Get Subscription Analytics**
-- **Endpoint:** `GET /api/site-configuration/subscription/analytics`
-- **Purpose:** Business intelligence and revenue metrics
-- **Auto-Refresh:** ✅ **Updates every 5 minutes**
-
----
-
-## 🔄 **Auto-Save Implementation Pattern**
-
-```javascript
-// Generic auto-save function for all forms
-async function autoSave(endpoint, data, fieldName) {
-    try {
-        const response = await fetch(endpoint, {
-            method: 'PUT',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${authToken}`
-            },
-            body: JSON.stringify(data)
-        });
-        
-        if (response.ok) {
-            showSaveIndicator('success', fieldName);
-        } else {
-            showSaveIndicator('error', fieldName);
-        }
-    } catch (error) {
-        showSaveIndicator('error', fieldName, error.message);
-    }
-}
-
-// Attach to form fields
-document.querySelectorAll('.auto-save').forEach(field => {
-    field.addEventListener('blur', (e) => {
-        const data = { [e.target.name]: e.target.value };
-        autoSave(`/api/resource/${resourceId}`, data, e.target.name);
-    });
-});
-```
-
----
-
-## 🎫 **Referral System APIs**
-
-### **Referral Code Management**
-
-#### **POST /api/clients/:id/referral-codes**
-- **Purpose:** Create new referral code for existing client
-- **Method:** POST
-- **Authentication:** Admin access required
-- **Auto-Save Trigger:** ✅ (Creates referral code)
-- **Request Body:**
-```json
-{
-  "code_name": "Maya VIP Code",
-  "usage_limit": 10,
-  "expires_at": "2025-12-31T23:59:59.000Z",
-  "custom_code": "MAYA2025"
-}
-```
-- **Response Format:**
-```json
-{
-  "success": true,
-  "message": "Referral code created successfully",
-  "data": {
-    "id": 1,
-    "code": "MAYA2025",
-    "code_name": "Maya VIP Code",
-    "usage_limit": 10,
-    "usage_count": 0,
-    "expires_at": "2025-12-31T23:59:59.000Z",
-    "is_active": true,
-    "created_at": "2025-08-04T12:00:00.000Z"
-  }
-}
-```
-
-#### **GET /api/clients/:id/referral-codes**
-- **Purpose:** Retrieve all referral codes owned by client
-- **Method:** GET
-- **Authentication:** Admin access required
-- **Auto-Save Trigger:** ❌ (Read operation)
-- **Response Format:**
+**Response:**
 ```json
 {
   "success": true,
   "data": [
     {
       "id": 1,
-      "code": "MAYA2025",
-      "code_name": "Maya VIP Code",
-      "usage_limit": 10,
-      "usage_count": 3,
-      "actual_usage_count": 3,
-      "eligible_referrals": 3,
-      "total_commission_earned": "29.97",
-      "expires_at": null,
-      "is_active": true,
-      "created_at": "2025-08-04T12:00:00.000Z"
+      "client_identifier": "client123",
+      "email_hash": "hash...",
+      "phone_hash": "hash...",
+      "interaction_id": 5,
+      "screening_status": "approved",
+      "client_category": "screened",
+      "subscription_status": "active",
+      "unread_count": 3,
+      "conversation_count": 12,
+      "created_at": "2025-09-16T10:00:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 50,
+    "total": 100,
+    "pages": 2
+  }
+}
+```
+
+### Get Client
+
+**GET** `/api/v1/clients/:interactionId`
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "client_identifier": "client123",
+    "interaction_id": 5,
+    "screening_status": "approved",
+    "client_category": "screened",
+    "subscription_status": "active",
+    "notes_encrypted": "Private notes...",
+    "last_contacted_at": "2025-09-16T15:30:00Z"
+  }
+}
+```
+
+### Create Client
+
+**POST** `/api/v1/clients`
+
+```json
+{
+  "email": "client@example.com",
+  "phone": "+1234567890",
+  "client_identifier": "client123"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "client_id": 1,
+    "interaction_id": 5,
+    "created": true
+  }
+}
+```
+
+### Update Client
+
+**PUT** `/api/v1/clients/:interactionId`
+
+```json
+{
+  "screening_status": "approved",
+  "client_category": "screened",
+  "subscription_status": "active",
+  "notes_encrypted": "Updated notes..."
+}
+```
+
+## Conversations API
+
+### List Conversations
+
+**GET** `/api/v1/conversations`
+
+Query parameters:
+- `page`, `limit`: Pagination
+- `status`: Filter by status (`active`, `archived`, `all`)
+- `interaction_id`: Filter by client interaction
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 10,
+      "subject": "Initial Contact",
+      "chat_status": "active",
+      "client_model_interaction_id": 5,
+      "client_identifier": "client123",
+      "is_archived": 0,
+      "unread_count": 2,
+      "tags": ["screening", "appointment"],
+      "message_count": 15,
+      "created_at": "2025-09-16T10:00:00Z",
+      "updated_at": "2025-09-16T16:30:00Z"
     }
   ]
 }
 ```
 
-#### **GET /api/referral-codes/validate/:code**
-- **Purpose:** Validate referral code and get details (public endpoint)
-- **Method:** GET
-- **Authentication:** Not required
-- **Auto-Save Trigger:** ❌ (Read operation)
-- **Response Format:**
+### Get Conversation
+
+**GET** `/api/v1/conversations/:id`
+
+### Create Conversation
+
+**POST** `/api/v1/conversations`
+
 ```json
 {
-  "valid": true,
-  "data": {
-    "code": "MAYA2025",
-    "code_name": "Maya VIP Code",
-    "referrer_email": "maya@example.com",
-    "referrer_name": "Maya",
-    "usage_count": 3,
-    "usage_limit": 10,
-    "expires_at": null
-  }
+  "interaction_id": 5,
+  "subject": "New Thread",
+  "message": "Initial message (optional)"
 }
 ```
 
-### **Referral Analytics**
+### Archive Conversation
 
-#### **GET /api/clients/:id/referral-analytics**
-- **Purpose:** Comprehensive referral performance data and commission tracking
-- **Method:** GET
-- **Authentication:** Admin access required
-- **Auto-Save Trigger:** ❌ (Read operation)
-- **Response Format:**
+**PUT** `/api/v1/conversations/:id/archive`
+
+```json
+{
+  "archived": true
+}
+```
+
+### Update Tags
+
+**PUT** `/api/v1/conversations/:id/tags`
+
+```json
+{
+  "tags": ["screening", "appointment", "follow-up"]
+}
+```
+
+### Mark as Read
+
+**PUT** `/api/v1/conversations/:id/read`
+
+## Messages API
+
+### List Messages
+
+**GET** `/api/v1/messages?conversation_id=10`
+
+Query parameters:
+- `conversation_id` (required): Conversation ID
+- `page`, `limit`: Pagination
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 100,
+      "sender_type": "model",
+      "sender_id": 1,
+      "sender_name": "your-model-slug",
+      "message": "Hello, how can I help?",
+      "message_type": "text",
+      "timestamp": "2025-09-16T16:30:00Z",
+      "file_path": null,
+      "file_name": null,
+      "file_size": null
+    }
+  ]
+}
+```
+
+### Send Message
+
+**POST** `/api/v1/messages`
+
+```json
+{
+  "conversation_id": 10,
+  "message": "Your message text",
+  "message_type": "text"
+}
+```
+
+### Get Message
+
+**GET** `/api/v1/messages/:id`
+
+## Screening API
+
+### Get Screening Info
+
+**GET** `/api/v1/screening/:interactionId`
+
+**Response:**
 ```json
 {
   "success": true,
   "data": {
-    "codes": [
+    "interaction_id": 5,
+    "escort_client_id": 1,
+    "methods": [
       {
         "id": 1,
-        "code": "MAYA2025",
-        "code_name": "Maya VIP Code",
-        "total_signups": 3,
-        "signups_last_30_days": 2,
-        "signups_last_7_days": 1,
-        "total_commission_earned": "29.97",
-        "commission_paid": "0.00"
+        "method_type": "references",
+        "details": "Verified with provider X",
+        "status": "completed",
+        "created_at": "2025-09-16T10:00:00Z"
       }
     ],
-    "recent_referrals": [
+    "files": [
       {
-        "used_at": "2025-08-04T15:30:00.000Z",
-        "referred_user_email": "newuser@example.com",
-        "referral_code_used": "MAYA2025",
-        "commission_amount": "9.99",
-        "commission_eligible": true
+        "id": 1,
+        "file_name": "id_photo.jpg",
+        "file_size": 1024000,
+        "file_type": "image/jpeg",
+        "uploaded_at": "2025-09-16T11:00:00Z"
       }
-    ],
-    "summary": {
-      "total_codes": 2,
-      "active_codes": 2,
-      "total_referrals": 7,
-      "total_commission_earned": 69.93,
-      "commission_pending": 69.93
-    }
+    ]
   }
 }
 ```
 
-#### **POST /api/clients/:id/referral-codes/suggestions**
-- **Purpose:** Generate AI-powered referral code suggestions
-- **Method:** POST
-- **Authentication:** Admin access required
-- **Auto-Save Trigger:** ❌ (Suggestion generation)
-- **Response Format:**
+### Add Screening Method
+
+**POST** `/api/v1/screening/:interactionId/methods`
+
+```json
+{
+  "method_type": "references",
+  "details": "Contact details or notes",
+  "status": "pending"
+}
+```
+
+### Update Screening Method
+
+**PUT** `/api/v1/screening/:interactionId/methods/:methodId`
+
+```json
+{
+  "status": "completed",
+  "details": "Updated details"
+}
+```
+
+### Upload Screening File
+
+**POST** `/api/v1/screening/:interactionId/files`
+
+Content-Type: `multipart/form-data`
+
+Form field: `file`
+
+Supported types: JPEG, PNG, PDF, DOC, DOCX
+Max size: 10MB
+
+### Delete Screening File
+
+**DELETE** `/api/v1/screening/:interactionId/files/:fileId`
+
+## Files API
+
+### List Conversation Files
+
+**GET** `/api/v1/files?conversation_id=10`
+
+**Response:**
 ```json
 {
   "success": true,
-  "suggestions": [
-    "MAYA2025",
-    "MAYAVIP",
-    "MAYA25",
-    "MUSE2025",
-    "REF8H92N"
+  "data": [
+    {
+      "message_id": 100,
+      "file_path": "/uploads/...",
+      "file_name": "photo.jpg",
+      "file_size": 1024000,
+      "sender_name": "client123",
+      "file_exists": true,
+      "file_url": "/uploads/client123/photo.jpg",
+      "file_extension": ".jpg",
+      "is_image": true,
+      "timestamp": "2025-09-16T16:30:00Z"
+    }
   ]
 }
 ```
 
----
+### Get File Info
 
-**Last Updated:** August 4, 2025  
-**Total Endpoints:** 80+ documented API endpoints  
-**Status:** Ready for Business Manager CRM integration with full referral system support
+**GET** `/api/v1/files/:messageId`
+
+### Download File
+
+**GET** `/api/v1/files/:messageId/download`
+
+Returns the file as a download.
+
+### List Screening Files
+
+**GET** `/api/v1/files/screening/:interactionId`
+
+## Notes API
+
+### Get Notes
+
+**GET** `/api/v1/notes/:interactionId`
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "interaction_id": 5,
+    "client_identifier": "client123",
+    "notes": "Private notes about this client...",
+    "updated_at": "2025-09-16T16:30:00Z"
+  }
+}
+```
+
+### Update Notes
+
+**PUT** `/api/v1/notes/:interactionId`
+
+```json
+{
+  "notes": "Updated private notes..."
+}
+```
+
+### Clear Notes
+
+**DELETE** `/api/v1/notes/:interactionId`
+
+## Error Responses
+
+All endpoints return errors in this format:
+
+```json
+{
+  "success": false,
+  "error": "Error message"
+}
+```
+
+Common HTTP status codes:
+- `400`: Bad Request (missing/invalid parameters)
+- `401`: Unauthorized (invalid/missing API key)
+- `404`: Not Found (resource doesn't exist or no access)
+- `500`: Internal Server Error
+
+## Rate Limiting
+
+Currently no rate limiting is implemented, but may be added in the future.
+
+## Data Types
+
+### Client Categories
+- `unscreened`: New client, not yet verified
+- `screened`: Client has passed screening
+- `subscriber`: Client with active subscription
+
+### Screening Status
+- `pending`: Screening in progress
+- `approved`: Screening passed
+- `rejected`: Screening failed
+- `pending_references`: Waiting for reference verification
+
+### Subscription Status
+- `none`: No subscription
+- `active`: Active subscription
+- `canceled`: Canceled subscription
+- `past_due`: Payment overdue
+
+### Message Types
+- `text`: Text message
+- `image`: Image attachment
+- `file`: File attachment
+- `system`: System message
+
+## Integration Examples
+
+### Node.js Example
+
+```javascript
+const axios = require('axios');
+
+const api = axios.create({
+  baseURL: 'https://phoenix4ge.com/api/v1',
+  headers: {
+    'Authorization': 'Bearer pk_your_api_key_here'
+  }
+});
+
+// List clients
+const clients = await api.get('/clients?status=screened');
+
+// Send message
+await api.post('/messages', {
+  conversation_id: 10,
+  message: 'Hello from external app!'
+});
+```
+
+### Python Example
+
+```python
+import requests
+
+headers = {'Authorization': 'Bearer pk_your_api_key_here'}
+base_url = 'https://phoenix4ge.com/api/v1'
+
+# Get client
+response = requests.get(f'{base_url}/clients/5', headers=headers)
+client = response.json()
+
+# Update notes
+requests.put(f'{base_url}/notes/5', 
+  json={'notes': 'Updated from Python'}, 
+  headers=headers)
+```
+
+## Support
+
+For API support or questions, contact the development team or refer to the source code in the `/routes/api/v1/` directory.

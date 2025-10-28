@@ -330,7 +330,7 @@ INSERT INTO backup_schedules (
     JSON_OBJECT(
         'on_success', JSON_ARRAY('email'),
         'on_failure', JSON_ARRAY('email', 'alert'),
-        'recipients', JSON_ARRAY('admin@musenest.com')
+        'recipients', JSON_ARRAY('admin@phoenix4ge.com')
     ),
     DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1 DAY), INTERVAL 3 HOUR)
 ),
@@ -350,7 +350,7 @@ INSERT INTO backup_schedules (
     JSON_OBJECT(
         'on_success', JSON_ARRAY('log'),
         'on_failure', JSON_ARRAY('email', 'alert'),
-        'recipients', JSON_ARRAY('admin@musenest.com')
+        'recipients', JSON_ARRAY('admin@phoenix4ge.com')
     ),
     DATE_ADD(NOW(), INTERVAL 1 HOUR)
 ),
@@ -370,7 +370,7 @@ INSERT INTO backup_schedules (
     JSON_OBJECT(
         'on_success', JSON_ARRAY('email', 'log'),
         'on_failure', JSON_ARRAY('email', 'alert', 'slack'),
-        'recipients', JSON_ARRAY('admin@musenest.com', 'dev-team@musenest.com')
+        'recipients', JSON_ARRAY('admin@phoenix4ge.com', 'dev-team@phoenix4ge.com')
     ),
     NULL -- Triggered manually before migrations
 );

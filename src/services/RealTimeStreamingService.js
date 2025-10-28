@@ -45,7 +45,7 @@ class RealTimeStreamingService extends EventEmitter {
                 maxWindows: config.aggregation?.maxWindows || 100
             },
             storage: {
-                streamingDir: config.storage?.streamingDir || '/tmp/musenest-streaming',
+                streamingDir: config.storage?.streamingDir || '/tmp/phoenix4ge-streaming',
                 maxFileSize: config.storage?.maxFileSize || 50 * 1024 * 1024, // 50MB
                 retentionHours: config.storage?.retentionHours || 24,
                 compressionEnabled: config.storage?.compressionEnabled !== false

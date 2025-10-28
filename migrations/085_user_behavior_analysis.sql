@@ -1,7 +1,7 @@
 -- User Behavior Analysis System Migration
 -- Adds tables and infrastructure for user behavior tracking and predictive loading
 
-USE musenest;
+USE phoenix4ge;
 
 -- User behavior events tracking
 CREATE TABLE IF NOT EXISTS user_behavior_events (
@@ -484,13 +484,13 @@ ALTER TABLE behavior_predictions ADD INDEX idx_model_confidence_accuracy (model_
 
 -- Grant permissions for user behavior analysis service
 -- Note: In production, create a dedicated user behavior service user
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.user_behavior_* TO 'behavior_analyzer'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.user_sessions TO 'behavior_analyzer'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.user_personalization_profiles TO 'behavior_analyzer'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.prefetch_executions TO 'behavior_analyzer'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.behavior_prediction* TO 'behavior_analyzer'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.AnalyzeUserBehaviorPatterns TO 'behavior_analyzer'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.UpdateUserPersonalizationProfile TO 'behavior_analyzer'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.CalculatePrefetchEffectiveness TO 'behavior_analyzer'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.user_behavior_* TO 'behavior_analyzer'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.user_sessions TO 'behavior_analyzer'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.user_personalization_profiles TO 'behavior_analyzer'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.prefetch_executions TO 'behavior_analyzer'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.behavior_prediction* TO 'behavior_analyzer'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.AnalyzeUserBehaviorPatterns TO 'behavior_analyzer'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.UpdateUserPersonalizationProfile TO 'behavior_analyzer'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.CalculatePrefetchEffectiveness TO 'behavior_analyzer'@'localhost';
 
 SELECT 'User Behavior Analysis System migration completed successfully' as status;

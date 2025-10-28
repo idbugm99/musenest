@@ -1,5 +1,5 @@
 /**
- * Gallery Rendering Service for MuseNest
+ * Gallery Rendering Service for phoenix4ge
  * Part of Phase 5: Gallery Layouts Implementation (Enhanced with Phase C Caching)
  * Handles rendering of gallery sections on public model sites with performance optimization
  */

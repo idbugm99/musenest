@@ -10,7 +10,7 @@ async function testRawAIResponse() {
     console.log('🧪 Testing raw AI response for close-up face image...');
     
     // Find Amanda4.jpeg in uploads
-    const imagePath = '/Users/programmer/Projects/musenest/public/uploads/escortexample/originals';
+    const imagePath = '/Users/programmer/Projects/phoenix4ge/public/uploads/escortexample/originals';
     const files = fs.readdirSync(imagePath).filter(f => f.includes('Amanda4'));
     
     if (files.length === 0) {

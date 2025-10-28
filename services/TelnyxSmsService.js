@@ -76,7 +76,7 @@ class TelnyxSmsService {
                     headers: {
                         'Authorization': `Bearer ${this.apiKey || 'mock-api-key'}`,
                         'Content-Type': 'application/json',
-                        'User-Agent': 'MuseNest/1.0'
+                        'User-Agent': 'phoenix4ge/1.0'
                     },
                     body: JSON.stringify(payload)
                 });
@@ -174,7 +174,7 @@ class TelnyxSmsService {
             return { success: false, error: 'No phone number' };
         }
 
-        const message = `💬 New Chat Started!\n\nClient: ${clientName}\nEmail: ${clientEmail}\n\nMessage: "${initialMessage}"\n\nReply at: ${process.env.BASE_URL || 'https://musenest.com'}/${modelSlug}/chat/${conversationId}`;
+        const message = `💬 New Chat Started!\n\nClient: ${clientName}\nEmail: ${clientEmail}\n\nMessage: "${initialMessage}"\n\nReply at: ${process.env.BASE_URL || 'https://phoenix4ge.com'}/${modelSlug}/chat/${conversationId}`;
 
         return await this.sendSms(toNumber, message);
     }
@@ -195,7 +195,7 @@ class TelnyxSmsService {
             message += `Message: "${preview}"\n`;
         }
         
-        message += `\nReply: ${process.env.BASE_URL || 'https://musenest.com'}/${modelSlug}/chat`;
+        message += `\nReply: ${process.env.BASE_URL || 'https://phoenix4ge.com'}/${modelSlug}/chat`;
         
         return message;
     }
@@ -402,7 +402,7 @@ Subject: ${subject}
 
 ${messagePreview}
 
-Reply at: https://musenest.com/${modelSlug}/admin/conversations/${conversationId}`;
+Reply at: https://phoenix4ge.com/${modelSlug}/admin/conversations/${conversationId}`;
 
         console.log('📱 Sending email notification SMS:', {
             to: toNumber,
@@ -412,7 +412,7 @@ Reply at: https://musenest.com/${modelSlug}/admin/conversations/${conversationId
         });
 
         return await this.sendSms(toNumber, message, {
-            webhookUrl: `https://musenest.com/api/sms/webhook`
+            webhookUrl: `https://phoenix4ge.com/api/sms/webhook`
         });
     }
 }

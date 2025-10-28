@@ -1,9 +1,9 @@
-# MuseNest Template Rebuild Checklist
+# phoenix4ge Template Rebuild Checklist
 *Based on Basic Template Standards*
 
 ## Overview
 
-This checklist ensures that all new themes maintain 100% compatibility with the MuseNest database structure while providing creative freedom for unique visual designs. Every template rebuild must follow these standards to guarantee plug-and-play compatibility.
+This checklist ensures that all new themes maintain 100% compatibility with the phoenix4ge database structure while providing creative freedom for unique visual designs. Every template rebuild must follow these standards to guarantee plug-and-play compatibility.
 
 ## 1. Source of Truth
 

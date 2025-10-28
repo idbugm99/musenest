@@ -15,7 +15,7 @@ async function debugPathMatching() {
             host: process.env.DB_HOST || 'localhost',
             user: process.env.DB_USER || 'root',
             password: process.env.DB_PASSWORD || '',
-            database: process.env.DB_NAME || 'musenest',
+            database: process.env.DB_NAME || 'phoenix4ge',
             charset: 'utf8mb4'
         });
 

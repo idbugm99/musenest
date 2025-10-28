@@ -274,10 +274,8 @@ router.get('/active-sessions', async (req, res) => {
             expires_in_minutes: Math.round((new Date(session.expires_at) - Date.now()) / 60000)
         }));
 
-        res.json({
-            success: true,
-            data: processedSessions
-        });
+        res.success(processedSessions
+        );
 
     } catch (error) {
         console.error('Error fetching active sessions:', error);

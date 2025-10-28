@@ -3,7 +3,7 @@
 
 -- Rename existing table to preserve data (only if it exists)
 SET @table_exists = (SELECT COUNT(*) FROM information_schema.tables 
-                     WHERE table_schema = 'musenest' AND table_name = 'model_contact_page_content');
+                     WHERE table_schema = 'phoenix4ge' AND table_name = 'model_contact_page_content');
 SET @sql = IF(@table_exists > 0, 
               'ALTER TABLE model_contact_page_content RENAME TO model_contact_page_content_legacy', 
               'SELECT "No existing table to rename" AS message');
@@ -96,7 +96,7 @@ SELECT
     updated_at
 FROM model_contact_page_content_legacy
 WHERE EXISTS (SELECT 1 FROM information_schema.tables 
-              WHERE table_schema = 'musenest' AND table_name = 'model_contact_page_content_legacy');
+              WHERE table_schema = 'phoenix4ge' AND table_name = 'model_contact_page_content_legacy');
 
 -- Seed default content for Model Example (id=39) - Delete first to avoid duplicates
 DELETE FROM model_contact_page_content WHERE model_id = 39;

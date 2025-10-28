@@ -2,7 +2,7 @@ const sharp = require('sharp');
 
 // Test how Sharp handles EXIF vs our manual approach
 async function compareExifHandling() {
-    const testImage = '/Users/programmer/Projects/musenest/public/uploads/escortexample/originals/1753738244223_BendoverAss.jpg';
+    const testImage = '/Users/programmer/Projects/phoenix4ge/public/uploads/escortexample/originals/1753738244223_BendoverAss.jpg';
     
     console.log('=== SHARP AUTOMATIC EXIF ===');
     const autoExif = sharp(testImage); 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Simple NudeNet-only AI Content Moderation Service
-For MuseNest content moderation with minimal dependencies
+For phoenix4ge content moderation with minimal dependencies
 """
 
 import os

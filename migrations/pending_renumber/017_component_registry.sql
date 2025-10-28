@@ -95,8 +95,8 @@ INSERT INTO component_registry (name, description, category, file_path, dependen
 
 -- Insert component usage tracking for Business Manager
 INSERT INTO component_usage (component_id, used_in_page, used_in_section, usage_context, load_order, is_critical) VALUES
-((SELECT id FROM component_registry WHERE name = 'Client Management'), 'musenest-business-manager.html', 'clients-list', 'ajax_load', 1, true),
-((SELECT id FROM component_registry WHERE name = 'Client Onboarding Wizard'), 'musenest-business-manager.html', 'clients-onboard', 'ajax_load', 1, true),
+((SELECT id FROM component_registry WHERE name = 'Client Management'), 'phoenix4ge-business-manager.html', 'clients-list', 'ajax_load', 1, true),
+((SELECT id FROM component_registry WHERE name = 'Client Onboarding Wizard'), 'phoenix4ge-business-manager.html', 'clients-onboard', 'ajax_load', 1, true),
 ((SELECT id FROM component_registry WHERE name = 'KPI Dashboard Card'), 'client-management.html', 'client-kpis', 'embedded', 1, false),
 ((SELECT id FROM component_registry WHERE name = 'Auto-Save Input'), 'client-management.html', 'client-profile-modal', 'embedded', 2, true),
 ((SELECT id FROM component_registry WHERE name = 'Enhanced Data Table'), 'client-management.html', 'client-list', 'embedded', 3, true);

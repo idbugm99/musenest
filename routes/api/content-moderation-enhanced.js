@@ -244,8 +244,8 @@ router.get('/admin/queue', async (req, res) => {
             // Fix image paths - ensure they are web-relative, not absolute file paths
             if (row.image_path) {
                 // Remove absolute path prefix if it exists
-                if (row.image_path.includes('/Users/programmer/Projects/musenest/public')) {
-                    row.image_path = row.image_path.replace('/Users/programmer/Projects/musenest/public', '');
+                if (row.image_path.includes('/Users/programmer/Projects/phoenix4ge/public')) {
+                    row.image_path = row.image_path.replace('/Users/programmer/Projects/phoenix4ge/public', '');
                 }
                 
                 // If path doesn't start with /, add it
@@ -263,8 +263,8 @@ router.get('/admin/queue', async (req, res) => {
             
             // Same fix for original_path
             if (row.original_path) {
-                if (row.original_path.includes('/Users/programmer/Projects/musenest/public')) {
-                    row.original_path = row.original_path.replace('/Users/programmer/Projects/musenest/public', '');
+                if (row.original_path.includes('/Users/programmer/Projects/phoenix4ge/public')) {
+                    row.original_path = row.original_path.replace('/Users/programmer/Projects/phoenix4ge/public', '');
                 }
                 if (!row.original_path.startsWith('/')) {
                     row.original_path = '/' + row.original_path;
@@ -356,8 +356,8 @@ router.get('/admin/queue-item/:id', async (req, res) => {
         
         // Fix image paths
         if (item.image_path) {
-            if (item.image_path.includes('/Users/programmer/Projects/musenest/public')) {
-                item.image_path = item.image_path.replace('/Users/programmer/Projects/musenest/public', '');
+            if (item.image_path.includes('/Users/programmer/Projects/phoenix4ge/public')) {
+                item.image_path = item.image_path.replace('/Users/programmer/Projects/phoenix4ge/public', '');
             }
             if (!item.image_path.startsWith('/')) {
                 item.image_path = '/' + item.image_path;
@@ -370,8 +370,8 @@ router.get('/admin/queue-item/:id', async (req, res) => {
         }
         
         if (item.original_path) {
-            if (item.original_path.includes('/Users/programmer/Projects/musenest/public')) {
-                item.original_path = item.original_path.replace('/Users/programmer/Projects/musenest/public', '');
+            if (item.original_path.includes('/Users/programmer/Projects/phoenix4ge/public')) {
+                item.original_path = item.original_path.replace('/Users/programmer/Projects/phoenix4ge/public', '');
             }
             if (!item.original_path.startsWith('/')) {
                 item.original_path = '/' + item.original_path;

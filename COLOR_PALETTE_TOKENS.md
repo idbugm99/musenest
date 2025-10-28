@@ -1,6 +1,6 @@
 # Color Palette Token Reference
 
-This document defines the complete set of color tokens that every color palette must support in the MuseNest theme system.
+This document defines the complete set of color tokens that every color palette must support in the phoenix4ge theme system.
 
 ## Core Brand Colors
 | Token | Description |

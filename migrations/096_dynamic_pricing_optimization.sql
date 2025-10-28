@@ -2,7 +2,7 @@
 -- Adds comprehensive tables for dynamic pricing, market intelligence,
 -- competitor analysis, demand forecasting, and revenue optimization
 
-USE musenest;
+USE phoenix4ge;
 
 -- Product pricing configuration and management
 CREATE TABLE IF NOT EXISTS product_pricing_config (
@@ -699,10 +699,10 @@ ALTER TABLE pricing_experiments ADD INDEX idx_experiment_performance (experiment
 
 -- Grant permissions for dynamic pricing service
 -- Note: In production, create a dedicated pricing service user
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.product_pricing_config TO 'pricing_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.pricing_optimization_results TO 'pricing_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.pricing_experiments TO 'pricing_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.OptimizePricingForProduct TO 'pricing_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.GetPricingAnalytics TO 'pricing_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.product_pricing_config TO 'pricing_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.pricing_optimization_results TO 'pricing_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.pricing_experiments TO 'pricing_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.OptimizePricingForProduct TO 'pricing_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.GetPricingAnalytics TO 'pricing_service'@'localhost';
 
 SELECT 'Dynamic Pricing Optimization and Market Intelligence migration completed successfully' as status;

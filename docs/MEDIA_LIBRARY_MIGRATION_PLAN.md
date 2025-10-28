@@ -1,7 +1,7 @@
-# MuseNest Media Library & Gallery System Migration Plan
+# phoenix4ge Media Library & Gallery System Migration Plan
 
 ## Overview
-This document outlines the comprehensive plan to recreate the RoseMastos media library and gallery sections functionality within MuseNest's {slug}/admin architecture, maintaining all existing capabilities while integrating with MuseNest's moderation API.
+This document outlines the comprehensive plan to recreate the RoseMastos media library and gallery sections functionality within phoenix4ge's {slug}/admin architecture, maintaining all existing capabilities while integrating with phoenix4ge's moderation API.
 
 ## Source System Analysis
 
@@ -27,14 +27,14 @@ This document outlines the comprehensive plan to recreate the RoseMastos media l
 - **Bulk Operations**: Multi-section management
 - **Auto-save Functionality**: Real-time configuration updates
 
-## Target Implementation: MuseNest Architecture
+## Target Implementation: phoenix4ge Architecture
 
 ### Integration Points
 1. **Admin Route Structure**: `/{slug}/admin/media-library` and `/{slug}/admin/gallery-sections`
-2. **API Integration**: MuseNest moderation API for all uploads
+2. **API Integration**: phoenix4ge moderation API for all uploads
 3. **Database Schema**: Model-specific media management tables
-4. **Authentication**: Existing MuseNest authentication system
-5. **Theme Integration**: Bootstrap 5.3 consistency with MuseNest design
+4. **Authentication**: Existing phoenix4ge authentication system
+5. **Theme Integration**: Bootstrap 5.3 consistency with phoenix4ge design
 
 ---
 
@@ -166,7 +166,7 @@ class MediaUploadService {
                 // 2. Save to temporary location
                 const tempPath = await this.saveTemporary(processedFile);
                 
-                // 3. Submit to MuseNest moderation API
+                // 3. Submit to phoenix4ge moderation API
                 const moderationResult = await this.submitForModeration(
                     tempPath, modelSlug, file.originalname
                 );
@@ -193,7 +193,7 @@ class MediaUploadService {
     }
     
     async submitForModeration(filePath, modelSlug, originalName) {
-        // Integration with existing MuseNest moderation API
+        // Integration with existing phoenix4ge moderation API
         const formData = new FormData();
         formData.append('image', fs.createReadStream(filePath));
         formData.append('model_slug', modelSlug);
@@ -541,7 +541,7 @@ class ImageProcessingService {
 ### 4.1 Media Library JavaScript (Enhanced from RoseMastos)
 ```javascript
 // admin/js/media-library.js
-class MuseNestMediaLibrary {
+class phoenix4geMediaLibrary {
     constructor(modelSlug) {
         this.modelSlug = modelSlug;
         this.selectedMedia = new Set();
@@ -713,7 +713,7 @@ class MuseNestMediaLibrary {
     }
     
     // Additional methods for crop, rotate, resize functionality...
-    // (Implementation details similar to RoseMastos but adapted for MuseNest)
+    // (Implementation details similar to RoseMastos but adapted for phoenix4ge)
 }
 ```
 
@@ -914,7 +914,7 @@ class ModerationIntegration {
 - [ ] Advanced image editing (crop, rotate, resize, rename)
 - [ ] Multiple gallery layout types (grid, masonry, carousel, lightbox)
 - [ ] Batch operations for media management
-- [ ] Integration with MuseNest moderation API
+- [ ] Integration with phoenix4ge moderation API
 - [ ] Category-based organization
 - [ ] Search and filtering capabilities
 
@@ -932,4 +932,4 @@ class ModerationIntegration {
 
 ---
 
-*This migration plan ensures complete feature parity with RoseMastos while integrating seamlessly with MuseNest's existing architecture and moderation system.*
+*This migration plan ensures complete feature parity with RoseMastos while integrating seamlessly with phoenix4ge's existing architecture and moderation system.*

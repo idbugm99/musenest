@@ -1,4 +1,4 @@
--- MuseNest Database Migration 002
+-- phoenix4ge Database Migration 002
 -- Gallery and Media Management System
 -- Run date: 2025-07-24
 

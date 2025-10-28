@@ -1,4 +1,4 @@
-# MuseNest BIN-Style Account System Configuration
+# phoenix4ge BIN-Style Account System Configuration
 **Created:** August 4, 2025  
 **Version:** 1.0  
 **Status:** ✅ Ready for Production  
@@ -7,7 +7,7 @@
 
 ## 🎯 **System Overview**
 
-The MuseNest BIN-style account numbering system provides structured 12-digit account numbers that encode business intelligence data while appearing professional to clients.
+The phoenix4ge BIN-style account numbering system provides structured 12-digit account numbers that encode business intelligence data while appearing professional to clients.
 
 ### **Account Number Format: `[TT][CC][SS][RRRRRR]`**
 
@@ -25,14 +25,14 @@ The MuseNest BIN-style account numbering system provides structured 12-digit acc
 ### **Standard Configuration**
 ```sql
 INSERT INTO client_type_codes (client_type, type_code, description) VALUES
-('muse_owned', 1, 'Direct MuseNest clients - primary revenue source'),
+('muse_owned', 1, 'Direct phoenix4ge clients - primary revenue source'),
 ('white_label', 2, 'White label agency partners - shared revenue'),
 ('sub_client', 3, 'Sub-clients under parent accounts - nested billing'),
 ('admin', 9, 'System templates and demo accounts - non-revenue');
 ```
 
 ### **Business Logic**
-- **01 (MuseNest)**: Direct customers, full revenue attribution
+- **01 (phoenix4ge)**: Direct customers, full revenue attribution
 - **02 (White Label)**: Agency partners, revenue sharing model
 - **03 (Sub-client)**: Hierarchical accounts, parent billing relationship
 - **09 (Admin)**: System templates, excluded from business metrics
@@ -130,11 +130,11 @@ INSERT INTO account_sequence (last_sequence) VALUES (100000);
 ### **Live Production Examples**
 | Account Number | Breakdown | Description |
 |----------------|-----------|-------------|
-| `010110100001` | US MuseNest Website #1 | First US direct customer via website |
+| `010110100001` | US phoenix4ge Website #1 | First US direct customer via website |
 | `024420200045` | UK White Label Referral #45 | UK agency client from referral program |
 | `030130300123` | US Sub-client Manual #123 | US sub-account created manually |
 | `099999100002` | International Admin System #2 | System template (Escort Example) |
-| `014950100500` | DE MuseNest Partner #500 | German client via partner channel |
+| `014950100500` | DE phoenix4ge Partner #500 | German client via partner channel |
 | `028140150750` | JP White Label API #750 | Japanese agency via API integration |
 
 ### **Geographic Distribution Analysis**
@@ -158,7 +158,7 @@ ORDER BY client_count DESC;
 ### **1. Database Schema Setup**
 ```bash
 # Run the BIN system migration
-cd /Users/programmer/Projects/musenest
+cd /Users/programmer/Projects/phoenix4ge
 node -e "
 const db = require('./config/database');
 
@@ -210,10 +210,10 @@ setupBINSystem().catch(console.error);
 ### **2. Populate Default Data**
 ```bash
 # Populate with standard configuration
-mysql -u root -D musenest << 'EOF'
+mysql -u root -D phoenix4ge << 'EOF'
 -- Client Types
 INSERT IGNORE INTO client_type_codes (client_type, type_code, description) VALUES
-('muse_owned', 1, 'Direct MuseNest clients - primary revenue source'),
+('muse_owned', 1, 'Direct phoenix4ge clients - primary revenue source'),
 ('white_label', 2, 'White label agency partners - shared revenue'),
 ('sub_client', 3, 'Sub-clients under parent accounts - nested billing'),
 ('admin', 9, 'System templates and demo accounts - non-revenue');
@@ -244,7 +244,7 @@ EOF
 ## 🎯 **Business Intelligence Benefits**
 
 ### **1. Instant Recognition Patterns**
-- **Revenue Accounts**: `01****` = MuseNest direct customers
+- **Revenue Accounts**: `01****` = phoenix4ge direct customers
 - **Partner Revenue**: `02****` = White label shared revenue
 - **System Accounts**: `09****` = Non-revenue templates
 - **Geographic Focus**: `*01***` = US market, `*44***` = UK market
@@ -345,6 +345,6 @@ console.log(parsed);
 
 **Status**: ✅ Production Ready  
 **Next Review**: Q1 2026  
-**Maintainer**: MuseNest Development Team  
+**Maintainer**: phoenix4ge Development Team  
 
-This BIN-style account system provides MuseNest with enterprise-grade account numbering that scales globally while embedding valuable business intelligence in every account number.
+This BIN-style account system provides phoenix4ge with enterprise-grade account numbering that scales globally while embedding valuable business intelligence in every account number.

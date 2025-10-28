@@ -1,6 +1,5 @@
 const multer = require('multer');
 const sharp = require('sharp');
-const { fileTypeFromBuffer } = require('file-type');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs').promises;
@@ -82,6 +81,7 @@ class FileUploadService {
   async validateFileType(filePath) {
     try {
       const buffer = await fs.readFile(filePath);
+      const { fileTypeFromBuffer } = await import('file-type');
       const fileType = await fileTypeFromBuffer(buffer);
       
       if (!fileType) {

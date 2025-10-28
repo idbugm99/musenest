@@ -1,7 +1,7 @@
 -- A/B Testing Framework Migration
 -- Adds tables and infrastructure for automated A/B testing with statistical significance tracking
 
-USE musenest;
+USE phoenix4ge;
 
 -- A/B test experiments configuration and management
 CREATE TABLE IF NOT EXISTS ab_test_experiments (
@@ -556,8 +556,8 @@ ALTER TABLE ab_test_monitoring ADD INDEX idx_experiment_health_time (experiment_
 
 -- Grant permissions for A/B testing framework service
 -- Note: In production, create a dedicated A/B testing service user
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.ab_test_* TO 'ab_test_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.GetExperimentDashboard TO 'ab_test_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.AnalyzeExperimentPerformance TO 'ab_test_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.ab_test_* TO 'ab_test_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.GetExperimentDashboard TO 'ab_test_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.AnalyzeExperimentPerformance TO 'ab_test_service'@'localhost';
 
 SELECT 'A/B Testing Framework migration completed successfully' as status;

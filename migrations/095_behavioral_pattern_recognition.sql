@@ -2,7 +2,7 @@
 -- Adds comprehensive tables for behavioral analysis, fraud detection, 
 -- abuse pattern recognition, and security threat monitoring
 
-USE musenest;
+USE phoenix4ge;
 
 -- User behavior profiles and baselines
 CREATE TABLE IF NOT EXISTS user_behavior_profiles (
@@ -606,10 +606,10 @@ ALTER TABLE security_threat_monitoring ADD INDEX idx_threat_monitoring (user_id,
 
 -- Grant permissions for behavioral pattern recognition service
 -- Note: In production, create a dedicated behavioral analysis service user
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.user_behavior_profiles TO 'behavioral_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.behavior_pattern_analysis TO 'behavioral_service'@'localhost';
--- GRANT SELECT, INSERT, UPDATE, DELETE ON musenest.fraud_detection_cases TO 'behavioral_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.GetUserRiskAssessment TO 'behavioral_service'@'localhost';
--- GRANT EXECUTE ON PROCEDURE musenest.UpdateUserBehaviorProfile TO 'behavioral_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.user_behavior_profiles TO 'behavioral_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.behavior_pattern_analysis TO 'behavioral_service'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON phoenix4ge.fraud_detection_cases TO 'behavioral_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.GetUserRiskAssessment TO 'behavioral_service'@'localhost';
+-- GRANT EXECUTE ON PROCEDURE phoenix4ge.UpdateUserBehaviorProfile TO 'behavioral_service'@'localhost';
 
 SELECT 'Behavioral Pattern Recognition and Fraud Detection migration completed successfully' as status;

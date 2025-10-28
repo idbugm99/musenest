@@ -1,7 +1,7 @@
-# MuseNest AI Configuration Control Plan
+# phoenix4ge AI Configuration Control Plan
 
 ## Executive Summary
-Transform MuseNest into the single source of truth for AI moderation settings, eliminating the need to manually access the AI server for configuration changes. Achieve optimal photo moderation and child protection through centralized, intelligent configuration management.
+Transform phoenix4ge into the single source of truth for AI moderation settings, eliminating the need to manually access the AI server for configuration changes. Achieve optimal photo moderation and child protection through centralized, intelligent configuration management.
 
 ## Current State Analysis
 
@@ -11,7 +11,7 @@ Transform MuseNest into the single source of truth for AI moderation settings, e
 - **Server Restart**: `/restart` endpoint applies configuration changes
 - **Real-time Updates**: Configurations can be changed via API without downtime
 
-### Current MuseNest Interface
+### Current phoenix4ge Interface
 - ✅ Sophisticated admin UI with tabbed configuration interface
 - ✅ Body part detection sliders and threshold controls
 - ✅ Child safety keyword management system
@@ -24,7 +24,7 @@ Transform MuseNest into the single source of truth for AI moderation settings, e
 ## The Solution: Centralized AI Control System
 
 ### Phase 1: Direct AI Server Control
-**Goal**: Make MuseNest configuration changes immediately apply to AI server
+**Goal**: Make phoenix4ge configuration changes immediately apply to AI server
 
 #### 1.1 Enhanced Deployment System
 - **Current**: Deployment endpoint exists but limited functionality
@@ -32,12 +32,12 @@ Transform MuseNest into the single source of truth for AI moderation settings, e
 - **Benefit**: One-click configuration updates across all AI servers
 
 #### 1.2 Configuration Translation Engine  
-- **NudeNet Mapping**: Transform MuseNest body part thresholds → AI server format
+- **NudeNet Mapping**: Transform phoenix4ge body part thresholds → AI server format
 - **BLIP Mapping**: Convert risk multipliers and keywords → server's child safety config
 - **Format Standardization**: Handle all format differences automatically
 
 ### Phase 2: Bidirectional Synchronization
-**Goal**: Keep MuseNest and AI server configurations perfectly in sync
+**Goal**: Keep phoenix4ge and AI server configurations perfectly in sync
 
 #### 2.1 Pull Configuration System
 - **Remote Config Fetch**: Retrieve current AI server settings
@@ -94,7 +94,7 @@ Transform MuseNest into the single source of truth for AI moderation settings, e
 ## Configuration Format Mapping
 
 ### NudeNet Configuration
-**MuseNest Database Format**:
+**phoenix4ge Database Format**:
 ```json
 {
   "body_parts": {
@@ -124,7 +124,7 @@ Transform MuseNest into the single source of truth for AI moderation settings, e
 - Transform individual body part thresholds to unified nudity_score_threshold
 
 ### BLIP Configuration  
-**MuseNest Database Format**:
+**phoenix4ge Database Format**:
 ```json
 {
   "child_keywords": ["child", "kid", "minor", "young"],
@@ -153,7 +153,7 @@ Transform MuseNest into the single source of truth for AI moderation settings, e
 ## Success Criteria & Testing Goals
 
 ### Goal 1: Centralized Control
-**Test**: Change NudeNet threshold in MuseNest admin → Verify AI server reflects change within 30 seconds
+**Test**: Change NudeNet threshold in phoenix4ge admin → Verify AI server reflects change within 30 seconds
 **Success Metric**: 100% configuration deployment success rate
 
 ### Goal 2: Child Protection Excellence  
@@ -161,12 +161,12 @@ Transform MuseNest into the single source of truth for AI moderation settings, e
 **Success Metric**: 0% false negatives for child content detection
 
 ### Goal 3: Configuration Sync Reliability
-**Test**: Make manual change on AI server → Verify MuseNest detects and alerts drift
+**Test**: Make manual change on AI server → Verify phoenix4ge detects and alerts drift
 **Success Metric**: Drift detection within 5 minutes, one-click resolution
 
 ### Goal 4: User Experience
 **Test**: Admin user can modify all AI settings without server access
-**Success Metric**: Complete configuration control from MuseNest interface
+**Success Metric**: Complete configuration control from phoenix4ge interface
 
 ### Goal 5: Optimal Moderation Accuracy
 **Test**: Process 100 diverse test images → Measure false positive/negative rates
@@ -237,5 +237,5 @@ Transform MuseNest into the single source of truth for AI moderation settings, e
 
 **Document Version**: 1.0  
 **Created**: 2025-08-01  
-**Owner**: MuseNest Development Team  
+**Owner**: phoenix4ge Development Team  
 **Review Date**: 2025-09-01

@@ -1,7 +1,7 @@
 -- Migration 016: Create AI Moderation Management System
 -- Multi-server, multi-industry white-label platform management
 
-USE musenest;
+USE phoenix4ge;
 
 -- Table 1: AI Moderation Servers
 -- Manages multiple AI server instances across different IPs/ports
@@ -350,11 +350,11 @@ LEFT JOIN configuration_deployments cd ON sc.id = cd.site_config_id
 WHERE sc.is_active = 1;
 
 -- Grant permissions (development environment)
--- GRANT ALL PRIVILEGES ON musenest.ai_moderation_servers TO 'musenest_user'@'localhost';
--- GRANT ALL PRIVILEGES ON musenest.industry_templates TO 'musenest_user'@'localhost';
--- GRANT ALL PRIVILEGES ON musenest.site_configurations TO 'musenest_user'@'localhost';
--- GRANT ALL PRIVILEGES ON musenest.configuration_deployments TO 'musenest_user'@'localhost';
--- GRANT ALL PRIVILEGES ON musenest.server_health_logs TO 'musenest_user'@'localhost';
+-- GRANT ALL PRIVILEGES ON phoenix4ge.ai_moderation_servers TO 'phoenix4ge_user'@'localhost';
+-- GRANT ALL PRIVILEGES ON phoenix4ge.industry_templates TO 'phoenix4ge_user'@'localhost';
+-- GRANT ALL PRIVILEGES ON phoenix4ge.site_configurations TO 'phoenix4ge_user'@'localhost';
+-- GRANT ALL PRIVILEGES ON phoenix4ge.configuration_deployments TO 'phoenix4ge_user'@'localhost';
+-- GRANT ALL PRIVILEGES ON phoenix4ge.server_health_logs TO 'phoenix4ge_user'@'localhost';
 
 SELECT 'AI Moderation Management System Created Successfully' as status;
 SELECT 'Default Industry Templates Installed' as templates;

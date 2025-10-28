@@ -2,7 +2,7 @@ const { query } = require('./config/database');
 const bcrypt = require('bcrypt');
 
 async function seedBasicData() {
-    console.log('🌱 Seeding basic MuseNest data...\n');
+    console.log('🌱 Seeding basic phoenix4ge data...\n');
     
     try {
         // 1. Add basic themes
@@ -19,7 +19,7 @@ async function seedBasicData() {
         const hashedPassword = await bcrypt.hash('admin123', 12);
         await query(`
             INSERT IGNORE INTO users (id, email, password_hash, role, is_active, created_at)
-            VALUES (1, 'admin@musenest.com', ?, 'admin', true, NOW())
+            VALUES (1, 'admin@phoenix4ge.com', ?, 'admin', true, NOW())
         `, [hashedPassword]);
         
         // 3. Add test model
@@ -44,7 +44,7 @@ async function seedBasicData() {
         // 6. Add basic site settings
         await query(`
             INSERT IGNORE INTO site_settings (model_id, site_name, model_name, tagline, created_at)
-            VALUES (1, 'MuseNest Demo', 'Demo Model', 'Professional companionship services', NOW())
+            VALUES (1, 'phoenix4ge Demo', 'Demo Model', 'Professional companionship services', NOW())
         `);
         
         // 7. Add some test FAQ items

@@ -1,9 +1,9 @@
-# Machine Map for MuseNest
+# Machine Map for Phoenix4Ge
 # Purpose: Document canonical color tokens, alias mapping, and per-theme wiring
 # to ensure templates use DB-driven colors consistently (no hard-coded colors).
 
 version: 1
-project: musenest
+project: phoenix4ge
 
 schema:
   colors:
@@ -132,13 +132,13 @@ schema:
 themes:
   rose:
     id: 17
-    path: musenest/themes/rose
-    layout: musenest/themes/rose/layouts/main.handlebars
+    path: phoenix4ge/themes/rose
+    layout: phoenix4ge/themes/rose/layouts/main.handlebars
     assets:
       css:
-        - musenest/themes/rose/assets/rose-enhancements.css
+        - phoenix4ge/themes/rose/assets/rose-enhancements.css
       js:
-        - musenest/themes/rose/assets/rose-interactions.js
+        - phoenix4ge/themes/rose/assets/rose-interactions.js
     pages:
       - about
       - calendar
@@ -227,25 +227,25 @@ themes:
         hero_overlay_enabled: false
       gallery:
         uses_universal_system: true
-        api: musenest/routes/api/universal-gallery.js
-        frontend_script: musenest/templates/universal/gallery-script.js
+        api: phoenix4ge/routes/api/universal-gallery.js
+        frontend_script: phoenix4ge/templates/universal/gallery-script.js
 
 # Key APIs referenced by theming and admin UI
 apis:
   model_theme_settings:
-    file: musenest/routes/api/model-theme-settings.js
+    file: phoenix4ge/routes/api/model-theme-settings.js
     endpoints:
       - GET /api/model-theme-settings/:slug/active
       - GET /api/model-theme-settings/:slug
       - POST /api/model-theme-settings/:slug
       - POST /api/model-theme-settings/:slug/activate
   universal_gallery:
-    file: musenest/routes/api/universal-gallery.js
+    file: phoenix4ge/routes/api/universal-gallery.js
     endpoints:
       - GET /api/universal-gallery/config
 
 # Migrations and tooling notes
 tooling:
   migrate:
-    script: musenest/scripts/migrate.js
+    script: phoenix4ge/scripts/migrate.js
     notes: ignores duplicate index creation errors (e.g., Duplicate key name)

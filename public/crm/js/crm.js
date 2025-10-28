@@ -1,5 +1,5 @@
 /**
- * MuseNest CRM System JavaScript
+ * phoenix4ge CRM System JavaScript
  * Common functionality for all CRM pages
  */
 

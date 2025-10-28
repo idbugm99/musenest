@@ -1,10 +1,10 @@
 /**
- * MuseNest Image Editor JavaScript
+ * phoenix4ge Image Editor JavaScript
  * Part of Phase 3: Frontend Components Development
  * Advanced image editing functionality adapted from RoseMastos
  */
 
-class MuseNestImageEditor {
+class phoenix4geImageEditor {
     constructor(mediaLibrary) {
         this.mediaLibrary = mediaLibrary;
         this.currentMedia = null;
@@ -29,7 +29,7 @@ class MuseNestImageEditor {
      * Initialize image editor
      */
     init() {
-        console.log('🎨 Initializing MuseNest Image Editor');
+        console.log('🎨 Initializing phoenix4ge Image Editor');
         this.bindEditorEvents();
     }
     
@@ -1099,14 +1099,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Wait for media library to be available
     setTimeout(() => {
         if (window.mediaLibrary) {
-            const imageEditor = new MuseNestImageEditor(window.mediaLibrary);
+            const imageEditor = new phoenix4geImageEditor(window.mediaLibrary);
             
             // Extend media library with editor methods
             window.mediaLibrary.updateImageInfo = imageEditor.updateImageInfo.bind(imageEditor);
             window.mediaLibrary.resetImageEditor = imageEditor.resetImageEditor.bind(imageEditor);
             window.mediaLibrary.initializeImageEditor = imageEditor.initializeImageEditor.bind(imageEditor);
             
-            console.log('🎨 MuseNest Image Editor ready');
+            console.log('🎨 phoenix4ge Image Editor ready');
         }
     }, 1000);
 });

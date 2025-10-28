@@ -61,8 +61,7 @@ router.get('/pages/types', async (req, res) => {
 
     } catch (error) {
         console.error('Error fetching page types:', error);
-        res.status(500).json({
-            error: 'Failed to fetch page types',
+        res.fail(500, 'Failed to fetch page types', {
             message: 'Unable to load page types'
         });
     }
@@ -107,8 +106,7 @@ router.get('/pages/sections', async (req, res) => {
 
     } catch (error) {
         console.error('Error fetching page sections:', error);
-        res.status(500).json({
-            error: 'Failed to fetch page sections',
+        res.fail(500, 'Failed to fetch page sections', {
             message: 'Unable to load page sections'
         });
     }
@@ -119,10 +117,9 @@ router.get('/pages/sections/:sectionId', async (req, res) => {
     try {
         const modelId = await getUserModelId(req.user.id);
         if (!modelId) {
-            return res.status(404).json({
-                error: 'Model not found',
-                message: 'No model associated with this user'
-            });
+            return res.fail(404, 'Model not found', {
+            message: 'No model associated with this user'
+        });
         }
 
         const { sectionId } = req.params;
@@ -147,18 +144,16 @@ router.get('/pages/sections/:sectionId', async (req, res) => {
         `, [sectionId, modelId]);
 
         if (sections.length === 0) {
-            return res.status(404).json({
-                error: 'Section not found',
-                message: 'Page section not found or access denied'
-            });
+            return res.fail(404, 'Section not found', {
+            message: 'Page section not found or access denied'
+        });
         }
 
         res.json(sections[0]);
 
     } catch (error) {
         console.error('Error fetching page section:', error);
-        res.status(500).json({
-            error: 'Failed to fetch page section',
+        res.fail(500, 'Failed to fetch page section', {
             message: 'Unable to load page section'
         });
     }
@@ -190,19 +185,17 @@ router.put('/pages/sections/:sectionId', [
         // Check validation errors
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({
-                error: 'Validation failed',
+            return res.fail(400, 'Validation failed',
                 message: 'Please check your input',
                 details: errors.array()
-            });
+            );
         }
 
         const modelId = await getUserModelId(req.user.id);
         if (!modelId) {
-            return res.status(404).json({
-                error: 'Model not found',
-                message: 'No model associated with this user'
-            });
+            return res.fail(404, 'Model not found', {
+            message: 'No model associated with this user'
+        });
         }
 
         const { sectionId } = req.params;
@@ -217,10 +210,9 @@ router.put('/pages/sections/:sectionId', [
         `, [sectionId, modelId]);
 
         if (existingSections.length === 0) {
-            return res.status(404).json({
-                error: 'Section not found',
-                message: 'Page section not found or access denied'
-            });
+            return res.fail(404, 'Section not found', {
+            message: 'Page section not found or access denied'
+        });
         }
 
         // Update page section
@@ -243,8 +235,7 @@ router.put('/pages/sections/:sectionId', [
 
     } catch (error) {
         console.error('Error updating page section:', error);
-        res.status(500).json({
-            error: 'Failed to update page section',
+        res.fail(500, 'Failed to update page section', {
             message: 'Unable to update page section'
         });
     }
@@ -255,10 +246,9 @@ router.delete('/pages/sections/:sectionId', async (req, res) => {
     try {
         const modelId = await getUserModelId(req.user.id);
         if (!modelId) {
-            return res.status(404).json({
-                error: 'Model not found',
-                message: 'No model associated with this user'
-            });
+            return res.fail(404, 'Model not found', {
+            message: 'No model associated with this user'
+        });
         }
 
         const { sectionId } = req.params;
@@ -272,10 +262,9 @@ router.delete('/pages/sections/:sectionId', async (req, res) => {
         `, [sectionId, modelId]);
 
         if (existingSections.length === 0) {
-            return res.status(404).json({
-                error: 'Section not found',
-                message: 'Page section not found or access denied'
-            });
+            return res.fail(404, 'Section not found', {
+            message: 'Page section not found or access denied'
+        });
         }
 
         // Delete page section
@@ -288,8 +277,7 @@ router.delete('/pages/sections/:sectionId', async (req, res) => {
 
     } catch (error) {
         console.error('Error deleting page section:', error);
-        res.status(500).json({
-            error: 'Failed to delete page section',
+        res.fail(500, 'Failed to delete page section', {
             message: 'Unable to delete page section'
         });
     }
@@ -330,19 +318,17 @@ router.post('/pages/sections', [
         // Check validation errors
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({
-                error: 'Validation failed',
+            return res.fail(400, 'Validation failed',
                 message: 'Please check your input',
                 details: errors.array()
-            });
+            );
         }
 
         const modelId = await getUserModelId(req.user.id);
         if (!modelId) {
-            return res.status(404).json({
-                error: 'Model not found',
-                message: 'No model associated with this user'
-            });
+            return res.fail(404, 'Model not found', {
+            message: 'No model associated with this user'
+        });
         }
 
         const { page_type_name, section_key, title, content, sort_order, is_visible } = req.body;
@@ -350,10 +336,9 @@ router.post('/pages/sections', [
         // Get or create page for this page type
         const pageTypes = await query('SELECT id FROM page_types WHERE name = ?', [page_type_name]);
         if (pageTypes.length === 0) {
-            return res.status(400).json({
-                error: 'Invalid page type',
-                message: 'Page type not found'
-            });
+            return res.fail(400, 'Invalid page type', {
+            message: 'Page type not found'
+        });
         }
 
         const pageTypeId = pageTypes[0].id;
@@ -383,10 +368,9 @@ router.post('/pages/sections', [
         `, [pageId, section_key]);
 
         if (existingSections.length > 0) {
-            return res.status(409).json({
-                error: 'Section key exists',
-                message: 'A section with this key already exists for this page'
-            });
+            return res.fail(409, 'Section key exists', {
+            message: 'A section with this key already exists for this page'
+        });
         }
 
         // Create new page section
@@ -410,8 +394,7 @@ router.post('/pages/sections', [
 
     } catch (error) {
         console.error('Error creating page section:', error);
-        res.status(500).json({
-            error: 'Failed to create page section',
+        res.fail(500, 'Failed to create page section', {
             message: 'Unable to create page section'
         });
     }
@@ -515,8 +498,7 @@ router.get('/stats', async (req, res) => {
 
     } catch (error) {
         console.error('Error fetching admin stats:', error);
-        res.status(500).json({
-            error: 'Failed to fetch stats',
+        res.fail(500, 'Failed to fetch stats', {
             message: 'Unable to load dashboard statistics'
         });
     }
@@ -598,8 +580,7 @@ router.get('/themes', async (req, res) => {
 
     } catch (error) {
         console.error('Error fetching themes:', error);
-        res.status(500).json({
-            error: 'Failed to fetch themes',
+        res.fail(500, 'Failed to fetch themes', {
             message: 'Unable to load themes'
         });
     }
@@ -612,19 +593,17 @@ router.post('/themes/:themeId/apply', async (req, res) => {
         const modelId = await getUserModelId(req.user.id);
         
         if (!modelId) {
-            return res.status(404).json({
-                error: 'Model not found',
-                message: 'No model associated with this user'
-            });
+            return res.fail(404, 'Model not found', {
+            message: 'No model associated with this user'
+        });
         }
 
         // Verify theme set exists
         const themeCheck = await query('SELECT id, display_name FROM theme_sets WHERE id = ? AND is_active = 1', [themeId]);
         if (themeCheck.length === 0) {
-            return res.status(404).json({
-                error: 'Theme not found',
-                message: 'The specified theme does not exist'
-            });
+            return res.fail(404, 'Theme not found', {
+            message: 'The specified theme does not exist'
+        });
         }
 
         // Deactivate current theme
@@ -643,8 +622,7 @@ router.post('/themes/:themeId/apply', async (req, res) => {
 
     } catch (error) {
         console.error('Error applying theme:', error);
-        res.status(500).json({
-            error: 'Failed to apply theme',
+        res.fail(500, 'Failed to apply theme', {
             message: 'Unable to apply theme'
         });
     }
@@ -689,10 +667,9 @@ router.get('/debug', async (req, res) => {
             debug: 'Working'
         });
     } catch (error) {
-        res.status(500).json({
-            error: error.message,
+        res.fail(500, error.message,
             stack: error.stack
-        });
+        );
     }
 });
 

@@ -76,7 +76,7 @@ SELECT
     TABLE_ROWS,
     ROUND((INDEX_LENGTH / (DATA_LENGTH + INDEX_LENGTH)) * 100, 2) AS 'Index Ratio %'
 FROM information_schema.TABLES 
-WHERE TABLE_SCHEMA = 'musenest_production'
+WHERE TABLE_SCHEMA = 'phoenix4ge_production'
 ORDER BY (DATA_LENGTH + INDEX_LENGTH) DESC
 LIMIT 20;
 "
@@ -85,7 +85,7 @@ LIMIT 20;
 redis-cli INFO stats | grep -E "(keyspace_hits|keyspace_misses|used_memory)"
 
 # CDN performance check
-curl -w "@curl-format.txt" -s -o /dev/null https://cdn.musenest.com/test-asset.jpg
+curl -w "@curl-format.txt" -s -o /dev/null https://cdn.phoenix4ge.com/test-asset.jpg
 ```
 
 **Action Items:**
@@ -101,7 +101,7 @@ curl -w "@curl-format.txt" -s -o /dev/null https://cdn.musenest.com/test-asset.j
 
 ```bash
 # Review authentication logs
-grep "authentication" /var/log/musenest/app.log | tail -100
+grep "authentication" /var/log/phoenix4ge/app.log | tail -100
 
 # Check for suspicious activities
 mysql -e "
@@ -114,7 +114,7 @@ ORDER BY attempts DESC;
 "
 
 # SSL certificate check
-openssl s_client -connect musenest.com:443 -servername musenest.com 2>/dev/null | openssl x509 -noout -dates
+openssl s_client -connect phoenix4ge.com:443 -servername phoenix4ge.com 2>/dev/null | openssl x509 -noout -dates
 
 # Dependency vulnerability scan
 npm audit --audit-level moderate
@@ -155,7 +155,7 @@ SELECT
 FROM information_schema.STATISTICS s
 JOIN information_schema.TABLES t ON s.table_schema = t.table_schema 
     AND s.table_name = t.table_name
-WHERE s.table_schema = 'musenest_production'
+WHERE s.table_schema = 'phoenix4ge_production'
     AND s.cardinality IS NOT NULL
 ORDER BY selectivity ASC;
 "
@@ -181,14 +181,14 @@ curl -X POST http://localhost:3000/api/backup-recovery/verify/latest
 curl http://localhost:3000/api/backup-recovery/backups?limit=10
 
 # Test backup restoration (staging environment)
-curl -X POST http://staging.musenest.com/api/backup-recovery/restore/{latest-backup-id} \
+curl -X POST http://staging.phoenix4ge.com/api/backup-recovery/restore/{latest-backup-id} \
   -d '{"components": ["configuration"], "reason": "Weekly DR test"}'
 
 # Verify restored data integrity
-curl http://staging.musenest.com/api/universal-gallery/health
+curl http://staging.phoenix4ge.com/api/universal-gallery/health
 
 # Document recovery time
-echo "Recovery test completed: $(date)" >> /var/log/musenest/dr-tests.log
+echo "Recovery test completed: $(date)" >> /var/log/phoenix4ge/dr-tests.log
 ```
 
 **DR Testing Checklist:**
@@ -264,13 +264,13 @@ ORDER BY date;
 1. **Vulnerability Assessment:**
    ```bash
    # Run comprehensive security scan
-   nmap -sV -sC musenest.com
+   nmap -sV -sC phoenix4ge.com
    
    # Check for SQL injection vulnerabilities
-   sqlmap -u "http://musenest.com/api/gallery/search?q=test" --batch
+   sqlmap -u "http://phoenix4ge.com/api/gallery/search?q=test" --batch
    
    # Web application security scan
-   nikto -h https://musenest.com -Format htm -output security-scan.html
+   nikto -h https://phoenix4ge.com -Format htm -output security-scan.html
    ```
 
 2. **Access Control Review:**

@@ -6,7 +6,7 @@
 
 ## Project Overview
 
-Transform the current flat media review system into a model-centric dashboard that provides comprehensive media management, violation tracking, and workflow efficiency for MuseNest's content moderation system.
+Transform the current flat media review system into a model-centric dashboard that provides comprehensive media management, violation tracking, and workflow efficiency for phoenix4ge's content moderation system.
 
 ## Core Requirements
 

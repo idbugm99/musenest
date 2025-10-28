@@ -19,12 +19,12 @@ This guide covers the complete deployment of the Universal Gallery & Template Re
 # Database Configuration
 DB_HOST=localhost
 DB_PORT=3306
-DB_USER=musenest_prod
+DB_USER=phoenix4ge_prod
 DB_PASSWORD=<secure_password>
-DB_DATABASE=musenest_production
+DB_DATABASE=phoenix4ge_production
 
 # Backup Configuration
-BACKUP_PATH=/var/backups/musenest
+BACKUP_PATH=/var/backups/phoenix4ge
 BACKUP_SCHEDULE_ENABLED=true
 BACKUP_FREQUENCY=daily
 BACKUP_COMPRESSION=true
@@ -34,13 +34,13 @@ BACKUP_ENCRYPTION_KEY=<encryption_key>
 ALERTS_EMAIL_ENABLED=true
 SMTP_HOST=smtp.company.com
 SMTP_PORT=587
-SMTP_USER=alerts@musenest.com
+SMTP_USER=alerts@phoenix4ge.com
 SMTP_PASS=<smtp_password>
-ALERT_TO_EMAIL=admin@musenest.com,devops@musenest.com
+ALERT_TO_EMAIL=admin@phoenix4ge.com,devops@phoenix4ge.com
 
 ALERTS_SLACK_ENABLED=true
 SLACK_WEBHOOK_URL=<slack_webhook_url>
-SLACK_ALERT_CHANNEL=#musenest-alerts
+SLACK_ALERT_CHANNEL=#phoenix4ge-alerts
 
 # Production Environment
 NODE_ENV=production
@@ -55,18 +55,18 @@ Run all database migrations in sequence:
 
 ```bash
 # Core Universal Gallery system
-mysql -u root -p musenest_production < migrations/080_theme_migration_system.sql
+mysql -u root -p phoenix4ge_production < migrations/080_theme_migration_system.sql
 
 # Production monitoring and alerting
-mysql -u root -p musenest_production < migrations/081_production_monitoring_alerts.sql
+mysql -u root -p phoenix4ge_production < migrations/081_production_monitoring_alerts.sql
 
 # Backup and rollback system
-mysql -u root -p musenest_production < migrations/082_backup_rollback_system.sql
+mysql -u root -p phoenix4ge_production < migrations/082_backup_rollback_system.sql
 ```
 
 Verify migrations:
 ```bash
-mysql -u root -p musenest_production -e "SHOW TABLES LIKE '%theme%'; SHOW TABLES LIKE '%backup%'; SHOW TABLES LIKE '%alert%';"
+mysql -u root -p phoenix4ge_production -e "SHOW TABLES LIKE '%theme%'; SHOW TABLES LIKE '%backup%'; SHOW TABLES LIKE '%alert%';"
 ```
 
 ### Step 2: Initialize System Services
@@ -127,7 +127,7 @@ Establish performance baselines:
 ```bash
 # The baselines are automatically inserted via migration 081
 # Verify they exist:
-mysql -u root -p musenest_production -e "SELECT * FROM performance_baselines WHERE is_active = TRUE;"
+mysql -u root -p phoenix4ge_production -e "SELECT * FROM performance_baselines WHERE is_active = TRUE;"
 ```
 
 ## System Configuration
@@ -383,18 +383,18 @@ curl -X POST http://localhost:3000/api/backup-recovery/backup \
 ## Support & Documentation
 
 ### Log Locations
-- Application logs: `/var/log/musenest/`
-- Backup logs: `/var/backups/musenest/logs/`
-- Migration logs: `/var/log/musenest/migrations/`
+- Application logs: `/var/log/phoenix4ge/`
+- Backup logs: `/var/backups/phoenix4ge/logs/`
+- Migration logs: `/var/log/phoenix4ge/migrations/`
 
 ### Monitoring Dashboards
-- System Health: `https://musenest.com/admin/production-monitoring`
-- Theme Migrations: `https://musenest.com/admin/theme-migrations`
-- Backup Status: `https://musenest.com/admin/backup-recovery`
+- System Health: `https://phoenix4ge.com/admin/production-monitoring`
+- Theme Migrations: `https://phoenix4ge.com/admin/theme-migrations`
+- Backup Status: `https://phoenix4ge.com/admin/backup-recovery`
 
 ### Emergency Contacts
-- Primary: `admin@musenest.com`
-- DevOps Team: `devops@musenest.com`
+- Primary: `admin@phoenix4ge.com`
+- DevOps Team: `devops@phoenix4ge.com`
 - Emergency: `+1-XXX-XXX-XXXX`
 
 ---

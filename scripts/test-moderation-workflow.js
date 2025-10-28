@@ -9,7 +9,7 @@
 const path = require('path');
 const ModerationWorkflowTest = require('../tests/integration/moderation-workflow-test');
 
-console.log('🧪 MuseNest Moderation Workflow Test Suite');
+console.log('🧪 phoenix4ge Moderation Workflow Test Suite');
 console.log('==========================================');
 console.log('Testing complete end-to-end moderation workflow integration...\n');
 

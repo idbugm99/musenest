@@ -5,7 +5,7 @@ const fs = require('fs').promises;
 
 // Configuration
 const ROSEMASTOS_DB_PATH = '/Users/programmer/Projects/rosemastos/instance/models.db';
-const MUSENEST_DB_PATH = process.env.DB_NAME || 'musenest';
+const phoenix4ge_DB_PATH = process.env.DB_NAME || 'phoenix4ge';
 
 class DataMigrator {
     constructor() {
@@ -56,7 +56,7 @@ class DataMigrator {
 
         for (const user of sourceUsers) {
             try {
-                // Map Flask user roles to MuseNest roles
+                // Map Flask user roles to phoenix4ge roles
                 let role = 'model';
                 if (user.role === 'sysadmin') role = 'sysadmin';
                 else if (user.role === 'admin') role = 'admin';
@@ -458,7 +458,7 @@ class DataMigrator {
 
     async run() {
         try {
-            console.log('🚀 Starting MuseNest Data Migration');
+            console.log('🚀 Starting phoenix4ge Data Migration');
             console.log('====================================');
             
             await this.connect();

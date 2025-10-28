@@ -5,7 +5,7 @@ async function addModelPages() {
         host: 'localhost',
         user: 'root',
         password: '',
-        database: 'musenest'
+        database: 'phoenix4ge'
     });
 
     try {

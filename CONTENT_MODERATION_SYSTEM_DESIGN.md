@@ -1,9 +1,9 @@
-# MuseNest Content Moderation System Design
+# phoenix4ge Content Moderation System Design
 **Version 1.0** | **Date: July 29, 2025**
 
 ## Overview
 
-This document defines the comprehensive content moderation system for MuseNest, designed to automatically screen, categorize, and manage user-uploaded images across different content tiers while maintaining strict legal compliance and audit trails.
+This document defines the comprehensive content moderation system for phoenix4ge, designed to automatically screen, categorize, and manage user-uploaded images across different content tiers while maintaining strict legal compliance and audit trails.
 
 ## Core Principles
 
@@ -267,4 +267,4 @@ image_moderation_queue.approved_by_user_id → users.id
 
 ---
 
-*This document serves as the foundational design for MuseNest's content moderation system. All implementation decisions should reference and align with these principles and procedures.*
+*This document serves as the foundational design for phoenix4ge's content moderation system. All implementation decisions should reference and align with these principles and procedures.*

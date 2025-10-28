@@ -1,6 +1,6 @@
 <?php
 /**
- * CLIP NSFW Image Describer for MuseNest
+ * CLIP NSFW Image Describer for Phoenix4Ge
  * PHP wrapper for CLIP-based explicit content description
  */
 

@@ -20,6 +20,22 @@ const requireCRMAuth = async (req, res, next) => {
     return res.status(401).json({ error: 'Unauthorized' });
 };
 
+// Approve a client (flip screening + category on the interaction)
+router.post('/:slug/clients/:interactionId/approve', requireCRMAuth, async (req, res) => {
+    const { interactionId } = req.params;
+    try {
+        await db.query(`
+            UPDATE client_model_interactions
+            SET screening_status='approved', client_category='screened', updated_at=NOW()
+            WHERE id = ?
+        `, [interactionId]);
+        res.json({ success: true });
+    } catch (e) {
+        console.error('Approve client failed:', e);
+        res.status(500).json({ success: false, error: 'Failed to approve client' });
+    }
+});
+
 // Get all clients for a model
 router.get('/:slug/clients', requireCRMAuth, async (req, res) => {
     const { slug } = req.params;
@@ -27,29 +43,23 @@ router.get('/:slug/clients', requireCRMAuth, async (req, res) => {
     const { page = 1, limit = 20, status, search, sortBy = 'created_at', sortOrder = 'desc' } = req.query;
     
     try {
-        let whereClause = 'WHERE ec.model_id = $1';
+        let whereClause = 'WHERE cmi.model_id = ? AND cmi.escort_client_id = ec.id';
         let params = [modelId];
-        let paramCount = 1;
         
         if (status && status !== 'all') {
-            paramCount++;
-            whereClause += ` AND ec.screening_status = $${paramCount}`;
+            whereClause += ' AND ec.screening_status = ?';
             params.push(status);
         }
         
         if (search) {
-            paramCount++;
-            whereClause += ` AND (ec.client_identifier ILIKE $${paramCount} OR ec.phone_hash ILIKE $${paramCount} OR ec.email_hash ILIKE $${paramCount})`;
-            params.push(`%${search}%`);
+            whereClause += ' AND (ec.client_identifier LIKE ? OR ec.phone_hash LIKE ? OR ec.email_hash LIKE ?)';
+            const like = `%${search}%`;
+            params.push(like, like, like);
         }
         
         // Get total count
-        const countResult = await pool.query(
-            `SELECT COUNT(*) FROM escort_clients ec ${whereClause}`,
-            params
-        );
-        
-        const totalClients = parseInt(countResult.rows[0].count);
+        const countRows = await db.query(`SELECT COUNT(*) AS count FROM escort_clients ec JOIN client_model_interactions cmi ON cmi.escort_client_id = ec.id ${whereClause}`, params);
+        const totalClients = parseInt(countRows[0]?.count || 0);
         const totalPages = Math.ceil(totalClients / limit);
         const offset = (page - 1) * limit;
         
@@ -57,30 +67,37 @@ router.get('/:slug/clients', requireCRMAuth, async (req, res) => {
         const allowedSortFields = ['created_at', 'client_identifier', 'screening_status', 'last_visit_date'];
         const allowedSortOrders = ['asc', 'desc'];
         
-        if (!allowedSortFields.includes(sortBy)) sortBy = 'created_at';
-        if (!allowedSortOrders.includes(sortOrder)) sortOrder = 'desc';
+        const sortField = allowedSortFields.includes(sortBy) ? sortBy : 'created_at';
+        const sortDir = allowedSortOrders.includes((sortOrder || '').toLowerCase()) ? sortOrder.toLowerCase() : 'desc';
         
         // Get clients with pagination
-        const clientsResult = await pool.query(`
+        const clientsSql = `
             SELECT 
                 ec.*,
+                cmi.id AS client_model_interaction_id,
                 crs.total_visits,
                 crs.total_revenue,
                 crs.last_visit_date,
                 crs.average_rate,
-                COUNT(cr.id) as reference_count,
-                COUNT(cv.id) as visit_count
+                COUNT(cr.id) AS reference_count,
+                COUNT(cv.id) AS visit_count,
+                COALESCE(cms.unread_count, 0) AS unread_count
             FROM escort_clients ec
+            JOIN client_model_interactions cmi ON cmi.escort_client_id = ec.id
             LEFT JOIN client_revenue_summary crs ON ec.id = crs.client_id
             LEFT JOIN client_references cr ON ec.id = cr.client_id
             LEFT JOIN client_visits cv ON ec.id = cv.client_id
+            LEFT JOIN (
+               SELECT c.client_model_interaction_id, SUM(COALESCE(s.unread_count,0)) AS unread_count
+               FROM conversations c
+               LEFT JOIN conversation_model_state s ON s.conversation_id = c.id AND s.model_id = ?
+               GROUP BY c.client_model_interaction_id
+            ) cms ON cms.client_model_interaction_id = cmi.id
             ${whereClause}
-            GROUP BY ec.id, crs.total_visits, crs.total_revenue, crs.last_visit_date, crs.average_rate
-            ORDER BY ec.${sortBy} ${sortOrder.toUpperCase()}
-            LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}
-        `, [...params, limit, offset]);
-        
-        const clients = clientsResult.rows;
+            GROUP BY ec.id, cmi.id, crs.total_visits, crs.total_revenue, crs.last_visit_date, crs.average_rate, cms.unread_count
+            ORDER BY ec.${sortField} ${sortDir.toUpperCase()}
+            LIMIT ? OFFSET ?`;
+        const clients = await db.query(clientsSql, [modelId, ...params, Number(limit), Number(offset)]);
         
         res.json({
             success: true,
@@ -114,7 +131,7 @@ router.get('/:slug/clients/:clientId', requireCRMAuth, async (req, res) => {
     
     try {
         // Get client details
-        const clientResult = await pool.query(`
+        const clientRows = await db.query(`
             SELECT 
                 ec.*,
                 crs.total_visits,
@@ -124,48 +141,48 @@ router.get('/:slug/clients/:clientId', requireCRMAuth, async (req, res) => {
                 crs.average_rate
             FROM escort_clients ec
             LEFT JOIN client_revenue_summary crs ON ec.id = crs.client_id
-            WHERE ec.id = $1 AND ec.model_id = $2
+            WHERE ec.id = ? AND ec.model_id = ?
         `, [clientId, modelId]);
         
-        if (clientResult.rows.length === 0) {
+        if (clientRows.length === 0) {
             return res.status(404).json({ 
                 success: false, 
                 error: 'Client not found' 
             });
         }
         
-        const client = clientResult.rows[0];
+        const client = clientRows[0];
         
         // Get client visits
-        const visitsResult = await pool.query(`
+        const visits = await db.query(`
             SELECT 
                 id, visit_date, visit_duration, visit_type, rate_amount,
                 payment_method, payment_status, client_rating, would_see_again,
                 actual_amount_received, expenses, net_revenue
             FROM client_visits
-            WHERE client_id = $1
+            WHERE client_id = ?
             ORDER BY visit_date DESC
         `, [clientId]);
         
         // Get client references
-        const referencesResult = await pool.query(`
+        const references = await db.query(`
             SELECT id, reference_relationship, reference_status, contacted_at
             FROM client_references
-            WHERE client_id = $1
+            WHERE client_id = ?
             ORDER BY created_at DESC
         `, [clientId]);
         
         // Get client screening
-        const screeningResult = await pool.query(`
+        const screening = await db.query(`
             SELECT id, screening_type, verification_status, verified_at, expires_at
             FROM client_screening
-            WHERE client_id = $1
+            WHERE client_id = ?
             ORDER BY created_at DESC
         `, [clientId]);
         
-        client.visits = visitsResult.rows;
-        client.references = referencesResult.rows;
-        client.screening = screeningResult.rows;
+        client.visits = visits;
+        client.references = references;
+        client.screening = screening;
         
         res.json({
             success: true,
@@ -202,12 +219,12 @@ router.post('/:slug/clients', requireCRMAuth, async (req, res) => {
         
         // Check if client already exists (by phone or email hash)
         if (phone_hash || email_hash) {
-            const existingClient = await pool.query(`
+            const existingClient = await db.query(`
                 SELECT id FROM escort_clients 
-                WHERE model_id = $1 AND (phone_hash = $2 OR email_hash = $3)
+                WHERE model_id = ? AND (phone_hash = ? OR email_hash = ?)
             `, [modelId, phone_hash, email_hash]);
             
-            if (existingClient.rows.length > 0) {
+            if (existingClient.length > 0) {
                 return res.status(400).json({ 
                     success: false, 
                     error: 'Client with this phone or email already exists' 
@@ -229,13 +246,12 @@ router.post('/:slug/clients', requireCRMAuth, async (req, res) => {
         }
         
         // Insert new client
-        const insertResult = await pool.query(`
+        const insertResult = await db.query(`
             INSERT INTO escort_clients (
                 model_id, client_identifier, phone_hash, email_hash,
                 phone_encrypted, email_encrypted, screening_method,
                 reference_sites, communication_preference, notes_encrypted
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-            RETURNING id, client_identifier, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [
             modelId, client_identifier, phone_hash, email_hash,
             phone_encrypted, email_encrypted, screening_method,
@@ -243,12 +259,14 @@ router.post('/:slug/clients', requireCRMAuth, async (req, res) => {
             communication_preference, notes_encrypted
         ]);
         
-        const newClient = insertResult.rows[0];
+        const newClientId = insertResult.insertId;
+        const [newClientRow] = await db.query('SELECT id, client_identifier, created_at FROM escort_clients WHERE id = ?', [newClientId]);
+        const newClient = newClientRow;
         
         // Initialize revenue summary
-        await pool.query(`
+        await db.query(`
             INSERT INTO client_revenue_summary (client_id, total_visits, total_revenue, average_rate)
-            VALUES ($1, 0, 0.00, 0.00)
+            VALUES (?, 0, 0.00, 0.00)
         `, [newClient.id]);
         
         res.status(201).json({
@@ -274,11 +292,11 @@ router.put('/:slug/clients/:clientId', requireCRMAuth, async (req, res) => {
     
     try {
         // Verify client belongs to model
-        const clientCheck = await pool.query(`
-            SELECT id FROM escort_clients WHERE id = $1 AND model_id = $2
+        const clientCheck = await db.query(`
+            SELECT id FROM escort_clients WHERE id = ? AND model_id = ?
         `, [clientId, modelId]);
         
-        if (clientCheck.rows.length === 0) {
+        if (clientCheck.length === 0) {
             return res.status(404).json({ 
                 success: false, 
                 error: 'Client not found' 
@@ -345,16 +363,15 @@ router.put('/:slug/clients/:clientId', requireCRMAuth, async (req, res) => {
         updateValues.push(clientId, modelId);
         
         // Update client
-        const updateResult = await pool.query(`
+        const updateResult = await db.query(`
             UPDATE escort_clients 
             SET ${updateFields.join(', ')}, updated_at = CURRENT_TIMESTAMP
-            WHERE id = $${paramCount + 1} AND model_id = $${paramCount + 2}
-            RETURNING id, client_identifier, updated_at
+            WHERE id = ? AND model_id = ?
         `, updateValues);
         
         res.json({
             success: true,
-            data: updateResult.rows[0],
+            data: { id: clientId, client_identifier: updateData.client_identifier, updated_at: new Date() },
             message: 'Client updated successfully'
         });
         
@@ -374,11 +391,11 @@ router.delete('/:slug/clients/:clientId', requireCRMAuth, async (req, res) => {
     
     try {
         // Verify client belongs to model
-        const clientCheck = await pool.query(`
-            SELECT id FROM escort_clients WHERE id = $1 AND model_id = $2
+        const clientCheck = await db.query(`
+            SELECT id FROM escort_clients WHERE id = ? AND model_id = ?
         `, [clientId, modelId]);
         
-        if (clientCheck.rows.length === 0) {
+        if (clientCheck.length === 0) {
             return res.status(404).json({ 
                 success: false, 
                 error: 'Client not found' 
@@ -386,8 +403,8 @@ router.delete('/:slug/clients/:clientId', requireCRMAuth, async (req, res) => {
         }
         
         // Delete client (cascade will handle related records)
-        await pool.query(`
-            DELETE FROM escort_clients WHERE id = $1 AND model_id = $2
+        await db.query(`
+            DELETE FROM escort_clients WHERE id = ? AND model_id = ?
         `, [clientId, modelId]);
         
         res.json({
@@ -411,30 +428,30 @@ router.get('/:slug/clients/search/:query', requireCRMAuth, async (req, res) => {
     const { limit = 10 } = req.query;
     
     try {
-        const searchResult = await pool.query(`
+        const searchResult = await db.query(`
             SELECT 
                 ec.id, ec.client_identifier, ec.screening_status,
                 ec.screening_method, ec.created_at,
                 crs.total_visits, crs.total_revenue, crs.last_visit_date
             FROM escort_clients ec
             LEFT JOIN client_revenue_summary crs ON ec.id = crs.client_id
-            WHERE ec.model_id = $1 
+            WHERE ec.model_id = ? 
             AND (
-                ec.client_identifier ILIKE $2 
-                OR ec.phone_hash ILIKE $3 
-                OR ec.email_hash ILIKE $3
+                ec.client_identifier LIKE ? 
+                OR ec.phone_hash LIKE ? 
+                OR ec.email_hash LIKE ?
             )
             ORDER BY 
-                CASE WHEN ec.client_identifier ILIKE $2 THEN 1 ELSE 2 END,
+                CASE WHEN ec.client_identifier LIKE ? THEN 1 ELSE 2 END,
                 ec.created_at DESC
-            LIMIT $4
-        `, [modelId, `%${query}%`, crypto.createHash('sha256').update(query).digest('hex'), limit]);
+            LIMIT ?
+        `, [modelId, `%${query}%`, crypto.createHash('sha256').update(query).digest('hex'), `%${query}%`, Number(limit)]);
         
         res.json({
             success: true,
-            data: searchResult.rows,
+            data: searchResult,
             query,
-            total: searchResult.rows.length
+            total: searchResult.length
         });
         
     } catch (error) {

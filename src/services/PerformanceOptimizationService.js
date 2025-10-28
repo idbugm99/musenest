@@ -57,9 +57,9 @@ class PerformanceOptimizationService extends EventEmitter {
                 }
             },
             storage: {
-                optimizationDir: config.storage?.optimizationDir || '/tmp/musenest-optimization',
-                reportsDir: config.storage?.reportsDir || '/tmp/musenest-optimization/reports',
-                cacheDir: config.storage?.cacheDir || '/tmp/musenest-optimization/cache'
+                optimizationDir: config.storage?.optimizationDir || '/tmp/phoenix4ge-optimization',
+                reportsDir: config.storage?.reportsDir || '/tmp/phoenix4ge-optimization/reports',
+                cacheDir: config.storage?.cacheDir || '/tmp/phoenix4ge-optimization/cache'
             }
         };
 

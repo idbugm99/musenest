@@ -1,10 +1,10 @@
-# MuseNest Template Addition Workflow
+# phoenix4ge Template Addition Workflow
 
 ## Overview
-This document outlines the complete workflow for adding new themes to the MuseNest system.
+This document outlines the complete workflow for adding new themes to the phoenix4ge system.
 
 ## Prerequisites
-- MuseNest server running with Handlebars configuration
+- phoenix4ge server running with Handlebars configuration
 - Database access to add theme sets
 - Understanding of Handlebars templating
 
@@ -390,4 +390,4 @@ Ensure your theme uses the correct content field names. Common content fields av
 For additional help with theme development, refer to:
 - Handlebars documentation: https://handlebarsjs.com/
 - Bootstrap documentation: https://getbootstrap.com/
-- MuseNest admin interface for theme assignment and content management
+- phoenix4ge admin interface for theme assignment and content management

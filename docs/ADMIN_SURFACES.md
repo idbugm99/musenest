@@ -57,7 +57,7 @@
 | URL | Source | Status | Notes |
 |-----|--------|--------|-------|
 | /sysadmin | server.js + Handlebars | Canonical | System admin dashboard |
-| /admin/musenest-business-manager.html | admin/ | Redirect → /sysadmin | Legacy |
+| /admin/phoenix4ge-business-manager.html | admin/ | Redirect → /sysadmin | Legacy |
 | /admin/media-queue-review.html | admin/ | Read-only | Use sysadmin equivalents where available |
 | /admin/* | admin/ | Read-only | Banner to point to /sysadmin |
 

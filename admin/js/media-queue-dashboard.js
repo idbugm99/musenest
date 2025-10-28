@@ -8,7 +8,7 @@ if (window.ComponentRegistryClient) {
 class SystemAdminDashboard {
     constructor() {
         this.currentUser = null;
-        this.authToken = localStorage.getItem('musenest_token');
+        this.authToken = localStorage.getItem('phoenix4ge_token');
         this.currentTab = 'overview';
         this.isRedirecting = false;
         
@@ -1318,9 +1318,9 @@ class SystemAdminDashboard {
 
     performCompleteLogout() {
         // Clear all authentication data
-        localStorage.removeItem('musenest_token');
-        localStorage.removeItem('musenest_user');
-        localStorage.removeItem('musenest_session');
+        localStorage.removeItem('phoenix4ge_token');
+        localStorage.removeItem('phoenix4ge_user');
+        localStorage.removeItem('phoenix4ge_session');
         sessionStorage.clear();
         
         // Clear cookies
@@ -1337,7 +1337,7 @@ class SystemAdminDashboard {
         if (this.isRedirecting) return;
         this.isRedirecting = true;
         
-        localStorage.removeItem('musenest_token');
+        localStorage.removeItem('phoenix4ge_token');
         const timestamp = new Date().getTime();
         window.location.href = `login.html?t=${timestamp}`;
     }
@@ -1819,7 +1819,7 @@ class SystemAdminDashboard {
                                 ${(data.data.queue).map(item => `
                                     <div class="border border-gray-200 rounded-lg p-4">
                                         <div class="aspect-w-16 aspect-h-9 mb-3">
-                                            <img src="${item.thumbnail_path || (item.original_path ? item.original_path.replace(/^\\/Users\\/[^/]+\\/Projects\\/musenest\\/public/, '') : '')}" alt="Blurred content" class="w-full h-32 object-cover rounded" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIvdmlld0JveD0iMCAwIDEyMCAxMjAiPjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiBmaWxsPSIjRjNGNEY2Ii8+PC9zdmc+'">
+                                            <img src="${item.thumbnail_path || (item.original_path ? item.original_path.replace(/^\\/Users\\/[^/]+\\/Projects\\/phoenix4ge\\/public/, '') : '')}" alt="Blurred content" class="w-full h-32 object-cover rounded" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIvdmlld0JveD0iMCAwIDEyMCAxMjAiPjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiBmaWxsPSIjRjNGNEY2Ii8+PC9zdmc+'">
                                         </div>
                                         <div class="space-y-2">
                                             <h4 class="font-medium text-sm">${item.model_name}</h4>
@@ -2456,7 +2456,7 @@ class SystemAdminDashboard {
     getWebPath(absolutePath) {
         if (!absolutePath) return '/placeholder-image.jpg';
         // Convert absolute path to web-accessible path
-        return absolutePath.replace('/Users/programmer/Projects/musenest/public', '');
+        return absolutePath.replace('/Users/programmer/Projects/phoenix4ge/public', '');
     }
 
     closeBlurToolModal() {

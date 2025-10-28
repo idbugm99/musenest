@@ -1,6 +1,6 @@
 -- Media Library & Gallery Sections Migration
--- Migration 067: Complete media management system for MuseNest
--- Based on RoseMastos functionality with MuseNest integration
+-- Migration 067: Complete media management system for phoenix4ge
+-- Based on RoseMastos functionality with phoenix4ge integration
 -- Date: August 9, 2025
 
 -- ===================================
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS model_media_library (
     watermark_applied TINYINT(1) DEFAULT 0,
     processing_status ENUM('pending', 'processing', 'completed', 'failed') DEFAULT 'pending',
     
-    -- Integration with MuseNest moderation API
+    -- Integration with phoenix4ge moderation API
     moderation_status ENUM('pending', 'approved', 'rejected', 'reviewing') DEFAULT 'pending',
     moderation_id VARCHAR(255) NULL, -- External moderation system ID
     moderation_notes TEXT,
@@ -345,5 +345,5 @@ END//
 DELIMITER ;
 
 -- Migration completed successfully
--- This migration adds comprehensive media library functionality to MuseNest
+-- This migration adds comprehensive media library functionality to phoenix4ge
 -- including file management, gallery sections, watermarking, and analytics.

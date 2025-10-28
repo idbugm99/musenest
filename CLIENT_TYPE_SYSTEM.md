@@ -1,4 +1,4 @@
-# MuseNest Client Type System
+# phoenix4ge Client Type System
 
 **Implementation Date:** August 4, 2025  
 **Version:** 1.0  
@@ -8,14 +8,14 @@
 
 ## 🎯 **Client Type Overview**
 
-MuseNest now supports a sophisticated multi-tier client system with three distinct client types, each serving different business models and operational requirements.
+phoenix4ge now supports a sophisticated multi-tier client system with three distinct client types, each serving different business models and operational requirements.
 
 | Client Type | Description | Ownership | Billing | Icon | Color |
 |-------------|-------------|-----------|---------|------|-------|
-| **MuseNest** (`muse_owned`) | Direct MuseNest customers (models/sites) | MuseNest | Direct billing | 💼 | Blue (Primary) |
-| **White Label** (`white_label`) | External agencies using MuseNest under their brand | 3rd Party | Agency-managed | 🏷️ | Light Blue (Info) |
+| **phoenix4ge** (`muse_owned`) | Direct phoenix4ge customers (models/sites) | phoenix4ge | Direct billing | 💼 | Blue (Primary) |
+| **White Label** (`white_label`) | External agencies using phoenix4ge under their brand | 3rd Party | Agency-managed | 🏷️ | Light Blue (Info) |
 | **Sub-clients** (`sub_client`) | End-users under Type 1 or Type 2 businesses | Parent-owned | Through parent | 👥 | Gray (Secondary) |
-| **System Templates** (`admin`) | Internal templates and demo sites | MuseNest | Non-billable | ⚙️ | Dark |
+| **System Templates** (`admin`) | Internal templates and demo sites | phoenix4ge | Non-billable | ⚙️ | Dark |
 
 ---
 
@@ -48,7 +48,7 @@ CONSTRAINT `fk_parent_client` FOREIGN KEY (`parent_client_id`) REFERENCES `model
 **New Logic:** Focus on `client_type = "muse_owned"` for business metrics
 
 ```javascript
-// Only MuseNest-owned clients count toward business KPIs
+// Only phoenix4ge-owned clients count toward business KPIs
 const totalClients = await db.execute(
     'SELECT COUNT(*) as count FROM models WHERE client_type = "muse_owned"'
 );
@@ -60,7 +60,7 @@ const totalClients = await db.execute(
 {
   "success": true,
   "data": {
-    // Primary MuseNest business metrics
+    // Primary phoenix4ge business metrics
     "total_clients": 0,
     "active_subscriptions": 0,
     "trial_accounts": 0,
@@ -88,7 +88,7 @@ const totalClients = await db.execute(
 
 **Example Requests:**
 ```bash
-# Get only MuseNest-owned clients
+# Get only phoenix4ge-owned clients
 GET /api/system-management/clients?client_type=muse_owned
 
 # Get white label agencies only
@@ -128,7 +128,7 @@ Each client displays a visual badge indicating their type:
 
 | Type | Badge | Description |
 |------|-------|-------------|
-| MuseNest | `💼 MuseNest` | Blue badge for direct customers |
+| phoenix4ge | `💼 phoenix4ge` | Blue badge for direct customers |
 | White Label | `🏷️ White Label` | Light blue badge for agencies |
 | Sub-client | `👥 Sub-client of [Parent]` | Gray badge with parent name |
 | System | `⚙️ System Template` | Dark badge for templates |
@@ -139,7 +139,7 @@ Added to client management interface:
 ```html
 <select class="form-select" id="client-type-filter">
     <option value="">All Client Types</option>
-    <option value="muse_owned">💼 MuseNest</option>
+    <option value="muse_owned">💼 phoenix4ge</option>
     <option value="white_label">🏷️ White Label</option>
     <option value="sub_client">👥 Sub-clients</option>
     <option value="admin">⚙️ System Templates</option>
@@ -150,10 +150,10 @@ Added to client management interface:
 
 ## 🚀 **Business Model Implications**
 
-### **📈 MuseNest-Owned Clients (`muse_owned`)**
+### **📈 phoenix4ge-Owned Clients (`muse_owned`)**
 - **Revenue Impact:** ✅ Counted in all business metrics
 - **Billing:** Direct Stripe integration
-- **Features:** Full MuseNest feature set
+- **Features:** Full phoenix4ge feature set
 - **Management:** Complete admin control
 
 ### **🏷️ White Label Clients (`white_label`)**

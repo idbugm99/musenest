@@ -1,8 +1,8 @@
-# MuseNest Admin: Migration Plan from RoseMastos Admin
+# phoenix4ge Admin: Migration Plan from RoseMastos Admin
 
 ## Goals
 - Parity: replicate the productive UX from `rosemastos` admin for content and gallery management.
-- Consolidation: integrate with MuseNest sysadmin (`/sysadmin`) and future model admin (`/admin/:modelSlug`).
+- Consolidation: integrate with phoenix4ge sysadmin (`/sysadmin`) and future model admin (`/admin/:modelSlug`).
 - Standards: use our response envelope, logging, pagination, auth, and `sysFetch`.
 
 ## Source Features Observed (RoseMastos)
@@ -16,7 +16,7 @@
   - Manage images with visual picker and per-image inline edit (caption/tags/visibility), drag reordering, bulk actions.
   - Section visibility toggles with immediate feedback.
 
-## Target Surfaces (MuseNest)
+## Target Surfaces (phoenix4ge)
 - System Admin (`/sysadmin`): includes Model Media Dashboard, Theme Management, Media Queue.
 - New: Model Content Admin (`/admin/:modelId/content`) per `CONTENT_MANAGEMENT.md` design.
 - New: Model Gallery Admin (`/admin/:modelId/gallery`) mirroring RoseMastos gallery UX.
@@ -25,7 +25,7 @@
 - Left nav in `/sysadmin` gains anchors to open per-model admin pages in a new tab.
 - Per-model admin uses Bootstrap layout and our component loader, not Flask.
 
-## Data Model (MuseNest)
+## Data Model (phoenix4ge)
 - Content:
   - `content_templates` + `content_change_log` (per `CONTENT_MANAGEMENT.md`).
 - Gallery:
@@ -64,7 +64,7 @@
   - Existing images grid with per-image controls (caption/tags inline autosave, visibility badge, drag to reorder, bulk actions).
   - Uses Bootstrap draggable handlers; updates order via `/images/reorder`.
 
-## Reuse from Current MuseNest
+## Reuse from Current phoenix4ge
 - Component loader/execution in `dashboard.handlebars`.
 - `sysFetch`, standardized logging, pagination helpers.
 - Media preview/thumbnail pipeline; thumbnails shown in pickers.

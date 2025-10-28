@@ -1,6 +1,6 @@
 # CLIP NSFW Image Description Implementation Guide
 
-**Project:** Enhanced NSFW Image Moderation for MuseNest  
+**Project:** Enhanced NSFW Image Moderation for phoenix4ge  
 **Purpose:** Replace vague BLIP descriptions with explicit, accurate NSFW content descriptions  
 **Implementation Time:** 1-2 days  
 **Status:** Ready for Implementation
@@ -67,7 +67,7 @@ pip install numpy
 - **Network**: Initial download of pre-trained models (~400MB)
 
 ### Server Environment
-- **PHP 8.0+** (for MuseNest integration)
+- **PHP 8.0+** (for phoenix4ge integration)
 - **Python 3.8+** (for CLIP processing)
 - **Shell access** (for Python subprocess calls)
 - **File system access** (for image processing)
@@ -79,7 +79,7 @@ pip install numpy
 ### Component Overview
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   MuseNest      │    │   CLIP NSFW     │    │   Description   │
+│   phoenix4ge      │    │   CLIP NSFW     │    │   Description   │
 │   PHP Backend  │───▶│   Processor     │───▶│   Database      │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
@@ -91,7 +91,7 @@ pip install numpy
 ```
 
 ### Data Flow
-1. **Image Upload**: User uploads image to MuseNest
+1. **Image Upload**: User uploads image to phoenix4ge
 2. **Moderation Trigger**: System calls CLIP NSFW processor
 3. **CLIP Analysis**: Python script analyzes image against NSFW descriptions
 4. **Result Return**: Structured JSON with descriptions and confidence scores
@@ -106,8 +106,8 @@ pip install numpy
 #### Step 1.1: Environment Setup
 ```bash
 # Create Python virtual environment
-python3 -m venv /path/to/musenest/clip_env
-source /path/to/musenest/clip_env/bin/activate
+python3 -m venv /path/to/phoenix4ge/clip_env
+source /path/to/phoenix4ge/clip_env/bin/activate
 
 # Install dependencies
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
@@ -269,7 +269,7 @@ ADD COLUMN clip_processed_at TIMESTAMP NULL;
 ```python
 #!/usr/bin/env python3
 """
-CLIP NSFW Image Processor for MuseNest
+CLIP NSFW Image Processor for phoenix4ge
 Provides explicit descriptions for adult content moderation
 """
 

@@ -67,7 +67,7 @@ router.get('/category/:category', auth, async (req, res) => {
     }
 });
 
-// Get single setting (adapted for MuseNest schema)
+// Get single setting (adapted for phoenix4ge schema)
 router.get('/:key', auth, async (req, res) => {
     try {
         const settingKey = req.params.key;
