@@ -110,6 +110,25 @@ p { font-size: clamp(0.875rem, 2.5vw, 1.125rem); line-height: 1.6; }
     .button-group > *, [class*="btn-group"] > * {
         width: 100% !important;
     }
+
+    /* Royal Gem specific button containers */
+    .royal-btn {
+        min-height: 44px !important;
+        padding: 0.75rem 1.5rem !important;
+        font-size: 1rem !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem !important;
+    }
+
+    /* Fix flex containers with buttons */
+    div[style*="display: flex"] a.royal-btn,
+    div[style*="display:flex"] a.royal-btn {
+        flex: 1 1 100% !important;
+        min-width: 100% !important;
+        margin: 0.5rem 0 !important;
+    }
 }
 
 /* ============================================
@@ -497,4 +516,96 @@ p { font-size: clamp(0.875rem, 2.5vw, 1.125rem); line-height: 1.6; }
     .lg\:block { display: block !important; }
     .lg\:flex { display: flex !important; }
     .lg\:grid { display: grid !important; }
+}
+
+/* ============================================
+   ROYAL GEM THEME SPECIFIC FIXES
+   ============================================ */
+
+@media (max-width: 768px) {
+    /* Fix hero button container */
+    .royal-section div[style*="display: flex"][style*="gap: 2rem"] {
+        flex-direction: column !important;
+        gap: 1rem !important;
+        width: 100%;
+    }
+
+    /* Ensure buttons don't overlap */
+    .royal-section div[style*="display: flex"] a.royal-btn {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: none !important;
+        margin: 0.5rem auto !important;
+        display: flex !important;
+    }
+
+    /* Fix about section grid */
+    .royal-card div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+    }
+
+    /* Adjust portrait image on mobile */
+    .royal-card div[style*="aspect-ratio: 4/5"] {
+        aspect-ratio: 1 / 1 !important;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    /* Fix testimonials grid */
+    .royal-card div[style*="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr))"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Fix gallery preview grid */
+    .royal-card div[style*="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.5rem !important;
+    }
+
+    /* Fix location availability grid */
+    .royal-card div[style*="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr))"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Reduce padding on royal cards */
+    .royal-card {
+        padding: 1.5rem 1rem !important;
+    }
+
+    /* Reduce hero section padding */
+    .royal-section .royal-container {
+        padding-top: 3rem !important;
+        padding-bottom: 3rem !important;
+    }
+
+    /* Adjust royal icon sizes on mobile */
+    .royal-icon-lg {
+        width: 3rem !important;
+        height: 3rem !important;
+    }
+
+    /* Hide decorative background icons on mobile */
+    .royal-section > div[style*="position: absolute"] {
+        display: none !important;
+    }
+}
+
+/* Small mobile specific (iPhone SE, etc.) */
+@media (max-width: 480px) {
+    /* Single column gallery */
+    .royal-card div[style*="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Smaller buttons on very small screens */
+    .royal-btn {
+        padding: 0.75rem 1rem !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* Adjust hero title size */
+    .royal-section h1 {
+        font-size: 2rem !important;
+    }
 }

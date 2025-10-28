@@ -177,6 +177,13 @@ Or manually:
 - Performance optimized for mobile devices
 - Maintains theme-specific styling
 - No JavaScript required for responsive features
+- Royal Gem theme includes additional fixes for button spacing and inline styles
+
+## Known Issues Fixed
+- **Royal Gem Theme**: Fixed button overlap issue in hero section on mobile (iPhone SE 375px)
+  - Hero buttons now stack vertically with proper spacing
+  - Removed decorative background icons on mobile for better performance
+  - Grid layouts properly collapse to single column
 
 ## Maintenance
 - Update `responsive-universal.css` for global changes
