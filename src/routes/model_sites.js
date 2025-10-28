@@ -4,8 +4,11 @@ const db = require('../../config/database');
 
 const router = express.Router();
 
-// API Base URL configuration - easily configurable for production  
-const API_BASE_URL = process.env.API_BASE_URL || `https://localhost:${process.env.PORT || 443}`;
+// API Base URL configuration - adapts to environment
+// Uses HTTP for development, HTTPS for production
+const DEFAULT_PROTOCOL = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+const DEFAULT_PORT = process.env.PORT || 3000;
+const API_BASE_URL = process.env.API_BASE_URL || `${DEFAULT_PROTOCOL}://localhost:${DEFAULT_PORT}`;
 
 // Request-level cache to prevent duplicate API calls within the same request
 class RequestCache {
