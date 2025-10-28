@@ -3764,23 +3764,35 @@ async function startServer() {
             }
         });
         
-        // HTTPS Configuration
-        const httpsOptions = {
-            key: fs.readFileSync('/etc/ssl/phoenix4ge/origin.key'),
-            cert: fs.readFileSync('/etc/ssl/phoenix4ge/origin.cert')
-        };
-        
-        https.createServer(httpsOptions, app).listen(PORT, () => {
-            console.log('🚀 Phoenix4GE Server Started with HTTPS');
-            console.log(`📍 Server running on port ${PORT}`);
-            console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-            console.log(`🔗 Health check: https://localhost:${PORT}/health`);
-            console.log('');
-            console.log('Next steps:');
-            console.log('1. Copy .env.example to .env and configure your database');
-            console.log('2. Run: npm run migrate (to set up database)');
-            console.log('3. Run: npm run seed (to add sample data)');
-        });
+        // Server Configuration - Use HTTP for development, HTTPS for production
+        if (process.env.NODE_ENV === 'production') {
+            // HTTPS Configuration for production
+            const httpsOptions = {
+                key: fs.readFileSync('/etc/ssl/phoenix4ge/origin.key'),
+                cert: fs.readFileSync('/etc/ssl/phoenix4ge/origin.cert')
+            };
+
+            https.createServer(httpsOptions, app).listen(PORT, () => {
+                console.log('🚀 Phoenix4GE Server Started with HTTPS');
+                console.log(`📍 Server running on port ${PORT}`);
+                console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+                console.log(`🔗 Health check: https://localhost:${PORT}/health`);
+            });
+        } else {
+            // HTTP Configuration for development
+            app.listen(PORT, () => {
+                console.log('🚀 Phoenix4GE Server Started (Development Mode - HTTP)');
+                console.log(`📍 Server running on port ${PORT}`);
+                console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+                console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+                console.log(`🔗 Access: http://localhost:${PORT}/`);
+                console.log('');
+                console.log('Next steps:');
+                console.log('1. Copy .env.example to .env and configure your database');
+                console.log('2. Run: npm run migrate (to set up database)');
+                console.log('3. Run: npm run seed (to add sample data)');
+            });
+        }
         
     } catch (error) {
         console.error('❌ Failed to start server:', error);
